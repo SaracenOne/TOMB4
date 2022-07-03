@@ -1085,6 +1085,11 @@ void do_boot_screen(long language)
 {
 	Log(2, "do_boot_screen");
 
+#ifdef LEVEL_EDITOR
+	_LoadBitmap(App.dx.lpBackBuffer, "load.bmp");
+	S_DumpScreen();
+	_LoadBitmap(App.dx.lpBackBuffer, "load.bmp");
+#else
 	switch (language)
 	{
 		case ENGLISH:
@@ -1130,6 +1135,7 @@ void do_boot_screen(long language)
 			_LoadBitmap(App.dx.lpBackBuffer, "japan.bmp");
 			break;
 	}
+#endif
 }
 
 void S_AnimateTextures(long n)
