@@ -583,11 +583,13 @@ void S_InitialisePolyList()
 #else
 		col = 0xCEAE60;
 #endif
+#ifndef LEVEL_EDITOR
 	else if (gfCurrentLevel == 5 || gfCurrentLevel == 6)
 	{
 		col = FogTableColor[19];
 		SetFogColor(CLRR(col), CLRG(col), CLRB(col));
 	}
+#endif
 	else
 		col = 0;
 	
@@ -860,7 +862,11 @@ void phd_PutPolygonSkyMesh(short* objptr, long clipstatus)
 		else
 			pTex->drawtype = 4;
 
+#ifndef LEVEL_EDITOR
 		if (gfLevelFlags & GF_TRAIN || gfCurrentLevel == 5 || gfCurrentLevel == 6)
+#else 
+		if (gfLevelFlags & GF_TRAIN)
+#endif
 		{
 			v[quad[0]].color = 0xFFFFFFFF;
 			v[quad[1]].color = 0xFFFFFFFF;
