@@ -578,6 +578,9 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
 		LoadSettings();
 	}
 
+#ifdef LEVEL_EDITOR
+	fmvs_disabled = 1;
+#else
 #ifdef GENERAL_FIXES
 	if (!fmvs_disabled)
 	{
@@ -587,6 +590,7 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
 			fmvs_disabled = 1;
 		}
 	}
+#endif
 #endif
 
 	SetWindowPos(App.hWnd, 0, App.dx.rScreen.left, App.dx.rScreen.top, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
