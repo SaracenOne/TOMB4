@@ -540,6 +540,7 @@ void DoLevel(uchar Name, uchar Audio)
 		}
 
 		nFrames = DrawPhaseGame();
+#ifndef LEVEL_EDITOR
 		handle_cutseq_triggering(Name);
 
 		if (DEL_playingamefmv)
@@ -549,6 +550,7 @@ void DoLevel(uchar Name, uchar Audio)
 			PlayFmvNow(7);
 			DelsHandyTeleportLara(54179, -8192, 50899, -32703);
 		}
+#endif
 
 		if (gfLevelComplete)
 		{
@@ -944,8 +946,10 @@ void DoTitle(uchar Name, uchar Audio)
 	bUseSpotCam = 0;
 	bDisableLaraControl = 0;
 
+#ifndef LEVEL_EDITOR
 	if (gfLevelComplete == 1 && gfStatus != 2)
 		PlayFmvNow(12);
+#endif
 
 	if (gfStatus != 4)
 		RenderLoadPic(0);
