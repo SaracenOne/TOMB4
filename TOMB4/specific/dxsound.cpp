@@ -229,6 +229,22 @@ bool FreeSampleDecompress()
 	return 1;
 }
 
+bool DXCreateSample(char* data, long size, LPWAVEFORMATEX format, long num)
+{
+	Log(8, "DXCreateSample");
+
+	if (!App.dx.lpDS)
+		return 0;
+
+	if (format->nSamplesPerSec != 22050)
+		Log(1, "Incorrect SamplesPerSec");
+
+	XA_Buffers[num].pAudioData = (BYTE*)malloc(size);
+	memcpy((void*)XA_Buffers[num].pAudioData, data, size);
+	XA_Buffers[num].AudioBytes = size;
+	return 1;
+}
+
 bool DXCreateSampleADPCM(char* data, long comp_size, long uncomp_size, long num)
 {
 	LPWAVEFORMATEX format;

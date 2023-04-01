@@ -1062,11 +1062,13 @@ void S_InitialisePolyList()
 
 	if (gfLevelFlags & GF_TRAIN)
 		col = 0xD2B163;
+#ifndef LEVEL_EDITOR
 	else if (gfCurrentLevel == 5 || gfCurrentLevel == 6)
 	{
 		col = FogTableColor[19];
 		SetFogColor(CLRR(col), CLRG(col), CLRB(col));
 	}
+#endif
 	else
 		col = 0;
 	
@@ -1326,7 +1328,11 @@ void phd_PutPolygonSkyMesh(short* objptr, long clipstatus)
 		else
 			pTex->drawtype = 4;
 
+#ifndef LEVEL_EDITOR
 		if (gfLevelFlags & GF_TRAIN || gfCurrentLevel == 5 || gfCurrentLevel == 6)
+#else 
+		if (gfLevelFlags & GF_TRAIN)
+#endif	
 		{
 			MyVertexBuffer[quad[0]].color = 0xFFFFFFFF;
 			MyVertexBuffer[quad[1]].color = 0xFFFFFFFF;
@@ -1553,6 +1559,11 @@ void do_boot_screen(long language)
 {
 	Log(2, "do_boot_screen");
 
+#ifdef LEVEL_EDITOR
+	_LoadBitmap(App.dx.lpBackBuffer, "load.bmp");
+	S_DumpScreen();
+	_LoadBitmap(App.dx.lpBackBuffer, "load.bmp");
+#else
 	switch (language)
 	{
 		case ENGLISH:
@@ -1601,6 +1612,7 @@ void do_boot_screen(long language)
 
 #ifdef TIMES_LEVEL
 	Sleep(2000);
+#endif
 #endif
 }
 

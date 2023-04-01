@@ -1248,11 +1248,23 @@ bool LoadSamples()
 		fread(&comp_size, 1, 4, level_fp);
 		fread(samples_buffer, comp_size, 1, level_fp);
 
+#ifndef LEVEL_EDITOR
 		if (!DXCreateSampleADPCM(samples_buffer, comp_size, uncomp_size, i))
 		{
 			FreeSampleDecompress();
 			return 0;
 		}
+#else 
+		LPWAVEFORMATEX format = (LPWAVEFORMATEX)(samples_buffer + 20);
+
+		const int data_len = *((int*)(samples_buffer + 40));
+		const int data_off = 44;
+
+		if (!DXCreateSample(samples_buffer + data_off, data_len, format, i)) {
+			FreeSampleDecompress();
+			return 0;
+		}
+#endif
 	}
 
 	FreeSampleDecompress();

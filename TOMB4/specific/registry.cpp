@@ -9,6 +9,12 @@ static HKEY phkResult;
 static DWORD dwDisposition;
 static bool REG_Setup;
 
+#ifdef LEVEL_EDITOR
+#define REGISTRY_PATH "Software\\Core Design\\Tomb Raider Level Editor"
+#else
+#define REGISTRY_PATH "Software\\Core Design\\Tomb Raider IV"
+#endif
+
 bool REG_OpenKey(LPCSTR lpSubKey)
 {
 	return RegCreateKeyEx(HKEY_CURRENT_USER, lpSubKey, 0, (CHAR*)"", REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, 0, &phkResult, &dwDisposition) == ERROR_SUCCESS;
@@ -19,9 +25,9 @@ bool OpenRegistry(LPCSTR SubKeyName)
 	char buffer[256];
 
 	if (!SubKeyName)
-		return REG_OpenKey("Software\\Core Design\\Tomb Raider IV");
+		return REG_OpenKey(REGISTRY_PATH);
 
-	sprintf(buffer, "%s\\%s", "Software\\Core Design\\Tomb Raider IV", SubKeyName);
+	sprintf(buffer, "%s\\%s", REGISTRY_PATH, SubKeyName);
 	return REG_OpenKey(buffer);
 }
 

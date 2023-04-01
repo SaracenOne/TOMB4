@@ -90,6 +90,10 @@ void ShowBinkFrame()
 
 long PlayFmvNow(long num)
 {
+#ifdef LEVEL_EDITOR
+	return 0;
+#endif
+
 	DXDISPLAYMODE* modes;
 	DXDISPLAYMODE* current;
 	long dm, rm, ndms;
