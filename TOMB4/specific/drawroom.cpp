@@ -22,7 +22,7 @@ static ROOM_DYNAMIC RoomDynamics[MAX_DYNAMICS];
 static long nRoomDynamics;
 
 MESH_DATA** mesh_vtxbuf;
-TEXTUREBUCKET Bucket[20];
+TEXTUREBUCKET Bucket[80]; // TRLE: Increased bucket count (x8)
 float clip_left;
 float clip_top;
 float clip_right;

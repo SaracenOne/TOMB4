@@ -14,7 +14,7 @@ void DrawBuckets();
 void CreateVertexNormals(ROOM_INFO* r);
 
 extern MESH_DATA** mesh_vtxbuf;
-extern TEXTUREBUCKET Bucket[20];
+extern TEXTUREBUCKET Bucket[80]; // TRLE: increased bucket count (x8)
 extern float clip_left;
 extern float clip_top;
 extern float clip_right;

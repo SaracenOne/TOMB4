@@ -1642,7 +1642,7 @@ struct TEXTUREBUCKET
 {
 	long tpage;
 	long nVtx;
-	D3DTLBUMPVERTEX vtx[544];
+	D3DTLBUMPVERTEX vtx[8224]; // TRLE: increased size (256 * 32 + 32)
 };
 
 struct THREAD

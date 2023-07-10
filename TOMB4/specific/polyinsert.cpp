@@ -36,7 +36,7 @@ long DrawPrimitiveCnt;
 SORTLIST* SortList[16384];
 long SortCount;
 
-static char SortBuffer[655360];
+static char SortBuffer[5242880]; // TRLE: Increased soft buffer size (x8)
 static SORTLIST** pSortList;
 static char* pSortBuffer;
 
