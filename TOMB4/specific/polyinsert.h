@@ -40,5 +40,5 @@ extern long nPolys;
 extern long nClippedPolys;
 extern long DrawPrimitiveCnt;
 
-extern SORTLIST* SortList[16384];
+extern SORTLIST* SortList[262144]; // TRLE: increased size (x16)
 extern long SortCount;

@@ -33,10 +33,10 @@ long nPolys;
 long nClippedPolys;
 long DrawPrimitiveCnt;
 
-SORTLIST* SortList[16384];
+SORTLIST* SortList[262144]; // TRLE: increased size (x16)
 long SortCount;
 
-static char SortBuffer[5242880]; // TRLE: Increased soft buffer size (x8)
+static char SortBuffer[10485760]; // TRLE: Increased soft buffer size (x16)
 static SORTLIST** pSortList;
 static char* pSortBuffer;
 
