@@ -1225,10 +1225,16 @@ bool LoadSamples()
 	long num_samples, uncomp_size, comp_size;
 	static long num_sample_infos;
 
+	// TRLE: Not sure how to detect for a higher sample buffer size, but hopefully this works
+	char *origFileData = FileData;
 	int max_samples = MAX_SAMPLES;
-	if (is_ngle_level) {
+	FileData += max_samples * sizeof(short);
+	num_sample_infos = *(long*)FileData;
+	if (num_sample_infos < 0)
+	{
 		max_samples = MAX_NGLE_SAMPLES;
 	}
+	FileData = origFileData;
 
 	Log(2, "LoadSamples");
 	sample_lut = (short*)game_malloc(max_samples * sizeof(short));
