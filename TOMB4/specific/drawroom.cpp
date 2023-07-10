@@ -617,8 +617,12 @@ void ProcessMeshData(long num_meshes)
 			mesh->nVerts = mesh_ptr[5] & 0xFF;
 			lp = 0;
 
-			if (!mesh->nVerts)
+			if (!mesh->nVerts) {
 				lp = mesh_ptr[5] >> 8;
+			} else {
+				// TRLE: Add support for high vertex meshes. May allow some TREP and NGLE levels to load.
+				mesh->nVerts = mesh_ptr[5];
+			}
 
 			mesh_ptr += 6;
 
