@@ -31,7 +31,7 @@
 #define MAX_SAMPLES	370
 #define MAX_NGLE_SAMPLES	2048
 #define MAX_DYNAMICS	64
-#define MALLOC_SIZE	15000000	//15MB
+#define MALLOC_SIZE	64000000	// TRLE: bumped from 15MB to 64MB 
 
 /********************DX defs********************/
 #define LPDIRECTDRAWX			LPDIRECTDRAW4
