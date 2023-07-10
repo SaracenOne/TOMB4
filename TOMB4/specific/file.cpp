@@ -48,6 +48,8 @@ long nAnimUVRanges;
 long number_cameras;
 short nAIObjects;
 
+bool is_ngle_level = false;
+
 static FILE* level_fp;
 static char* FileData;
 static char* CompressedData;
@@ -60,6 +62,9 @@ unsigned int __stdcall LoadLevel(void* name)
 	char* pData;
 	long version, size, compressedSize;
 	short RTPages, OTPages, BTPages;
+
+	long ngle_ident = 0;
+	long ngle_version = 0;
 
 	Log(2, "LoadLevel");
 	FreeLevel();
@@ -84,6 +89,20 @@ unsigned int __stdcall LoadLevel(void* name)
 
 	if (level_fp)
 	{
+		// Check footer for NGLE info
+		fseek(level_fp, -8L, SEEK_END);
+		int foo = ftell(level_fp);
+		fread(&ngle_ident, 1, 4, level_fp);
+		fread(&ngle_version, 1, 2, level_fp);
+
+		if (ngle_ident == 1162626894) {
+			is_ngle_level = true;
+		} else {
+			is_ngle_level = false;
+		}
+
+		fseek(level_fp, 0, SEEK_SET);
+
 		fread(&version, 1, 4, level_fp);
 		fread(&RTPages, 1, 2, level_fp);
 		fread(&OTPages, 1, 2, level_fp);
@@ -1206,10 +1225,15 @@ bool LoadSamples()
 	long num_samples, uncomp_size, comp_size;
 	static long num_sample_infos;
 
+	int max_samples = MAX_SAMPLES;
+	if (is_ngle_level) {
+		max_samples = MAX_NGLE_SAMPLES;
+	}
+
 	Log(2, "LoadSamples");
-	sample_lut = (short*)game_malloc(MAX_SAMPLES * sizeof(short));
-	memcpy(sample_lut, FileData, MAX_SAMPLES * sizeof(short));
-	FileData += MAX_SAMPLES * sizeof(short);
+	sample_lut = (short*)game_malloc(max_samples * sizeof(short));
+	memcpy(sample_lut, FileData, max_samples * sizeof(short));
+	FileData += max_samples * sizeof(short);
 	num_sample_infos = *(long*)FileData;
 	FileData += sizeof(long);
 	Log(8, "Number Of Sample Infos %d", num_sample_infos);
