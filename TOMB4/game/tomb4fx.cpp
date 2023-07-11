@@ -2076,7 +2076,7 @@ void S_DrawSparks()
 	Z = (long*)&tsv_buffer[512];
 	offsets = (long*)&tsv_buffer[1024];
 
-	for (int i = 0; i < 256; i++)
+	for (int i = 0; i < MAX_SPARKS; i++)
 	{
 		sptr = &spark[i];
 

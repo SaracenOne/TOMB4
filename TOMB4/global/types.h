@@ -31,6 +31,9 @@
 #define MAX_SAMPLES	370
 #define MAX_NGLE_SAMPLES	2048
 #define MAX_DYNAMICS	64
+#define MAX_BUCKETS		80 // TRLE: bumped from 20 to 80
+#define BUCKET_VERT_COUNT	8224 // TRLE: increased size (256 * 32 + 32)
+#define MAX_SPARKS 8096 // TRLE: bumped from 256 to 8096 (WARNING: affects RNG)
 #define MALLOC_SIZE	64000000	// TRLE: bumped from 15MB to 64MB 
 
 /********************DX defs********************/
@@ -1642,7 +1645,7 @@ struct TEXTUREBUCKET
 {
 	long tpage;
 	long nVtx;
-	D3DTLBUMPVERTEX vtx[8224]; // TRLE: increased size (256 * 32 + 32)
+	D3DTLBUMPVERTEX vtx[BUCKET_VERT_COUNT]; // TRLE: increased size (256 * 32 + 32)
 };
 
 struct THREAD

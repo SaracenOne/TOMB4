@@ -720,7 +720,7 @@ void InitBuckets()
 {
 	TEXTUREBUCKET* bucket;
 
-	for (int i = 0; i < 20; i++)
+	for (int i = 0; i < MAX_BUCKETS; i++)
 	{
 		bucket = &Bucket[i];
 		bucket->tpage = -1;
@@ -774,18 +774,18 @@ void FindBucket(long tpage, D3DTLBUMPVERTEX** Vpp, long** nVtxpp)
 	TEXTUREBUCKET* bucket;
 	long nVtx, biggest;
 
-	for (int i = 0; i < 20; i++)
+	for (int i = 0; i < MAX_BUCKETS; i++)
 	{
 		bucket = &Bucket[i];
 
-		if (bucket->tpage == tpage && bucket->nVtx < 512)
+		if (bucket->tpage == tpage && bucket->nVtx < BUCKET_VERT_COUNT - 32)
 		{
 			*Vpp = &bucket->vtx[bucket->nVtx];
 			*nVtxpp = &bucket->nVtx;
 			return;
 		}
 
-		if (bucket->nVtx > 512)
+		if (bucket->nVtx > BUCKET_VERT_COUNT - 32)
 		{
 			DrawBucket(bucket);
 			bucket->tpage = tpage;
@@ -799,7 +799,7 @@ void FindBucket(long tpage, D3DTLBUMPVERTEX** Vpp, long** nVtxpp)
 	nVtx = 0;
 	biggest = 0;
 
-	for (int i = 0; i < 20; i++)
+	for (int i = 0; i < MAX_BUCKETS; i++)
 	{
 		bucket = &Bucket[i];
 
@@ -841,7 +841,7 @@ void DrawBuckets()
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_CURRENT);
 
-		for (int i = 0; i < 20; i++)
+		for (int i = 0; i < MAX_BUCKETS; i++)
 		{
 			bucket = &Bucket[i];
 
@@ -861,7 +861,7 @@ void DrawBuckets()
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
 
-		for (int i = 0; i < 20; i++)
+		for (int i = 0; i < MAX_BUCKETS; i++)
 		{
 			bucket = &Bucket[i];
 
@@ -877,7 +877,7 @@ void DrawBuckets()
 
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
 
-		for (int i = 0; i < 20; i++)
+		for (int i = 0; i < MAX_BUCKETS; i++)
 		{
 			bucket = &Bucket[i];
 
@@ -893,7 +893,7 @@ void DrawBuckets()
 	}
 	else
 	{
-		for (int i = 0; i < 20; i++)
+		for (int i = 0; i < MAX_BUCKETS; i++)
 		{
 			bucket = &Bucket[i];
 			DrawBucket(bucket);

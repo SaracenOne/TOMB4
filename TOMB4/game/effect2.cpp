@@ -22,7 +22,7 @@ DYNAMIC dynamics[MAX_DYNAMICS * 2];
 SPLASH_STRUCT splashes[4];
 RIPPLE_STRUCT ripples[16];
 SPLASH_SETUP splash_setup;
-SPARKS spark[256];
+SPARKS spark[MAX_SPARKS];
 long wibble = 0;
 long SplashCount = 0;
 long KillEverythingFlag = 0;
@@ -1019,7 +1019,7 @@ void DetatchSpark(long num, long type)
 	FX_INFO* fx;
 	ITEM_INFO* item;
 
-	for (int i = 0; i < 256; i++)
+	for (int i = 0; i < MAX_SPARKS; i++)
 	{
 		sptr = &spark[i];
 
@@ -1053,11 +1053,11 @@ long GetFreeSpark()
 	free = next_spark;
 	sptr = &spark[next_spark];
 
-	for (int i = 0; i < 256; i++)
+	for (int i = 0; i < MAX_SPARKS; i++)
 	{
 		if (sptr->On)
 		{
-			if (free == 255)
+			if (free == MAX_SPARKS - 1)
 			{
 				sptr = &spark[0];
 				free = 0;
@@ -1070,7 +1070,7 @@ long GetFreeSpark()
 		}
 		else
 		{
-			next_spark = (free + 1) & 0xFF;
+			next_spark = (free + 1) & (MAX_SPARKS - 1);
 			spark[free].extras = 0;
 			spark[free].Dynamic = -1;
 			spark[free].Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
@@ -1081,7 +1081,7 @@ long GetFreeSpark()
 	free = 0;
 	min_life = 4095;
 
-	for (int i = 0; i < 256; i++)
+	for (int i = 0; i < MAX_SPARKS; i++)
 	{
 		sptr = &spark[i];
 
@@ -1114,7 +1114,7 @@ void UpdateSparks()
 	DeadlyBounds[4] = lara_item->pos.z_pos + bounds[4];
 	DeadlyBounds[5] = lara_item->pos.z_pos + bounds[5];
 
-	for (int i = 0; i < 256; i++)
+	for (int i = 0; i < MAX_SPARKS; i++)
 	{
 		sptr = &spark[i];
 
@@ -1232,7 +1232,7 @@ void UpdateSparks()
 		}
 	}
 
-	for (int i = 0; i < 256; i++)
+	for (int i = 0; i < MAX_SPARKS; i++)
 	{
 		sptr = &spark[i];
 

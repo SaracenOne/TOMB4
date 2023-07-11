@@ -281,6 +281,16 @@ void DrawSortList()
 				if (pSort->tpage == tpage && pSort->drawtype == drawtype)
 				{
 					vtx = (D3DTLBUMPVERTEX*)(pSort + 1);
+					total_nVtx += pSort->nVtx;
+
+					// TRLE: extra check backported from TR5
+					if (total_nVtx >= BUCKET_VERT_COUNT - 4)
+					{
+						HWR_DrawSortList(bVtxbak, nVtx, tpage, drawtype);
+						nVtx = 0;
+						bVtx = bVtxbak;
+						total_nVtx = 0;
+					}
 
 					for (int i = 0; i < pSort->nVtx; i++, vtx++, bVtx++)
 					{
