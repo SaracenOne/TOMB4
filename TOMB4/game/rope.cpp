@@ -10,7 +10,7 @@
 
 static PENDULUM NullPendulum = { {0, 0, 0}, {0, 0, 0}, 0, 0 };
 
-ROPE_STRUCT RopeList[5];
+ROPE_STRUCT RopeList[64]; // TRLE: increased rope buffer
 PENDULUM CurrentPendulum;
 long nRope = 0;
 
