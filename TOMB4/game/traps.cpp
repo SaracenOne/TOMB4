@@ -1788,10 +1788,13 @@ void ControlRollingBall(short item_number)
 		{
 			fz = phd_sqrt(SQUARE(camera.pos.x - item->pos.x_pos) + SQUARE(camera.pos.y - item->pos.y_pos) + SQUARE(camera.pos.z - item->pos.z_pos));
 
-			if (fz < 0x4000)
-				camera.bounce = -(((0x4000 - fz) * abs(item->fallspeed)) >> W2V_SHIFT);
+			// NGLE: This flag silences the RollingBall.
+			if (!item->trigger_flags & 0x01) {
+				if (fz < 0x4000)
+					camera.bounce = -(((0x4000 - fz) * abs(item->fallspeed)) >> W2V_SHIFT);
 
-			SoundEffect(SFX_BOULDER_FALL, &item->pos, SFX_DEFAULT);
+				SoundEffect(SFX_BOULDER_FALL, &item->pos, SFX_DEFAULT);
+			}
 		}
 
 		if (item->pos.y_pos - h < 512)
@@ -1972,6 +1975,10 @@ void ControlRollingBall(short item_number)
 	item->pos.x_rot -= (abs(item->item_flags[0]) + abs(item->item_flags[1])) >> 1;
 	GetHeight(GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number), item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
 	TestTriggers(trigger_index, 1, 0);
+	// NGLE: can activate regular triggers with this OCB code.
+	if (item->trigger_flags & 0x40) {
+		TestTriggers(trigger_index, 0, 0);
+	}
 }
 
 void RollingBallCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
