@@ -625,7 +625,11 @@ void OmniFog(D3DTLVERTEX* v)
 
 	s = (v->specular & 0xFF000000) >> 24;
 
+#ifdef LEVEL_EDITOR
+	if (s != 255)
+#else
 	if (gfCurrentLevel != 5 && gfCurrentLevel != 6 && s != 255)
+#endif
 	{
 		v->specular |= 0xFF000000;
 		r = (CLRR(v->color) * s) >> 8;

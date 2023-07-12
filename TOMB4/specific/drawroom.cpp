@@ -86,7 +86,11 @@ void ProcessRoomVertices(ROOM_INFO* r)
 
 	clip = clipflags;
 
+#ifdef LEVEL_EDITOR
+	if (gfLevelFlags & GF_TRAIN)
+#else
 	if (gfLevelFlags & GF_TRAIN || gfCurrentLevel == 5 || gfCurrentLevel == 6)
+#endif
 		DistanceFogStart = 12.0F * 1024.0F;
 	else
 		DistanceFogStart = tomb4.distance_fog * 1024.0F;
@@ -125,7 +129,11 @@ void ProcessRoomVertices(ROOM_INFO* r)
 		{
 			zv = f_mpersp / vPos.z;
 
+#ifdef LEVEL_EDITOR
+			if (gfLevelFlags & GF_TRAIN)
+#else
 			if (gfLevelFlags & GF_TRAIN || gfCurrentLevel == 5 || gfCurrentLevel == 6)
+#endif
 			{
 				if (vPos.z > FogEnd)
 				{
@@ -226,7 +234,11 @@ void ProcessRoomVertices(ROOM_INFO* r)
 		{
 			val = (vPos.z - DistanceFogStart) * num;
 
+#ifdef LEVEL_EDITOR
+			if (gfLevelFlags & GF_TRAIN)
+#else
 			if (gfLevelFlags & GF_TRAIN || gfCurrentLevel == 5 || gfCurrentLevel == 6)
+#endif
 			{
 				val = (vPos.z - DistanceFogStart) / 512.0F;
 				sA -= long(val * (255.0F / 8.0F));
