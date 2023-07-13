@@ -33,7 +33,11 @@
 #define MAX_DYNAMICS	64
 #define MAX_BUCKETS		80 // TRLE: bumped from 20 to 80
 #define BUCKET_VERT_COUNT	8224 // TRLE: increased size (256 * 32 + 32)
+#ifdef LEVEL_EDITOR
 #define MAX_SPARKS 8096 // TRLE: bumped from 256 to 8096 (WARNING: affects RNG)
+#else
+#define MAX_SPARKS 256
+#endif
 #define MALLOC_SIZE	64000000	// TRLE: bumped from 15MB to 64MB 
 
 /********************DX defs********************/
