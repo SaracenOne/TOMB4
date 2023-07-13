@@ -51,6 +51,7 @@ void SetScreenFadeOut(short speed, short back);
 void SetScreenFadeIn(short speed);
 void Fade();
 
+extern float SnowSizes[32]; // TRLE
 extern NODEOFFSET_INFO NodeOffsets[16];
 extern LIGHTNING_STRUCT Lightning[16];
 extern GUNSHELL_STRUCT Gunshells[24];

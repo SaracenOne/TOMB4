@@ -45,6 +45,8 @@ long current_room;
 short no_rotation[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 long outside;
+long rain_outside; // TRLE
+long snow_outside; // TRLE
 
 short SkyPos;
 short SkyPos2;
@@ -640,6 +642,8 @@ void DrawRooms(short CurrentRoom)
 	r->test_right = phd_winxmax;
 	r->test_bottom = phd_winymax;
 	outside = r->flags & ROOM_OUTSIDE;
+	rain_outside = (r->flags & ROOM_RAIN) || (WeatherType == 1 && outside); // TRLE
+	snow_outside = 0; // TRLE
 	camera_underwater = r->flags & ROOM_UNDERWATER;
 	r->bound_active = 2;
 	draw_room_list[0] = CurrentRoom;
@@ -827,6 +831,7 @@ void DrawRooms(short CurrentRoom)
 	lara_item->pos.y_pos = camera.pos.y;
 	lara_item->pos.z_pos = camera.pos.z;
 	lara_item->room_number = camera.pos.room_number;
+	DoWeather(); // TRLE
 	DoUwEffect();
 	S_DrawFires();
 	S_DrawSmokeSparks();
@@ -870,6 +875,7 @@ void RenderIt(short CurrentRoom)
 	r->test_right = phd_winxmax;
 	r->test_bottom = phd_winymax;
 	outside = r->flags & ROOM_OUTSIDE;
+	rain_outside = (r->flags & ROOM_RAIN) || (WeatherType == 1 && outside); // TRLE
 	camera_underwater = r->flags & ROOM_UNDERWATER;
 	r->bound_active = 2;
 	draw_room_list[0] = CurrentRoom;
@@ -1002,6 +1008,9 @@ void GetRoomBounds()
 
 			if (r->flags & ROOM_OUTSIDE)
 				outside = ROOM_OUTSIDE;
+			// TRLE
+			if ((r->flags & ROOM_RAIN) || (WeatherType == 1 && outside))
+				rain_outside = ROOM_RAIN; // TRLE
 		}
 
 		if (r->flags & ROOM_OUTSIDE)
@@ -1028,6 +1037,10 @@ void GetRoomBounds()
 			for (drn = *door++; drn > 0; drn--)
 			{
 				rn = *door++;
+
+				// TRLE
+				if (room[rn].flags & ROOM_SNOW || WeatherType == 2 && room[rn].flags & ROOM_OUTSIDE)
+					snow_outside = 1;
 
 				if (door[0] * long(r->x + door[3] - mW2V[M03]) +
 					door[1] * long(r->y + door[4] - mW2V[M13]) +

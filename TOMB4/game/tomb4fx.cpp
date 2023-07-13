@@ -16,6 +16,13 @@
 #include "lara.h"
 #include "gameflow.h"
 
+// TRLE
+float SnowSizes[32]
+{
+	-24.0F, -24.0F, -24.0F, 24.0F, 24.0F, -24.0F, 24.0F, 24.0F, -12.0F, -12.0F, -12.0F, 12.0F, 12.0F, -12.0F, 12.0F, 12.0F,
+	-8.0F, -8.0F, -8.0F, 8.0F, 8.0F, -8.0F, 8.0F, 8.0F, -6.0F, -6.0F, -6.0F, 6.0F, 6.0F, -6.0F, 6.0F, 6.0F
+};
+
 NODEOFFSET_INFO NodeOffsets[16] =
 {
 	{ -16, 40, 160, -14, 0 },

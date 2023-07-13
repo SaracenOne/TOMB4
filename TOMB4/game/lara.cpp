@@ -272,6 +272,7 @@ void(*lara_collision_routines[118])(ITEM_INFO* item, COLL_INFO* coll) =
 LARA_INFO lara;
 ITEM_INFO* lara_item;
 short DashTimer;
+char WeatherType; // TRLE
 
 static short LeftClimbTab[4] = { 512, 1024, 2048, 256 };
 static short RightClimbTab[4] = { 2048, 256, 512, 1024 };

@@ -44,3 +44,10 @@ void DrawLightning();
 
 extern MESH_DATA* targetMeshP;
 extern long DoFade;
+
+// TRLE - Weather effects
+void InitWeatherFX();
+void ClearWeatherFX();
+void DoWeather();
+void DoRain();
+void DoSnow();

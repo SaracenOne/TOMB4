@@ -14,6 +14,8 @@
 #include "../game/savegame.h"
 #include "../tomb4/tomb4.h"
 
+#include "specificfx.h"
+
 LPDIRECT3DVERTEXBUFFER DestVB;
 WATERTAB WaterTable[22][64];
 THREAD MainThread;
@@ -181,6 +183,7 @@ bool GameInitialise()
 	init_game_malloc();
 	clipflags = (short*)malloc(0x4000);
 	init_water_table();
+	InitWeatherFX(); // TRLE
 	return 1;
 }
 

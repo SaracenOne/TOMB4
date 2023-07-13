@@ -45,6 +45,8 @@ extern long current_room;
 extern short no_rotation[12];
 
 extern long outside;
+extern long rain_outside; // TRLE
+extern long snow_outside; // TRLE
 
 extern short SkyPos;
 extern short SkyPos2;

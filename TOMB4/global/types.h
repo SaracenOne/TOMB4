@@ -126,11 +126,17 @@ enum font_flags
 enum room_flags
 {
 	ROOM_UNDERWATER =	0x1,
+	ROOM_SKYBOX =		0x4,
 	ROOM_OUTSIDE =		0x8,
 	ROOM_DYNAMIC_LIT =	0x10,
 	ROOM_NOT_INSIDE =	0x20,
 	ROOM_INSIDE =		0x40,
-	ROOM_NO_LENSFLARE = 0x80
+	ROOM_NO_LENSFLARE = 0x80,
+	ROOM_CAUSTICS =     0x100,
+	ROOM_REFLECTIONS =  0x200,
+	ROOM_SNOW =			0x400,
+	ROOM_RAIN =			0x800,
+	ROOM_COLD =			0x1000,
 };
 
 enum quadrant_names
@@ -1415,6 +1421,19 @@ struct LIGHTNING_STRUCT
 	uchar Segments;
 	uchar Pad[3];
 };
+
+typedef struct SNOWFLAKE
+{
+	long x;
+	long y;
+	long z;
+	char xv;
+	uchar yv;
+	char zv;
+	uchar life;
+	short stopped;
+	short room_number;
+} RAINDROPS, UWEFFECTS;
 
 struct DYNAMIC
 {

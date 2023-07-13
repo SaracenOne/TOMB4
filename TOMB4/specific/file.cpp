@@ -118,6 +118,8 @@ unsigned int __stdcall LoadLevel(void* name)
 		Decompress(FileData, CompressedData, compressedSize, size);
 		free(CompressedData);
 
+		WeatherType = 0;
+
 		pData = FileData;
 		S_LoadBar();
 
@@ -184,6 +186,8 @@ unsigned int __stdcall LoadLevel(void* name)
 		SetFadeClip(0, 1);
 		reset_cutseq_vars();
 		FileClose(level_fp);
+
+		ClearWeatherFX();
 	}
 
 	LevelLoadingThread.active = 0;

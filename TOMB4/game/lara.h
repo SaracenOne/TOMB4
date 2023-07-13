@@ -174,3 +174,4 @@ extern void (*lara_collision_routines[118])(ITEM_INFO* item, COLL_INFO* coll);
 extern LARA_INFO lara;
 extern ITEM_INFO* lara_item;
 extern short DashTimer;
+extern char WeatherType; // TRLE
