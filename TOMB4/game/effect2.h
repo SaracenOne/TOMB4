@@ -41,3 +41,5 @@ extern long SmokeCountR;
 extern long SmokeWeapon;
 extern long SmokeWindX;
 extern long SmokeWindZ;
+
+extern void TriggerBreath(long x, long y, long z, long xv, long yv, long zv);

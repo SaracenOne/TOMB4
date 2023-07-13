@@ -2024,3 +2024,53 @@ void UpdateSplashes()	//(and ripples)
 		}
 	}
 }
+
+// TRLE
+
+void TriggerBreath(long x, long y, long z, long xv, long yv, long zv)
+{
+	SPARKS* sptr;
+
+	sptr = &spark[GetFreeSpark()];
+	sptr->On = 1;
+	sptr->sR = 0;
+	sptr->sG = 0;
+	sptr->sB = 0;
+	sptr->dR = 32;
+	sptr->dG = 32;
+	sptr->dB = 32;
+	sptr->ColFadeSpeed = 4;
+	sptr->FadeToBlack = 32;
+	sptr->TransType = 2;
+	sptr->extras = 0;
+	sptr->Life = (GetRandomControl() & 3) + 37;
+	sptr->sLife = sptr->Life;
+	sptr->Dynamic = -1;
+	sptr->x = (GetRandomControl() & 0xF) + x - 8;
+	sptr->y = (GetRandomControl() & 0xF) + y - 8;
+	sptr->z = (GetRandomControl() & 0xF) + z - 8;
+	sptr->Friction = 0;
+	sptr->Xvel = (short)xv;
+	sptr->Yvel = (short)yv;
+	sptr->Zvel = (short)zv;
+
+	if (room[lara_item->room_number].flags & ROOM_NOT_INSIDE)
+		sptr->Flags = 778;
+	else
+		sptr->Flags = 522;
+
+	sptr->Scalar = 3;
+	sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
+	sptr->Gravity = 0;
+	sptr->MaxYvel = 0;
+	sptr->dSize = (GetRandomControl() & 7) << 1;
+	sptr->sSize = sptr->dSize;
+	sptr->dSize = sptr->dSize;
+
+	//sptr->dWidth = (GetRandomControl() & 7) + 32;
+	//sptr->sWidth = sptr->dWidth >> 3;
+	//sptr->Width = sptr->sWidth;
+	//sptr->sHeight = sptr->sWidth;
+	//sptr->Height = sptr->sWidth;
+	//sptr->dHeight = sptr->dWidth;
+}

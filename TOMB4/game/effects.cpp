@@ -24,6 +24,8 @@
 #include "pickup.h"
 #include "gameflow.h"
 
+#include "delstuff.h"
+
 FX_INFO* effects;
 OBJECT_VECTOR* sound_effects;
 long GlobalFogOff = 0;
@@ -1081,4 +1083,54 @@ long ItemNearLara(PHD_3DPOS* pos, long rad)
 	}
 
 	return 0;
+}
+
+// TRLE
+
+void LaraBreath(ITEM_INFO* item)
+{
+	PHD_VECTOR p;
+	PHD_VECTOR v;
+
+	if (lara.water_status == 1 || lara_item->hit_points < 0 || !(room[lara_item->room_number].flags & ROOM_COLD))
+		return;
+
+	if (room[lara_item->room_number].flags & ROOM_SNOW) {
+
+	}
+
+	if (lara_item->current_anim_state == AS_STOP)
+	{
+		if (lara_item->frame_number < anims[ANIM_BREATH].frame_base + 30)
+			return;
+	}
+	else if (lara_item->current_anim_state == AS_SURFSWIM)
+	{
+		if (lara_item->frame_number < anims[ANIM_SURF].frame_base + 21)
+			return;
+	}
+	else if (lara_item->current_anim_state == AS_DUCK)
+	{
+		if (lara_item->frame_number < anims[ANIM_DUCKBREATHE].frame_base + 32)
+			return;
+	}
+	else if (lara_item->current_anim_state == AS_ALL4S)
+	{
+		if (lara_item->frame_number < anims[ANIM_ALL4S].frame_base + 28)
+			return;
+	}
+	else if (wibble < 80 || wibble > 192)
+		return;
+
+	p.x = 0;
+	p.y = -4;
+	p.z = 64;
+	GetLaraJointPos(&p, 8);
+
+	v.x = (GetRandomControl() & 7) - 4;
+	v.y = (GetRandomControl() & 7) - 8;
+	v.z = (GetRandomControl() & 0x7F) + 64;
+	GetLaraJointPos(&v, 8);
+
+	TriggerBreath(p.x, p.y, p.z, v.x - p.x, v.y - p.y, v.z - p.z);
 }

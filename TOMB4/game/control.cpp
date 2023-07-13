@@ -485,6 +485,9 @@ long ControlPhase(long nframes, long demo_mode)
 		else if (!bVoncroyCutScene)
 			CalculateCamera();
 
+		// TRLE
+		LaraBreath(lara_item);
+
 		CamRot.y = (mGetAngle(camera.pos.z, camera.pos.x, camera.target.z, camera.target.x) >> 4) & 0xFFF;
 		wibble = (wibble + 4) & 0xFC;
 		TriggerLaraDrips();
