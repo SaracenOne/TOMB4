@@ -649,7 +649,7 @@ void SaveLevelData(long FullSave)
 		byte = 0;
 		item = &items[level_items];
 
-		for (int i = level_items; i < 256; i++)
+		for (int i = level_items; i < NATIVE_ITEM_COUNT; i++)
 		{
 			if (item->active && (item->object_number == FLARE_ITEM || item->object_number == BURNING_TORCH_ITEM))
 				byte++;
@@ -660,7 +660,7 @@ void SaveLevelData(long FullSave)
 		WriteSG(&byte, sizeof(uchar));
 		item = &items[level_items];
 
-		for (int i = level_items; i < 256; i++)
+		for (int i = level_items; i < NATIVE_ITEM_COUNT; i++)
 		{
 			if (item->active && (item->object_number == FLARE_ITEM || item->object_number == BURNING_TORCH_ITEM))
 			{
@@ -1007,7 +1007,7 @@ void RestoreLevelData(long FullSave)
 						ReadSG(creature, 22);
 						creature->enemy = (ITEM_INFO*)((long)creature->enemy + (long)malloc_buffer);
 
-						if (creature->enemy < 0)
+						if ((int)creature->enemy < 0)
 							creature->enemy = 0;
 
 						ReadSG(&creature->ai_target.object_number, sizeof(short));

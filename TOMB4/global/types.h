@@ -2338,4 +2338,13 @@ struct tomb4_options	//keep this at the bottom of the file, please
 	ulong distance_fog;			//value in blocks
 	float GUI_Scale;
 };
+
+#define NATIVE_ITEM_COUNT 256 // TRLE: For save compatibility
+
+#ifdef LEVEL_EDITOR
+#define ITEM_COUNT 6000 // TRLE: bumped from 256
+#else
+#define ITEM_COUNT NATIVE_ITEM_COUNT
+#endif
+
 #pragma pack(pop)

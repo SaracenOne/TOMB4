@@ -1128,9 +1128,10 @@ bool LoadItems()
 	if (!num_items)
 		return 1;
 
-	items = (ITEM_INFO*)game_malloc(256 * sizeof(ITEM_INFO));
+	// TRLE: increased item limit
+	items = (ITEM_INFO*)game_malloc(ITEM_COUNT * sizeof(ITEM_INFO));
 	level_items = num_items;
-	InitialiseItemArray(256);
+	InitialiseItemArray(ITEM_COUNT); // TRLE
 
 	for (int i = 0; i < num_items; i++)
 	{
