@@ -72,9 +72,15 @@ void ProcessObjectMeshVertices(MESH_DATA* mesh)
 		vtx.x = *v++;
 		vtx.y = *v++;
 		vtx.z = *v++;
-		n.x = mesh->Normals[i].x;
-		n.y = mesh->Normals[i].y;
-		n.z = mesh->Normals[i].z;
+		if (mesh->Normals) {
+			n.x = mesh->Normals[i].x;
+			n.y = mesh->Normals[i].y;
+			n.z = mesh->Normals[i].z;
+		} else {
+			n.x = 0;
+			n.y = 0;
+			n.z = 0;
+		}
 		v += 5;
 
 		vPos.x = vtx.x * D3DMView._11 + vtx.y * D3DMView._21 + vtx.z * D3DMView._31 + D3DMView._41;
