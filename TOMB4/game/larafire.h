@@ -1,6 +1,8 @@
 #pragma once
 #include "../global/types.h"
 
+#define TARGET_LIST_SIZE (MAXIMUM_BADDIES + 3)
+
 void InitialiseNewWeapon();
 void LaraTargetInfo(WEAPON_INFO* winfo);
 short* get_current_ammo_pointer(long weapon_type);

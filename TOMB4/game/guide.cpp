@@ -117,7 +117,7 @@ void GuideControl(short item_number)
 
 	if (!objects[WRAITH1].loaded && (item->current_anim_state < 4 || item->current_anim_state == 31))
 	{
-		for (int i = 0; i < 5; i++)
+		for (int i = 0; i < MAXIMUM_BADDIES; i++)
 		{
 			if (baddie_slots[i].item_num != NO_ITEM && baddie_slots[i].item_num != item_number)
 			{

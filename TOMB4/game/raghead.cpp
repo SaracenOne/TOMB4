@@ -777,7 +777,7 @@ void RagheadControl(short item_number)
 
 				KillItem(raghead->enemy - items);
 
-				for (int i = 0; i < 5; i++)
+				for (int i = 0; i < MAXIMUM_BADDIES; i++)
 				{
 					if (baddie_slots[i].item_num != -1 && baddie_slots[i].item_num != item_number && baddie_slots[i].enemy == raghead->enemy)
 						baddie_slots[i].enemy = 0;

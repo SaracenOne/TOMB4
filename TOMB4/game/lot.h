@@ -1,6 +1,12 @@
 #pragma once
 #include "../global/types.h"
 
+#ifdef LEVEL_EDITOR
+#define MAXIMUM_BADDIES 64
+#else
+#define MAXIMUM_BADDIES 5
+#endif
+
 void InitialiseLOTarray(long allocmem);
 void DisableBaddieAI(short item_number);
 void ClearLOT(LOT_INFO* lot);

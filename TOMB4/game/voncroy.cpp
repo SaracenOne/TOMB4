@@ -996,7 +996,7 @@ void VoncroyControl(short item_number)
 	{
 		max_dist = 0x7FFFFFFF;
 
-		for (int i = 0; i < 5; i++)
+		for (int i = 0; i < MAXIMUM_BADDIES; i++)
 		{
 			baddie = &baddie_slots[i];
 

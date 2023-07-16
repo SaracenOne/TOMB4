@@ -558,7 +558,7 @@ void FlipMap(long FlipNumber)
 	flip_stats[FlipNumber] = !flip_stats[FlipNumber];
 	flip_status = flip_stats[FlipNumber];
 
-	for (short slot = 0; slot < 5; slot++)
+	for (short slot = 0; slot < MAXIMUM_BADDIES; slot++)
 	{
 		cinfo = &baddie_slots[slot];
 		cinfo->LOT.target_box = 2047;

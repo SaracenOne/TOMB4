@@ -167,7 +167,7 @@ void ScorpionControl(short item_number)
 				scorpion->enemy = 0;
 				bestdist = 0x7FFFFFFF;
 
-				for (int i = 0; i < 5; i++)
+				for (int i = 0; i < MAXIMUM_BADDIES; i++)
 				{
 					target_num = baddie_slots[i].item_num;
 

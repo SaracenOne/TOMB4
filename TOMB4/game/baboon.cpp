@@ -247,7 +247,7 @@ void BaboonControl(short item_number)
 							item2->room_number = 255;
 							item2->carried_item = -1;
 
-							for (int i = 0; i < 5; i++)
+							for (int i = 0; i < MAXIMUM_BADDIES; i++)
 							{
 								if (baddie_slots[i].item_num != -1 && baddie_slots[i].item_num != item_number && baddie_slots[i].enemy == baboon->enemy)
 									baddie_slots[i].enemy = 0;

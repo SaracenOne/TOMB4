@@ -16,9 +16,9 @@ void InitialiseLOTarray(long allocmem)
 	CREATURE_INFO* creature;
 
 	if (allocmem)
-		baddie_slots = (CREATURE_INFO*)game_malloc(5 * sizeof(CREATURE_INFO));
+		baddie_slots = (CREATURE_INFO*)game_malloc(MAXIMUM_BADDIES * sizeof(CREATURE_INFO));
 
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < MAXIMUM_BADDIES; i++)
 	{
 		creature = &baddie_slots[i];
 		creature->item_num = NO_ITEM;
@@ -232,9 +232,9 @@ long EnableBaddieAI(short item_number, long Always)
 	if (item->data)
 		return 1;
 
-	if (slots_used < 5)
+	if (slots_used < MAXIMUM_BADDIES)
 	{
-		for (slot = 0; slot < 5; slot++)
+		for (slot = 0; slot < MAXIMUM_BADDIES; slot++)
 		{
 			creature = &baddie_slots[slot];
 
@@ -258,7 +258,7 @@ long EnableBaddieAI(short item_number, long Always)
 
 	worstslot = -1;
 
-	for (slot = 0; slot < 5; slot++)
+	for (slot = 0; slot < MAXIMUM_BADDIES; slot++)
 	{
 		creature = &baddie_slots[slot];
 		item = &items[creature->item_num];

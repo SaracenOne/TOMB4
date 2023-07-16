@@ -182,8 +182,8 @@ static short HoldStates[] =
 static PHD_3DPOS bum_view;
 static GAME_VECTOR bum_vdest;
 static GAME_VECTOR bum_vsrc;
-static ITEM_INFO* TargetList[8];
-static ITEM_INFO* LastTargets[8];
+static ITEM_INFO* TargetList[TARGET_LIST_SIZE];
+static ITEM_INFO* LastTargets[TARGET_LIST_SIZE];
 
 static long CheckForHoldingState(long state)
 {
@@ -534,7 +534,7 @@ void LaraGetNewTarget(WEAPON_INFO* winfo)
 	creature = baddie_slots;
 	targets = 0;
 
-	for (slot = 0; slot < 5; slot++, creature++)
+	for (slot = 0; slot < MAXIMUM_BADDIES; slot++, creature++)
 	{
 		if (creature->item_num != NO_ITEM)
 		{
@@ -584,7 +584,7 @@ void LaraGetNewTarget(WEAPON_INFO* winfo)
 
 	if (TargetList[0])
 	{
-		for (slot = 0; slot < 8; slot++)
+		for (slot = 0; slot < TARGET_LIST_SIZE; slot++)
 		{
 			if (!TargetList[slot])
 				lara.target = 0;
@@ -604,16 +604,16 @@ void LaraGetNewTarget(WEAPON_INFO* winfo)
 			{
 				lara.target = 0;
 
-				for (match = 0; match < 8; match++)
+				for (match = 0; match < TARGET_LIST_SIZE; match++)
 				{
 					if (!TargetList[match])
 						break;
 
-					for (slot = 0; slot < 8; slot++)
+					for (slot = 0; slot < TARGET_LIST_SIZE; slot++)
 					{
 						if (!LastTargets[slot])
 						{
-							slot = 8;
+							slot = TARGET_LIST_SIZE;
 							break;
 						}
 
@@ -621,7 +621,7 @@ void LaraGetNewTarget(WEAPON_INFO* winfo)
 							break;
 					}
 
-					if (slot == 8)
+					if (slot == TARGET_LIST_SIZE)
 					{
 						lara.target = TargetList[match];
 						break;

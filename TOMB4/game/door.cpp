@@ -42,7 +42,7 @@ void ShutThatDoor(DOORPOS_DATA* d)
 		{
 			boxes[d->block].overlap_index |= 0x4000;
 
-			for (short slot = 0; slot < 5; slot++)
+			for (short slot = 0; slot < MAXIMUM_BADDIES; slot++)
 			{
 				cinfo = &baddie_slots[slot];
 				cinfo->LOT.target_box = 2047;
@@ -63,7 +63,7 @@ void OpenThatDoor(DOORPOS_DATA* d)
 		{
 			boxes[d->block].overlap_index &= ~0x4000;
 
-			for (short slot = 0; slot < 5; slot++)
+			for (short slot = 0; slot < MAXIMUM_BADDIES; slot++)
 			{
 				cinfo = &baddie_slots[slot];
 				cinfo->LOT.target_box = 2047;
