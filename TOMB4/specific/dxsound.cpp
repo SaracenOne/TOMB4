@@ -195,13 +195,13 @@ bool InitSampleDecompress()
 	if (mmresult != DS_OK)
 		Log(1, "Stream Open %d", mmresult);
 
-	decompressed_samples_buffer = (char*)malloc(0x40000);
-	samples_buffer = (char*)malloc(0x4005A);
+	decompressed_samples_buffer = (char*)malloc(DECOMPRESS_BUFFER_LEN);
+	samples_buffer = (char*)malloc(DECOMPRESS_BUFFER_LEN + 0x5A);
 	memset(&ACMStreamHeader, 0, sizeof(ACMStreamHeader));
-	ACMStreamHeader.pbSrc = (uchar*)(samples_buffer + 90);
+	ACMStreamHeader.pbSrc = (uchar*)(samples_buffer + 0x5A);
 	ACMStreamHeader.cbStruct = 84;
-	ACMStreamHeader.cbSrcLength = 0x40000;
-	ACMStreamHeader.cbDstLength = 0x40000;
+	ACMStreamHeader.cbSrcLength = DECOMPRESS_BUFFER_LEN;
+	ACMStreamHeader.cbDstLength = DECOMPRESS_BUFFER_LEN;
 	ACMStreamHeader.pbDst = (uchar*)decompressed_samples_buffer;
 	mmresult = acmStreamPrepareHeader(hACMStream, &ACMStreamHeader, 0);
 
@@ -213,7 +213,7 @@ bool InitSampleDecompress()
 
 bool FreeSampleDecompress()
 {
-	ACMStreamHeader.cbSrcLength = 0x40000;
+	ACMStreamHeader.cbSrcLength = DECOMPRESS_BUFFER_LEN;
 	mmresult = acmStreamUnprepareHeader(hACMStream, &ACMStreamHeader, 0);
 
 	if (mmresult != DS_OK)

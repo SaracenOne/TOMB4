@@ -1,6 +1,9 @@
 #pragma once
 #include "../global/types.h"
 
+// TRLE - bumped from 0x40000 to 0x100000 (4x)
+#define DECOMPRESS_BUFFER_LEN (0x100000)
+
 bool DXChangeOutputFormat(long nSamplesPerSec, bool force);
 void DSChangeVolume(long num, long volume);
 void DSAdjustPitch(long num, long pitch);
