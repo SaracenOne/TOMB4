@@ -38,6 +38,9 @@ void AddFootPrint(ITEM_INFO* item)
 		GetLaraJointPos(&pos, LM_RFOOT);
 
 	room_num = item->room_number;
+	if (item->room_number == 0xff)
+		return;
+
 	floor = GetFloor(pos.x, pos.y, pos.z, &room_num);
 
 	if (floor->fx != 6 && floor->fx != 5 && floor->fx != 11)
