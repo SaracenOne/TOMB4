@@ -11,7 +11,7 @@
 #include "gameflow.h"
 #include "../tomb4/tomb4.h"
 
-SPOTCAM SpotCam[128];
+SPOTCAM SpotCam[MAXIMUM_SPOTCAMS];
 long bTrackCamInit = 0;
 long bUseSpotCam = 0;
 long bDisableLaraControl = 0;
@@ -48,8 +48,8 @@ static short InitialCameraRoom;
 static short LastFov;
 static short spotcam_timer;
 static short spotcam_loopcnt;
-static uchar SpotRemap[8];
-static uchar CameraCnt[8];
+static uchar SpotRemap[CAMERA_COUNT];
+static uchar CameraCnt[CAMERA_COUNT];
 
 void SetSplineData(long num, long cam)
 {

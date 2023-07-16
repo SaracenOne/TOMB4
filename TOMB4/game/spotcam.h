@@ -1,6 +1,10 @@
 #pragma once
 #include "../global/types.h"
 
+// TRLE - bumped from 8 to 64
+#define CAMERA_COUNT 64
+#define MAXIMUM_SPOTCAMS CAMERA_COUNT * 4
+
 void SetSplineData(long num, long cam);
 void InitialiseSpotCam(short Sequence);
 void InitSpotCamSequences();
