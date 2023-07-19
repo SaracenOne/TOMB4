@@ -1401,7 +1401,12 @@ void LaraGun()
 			if (!*get_current_ammo_pointer(lara.gun_type))
 			{
 				SoundEffect(SFX_SARLID_PALACES, &lara_item->pos, SFX_DEFAULT);
-				lara.request_gun_type = WEAPON_PISTOLS;
+				// TRLE: Fix for automatically changing back to pistols if we don't have them.
+				if (lara.pistols_type_carried & W_PRESENT) {
+					lara.request_gun_type = WEAPON_PISTOLS;
+				} else {
+					lara.request_gun_type = WEAPON_NONE;
+				}
 				return;
 			}
 		}
