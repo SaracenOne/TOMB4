@@ -242,37 +242,41 @@ void DrawLara(ITEM_INFO* item, long mirror)
 
 	if (!(gfLevelFlags & GF_YOUNGLARA))
 	{
-		obj = &objects[lara.holster];
-		meshpp = &meshes[obj->mesh_index];
-		meshpp += 8;
-		mMXPtr[M00] = lara_matrices[1 * 12 + M00];
-		mMXPtr[M01] = lara_matrices[1 * 12 + M01];
-		mMXPtr[M02] = lara_matrices[1 * 12 + M02];
-		mMXPtr[M03] = lara_matrices[1 * 12 + M03];
-		mMXPtr[M10] = lara_matrices[1 * 12 + M10];
-		mMXPtr[M11] = lara_matrices[1 * 12 + M11];
-		mMXPtr[M12] = lara_matrices[1 * 12 + M12];
-		mMXPtr[M13] = lara_matrices[1 * 12 + M13];
-		mMXPtr[M20] = lara_matrices[1 * 12 + M20];
-		mMXPtr[M21] = lara_matrices[1 * 12 + M21];
-		mMXPtr[M22] = lara_matrices[1 * 12 + M22];
-		mMXPtr[M23] = lara_matrices[1 * 12 + M23];
-		phd_PutPolygons(*meshpp, -1);
+		// TRLE: If the holster value is 0, skip drawing it.
+		if (lara.holster != LARA)
+		{
+			obj = &objects[lara.holster];
+			meshpp = &meshes[obj->mesh_index];
+			meshpp += 8;
+			mMXPtr[M00] = lara_matrices[1 * 12 + M00];
+			mMXPtr[M01] = lara_matrices[1 * 12 + M01];
+			mMXPtr[M02] = lara_matrices[1 * 12 + M02];
+			mMXPtr[M03] = lara_matrices[1 * 12 + M03];
+			mMXPtr[M10] = lara_matrices[1 * 12 + M10];
+			mMXPtr[M11] = lara_matrices[1 * 12 + M11];
+			mMXPtr[M12] = lara_matrices[1 * 12 + M12];
+			mMXPtr[M13] = lara_matrices[1 * 12 + M13];
+			mMXPtr[M20] = lara_matrices[1 * 12 + M20];
+			mMXPtr[M21] = lara_matrices[1 * 12 + M21];
+			mMXPtr[M22] = lara_matrices[1 * 12 + M22];
+			mMXPtr[M23] = lara_matrices[1 * 12 + M23];
+			phd_PutPolygons(*meshpp, -1);
 
-		meshpp += 8;
-		mMXPtr[M00] = lara_matrices[4 * 12 + M00];
-		mMXPtr[M01] = lara_matrices[4 * 12 + M01];
-		mMXPtr[M02] = lara_matrices[4 * 12 + M02];
-		mMXPtr[M03] = lara_matrices[4 * 12 + M03];
-		mMXPtr[M10] = lara_matrices[4 * 12 + M10];
-		mMXPtr[M11] = lara_matrices[4 * 12 + M11];
-		mMXPtr[M12] = lara_matrices[4 * 12 + M12];
-		mMXPtr[M13] = lara_matrices[4 * 12 + M13];
-		mMXPtr[M20] = lara_matrices[4 * 12 + M20];
-		mMXPtr[M21] = lara_matrices[4 * 12 + M21];
-		mMXPtr[M22] = lara_matrices[4 * 12 + M22];
-		mMXPtr[M23] = lara_matrices[4 * 12 + M23];
-		phd_PutPolygons(*meshpp, -1);
+			meshpp += 8;
+			mMXPtr[M00] = lara_matrices[4 * 12 + M00];
+			mMXPtr[M01] = lara_matrices[4 * 12 + M01];
+			mMXPtr[M02] = lara_matrices[4 * 12 + M02];
+			mMXPtr[M03] = lara_matrices[4 * 12 + M03];
+			mMXPtr[M10] = lara_matrices[4 * 12 + M10];
+			mMXPtr[M11] = lara_matrices[4 * 12 + M11];
+			mMXPtr[M12] = lara_matrices[4 * 12 + M12];
+			mMXPtr[M13] = lara_matrices[4 * 12 + M13];
+			mMXPtr[M20] = lara_matrices[4 * 12 + M20];
+			mMXPtr[M21] = lara_matrices[4 * 12 + M21];
+			mMXPtr[M22] = lara_matrices[4 * 12 + M22];
+			mMXPtr[M23] = lara_matrices[4 * 12 + M23];
+			phd_PutPolygons(*meshpp, -1);
+		}
 
 		if (lara.back_gun)
 		{
