@@ -56,13 +56,19 @@ void ProcessObjectMeshVertices(MESH_DATA* mesh)
 	clip = clipflags;
 
 #ifdef LEVEL_EDITOR
+#ifndef FORCE_TRAIN_FOG
 	if (gfLevelFlags & GF_TRAIN)
+#endif
 #else
+#ifndef FORCE_TRAIN_FOG
 	if (gfLevelFlags & GF_TRAIN || gfCurrentLevel == 5 || gfCurrentLevel == 6)
 #endif
+#endif
 		DistanceFogStart = 12.0F * 1024.0F;
+#ifndef FORCE_TRAIN_FOG
 	else
 		DistanceFogStart = tomb4.distance_fog * 1024.0F;
+#endif
 
 	num = 255.0F / DistanceFogStart;
 	mesh->SourceVB->Lock(DDLOCK_READONLY, (LPVOID*)&v, 0);
@@ -163,9 +169,13 @@ void ProcessObjectMeshVertices(MESH_DATA* mesh)
 			val = (vPos.z - DistanceFogStart) * num;
 
 #ifdef LEVEL_EDITOR
+#ifndef FORCE_TRAIN_FOG
 			if (gfLevelFlags & GF_TRAIN)
+#endif
 #else
+#ifndef FORCE_TRAIN_FOG
 			if (gfLevelFlags & GF_TRAIN || gfCurrentLevel == 5 || gfCurrentLevel == 6)
+#endif
 #endif		
 			{
 				val = (vPos.z - DistanceFogStart) / 512.0F;
@@ -174,12 +184,14 @@ void ProcessObjectMeshVertices(MESH_DATA* mesh)
 				if (sA < 0)
 					sA = 0;
 			}
+#ifndef FORCE_TRAIN_FOG
 			else
 			{
 				cR -= (long)val;
 				cG -= (long)val;
 				cB -= (long)val;
 			}
+#endif
 		}
 
 		if (cR - 128 <= 0)
@@ -215,9 +227,13 @@ void ProcessObjectMeshVertices(MESH_DATA* mesh)
 			zv = f_mpersp / vPos.z;
 
 #ifdef LEVEL_EDITOR
+#ifndef FORCE_TRAIN_FOG
 			if (gfLevelFlags & GF_TRAIN)
+#endif
 #else
+#ifndef FORCE_TRAIN_FOG
 			if (gfLevelFlags & GF_TRAIN || gfCurrentLevel == 5 || gfCurrentLevel == 6)
+#endif
 #endif
 			{
 				if (vPos.z > FogEnd)
@@ -295,13 +311,19 @@ void ProcessStaticMeshVertices(MESH_DATA* mesh)
 	clip = clipflags;
 
 #ifdef LEVEL_EDITOR
+#ifndef FORCE_TRAIN_FOG
 	if (gfLevelFlags & GF_TRAIN)
+#endif
 #else
+#ifndef FORCE_TRAIN_FOG
 	if (gfLevelFlags & GF_TRAIN || gfCurrentLevel == 5 || gfCurrentLevel == 6)
 #endif
+#endif
 		DistanceFogStart = 12.0F * 1024.0F;
+#ifndef FORCE_TRAIN_FOG
 	else
 		DistanceFogStart = tomb4.distance_fog * 1024.0F;
+#endif
 
 	num = 255.0F / DistanceFogStart;
 	pR = (StaticMeshShade & 0x1F) << 3;
@@ -365,9 +387,13 @@ void ProcessStaticMeshVertices(MESH_DATA* mesh)
 			val = (vPos.z - DistanceFogStart) * num;
 
 #ifdef LEVEL_EDITOR
+#ifndef FORCE_TRAIN_FOG
 			if (gfLevelFlags & GF_TRAIN)
+#endif
 #else
+#ifndef FORCE_TRAIN_FOG
 			if (gfLevelFlags & GF_TRAIN || gfCurrentLevel == 5 || gfCurrentLevel == 6)
+#endif
 #endif
 			{
 				val = (vPos.z - DistanceFogStart) / 512.0F;
@@ -376,12 +402,14 @@ void ProcessStaticMeshVertices(MESH_DATA* mesh)
 				if (sA < 0)
 					sA = 0;
 			}
+#ifndef FORCE_TRAIN_FOG
 			else
 			{
 				cR -= (long)val;
 				cG -= (long)val;
 				cB -= (long)val;
 			}
+#endif
 		}
 
 		if (cR - 128 <= 0)
@@ -417,9 +445,13 @@ void ProcessStaticMeshVertices(MESH_DATA* mesh)
 			zv = f_mpersp / vPos.z;
 
 #ifdef LEVEL_EDITOR
+#ifndef FORCE_TRAIN_FOG
 			if (gfLevelFlags & GF_TRAIN)
+#endif
 #else
+#ifndef FORCE_TRAIN_FOG
 			if (gfLevelFlags & GF_TRAIN || gfCurrentLevel == 5 || gfCurrentLevel == 6)
+#endif
 #endif
 			{
 				if (vPos.z > FogEnd)
@@ -520,7 +552,9 @@ void ProcessTrainMeshVertices(MESH_DATA* mesh)
 		if (zbak > DistanceFogStart)
 		{
 #ifdef LEVEL_EDITOR
+#ifndef FORCE_TRAIN_FOG
 			if (gfLevelFlags & GF_TRAIN)
+#endif
 #else
 			if (gfLevelFlags & GF_TRAIN || gfCurrentLevel == 5 || gfCurrentLevel == 6)
 #endif
@@ -553,6 +587,7 @@ void ProcessTrainMeshVertices(MESH_DATA* mesh)
 				if (sG > dG) sG = dG;
 				if (sB > dB) sB = dB;
 			}
+#ifndef FORCE_TRAIN_FOG
 			else
 			{
 				val = (zbak - DistanceFogStart) * num;
@@ -560,6 +595,7 @@ void ProcessTrainMeshVertices(MESH_DATA* mesh)
 				cG -= (long)val;
 				cB -= (long)val;
 			}
+#endif
 		}
 		
 		clipFlag = 0;

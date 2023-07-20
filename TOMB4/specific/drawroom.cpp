@@ -130,9 +130,13 @@ void ProcessRoomVertices(ROOM_INFO* r)
 			zv = f_mpersp / vPos.z;
 
 #ifdef LEVEL_EDITOR
+#ifndef FORCE_TRAIN_FOG
 			if (gfLevelFlags & GF_TRAIN)
+#endif
 #else
+#ifndef FORCE_TRAIN_FOG
 			if (gfLevelFlags & GF_TRAIN || gfCurrentLevel == 5 || gfCurrentLevel == 6)
+#endif
 #endif
 			{
 				if (vPos.z > FogEnd)
@@ -235,9 +239,13 @@ void ProcessRoomVertices(ROOM_INFO* r)
 			val = (vPos.z - DistanceFogStart) * num;
 
 #ifdef LEVEL_EDITOR
+#ifndef FORCE_TRAIN_FOG
 			if (gfLevelFlags & GF_TRAIN)
+#endif
 #else
+#ifndef FORCE_TRAIN_FOG
 			if (gfLevelFlags & GF_TRAIN || gfCurrentLevel == 5 || gfCurrentLevel == 6)
+#endif
 #endif
 			{
 				val = (vPos.z - DistanceFogStart) / 512.0F;
@@ -246,12 +254,14 @@ void ProcessRoomVertices(ROOM_INFO* r)
 				if (sA < 0)
 					sA = 0;
 			}
+#ifndef FORCE_TRAIN_FOG
 			else
 			{
 				cR -= (long)val;
 				cG -= (long)val;
 				cB -= (long)val;
 			}
+#endif
 		}
 
 		if (cR - 128 <= 0)
