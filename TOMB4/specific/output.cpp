@@ -1094,16 +1094,16 @@ void S_InitialisePolyList()
 	rect.x2 = App.dx.rViewport.left + App.dx.rViewport.right;
 	rect.y2 = App.dx.rViewport.top + App.dx.rViewport.bottom;
 
+#ifndef LEVEL_EDITOR
 	if (gfLevelFlags & GF_TRAIN)
 		col = 0xD2B163;
-#ifndef LEVEL_EDITOR
 	else if (gfCurrentLevel == 5 || gfCurrentLevel == 6)
 	{
 		col = FogTableColor[19];
 		SetFogColor(CLRR(col), CLRG(col), CLRB(col));
 	}
-#endif
 	else
+#endif
 		col = 0;
 	
 	if (App.dx.Flags & DXF_HWR)
