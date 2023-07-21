@@ -1083,8 +1083,10 @@ void RenderLoadPic(long unused)
 	{
 		phd_LookAt(camera.pos.x, camera.pos.y, camera.pos.z, camera.target.x, camera.target.y, camera.target.z, 0);
 		S_InitialisePolyList();
-		RenderIt(camera.pos.room_number);
-
+		// TRLE: extra check to prevent crashing
+		if (gfLoadRoom < number_rooms) {
+			RenderIt(camera.pos.room_number);
+		}
 		if (tomb4.loadingtxt && !tomb4.tr5_loadbar)
 		{
 			if (tomb4.bar_mode == 2 || tomb4.bar_mode == 3)
@@ -1102,7 +1104,10 @@ void RenderLoadPic(long unused)
 
 	phd_LookAt(camera.pos.x, camera.pos.y, camera.pos.z, camera.target.x, camera.target.y, camera.target.z, 0);
 	S_InitialisePolyList();
-	RenderIt(camera.pos.room_number);
+	// TRLE: extra check to prevent crashing
+	if (gfLoadRoom < number_rooms) {
+		RenderIt(camera.pos.room_number);
+	}
 
 	if (tomb4.loadingtxt && !tomb4.tr5_loadbar)
 	{
