@@ -12,6 +12,8 @@
 #include "lara.h"
 #include "gameflow.h"
 
+#include "../tomb4/mod_config.h"
+
 HAIR_STRUCT hairs[2][7];
 static long hair_wind = 0;
 static long hair_dwind_angle = 0;
@@ -66,6 +68,8 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 	short room_num, spaz;
 
 	obj = &objects[LARA];
+
+	MOD_LARA_INFO mod_lara_info = get_game_mod_lara_info();
 
 	if (!cutscenething)
 	{
@@ -190,13 +194,13 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 		sphere[5].r = gfLevelFlags & GF_YOUNGLARA ? 0 : 5 * sphere[2].r / 4;
 
 		if (pigtail)
-			phd_TranslateRel_I(44, -48, -50);
+			phd_TranslateRel_I(mod_lara_info.pigtail_right_x, mod_lara_info.pigtail_right_y, mod_lara_info.pigtail_right_z);
 		else
 		{
 			if (gfLevelFlags & GF_YOUNGLARA)
-				phd_TranslateRel_I(-52, -48, -50);
+				phd_TranslateRel_I(mod_lara_info.pigtail_left_x, mod_lara_info.pigtail_left_y, mod_lara_info.pigtail_left_z);
 			else
-				phd_TranslateRel_I(-4, -4, -48);
+				phd_TranslateRel_I(mod_lara_info.braid_x, mod_lara_info.braid_y, mod_lara_info.braid_z);
 		}
 
 		mInterpolateMatrix();
@@ -391,7 +395,7 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 
 			if (water == NO_HEIGHT || hair->pos.y_pos < water)
 			{
-				hair->pos.y_pos += 10;
+				hair->pos.y_pos += mod_lara_info.hair_gravity;
 
 				if (water != NO_HEIGHT && hair->pos.y_pos > water)
 					hair->pos.y_pos = water;

@@ -27,6 +27,8 @@
 #include "../tomb4/troyestuff.h"
 #include "drawbars.h"
 
+#include "../tomb4/mod_config.h"
+
 long sfx_frequencies[3] = { 11025, 22050, 44100 };
 long SoundQuality = 1;
 long MusicVolume = 40;
@@ -464,7 +466,7 @@ void DisplayStatsUCunt()
 #ifdef TIMES_LEVEL
 	sprintf(buf, "%d / 2", savegame.Game.Secrets);
 #else
-	sprintf(buf, "%d / 70", savegame.Game.Secrets);
+	sprintf(buf, "%d / %d", savegame.Game.Secrets, get_game_mod_game_info().secret_count);
 #endif
 	PrintString(phd_centerx + (phd_centerx >> 2), y + 7 * font_height, 6, buf, 0);
 }

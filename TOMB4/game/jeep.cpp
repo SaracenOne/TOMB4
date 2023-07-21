@@ -30,6 +30,8 @@
 #include "laramisc.h"
 #include "../specific/file.h"
 
+#include "../tomb4/mod_config.h"
+
 static short jroomies[22];
 static char dont_exit_jeep = 0;
 
@@ -217,6 +219,8 @@ static long JeepCheckGetOut()
 {
 	if (lara_item->current_anim_state == 10 && lara_item->frame_number == anims[lara_item->anim_number].frame_end)
 	{
+		MOD_AUDIO_INFO mod_audio_info = get_game_mod_audio_info();
+
 		lara_item->pos.y_rot += 0x4000;
 		lara_item->anim_number = ANIM_STOP;
 		lara_item->frame_number = anims[ANIM_STOP].frame_base;
@@ -228,9 +232,11 @@ static long JeepCheckGetOut()
 		lara_item->pos.z_rot = 0;
 		lara.vehicle = NO_ITEM;
 		lara.gun_status = LG_NO_ARMS;
-		CurrentAtmosphere = 110;
-		IsAtmospherePlaying = 1;
-		S_CDPlay(110, 1);
+		if (mod_audio_info.outside_jeep_track >= 0) {
+			CurrentAtmosphere = (uchar)mod_audio_info.outside_jeep_track;
+			IsAtmospherePlaying = 1;
+			S_CDPlay(CurrentAtmosphere, 1);
+		}
 	}
 
 	return 1;
@@ -359,6 +365,8 @@ void JeepCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 		else
 			l->anim_number = objects[VEHICLE_EXTRA].anim_index + 18;
 
+		MOD_AUDIO_INFO mod_audio_info = get_game_mod_audio_info();
+
 		l->current_anim_state = 9;
 		l->goal_anim_state = 9;
 		l->frame_number = anims[l->anim_number].frame_base;
@@ -377,9 +385,11 @@ void JeepCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 		jeep->unused1 = 0;
 		jeep->gear = 0;
 		item->flags |= IFL_TRIGGERED;
-		CurrentAtmosphere = 98;
-		IsAtmospherePlaying = 1;
-		S_CDPlay(98, 1);
+		if (mod_audio_info.inside_jeep_track >= 0) {
+			CurrentAtmosphere = (uchar)mod_audio_info.inside_jeep_track;
+			IsAtmospherePlaying = 1;
+			S_CDPlay(CurrentAtmosphere, 1);
+		}
 	}
 	else
 		ObjectCollision(item_number, l, coll);

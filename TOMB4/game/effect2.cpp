@@ -18,6 +18,8 @@
 #include "lara.h"
 #include "gameflow.h"
 
+#include "../tomb4/mod_config.h"
+
 DYNAMIC dynamics[MAX_DYNAMICS * 2];
 SPLASH_STRUCT splashes[4];
 RIPPLE_STRUCT ripples[16];
@@ -1019,7 +1021,7 @@ void DetatchSpark(long num, long type)
 	FX_INFO* fx;
 	ITEM_INFO* item;
 
-	for (int i = 0; i < MAX_SPARKS; i++)
+	for (int i = 0; i < get_game_mod_graphics_info().max_particles; i++)
 	{
 		sptr = &spark[i];
 
@@ -1053,11 +1055,13 @@ long GetFreeSpark()
 	free = next_spark;
 	sptr = &spark[next_spark];
 
-	for (int i = 0; i < MAX_SPARKS; i++)
+	int max_sparks = get_game_mod_graphics_info().max_particles;
+
+	for (int i = 0; i < max_sparks; i++)
 	{
 		if (sptr->On)
 		{
-			if (free == MAX_SPARKS - 1)
+			if (free == max_sparks - 1)
 			{
 				sptr = &spark[0];
 				free = 0;
@@ -1070,7 +1074,7 @@ long GetFreeSpark()
 		}
 		else
 		{
-			next_spark = (free + 1) & (MAX_SPARKS - 1);
+			next_spark = (free + 1) & (max_sparks - 1);
 			spark[free].extras = 0;
 			spark[free].Dynamic = -1;
 			spark[free].Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
@@ -1081,7 +1085,7 @@ long GetFreeSpark()
 	free = 0;
 	min_life = 4095;
 
-	for (int i = 0; i < MAX_SPARKS; i++)
+	for (int i = 0; i < max_sparks; i++)
 	{
 		sptr = &spark[i];
 
@@ -1114,7 +1118,9 @@ void UpdateSparks()
 	DeadlyBounds[4] = lara_item->pos.z_pos + bounds[4];
 	DeadlyBounds[5] = lara_item->pos.z_pos + bounds[5];
 
-	for (int i = 0; i < MAX_SPARKS; i++)
+	int max_sparks = get_game_mod_graphics_info().max_particles;
+
+	for (int i = 0; i < max_sparks; i++)
 	{
 		sptr = &spark[i];
 
@@ -1232,7 +1238,7 @@ void UpdateSparks()
 		}
 	}
 
-	for (int i = 0; i < MAX_SPARKS; i++)
+	for (int i = 0; i < max_sparks; i++)
 	{
 		sptr = &spark[i];
 

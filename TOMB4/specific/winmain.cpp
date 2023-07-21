@@ -18,6 +18,8 @@
 #include "gamemain.h"
 #include "fmv.h"
 
+#include "../tomb4/mod_config.h"
+
 static COMMANDLINES commandlines[] =
 {
 	{ "SETUP", 0, &CLSetup },
@@ -502,6 +504,8 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
 		return 0;
 
 	LoadGameflow();
+	LoadGameModConfig();
+
 	WinProcessCommandLine(lpCmdLine);
 
 	if (!WinRegisterWindow(hInstance))

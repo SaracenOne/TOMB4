@@ -26,6 +26,9 @@
     <Filter Include="TOMB4\tomb4\libs\zlib">
       <UniqueIdentifier>{ac45d35f-3f2a-4795-bf31-b0e8064bd25d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="TOMB4\tomb4\libs\tiny-json">
+      <UniqueIdentifier>{d24c2abc-4f5d-4c3d-b6d7-464c6d41397b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TOMB4\tomb4\pch.h">
@@ -366,6 +369,12 @@
       <Filter>TOMB4\tomb4\libs\zlib</Filter>
     </ClInclude>
     <ClInclude Include="TOMB4\specific\drawbars.h" />
+    <ClInclude Include="TOMB4\tomb4\mod_config.h">
+      <Filter>TOMB4\tomb4</Filter>
+    </ClInclude>
+    <ClInclude Include="..\tiny-json\tiny-json.h">
+      <Filter>TOMB4\tomb4\libs\tiny-json</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TOMB4\game\lara.cpp">
@@ -706,6 +715,12 @@
     </ClCompile>
     <ClCompile Include="TOMB4\specific\drawbars.cpp">
       <Filter>TOMB4</Filter>
+    </ClCompile>
+    <ClCompile Include="TOMB4\tomb4\mod_config.cpp">
+      <Filter>TOMB4\tomb4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\tiny-json\tiny-json.c">
+      <Filter>TOMB4\tomb4\libs\tiny-json</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

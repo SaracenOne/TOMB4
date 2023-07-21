@@ -43,6 +43,8 @@
 #include "savegame.h"
 #include "../specific/file.h"
 
+#include "../tomb4/mod_config.h"
+
 ITEM_INFO* items;
 ANIM_STRUCT* anims;
 ROOM_INFO* room;
@@ -976,7 +978,12 @@ void TestTriggers(short* data, long heavy, long HeavyFlags)
 
 			if (!(savegame.Level.Secrets & 1 << value))
 			{
-				S_CDPlay(5, 0);
+				MOD_AUDIO_INFO mod_audio_info = get_game_mod_audio_info();
+
+				if (mod_audio_info.secret_track >= 0)
+				{
+					S_CDPlay(mod_audio_info.secret_track, 0);
+				}
 				savegame.Level.Secrets |= 1 << value;
 				savegame.Game.Secrets++;
 			}

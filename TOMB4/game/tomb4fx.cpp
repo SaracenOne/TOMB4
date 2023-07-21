@@ -16,7 +16,8 @@
 #include "lara.h"
 #include "gameflow.h"
 
-// TRLE
+#include "../tomb4/mod_config.h"
+
 float SnowSizes[32]
 {
 	-24.0F, -24.0F, -24.0F, 24.0F, 24.0F, -24.0F, 24.0F, 24.0F, -12.0F, -12.0F, -12.0F, 12.0F, 12.0F, -12.0F, 12.0F, 12.0F,
@@ -2083,7 +2084,9 @@ void S_DrawSparks()
 	Z = (long*)&tsv_buffer[512];
 	offsets = (long*)&tsv_buffer[1024];
 
-	for (int i = 0; i < MAX_SPARKS; i++)
+	int max_sparks = get_game_mod_graphics_info().max_particles;
+
+	for (int i = 0; i < max_sparks; i++)
 	{
 		sptr = &spark[i];
 
