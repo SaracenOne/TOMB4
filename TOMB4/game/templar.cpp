@@ -12,6 +12,8 @@
 #include "control.h"
 #include "lara.h"
 
+#include "trng/trng.h"
+
 static BITE_INFO templar_hit{ 0, 0, 0, 11 };
 
 void InitialiseTemplar(short item_number)
@@ -133,6 +135,7 @@ void TemplarControl(short item_number)
 			GetJointAbsPosition(item, &pos, 11);
 
 			floor = &r->floor[((pos.z - r->z) >> 10) + r->x_size * ((pos.x - r->x) >> 10)];
+			NGUpdateCurrentTriggerRoomAndIndex(item->room_number, ((pos.z - r->z) >> 10) + r->x_size * ((pos.x - r->x) >> 10)); // NGLE
 
 			if (floor->stopper)
 			{

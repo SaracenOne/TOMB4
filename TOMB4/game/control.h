@@ -38,6 +38,9 @@ long DoRayBox(GAME_VECTOR* start, GAME_VECTOR* target, short* bounds, PHD_3DPOS*
 long GetMaximumFloor(FLOOR_INFO* floor, long x, long z);
 long GetMinimumCeiling(FLOOR_INFO* floor, long x, long z);
 
+// TRNG
+void TriggerChannelTrack(unsigned char track_id, unsigned char channel, bool looping);
+
 extern ITEM_INFO* items;
 extern ANIM_STRUCT* anims;
 extern ROOM_INFO* room;

@@ -29,6 +29,8 @@
 #include "output.h"
 #include "../game/gameflow.h"
 
+#include "../game/trng/trng.h"
+
 TEXTURESTRUCT* textinfo;
 SPRITESTRUCT* spriteinfo;
 THREAD LevelLoadingThread;
@@ -188,6 +190,7 @@ unsigned int __stdcall LoadLevel(void* name)
 		FileClose(level_fp);
 
 		ClearWeatherFX();
+		NGSetup();
 	}
 
 	LevelLoadingThread.active = 0;

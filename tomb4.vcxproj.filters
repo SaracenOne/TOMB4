@@ -29,6 +29,9 @@
     <Filter Include="TOMB4\tomb4\libs\tiny-json">
       <UniqueIdentifier>{d24c2abc-4f5d-4c3d-b6d7-464c6d41397b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="TOMB4\game\trng">
+      <UniqueIdentifier>{91493a9b-2047-4599-8661-9968ffeb025f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TOMB4\tomb4\pch.h">
@@ -374,6 +377,21 @@
     </ClInclude>
     <ClInclude Include="..\tiny-json\tiny-json.h">
       <Filter>TOMB4\tomb4\libs\tiny-json</Filter>
+    </ClInclude>
+    <ClInclude Include="TOMB4\game\trng.h">
+      <Filter>TOMB4\game\trng</Filter>
+    </ClInclude>
+    <ClInclude Include="TOMB4\game\trng\trng_action.h">
+      <Filter>TOMB4\game\trng</Filter>
+    </ClInclude>
+    <ClInclude Include="TOMB4\game\trng\trng_extra_state.h">
+      <Filter>TOMB4\game\trng</Filter>
+    </ClInclude>
+    <ClInclude Include="TOMB4\game\trng\trng_flipeffect.h">
+      <Filter>TOMB4\game\trng</Filter>
+    </ClInclude>
+    <ClInclude Include="TOMB4\game\trng\trng_script_parser.h">
+      <Filter>TOMB4\game\trng</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -721,6 +739,21 @@
     </ClCompile>
     <ClCompile Include="..\tiny-json\tiny-json.c">
       <Filter>TOMB4\tomb4\libs\tiny-json</Filter>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\trng\trng_action.cpp">
+      <Filter>TOMB4\game\trng</Filter>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\trng\trng_extra_state.cpp">
+      <Filter>TOMB4\game\trng</Filter>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\trng\trng_flipeffect.cpp">
+      <Filter>TOMB4\game\trng</Filter>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\trng\trng_script_parser.cpp">
+      <Filter>TOMB4\game\trng</Filter>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\trng\trng.cpp">
+      <Filter>TOMB4\game\trng</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

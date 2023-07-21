@@ -44,6 +44,7 @@
 #include "../specific/file.h"
 
 #include "../tomb4/mod_config.h"
+#include "trng/trng.h"
 
 ITEM_INFO* items;
 ANIM_STRUCT* anims;
@@ -368,14 +369,17 @@ long ControlPhase(long nframes, long demo_mode)
 			item = &items[item_num];
 			nex = item->next_active;
 
-			if (item->after_death < 128)
-			{
-				if (objects[item->object_number].control)
-					objects[item->object_number].control(item_num);
-			}
-			else
-				KillItem(item_num);
+			NGItemUpdate(item_num); // TRNG (should this go before or after the control update?)
 
+			if (!NGIsItemFrozen(item_num)) { // TRNG
+				if (item->after_death < 128)
+				{
+					if (objects[item->object_number].control)
+						objects[item->object_number].control(item_num);
+				}
+				else
+					KillItem(item_num);
+			}
 			item_num = nex;
 		}
 
@@ -523,6 +527,8 @@ long ControlPhase(long nframes, long demo_mode)
 		}
 
 		UpdateFadeClip();
+
+		NGFrameFinish(); // NGLE
 	}
 
 	return 0;
@@ -607,6 +613,7 @@ void TestTriggers(short* data, long heavy, long HeavyFlags)
 	short camera_flags, camera_timer, type, trigger, value, flags, state;
 	static uchar HeavyTriggered;
 	char timer;
+	bool is_ng_oneshot = false;
 
 	switch_off = 0;
 	flip = -1;
@@ -970,8 +977,14 @@ void TestTriggers(short* data, long heavy, long HeavyFlags)
 			break;
 
 		case TO_FLIPEFFECT:
-			TriggerTimer = timer;
-			neweffect = value;
+			if (value >= 47 && NGUseNGFlipEffects()) {
+				trigger = *data;
+				is_ng_oneshot = flags & IFL_INVISIBLE;
+				NGFlipEffect(value, (trigger & 0x7fff), is_ng_oneshot);
+			} else {
+				TriggerTimer = timer;
+				neweffect = value;
+			}
 			break;
 
 		case TO_SECRET:
@@ -988,6 +1001,10 @@ void TestTriggers(short* data, long heavy, long HeavyFlags)
 				savegame.Game.Secrets++;
 			}
 
+			break;
+		case TO_BODYBAG:
+			trigger = *data;
+			NGActionTrigger(value, (trigger & 0x7fff));
 			break;
 
 		case TO_FLYBY:
@@ -1078,6 +1095,9 @@ void TestTriggers(short* data, long heavy, long HeavyFlags)
 		flipeffect = neweffect;
 		fliptimer = 0;
 	}
+
+
+	NGUpdateFloorstateData(is_ng_oneshot);
 }
 
 short GetDoor(FLOOR_INFO* floor)
@@ -1237,6 +1257,7 @@ FLOOR_INFO* GetFloor(long x, long y, long z, short* room_number)
 	short door;
 
 	r = &room[*room_number];
+	NGStorePendingRoomNumber(*room_number);
 
 	do
 	{
@@ -1273,6 +1294,7 @@ FLOOR_INFO* GetFloor(long x, long y, long z, short* room_number)
 			break;
 
 		*room_number = door;
+		NGStorePendingRoomNumber(*room_number);
 		r = &room[door];
 
 	} while (door != 255);
@@ -1287,6 +1309,7 @@ FLOOR_INFO* GetFloor(long x, long y, long z, short* room_number)
 					break;
 
 				*room_number = floor->sky_room;
+				NGStorePendingRoomNumber(*room_number);
 				r = &room[floor->sky_room];
 				floor = &r->floor[((z - r->z) >> 10) + r->x_size * ((x - r->x) >> 10)];
 
@@ -1304,6 +1327,7 @@ FLOOR_INFO* GetFloor(long x, long y, long z, short* room_number)
 				break;
 
 			*room_number = floor->pit_room;
+			NGStorePendingRoomNumber(*room_number);
 			r = &room[floor->pit_room];
 			floor = &r->floor[((z - r->z) >> 10) + r->x_size * ((x - r->x) >> 10)];
 
@@ -1404,8 +1428,10 @@ long GetWaterHeight(long x, long y, long z, short room_number)
 
 long GetHeight(FLOOR_INFO* floor, long x, long y, long z)
 {
+	int room_number = NGRestorePendingRoomNumber(); // NGLE
+
 	ITEM_INFO* item;
-	ROOM_INFO* r;
+	ROOM_INFO* r = &room[room_number]; // NGLE;
 	short* data;
 	long height;
 	ushort trigger;
@@ -1421,7 +1447,8 @@ long GetHeight(FLOOR_INFO* floor, long x, long y, long z)
 		if (CheckNoColFloorTriangle(floor, x, z) == 1)
 			break;
 
-		r = &room[floor->pit_room];
+		room_number = floor->pit_room;
+		r = &room[room_number];
 		floor = &r->floor[((z - r->z) >> 10) + ((x - r->x) >> 10) * r->x_size];
 	}
 
@@ -1431,6 +1458,7 @@ long GetHeight(FLOOR_INFO* floor, long x, long y, long z)
 		return height;
 
 	trigger_index = 0;
+	NGUpdateCurrentTriggerRoomAndIndex(room_number, ((z - r->z) >> 10) + ((x - r->x) >> 10) * r->x_size); // NGLE
 
 	if (!floor->index)
 		return height;
@@ -3342,4 +3370,19 @@ long GetMinimumCeiling(FLOOR_INFO* floor, long x, long z)
 	}
 
 	return height;
+}
+
+void TriggerChannelTrack(unsigned char track_id, unsigned char channel, bool looping) {
+	if (looping) {
+		if (CurrentAtmosphere != track_id)
+		{
+			CurrentAtmosphere = (uchar)track_id;
+
+			if (IsAtmospherePlaying)
+				S_CDPlay(track_id, true);
+		}
+	}
+	else {
+		S_CDPlay(track_id, false);
+	}
 }

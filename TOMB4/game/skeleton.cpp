@@ -17,6 +17,8 @@
 #include "lara.h"
 #include "savegame.h"
 
+#include "trng/trng.h"
+
 static BITE_INFO skelly_hit = { 180, 0, 0, 16 };
 
 void TriggerRiseEffect(ITEM_INFO* item)
@@ -406,6 +408,7 @@ void SkeletonControl(short item_number)
 			GetJointAbsPosition(item, &pos, 16);
 
 			floor = &r->floor[((pos.z - r->z) >> 10) + r->x_size * ((pos.x - r->x) >> 10)];
+			NGUpdateCurrentTriggerRoomAndIndex(item->room_number, ((pos.z - r->z) >> 10) + r->x_size * ((pos.x - r->x) >> 10)); // NGLE
 
 			if (floor->stopper)
 			{

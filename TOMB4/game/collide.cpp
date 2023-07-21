@@ -13,6 +13,8 @@
 #include "lara.h"
 #include "../specific/file.h"
 
+#include "trng/trng.h"
+
 static short StarGateBounds[24] =
 {
 	-512, 512, -1024, -896, -96, 96,
@@ -1247,6 +1249,7 @@ void GetCollisionInfo(COLL_INFO* coll, long x, long y, long z, short room_number
 	coll->mid_ceiling = c;
 	coll->mid_type = height_type;
 	coll->trigger = trigger_index;
+	NGStoreBackupTriggerRoomAndIndex(); // NGLE
 	tilt = GetTiltType(floor, x, lara_item->pos.y_pos, z);
 	coll->tilt_x = (char)tilt;
 	coll->tilt_z = tilt >> 8;

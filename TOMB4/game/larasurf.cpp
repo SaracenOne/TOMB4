@@ -11,6 +11,8 @@
 #include "camera.h"
 #include "../specific/input.h"
 
+#include "trng/trng.h"
+
 void lara_as_surfswim(ITEM_INFO* item, COLL_INFO* coll)
 {
 	if (item->hit_points <= 0)
@@ -237,8 +239,15 @@ void LaraSurface(ITEM_INFO* item, COLL_INFO* coll)
 	if (lara.vehicle == NO_ITEM)
 		lara_collision_routines[item->current_anim_state](item, coll);
 
+	// NGLE
+	NGStoreBackupTriggerRoomAndIndex();
+
 	UpdateLaraRoom(item, 100);
 	LaraGun();
+
+	// NGLE
+	NGRestoreBackupTriggerRoomAndIndex();
+
 	TestTriggers(coll->trigger, 0, 0);
 }
 

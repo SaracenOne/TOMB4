@@ -11,6 +11,8 @@
 #include "../specific/input.h"
 #include "effect2.h"
 
+#include "trng/trng.h"
+
 static void lara_as_swimcheat(ITEM_INFO* item, COLL_INFO* coll)
 {
 	if (input & IN_FORWARD)
@@ -144,8 +146,15 @@ void LaraUnderWater(ITEM_INFO* item, COLL_INFO* coll)
 	if (lara.vehicle == NO_ITEM)
 		lara_collision_routines[item->current_anim_state](item, coll);
 
+	// NGLE
+	NGStoreBackupTriggerRoomAndIndex();
+
 	UpdateLaraRoom(item, 0);
 	LaraGun();
+
+	// NGLE
+	NGRestoreBackupTriggerRoomAndIndex();
+
 	TestTriggers(coll->trigger, 0, 0);
 
 	if (lara.water_status == LW_FLYCHEAT)

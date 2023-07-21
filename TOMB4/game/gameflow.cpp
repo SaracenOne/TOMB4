@@ -28,6 +28,7 @@
 #include "../specific/3dmath.h"
 #include "lara.h"
 #include "../tomb4/tomb4.h"
+#include "trng/trng.h"
 
 short CreditGroups[18] =
 {
@@ -957,7 +958,7 @@ void LoadGameflow()
 	long l, end;
 
 	s = 0;
-	LoadFile("SCRIPT.DAT", &s);
+	int gameflow_len = LoadFile("SCRIPT.DAT", &s);
 
 	gfScriptFile = (uchar*)s;
 
@@ -1068,7 +1069,10 @@ void LoadGameflow()
 				break;
 			}
 		}
+		s = (char *)n;
 	}
+
+	NGLoaderHeader((char *)gfScriptFile, (int)s - (int)gfScriptFile, gameflow_len);
 }
 
 long DoCredits()

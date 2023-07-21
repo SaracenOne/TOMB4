@@ -25,6 +25,8 @@
 #include "tomb4fx.h"
 #include "../tomb4/tomb4.h"
 
+#include "trng/trng.h"
+
 void(*lara_control_routines[118])(ITEM_INFO* item, COLL_INFO* coll) =
 {
 	lara_as_walk,
@@ -463,6 +465,10 @@ void LaraAboveWater(ITEM_INFO* item, COLL_INFO* coll)
 
 	UpdateLaraRoom(item, -381);
 	LaraGun();
+
+	// NGLE
+	NGRestoreBackupTriggerRoomAndIndex();
+
 	TestTriggers(coll->trigger, 0, 0);
 }
 
@@ -2752,6 +2758,7 @@ void lara_as_deathslide(ITEM_INFO* item, COLL_INFO* coll)
 	camera.target_angle = 12740;
 	GetHeight(GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number), item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
 	coll->trigger = trigger_index;
+	NGStoreBackupTriggerRoomAndIndex(); // NGLE
 
 	if (!(input & IN_ACTION))
 	{
