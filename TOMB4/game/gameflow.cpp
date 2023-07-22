@@ -526,6 +526,8 @@ void DoLevel(uchar Name, uchar Audio)
 
 	while (!gfStatus)
 	{
+		S_AudioUpdate();
+
 		S_InitialisePolyList();
 
 		if (gfLegendTime && !DestFadeScreenHeight && !FadeScreenHeight && !cutseq_num)
@@ -786,8 +788,11 @@ long TitleOptions()
 				switch (selection)
 				{
 				case 1:
-
+#ifdef _DEBUG
+					if (true)
+#else
 					if (Gameflow->PlayAnyLevel)
+#endif
 					{
 						selection_bak = selection;
 						menu = 1;
@@ -920,6 +925,8 @@ void DoTitle(uchar Name, uchar Audio)
 
 	while (!gfStatus)
 	{
+		S_AudioUpdate();
+
 		S_InitialisePolyList();
 		gfStatus = TitleOptions();	//originally inlined
 
