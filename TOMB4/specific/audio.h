@@ -15,6 +15,10 @@ void S_CDPlay(long track, long mode);
 void S_CDStop();
 void S_StartSyncedAudio(long track);
 
+void S_AudioUpdate();
+void S_PauseAudio();
+void S_UnpauseAudio();
+
 extern HACMDRIVER hACMDriver;
 extern uchar* wav_file_buffer;
 extern uchar* ADPCMBuffer;

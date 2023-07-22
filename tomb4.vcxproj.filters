@@ -32,6 +32,15 @@
     <Filter Include="TOMB4\game\trng">
       <UniqueIdentifier>{91493a9b-2047-4599-8661-9968ffeb025f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="TOMB4\tomb4\libs\miniaudio">
+      <UniqueIdentifier>{031298dd-d692-4da2-bc95-8efdceaf5a26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TOMB4\tomb4\libs\miniaudio\extras">
+      <UniqueIdentifier>{b4002152-887d-498f-a2f5-00371b732d4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TOMB4\game\trep">
+      <UniqueIdentifier>{27d6677f-1b77-45db-be7b-95d0482f3b67}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TOMB4\tomb4\pch.h">
@@ -392,6 +401,9 @@
     </ClInclude>
     <ClInclude Include="TOMB4\game\trng\trng_script_parser.h">
       <Filter>TOMB4\game\trng</Filter>
+    </ClInclude>
+    <ClInclude Include="TOMB4\tomb4\libs\miniaudio\miniaudio.h">
+      <Filter>TOMB4\tomb4\libs\miniaudio</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -754,6 +766,9 @@
     </ClCompile>
     <ClCompile Include="TOMB4\game\trng\trng.cpp">
       <Filter>TOMB4\game\trng</Filter>
+    </ClCompile>
+    <ClCompile Include="TOMB4\tomb4\libs\miniaudio\extras\stb_vorbis.c">
+      <Filter>TOMB4\tomb4\libs\miniaudio\extras</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
