@@ -45,4 +45,4 @@ extern long nAnimUVRanges;
 extern long number_cameras;
 extern short nAIObjects;
 
-extern bool is_ngle_level;
+extern void LoadNGInfo();

@@ -65,9 +65,6 @@ unsigned int __stdcall LoadLevel(void* name)
 	long version, size, compressedSize;
 	short RTPages, OTPages, BTPages;
 
-	long ngle_ident = 0;
-	long ngle_version = 0;
-
 	Log(2, "LoadLevel");
 	FreeLevel();
 	memset(malloc_ptr, 0, MALLOC_SIZE);
@@ -91,17 +88,7 @@ unsigned int __stdcall LoadLevel(void* name)
 
 	if (level_fp)
 	{
-		// Check footer for NGLE info
-		fseek(level_fp, -8L, SEEK_END);
-		int foo = ftell(level_fp);
-		fread(&ngle_ident, 1, 4, level_fp);
-		fread(&ngle_version, 1, 2, level_fp);
-
-		if (ngle_ident == 1162626894) {
-			is_ngle_level = true;
-		} else {
-			is_ngle_level = false;
-		}
+		LoadNGInfo();
 
 		fseek(level_fp, 0, SEEK_SET);
 
@@ -1233,16 +1220,12 @@ bool LoadSamples()
 	long num_samples, uncomp_size, comp_size;
 	static long num_sample_infos;
 
-	// TRLE: Not sure how to detect for a higher sample buffer size, but hopefully this works
-	char *origFileData = FileData;
+	// Still not sure if this flag consistently determines the size of the sample buffer, but lets try it...
 	int max_samples = MAX_SAMPLES;
-	FileData += max_samples * sizeof(short);
-	num_sample_infos = *(long*)FileData;
-	if (num_sample_infos < 0)
+	if (is_ngle_level)
 	{
 		max_samples = MAX_NGLE_SAMPLES;
 	}
-	FileData = origFileData;
 
 	Log(2, "LoadSamples");
 	sample_lut = (short*)game_malloc(max_samples * sizeof(short));
@@ -1482,4 +1465,117 @@ bool Decompress(char* pDest, char* pCompressed, long compressedSize, long size)
 	inflateEnd(&stream);
 	Log(5, "Decompression OK");
 	return 1;
+}
+
+#define NGLE_START_SIGNATURE 0x474e
+#define NGLE_END_SIGNATURE 0x454c474e
+
+void LoadNGInfo() {
+	is_ngle_level = false;
+
+	long level_version = 0;
+	long ngle_ident = 0;
+	long ngle_offset = 0;
+
+	// Check footer for NGLE info
+	fseek(level_fp, -8L, SEEK_END);
+	fread(&ngle_ident, 1, sizeof(long), level_fp);
+	fread(&ngle_offset, 1, sizeof(long), level_fp);
+
+	if (ngle_ident == NGLE_END_SIGNATURE) {
+		fseek(level_fp, -ngle_offset, SEEK_END);
+
+		unsigned short start_ident = 0;
+		fread(&start_ident, 1, sizeof(short), level_fp);
+		if (start_ident == NGLE_START_SIGNATURE) {
+			while (1) {
+				unsigned short chunk_size = 0;
+				fread(&chunk_size, 1, sizeof(unsigned short), level_fp);
+				unsigned short chunk_ident = 0;
+				fread(&chunk_ident, 1, sizeof(unsigned short), level_fp);
+
+				if (chunk_size == 0 || chunk_ident == 0) {
+					break;
+				}
+
+				switch (chunk_ident) {
+					// Animated Textures
+					case 0x8002: {
+						fseek(level_fp, (chunk_size * sizeof(short)) - (sizeof(short) * 2), SEEK_CUR);
+						break;
+					}
+					// Moveables Table
+					case 0x8005: {
+						fseek(level_fp, (chunk_size * sizeof(short)) - (sizeof(short) * 2), SEEK_CUR);
+						break;
+					}
+					// Extra room flags
+					case 0x8009: {
+						unsigned short room_count;
+						fread(&room_count, 1, sizeof(unsigned short), level_fp);
+
+						for (int i = 0; i < room_count; i++) {
+							unsigned char flags[8];
+							fread(&flags, sizeof(flags), sizeof(unsigned char), level_fp);
+						}
+						break;
+					}
+					// Level Flags
+					case 0x800d: {
+						unsigned int flags;
+						fread(&flags, 1, sizeof(unsigned int), level_fp);
+						if (flags & 0x02) {
+							is_ngle_level = true;
+						}
+
+						break;
+					}
+					// Tex Partial (?)
+					case 0x8017: {
+						fseek(level_fp, (chunk_size * sizeof(short)) - (sizeof(short) * 2), SEEK_CUR);
+						break;
+					}
+					// Statics Table
+					case 0x8021: {
+						fseek(level_fp, (chunk_size * sizeof(short)) - (sizeof(short) * 2), SEEK_CUR);
+						break;
+					}
+					// Level version
+					case 0x8024: {
+						unsigned short version_info[4];
+						for (int i = 0; i < 4; i++) {
+							fread(&version_info[i], 1, sizeof(unsigned short), level_fp);
+						}
+						break;
+					}
+					// TOM version
+					case 0x8025: {
+						unsigned short version_info[4];
+						for (int i = 0; i < 4; i++) {
+							fread(&version_info[i], 1, sizeof(unsigned short), level_fp);
+						}
+						break;
+					}
+					// Plugin Names (?)
+					case 0x8047: {
+						unsigned short unk1;
+						fread(&unk1, 1, sizeof(unsigned short), level_fp);
+						break;
+					}
+					// Floor ID table (?)
+					case 0x8048: {
+						fseek(level_fp, (chunk_size * sizeof(short)) - (sizeof(short) * 2), SEEK_CUR);
+						break;
+					}
+					default: {
+						fseek(level_fp, (chunk_size * sizeof(short)) - (sizeof(short) * 2), SEEK_CUR);
+						break;
+					}
+				}
+			}
+		}
+	}
+	else {
+		return;
+	}
 }
