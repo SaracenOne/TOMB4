@@ -1379,9 +1379,9 @@ struct MESH_DATA
 	short flags;
 	short nVerts;
 	short nNorms;
-	short ngt4;
+	ushort ngt4; // TRLE: Made unsigned, fixes some level loading
 	short* gt4;
-	short ngt3;
+	ushort ngt3; // TRLE: Made unsigned, fixes some level loading
 	short* gt3;
 	long* prelight;
 	LPDIRECT3DVERTEXBUFFER SourceVB;
