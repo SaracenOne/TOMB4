@@ -819,7 +819,7 @@ void TrapObjects()
 
 void BaddyObjects()
 {
-	MOD_CREATURE_HEALTH_INFO creature_health_info = get_game_mod_creature_health_info();
+	MOD_LEVEL_CREATURE_HEALTH_INFO creature_health_info = get_game_mod_level_creature_health_info(gfCurrentLevel);
 
 	OBJECT_INFO* obj;
 

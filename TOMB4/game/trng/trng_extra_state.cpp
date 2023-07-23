@@ -102,6 +102,7 @@ void NGUpdateFloorstateData(bool update_oneshot) {
 
 void NGSetupExtraState() {
 	ng_items_extradata = (NG_ITEM_EXTRADATA*)game_malloc(ITEM_COUNT * sizeof(NG_ITEM_EXTRADATA));
+	memset(ng_items_extradata, 0x00, ITEM_COUNT * sizeof(NG_ITEM_EXTRADATA));
 
 	floorstate_data_size = 0;
 	for (int i = 0; i < number_rooms; i++) {

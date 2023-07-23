@@ -1021,7 +1021,7 @@ void DetatchSpark(long num, long type)
 	FX_INFO* fx;
 	ITEM_INFO* item;
 
-	for (int i = 0; i < get_game_mod_graphics_info().max_particles; i++)
+	for (int i = 0; i < get_game_mod_global_graphics_info().max_particles; i++)
 	{
 		sptr = &spark[i];
 
@@ -1055,7 +1055,7 @@ long GetFreeSpark()
 	free = next_spark;
 	sptr = &spark[next_spark];
 
-	int max_sparks = get_game_mod_graphics_info().max_particles;
+	int max_sparks = get_game_mod_global_graphics_info().max_particles;
 
 	for (int i = 0; i < max_sparks; i++)
 	{
@@ -1118,7 +1118,7 @@ void UpdateSparks()
 	DeadlyBounds[4] = lara_item->pos.z_pos + bounds[4];
 	DeadlyBounds[5] = lara_item->pos.z_pos + bounds[5];
 
-	int max_sparks = get_game_mod_graphics_info().max_particles;
+	int max_sparks = get_game_mod_global_graphics_info().max_particles;
 
 	for (int i = 0; i < max_sparks; i++)
 	{

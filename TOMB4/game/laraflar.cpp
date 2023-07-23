@@ -17,6 +17,8 @@
 #include "draw.h"
 #include "tomb4fx.h"
 
+#include "../tomb4/mod_config.h"
+
 void DrawFlareInAir(ITEM_INFO* item)
 {
 	short* bounds;
@@ -56,7 +58,9 @@ long DoFlareLight(PHD_VECTOR* pos, long flare_age)
 {
 	long x, y, z, r, g, b, rnd, falloff, ret;
 
-	if (flare_age >= 900 || !flare_age)
+	MOD_LEVEL_FLARE_INFO flare_info = get_game_mod_level_flare_info(gfCurrentLevel);
+
+	if (flare_age >= flare_info.flare_lifetime_in_ticks || !flare_age)
 		return 0;
 
 	rnd = GetRandomControl();
@@ -83,18 +87,18 @@ long DoFlareLight(PHD_VECTOR* pos, long flare_age)
 		g = (rnd & 0x3F) + 4 * flare_age + 128;
 		b = ((rnd >> 8) & 0x1F) + 4 * flare_age + 16;
 	}
-	else if (flare_age < 810)
+	else if (flare_age < (flare_info.flare_lifetime_in_ticks - 90))
 	{
-		falloff = 16;
-		r = (rnd >> 4 & 0x1F) + 128;
-		g = (rnd & 0x3F) + 192;
-		b = ((rnd >> 8) & 0x3F) + (((rnd >> 6) & 0x7F) >> 2);
+		falloff = flare_info.light_intensity;
+		r = (rnd >> 4 & 0x1F) + flare_info.light_color_r;
+		g = (rnd & 0x3F) + flare_info.light_color_g;
+		b = ((rnd >> 8) & 0x3F) + (((rnd >> 6) & 0x7F) >> 2) + flare_info.light_color_b;
 	}
-	else if (flare_age < 876)
+	else if (flare_age < (flare_info.flare_lifetime_in_ticks - 24))
 	{
 		if (rnd > 0x2000)
 		{
-			falloff = 16;
+			falloff = flare_info.light_intensity;
 			r = (rnd & 0x1F) + 128;
 			g = (rnd & 0x3F) + 192;
 			b = ((rnd >> 8) & 0x3F) + (((rnd >> 6) & 0x7F) >> 2);
@@ -104,20 +108,38 @@ long DoFlareLight(PHD_VECTOR* pos, long flare_age)
 			r = (GetRandomControl() & 0x3F) + 64;
 			g = (GetRandomControl() & 0x3F) + 192;
 			b = GetRandomControl() & 0x7F;
-			falloff = (GetRandomControl() & 6) + 8;
+			falloff = (GetRandomControl() & 6) + (flare_info.light_intensity / 2);
 			ret = 0;
 		}
 	}
 	else
 	{
-		falloff = 16 - ((flare_age - 876) >> 1);
+		falloff = flare_info.light_intensity - ((flare_age - (flare_info.flare_lifetime_in_ticks - 24)) >> 1) * ((float)flare_info.light_intensity / 16.0f);
 		r = (GetRandomControl() & 0x3F) + 64;
 		g = (GetRandomControl() & 0x3F) + 192;
 		b = GetRandomControl() & 0x1F;
 		ret = rnd & 1;
 	}
 
-	TriggerDynamic(x, y, z, falloff, r, g, b);
+	// Clamp the lighting values
+	if (r >= 0xff)
+		r = 0xff;
+	if (g >= 0xff)
+		g = 0xff;
+	if (b >= 0xff)
+		b = 0xff;
+
+	if (flare_info.flat_light) {
+		TriggerDynamic(x, y, z, falloff, flare_info.light_color_r, flare_info.light_color_g, flare_info.light_color_b);
+	} else {
+		TriggerDynamic(x, y, z, falloff, r, g, b);
+	}
+	if (flare_info.has_sparks) {
+		if (flare_age < flare_info.flare_lifetime_in_ticks - 24) {
+			unsigned long flare_spark_rnd = GetRandomControl();
+			TriggerFlareSparks(pos->x, pos->y, pos->z, 0, flare_spark_rnd * -0.025, 0, flare_info.sparks_include_smoke);
+		}
+	}
 	return ret;
 }
 
@@ -136,8 +158,11 @@ void DoFlareInHand(long flare_age)
 		pos.z = 2 * gfMirrorZPlane - pos.z;
 		DoFlareLight(&pos, flare_age);
 	}
+	
+	// TRLE
+	MOD_LEVEL_FLARE_INFO flare_info = get_game_mod_level_flare_info(gfCurrentLevel);
 
-	if (lara.flare_age < 900)
+	if (lara.flare_age < flare_info.flare_lifetime_in_ticks)
 		lara.flare_age++;
 	else if (lara.gun_status == LG_NO_ARMS)
 		lara.gun_status = LG_UNDRAW_GUNS;

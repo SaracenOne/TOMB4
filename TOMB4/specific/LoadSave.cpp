@@ -466,7 +466,7 @@ void DisplayStatsUCunt()
 #ifdef TIMES_LEVEL
 	sprintf(buf, "%d / 2", savegame.Game.Secrets);
 #else
-	sprintf(buf, "%d / %d", savegame.Game.Secrets, get_game_mod_game_info().secret_count);
+	sprintf(buf, "%d / %d", savegame.Game.Secrets, get_game_mod_level_stat_info(gfCurrentLevel).secret_count);
 #endif
 	PrintString(phd_centerx + (phd_centerx >> 2), y + 7 * font_height, 6, buf, 0);
 }

@@ -29,6 +29,7 @@
 #include "../specific/input.h"
 #include "laramisc.h"
 #include "../specific/file.h"
+#include "gameflow.h"
 
 #include "../tomb4/mod_config.h"
 
@@ -219,7 +220,7 @@ static long JeepCheckGetOut()
 {
 	if (lara_item->current_anim_state == 10 && lara_item->frame_number == anims[lara_item->anim_number].frame_end)
 	{
-		MOD_AUDIO_INFO mod_audio_info = get_game_mod_audio_info();
+		MOD_LEVEL_AUDIO_INFO mod_audio_info = get_game_mod_level_audio_info(gfCurrentLevel);
 
 		lara_item->pos.y_rot += 0x4000;
 		lara_item->anim_number = ANIM_STOP;
@@ -365,7 +366,7 @@ void JeepCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 		else
 			l->anim_number = objects[VEHICLE_EXTRA].anim_index + 18;
 
-		MOD_AUDIO_INFO mod_audio_info = get_game_mod_audio_info();
+		MOD_LEVEL_AUDIO_INFO mod_audio_info = get_game_mod_level_audio_info(gfCurrentLevel);
 
 		l->current_anim_state = 9;
 		l->goal_anim_state = 9;

@@ -991,7 +991,7 @@ void TestTriggers(short* data, long heavy, long HeavyFlags)
 
 			if (!(savegame.Level.Secrets & 1 << value))
 			{
-				MOD_AUDIO_INFO mod_audio_info = get_game_mod_audio_info();
+				MOD_LEVEL_AUDIO_INFO mod_audio_info = get_game_mod_level_audio_info(gfCurrentLevel);
 
 				if (mod_audio_info.secret_track >= 0)
 				{

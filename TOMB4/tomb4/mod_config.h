@@ -8,7 +8,7 @@ enum CREATURE_HIT_TYPE {
 	CREATURE_HIT_CLEAR_DAMAGE
 };
 
-struct MOD_CREATURE_HEALTH_INFO {
+struct MOD_LEVEL_CREATURE_HEALTH_INFO {
 	unsigned short skeleton_hp = 15;
 	CREATURE_HIT_TYPE skeleton_hit_type = CREATURE_HIT_SMOKE;
 	unsigned short baddy_1_hp = 25;
@@ -66,13 +66,13 @@ struct MOD_CREATURE_HEALTH_INFO {
 	bool small_scorpion_is_poisonous = true;
 };
 
-struct MOD_AUDIO_INFO {
+struct MOD_LEVEL_AUDIO_INFO {
 	short inside_jeep_track = 98;
 	short outside_jeep_track = 110;
 	short secret_track = 5;
 };
 
-struct MOD_LARA_INFO {
+struct MOD_LEVEL_LARA_INFO {
 	long hair_gravity = 10;
 
 	long braid_x = -4;
@@ -88,39 +88,56 @@ struct MOD_LARA_INFO {
 	long pigtail_right_z = -50;
 };
 
-struct MOD_GAME_INFO {
-	unsigned char secret_count = 70;
-};
-
-struct MOD_GRAPHICS_INFO {
+struct MOD_GLOBAL_GRAPHICS_INFO {
 	unsigned short max_particles = 256;
 };
 
-struct MOD_BAR_INFO {
+struct MOD_LEVEL_BAR_INFO {
 
+};
+
+struct MOD_LEVEL_STAT_INFO {
+	unsigned int secret_count = 70;
+};
+
+struct MOD_LEVEL_FLARE_INFO {
+	unsigned char light_color_r = 128;
+	unsigned char light_color_g = 192;
+	unsigned char light_color_b = 0;
+	int flare_lifetime_in_ticks = 30 * 30;
+	int light_intensity = 16;
+	bool has_sparks = false;
+	bool has_fire = false; // Unimplemented
+	bool sparks_include_smoke = false;
+	bool has_glow = false; // Unimplemented
+	bool flat_light = false;
 };
 
 struct MOD_LEVEL_INFO {
-
+	MOD_LEVEL_CREATURE_HEALTH_INFO creature_health_info;
+	MOD_LEVEL_STAT_INFO stat_info;
+	MOD_LEVEL_LARA_INFO lara_info;
+	MOD_LEVEL_AUDIO_INFO audio_info;
+	MOD_LEVEL_FLARE_INFO flare_info;
 };
 
-struct GAME_MOD_CONFIG {
-	MOD_CREATURE_HEALTH_INFO creature_health_info;
-	MOD_AUDIO_INFO audio_info;
-	MOD_GRAPHICS_INFO graphics_info;
-	MOD_LARA_INFO lara_info;
-	MOD_GAME_INFO game_info;
+#define MOD_LEVEL_COUNT 64
 
-	MOD_LEVEL_INFO global_level_info;
-	MOD_LEVEL_INFO level_info[40];
+struct GAME_MOD_CONFIG {
+	MOD_GLOBAL_GRAPHICS_INFO graphics_info;
+
+	MOD_LEVEL_INFO level_info[MOD_LEVEL_COUNT];
 };
 
 extern GAME_MOD_CONFIG game_mod_config;
 
-extern MOD_CREATURE_HEALTH_INFO get_game_mod_creature_health_info();
-extern MOD_AUDIO_INFO get_game_mod_audio_info();
-extern MOD_GRAPHICS_INFO get_game_mod_graphics_info();
-extern MOD_LARA_INFO get_game_mod_lara_info();
-extern MOD_GAME_INFO get_game_mod_game_info();
+extern MOD_GLOBAL_GRAPHICS_INFO &get_game_mod_global_graphics_info();
 
-extern void LoadGameModConfig();
+extern MOD_LEVEL_CREATURE_HEALTH_INFO &get_game_mod_level_creature_health_info(int level);
+extern MOD_LEVEL_AUDIO_INFO &get_game_mod_level_audio_info(int level);
+extern MOD_LEVEL_LARA_INFO &get_game_mod_level_lara_info(int level);
+extern MOD_LEVEL_STAT_INFO &get_game_mod_level_stat_info(int level);
+extern MOD_LEVEL_FLARE_INFO &get_game_mod_level_flare_info(int level);
+
+extern void LoadGameModConfigFirstPass();
+extern void LoadGameModConfigSecondPass();

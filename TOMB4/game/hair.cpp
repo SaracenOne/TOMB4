@@ -69,7 +69,7 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 
 	obj = &objects[LARA];
 
-	MOD_LARA_INFO mod_lara_info = get_game_mod_lara_info();
+	MOD_LEVEL_LARA_INFO mod_lara_info = get_game_mod_level_lara_info(gfCurrentLevel);
 
 	if (!cutscenething)
 	{
