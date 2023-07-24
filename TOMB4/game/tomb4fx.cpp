@@ -2215,6 +2215,12 @@ void SetFadeClip(short height, short speed)
 	FadeClipSpeed = speed;
 }
 
+// TRNG
+void SetFadeClipImmediate(short height) {
+	DestFadeScreenHeight = height;
+	FadeScreenHeight = DestFadeScreenHeight;
+}
+
 void UpdateFadeClip()
 {
 	if (DestFadeScreenHeight < FadeScreenHeight)

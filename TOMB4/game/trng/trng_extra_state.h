@@ -16,6 +16,8 @@ extern void NGSetupExtraState();
 extern void NGFrameFinishExtraState();
 extern bool NGIsItemFrozen(unsigned int item_num);
 extern void NGSetItemFreezeTimer(unsigned int item_num, int ticks);
+extern void NGSetCurtainTimer(int ticks);
+extern void NGSetCinemaTypeAndTimer(int type, int ticks);
 
 extern bool NGIsOneShotTriggeredForTile();
 extern bool NGCheckFloorStatePressedThisFrameOrLastFrame();

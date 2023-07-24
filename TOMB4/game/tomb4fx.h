@@ -46,6 +46,7 @@ void TriggerLightningGlow(long x, long y, long z, long rgb);
 void TriggerFlashSmoke(long x, long y, long z, short room_number);
 void S_DrawSparks();
 void SetFadeClip(short height, short speed);
+void SetFadeClipImmediate(short height); // TRNG
 void UpdateFadeClip();
 void SetScreenFadeOut(short speed, short back);
 void SetScreenFadeIn(short speed);

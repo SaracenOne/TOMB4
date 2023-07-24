@@ -37,6 +37,33 @@ void play_cd_track_channel_1(unsigned char track_id, unsigned char looping) {
 	}
 }
 
+
+// NGLE - 77
+void force_lara_animation_0_255_of_slot_animation(unsigned char animation_index, unsigned char object_id) {
+	if (!NGIsOneShotTriggeredForTile() && !NGCheckFloorStatePressedThisFrameOrLastFrame()) {
+		int animation_index_offset = objects[object_id].anim_index + animation_index;
+
+		lara_item->anim_number = animation_index_offset;
+		lara_item->frame_number = anims[animation_index_offset].frame_base;
+	}
+}
+
+// NGLE - 80
+void force_lara_animation_256_512_of_slot_animation(unsigned char animation_index, unsigned char object_id) {
+	if (!NGIsOneShotTriggeredForTile() && !NGCheckFloorStatePressedThisFrameOrLastFrame()) {
+		int animation_index_offset = objects[object_id].anim_index + animation_index + 256;
+
+		lara_item->anim_number = animation_index_offset;
+		lara_item->frame_number = anims[animation_index_offset].frame_base;
+	}
+}
+
+// NGLE - 83
+
+void remove_weapons_or_flares_from_laras_hands(unsigned char unused1, unsigned char unused2) {
+	lara.request_gun_type = WEAPON_NONE;
+}
+
 // NGLE - 96
 void disarm_lara(unsigned char remove_weapons_only, unsigned char _unusued) {
 	if (!NGIsOneShotTriggeredForTile() && !NGCheckFloorStatePressedThisFrameOrLastFrame()) {
@@ -95,7 +122,7 @@ void set_volume_for_audio_track_on_channel(unsigned char volume, unsigned char c
 }
 
 // NGLE - 407
-void set_lara_holsters(unsigned int holster_type) {
+void set_lara_holsters(unsigned int holster_type, unsigned char unused) {
 	if (!NGIsOneShotTriggeredForTile() && !NGCheckFloorStatePressedThisFrameOrLastFrame()) {
 		switch (holster_type) {
 		case 0x0d: {
@@ -125,6 +152,18 @@ void set_lara_holsters(unsigned int holster_type) {
 	}
 }
 
+void camera_show_black_screen_for_seconds_with_final_curtain_effect(unsigned char timer, unsigned char unused) {
+	if (!NGIsOneShotTriggeredForTile() && !NGCheckFloorStatePressedThisFrameOrLastFrame()) {
+		NGSetCurtainTimer(timer * 30);
+	}
+}
+
+void camera_set_cinema_effect_type_for_seconds(unsigned char action_data_1, unsigned char action_data_2) {
+	if (!NGIsOneShotTriggeredForTile() && !NGCheckFloorStatePressedThisFrameOrLastFrame()) {
+		NGSetCinemaTypeAndTimer(action_data_1, action_data_2 * 30);
+	}
+}
+
 void NGFlipEffect(unsigned short param, short extra, bool oneshot) {
 	char action_data_1 = (char)extra & 0xff;
 	char action_data_2 = (char)(extra >> 8) & 0xff;
@@ -136,6 +175,17 @@ void NGFlipEffect(unsigned short param, short extra, bool oneshot) {
 		}
 		case PLAY_CD_TRACK_ON_CHANNEL_1: {
 			play_cd_track_channel_1(action_data_1, action_data_2);
+			break;
+		}
+		case REMOVE_WEAPONS_OR_FLARES_FROM_LARAS_HANDS: {
+			remove_weapons_or_flares_from_laras_hands(action_data_1, action_data_2);
+		}
+		case FORCE_LARA_ANIMATION_0_255_OF_SLOT_ANIMATION: {
+			force_lara_animation_0_255_of_slot_animation(action_data_1, action_data_2);
+			break;
+		}
+		case FORCE_LARA_ANIMATION_256_512_OF_SLOT_ANIMATION: {
+			force_lara_animation_256_512_of_slot_animation(action_data_1, action_data_2);
 			break;
 		}
 		case DISARM_LARA: {
@@ -151,7 +201,15 @@ void NGFlipEffect(unsigned short param, short extra, bool oneshot) {
 			break;
 		}
 		case SET_LARA_HOLSTER_TYPE: {
-			set_lara_holsters(action_data_1);
+			set_lara_holsters(action_data_1, action_data_2);
+			break;
+		}
+		case CAMERA_SHOW_BLACK_SCREEN_FOR_SECONDS_WITH_FINAL_CURTAIN_EFFECT: {
+			camera_show_black_screen_for_seconds_with_final_curtain_effect(action_data_1, action_data_2);
+			break;
+		}
+		case CAMERA_SET_CINEMA_EFFECT_TYPE_FOR_SECONDS: {
+			camera_set_cinema_effect_type_for_seconds(action_data_1, action_data_2);
 			break;
 		}
 		default: {

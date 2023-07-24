@@ -2,12 +2,19 @@
 
 #include "../../specific/function_stubs.h"
 #include "../control.h"
+#include "../effects.h"
+#include "../objects.h"
+#include "../lara.h"
+#include "../tomb4fx.h"
 #include "trng.h"
 #include "trng_extra_state.h"
 
 unsigned int ng_room_offset_table[0xff];
 
 NG_ITEM_EXTRADATA *ng_items_extradata = NULL;
+
+int ng_cinema_timer = -1;
+int ng_cinema_type = 0;
 
 int current_ng_trigger_index = -1;
 int current_ng_trigger_room = -1;
@@ -78,6 +85,39 @@ void NGItemUpdate(unsigned int item_num) {
 	}
 }
 
+void NGFrameStartUpdate() {
+	if (ng_cinema_timer > 0 || ng_cinema_type > 0) {
+		switch (ng_cinema_type) {
+			case 0: { // None / curtain effect
+				SetFadeClipImmediate(150);
+				break;
+			// TODO: these are not accurate
+			} case 1: { // Tiny
+				SetFadeClipImmediate(8);
+				break;
+			} case 2: { // Middle
+				SetFadeClipImmediate(16);
+				break;
+			} case 3: { // Big
+				SetFadeClipImmediate(32);
+				break;
+			} case 4: { // Huge
+				SetFadeClipImmediate(64);
+				break;
+			} case 5: { // Fissure
+				SetFadeClipImmediate(128);
+				break;
+			}
+		}
+		ng_cinema_timer--;
+		if (ng_cinema_timer == 0) {
+			ng_cinema_type = 0;
+			SetFadeClip(0, 1);
+			ng_cinema_timer--;
+		}
+	}
+}
+
 bool NGIsItemFrozen(unsigned int item_num) {
 	if ((unsigned short)(ng_items_extradata[item_num].frozen_ticks) > 0) {
 		return true;
@@ -88,6 +128,17 @@ bool NGIsItemFrozen(unsigned int item_num) {
 
 void NGSetItemFreezeTimer(unsigned int item_num, int ticks) {
 	ng_items_extradata[item_num].frozen_ticks = ticks;
+}
+
+void NGSetCurtainTimer(int ticks) {
+	if (ng_cinema_type == 0) {
+		ng_cinema_timer = ticks;
+	}
+}
+
+void NGSetCinemaTypeAndTimer(int type, int ticks) {
+	ng_cinema_type = type;
+	ng_cinema_timer = ticks;
 }
 
 void NGUpdateFloorstateData(bool update_oneshot) {
@@ -104,6 +155,9 @@ void NGSetupExtraState() {
 	ng_items_extradata = (NG_ITEM_EXTRADATA*)game_malloc(ITEM_COUNT * sizeof(NG_ITEM_EXTRADATA));
 	memset(ng_items_extradata, 0x00, ITEM_COUNT * sizeof(NG_ITEM_EXTRADATA));
 
+	ng_cinema_timer = -1;
+	ng_cinema_type = 0;
+
 	floorstate_data_size = 0;
 	for (int i = 0; i < number_rooms; i++) {
 		ng_room_offset_table[i] = floorstate_data_size;
@@ -119,6 +173,10 @@ void NGSetupExtraState() {
 	memset(ng_current_floorstate, 0x00, floorstate_data_size);
 
 	memset(ng_input_lock_timers, 0x00, sizeof(ng_input_lock_timers));
+}
+
+void NGUpdateOther() {
+
 }
 
 void NGFrameFinishExtraState() {

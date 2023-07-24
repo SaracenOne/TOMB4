@@ -214,6 +214,10 @@ long ControlPhase(long nframes, long demo_mode)
 	FLOOR_INFO* floor;
 	MESH_INFO* mesh;
 	short item_num, nex, fx_num;
+	
+	MOD_GLOBAL_INFO global_info = get_game_mod_global_info();
+
+	NGFrameStartUpdate();
 
 	RegeneratePickups();
 
@@ -451,6 +455,9 @@ long ControlPhase(long nframes, long demo_mode)
 
 		if (!GLOBAL_playing_cutseq && !gfGameMode)
 			LaraControl(0);
+		else if (gfGameMode == 1 && global_info.show_lara_in_title)
+			// TRLE: Activate Lara if we have 'show_lara_in_title' flag set.
+			AnimateLara(lara_item);
 
 		InItemControlLoop = 0;
 
