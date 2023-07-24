@@ -41,8 +41,37 @@ void NGLoaderHeader(char* gfScriptFile, unsigned int offset, unsigned int len) {
 	}
 
 	if (ng_header_found) {
+		unsigned int first_header_block_start_position = offset;
+
 		unsigned short first_header_block_size = NG_READ_16(gfScriptFile, offset);
-		offset += (first_header_block_size - 1) * sizeof(short);
+		unsigned int first_header_block_end_pos = first_header_block_start_position + (first_header_block_size * sizeof(short));
+		unsigned short first_block_unknown_variable = NG_READ_16(gfScriptFile, offset);
+
+		while (1) {
+			unsigned int data_block_start_start_position = offset;
+			unsigned char current_data_block_size_wide = NG_READ_8(gfScriptFile, offset);
+
+			unsigned char block_type = NG_READ_8(gfScriptFile, offset);
+
+			if (current_data_block_size_wide == 0 && block_type == 0) {
+				if (offset != first_header_block_end_pos) {
+					printf("First header block size mismatch!\n");
+				}
+				break;
+			}
+
+			switch (block_type) {
+				case 0xc8: {
+					unsigned char flags = NG_READ_16(gfScriptFile, offset);
+					get_game_mod_global_info().show_lara_in_title = flags & 0x40;
+					break;
+				}
+			}
+
+			offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+		}
+		
+		offset = first_header_block_end_pos;
 
 		unsigned short second_header_block_size = NG_READ_16(gfScriptFile, offset);
 		offset += (second_header_block_size - 1) * sizeof(short);
@@ -51,7 +80,7 @@ void NGLoaderHeader(char* gfScriptFile, unsigned int offset, unsigned int len) {
 		while (1) {
 			unsigned int level_block_start_position = offset;
 			unsigned short level_block_size = NG_READ_16(gfScriptFile, offset);
-			unsigned short unknown_variable = NG_READ_16(gfScriptFile, offset);
+			unsigned short level_block_unknown_variable = NG_READ_16(gfScriptFile, offset);
 
 			if (level_block_size == 0) {
 				return;
@@ -115,8 +144,8 @@ void NGLoaderHeader(char* gfScriptFile, unsigned int offset, unsigned int len) {
 						unsigned short distance_for_env = NG_READ_16(gfScriptFile, offset);
 						unsigned short extra = NG_READ_16(gfScriptFile, offset);
 
-							// TODO: Figure out the array format
-							offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+						// TODO: Figure out the array format
+						offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 
 						break;
 					}
@@ -195,12 +224,13 @@ void NGLoaderHeader(char* gfScriptFile, unsigned int offset, unsigned int len) {
 											get_game_mod_level_flare_info(i).light_intensity = flare_light_intensity;
 										if (flare_lifetime_in_seconds != 0xffff)
 											get_game_mod_level_flare_info(i).flare_lifetime_in_ticks = flare_lifetime_in_seconds * 30;
-										if (flare_flags != 0xffff)
+										if (flare_flags != 0xffff) {
 											get_game_mod_level_flare_info(i).has_sparks = flare_flags & 0x0001;
 											get_game_mod_level_flare_info(i).has_fire = flare_flags & 0x0002; // Unsupported
 											get_game_mod_level_flare_info(i).sparks_include_smoke = flare_flags & 0x0004;
 											get_game_mod_level_flare_info(i).has_glow = flare_flags & 0x0008; // Unsupported
 											get_game_mod_level_flare_info(i).flat_light = flare_flags & 0x0010;
+										}
 									}
 								} else {
 									if (flare_light_r != 0xff && flare_light_g != 0xff && flare_light_b != 0xff) {
@@ -212,12 +242,13 @@ void NGLoaderHeader(char* gfScriptFile, unsigned int offset, unsigned int len) {
 										get_game_mod_level_flare_info(current_level).light_intensity = flare_light_intensity;
 									if (flare_lifetime_in_seconds != 0xffff)
 										get_game_mod_level_flare_info(current_level).flare_lifetime_in_ticks = flare_lifetime_in_seconds * 30;
-									if (flare_flags != 0xffff)
+									if (flare_flags != 0xffff) {
 										get_game_mod_level_flare_info(current_level).has_sparks = flare_flags & 0x0001;
-									get_game_mod_level_flare_info(current_level).has_fire = flare_flags & 0x0002; // Unsupported
-									get_game_mod_level_flare_info(current_level).sparks_include_smoke = flare_flags & 0x0004;
-									get_game_mod_level_flare_info(current_level).has_glow = flare_flags & 0x0008; // Unsupported
-									get_game_mod_level_flare_info(current_level).flat_light = flare_flags & 0x0010;
+										get_game_mod_level_flare_info(current_level).has_fire = flare_flags & 0x0002; // Unsupported
+										get_game_mod_level_flare_info(current_level).sparks_include_smoke = flare_flags & 0x0004;
+										get_game_mod_level_flare_info(current_level).has_glow = flare_flags & 0x0008; // Unsupported
+										get_game_mod_level_flare_info(current_level).flat_light = flare_flags & 0x0010;
+									}
 								}
 
 								break;
@@ -227,7 +258,6 @@ void NGLoaderHeader(char* gfScriptFile, unsigned int offset, unsigned int len) {
 								break;
 							}
 							default: {
-								return;
 								break;
 							}
 						}

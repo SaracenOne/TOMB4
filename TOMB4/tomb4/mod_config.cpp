@@ -6,8 +6,8 @@
 
 GAME_MOD_CONFIG game_mod_config;
 
-extern MOD_GLOBAL_GRAPHICS_INFO& get_game_mod_global_graphics_info() {
-    return game_mod_config.graphics_info;
+extern MOD_GLOBAL_INFO& get_game_mod_global_info() {
+    return game_mod_config.global_info;
 }
 
 MOD_LEVEL_CREATURE_HEALTH_INFO &get_game_mod_level_creature_health_info(int level) {

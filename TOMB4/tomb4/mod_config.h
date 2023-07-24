@@ -88,8 +88,9 @@ struct MOD_LEVEL_LARA_INFO {
 	long pigtail_right_z = -50;
 };
 
-struct MOD_GLOBAL_GRAPHICS_INFO {
+struct MOD_GLOBAL_INFO {
 	unsigned short max_particles = 256;
+	bool show_lara_in_title = false;
 };
 
 struct MOD_LEVEL_BAR_INFO {
@@ -124,14 +125,14 @@ struct MOD_LEVEL_INFO {
 #define MOD_LEVEL_COUNT 64
 
 struct GAME_MOD_CONFIG {
-	MOD_GLOBAL_GRAPHICS_INFO graphics_info;
+	MOD_GLOBAL_INFO global_info;
 
 	MOD_LEVEL_INFO level_info[MOD_LEVEL_COUNT];
 };
 
 extern GAME_MOD_CONFIG game_mod_config;
 
-extern MOD_GLOBAL_GRAPHICS_INFO &get_game_mod_global_graphics_info();
+extern MOD_GLOBAL_INFO &get_game_mod_global_info();
 
 extern MOD_LEVEL_CREATURE_HEALTH_INFO &get_game_mod_level_creature_health_info(int level);
 extern MOD_LEVEL_AUDIO_INFO &get_game_mod_level_audio_info(int level);

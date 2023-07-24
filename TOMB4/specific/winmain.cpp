@@ -506,8 +506,11 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
 	if (WinRunCheck((char*)"Tomb Raider - The Last Revelation", (char*)"MainGameWindow", &App.mutex))
 		return 0;
 
+	LoadGameModConfigFirstPass();
+
 	LoadGameflow();
-	LoadGameModConfig();
+
+	LoadGameModConfigSecondPass();
 
 	WinProcessCommandLine(lpCmdLine);
 

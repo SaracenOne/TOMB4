@@ -29,6 +29,7 @@
 #include "lara.h"
 #include "../tomb4/tomb4.h"
 #include "trng/trng.h"
+#include "../tomb4/mod_config.h"
 
 short CreditGroups[18] =
 {
@@ -916,8 +917,11 @@ void DoTitle(uchar Name, uchar Audio)
 		ScreenFading = 0;
 	}
 
+	MOD_GLOBAL_INFO global_info  = get_game_mod_global_info();
+
 	bUseSpotCam = 1;
-	lara_item->mesh_bits = 0;
+	if (!global_info.show_lara_in_title)
+		lara_item->mesh_bits = 0;
 	gfGameMode = 1;
 	gfLevelComplete = 0;
 	nFrames = 2;
