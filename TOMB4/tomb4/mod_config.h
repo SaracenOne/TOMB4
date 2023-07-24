@@ -91,6 +91,9 @@ struct MOD_LEVEL_LARA_INFO {
 struct MOD_GLOBAL_INFO {
 	unsigned short max_particles = 256;
 	bool show_lara_in_title = false;
+	bool rollingball_extended_ocb = true; // TRNG (moveable and regular trigger activation)
+	bool statics_extended_ocb = true; // TRNG (touch inflicting poison)
+	bool pushable_extended_ocb = true; // TRNG (climable pushables)
 };
 
 struct MOD_LEVEL_BAR_INFO {

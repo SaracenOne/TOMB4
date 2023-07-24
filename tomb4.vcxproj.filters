@@ -743,9 +743,6 @@
     <ClCompile Include="TOMB4\tomb4\libs\zlib\inftrees.c">
       <Filter>TOMB4\tomb4\libs\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="TOMB4\specific\drawbars.cpp">
-      <Filter>TOMB4</Filter>
-    </ClCompile>
     <ClCompile Include="TOMB4\tomb4\mod_config.cpp">
       <Filter>TOMB4\tomb4</Filter>
     </ClCompile>
@@ -769,6 +766,9 @@
     </ClCompile>
     <ClCompile Include="TOMB4\tomb4\libs\miniaudio\extras\stb_vorbis.c">
       <Filter>TOMB4\tomb4\libs\miniaudio\extras</Filter>
+    </ClCompile>
+    <ClCompile Include="TOMB4\specific\drawbars.cpp">
+      <Filter>TOMB4\specific</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

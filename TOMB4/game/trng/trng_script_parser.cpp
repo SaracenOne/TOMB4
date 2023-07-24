@@ -66,6 +66,10 @@ void NGLoaderHeader(char* gfScriptFile, unsigned int offset, unsigned int len) {
 					get_game_mod_global_info().show_lara_in_title = flags & 0x40;
 					break;
 				}
+				default: {
+					printf("Unimplemented NG option data block type: %u\n", block_type);
+					break;
+				}
 			}
 
 			offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
@@ -176,32 +180,44 @@ void NGLoaderHeader(char* gfScriptFile, unsigned int offset, unsigned int len) {
 								}
 								break;
 							}
+							// CUST_ROLLINGBALL_PUSHING
+							case 0x0005: {
+								printf("CUST_ROLLINGBALL_PUSHING unimplemented!\n");
+								break;
+							}
 							// CUST_AMMO
 							case 0x000a: {
+								printf("CUST_AMMO unimplemented!\n");
 								break;
 							}
 							// CUST_CAMERA
 							case 0x001c: {
+								printf("CUST_CAMERA unimplemented!\n");
 								break;
 							}
 							// CUST_ADD_DEATH_ANIMATION 
 							case 0x0018: {
+								printf("CUST_ADD_DEATH_ANIMATION unimplemented!\n");
 								break;
 							}
 							// CUST_BAR 
 							case 0x0019: {
+								printf("CUST_BAR unimplemented!\n");
 								break;
 							}
 							// CUST_FIX_WATER_FOG_BUG 
 							case 0x0020: {
+								printf("CUST_FIX_WATER_FOG_BUG unimplemented!\n");
 								break;
 							}
 							// CUST_RAIN
 							case 0x0025: {
+								printf("CUST_RAIN unimplemented!\n");
 								break;
 							}
 							// CUST_TR5_UNDERWATER_COLLISIONS 
 							case 0x0026: {
+								printf("CUST_TR5_UNDERWATER_COLLISIONS unimplemented!\n");
 								break;
 							}
 							// CUST_FLARE 
@@ -255,9 +271,11 @@ void NGLoaderHeader(char* gfScriptFile, unsigned int offset, unsigned int len) {
 							}
 							// CUST_BACKGROUND
 							case 0x0031: {
+								printf("CUST_BACKGROUND unimplemented!\n");
 								break;
 							}
 							default: {
+								printf("Unimplemented NG customization category: %u\n", customization_category);
 								break;
 							}
 						}
@@ -402,6 +420,7 @@ void NGLoaderHeader(char* gfScriptFile, unsigned int offset, unsigned int len) {
 					default: {
 						offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 						command_blocks_failed++;
+						printf("Unimplemented NG level data block type: %u\n", block_type);
 						break;
 					}
 				}

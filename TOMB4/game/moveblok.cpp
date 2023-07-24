@@ -18,6 +18,8 @@
 #include "../specific/input.h"
 #include "lara.h"
 
+#include "../tomb4/mod_config.h"
+
 static short MovingBlockBounds[12] = { 0, 0, -256, 0, 0, 0, -1820, 1820, -5460, 5460, -1820, 1820 };
 
 static PHD_VECTOR MovingBlockPos = { 0, 0, 0 };
@@ -73,6 +75,20 @@ void InitialiseMovingBlock(short item_number)
 
 	item = &items[item_number];
 	ClearMovableBlockSplitters(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number);
+
+	MOD_GLOBAL_INFO global_info = get_game_mod_global_info();
+	// TRNG
+	int climbable_block_height = 0;
+	if (global_info.pushable_extended_ocb) {
+		climbable_block_height = item->trigger_flags & 0xf;
+	}
+
+	if (climbable_block_height) {
+		if (item->status == ITEM_INACTIVE) {
+			AlterFloorHeight(item, -climbable_block_height * 256);
+			item->pos.y_pos = (item->pos.y_pos - climbable_block_height * 256);
+		}
+	}
 }
 
 static long TestBlockPush(ITEM_INFO* item, long height, ushort quadrant)
@@ -293,6 +309,14 @@ void MovableBlock(short item_number)
 	static char sfx = 0;
 
 	item = &items[item_number];
+
+	MOD_GLOBAL_INFO global_info = get_game_mod_global_info();
+	// TRNG
+	int climbable_block_height = 0;
+	if (global_info.pushable_extended_ocb) {
+		climbable_block_height = item->trigger_flags & 0xf;
+	}
+
 	pos.x = 0;
 	pos.y = 0;
 	pos.z = 0;
@@ -455,6 +479,11 @@ void MovableBlock(short item_number)
 			TestTriggers(trigger_index, 1, item->flags & IFL_CODEBITS);
 			RemoveActiveItem(item_number);
 			item->status = ITEM_INACTIVE;
+
+			if (climbable_block_height) {
+				AlterFloorHeight(item, -climbable_block_height * 256);
+				item->pos.y_pos = (item->pos.y_pos - climbable_block_height * 256);
+			}
 		}
 
 		break;
@@ -469,9 +498,23 @@ void MovableBlockCollision(short item_number, ITEM_INFO* laraitem, COLL_INFO* co
 	short room_number, yrot, quadrant;
 
 	item = &items[item_number];
+
+	MOD_GLOBAL_INFO global_info = get_game_mod_global_info();
+
+	// TRNG
+	int climbable_block_height = 0;
+	if (global_info.pushable_extended_ocb) {
+		climbable_block_height = item->trigger_flags & 0xf;
+	}
+
 	room_number = item->room_number;
-	item->pos.y_pos = GetHeight(GetFloor(item->pos.x_pos, item->pos.y_pos - 256, item->pos.z_pos, &room_number),
-		item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
+	if (item->status == ITEM_INACTIVE) {
+		item->pos.y_pos = GetHeight(GetFloor(item->pos.x_pos, item->pos.y_pos - 256, item->pos.z_pos, &room_number),
+			item->pos.x_pos, item->pos.y_pos, item->pos.z_pos) + (climbable_block_height * 256);
+	} else {
+		item->pos.y_pos = GetHeight(GetFloor(item->pos.x_pos, item->pos.y_pos - 256, item->pos.z_pos, &room_number),
+			item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
+	}
 
 	if (item->room_number != room_number)
 		ItemNewRoom(item_number, room_number);
@@ -495,9 +538,15 @@ void MovableBlockCollision(short item_number, ITEM_INFO* laraitem, COLL_INFO* co
 			if (TestLaraPosition(MovingBlockBounds, item, laraitem))
 			{
 				if ((ushort(yrot + 0x2000) / 0x4000) + ((ushort)item->pos.y_rot / 0x4000) & 1)
-					MovingBlockPos.z = bounds[0] - 35;
+					if (climbable_block_height == 0)
+						MovingBlockPos.z = bounds[0] - 35;
+					else
+						MovingBlockPos.z = bounds[0] - 105;
 				else
-					MovingBlockPos.z = bounds[4] - 35;
+					if (climbable_block_height == 0)
+						MovingBlockPos.z = bounds[4] - 35;
+					else
+						MovingBlockPos.z = bounds[0] - 105;
 
 				if (MoveLaraPosition(&MovingBlockPos, item, laraitem))
 				{
@@ -547,6 +596,10 @@ void MovableBlockCollision(short item_number, ITEM_INFO* laraitem, COLL_INFO* co
 
 		AddActiveItem(item_number);
 		item->status = ITEM_ACTIVE;
+		if (climbable_block_height) {
+			// NGLE: Reset the floorstate and position back to normal
+			AlterFloorHeight(item, climbable_block_height * 256);
+		}
 		lara.head_x_rot = 0;
 		lara.head_y_rot = 0;
 		lara.torso_x_rot = 0;
@@ -558,7 +611,8 @@ void MovableBlockCollision(short item_number, ITEM_INFO* laraitem, COLL_INFO* co
 		*(long*)&item->item_flags[2] = item->pos.z_pos;
 	}
 	else
-		ObjectCollision(item_number, laraitem, coll);
+		if (climbable_block_height == 0)
+			ObjectCollision(item_number, laraitem, coll);
 }
 
 void InitialisePlanetEffect(short item_number)
