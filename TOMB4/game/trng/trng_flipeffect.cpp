@@ -17,6 +17,13 @@ void disable_input_for_time(unsigned char input, unsigned char timer) {
 	}
 }
 
+// NGLE - 52
+void enable_input(unsigned char input, unsigned char unused) {
+	if (!NGIsOneShotTriggeredForTile() && !NGCheckFloorStatePressedThisFrameOrLastFrame()) {
+		NGEnableInput(input);
+	}
+}
+
 // NGLE - 68
 
 void play_cd_track_channel_1(unsigned char track_id, unsigned char looping) {
@@ -159,6 +166,10 @@ void NGFlipEffect(unsigned short param, short extra, bool oneshot) {
 	switch (param) {
 		case DISABLE_INPUT_FOR_TIME: {
 			disable_input_for_time(action_data_1, action_data_2);
+			break;
+		}
+		case ENABLE_INPUT: {
+			enable_input(action_data_1, action_data_2);
 			break;
 		}
 		case PLAY_CD_TRACK_ON_CHANNEL_1: {
