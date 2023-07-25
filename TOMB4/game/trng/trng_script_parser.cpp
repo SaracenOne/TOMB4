@@ -180,14 +180,89 @@ void NGLoaderHeader(char* gfScriptFile, unsigned int offset, unsigned int len) {
 								}
 								break;
 							}
+							// CUST_SET_CREDITS_LEVEL
+							case 0x0003: {
+								printf("CUST_SET_CREDITS_LEVEL unimplemented!\n");
+								break;
+							}
 							// CUST_ROLLINGBALL_PUSHING
 							case 0x0005: {
 								printf("CUST_ROLLINGBALL_PUSHING unimplemented!\n");
 								break;
 							}
+							// CUST_NEW_SOUND_ENGINE
+							case 0x0006: {
+								printf("CUST_ROLLINGBALL_PUSHING unimplemented!\n");
+								break;
+							}
+							// CUST_SHATTER_RANGE
+							case 0x0008: {
+								printf("CUST_SHATTER_RANGE unimplemented!\n");
+								break;
+							}
+							// CUST_WEAPON
+							case 0x0009: {
+								printf("CUST_WEAPON unimplemented!\n");
+								break;
+							}
 							// CUST_AMMO
 							case 0x000a: {
 								printf("CUST_AMMO unimplemented!\n");
+								break;
+							}
+							// CUST_SHOW_AMMO_COUNTER
+							case 0x000b: {
+								printf("CUST_SHOW_AMMO_COUNTER unimplemented!\n");
+								break;
+							}
+							// CUST_SET_INV_ITEM
+							case 0x000c: {
+								printf("CUST_SET_INV_ITEM unimplemented!\n");
+								break;
+							}
+							// CUST_SET_JEEP_KEY_SLOT
+							case 0x000d: {
+								printf("CUST_SET_JEEP_KEY_SLOT unimplemented!\n");
+								break;
+							}
+							// CUST_STATIC_TRANSPARENCY
+							case 0x000e: {
+								printf("CUST_STATIC_TRANSPARENCY unimplemented!\n");
+								break;
+							}
+							// CUST_SET_STATIC_DAMAGE
+							case 0x000f: {
+								printf("CUST_SET_STATIC_DAMAGE unimplemented!\n");
+								break;
+							}
+							// CUST_LOOK_TRASPARENT
+							case 0x0010: {
+								printf("CUST_LOOK_TRASPARENT unimplemented!\n");
+								break;
+							}
+							// CUST_SET_OLD_CD_TRIGGER
+							case 0x0013: {
+								printf("CUST_SET_OLD_CD_TRIGGER unimplemented!\n");
+								break;
+							}
+							// CUST_PAUSE_FLY_CAMERA
+							case 0x0015: {
+								printf("CUST_PAUSE_FLY_CAMERA unimplemented!\n");
+								break;
+							}
+							// CUST_TEXT_ON_FLY_SCREEN
+							case 0x0016: {
+								printf("CUST_TEXT_ON_FLY_SCREEN unimplemented!\n");
+								break;
+							}
+							// CUST_NO_TIME_IN_SAVELIST
+							case 0x001a: {
+								printf("CUST_NO_TIME_IN_SAVELIST unimplemented!\n");
+								break;
+							}
+							// CUST_PARALLEL_BARS
+							case 0x001b: {
+								printf("CUST_PARALLEL_BARS unimplemented!\n");
 								break;
 							}
 							// CUST_CAMERA
@@ -208,6 +283,21 @@ void NGLoaderHeader(char* gfScriptFile, unsigned int offset, unsigned int len) {
 							// CUST_FIX_WATER_FOG_BUG 
 							case 0x0020: {
 								printf("CUST_FIX_WATER_FOG_BUG unimplemented!\n");
+								break;
+							}
+							// CUST_SAVE_LOCUST 
+							case 0x0021: {
+								printf("CUST_SAVE_LOCUST unimplemented!\n");
+								break;
+							}
+							// CUST_LIGHT_OBJECT 
+							case 0x0022: {
+								printf("CUST_LIGHT_OBJECT unimplemented!\n");
+								break;
+							}
+							// CUST_SCREENSHOT_CAPTURE
+							case 0x0024: {
+								printf("CUST_SCREENSHOT_CAPTURE unimplemented!\n");
 								break;
 							}
 							// CUST_RAIN
@@ -267,6 +357,36 @@ void NGLoaderHeader(char* gfScriptFile, unsigned int offset, unsigned int len) {
 									}
 								}
 
+								break;
+							}
+							 // CUST_SET_TEXT_COLOR 
+							case 0x0029: {
+								printf("CUST_SET_TEXT_COLOR unimplemented!\n");
+								break;
+							}
+							 // CUST_SET_STILL_COLLISION 
+							case 0x002a: {
+								printf("CUST_SET_STILL_COLLISION unimplemented!\n");
+								break;
+							}
+							 // CUST_WATERFALL_SPEED 
+							case 0x002b: {
+								printf("CUST_WATERFALL_SPEED unimplemented!\n");
+								break;
+							}
+							 // CUST_ROLLING_BOAT 
+							case 0x002c: {
+								printf("CUST_ROLLING_BOAT unimplemented!\n");
+								break;
+							}
+							 // CUST_SFX 
+							case 0x002d: {
+								printf("CUST_SFX unimplemented!\n");
+								break;
+							}
+							 // CUST_TITLE_FMV 
+							case 0x002e: {
+								printf("CUST_TITLE_FMV unimplemented!\n");
 								break;
 							}
 							// CUST_BACKGROUND
