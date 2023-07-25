@@ -13,19 +13,7 @@
 // NGLE - 51
 void disable_input_for_time(unsigned char input, unsigned char timer) {
 	if (!NGIsOneShotTriggeredForTile() && !NGCheckFloorStatePressedThisFrameOrLastFrame()) {
-		int final_timer = -1;
-		if (timer > 0) {
-			final_timer = timer * 30;
-		}
-
-		if (input == 0) {
-			for (int i = 0; i < NG_INPUT_LOCK_TIMER_COUNT; i++) {
-				ng_input_lock_timers[i] = final_timer;
-			}
-		}
-		else {
-			ng_input_lock_timers[input - 1] = final_timer;
-		}
+		NGDisableInputForTime(input, (int)timer * 30);
 	}
 }
 

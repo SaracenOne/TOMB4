@@ -27,6 +27,31 @@ char* ng_oneshot_floorstate = NULL;
 char* ng_last_floorstate = NULL;
 char* ng_current_floorstate = NULL;
 
+enum TRNG_INPUT {
+	TRNG_INPUT_UP,
+	TRNG_INPUT_DOWN,
+	TRNG_INPUT_LEFT,
+	TRNG_INPUT_RIGHT,
+	TRNG_INPUT_DUCK,
+	TRNG_INPUT_DASH,
+	TRNG_INPUT_WALK,
+	TRNG_INPUT_JUMP,
+	TRNG_INPUT_ACTION,
+	TRNG_INPUT_DRAW_WEAPON,
+	TRNG_INPUT_USE_FLARE,
+	TRNG_INPUT_LOOK,
+	TRNG_INPUT_ROLL,
+	TRNG_INVENTORY_AND_DESELECT,
+	TRNG_STEP_LEFT,
+	TRNG_STEP_RIGHT,
+	TRNG_PAUSE,
+	TRNG_SAVE_GAME,
+	TRNG_LOAD_GAME,
+	TRNG_WEAPON_KEYS,
+	TRNG_INPUT_COUNT
+};
+
+#define NG_INPUT_LOCK_TIMER_COUNT TRNG_INPUT_COUNT
 int ng_input_lock_timers[NG_INPUT_LOCK_TIMER_COUNT];
 
 void NGStorePendingRoomNumber(int room_number) {
@@ -72,11 +97,115 @@ bool NGCheckFloorStatePressedThisFrameOrLastFrame() {
 	if (ng_current_floorstate[index] || ng_last_floorstate[index])
 		return true;
 
+
 	return false;
 }
 
 int NGValidateInputAgainstLockTimers(int input) {
+	for (int i = 0; i < TRNG_SAVE_GAME; i++) {
+		if (ng_input_lock_timers[i] != 0) {
+			switch (i) {
+				case TRNG_INPUT_UP:
+					input &= ~IN_FORWARD;
+					break;
+				case TRNG_INPUT_DOWN:
+					input &= ~IN_BACK;
+					break;
+				case TRNG_INPUT_LEFT:
+					input &= ~IN_LEFT;
+					break;
+				case TRNG_INPUT_RIGHT:
+					input &= ~IN_RIGHT;
+					break;
+				case TRNG_INPUT_DUCK:
+					input &= ~IN_DUCK;
+					break;
+				case TRNG_INPUT_DASH:
+					input &= ~IN_SPRINT;
+					break;
+				case TRNG_INPUT_WALK:
+					input &= ~(IN_WALK | IN_LSTEP | IN_RSTEP); // TRNG bug?
+					break;
+				case TRNG_INPUT_JUMP:
+					input &= ~IN_JUMP;
+					break;
+				case TRNG_INPUT_ACTION:
+					input &= ~(IN_ACTION | IN_SELECT);
+					break;
+				case TRNG_INPUT_DRAW_WEAPON:
+					input &= ~IN_DRAW;
+					break;
+				case TRNG_INPUT_USE_FLARE:
+					input &= ~IN_FLARE;
+					break;
+				case TRNG_INPUT_LOOK:
+					input &= ~IN_LOOK;
+					break;
+				case TRNG_INPUT_ROLL:
+					input &= ~IN_ROLL;
+					break;
+				case TRNG_INVENTORY_AND_DESELECT:
+					input &= ~(IN_OPTION | IN_DESELECT);
+					break;
+				case TRNG_STEP_LEFT:
+					input &= ~(IN_WALK | IN_LSTEP | IN_RSTEP); // TRNG bug?
+					break;
+				case TRNG_STEP_RIGHT:
+					input &= ~(IN_WALK | IN_LSTEP | IN_RSTEP); // TRNG bug?
+					break;
+				case TRNG_PAUSE:
+					input &= ~IN_PAUSE;
+					break;
+				default:
+					//printf("Invalid input type\n");
+					break;
+			}
+		}
+	}
+
 	return input;
+}
+
+bool NGValidateInputSavegame() {
+	return ng_input_lock_timers[TRNG_SAVE_GAME] == 0;
+}
+
+bool NGValidateInputLoadgame() {
+	return ng_input_lock_timers[TRNG_LOAD_GAME] == 0;
+}
+
+bool NGValidateInputWeaponHotkeys() {
+	return ng_input_lock_timers[TRNG_WEAPON_KEYS] == 0;
+}
+
+void NGDisableInputForTime(unsigned char input, int ticks) {
+	if (input > NG_INPUT_LOCK_TIMER_COUNT) {
+		printf("Invalid input id!");
+		return;
+	}
+
+	int final_ticks = -1;
+	if (ticks > 0) {
+		final_ticks = ticks;
+	}
+
+	if (input == 0) {
+		for (int i = 0; i < NG_INPUT_LOCK_TIMER_COUNT; i++) {
+			ng_input_lock_timers[i] = final_ticks;
+		}
+	} else {
+		ng_input_lock_timers[input - 1] = final_ticks;
+	}
+}
+
+void NGEnableInput(unsigned char input) {
+	if (input == 0) {
+		for (int i = 0; i < NG_INPUT_LOCK_TIMER_COUNT; i++) {
+			ng_input_lock_timers[i] = 0;
+		}
+	} else {
+		ng_input_lock_timers[input - 1] = 0;
+	}
 }
 
 void NGItemUpdate(unsigned int item_num) {
@@ -114,6 +243,13 @@ void NGFrameStartUpdate() {
 			ng_cinema_type = 0;
 			SetFadeClip(0, 1);
 			ng_cinema_timer--;
+		}
+	}
+
+	// Input locks
+	for (int i = 0; i < NG_INPUT_LOCK_TIMER_COUNT; i++) {
+		if (ng_input_lock_timers[i] > 0) {
+			ng_input_lock_timers[i] -= 1;
 		}
 	}
 }
@@ -173,10 +309,6 @@ void NGSetupExtraState() {
 	memset(ng_current_floorstate, 0x00, floorstate_data_size);
 
 	memset(ng_input_lock_timers, 0x00, sizeof(ng_input_lock_timers));
-}
-
-void NGUpdateOther() {
-
 }
 
 void NGFrameFinishExtraState() {

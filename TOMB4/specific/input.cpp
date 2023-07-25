@@ -14,6 +14,8 @@
 #include "../game/spotcam.h"
 #include "../tomb4/tomb4.h"
 
+#include "../game/trng/trng_extra_state.h"
+
 const char* KeyboardButtons[272] =
 {
 	0,
@@ -383,26 +385,7 @@ long S_UpdateInput()
 		linput |= IN_DRAW;
 
 	if (Key(10))
-	{
-		if (!flare_no_db)
-		{
-			state = lara_item->current_anim_state;
-
-			if (state == AS_ALL4S || state == AS_CRAWL || state == AS_ALL4TURNL ||
-				state == AS_ALL4TURNR || state == AS_CRAWLBACK || state == AS_CRAWL2HANG)
-			{
-				SoundEffect(SFX_LARA_NO, 0, SFX_ALWAYS);
-				flare_no_db = 1;
-			}
-			else
-			{
-				flare_no_db = 0;
-				linput |= IN_FLARE;
-			}
-		}
-	}
-	else
-		flare_no_db = 0;
+		linput |= IN_FLARE;
 
 	if (Key(11))
 		linput |= IN_LOOK;
@@ -428,6 +411,31 @@ long S_UpdateInput()
 	if (keymap[DIK_ESCAPE])
 		linput |= IN_DESELECT | IN_OPTION;
 
+	linput = NGValidateInputAgainstLockTimers(linput);
+
+	if (linput & IN_FLARE) {
+		linput &= ~IN_FLARE;
+
+		if (!flare_no_db)
+		{
+			state = lara_item->current_anim_state;
+
+			if (state == AS_ALL4S || state == AS_CRAWL || state == AS_ALL4TURNL ||
+				state == AS_ALL4TURNR || state == AS_CRAWLBACK || state == AS_CRAWL2HANG)
+			{
+				SoundEffect(SFX_LARA_NO, 0, SFX_ALWAYS);
+				flare_no_db = 1;
+			}
+			else
+			{
+				linput |= IN_FLARE;
+				flare_no_db = 0;
+			}
+		}
+	} else {
+		flare_no_db = 0;
+	}
+
 	if (lara.gun_status == LG_READY)
 	{
 		savegame.AutoTarget = (uchar)App.AutoTarget;
@@ -451,7 +459,8 @@ long S_UpdateInput()
 		}
 	}
 
-	DoWeaponHotkey();
+	if (NGValidateInputWeaponHotkeys())
+		DoWeaponHotkey();
 
 	if (keymap[DIK_0])
 	{
@@ -543,10 +552,12 @@ long S_UpdateInput()
 	if (!gfGameMode && Gameflow->LoadSaveEnabled)
 	{
 		if (keymap[DIK_F5])
-			linput |= IN_SAVE;
+			if (NGValidateInputSavegame())
+				linput |= IN_SAVE;
 
 		if (keymap[DIK_F6])
-			linput |= IN_LOAD;
+			if (NGValidateInputLoadgame()) 
+				linput |= IN_LOAD;
 	}
 
 	if (keymap[DIK_APOSTROPHE])
