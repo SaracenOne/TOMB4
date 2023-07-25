@@ -54,7 +54,7 @@ void NGActionTrigger(unsigned short param, unsigned short extra) {
 
 	switch (action_type) {
 		case PERFORM_FLIPEFFECT_ON_ITEM: {
-			effect_routines[flipeffect](&items[param]);
+			effect_routines[action_data](&items[param]);
 			break;
 		}
 		case FREEZE_ENEMY_FOR_SECONDS: {
