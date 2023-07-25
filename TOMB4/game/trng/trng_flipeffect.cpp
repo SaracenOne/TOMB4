@@ -2,11 +2,13 @@
 
 #include "trng.h"
 #include "trng_extra_state.h"
+#include "trng_flipeffect.h"
 #include "../../specific/function_stubs.h"
 #include "../control.h"
 #include "../effects.h"
 #include "../objects.h"
 #include "../lara.h"
+#include "../traps.h"
 
 // FlipEffects
 
@@ -21,6 +23,27 @@ void disable_input_for_time(unsigned char input, unsigned char timer) {
 void enable_input(unsigned char input, unsigned char unused) {
 	if (!NGIsOneShotTriggeredForTile() && !NGCheckFloorStatePressedThisFrameOrLastFrame()) {
 		NGEnableInput(input);
+	}
+}
+
+// NGLE - 63
+
+void kill_and_or_set_lara_on_fire(unsigned char death_type, unsigned char action_data_2) {
+	if (!NGIsOneShotTriggeredForTile() && !NGCheckFloorStatePressedThisFrameOrLastFrame()) {
+		switch (death_type) {
+			case 0x00: // Zero Lara hitpoints
+				lara_item->hit_points = 0;
+				lara_item->hit_status = 1;
+				break;
+			case 0x01: // Zero Lara hitpoints and set on fire
+				lara_item->hit_points = 0;
+				lara_item->hit_status = 1;
+				LaraBurn();
+				break;
+			case 0x02: // Just set Lara on fire (With the original executable, it sometimes doesn't execute. TRNG bug?)
+				LaraBurn();
+				break;
+		}
 	}
 }
 
@@ -170,6 +193,10 @@ void NGFlipEffect(unsigned short param, short extra, bool oneshot) {
 		}
 		case ENABLE_INPUT: {
 			enable_input(action_data_1, action_data_2);
+			break;
+		}
+		case KILL_AND_OR_SET_LARA_ON_FIRE: {
+			kill_and_or_set_lara_on_fire(action_data_1, action_data_2);
 			break;
 		}
 		case PLAY_CD_TRACK_ON_CHANNEL_1: {
