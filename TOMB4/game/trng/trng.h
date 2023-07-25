@@ -74,4 +74,6 @@ extern void NGFrameFinish();
 extern void NGLoaderHeader(char* gfScriptFile, unsigned int offset, unsigned int len);
 
 extern bool NGUseNGFlipEffects();
+extern bool NGUseNGActions();
+
 extern void NGUpdateFloorstateData(bool update_oneshot);

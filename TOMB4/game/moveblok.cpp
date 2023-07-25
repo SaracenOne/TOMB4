@@ -79,14 +79,16 @@ void InitialiseMovingBlock(short item_number)
 	MOD_GLOBAL_INFO global_info = get_game_mod_global_info();
 	// TRNG
 	int climbable_block_height = 0;
-	if (global_info.pushable_extended_ocb) {
+	if (global_info.trng_pushable_extended_ocb) {
 		climbable_block_height = item->trigger_flags & 0xf;
+	// TREP
+	} else if (global_info.trep_pushable_extended_ocb) {
+		climbable_block_height = (item->trigger_flags & 0xf00) >> 8;
 	}
 
 	if (climbable_block_height) {
 		if (item->status == ITEM_INACTIVE) {
 			AlterFloorHeight(item, -climbable_block_height * 256);
-			item->pos.y_pos = (item->pos.y_pos - climbable_block_height * 256);
 		}
 	}
 }
@@ -313,8 +315,11 @@ void MovableBlock(short item_number)
 	MOD_GLOBAL_INFO global_info = get_game_mod_global_info();
 	// TRNG
 	int climbable_block_height = 0;
-	if (global_info.pushable_extended_ocb) {
+	if (global_info.trng_pushable_extended_ocb) {
 		climbable_block_height = item->trigger_flags & 0xf;
+	// TREP
+	} else if (global_info.trep_pushable_extended_ocb) {
+		climbable_block_height = (item->trigger_flags & 0xf00) >> 8;
 	}
 
 	pos.x = 0;
@@ -480,9 +485,11 @@ void MovableBlock(short item_number)
 			RemoveActiveItem(item_number);
 			item->status = ITEM_INACTIVE;
 
-			if (climbable_block_height) {
+			if (climbable_block_height > 0) {
+				if (item->room_number != room_number)
+					ItemNewRoom(item_number, room_number);
+
 				AlterFloorHeight(item, -climbable_block_height * 256);
-				item->pos.y_pos = (item->pos.y_pos - climbable_block_height * 256);
 			}
 		}
 
@@ -503,17 +510,26 @@ void MovableBlockCollision(short item_number, ITEM_INFO* laraitem, COLL_INFO* co
 
 	// TRNG
 	int climbable_block_height = 0;
-	if (global_info.pushable_extended_ocb) {
+	if (global_info.trng_pushable_extended_ocb) {
 		climbable_block_height = item->trigger_flags & 0xf;
+	// TREP
+	} else if (global_info.trep_pushable_extended_ocb) {
+		climbable_block_height = (item->trigger_flags & 0xf00) >> 8;
 	}
 
 	room_number = item->room_number;
-	if (item->status == ITEM_INACTIVE) {
-		item->pos.y_pos = GetHeight(GetFloor(item->pos.x_pos, item->pos.y_pos - 256, item->pos.z_pos, &room_number),
-			item->pos.x_pos, item->pos.y_pos, item->pos.z_pos) + (climbable_block_height * 256);
-	} else {
-		item->pos.y_pos = GetHeight(GetFloor(item->pos.x_pos, item->pos.y_pos - 256, item->pos.z_pos, &room_number),
-			item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
+
+	// TODO: currently, climable blocks are not compatible with raising blocks.
+	if (climbable_block_height == 0)
+	{
+		if (item->status == ITEM_INACTIVE) {
+			item->pos.y_pos = GetHeight(GetFloor(item->pos.x_pos, item->pos.y_pos - 256, item->pos.z_pos, &room_number),
+				item->pos.x_pos, item->pos.y_pos, item->pos.z_pos) + (climbable_block_height * 256);
+		}
+		else {
+			item->pos.y_pos = GetHeight(GetFloor(item->pos.x_pos, item->pos.y_pos - 256, item->pos.z_pos, &room_number),
+				item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
+		}
 	}
 
 	if (item->room_number != room_number)
@@ -596,7 +612,7 @@ void MovableBlockCollision(short item_number, ITEM_INFO* laraitem, COLL_INFO* co
 
 		AddActiveItem(item_number);
 		item->status = ITEM_ACTIVE;
-		if (climbable_block_height) {
+		if (climbable_block_height > 0) {
 			// NGLE: Reset the floorstate and position back to normal
 			AlterFloorHeight(item, climbable_block_height * 256);
 		}

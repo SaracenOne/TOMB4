@@ -89,11 +89,17 @@ struct MOD_LEVEL_LARA_INFO {
 };
 
 struct MOD_GLOBAL_INFO {
-	unsigned short max_particles = 256;
+	bool trng_flipeffects_enabled = true; // TRNG (special TRNG flipeffects. Disable if conflicting with FURR)
+	bool trng_actions_enabled = true;
+	bool trng_rollingball_extended_ocb = true; // TRNG (moveable and regular trigger activation)
+	bool trng_statics_extended_ocb = true; // TRNG (touch inflicting poison)
+
+	// Climable pushables (both implementations have different quirks. Will attempt to more accurately recreate them later)
+	bool trng_pushable_extended_ocb = true; // TRNG (climable pushables)
+	bool trep_pushable_extended_ocb = true; // TREP (climable pushables)
+
 	bool show_lara_in_title = false;
-	bool rollingball_extended_ocb = true; // TRNG (moveable and regular trigger activation)
-	bool statics_extended_ocb = true; // TRNG (touch inflicting poison)
-	bool pushable_extended_ocb = true; // TRNG (climable pushables)
+	unsigned short max_particles = 256;
 };
 
 struct MOD_LEVEL_BAR_INFO {

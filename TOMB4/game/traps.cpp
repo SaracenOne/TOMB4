@@ -1793,7 +1793,7 @@ void ControlRollingBall(short item_number)
 			fz = phd_sqrt(SQUARE(camera.pos.x - item->pos.x_pos) + SQUARE(camera.pos.y - item->pos.y_pos) + SQUARE(camera.pos.z - item->pos.z_pos));
 
 			// NGLE: This flag silences the RollingBall.
-			if (!item->trigger_flags & 0x01 || !global_info.rollingball_extended_ocb) {
+			if (!item->trigger_flags & 0x01 || !global_info.trng_rollingball_extended_ocb) {
 				if (fz < 0x4000)
 					camera.bounce = -(((0x4000 - fz) * abs(item->fallspeed)) >> W2V_SHIFT);
 
@@ -1980,7 +1980,7 @@ void ControlRollingBall(short item_number)
 	GetHeight(GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number), item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
 	TestTriggers(trigger_index, 1, 0);
 	// NGLE: can activate regular triggers with this OCB code.
-	if (global_info.rollingball_extended_ocb && item->trigger_flags & 0x40) {
+	if (global_info.trng_rollingball_extended_ocb && item->trigger_flags & 0x40) {
 		TestTriggers(trigger_index, 0, 0);
 	}
 }

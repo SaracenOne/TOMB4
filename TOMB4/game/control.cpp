@@ -1010,10 +1010,11 @@ void TestTriggers(short* data, long heavy, long HeavyFlags)
 
 			break;
 		case TO_BODYBAG:
-			trigger = *data;
-			NGActionTrigger(value, (trigger & 0x7fff));
+			if (NGUseNGActions()) {
+				trigger = *data;
+				NGActionTrigger(value, (trigger & 0x7fff));
+			}
 			break;
-
 		case TO_FLYBY:
 			trigger = *data++;
 			camera_flags = trigger;
