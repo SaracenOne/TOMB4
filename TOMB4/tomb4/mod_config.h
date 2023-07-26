@@ -89,6 +89,12 @@ struct MOD_LEVEL_LARA_INFO {
 };
 
 struct MOD_GLOBAL_INFO {
+	// Default to latest known version.
+	unsigned char trng_version_major = 1;
+	unsigned char trng_version_minor = 3;
+	unsigned char trng_version_maintainence = 0;
+	unsigned char trng_version_build = 7;
+
 	bool trng_flipeffects_enabled = true; // TRNG (special TRNG flipeffects. Disable if conflicting with FURR)
 	bool trng_actions_enabled = true;
 	bool trng_rollingball_extended_ocb = true; // TRNG (moveable and regular trigger activation)

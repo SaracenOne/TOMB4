@@ -52,12 +52,23 @@ void LoadGameModConfigFirstPass() {
     }
 
     json_t mem[32];
-    const json_t* json = json_create(json_buf, mem, sizeof mem / sizeof * mem);
-    if (!json) {
+    const json_t* root_json = json_create(json_buf, mem, sizeof mem / sizeof * mem);
+    if (!root_json) {
         // Could not create JSON!
         free(json_buf);
         return;
     }
+
+    const json_t* global = json_getProperty(root_json, "global_info");
+    if (global && JSON_OBJ == json_getType(global)) {
+        MOD_GLOBAL_INFO* mod_global_info = &game_mod_config.global_info;
+
+        READ_JSON_UINT8(trng_version_major, global, mod_global_info);
+        READ_JSON_UINT8(trng_version_minor, global, mod_global_info);
+        READ_JSON_UINT8(trng_version_maintainence, global, mod_global_info);
+        READ_JSON_UINT8(trng_version_build, global, mod_global_info);
+    }
+
 
     free(json_buf);
     return;
@@ -80,6 +91,11 @@ void LoadGameModConfigSecondPass() {
     const json_t* global = json_getProperty(root_json, "global_info");
     if (global && JSON_OBJ == json_getType(global)) {
         MOD_GLOBAL_INFO* mod_global_info = &game_mod_config.global_info;
+
+        READ_JSON_UINT8(trng_version_major, global, mod_global_info);
+        READ_JSON_UINT8(trng_version_minor, global, mod_global_info);
+        READ_JSON_UINT8(trng_version_maintainence, global, mod_global_info);
+        READ_JSON_UINT8(trng_version_build, global, mod_global_info);
 
         READ_JSON_BOOL(trng_flipeffects_enabled, global, mod_global_info);
         READ_JSON_BOOL(trng_actions_enabled, global, mod_global_info);
