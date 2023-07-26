@@ -45,6 +45,7 @@
 
 #include "../tomb4/mod_config.h"
 #include "trng/trng.h"
+#include "trng/trng_flipeffect.h"
 
 ITEM_INFO* items;
 ANIM_STRUCT* anims;
@@ -987,7 +988,7 @@ void TestTriggers(short* data, long heavy, long HeavyFlags)
 			if (value >= 47 && NGUseNGFlipEffects()) {
 				trigger = *data;
 				is_ng_oneshot = flags & IFL_INVISIBLE;
-				NGFlipEffect(value, (trigger & 0x7fff), is_ng_oneshot);
+				NGFlipEffect(value, (trigger & 0x7fff), is_ng_oneshot, false);
 			} else {
 				TriggerTimer = timer;
 				neweffect = value;

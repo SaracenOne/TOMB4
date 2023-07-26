@@ -968,6 +968,8 @@ void LoadGameflow()
 	char* d;
 	long l, end;
 
+	NGInit();
+
 	s = 0;
 	int gameflow_len = LoadFile("SCRIPT.DAT", &s);
 

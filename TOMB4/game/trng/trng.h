@@ -50,7 +50,6 @@ extern void NGItemUpdate(unsigned int item_num);
 extern void NGFrameStartUpdate();
 
 extern bool NGIsItemFrozen(unsigned int item_num);
-extern void NGFlipEffect(unsigned short param, short extra, bool oneshot);
 
 extern void NGFrameFinish();
 
@@ -60,3 +59,6 @@ extern bool NGUseNGFlipEffects();
 extern bool NGUseNGActions();
 
 extern void NGUpdateFloorstateData(bool update_oneshot);
+
+extern void NGInit();
+extern void NGCleanup();

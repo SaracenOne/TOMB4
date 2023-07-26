@@ -387,9 +387,6 @@
     <ClInclude Include="..\tiny-json\tiny-json.h">
       <Filter>TOMB4\tomb4\libs\tiny-json</Filter>
     </ClInclude>
-    <ClInclude Include="TOMB4\game\trng.h">
-      <Filter>TOMB4\game\trng</Filter>
-    </ClInclude>
     <ClInclude Include="TOMB4\game\trng\trng_action.h">
       <Filter>TOMB4\game\trng</Filter>
     </ClInclude>
@@ -404,6 +401,9 @@
     </ClInclude>
     <ClInclude Include="TOMB4\tomb4\libs\miniaudio\miniaudio.h">
       <Filter>TOMB4\tomb4\libs\miniaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="TOMB4\game\trng\trng.h">
+      <Filter>TOMB4\game\trng</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

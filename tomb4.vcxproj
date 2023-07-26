@@ -242,7 +242,7 @@
     <ClInclude Include="TOMB4\game\tomb4fx.h" />
     <ClInclude Include="TOMB4\game\train.h" />
     <ClInclude Include="TOMB4\game\traps.h" />
-    <ClInclude Include="TOMB4\game\trng.h" />
+    <ClInclude Include="TOMB4\game\trng\trng.h" />
     <ClInclude Include="TOMB4\game\trng\trng_action.h" />
     <ClInclude Include="TOMB4\game\trng\trng_extra_state.h" />
     <ClInclude Include="TOMB4\game\trng\trng_flipeffect.h" />

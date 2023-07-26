@@ -16,6 +16,8 @@
 
 #include "specificfx.h"
 
+#include "../game/trng/trng.h"
+
 LPDIRECT3DVERTEXBUFFER DestVB;
 WATERTAB WaterTable[22][64];
 THREAD MainThread;
@@ -56,6 +58,8 @@ void GameClose()
 	free(malloc_buffer);
 	free(gfScriptFile);
 	free(gfLanguageFile);
+
+	NGCleanup();
 }
 
 unsigned int __stdcall GameMain(void* ptr)

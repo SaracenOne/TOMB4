@@ -7,6 +7,7 @@ enum NG_FLIPEFFECTS {
 	FORCE_LARA_ANIMATION_256_512_OF_SLOT_ANIMATION = 80,
 	REMOVE_WEAPONS_OR_FLARES_FROM_LARAS_HANDS = 83,
 	DISARM_LARA = 96,
+	PERFORM_TRIGGERGROUP_FROM_SCRIPT_IN_SPECIFIC_WAY = 118, // May be different in older TRNG versions (?)
 	PLAY_CD_TRACK_ON_CHANNEL_2 = 129,
 	ATTRACT_LARA_IN_DIRECTION_ON_GROUND = 134,
 	SET_VOLUME_OF_AUDIO_TRACK_ON_CHANNEL = 133,
@@ -17,4 +18,4 @@ enum NG_FLIPEFFECTS {
 	SET_LARA_HOLSTER_TYPE = 407
 };
 
-extern void NGFlipEffect(unsigned short param, short extra, bool oneshot);
+extern bool NGFlipEffect(unsigned short param, short extra, bool oneshot, bool skip_checks);

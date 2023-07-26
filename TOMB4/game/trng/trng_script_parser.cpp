@@ -5,12 +5,12 @@
 
 #include "../../tomb4/mod_config.h"
 
-NG_GLOBAL_TRIGGER global_triggers[MAX_NG_GLOBAL_TRIGGERS];
-NG_TRIGGER_GROUP trigger_group_table[MAX_NG_TRIGGER_GROUPS];
-NG_ORGANIZER organizer_table[MAX_NG_ORGANIZERS];
-NG_ITEM_GROUP item_group_table[MAX_NG_ITEM_GROUPS];
-
 NG_LEVEL ng_levels[MAX_NG_LEVELS];
+
+NG_GLOBAL_TRIGGER current_global_triggers[MAX_NG_GLOBAL_TRIGGERS];
+NG_TRIGGER_GROUP current_trigger_groups[MAX_NG_TRIGGER_GROUPS];
+NG_ORGANIZER current_organizers[MAX_NG_ORGANIZERS];
+NG_ITEM_GROUP current_item_groups[MAX_NG_ITEM_GROUPS];
 
 #define NG_READ_8(scr_buffer, scr_offset) scr_buffer[scr_offset]; \
 offset += sizeof(char)
@@ -20,6 +20,131 @@ scr_offset += sizeof(short)
 
 #define NG_READ_32(scr_buffer, scr_offset) (unsigned int)(((unsigned char)scr_buffer[scr_offset]) | (((unsigned int)(unsigned char)scr_buffer[scr_offset + 1]) << 8) | (((unsigned int)(unsigned char)scr_buffer[scr_offset + 2]) << 16) | (((unsigned int)(unsigned char)scr_buffer[scr_offset + 3]) << 24)); \
 scr_offset += sizeof(int)
+
+void NGInitLevelArray() {
+	for (int i = 0; i < MAX_NG_LEVELS; i++) {
+		ng_levels[i].records = NULL;
+	}
+}
+
+void NGFreeLevel(NG_LEVEL& level) {
+	if (level.records) {
+		level.records->global_trigger_count = 0;
+		if (level.records->global_triggers_table) {
+			free(level.records->global_triggers_table);
+			level.records->global_triggers_table = NULL;
+		}
+
+		level.records->trigger_group_count = 0;
+		if (level.records->trigger_group_table) {
+			free(level.records->trigger_group_table);
+			level.records->trigger_group_table = NULL;
+		}
+
+		level.records->organizer_count = 0;
+		if (level.records->organizer_table) {
+			free(level.records->organizer_table);
+			level.records->organizer_table = NULL;
+		}
+
+		level.records->item_group_count = 0;
+		if (level.records->item_group_table) {
+			free(level.records->item_group_table);
+			level.records->item_group_table = NULL;
+		}
+	}
+}
+
+bool NGReallocateLevel(NG_LEVEL& level, unsigned int global_triggers_table_count, unsigned int trigger_group_table_count, unsigned int organizer_table_count, unsigned int item_group_table_count) {
+	NGFreeLevel(level);
+
+	level.records = (NG_LEVEL_RECORD_DATA*)malloc(sizeof(NG_LEVEL_RECORD_DATA));
+
+	if (level.records) {
+		level.records->global_triggers_table = NULL;
+		level.records->trigger_group_table = NULL;
+		level.records->organizer_table = NULL;
+		level.records->item_group_table = NULL;
+		
+		level.records->global_trigger_count = global_triggers_table_count;
+		if (global_triggers_table_count) {
+			level.records->global_triggers_table = (NG_GLOBAL_TRIGGER_RECORD*)malloc(sizeof(NG_GLOBAL_TRIGGER_RECORD) * global_triggers_table_count);
+			if (!level.records->global_triggers_table) {
+				printf("Memory allocation failed!");
+				return false;
+			}
+		}
+
+		level.records->trigger_group_count = trigger_group_table_count;
+		if (trigger_group_table_count) {
+			level.records->trigger_group_table = (NG_TRIGGER_GROUP_RECORD*)malloc(sizeof(NG_TRIGGER_GROUP_RECORD) * trigger_group_table_count);
+			if (!level.records->trigger_group_table) {
+				printf("Memory allocation failed!");
+				return false;
+			}
+		}
+
+
+		level.records->organizer_count = organizer_table_count;
+		if (organizer_table_count) {
+			level.records->organizer_table = (NG_ORGANIZER_RECORD*)malloc(sizeof(NG_ORGANIZER_RECORD) * organizer_table_count);
+			if (!level.records->organizer_table) {
+				printf("Memory allocation failed!");
+				return false;
+			}
+		}
+
+		level.records->item_group_count = item_group_table_count;
+		if (item_group_table_count) {
+			level.records->item_group_table = (NG_ITEM_GROUP_RECORD*)malloc(sizeof(NG_ITEM_GROUP_RECORD) * item_group_table_count);
+			if (!level.records->item_group_table) {
+				printf("Memory allocation failed!");
+				return false;
+			}
+		}
+
+		return true;
+	} else {
+		printf("Memory allocation failed!");
+		return false;
+	}
+}
+
+void NGLoadTables(unsigned int level) {
+	memset(&current_global_triggers, 0x00, sizeof(NG_GLOBAL_TRIGGER) * MAX_NG_GLOBAL_TRIGGERS);
+	memset(&current_trigger_groups, 0x00, sizeof(NG_TRIGGER_GROUP) * MAX_NG_TRIGGER_GROUPS);
+	memset(&current_organizers, 0x00, sizeof(NG_ORGANIZER) * MAX_NG_ORGANIZERS);
+	memset(&current_item_groups, 0x00, sizeof(NG_ITEM_GROUP) * MAX_NG_ITEM_GROUPS);
+
+	if (ng_levels[level].records) {
+		for (int i = 0; i < ng_levels[level].records->global_trigger_count; i++) {
+			unsigned int id = ng_levels[level].records->global_triggers_table[i].record_id;
+
+			memcpy(&current_global_triggers[id], &ng_levels[level].records->global_triggers_table[i].global_trigger, sizeof(NG_GLOBAL_TRIGGER));
+		}
+		for (int i = 0; i < ng_levels[level].records->trigger_group_count; i++) {
+			unsigned int id = ng_levels[level].records->trigger_group_table[i].record_id;
+
+			memcpy(&current_trigger_groups[id], &ng_levels[level].records->trigger_group_table[i].trigger_group, sizeof(NG_TRIGGER_GROUP));
+		}
+		for (int i = 0; i < ng_levels[level].records->organizer_count; i++) {
+			unsigned int id = ng_levels[level].records->organizer_table[i].record_id;
+
+			memcpy(&current_organizers[id], &ng_levels[level].records->organizer_table[i].organizer, sizeof(NG_ORGANIZER));
+		}
+		for (int i = 0; i < ng_levels[level].records->item_group_count; i++) {
+			unsigned int id = ng_levels[level].records->item_group_table[i].record_id;
+
+			memcpy(&current_item_groups[id], &ng_levels[level].records->item_group_table[i].item_group, sizeof(NG_ITEM_GROUP));
+		}
+	}
+}
+
+extern void NGScriptCleanup() {
+	for (int i = 0; i < MAX_NG_LEVELS; i++) {
+		NGFreeLevel(ng_levels[i]);
+	}
+}
 
 void NGLoaderHeader(char* gfScriptFile, unsigned int offset, unsigned int len) {
 	bool ng_header_found = false;
@@ -81,7 +206,20 @@ void NGLoaderHeader(char* gfScriptFile, unsigned int offset, unsigned int len) {
 		offset += (second_header_block_size - 1) * sizeof(short);
 
 		int current_level = 0;
+
+		// Allocate the trigger table for each level.
+		NG_GLOBAL_TRIGGER_RECORD *level_global_triggers_table = (NG_GLOBAL_TRIGGER_RECORD *)malloc(sizeof(NG_GLOBAL_TRIGGER_RECORD) * MAX_NG_GLOBAL_TRIGGERS);
+		NG_TRIGGER_GROUP_RECORD *level_trigger_group_table = (NG_TRIGGER_GROUP_RECORD *)malloc(sizeof(NG_TRIGGER_GROUP_RECORD) * MAX_NG_TRIGGER_GROUPS);
+		NG_ORGANIZER_RECORD *level_organizer_table = (NG_ORGANIZER_RECORD *)malloc(sizeof(NG_ORGANIZER_RECORD) * MAX_NG_ORGANIZERS);
+		NG_ITEM_GROUP_RECORD *level_item_group_table = (NG_ITEM_GROUP_RECORD*)malloc(sizeof(NG_ITEM_GROUP_RECORD) * MAX_NG_ITEM_GROUPS);
+
+		// Do the levels
 		while (1) {
+			unsigned int level_global_trigger_count = 0;
+			unsigned int level_trigger_group_count = 0;
+			unsigned int level_organizer_count = 0;
+			unsigned int level_item_group_count = 0;
+
 			unsigned int level_block_start_position = offset;
 			unsigned short level_block_size = NG_READ_16(gfScriptFile, offset);
 			unsigned short level_block_unknown_variable = NG_READ_16(gfScriptFile, offset);
@@ -192,7 +330,7 @@ void NGLoaderHeader(char* gfScriptFile, unsigned int offset, unsigned int len) {
 							}
 							// CUST_NEW_SOUND_ENGINE
 							case 0x0006: {
-								printf("CUST_ROLLINGBALL_PUSHING unimplemented!\n");
+								printf("CUST_NEW_SOUND_ENGINE unimplemented!\n");
 								break;
 							}
 							// CUST_SHATTER_RANGE
@@ -414,12 +552,16 @@ void NGLoaderHeader(char* gfScriptFile, unsigned int offset, unsigned int len) {
 							// Broken
 						}
 
-						global_triggers[id].flags = NG_READ_16(gfScriptFile, offset);
-						global_triggers[id].type = NG_READ_16(gfScriptFile, offset);
-						global_triggers[id].parameter = NG_READ_32(gfScriptFile, offset);
-						global_triggers[id].condition_trigger_group = NG_READ_16(gfScriptFile, offset);
-						global_triggers[id].perform_trigger_group = NG_READ_16(gfScriptFile, offset);
-						global_triggers[id].on_false_trigger_group = NG_READ_16(gfScriptFile, offset);
+						level_global_triggers_table[level_global_trigger_count].record_id = id;
+
+						level_global_triggers_table[level_global_trigger_count].global_trigger.flags = NG_READ_16(gfScriptFile, offset);
+						level_global_triggers_table[level_global_trigger_count].global_trigger.type = NG_READ_16(gfScriptFile, offset);
+						level_global_triggers_table[level_global_trigger_count].global_trigger.parameter = NG_READ_32(gfScriptFile, offset);
+						level_global_triggers_table[level_global_trigger_count].global_trigger.condition_trigger_group = NG_READ_16(gfScriptFile, offset);
+						level_global_triggers_table[level_global_trigger_count].global_trigger.perform_trigger_group = NG_READ_16(gfScriptFile, offset);
+						level_global_triggers_table[level_global_trigger_count].global_trigger.on_false_trigger_group = NG_READ_16(gfScriptFile, offset);
+
+						level_global_trigger_count++;
 
 						break;
 					}
@@ -440,13 +582,15 @@ void NGLoaderHeader(char* gfScriptFile, unsigned int offset, unsigned int len) {
 							// Broken
 						}
 
-						organizer_table[id].flags = NG_READ_16(gfScriptFile, offset);
-						organizer_table[id].parameters = NG_READ_16(gfScriptFile, offset);
+						level_organizer_table[level_organizer_count].record_id = id;
+
+						level_organizer_table[level_organizer_count].organizer.flags = NG_READ_16(gfScriptFile, offset);
+						level_organizer_table[level_organizer_count].organizer.parameters = NG_READ_16(gfScriptFile, offset);
 
 						unsigned char index = 0;
 						while (offset < data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short))) {
-							organizer_table[id].appointments[index].time = NG_READ_16(gfScriptFile, offset);
-							organizer_table[id].appointments[index].trigger_group = NG_READ_16(gfScriptFile, offset);
+							level_organizer_table[level_organizer_count].organizer.appointments[index].time = NG_READ_16(gfScriptFile, offset);
+							level_organizer_table[level_organizer_count].organizer.appointments[index].trigger_group = NG_READ_16(gfScriptFile, offset);
 
 							index++;
 							if (index > NG_ORGANIZER_MAX_APPOINTMENTS) {
@@ -454,6 +598,7 @@ void NGLoaderHeader(char* gfScriptFile, unsigned int offset, unsigned int len) {
 								return;
 							}
 						}
+						level_organizer_count++;
 						break;
 					}
 					case 0x19: {
@@ -466,17 +611,19 @@ void NGLoaderHeader(char* gfScriptFile, unsigned int offset, unsigned int len) {
 							// Broken
 						}
 
+						level_item_group_table[level_item_group_count].record_id = id;
+
 						unsigned char index = 0;
 						while (offset < data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short))) {
-							item_group_table[id].item_records[index] = NG_READ_16(gfScriptFile, offset);
+							level_item_group_table[level_item_group_count].item_group.item_list[index] = NG_READ_16(gfScriptFile, offset);
 
 							index++;
-							if (index > NG_ITEM_GROUP_MAX_RECORDS) {
+							if (index > NG_ITEM_GROUP_MAX_LIST) {
 								printf("ItemGroup record size overflow!\n");
 								return;
 							}
 						}
-
+						level_item_group_count++;
 						break;
 					}
 					case 0x1a: {
@@ -513,23 +660,31 @@ void NGLoaderHeader(char* gfScriptFile, unsigned int offset, unsigned int len) {
 						// TriggerGroup (WIP)
 						unsigned short id = NG_READ_16(gfScriptFile, offset);
 
-							if (id > MAX_NG_TRIGGER_GROUPS) {
-								printf("TriggerGroup id is not valid!\n");
-								return;
-								// Broken
-							}
+						if (id > MAX_NG_TRIGGER_GROUPS) {
+							printf("TriggerGroup id is not valid!\n");
+							return;
+							// Broken
+						}
 
-						unsigned char index = 0;
+						level_trigger_group_table[level_trigger_group_count].record_id = id;
+
+						unsigned char data_index = 0;
 						while (offset < data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short))) {
-							unsigned short data = NG_READ_16(gfScriptFile, offset);
-							trigger_group_table[id].data[index] = data;
+							unsigned short first_field = NG_READ_16(gfScriptFile, offset);
+							unsigned short second_field = NG_READ_16(gfScriptFile, offset);
+							unsigned short third_field = NG_READ_16(gfScriptFile, offset);
 
-							index++;
-							if (index > NG_TRIGGER_GROUP_DATA_SIZE) {
+							level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].first_field = first_field;
+							level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].second_field = second_field;
+							level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].third_field = third_field;
+
+							data_index++;
+							if (data_index > NG_TRIGGER_GROUP_DATA_SIZE) {
 								printf("TriggerGroup size overflow!\n");
 								return;
 							}
 						}
+						level_trigger_group_count++;
 						break;
 					}
 					case 0xc9: {
@@ -545,7 +700,20 @@ void NGLoaderHeader(char* gfScriptFile, unsigned int offset, unsigned int len) {
 					}
 				}
 			}
+			// Now save the tables
+			NGReallocateLevel(ng_levels[current_level], level_global_trigger_count, level_trigger_group_count, level_organizer_count, level_item_group_count);
+			memcpy(ng_levels[current_level].records->global_triggers_table, level_global_triggers_table, sizeof(NG_GLOBAL_TRIGGER_RECORD) * level_global_trigger_count);
+			memcpy(ng_levels[current_level].records->trigger_group_table, level_trigger_group_table, sizeof(NG_TRIGGER_GROUP_RECORD) * level_trigger_group_count);
+			memcpy(ng_levels[current_level].records->organizer_table, level_organizer_table, sizeof(NG_ORGANIZER_RECORD) * level_organizer_count);
+			memcpy(ng_levels[current_level].records->item_group_table, level_item_group_table, sizeof(NG_ITEM_GROUP_RECORD) * level_item_group_count);
+
 			current_level++;
 		}
+
+		// Cleanup
+		free(level_global_triggers_table);
+		free(level_trigger_group_table);
+		free(level_organizer_table);
+		free(level_item_group_table);
 	}
 }
