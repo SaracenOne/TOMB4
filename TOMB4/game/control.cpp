@@ -799,6 +799,7 @@ void TestTriggers(short* data, long heavy, long HeavyFlags)
 	}
 
 	camera_item = 0;
+	int last_item = -1; // TRNG
 
 	do
 	{
@@ -809,6 +810,7 @@ void TestTriggers(short* data, long heavy, long HeavyFlags)
 		{
 		case TO_OBJECT:
 			item = &items[value];
+			last_item = value;
 
 			if (key >= 2 || ((type == ANTIPAD || type == ANTITRIGGER || type == HEAVYANTITRIGGER) && item->flags & IFL_ANTITRIGGER_ONESHOT) ||
 				(type == SWITCH && item->flags & IFL_SWITCH_ONESHOT) ||
@@ -1012,8 +1014,9 @@ void TestTriggers(short* data, long heavy, long HeavyFlags)
 			break;
 		case TO_BODYBAG:
 			if (NGUseNGActions()) {
-				trigger = *data;
-				NGActionTrigger(value, (trigger & 0x7fff));
+				trigger = *data++;
+				last_item = value;
+				NGActionTrigger(value, (trigger & 0x7fff), false);
 			}
 			break;
 		case TO_FLYBY:
@@ -1087,7 +1090,15 @@ void TestTriggers(short* data, long heavy, long HeavyFlags)
 			}
 
 			break;
-
+		case TO_FMV:
+			printf("FMV support is unimplemented!");
+			break;
+		case TO_TIMERFIELD:
+			if (last_item >= 0) {
+				item = &items[last_item];
+				item->timer = value * 30;
+			}
+			break;
 		default:
 			break;
 		}

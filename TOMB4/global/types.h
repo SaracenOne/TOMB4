@@ -310,7 +310,9 @@ enum trigobj_types
 	TO_SECRET,
 	TO_BODYBAG,
 	TO_FLYBY,
-	TO_CUTSCENE
+	TO_CUTSCENE,
+	TO_FMV,
+	TO_TIMERFIELD
 };
 
 enum matrix_indices

@@ -14,7 +14,7 @@
 
 void NGSetup() {
 	NGSetupExtraState();
-	NGLoadTables(gfCurrentLevel);
+	NGLoadTablesForLevel(gfCurrentLevel);
 }
 
 void NGFrameFinish() {

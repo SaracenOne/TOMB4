@@ -4,6 +4,8 @@
 #include "../control.h"
 #include "../effects.h"
 #include "../objects.h"
+#include "../door.h"
+#include "../items.h"
 #include "trng.h"
 #include "trng_extra_state.h"
 
@@ -48,7 +50,7 @@ void NGHurtEnemy(unsigned short item_id, unsigned short damage) {
 	}
 }
 
-void NGActionTrigger(unsigned short param, unsigned short extra) {
+void NGActionTrigger(unsigned short param, unsigned short extra, bool skip_checks) {
 	unsigned char action_type = (unsigned char)extra & 0xff;
 	unsigned char action_data = (unsigned char)(extra >> 8) & 0xff;
 
@@ -60,7 +62,7 @@ void NGActionTrigger(unsigned short param, unsigned short extra) {
 		case FREEZE_ENEMY_FOR_SECONDS: {
 			unsigned short item_id = param;
 			if (!NGIsItemFrozen(param)) {
-				if (!NGCheckFloorStatePressedThisFrameOrLastFrame()) {
+				if (skip_checks || !NGCheckFloorStatePressedThisFrameOrLastFrame()) {
 					if (action_data == 0) {
 						NGSetItemFreezeTimer(item_id, -1);
 					}
@@ -72,7 +74,7 @@ void NGActionTrigger(unsigned short param, unsigned short extra) {
 			break;
 		}
 		case UNFREEZE_ENEMY_WITH_EFFECT: {
-			if (!NGCheckFloorStatePressedThisFrameOrLastFrame()) {
+			if (skip_checks || !NGCheckFloorStatePressedThisFrameOrLastFrame()) {
 				unsigned short item_id = param;
 				if (action_data != 0x00) {
 					Log(0, "Unimplemented action data for UNFREEZE_ENEMY_WITH_EFFECT");
@@ -86,56 +88,72 @@ void NGActionTrigger(unsigned short param, unsigned short extra) {
 			break;
 		}
 		case HURT_ENEMY: {
-			if (!NGCheckFloorStatePressedThisFrameOrLastFrame()) {
+			if (skip_checks || !NGCheckFloorStatePressedThisFrameOrLastFrame()) {
 				NGHurtEnemy(param, action_data & 0x7f);
 			}
 			break;
 		}
 		case FORCE_ANIMATION_0_TO_31_ON_ITEM: {
-			if (!NGCheckFloorStatePressedThisFrameOrLastFrame()) {
+			if (skip_checks || !NGCheckFloorStatePressedThisFrameOrLastFrame()) {
 				NGForceItemAnimation(param, action_data & 0x1f);
 			}
 			break;
 		}
 		case FORCE_ANIMATION_32_TO_63_ON_ITEM: {
-			if (!NGCheckFloorStatePressedThisFrameOrLastFrame()) {
+			if (skip_checks || !NGCheckFloorStatePressedThisFrameOrLastFrame()) {
 				NGForceItemAnimation(param, (action_data & 0x1f) + 32);
 			}
 			break;
 		}
 		case FORCE_ANIMATION_64_TO_95_ON_ITEM: {
-			if (!NGCheckFloorStatePressedThisFrameOrLastFrame()) {
+			if (skip_checks || !NGCheckFloorStatePressedThisFrameOrLastFrame()) {
 				NGForceItemAnimation(param, (action_data & 0x1f) + 64);
 			}
 			break;
 		}
+		// This action causes the door to also have a timer set for 26 seconds.
+		// This might be a bug in the original code due to using the timer field.
+		// Probably need to examine other behaviour regarding the timer.
+		case OPEN_OR_CLOSE_DOOR_ITEM: {
+			if (skip_checks || !NGCheckFloorStatePressedThisFrameOrLastFrame()) {
+				AddActiveItem(param);
+
+				if (action_data) {
+					items[param].flags |= IFL_CODEBITS;
+					items[param].timer = 26 * 30;
+				} else {
+					items[param].flags &= ~IFL_CODEBITS;
+				}
+			}
+			break;
+		}
 		case MOVE_ITEM_UP_BY_UNITS_X8: {
-			if (!NGCheckFloorStatePressedThisFrameOrLastFrame())
+			if (skip_checks || !NGCheckFloorStatePressedThisFrameOrLastFrame())
 				NGMoveItemByUnits(param, NG_UP, 8 * ((action_data)+1));
 			break;
 		}
 		case MOVE_ITEM_DOWN_BY_UNITS_X8: {
-			if (!NGCheckFloorStatePressedThisFrameOrLastFrame())
+			if (skip_checks || !NGCheckFloorStatePressedThisFrameOrLastFrame())
 				NGMoveItemByUnits(param, NG_DOWN, 8 * ((action_data)+1));
 			break;
 		}
 		case MOVE_ITEM_WEST_BY_UNITS_X8: {
-			if (!NGCheckFloorStatePressedThisFrameOrLastFrame())
+			if (skip_checks || !NGCheckFloorStatePressedThisFrameOrLastFrame())
 				NGMoveItemByUnits(param, NG_WEST, 8 * ((action_data)+1));
 			break;
 		}
 		case MOVE_ITEM_NORTH_BY_UNITS_X8: {
-			if (!NGCheckFloorStatePressedThisFrameOrLastFrame())
+			if (skip_checks || !NGCheckFloorStatePressedThisFrameOrLastFrame())
 				NGMoveItemByUnits(param, NG_NORTH, 8 * ((action_data)+1));
 			break;
 		}
 		case MOVE_ITEM_EAST_BY_UNITS_X8: {
-			if (!NGCheckFloorStatePressedThisFrameOrLastFrame())
+			if (skip_checks || !NGCheckFloorStatePressedThisFrameOrLastFrame())
 				NGMoveItemByUnits(param, NG_EAST, 8 * ((action_data)+1));
 			break;
 		}
 		case MOVE_ITEM_SOUTH_BY_UNITS_X8: {
-			if (!NGCheckFloorStatePressedThisFrameOrLastFrame())
+			if (!skip_checks || !NGCheckFloorStatePressedThisFrameOrLastFrame())
 				NGMoveItemByUnits(param, NG_SOUTH, 8 * ((action_data)+1));
 			break;
 		}

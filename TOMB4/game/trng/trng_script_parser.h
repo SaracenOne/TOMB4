@@ -83,6 +83,6 @@ extern NG_ORGANIZER current_organizers[MAX_NG_ORGANIZERS];
 extern NG_ITEM_GROUP current_item_groups[MAX_NG_ITEM_GROUPS];
 
 extern void NGInitLevelArray();
-extern void NGLoadTables(unsigned int level);
+extern void NGLoadTablesForLevel(unsigned int level);
 extern void NGScriptCleanup();
 extern void NGLoaderHeader(char* gfScriptFile, unsigned int offset, unsigned int len);

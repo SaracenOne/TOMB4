@@ -136,11 +136,11 @@ bool perform_triggergroup_from_script_in_specific_way(unsigned char trigger_grou
 	while (index < NG_TRIGGER_GROUP_DATA_SIZE) {
 		// Flipeffect
 		if (trigger_group.data[index].first_field == 0x2000) {
-			result = NGFlipEffect(trigger_group.data[index].second_field, trigger_group.data[index].third_field, false, false);
+			result = NGFlipEffect(trigger_group.data[index].second_field, trigger_group.data[index].third_field, false, true);
 		}
 		// ActionNG
 		else if (trigger_group.data[index].first_field == 0x5000) {
-			NGActionTrigger(trigger_group.data[index].second_field, trigger_group.data[index].third_field);
+			NGActionTrigger(trigger_group.data[index].second_field, trigger_group.data[index].third_field, true);
 			result = true; //TODO: check for conditions on ActionNG triggers
 		}
 		// End

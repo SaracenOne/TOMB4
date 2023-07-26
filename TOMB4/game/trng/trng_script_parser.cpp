@@ -73,6 +73,7 @@ bool NGReallocateLevel(NG_LEVEL& level, unsigned int global_triggers_table_count
 				printf("Memory allocation failed!");
 				return false;
 			}
+			memset(level.records->global_triggers_table, 0x00, sizeof(NG_GLOBAL_TRIGGER_RECORD) * global_triggers_table_count);
 		}
 
 		level.records->trigger_group_count = trigger_group_table_count;
@@ -82,6 +83,7 @@ bool NGReallocateLevel(NG_LEVEL& level, unsigned int global_triggers_table_count
 				printf("Memory allocation failed!");
 				return false;
 			}
+			memset(level.records->trigger_group_table, 0x00, sizeof(NG_TRIGGER_GROUP_RECORD) * trigger_group_table_count);
 		}
 
 
@@ -92,6 +94,7 @@ bool NGReallocateLevel(NG_LEVEL& level, unsigned int global_triggers_table_count
 				printf("Memory allocation failed!");
 				return false;
 			}
+			memset(level.records->organizer_table, 0x00, sizeof(NG_ORGANIZER_RECORD) * organizer_table_count);
 		}
 
 		level.records->item_group_count = item_group_table_count;
@@ -101,6 +104,7 @@ bool NGReallocateLevel(NG_LEVEL& level, unsigned int global_triggers_table_count
 				printf("Memory allocation failed!");
 				return false;
 			}
+			memset(level.records->item_group_table, 0x00, sizeof(NG_ITEM_GROUP) * item_group_table_count);
 		}
 
 		return true;
@@ -110,7 +114,7 @@ bool NGReallocateLevel(NG_LEVEL& level, unsigned int global_triggers_table_count
 	}
 }
 
-void NGLoadTables(unsigned int level) {
+void NGLoadTablesForLevel(unsigned int level) {
 	memset(&current_global_triggers, 0x00, sizeof(NG_GLOBAL_TRIGGER) * MAX_NG_GLOBAL_TRIGGERS);
 	memset(&current_trigger_groups, 0x00, sizeof(NG_TRIGGER_GROUP) * MAX_NG_TRIGGER_GROUPS);
 	memset(&current_organizers, 0x00, sizeof(NG_ORGANIZER) * MAX_NG_ORGANIZERS);
@@ -220,6 +224,11 @@ void NGLoaderHeader(char* gfScriptFile, unsigned int offset, unsigned int len) {
 
 		// Do the levels
 		while (1) {
+			memset(level_global_triggers_table, 0x00, sizeof(NG_GLOBAL_TRIGGER_RECORD) * MAX_NG_GLOBAL_TRIGGERS);
+			memset(level_trigger_group_table, 0x00, sizeof(NG_TRIGGER_GROUP_RECORD) * MAX_NG_TRIGGER_GROUPS);
+			memset(level_organizer_table, 0x00, sizeof(NG_ORGANIZER_RECORD) * MAX_NG_ORGANIZERS);
+			memset(level_item_group_table, 0x00, sizeof(NG_ITEM_GROUP_RECORD) * MAX_NG_ITEM_GROUPS);
+
 			unsigned int level_global_trigger_count = 0;
 			unsigned int level_trigger_group_count = 0;
 			unsigned int level_organizer_count = 0;
