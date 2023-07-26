@@ -166,11 +166,11 @@ void NGLoaderHeader(char* gfScriptFile, unsigned int offset, unsigned int len) {
 	}
 
 	if (ng_header_found) {
-		unsigned int first_header_block_start_position = offset;
+		unsigned int options_header_block_start_position = offset;
 
-		unsigned short first_header_block_size = NG_READ_16(gfScriptFile, offset);
-		unsigned int first_header_block_end_pos = first_header_block_start_position + (first_header_block_size * sizeof(short));
-		unsigned short first_block_unknown_variable = NG_READ_16(gfScriptFile, offset);
+		unsigned short options_header_block_size = NG_READ_16(gfScriptFile, offset);
+		unsigned int options_header_block_end_pos = options_header_block_start_position + (options_header_block_size * sizeof(short));
+		unsigned short options_block_unknown_variable = NG_READ_16(gfScriptFile, offset);
 
 		while (1) {
 			unsigned int data_block_start_start_position = offset;
@@ -178,9 +178,9 @@ void NGLoaderHeader(char* gfScriptFile, unsigned int offset, unsigned int len) {
 
 			unsigned char block_type = NG_READ_8(gfScriptFile, offset);
 
-			if (current_data_block_size_wide == 0 && block_type == 0) {
-				if (offset != first_header_block_end_pos) {
-					printf("First header block size mismatch!\n");
+			if (offset >= options_header_block_end_pos) {
+				if (offset != options_header_block_end_pos) {
+					printf("Options header block size mismatch!\n");
 				}
 				break;
 			}
@@ -193,14 +193,19 @@ void NGLoaderHeader(char* gfScriptFile, unsigned int offset, unsigned int len) {
 				}
 				default: {
 					printf("Unimplemented NG option data block type: %u\n", block_type);
+					offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 					break;
 				}
 			}
 
-			offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+			int command_block_end_position = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+			if (offset != command_block_end_position) {
+				printf("Command block size mismatch!\n");
+			}
+			offset = command_block_end_position;
 		}
 		
-		offset = first_header_block_end_pos;
+		offset = options_header_block_end_pos;
 
 		unsigned short second_header_block_size = NG_READ_16(gfScriptFile, offset);
 		offset += (second_header_block_size - 1) * sizeof(short);
@@ -233,16 +238,18 @@ void NGLoaderHeader(char* gfScriptFile, unsigned int offset, unsigned int len) {
 			int command_blocks_parsed = 0;
 			int command_blocks_failed = 0;
 
+			// Do the commands
 			while (1) {
 				unsigned int data_block_start_start_position = offset;
 				unsigned char current_data_block_size_wide = NG_READ_8(gfScriptFile, offset);
 
 				unsigned char block_type = NG_READ_8(gfScriptFile, offset);
 
-				if (current_data_block_size_wide == 0 && block_type == 0) {
+				if (offset >= level_block_end_pos) {
 					if (offset != level_block_end_pos) {
 						printf("Level block size mismatch!\n");
 					}
+					offset = level_block_end_pos;
 					break;
 				}
 
@@ -300,7 +307,12 @@ void NGLoaderHeader(char* gfScriptFile, unsigned int offset, unsigned int len) {
 					}
 					case 0x14: {
 						// Customize (WIP)
-						unsigned short customization_category = NG_READ_32(gfScriptFile, offset);
+						unsigned int customization_category = 0;
+						if (get_game_mod_global_info().trng_version_minor < 3) {
+							customization_category = NG_READ_16(gfScriptFile, offset);
+						} else {
+							customization_category = NG_READ_32(gfScriptFile, offset);
+						}
 						switch (customization_category) {
 							// CUST_DISABLE_SCREAMING_HEAD	
 							case 0x0001: {
@@ -542,6 +554,47 @@ void NGLoaderHeader(char* gfScriptFile, unsigned int offset, unsigned int len) {
 						offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 						break;
 					}
+					case 0x15:
+						// TriggerGroup (legacy?)
+						// Older builds of TRNG seem to use this opcode for TriggerGroups. Not sure why it changed though.
+						if (get_game_mod_global_info().trng_version_minor < 3) {
+							// TriggerGroup (WIP)
+							unsigned short id = NG_READ_16(gfScriptFile, offset);
+
+							if (id > MAX_NG_TRIGGER_GROUPS) {
+								printf("TriggerGroup id is not valid!\n");
+								return;
+								// Broken
+							}
+
+							level_trigger_group_table[level_trigger_group_count].record_id = id;
+
+							unsigned char data_index = 0;
+							while (offset < data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short))) {
+								unsigned short first_field = NG_READ_16(gfScriptFile, offset);
+								// I assume this indicates the end of the command.
+								if (first_field == 0x0000) {
+									break;
+								}
+								unsigned short second_field = NG_READ_16(gfScriptFile, offset);
+								unsigned short third_field = NG_READ_16(gfScriptFile, offset);
+
+								level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].first_field = first_field;
+								level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].second_field = second_field;
+								level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].third_field = third_field;
+
+								data_index++;
+								if (data_index > NG_TRIGGER_GROUP_DATA_SIZE) {
+									printf("TriggerGroup size overflow!\n");
+									return;
+								}
+							}
+							level_trigger_group_count++;
+						} else {
+							printf("Encountered a legacy(?) TriggerGroup opcode in an TRNG 1.3+ level.\n");
+							offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+						}
+						break;
 					case 0x16: {
 						// Global Trigger
 						unsigned short id = NG_READ_16(gfScriptFile, offset);
@@ -671,6 +724,10 @@ void NGLoaderHeader(char* gfScriptFile, unsigned int offset, unsigned int len) {
 						unsigned char data_index = 0;
 						while (offset < data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short))) {
 							unsigned short first_field = NG_READ_16(gfScriptFile, offset);
+							// I assume this indicates the end of the command.
+							if (first_field == 0x0000) {
+								break;
+							}
 							unsigned short second_field = NG_READ_16(gfScriptFile, offset);
 							unsigned short third_field = NG_READ_16(gfScriptFile, offset);
 
@@ -699,6 +756,12 @@ void NGLoaderHeader(char* gfScriptFile, unsigned int offset, unsigned int len) {
 						break;
 					}
 				}
+				int command_block_end_position = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+
+				if (offset != command_block_end_position) {
+					printf("Command block size mismatch!\n");
+				}
+				offset = command_block_end_position;
 			}
 			// Now save the tables
 			NGReallocateLevel(ng_levels[current_level], level_global_trigger_count, level_trigger_group_count, level_organizer_count, level_item_group_count);
