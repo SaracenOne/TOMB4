@@ -124,9 +124,13 @@ bool disarm_lara(unsigned char remove_weapons_only, unsigned char _unusued) {
 }
 
 // NGLE - 118
-bool perform_triggergroup_from_script_in_specific_way(unsigned char trigger_group_id, unsigned char execution_type) {
-	if (execution_type != 1) {
-		printf("Unimplemented execution type!\n");
+bool perform_triggergroup_from_script_in_specific_way(unsigned char trigger_group_id, unsigned char execution_type, bool skip_checks) {
+	if (execution_type == 1 && !NGCheckFloorStatePressedThisFrameOrLastFrame() && !skip_checks) {
+		return false;
+	}
+
+	if (execution_type == 2) {
+		printf("TriggerGroup execution type 2 not implemented yet!");
 		return false;
 	}
 
@@ -136,11 +140,11 @@ bool perform_triggergroup_from_script_in_specific_way(unsigned char trigger_grou
 	while (index < NG_TRIGGER_GROUP_DATA_SIZE) {
 		// Flipeffect
 		if (trigger_group.data[index].first_field == 0x2000) {
-			result = NGFlipEffect(trigger_group.data[index].second_field, trigger_group.data[index].third_field & 0x7fff, false, true);
+			result = NGFlipEffect(ng_script_id_table[trigger_group.data[index].second_field], trigger_group.data[index].third_field & 0x7fff, false, true);
 		}
 		// ActionNG
 		else if (trigger_group.data[index].first_field == 0x5000) {
-			result = NGActionTrigger(trigger_group.data[index].second_field - 1, trigger_group.data[index].third_field & 0x7fff, true) != -1;
+			result = NGAction(ng_script_id_table[trigger_group.data[index].second_field], trigger_group.data[index].third_field & 0x7fff, true) != -1;
 		}
 		// End
 		else if (trigger_group.data[index].first_field == 0x0000) {
@@ -260,8 +264,8 @@ bool NGFlipEffect(unsigned short param, short extra, bool oneshot, bool skip_che
 			break;
 		}
 		case PERFORM_TRIGGERGROUP_FROM_SCRIPT_IN_SPECIFIC_WAY:
-			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFloorStatePressedThisFrameOrLastFrame())
-				return perform_triggergroup_from_script_in_specific_way(action_data_1, action_data_2);
+			if (skip_checks || !NGIsOneShotTriggeredForTile())
+				return perform_triggergroup_from_script_in_specific_way(action_data_1, action_data_2, skip_checks);
 			break;
 		case PLAY_CD_TRACK_ON_CHANNEL_2: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFloorStatePressedThisFrameOrLastFrame())

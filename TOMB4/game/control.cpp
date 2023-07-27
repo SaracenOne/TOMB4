@@ -46,6 +46,7 @@
 #include "../tomb4/mod_config.h"
 #include "trng/trng.h"
 #include "trng/trng_flipeffect.h"
+#include "trng/trng_extra_state.h"
 
 ITEM_INFO* items;
 ANIM_STRUCT* anims;
@@ -1015,7 +1016,7 @@ void TestTriggers(short* data, long heavy, long HeavyFlags)
 		case TO_BODYBAG:
 			if (NGUseNGActions()) {
 				trigger = *data++;
-				last_item = NGActionTrigger(value, (trigger & 0x7fff), false);
+				last_item = NGActionTrigger(value, (trigger & 0x7fff), timer);
 			}
 			break;
 		case TO_FLYBY:

@@ -4,7 +4,11 @@ enum NG_ACTION_TYPE {
 	FORCE_ANIMATION_0_TO_31_ON_ITEM = 15,
 	FORCE_ANIMATION_32_TO_63_ON_ITEM = 16,
 	FORCE_ANIMATION_64_TO_95_ON_ITEM = 17,
+	OPEN_OR_CLOSE_DOOR_ITEM = 26,
 	HURT_ENEMY = 38,
+	TRIGGER_MOVEABLE_ACTIVATE_WITH_TIMER = 43,
+	UNTRIGGER_MOVEABLE_ACTIVATE_WITH_TIMER = 44,
+	SHOW_TRIGGER_COUNTDOWN_TIMER_FOR_ENEMY = 52,
 	FREEZE_ENEMY_FOR_SECONDS = 58,
 	UNFREEZE_ENEMY_WITH_EFFECT = 59,
 	MOVE_ITEM_UP_BY_UNITS_X8 = 63,
@@ -15,4 +19,5 @@ enum NG_ACTION_TYPE {
 	MOVE_ITEM_SOUTH_BY_UNITS_X8 = 68,
 };
 
-extern void NGActionTrigger(unsigned short param, unsigned short extra);
+extern int NGActionTrigger(unsigned short param, unsigned short extra, bool skip_checks);
+extern int NGAction(unsigned short param, unsigned short extra, bool skip_checks);

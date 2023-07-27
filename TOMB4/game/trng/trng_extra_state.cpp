@@ -1,17 +1,31 @@
 #include "../../tomb4/pch.h"
 
+#include "../../global/types.h"
 #include "../../specific/function_stubs.h"
+#include "../../specific/3dmath.h"
 #include "../control.h"
 #include "../effects.h"
 #include "../objects.h"
 #include "../lara.h"
 #include "../tomb4fx.h"
+#include "../text.h"
 #include "trng.h"
 #include "trng_extra_state.h"
 
 unsigned int ng_room_offset_table[0xff];
 
+struct NG_ITEM_EXTRADATA {
+	short frozen_ticks = 0;
+};
+
 NG_ITEM_EXTRADATA *ng_items_extradata = NULL;
+
+// TODO: In the original, there's some behaviour which allows multiple timers to run
+// at once, displaying the last activated on until it runs out. Needs investigation.
+#define TIMER_TRACKER_TIMEOUT 30
+NGTimerTrackerType timer_tracker_type = TTT_ONLY_SHOW_SECONDS;
+int timer_tracker = -1;
+int timer_tracker_remaining_until_timeout = TIMER_TRACKER_TIMEOUT;
 
 int ng_cinema_timer = -1;
 int ng_cinema_type = 0;
@@ -91,6 +105,7 @@ bool NGIsOneShotTriggeredForTile() {
 	return result;
 }
 
+// This method is not accurate since it seems like rollingballs can interrupted the check.
 bool NGCheckFloorStatePressedThisFrameOrLastFrame() {
 	int index = ng_room_offset_table[current_ng_trigger_room] + current_ng_trigger_index;
 
@@ -252,6 +267,48 @@ void NGFrameStartUpdate() {
 			ng_input_lock_timers[i] -= 1;
 		}
 	}
+
+}
+
+void NGDrawPhase() {
+	if (timer_tracker >= 0) {
+		if (items[timer_tracker].timer > 0) {
+			timer_tracker_remaining_until_timeout = TIMER_TRACKER_TIMEOUT;
+		} else {
+			timer_tracker_remaining_until_timeout--;
+		}
+
+		if (timer_tracker_remaining_until_timeout > 0) {
+			char format_buffer[64];
+			int remainder = items[timer_tracker].timer % 30;
+			int seconds = items[timer_tracker].timer / 30;
+
+			switch (timer_tracker_type) {
+				case TTT_ONLY_SHOW_SECONDS:
+					sprintf(format_buffer, "%d", seconds);
+					break;
+				case TTT_SECONDS_AND_ONE_DECIMAL_POINT_SEPERATOR:
+					sprintf(format_buffer, "%d.%01d", seconds, remainder);
+					break;
+				case TTT_SECONDS_AND_TWO_DECIMAL_POINT_SEPERATOR:
+					sprintf(format_buffer, "%d.%02d", seconds, remainder);
+					break;
+				case TTT_SECONDS_AND_ONE_DECIMAL_COLON_SEPERATOR:
+					sprintf(format_buffer, "%d:%01d", seconds, remainder);
+					break;
+				case TTT_SECONDS_AND_TWO_DECIMAL_COLON_SEPERATOR:
+					sprintf(format_buffer, "%d:%02d", seconds, remainder);
+					break;
+				case TTT_SECONDS_WITH_THREE_NOUGHTS:
+					sprintf(format_buffer, "%03d", seconds);
+					break;
+				default:
+					sprintf(format_buffer, "%d", items[timer_tracker].timer);
+					break;
+			}
+			PrintString(phd_centerx, phd_winymax - font_height * 0.25, 0, format_buffer, FF_CENTER);
+		}
+	}
 }
 
 bool NGIsItemFrozen(unsigned int item_num) {
@@ -277,6 +334,12 @@ void NGSetCinemaTypeAndTimer(int type, int ticks) {
 	ng_cinema_timer = ticks;
 }
 
+void NGSetDisplayTimerForMoveableWithType(int item_id, NGTimerTrackerType new_timer_tracker_type) {
+	timer_tracker = item_id;
+	timer_tracker_type = new_timer_tracker_type;
+	timer_tracker_remaining_until_timeout = TIMER_TRACKER_TIMEOUT;
+}
+
 void NGUpdateFloorstateData(bool update_oneshot) {
 	int index = ng_room_offset_table[current_ng_trigger_room] + current_ng_trigger_index;
 
@@ -288,6 +351,10 @@ void NGUpdateFloorstateData(bool update_oneshot) {
 }
 
 void NGSetupExtraState() {
+	timer_tracker_type = TTT_ONLY_SHOW_SECONDS;
+	timer_tracker = -1;
+	timer_tracker_remaining_until_timeout = TIMER_TRACKER_TIMEOUT;
+
 	ng_items_extradata = (NG_ITEM_EXTRADATA*)game_malloc(ITEM_COUNT * sizeof(NG_ITEM_EXTRADATA));
 	memset(ng_items_extradata, 0x00, ITEM_COUNT * sizeof(NG_ITEM_EXTRADATA));
 

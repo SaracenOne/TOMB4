@@ -9,24 +9,6 @@ enum NG_DEGREES {
 	DEGREES_360
 };
 
-enum NG_ACTION_TYPE {
-	TURN_ANIMATING_CLOCKWISE_BY_DEGREES = 1,
-	PERFORM_FLIPEFFECT_ON_ITEM = 13,
-	FORCE_ANIMATION_0_TO_31_ON_ITEM = 15,
-	FORCE_ANIMATION_32_TO_63_ON_ITEM = 16,
-	FORCE_ANIMATION_64_TO_95_ON_ITEM = 17,
-	OPEN_OR_CLOSE_DOOR_ITEM = 26,
-	HURT_ENEMY = 38,
-	FREEZE_ENEMY_FOR_SECONDS = 58,
-	UNFREEZE_ENEMY_WITH_EFFECT = 59,
-	MOVE_ITEM_UP_BY_UNITS_X8 = 63,
-	MOVE_ITEM_DOWN_BY_UNITS_X8 = 64,
-	MOVE_ITEM_WEST_BY_UNITS_X8 = 65,
-	MOVE_ITEM_NORTH_BY_UNITS_X8 = 66,
-	MOVE_ITEM_EAST_BY_UNITS_X8 = 67,
-	MOVE_ITEM_SOUTH_BY_UNITS_X8 = 68,
-};
-
 enum NG_DIRECTIONS
 {
 	NG_NORTH,
@@ -37,6 +19,13 @@ enum NG_DIRECTIONS
 	NG_DOWN
 };
 
+extern bool is_ngle_level;
+
+#define NG_SCRIPT_ID_TABLE_SIZE 8192
+extern short ng_script_id_table[NG_SCRIPT_ID_TABLE_SIZE];
+
+extern void NGLoadInfo(FILE* level_fp);
+
 extern void NGStorePendingRoomNumber(int room_number);
 extern int NGRestorePendingRoomNumber();
 extern void NGUpdateCurrentTriggerRoomAndIndex(int new_room, int new_index);
@@ -44,11 +33,13 @@ extern void NGClearCurrentTriggerRoomAndIndex();
 extern void NGStoreBackupTriggerRoomAndIndex();
 extern void NGRestoreBackupTriggerRoomAndIndex();
 
-extern int NGActionTrigger(unsigned short param, unsigned short extra, bool skip_checks);
+extern int NGAction(unsigned short param, unsigned short extra, bool first_frame);
+extern int NGActionTrigger(unsigned short param, unsigned short extra, unsigned short timer);
 extern void NGSetup();
 
 extern void NGItemUpdate(unsigned int item_num);
 extern void NGFrameStartUpdate();
+extern void NGDrawPhase();
 
 extern bool NGIsItemFrozen(unsigned int item_num);
 

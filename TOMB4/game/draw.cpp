@@ -27,6 +27,8 @@
 #include "lara.h"
 #include "gameflow.h"
 
+#include "trng/trng_extra_state.h"
+
 static BITE_INFO EnemyBites[2] =
 {
 	{0, -40, 272, 7},
@@ -969,6 +971,9 @@ long DrawPhaseGame()
 	SetLaraUnderwaterNodes();
 	DrawRooms(camera.pos.room_number);
 	DrawGameInfo(1);
+
+	NGDrawPhase(); // TRNG
+
 	S_OutputPolyList();
 	camera.number_frames = S_DumpScreen();
 	S_AnimateTextures(camera.number_frames);
