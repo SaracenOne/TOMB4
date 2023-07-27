@@ -13,6 +13,44 @@
 
 // FlipEffects
 
+bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char execution_type, bool skip_checks) {
+	if (execution_type == 1 && !NGCheckFloorStatePressedThisFrameOrLastFrame() && !skip_checks) {
+		return false;
+	}
+
+	if (execution_type == 2) {
+		printf("TriggerGroup execution type 2 not implemented yet!");
+		return false;
+	}
+
+	NG_TRIGGER_GROUP& trigger_group = current_trigger_groups[trigger_group_id];
+	int index = 0;
+	bool result;
+	while (index < NG_TRIGGER_GROUP_DATA_SIZE) {
+		// Flipeffect
+		if (trigger_group.data[index].first_field == 0x2000) {
+			result = NGFlipEffect(trigger_group.data[index].second_field, trigger_group.data[index].third_field & 0x7fff, false, true);
+		}
+		// ActionNG
+		else if (trigger_group.data[index].first_field == 0x5000) {
+			result = NGAction(ng_script_id_table[trigger_group.data[index].second_field], trigger_group.data[index].third_field & 0x7fff, true) != -1;
+		}
+		// End
+		else if (trigger_group.data[index].first_field == 0x0000) {
+			result = true;
+			break;
+		}
+		else {
+			printf("Unknown triggergroup command!\n");
+			result = false;
+			break;
+		}
+		index++;
+	}
+
+	return result;
+}
+
 // NGLE - 51
 bool disable_input_for_time(unsigned char input, unsigned char timer) {
 	NGDisableInputForTime(input, (int)timer * 30);
@@ -125,41 +163,7 @@ bool disarm_lara(unsigned char remove_weapons_only, unsigned char _unusued) {
 
 // NGLE - 118
 bool perform_triggergroup_from_script_in_specific_way(unsigned char trigger_group_id, unsigned char execution_type, bool skip_checks) {
-	if (execution_type == 1 && !NGCheckFloorStatePressedThisFrameOrLastFrame() && !skip_checks) {
-		return false;
-	}
-
-	if (execution_type == 2) {
-		printf("TriggerGroup execution type 2 not implemented yet!");
-		return false;
-	}
-
-	NG_TRIGGER_GROUP& trigger_group = current_trigger_groups[trigger_group_id];
-	int index = 0;
-	bool result;
-	while (index < NG_TRIGGER_GROUP_DATA_SIZE) {
-		// Flipeffect
-		if (trigger_group.data[index].first_field == 0x2000) {
-			result = NGFlipEffect(ng_script_id_table[trigger_group.data[index].second_field], trigger_group.data[index].third_field & 0x7fff, false, true);
-		}
-		// ActionNG
-		else if (trigger_group.data[index].first_field == 0x5000) {
-			result = NGAction(ng_script_id_table[trigger_group.data[index].second_field], trigger_group.data[index].third_field & 0x7fff, true) != -1;
-		}
-		// End
-		else if (trigger_group.data[index].first_field == 0x0000) {
-			result = true;
-			break;
-		}
-		else {
-			printf("Unknown triggergroup command!\n");
-			result = false;
-			break;
-		}
-		index++;
-	}
-
-	return result;
+	return NGTriggerGroupFunction(trigger_group_id, execution_type, skip_checks);
 }
 
 // NGLE - 129
@@ -217,6 +221,19 @@ bool camera_set_cinema_effect_type_for_seconds(unsigned char action_data_1, unsi
 
 	return true;
 }
+
+// NGLE - 371
+bool perform_triggergroup_from_script_in_single_execution_mode(unsigned char trigger_group_id_lower, unsigned char trigger_group_id_upper, bool skip_checks) {
+	unsigned short trigger_group_id = (trigger_group_id_upper << 8) | trigger_group_id_lower;
+	return NGTriggerGroupFunction(trigger_group_id, 0, skip_checks);
+}
+
+// NGLE - 372
+bool perform_triggergroup_from_script_in_multi_execution_mode(unsigned char trigger_group_id_lower, unsigned char trigger_group_id_upper, bool skip_checks) {
+	unsigned short trigger_group_id = (trigger_group_id_upper << 8) | trigger_group_id_lower;
+	return NGTriggerGroupFunction(trigger_group_id, 1, skip_checks);
+}
+
 
 bool NGFlipEffect(unsigned short param, short extra, bool oneshot, bool skip_checks) {
 	char action_data_1 = (char)extra & 0xff;
@@ -287,6 +304,14 @@ bool NGFlipEffect(unsigned short param, short extra, bool oneshot, bool skip_che
 				return camera_show_black_screen_for_seconds_with_final_curtain_effect(action_data_1, action_data_2);
 			break;
 		}
+		case PERFORM_TRIGGERGROUP_FROM_SCRIPT_IN_SINGLE_EXECUTION:
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFloorStatePressedThisFrameOrLastFrame())
+				return perform_triggergroup_from_script_in_single_execution_mode(action_data_1, action_data_2, skip_checks);
+			break;
+		case PERFORM_TRIGGERGROUP_FROM_SCRIPT_IN_MULTI_EXECUTION:
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFloorStatePressedThisFrameOrLastFrame())
+				return perform_triggergroup_from_script_in_multi_execution_mode(action_data_1, action_data_2, skip_checks);
+			break;
 		case CAMERA_SET_CINEMA_EFFECT_TYPE_FOR_SECONDS: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFloorStatePressedThisFrameOrLastFrame())
 				return camera_set_cinema_effect_type_for_seconds(action_data_1, action_data_2);
