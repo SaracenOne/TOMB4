@@ -172,7 +172,7 @@ int NGValidateInputAgainstLockTimers(int input) {
 					input &= ~IN_PAUSE;
 					break;
 				default:
-					//printf("Invalid input type\n");
+					printf("Invalid input type\n");
 					break;
 			}
 		}

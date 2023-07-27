@@ -988,7 +988,7 @@ void TestTriggers(short* data, long heavy, long HeavyFlags)
 			break;
 
 		case TO_FLIPEFFECT:
-			if (value >= 47 && NGUseNGFlipEffects()) {
+			if (NGUseNGFlipEffects()) {
 				trigger = *data;
 				is_ng_oneshot = flags & IFL_INVISIBLE;
 				NGFlipEffect(value, (trigger & 0x7fff), is_ng_oneshot, false);

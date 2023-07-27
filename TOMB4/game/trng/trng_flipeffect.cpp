@@ -318,8 +318,17 @@ bool NGFlipEffect(unsigned short param, short extra, bool oneshot, bool skip_che
 			break;
 		}
 		default: {
-			printf("Unimplemented NGFlipEffect %u\n", param);
-			return false;
+			if (param < 47) {
+				if (skip_checks || !NGIsOneShotTriggeredForTile()) {
+					char original_trigger_timer = TriggerTimer;
+					TriggerTimer = action_data_1;
+					effect_routines[param](0);
+					TriggerTimer = original_trigger_timer;
+				}
+			} else {
+				printf("Unimplemented NGFlipEffect %u\n", param);
+				return false;
+			}
 		}
 	}
 
