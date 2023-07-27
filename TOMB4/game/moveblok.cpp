@@ -79,7 +79,7 @@ void InitialiseMovingBlock(short item_number)
 	MOD_GLOBAL_INFO global_info = get_game_mod_global_info();
 	// TRNG
 	int climbable_block_height = 0;
-	if (global_info.trng_pushable_extended_ocb) {
+	if (global_info.trng_pushable_extended_ocb && item->trigger_flags & 0x40) {
 		climbable_block_height = item->trigger_flags & 0xf;
 	// TREP
 	} else if (global_info.trep_pushable_extended_ocb) {
@@ -315,7 +315,7 @@ void MovableBlock(short item_number)
 	MOD_GLOBAL_INFO global_info = get_game_mod_global_info();
 	// TRNG
 	int climbable_block_height = 0;
-	if (global_info.trng_pushable_extended_ocb) {
+	if (global_info.trng_pushable_extended_ocb && item->trigger_flags & 0x40) {
 		climbable_block_height = item->trigger_flags & 0xf;
 	// TREP
 	} else if (global_info.trep_pushable_extended_ocb) {
@@ -510,7 +510,7 @@ void MovableBlockCollision(short item_number, ITEM_INFO* laraitem, COLL_INFO* co
 
 	// TRNG
 	int climbable_block_height = 0;
-	if (global_info.trng_pushable_extended_ocb) {
+	if (global_info.trng_pushable_extended_ocb && item->trigger_flags & 0x40) {
 		climbable_block_height = item->trigger_flags & 0xf;
 	// TREP
 	} else if (global_info.trep_pushable_extended_ocb) {
