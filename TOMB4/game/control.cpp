@@ -1015,8 +1015,7 @@ void TestTriggers(short* data, long heavy, long HeavyFlags)
 		case TO_BODYBAG:
 			if (NGUseNGActions()) {
 				trigger = *data++;
-				last_item = value;
-				NGActionTrigger(value, (trigger & 0x7fff), false);
+				last_item = NGActionTrigger(value, (trigger & 0x7fff), false);
 			}
 			break;
 		case TO_FLYBY:

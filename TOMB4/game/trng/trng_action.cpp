@@ -50,7 +50,7 @@ void NGHurtEnemy(unsigned short item_id, unsigned short damage) {
 	}
 }
 
-void NGActionTrigger(unsigned short param, unsigned short extra, bool skip_checks) {
+int NGActionTrigger(unsigned short param, unsigned short extra, bool skip_checks) {
 	unsigned char action_type = (unsigned char)extra & 0xff;
 	unsigned char action_data = (unsigned char)(extra >> 8) & 0xff;
 
@@ -120,10 +120,15 @@ void NGActionTrigger(unsigned short param, unsigned short extra, bool skip_check
 
 				if (action_data) {
 					items[param].flags |= IFL_CODEBITS;
-					items[param].timer = 26 * 30;
 				} else {
 					items[param].flags &= ~IFL_CODEBITS;
 				}
+				// To recreate bug/feature of the original NGLE
+				if (!skip_checks) {
+					items[param].timer = OPEN_OR_CLOSE_DOOR_ITEM * 30;
+				}
+
+				return param;
 			}
 			break;
 		}
@@ -161,4 +166,6 @@ void NGActionTrigger(unsigned short param, unsigned short extra, bool skip_check
 			printf("Unimplemented NGTrigger %u\n", action_type);
 			break;
 		};
+
+	return -1;
 };

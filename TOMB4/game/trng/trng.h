@@ -44,7 +44,7 @@ extern void NGClearCurrentTriggerRoomAndIndex();
 extern void NGStoreBackupTriggerRoomAndIndex();
 extern void NGRestoreBackupTriggerRoomAndIndex();
 
-extern void NGActionTrigger(unsigned short param, unsigned short extra, bool skip_checks);
+extern int NGActionTrigger(unsigned short param, unsigned short extra, bool skip_checks);
 extern void NGSetup();
 
 extern void NGItemUpdate(unsigned int item_num);
