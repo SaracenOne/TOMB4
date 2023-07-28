@@ -108,6 +108,10 @@ static long TestBlockPush(ITEM_INFO* item, long height, ushort quadrant)
 	bool can_push_over_ledges = false;
 
 	if (global_info.trng_pushable_extended_ocb && item->trigger_flags & 0x40) {
+		if (item->trigger_flags & 0x100) { // TRNG: Pushing disabled
+			return 0;
+		}
+
 		can_push_over_ledges = item->trigger_flags & 0x20;
 	}
 
@@ -195,6 +199,15 @@ static long TestBlockPull(ITEM_INFO* item, long height, ushort quadrant)
 	ROOM_INFO* r;
 	long x, y, z, destx, destz, rx, rz, ignore;
 	short room_number;
+
+	// TRNG
+	MOD_GLOBAL_INFO global_info = get_game_mod_global_info();
+
+	if (global_info.trng_pushable_extended_ocb && item->trigger_flags & 0x40) {
+		if (item->trigger_flags & 0x80) { // TRNG: Pulling disabled
+			return 0;
+		}
+	}
 
 	itemlist = (ITEM_INFO**)&tsv_buffer[0];
 	destx = 0;
