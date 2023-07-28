@@ -102,6 +102,15 @@ static long TestBlockPush(ITEM_INFO* item, long height, ushort quadrant)
 	long x, y, z, rx, rz;
 	short room_number;
 
+	// TRNG
+	MOD_GLOBAL_INFO global_info = get_game_mod_global_info();
+	
+	bool can_push_over_ledges = false;
+
+	if (global_info.trng_pushable_extended_ocb && item->trigger_flags & 0x40) {
+		can_push_over_ledges = item->trigger_flags & 0x20;
+	}
+
 	x = item->pos.x_pos;
 	y = item->pos.y_pos;
 	z = item->pos.z_pos;
@@ -135,8 +144,13 @@ static long TestBlockPush(ITEM_INFO* item, long height, ushort quadrant)
 	if (r->floor[rx * r->x_size + rz].stopper)
 		return 0;
 
-	if (GetHeight(floor, x, y - 256, z) != y)
-		return 0;
+	if (can_push_over_ledges) {
+		if (GetHeight(floor, x, y - 256, z) < y)
+			return 0;
+	} else  {
+		if (GetHeight(floor, x, y - 256, z) != y)
+			return 0;
+	}
 
 	GetHeight(floor, x, y, z);
 
