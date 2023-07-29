@@ -132,6 +132,36 @@ void NGLoadInfo(FILE* level_fp) {
 	}
 }
 
+// Move the item in a direction by the number of units
+void NGMoveItemByUnits(unsigned short item_id, NG_DIRECTIONS direction, unsigned int units) {
+	switch (direction) {
+		case NG_NORTH: {
+			items[item_id].pos.z_pos += units;
+			return;
+		}
+		case NG_EAST: {
+			items[item_id].pos.x_pos += units;
+			return;
+		}
+		case NG_SOUTH: {
+			items[item_id].pos.z_pos -= units;
+			return;
+		}
+		case NG_WEST: {
+			items[item_id].pos.x_pos -= units;
+			return;
+		}
+		case NG_UP: {
+			items[item_id].pos.y_pos -= units;
+			return;
+		}
+		case NG_DOWN: {
+			items[item_id].pos.y_pos += units;
+			return;
+		}
+	}
+}
+
 void NGSetup() {
 	NGSetupExtraState();
 	NGLoadTablesForLevel(gfCurrentLevel);

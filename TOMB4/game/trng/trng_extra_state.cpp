@@ -16,6 +16,10 @@ unsigned int ng_room_offset_table[0xff];
 
 struct NG_ITEM_EXTRADATA {
 	short frozen_ticks = 0;
+	short move_north_south_timer = 0;
+	short move_east_west_timer = 0;
+	short move_up_down_timer = 0;
+
 };
 
 NG_ITEM_EXTRADATA *ng_items_extradata = NULL;
@@ -223,9 +227,40 @@ void NGEnableInput(unsigned char input) {
 	}
 }
 
-void NGItemUpdate(unsigned int item_num) {
-	if (ng_items_extradata[item_num].frozen_ticks > 0) {
-		ng_items_extradata[item_num].frozen_ticks--;
+void NGUpdateAllItems() {
+	for (int i = 0; i < ITEM_COUNT; i++) {
+		if (ng_items_extradata[i].frozen_ticks > 0) {
+			ng_items_extradata[i].frozen_ticks--;
+		}
+
+		const int SPEED_RATE = 32;
+
+		if (ng_items_extradata[i].move_north_south_timer > 0) {
+			NGMoveItemByUnits(i, NG_NORTH, SPEED_RATE);
+			ng_items_extradata[i].move_north_south_timer--;
+		}
+		else if (ng_items_extradata[i].move_north_south_timer < 0) {
+			NGMoveItemByUnits(i, NG_SOUTH, SPEED_RATE);
+			ng_items_extradata[i].move_north_south_timer++;
+		}
+
+		if (ng_items_extradata[i].move_east_west_timer > 0) {
+			NGMoveItemByUnits(i, NG_EAST, SPEED_RATE);
+			ng_items_extradata[i].move_east_west_timer--;
+		}
+		else if (ng_items_extradata[i].move_east_west_timer < 0) {
+			NGMoveItemByUnits(i, NG_WEST, SPEED_RATE);
+			ng_items_extradata[i].move_east_west_timer++;
+		}
+
+		if (ng_items_extradata[i].move_up_down_timer > 0) {
+			NGMoveItemByUnits(i, NG_UP, SPEED_RATE);
+			ng_items_extradata[i].move_up_down_timer--;
+		}
+		else if (ng_items_extradata[i].move_up_down_timer < 0) {
+			NGMoveItemByUnits(i, NG_DOWN, SPEED_RATE);
+			ng_items_extradata[i].move_up_down_timer++;
+		}
 	}
 }
 
@@ -321,6 +356,31 @@ bool NGIsItemFrozen(unsigned int item_num) {
 
 void NGSetItemFreezeTimer(unsigned int item_num, int ticks) {
 	ng_items_extradata[item_num].frozen_ticks = ticks;
+}
+
+//
+short NGGetItemNorthSouthTimer(unsigned int item_num) {
+	return ng_items_extradata[item_num].move_north_south_timer;
+}
+
+void NGSetItemNorthSouthTimer(unsigned int item_num, short timer) {
+	ng_items_extradata[item_num].move_north_south_timer = timer;
+}
+
+short NGGetItemEastWestTimer(unsigned int item_num) {
+	return ng_items_extradata[item_num].move_east_west_timer;
+}
+
+void NGSetItemEastWestTimer(unsigned int item_num, short timer) {
+	ng_items_extradata[item_num].move_east_west_timer = timer;
+}
+
+short NGGetItemUpDownTimer(unsigned int item_num) {
+	return ng_items_extradata[item_num].move_up_down_timer;
+}
+
+void NGSetItemUpDownTimer(unsigned int item_num, short timer) {
+	ng_items_extradata[item_num].move_up_down_timer = timer;
 }
 
 void NGSetCurtainTimer(int ticks) {

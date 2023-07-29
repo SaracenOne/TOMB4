@@ -27,6 +27,14 @@ extern void NGEnableInput(unsigned char input);
 
 extern bool NGIsItemFrozen(unsigned int item_num);
 extern void NGSetItemFreezeTimer(unsigned int item_num, int ticks);
+
+extern short NGGetItemNorthSouthTimer(unsigned int item_num);
+extern void NGSetItemNorthSouthTimer(unsigned int item_num, short timer);
+extern short NGGetItemEastWestTimer(unsigned int item_num);
+extern void NGSetItemEastWestTimer(unsigned int item_num, short timer);
+extern short NGGetItemUpDownTimer(unsigned int item_num);
+extern void NGSetItemUpDownTimer(unsigned int item_num, short timer);
+
 extern void NGSetCurtainTimer(int ticks);
 extern void NGSetCinemaTypeAndTimer(int type, int ticks);
 

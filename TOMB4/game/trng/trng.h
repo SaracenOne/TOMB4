@@ -33,11 +33,14 @@ extern void NGClearCurrentTriggerRoomAndIndex();
 extern void NGStoreBackupTriggerRoomAndIndex();
 extern void NGRestoreBackupTriggerRoomAndIndex();
 
+// Move the item in a direction by the number of units
+extern void NGMoveItemByUnits(unsigned short item_id, NG_DIRECTIONS direction, unsigned int units);
+
 extern int NGAction(unsigned short param, unsigned short extra, bool first_frame);
 extern int NGActionTrigger(unsigned short param, unsigned short extra, unsigned short timer);
 extern void NGSetup();
 
-extern void NGItemUpdate(unsigned int item_num);
+extern void NGUpdateAllItems();
 extern void NGFrameStartUpdate();
 extern void NGDrawPhase();
 

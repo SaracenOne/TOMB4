@@ -60,36 +60,6 @@ void NGItemActivator(int item_id, bool anti) {
 	}
 }
 
-// Move the item in a direction by the number of units
-void NGMoveItemByUnits(unsigned short item_id, NG_DIRECTIONS direction, unsigned int units) {
-	switch (direction) {
-		case NG_NORTH: {
-			items[item_id].pos.z_pos += units;
-			return;
-		}
-		case NG_EAST: {
-			items[item_id].pos.x_pos += units;
-			return;
-		}
-		case NG_SOUTH: {
-			items[item_id].pos.z_pos -= units;
-			return;
-		}
-		case NG_WEST: {
-			items[item_id].pos.x_pos += units;
-			return;
-		}
-		case NG_UP: {
-			items[item_id].pos.y_pos -= units;
-			return;
-		}
-		case NG_DOWN: {
-			items[item_id].pos.y_pos += units;
-			return;
-		}
-	}
-}
-
 void NGForceItemAnimation(unsigned short item_id, unsigned int animation) {
 	items[item_id].anim_number = objects[items[item_id].object_number].anim_index + animation;
 	items[item_id].frame_number = anims[items[item_id].anim_number].frame_base;
@@ -216,6 +186,48 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame) {
 			}
 			break;
 		}
+		case MOVE_ITEM_UP_FOR_CLICKS:
+			if (first_frame) {
+				if (NGGetItemUpDownTimer(param) == 0) {
+					NGSetItemUpDownTimer(param, (action_data + 1) * 8);
+				}
+			}
+			break;
+		case MOVE_ITEM_DOWN_FOR_CLICKS:
+			if (first_frame) {
+				if (NGGetItemUpDownTimer(param) == 0) {
+					NGSetItemUpDownTimer(param, (action_data + 1) * -8);
+				}
+			}
+			break;
+		case MOVE_ITEM_WEST_FOR_CLICKS:
+			if (first_frame) {
+				if (NGGetItemEastWestTimer(param) == 0) {
+					NGSetItemEastWestTimer(param, (action_data + 1) * -8);
+				}
+			}
+			break;
+		case MOVE_ITEM_SOUTH_FOR_CLICKS:
+			if (first_frame) {
+				if (NGGetItemNorthSouthTimer(param) == 0) {
+					NGSetItemNorthSouthTimer(param, (action_data + 1) * -8);
+				}
+			}
+			break;
+		case MOVE_ITEM_EAST_FOR_CLICKS:
+			if (first_frame) {
+				if (NGGetItemEastWestTimer(param) == 0) {
+					NGSetItemEastWestTimer(param, (action_data + 1) * 8);
+				}
+			}
+			break;
+		case MOVE_ITEM_NORTH_FOR_CLICKS:
+			if (first_frame) {
+				if (NGGetItemNorthSouthTimer(param) == 0) {
+					NGSetItemNorthSouthTimer(param, (action_data + 1) * 8);
+				}
+			}
+			break;
 		case MOVE_ITEM_UP_BY_UNITS_X8: {
 			if (first_frame)
 				NGMoveItemByUnits(param, NG_UP, 8 * ((action_data)+1));

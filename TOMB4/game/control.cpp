@@ -370,12 +370,12 @@ long ControlPhase(long nframes, long demo_mode)
 		InItemControlLoop = 1;
 		item_num = next_item_active;
 
+		NGUpdateAllItems(); // TRNG (should this go before or after the control update?)
+
 		while (item_num != -1)
 		{
 			item = &items[item_num];
 			nex = item->next_active;
-
-			NGItemUpdate(item_num); // TRNG (should this go before or after the control update?)
 
 			if (!NGIsItemFrozen(item_num)) { // TRNG
 				if (item->after_death < 128)
