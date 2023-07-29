@@ -267,8 +267,13 @@ void NGLoaderHeader(char* gfScriptFile, unsigned int offset, unsigned int len) {
 				switch (block_type) {
 					case 0x01: {
 						// AssignSlot (WIP)
-						unsigned short slot_a = NG_READ_16(gfScriptFile, offset);
-						unsigned int slot_b = NG_READ_32(gfScriptFile, offset);
+						unsigned int slot_a = NG_READ_16(gfScriptFile, offset);
+						unsigned int slot_b = 0;
+						if (get_game_mod_global_info().trng_version_minor < 3) {
+							slot_b = NG_READ_16(gfScriptFile, offset);
+						} else {
+							slot_b = NG_READ_32(gfScriptFile, offset);
+						}
 
 						break;
 					}
