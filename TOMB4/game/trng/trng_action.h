@@ -17,6 +17,8 @@ enum NG_ACTION_TYPE {
 	SHOW_TRIGGER_COUNTDOWN_TIMER_FOR_ENEMY = 52,
 	FREEZE_ENEMY_FOR_SECONDS = 58,
 	UNFREEZE_ENEMY_WITH_EFFECT = 59,
+	DISABLE_ITEM_COLLISION = 61,
+	ENABLE_ITEM_COLLISION = 62,
 	MOVE_ITEM_UP_BY_UNITS_X8 = 63,
 	MOVE_ITEM_DOWN_BY_UNITS_X8 = 64,
 	MOVE_ITEM_WEST_BY_UNITS_X8 = 65,
@@ -25,5 +27,5 @@ enum NG_ACTION_TYPE {
 	MOVE_ITEM_SOUTH_BY_UNITS_X8 = 68,
 };
 
-extern int NGActionTrigger(unsigned short param, unsigned short extra, bool skip_checks);
+extern int NGActionTrigger(unsigned short param, unsigned short extra, unsigned short timer);
 extern int NGAction(unsigned short param, unsigned short extra, bool skip_checks);

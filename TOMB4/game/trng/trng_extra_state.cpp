@@ -14,12 +14,14 @@
 
 unsigned int ng_room_offset_table[0xff];
 
+// NG_ITEM_EXTRADATA is persistent supllementary data used by TRNG triggers.
+// The state here can subseqeuently be serialized as additional data for savegames.
 struct NG_ITEM_EXTRADATA {
 	short frozen_ticks = 0;
+	bool collison_disabled = false; // Will only disable the ObjectCollision routine. Doors and enemies stll have collision.
 	short move_north_south_timer = 0;
 	short move_east_west_timer = 0;
 	short move_up_down_timer = 0;
-
 };
 
 NG_ITEM_EXTRADATA *ng_items_extradata = NULL;
@@ -381,6 +383,18 @@ short NGGetItemUpDownTimer(unsigned int item_num) {
 
 void NGSetItemUpDownTimer(unsigned int item_num, short timer) {
 	ng_items_extradata[item_num].move_up_down_timer = timer;
+}
+
+bool NGIsItemCollisionDisabled(unsigned int item_num) {
+	return ng_items_extradata[item_num].collison_disabled;
+}
+
+void NGDisableItemCollision(unsigned int item_num) {
+	ng_items_extradata[item_num].collison_disabled = true;
+}
+
+void NGEnableItemCollision(unsigned int item_num) {
+	ng_items_extradata[item_num].collison_disabled = false;
 }
 
 void NGSetCurtainTimer(int ticks) {

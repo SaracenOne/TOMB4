@@ -18,6 +18,8 @@
 #include "../specific/input.h"
 #include "lara.h"
 
+#include "trng/trng_extra_state.h"
+
 #include "../tomb4/mod_config.h"
 
 static short MovingBlockBounds[12] = { 0, 0, -256, 0, 0, 0, -1820, 1820, -5460, 5460, -1820, 1820 };

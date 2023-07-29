@@ -228,6 +228,14 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame) {
 				}
 			}
 			break;
+		case DISABLE_ITEM_COLLISION:
+			if (first_frame)
+				NGDisableItemCollision(param);
+			break;
+		case ENABLE_ITEM_COLLISION:
+			if (first_frame)
+				NGEnableItemCollision(param);
+			break;
 		case MOVE_ITEM_UP_BY_UNITS_X8: {
 			if (first_frame)
 				NGMoveItemByUnits(param, NG_UP, 8 * ((action_data)+1));
@@ -259,7 +267,8 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame) {
 			break;
 		}
 		default:
-			printf("Unimplemented NGTrigger %u\n", action_type);
+			if (first_frame)
+				printf("Unimplemented NGTrigger %u\n", action_type);
 			break;
 		};
 	return -1;

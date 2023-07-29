@@ -14,6 +14,7 @@
 #include "../specific/file.h"
 
 #include "trng/trng.h"
+#include "trng/trng_extra_state.h"
 
 static short StarGateBounds[24] =
 {
@@ -663,6 +664,10 @@ void ObjectCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 
 	item = &items[item_number];
 
+	if (NGIsItemCollisionDisabled(item_number)) {
+		return;
+	}
+
 	if (TestBoundsCollide(item, l, coll->radius) && TestCollision(item, l) && coll->enable_baddie_push)
 		ItemPushLara(item, l, coll, 0, 1);
 }
@@ -670,6 +675,11 @@ void ObjectCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 void ObjectCollisionNoBigPush(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 {
 	ITEM_INFO* item;
+
+	// TODO: check if TRNG allows disabling of this special collision routine.
+	if (NGIsItemCollisionDisabled(item_number)) {
+		return;
+	}
 
 	item = &items[item_number];
 

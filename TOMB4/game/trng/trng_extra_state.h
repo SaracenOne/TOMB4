@@ -35,6 +35,10 @@ extern void NGSetItemEastWestTimer(unsigned int item_num, short timer);
 extern short NGGetItemUpDownTimer(unsigned int item_num);
 extern void NGSetItemUpDownTimer(unsigned int item_num, short timer);
 
+extern bool NGIsItemCollisionDisabled(unsigned int item_num);
+extern void NGDisableItemCollision(unsigned int item_num);
+extern void NGEnableItemCollision(unsigned int item_num);
+
 extern void NGSetCurtainTimer(int ticks);
 extern void NGSetCinemaTypeAndTimer(int type, int ticks);
 
