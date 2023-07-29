@@ -790,12 +790,16 @@ void TestTriggers(short* data, long heavy, long HeavyFlags)
 			return;
 
 		case MONKEY:
-			state = lara_item->current_anim_state;
+			if (NGUseNGConditionals()) {
+				return;
+			} else {
+				state = lara_item->current_anim_state;
 
-			if (state >= AS_HANG2 && (state <= AS_MONKEY180 || state == AS_HANGTURNL || state == AS_HANGTURNR))
-				break;
+				if (state >= AS_HANG2 && (state <= AS_MONKEY180 || state == AS_HANGTURNL || state == AS_HANGTURNR))
+					break;
 
-			return;
+				return;
+			}
 		}
 	}
 

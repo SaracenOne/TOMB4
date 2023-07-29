@@ -292,7 +292,7 @@ enum trigger_types
 	ANTITRIGGER,
 	HEAVYSWITCH,
 	HEAVYANTITRIGGER,
-	MONKEY
+	MONKEY // TRNG - replaces this this with generic conditional triggers
 };
 
 enum trigobj_types

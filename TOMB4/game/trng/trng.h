@@ -50,6 +50,7 @@ extern void NGFrameFinish();
 
 extern void NGLoaderHeader(char* gfScriptFile, unsigned int offset, unsigned int len);
 
+extern bool NGUseNGConditionals();
 extern bool NGUseNGFlipEffects();
 extern bool NGUseNGActions();
 

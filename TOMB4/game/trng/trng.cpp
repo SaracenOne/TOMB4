@@ -12,6 +12,7 @@
 
 #include "../../tomb4/mod_config.h"
 
+bool ngle_footer_found = false;
 bool is_ngle_level = false;
 short ng_script_id_table[NG_SCRIPT_ID_TABLE_SIZE];
 
@@ -20,6 +21,7 @@ short ng_script_id_table[NG_SCRIPT_ID_TABLE_SIZE];
 
 void NGLoadInfo(FILE* level_fp) {
 	is_ngle_level = false;
+	ngle_footer_found = false;
 
 	memset(&ng_script_id_table, 0x00, NG_SCRIPT_ID_TABLE_SIZE * sizeof(short));
 
@@ -33,6 +35,7 @@ void NGLoadInfo(FILE* level_fp) {
 	fread(&ngle_offset, 1, sizeof(long), level_fp);
 
 	if (ngle_ident == NGLE_END_SIGNATURE) {
+		ngle_footer_found = true;
 		fseek(level_fp, -ngle_offset, SEEK_END);
 
 		unsigned short start_ident = 0;
@@ -171,16 +174,22 @@ void NGFrameFinish() {
 	NGFrameFinishExtraState();
 }
 
+bool NGUseNGConditionals() {
+	MOD_GLOBAL_INFO global_info = get_game_mod_global_info();
+
+	return global_info.trng_conditionals_enabled && ngle_footer_found;
+}
+
 bool NGUseNGFlipEffects() {
 	MOD_GLOBAL_INFO global_info = get_game_mod_global_info();
 
-	return global_info.trng_flipeffects_enabled;
+	return global_info.trng_flipeffects_enabled && ngle_footer_found;
 }
 
 bool NGUseNGActions() {
 	MOD_GLOBAL_INFO global_info = get_game_mod_global_info();
 
-	return global_info.trng_actions_enabled;
+	return global_info.trng_actions_enabled && ngle_footer_found;
 }
 
 void NGInit() {

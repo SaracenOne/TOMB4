@@ -96,6 +96,7 @@ struct MOD_GLOBAL_INFO {
 	unsigned char trng_version_build = 7;
 
 	bool trng_flipeffects_enabled = true; // TRNG (special TRNG flipeffects. Disable if conflicting with FURR)
+	bool trng_conditionals_enabled = true; // TRNG replaces monkeybar trigger type with customizable conditional conditional
 	bool trng_actions_enabled = true;
 	bool trng_rollingball_extended_ocb = true; // TRNG (moveable and regular trigger activation)
 	bool trng_statics_extended_ocb = true; // TRNG (touch inflicting poison)
