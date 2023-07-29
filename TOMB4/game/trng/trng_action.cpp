@@ -1,6 +1,7 @@
 #include "../../tomb4/pch.h"
 
 #include "../../specific/function_stubs.h"
+#include "../../specific/file.h"
 #include "../control.h"
 #include "../effects.h"
 #include "../objects.h"
@@ -58,6 +59,15 @@ void NGItemActivator(int item_id, bool anti) {
 		item->status = ITEM_INACTIVE;
 		item->flags &= ~IFL_CODEBITS;
 	}
+}
+
+int NGFindIndexForLaraStartPosWithMatchingOCB(unsigned int ocb) {
+	for (int i = 0; i < nAIObjects; i++) {
+		if (AIObjects[i].object_number == LARA_START_POS && ocb == AIObjects[i].trigger_flags);
+		return i;
+	}
+
+	return -1;
 }
 
 void NGForceItemAnimation(unsigned short item_id, unsigned int animation) {
@@ -132,6 +142,21 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame) {
 		case HURT_ENEMY: {
 			if (first_frame) {
 				NGHurtEnemy(param, action_data & 0x7f);
+			}
+			break;
+		}
+		case MOVE_ITEM_IMMEDIATELY_TO_LARA_START_POS_WITH_MATCHING_OCB_SETTINGS: {
+			if (first_frame) {
+				int lara_start_pos_id = NGFindIndexForLaraStartPosWithMatchingOCB(action_data & 0x7f);
+				if (lara_start_pos_id >= 0) {
+					AIOBJECT *ai = &AIObjects[lara_start_pos_id];
+					if (ai) {
+						items[param].pos.x_pos = ai->x;
+						items[param].pos.y_pos = ai->y;
+						items[param].pos.z_pos = ai->z;
+						items[param].pos.y_rot = ai->y_rot;
+					}
+				}
 			}
 			break;
 		}
