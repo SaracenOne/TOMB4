@@ -639,8 +639,12 @@ void ProcessMeshData(long num_meshes)
 			mesh->nVerts = mesh_ptr[5] & 0xFF;
 			lp = 0;
 
-			if (!mesh->nVerts) {
-				lp = mesh_ptr[5] >> 8;
+			// TREP polycount extensions do not allow for polycounts where the lower byte is 0x00.
+			// However, some of these values seem to work in TRNG. Not sure what's going on, so I'm
+			// hardcoding a check for 256 polycount for now, but may need to revisit if other
+			// numbers are encountered.
+			if (!mesh->nVerts && mesh_ptr[5] != 256) {
+				lp = (mesh_ptr[5] >> 8);
 			} else {
 				// TRLE: Add support for high vertex meshes. May allow some TREP and NGLE levels to load.
 				mesh->nVerts = mesh_ptr[5];
