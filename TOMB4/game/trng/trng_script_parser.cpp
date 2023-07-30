@@ -255,6 +255,8 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 
 				unsigned char block_type = NG_READ_8(gfScriptFile, offset);
 
+				int command_block_end_position = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+
 				if (offset >= level_block_end_pos) {
 					if (offset != level_block_end_pos) {
 						printf("Level block size mismatch!\n");
@@ -278,10 +280,40 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 
 						break;
 					}
+					case 0x02: {
+						// Snow
+						printf("Snow is not implemented!\n");
+						// Skip to the end
+						offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+						break;
+					}
+					case 0x03: {
+						// LevelFarView (WIP)
+						unsigned short level_far_view = NG_READ_16(gfScriptFile, offset);
+						break;
+					}
 					case 0x04: {
 						// FogRange (WIP)
 						unsigned short fog_start = NG_READ_16(gfScriptFile, offset);
 						unsigned short fog_end = NG_READ_16(gfScriptFile, offset);
+
+						break;
+					}
+					case 0x06: {
+						// Rain
+						printf("Rain is not implemented!\n");
+						// Skip to the end
+						offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+						break;
+					}
+					case 0x08: {
+						// Damage (WIP)
+						unsigned short damage_flags = NG_READ_16(gfScriptFile, offset);
+						unsigned short seconds_for_death = NG_READ_16(gfScriptFile, offset);
+						unsigned short seconds_for_bar_restore = NG_READ_16(gfScriptFile, offset);
+						unsigned int bar_color = NG_READ_32(gfScriptFile, offset);
+						unsigned short bar_name = NG_READ_16(gfScriptFile, offset);
+						unsigned short blink_percentage = NG_READ_16(gfScriptFile, offset);
 
 						break;
 					}
@@ -313,11 +345,58 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 
 						break;
 					}
+					case 0x0b: {
+						// MirrorEffect (WIP)
+						unsigned short in_front_room = NG_READ_16(gfScriptFile, offset);
+						unsigned short hidden_room = NG_READ_16(gfScriptFile, offset);
+						unsigned short mirror_type = NG_READ_16(gfScriptFile, offset);
+
+						// The rest of it should be an array of animatings:
+						while ((offset != command_block_end_position)) {
+							unsigned short animating_index = NG_READ_16(gfScriptFile, offset);
+						}
+						break;
+					}
+					case 0x0c: {
+						// Elevator
+						printf("Elevator is not implemented!\n");
+						// Skip to the end
+						offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+						break;
+					}
+					case 0x0d: {
+						// Keypad
+						printf("Keypad is not implemented!\n");
+						// Skip to the end
+						offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+						break;
+					}
+					case 0x0f: {
+						// Detector
+						printf("Detector is not implemented!\n");
+						// Skip to the end
+						offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+						break;
+					}
+					case 0x11: {
+						// TextureSequence
+						printf("TextureSequence is not implemented!\n");
+						// Skip to the end
+						offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+						break;
+					}
 					case 0x12: {
 						// Equipment (WIP)
 						unsigned short slot_item = NG_READ_16(gfScriptFile, offset);
 						unsigned short amount = NG_READ_16(gfScriptFile, offset);
 
+						break;
+					}
+					case 0x13: {
+						// MultiEnvCondition (WIP)
+						printf("MultiEnvCondition is not implemented!\n");
+						// Skip to the end
+						offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 						break;
 					}
 					case 0x14: {
@@ -331,6 +410,7 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 						switch (customization_category) {
 							// CUST_DISABLE_SCREAMING_HEAD	
 							case 0x0001: {
+								printf("CUST_DISABLE_SCREAMING_HEAD unimplemented!\n");
 								break;
 							}
 							// CUST_SET_SECRET_NUMBER	
@@ -357,11 +437,18 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 							}
 							// CUST_NEW_SOUND_ENGINE
 							case 0x0006: {
+								unsigned short new_sound_engine_flags = NG_READ_16(gfScriptFile, offset);
+								unsigned short sound_extension = NG_READ_16(gfScriptFile, offset); // Obsolete
+								unsigned short long_fade_out = NG_READ_16(gfScriptFile, offset);
+								unsigned short short_fade_out = NG_READ_16(gfScriptFile, offset);
+
 								printf("CUST_NEW_SOUND_ENGINE unimplemented!\n");
 								break;
 							}
 							// CUST_SHATTER_RANGE
 							case 0x0008: {
+								unsigned short first_static_as_shatter = NG_READ_16(gfScriptFile, offset);
+								unsigned short last_static_as_shatter = NG_READ_16(gfScriptFile, offset);
 								printf("CUST_SHATTER_RANGE unimplemented!\n");
 								break;
 							}
@@ -372,11 +459,29 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 							}
 							// CUST_AMMO
 							case 0x000a: {
+								unsigned short ammo_slot = NG_READ_16(gfScriptFile, offset);
+								unsigned short ammo_flags = NG_READ_16(gfScriptFile, offset);
+								unsigned short damage = NG_READ_16(gfScriptFile, offset);
+								unsigned short shots_for_box = NG_READ_16(gfScriptFile, offset);
+								unsigned short shots_with_weapon = NG_READ_16(gfScriptFile, offset);
+								unsigned short extra = NG_READ_16(gfScriptFile, offset);
+								unsigned short trigger_group_when_hit_enemy = NG_READ_16(gfScriptFile, offset);
+								unsigned short damage_for_explosion = NG_READ_16(gfScriptFile, offset);
+								unsigned short speed = NG_READ_16(gfScriptFile, offset);
+								unsigned short gravity = NG_READ_16(gfScriptFile, offset);
+								unsigned short id_add_effect_to_ammo = NG_READ_16(gfScriptFile, offset);
+								unsigned short id_trigger_group_at_end = NG_READ_16(gfScriptFile, offset);
 								printf("CUST_AMMO unimplemented!\n");
 								break;
 							}
 							// CUST_SHOW_AMMO_COUNTER
 							case 0x000b: {
+								unsigned short color = NG_READ_16(gfScriptFile, offset);
+								unsigned short format_flags = NG_READ_16(gfScriptFile, offset); // Obsolete
+								unsigned short blink_time = NG_READ_16(gfScriptFile, offset);
+								unsigned short size_character = NG_READ_16(gfScriptFile, offset);
+								unsigned short show_counter_flags = NG_READ_16(gfScriptFile, offset);
+
 								printf("CUST_SHOW_AMMO_COUNTER unimplemented!\n");
 								break;
 							}
@@ -402,6 +507,8 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 							}
 							// CUST_LOOK_TRASPARENT
 							case 0x0010: {
+								unsigned short is_enabled = NG_READ_16(gfScriptFile, offset);
+
 								printf("CUST_LOOK_TRASPARENT unimplemented!\n");
 								break;
 							}
@@ -565,8 +672,81 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 							}
 						}
 
+						int command_block_end_position = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+
+						if (offset != command_block_end_position) {
+							printf("Customize block size mismatch!\n");
+						}
+
 						// Skip to the end
 						offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+						break;
+					}
+					case 0x0e: {
+						// AddEffect
+						unsigned short id = NG_READ_16(gfScriptFile, offset);
+						unsigned short effect_type = NG_READ_16(gfScriptFile, offset); // Obsolete
+						unsigned short flags_effects = NG_READ_16(gfScriptFile, offset);
+						unsigned short joint_type = NG_READ_16(gfScriptFile, offset);
+						short disp_x = NG_READ_16(gfScriptFile, offset);
+						short disp_y = NG_READ_16(gfScriptFile, offset);
+						short disp_z = NG_READ_16(gfScriptFile, offset);
+						unsigned short durate_emit = NG_READ_16(gfScriptFile, offset);
+						unsigned short durate_pause = NG_READ_16(gfScriptFile, offset);
+
+						switch ((NG_ADD_EFFECT_TYPE)effect_type) {
+							case NG_ADD_MIST: {
+								if (offset == command_block_end_position)
+									break;
+								unsigned short size_of_mist_ball = NG_READ_16(gfScriptFile, offset);
+								if (offset == command_block_end_position)
+									break;
+								unsigned short number_of_mist_balls = NG_READ_16(gfScriptFile, offset);
+								if (offset == command_block_end_position)
+									break;
+								unsigned short color_of_mist = NG_READ_16(gfScriptFile, offset);
+								if (offset == command_block_end_position)
+									break;
+								unsigned short persistence_of_mist = NG_READ_16(gfScriptFile, offset);
+								if (offset == command_block_end_position)
+									break;
+								break;
+							}
+							case NG_ADD_LIGHT_BLINK:
+							case NG_ADD_LIGHT_FLAT:
+							case NG_ADD_LIGHT_GLOVE:
+							case NG_ADD_LIGHT_SPOT: {
+								if (offset == command_block_end_position)
+									break;
+								unsigned short light_intensity = NG_READ_16(gfScriptFile, offset);
+								if (offset == command_block_end_position)
+									break;
+								unsigned short maximum_spotlight_distance = NG_READ_16(gfScriptFile, offset);
+								if (offset == command_block_end_position)
+									break;
+								unsigned short light_color = NG_READ_16(gfScriptFile, offset);
+								if (offset == command_block_end_position)
+									break;
+								break;
+							}
+							case NG_ADD_FLAME: {
+								if (offset == command_block_end_position)
+									break;
+								unsigned short flame_intensity = NG_READ_16(gfScriptFile, offset);
+								if (offset == command_block_end_position)
+									break;
+								unsigned short lara_burn_settings = NG_READ_16(gfScriptFile, offset);
+								if (offset == command_block_end_position)
+									break;
+								unsigned short flame_direction = NG_READ_16(gfScriptFile, offset);
+								if (offset == command_block_end_position)
+									break;
+								unsigned short flame_unknown = NG_READ_16(gfScriptFile, offset);
+								if (offset == command_block_end_position)
+									break;
+								break;
+							}
+						}
 						break;
 					}
 					case 0x15:
@@ -703,6 +883,41 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 
 						break;
 					}
+					case 0x1b: {
+						// Parameters (WIP)
+						printf("Parameters is not implemented!\n");
+						// Skip to the end
+						offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+						break;
+					}
+					case 0x1c: {
+						// Turbo (WIP)
+						printf("Turbo is not implemented!\n");
+						// Skip to the end
+						offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+						break;
+					}
+					case 0x1d: {
+						// WindowTitle (WIP)
+						printf("WindowTitle is not implemented!\n");
+						// Skip to the end
+						offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+						break;
+					}
+					case 0x1e: {
+						// TestPosition (WIP)
+						printf("TestPosition is not implemented!\n");
+						// Skip to the end
+						offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+						break;
+					}
+					case 0x21: {
+						// Diary
+						printf("Diary is not implemented!\n");
+						// Skip to the end
+						offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+						break;
+					}
 					case 0x22: {
 						// Image
 						unsigned short image_command_id = NG_READ_16(gfScriptFile, offset);
@@ -717,11 +932,60 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 						
 						break;
 					}
+					case 0x23: {
+						// SavegamePanel
+						printf("SavegamePanel is not implemented!\n");
+						// Skip to the end
+						offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+						break;
+					}
+					case 0x25: {
+						// Switch
+						printf("Switch is not implemented!\n");
+						// Skip to the end
+						offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+						break;
+					}
 					case 0x26: {
 						// CombineItems
 						unsigned short first_item = NG_READ_16(gfScriptFile, offset);
 						unsigned short second_item = NG_READ_16(gfScriptFile, offset);
 						unsigned short final_item = NG_READ_16(gfScriptFile, offset);
+						break;
+					}
+					case 0x27: {
+						// Standby
+						printf("Standby is not implemented!\n");
+						// Skip to the end
+						offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+						break;
+					}
+					case 0x28: {
+						// AnimationSlot
+						printf("AnimationSlot is not implemented!\n");
+						// Skip to the end
+						offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+						break;
+					}
+					case 0x2a: {
+						// Demo
+						printf("Demo is not implemented!\n");
+						// Skip to the end
+						offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+						break;
+					}
+					case 0x2c: {
+						// LaraStartPos
+						printf("LaraStartPos is not implemented!\n");
+						// Skip to the end
+						offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+						break;
+					}
+					case 0x2d: {
+						// StaticMIP
+						printf("StaticMIP is not implemented!\n");
+						// Skip to the end
+						offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 						break;
 					}
 					case 0x2e: {
@@ -760,8 +1024,8 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 						break;
 					}
 					case 0xc9: {
-						// Unknown, ends the level block? (WIP)
-						unsigned short unk = NG_READ_16(gfScriptFile, offset);
+						// Level flags (?)
+						unsigned short flags = NG_READ_16(gfScriptFile, offset);
 						break;
 					}
 					default: {
@@ -771,8 +1035,6 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 						break;
 					}
 				}
-				int command_block_end_position = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
-
 				if (offset != command_block_end_position) {
 					printf("Command block size mismatch!\n");
 				}
