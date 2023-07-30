@@ -1120,8 +1120,9 @@ void TestTriggers(short* data, long heavy, long HeavyFlags)
 		fliptimer = 0;
 	}
 
-
-	NGUpdateFloorstateData(is_ng_oneshot);
+	if (!heavy) {
+		NGUpdateFloorstateData(is_ng_oneshot);
+	}
 }
 
 short GetDoor(FLOOR_INFO* floor)
