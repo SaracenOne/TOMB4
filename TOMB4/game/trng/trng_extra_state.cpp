@@ -42,10 +42,10 @@ int backup_ng_trigger_index = -1;
 int backup_ng_trigger_room = -1;
 int pending_ng_room = -1;
 
-int floorstate_data_size = 0;
+int ng_floorstate_data_size = 0;
 char* ng_oneshot_floorstate = NULL;
-char* ng_last_floorstate = NULL;
-char* ng_current_floorstate = NULL;
+int ng_last_floor_trigger = -1;
+int ng_current_floor_trigger = -1;
 
 enum TRNG_INPUT {
 	TRNG_INPUT_UP,
@@ -115,7 +115,7 @@ bool NGIsOneShotTriggeredForTile() {
 bool NGCheckFloorStatePressedThisFrameOrLastFrame() {
 	int index = ng_room_offset_table[current_ng_trigger_room] + current_ng_trigger_index;
 
-	if (ng_current_floorstate[index] || ng_last_floorstate[index])
+	if (ng_current_floor_trigger == index|| ng_last_floor_trigger == index)
 		return true;
 
 
@@ -421,7 +421,8 @@ void NGUpdateFloorstateData(bool update_oneshot) {
 	if (update_oneshot) {
 		ng_oneshot_floorstate[index] = true;
 	}
-	ng_current_floorstate[index] = true;
+	ng_current_floor_trigger = index;
+	ng_last_floor_trigger = index;
 }
 
 void NGSetupExtraState() {
@@ -435,24 +436,20 @@ void NGSetupExtraState() {
 	ng_cinema_timer = -1;
 	ng_cinema_type = 0;
 
-	floorstate_data_size = 0;
+	ng_floorstate_data_size = 0;
 	for (int i = 0; i < number_rooms; i++) {
-		ng_room_offset_table[i] = floorstate_data_size;
-		floorstate_data_size += room[i].x_size * room[i].y_size;
+		ng_room_offset_table[i] = ng_floorstate_data_size;
+		ng_floorstate_data_size += room[i].x_size * room[i].y_size;
 	}
 
-	ng_oneshot_floorstate = (char*)game_malloc(floorstate_data_size);
-	ng_last_floorstate = (char*)game_malloc(floorstate_data_size);
-	ng_current_floorstate = (char*)game_malloc(floorstate_data_size);
+	ng_oneshot_floorstate = (char*)game_malloc(ng_floorstate_data_size);
 
-	memset(ng_oneshot_floorstate, 0x00, floorstate_data_size);
-	memset(ng_last_floorstate, 0x00, floorstate_data_size);
-	memset(ng_current_floorstate, 0x00, floorstate_data_size);
+	memset(ng_oneshot_floorstate, 0x00, ng_floorstate_data_size);
 
 	memset(ng_input_lock_timers, 0x00, sizeof(ng_input_lock_timers));
 }
 
 void NGFrameFinishExtraState() {
-	memcpy(ng_last_floorstate, ng_current_floorstate, floorstate_data_size);
-	memset(ng_current_floorstate, 0x00, floorstate_data_size);
+	ng_last_floor_trigger = ng_current_floor_trigger;
+	ng_current_floor_trigger = -1;
 }
