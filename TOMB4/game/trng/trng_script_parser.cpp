@@ -150,24 +150,25 @@ extern void NGScriptCleanup() {
 	}
 }
 
-void NGLoaderHeader(char* gfScriptFile, unsigned int offset, unsigned int len) {
+void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int len) {
 	bool ng_header_found = false;
 
-	while (offset < len) {
-		char* ptr = gfScriptFile + offset;
-
-		if (ptr[0] == 0x00) {
-			if (offset < len - 3) {
-				if (ptr[1] == 'N' && ptr[2] == 'G') {
-					offset += 3;
-					ng_header_found = true;
-					break;
-				}
-			}
-		}
-
-		offset++;
+	unsigned int footer_ident = NG_READ_32(gfScriptFile, offset);
+	if (footer_ident != 0x454c474e) { // NGLE
+		return;
 	}
+
+	unsigned int footer_offset = NG_READ_32(gfScriptFile, offset);
+	offset -= footer_offset;
+
+	unsigned short header_ident = NG_READ_16(gfScriptFile, offset);
+	if (header_ident != 0x474e) { // NGLE
+		return;
+	}
+
+	ng_header_found = true;
+
+	//offset += 3;
 
 	if (ng_header_found) {
 		unsigned int options_header_block_start_position = offset;

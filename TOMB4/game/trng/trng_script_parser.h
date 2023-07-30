@@ -31,8 +31,8 @@ struct NG_TRIGGER_GROUP_RECORD {
 };
 
 struct NG_ORGANIZER_APPOINTMENT {
-	unsigned int time;
-	unsigned short trigger_group;
+	unsigned int time = 0;
+	unsigned short trigger_group = 0;
 };
 
 #define NG_ORGANIZER_MAX_APPOINTMENTS 4096
@@ -85,4 +85,4 @@ extern NG_ITEM_GROUP current_item_groups[MAX_NG_ITEM_GROUPS];
 extern void NGInitLevelArray();
 extern void NGLoadTablesForLevel(unsigned int level);
 extern void NGScriptCleanup();
-extern void NGLoaderHeader(char* gfScriptFile, unsigned int offset, unsigned int len);
+extern void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int len);
