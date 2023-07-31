@@ -56,7 +56,11 @@ void GameClose()
 	free(gfLanguageFile);
 }
 
+#ifdef USE_SDL
+int GameMain(void* ptr)
+#else
 unsigned int __stdcall GameMain(void* ptr)
+#endif
 {
 	Log(2, "GameMain");
 

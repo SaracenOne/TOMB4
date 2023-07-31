@@ -40,9 +40,11 @@ DXINFO* G_dxinfo;
 LPDIRECTDRAWX G_ddraw;
 LPDIRECT3DX G_d3d;
 HWND G_hwnd;
+#ifdef USE_SDL
+const Uint8 *keymap;
+#else 
 char keymap[256];
-
-static char keymap2[256];
+#endif
 
 void DXBitMask2ShiftCnt(ulong mask, uchar* shift, uchar* count)
 {
@@ -59,6 +61,21 @@ void DXBitMask2ShiftCnt(ulong mask, uchar* shift, uchar* count)
 	*count = i;
 }
 
+#ifdef USE_SDL
+#include <SDL.h>
+#endif
+
+#if USE_SDL
+const Uint8 *DXReadKeyboard(const Uint8* KeyMap)
+{
+	SDL_PumpEvents();
+
+	const Uint8* sdl_keymap = SDL_GetKeyboardState(NULL);
+
+	KeyMap = sdl_keymap;
+
+	return KeyMap;
+#else
 void DXReadKeyboard(char* KeyMap)
 {
 	HRESULT state;
@@ -72,6 +89,7 @@ void DXReadKeyboard(char* KeyMap)
 
 		G_dxptr->Keyboard->GetDeviceState(256, KeyMap);
 	}
+#endif
 }
 
 long DXAttempt(HRESULT r)
@@ -578,8 +596,9 @@ void DXInitKeyboard(HWND hwnd, HINSTANCE hinstance)
 	DXAttempt(G_dxptr->Keyboard->SetCooperativeLevel(hwnd, DISCL_NONEXCLUSIVE | DISCL_BACKGROUND));
 	DXAttempt(G_dxptr->Keyboard->SetDataFormat(&c_dfDIKeyboard));
 	DXAttempt(G_dxptr->Keyboard->Acquire());
+#ifndef USE_SDL
 	memset(keymap, 0, sizeof(keymap));
-	memset(keymap2, 0, sizeof(keymap2));
+#endif
 }
 
 void DXSaveScreen(LPDIRECTDRAWSURFACEX surf, const char* name)

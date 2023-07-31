@@ -1,7 +1,11 @@
 #pragma once
 #include "../global/types.h"
 
+#ifdef USE_SDL
+int LoadLevel(void* name);
+#else
 unsigned int __stdcall LoadLevel(void* name);
+#endif
 long S_LoadLevelFile(long num);
 void FreeLevel();
 bool FindCDDrive();

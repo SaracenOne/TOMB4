@@ -3,6 +3,10 @@
 
 #pragma pack(push, 1)
 
+#ifdef USE_SDL
+#include <SDL.h>
+#endif
+
 /*math*/
 #define SQUARE(x) ((x)*(x))
 #define	TRIGMULT2(a,b)		(((a) * (b)) >> W2V_SHIFT)
@@ -1649,8 +1653,12 @@ struct THREAD
 	volatile long active;
 	long unk;
 	volatile long ended;
+#ifdef USE_SDL
+	SDL_Thread* handle;
+#else
 	ulong handle;
 	ulong address;
+#endif
 };
 
 struct DRIP_STRUCT

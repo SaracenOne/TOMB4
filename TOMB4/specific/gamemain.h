@@ -2,7 +2,11 @@
 #include "../global/types.h"
 
 void GameClose();
+#ifdef USE_SDL
+int GameMain(void* ptr);
+#else
 unsigned int __stdcall GameMain(void* ptr);
+#endif
 ushort GetRandom(WATERTAB* wt, long lp);
 void init_water_table();
 bool GameInitialise();

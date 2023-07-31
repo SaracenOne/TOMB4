@@ -53,7 +53,11 @@ static char* FileData;
 static char* CompressedData;
 static long num_items;
 
+#ifdef USE_SDL
+int LoadLevel(void* name)
+#else
 unsigned int __stdcall LoadLevel(void* name)
+#endif
 {
 	OBJECT_INFO* obj;
 	TEXTURESTRUCT* tex;
@@ -181,8 +185,17 @@ long S_LoadLevelFile(long num)
 	strcat(name, ".TR4");
 	LevelLoadingThread.active = 1;
 	LevelLoadingThread.ended = 0;
+#ifdef USE_SDL
+	LevelLoadingThread.handle = SDL_CreateThread(LoadLevel, "LoadLevel", name);
+	if (LevelLoadingThread.handle == NULL) {
+		printf("SDL_CreateThread failed: %s\n", SDL_GetError());
+		return -1;
+	}
+#else
 	LevelLoadingThread.handle = _beginthreadex(0, 0, &LoadLevel, name, 0, (unsigned int*)&LevelLoadingThread.address);
-	while (LevelLoadingThread.active);
+#endif
+
+	while (LevelLoadingThread.active) {};
 	return 1;
 }
 

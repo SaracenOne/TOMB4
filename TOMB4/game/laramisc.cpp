@@ -33,7 +33,11 @@ void LaraCheatyBits()
 		return;
 
 #ifdef _DEBUG
+#ifdef USE_SDL
+	if (keymap[SDL_SCANCODE_F1])
+#else
 	if (keymap[DIK_F1])
+#endif
 	{
 		lara.num_large_medipack = -1;
 		lara.num_small_medipack = -1;
@@ -69,9 +73,17 @@ void LaraCheatyBits()
 #endif
 
 #ifdef _DEBUG
+#ifdef USE_SDL
+	if (keymap[SDL_SCANCODE_F2])
+#else
 	if (keymap[DIK_F2])
+#endif
+#else
+#ifdef USE_SDL
+	if (keymap[SDL_SCANCODE_D] && keymap[SDL_SCANCODE_O] && keymap[SDL_SCANCODE_Z] && keymap[SDL_SCANCODE_Y])
 #else
 	if (keymap[DIK_D] && keymap[DIK_O] && keymap[DIK_Z] && keymap[DIK_Y])
+#endif
 #endif
 	{
 		if (lara.vehicle != NO_ITEM)
@@ -98,7 +110,11 @@ void LaraCheatyBits()
 	}
 
 #ifdef _DEBUG
+#ifdef USE_SDL
+	if (keymap[SDL_SCANCODE_F3])
+#else
 	if (keymap[DIK_F3])
+#endif
 	{
 		if (gfCurrentLevel == 2 || gfCurrentLevel == 6 || gfCurrentLevel == 13 || gfCurrentLevel == 21 || gfCurrentLevel == 27)
 			skipped_level = 1;

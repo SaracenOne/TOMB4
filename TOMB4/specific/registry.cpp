@@ -208,58 +208,58 @@ bool LoadSettings()
 	OpenRegistry("Game");
 
 	REG_ReadLong((char*)"Key0", key, layout[0][0]);
-	layout[1][0] = (short)key;
+	layout[1][0] = (short)convert_tomb_keycode_to_sdl_scancode(key);
 
 	REG_ReadLong((char*)"Key1", key, layout[0][1]);
-	layout[1][1] = (short)key;
+	layout[1][1] = (short)convert_tomb_keycode_to_sdl_scancode(key);
 
 	REG_ReadLong((char*)"Key2", key, layout[0][2]);
-	layout[1][2] = (short)key;
+	layout[1][2] = (short)convert_tomb_keycode_to_sdl_scancode(key);
 
 	REG_ReadLong((char*)"Key3", key, layout[0][3]);
-	layout[1][3] = (short)key;
+	layout[1][3] = (short)convert_tomb_keycode_to_sdl_scancode(key);
 
 	REG_ReadLong((char*)"Key4", key, layout[0][4]);
-	layout[1][4] = (short)key;
+	layout[1][4] = (short)convert_tomb_keycode_to_sdl_scancode(key);
 
 	REG_ReadLong((char*)"Key5", key, layout[0][5]);
-	layout[1][5] = (short)key;
+	layout[1][5] = (short)convert_tomb_keycode_to_sdl_scancode(key);
 
 	REG_ReadLong((char*)"Key6", key, layout[0][6]);
-	layout[1][6] = (short)key;
+	layout[1][6] = (short)convert_tomb_keycode_to_sdl_scancode(key);
 
 	REG_ReadLong((char*)"Key7", key, layout[0][7]);
-	layout[1][7] = (short)key;
+	layout[1][7] = (short)convert_tomb_keycode_to_sdl_scancode(key);
 
 	REG_ReadLong((char*)"Key8", key, layout[0][8]);
-	layout[1][8] = (short)key;
+	layout[1][8] = (short)convert_tomb_keycode_to_sdl_scancode(key);
 
 	REG_ReadLong((char*)"Key9", key, layout[0][9]);
-	layout[1][9] = (short)key;
+	layout[1][9] = (short)convert_tomb_keycode_to_sdl_scancode(key);
 
 	REG_ReadLong((char*)"Key10", key, layout[0][10]);
-	layout[1][10] = (short)key;
+	layout[1][10] = (short)convert_tomb_keycode_to_sdl_scancode(key);
 
 	REG_ReadLong((char*)"Key11", key, layout[0][11]);
-	layout[1][11] = (short)key;
+	layout[1][11] = (short)convert_tomb_keycode_to_sdl_scancode(key);
 
 	REG_ReadLong((char*)"Key12", key, layout[0][12]);
-	layout[1][12] = (short)key;
+	layout[1][12] = (short)convert_tomb_keycode_to_sdl_scancode(key);
 
 	REG_ReadLong((char*)"Key13", key, layout[0][13]);
-	layout[1][13] = (short)key;
+	layout[1][13] = (short)convert_tomb_keycode_to_sdl_scancode(key);
 
 	REG_ReadLong((char*)"Key14", key, layout[0][14]);
-	layout[1][14] = (short)key;
+	layout[1][14] = (short)convert_tomb_keycode_to_sdl_scancode(key);
 
 	REG_ReadLong((char*)"Key15", key, layout[0][15]);
-	layout[1][15] = (short)key;
+	layout[1][15] = (short)convert_tomb_keycode_to_sdl_scancode(key);
 
 	REG_ReadLong((char*)"Key16", key, layout[0][16]);
-	layout[1][16] = (short)key;
+	layout[1][16] = (short)convert_tomb_keycode_to_sdl_scancode(key);
 
 	REG_ReadLong((char*)"Key17", key, layout[0][17]);
-	layout[1][17] = (short)key;
+	layout[1][17] = (short)convert_tomb_keycode_to_sdl_scancode(key);
 
 	REG_ReadLong((char*)"MusicVolume", (ulong&)MusicVolume, 80);
 	REG_ReadLong((char*)"SFXVolume", (ulong&)SFXVolume, 90);
@@ -277,24 +277,26 @@ bool LoadSettings()
 void SaveSettings()
 {
 	OpenRegistry("Game");
-	REG_WriteLong((char*)"Key0", layout[1][0]);
-	REG_WriteLong((char*)"Key1", layout[1][1]);
-	REG_WriteLong((char*)"Key2", layout[1][2]);
-	REG_WriteLong((char*)"Key3", layout[1][3]);
-	REG_WriteLong((char*)"Key4", layout[1][4]);
-	REG_WriteLong((char*)"Key5", layout[1][5]);
-	REG_WriteLong((char*)"Key6", layout[1][6]);
-	REG_WriteLong((char*)"Key7", layout[1][7]);
-	REG_WriteLong((char*)"Key8", layout[1][8]);
-	REG_WriteLong((char*)"Key9", layout[1][9]);
-	REG_WriteLong((char*)"Key10", layout[1][10]);
-	REG_WriteLong((char*)"Key11", layout[1][11]);
-	REG_WriteLong((char*)"Key12", layout[1][12]);
-	REG_WriteLong((char*)"Key13", layout[1][13]);
-	REG_WriteLong((char*)"Key14", layout[1][14]);
-	REG_WriteLong((char*)"Key15", layout[1][15]);
-	REG_WriteLong((char*)"Key16", layout[1][16]);
-	REG_WriteLong((char*)"Key17", layout[1][17]);
+
+	REG_WriteLong((char*)"Key0", convert_sdl_scancode_to_tomb_keycode((int)layout[1][0]));
+	REG_WriteLong((char*)"Key1", convert_sdl_scancode_to_tomb_keycode((int)layout[1][1]));
+	REG_WriteLong((char*)"Key2", convert_sdl_scancode_to_tomb_keycode((int)layout[1][2]));
+	REG_WriteLong((char*)"Key3", convert_sdl_scancode_to_tomb_keycode((int)layout[1][3]));
+	REG_WriteLong((char*)"Key4", convert_sdl_scancode_to_tomb_keycode((int)layout[1][4]));
+	REG_WriteLong((char*)"Key5", convert_sdl_scancode_to_tomb_keycode((int)layout[1][5]));
+	REG_WriteLong((char*)"Key6", convert_sdl_scancode_to_tomb_keycode((int)layout[1][6]));
+	REG_WriteLong((char*)"Key7", convert_sdl_scancode_to_tomb_keycode((int)layout[1][7]));
+	REG_WriteLong((char*)"Key8", convert_sdl_scancode_to_tomb_keycode((int)layout[1][8]));
+	REG_WriteLong((char*)"Key9", convert_sdl_scancode_to_tomb_keycode((int)layout[1][9]));
+	REG_WriteLong((char*)"Key10", convert_sdl_scancode_to_tomb_keycode((int)layout[1][10]));
+	REG_WriteLong((char*)"Key11", convert_sdl_scancode_to_tomb_keycode((int)layout[1][11]));
+	REG_WriteLong((char*)"Key12", convert_sdl_scancode_to_tomb_keycode((int)layout[1][12]));
+	REG_WriteLong((char*)"Key13", convert_sdl_scancode_to_tomb_keycode((int)layout[1][13]));
+	REG_WriteLong((char*)"Key14", convert_sdl_scancode_to_tomb_keycode((int)layout[1][14]));
+	REG_WriteLong((char*)"Key15", convert_sdl_scancode_to_tomb_keycode((int)layout[1][15]));
+	REG_WriteLong((char*)"Key16", convert_sdl_scancode_to_tomb_keycode((int)layout[1][16]));
+	REG_WriteLong((char*)"Key17", convert_sdl_scancode_to_tomb_keycode((int)layout[1][17]));
+
 	REG_WriteLong((char*)"ControlMethod", ControlMethod);
 	REG_WriteLong((char*)"MusicVolume", MusicVolume);
 	REG_WriteLong((char*)"SFXVolume", SFXVolume);

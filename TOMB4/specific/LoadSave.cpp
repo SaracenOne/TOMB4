@@ -27,6 +27,8 @@
 #include "../tomb4/troyestuff.h"
 #include "drawbars.h"
 
+#include "../specific/input.h"
+
 long sfx_frequencies[3] = { 11025, 22050, 44100 };
 long SoundQuality = 1;
 long MusicVolume = 40;
@@ -118,8 +120,17 @@ void DoOptions()
 
 		for (lp = 0; lp < 16; lp++)
 		{
-			txt = (waiting_for_key && sel2 & (1 << i)) ? SCRIPT_TEXT(TXT_Waiting) : keyboard_buttons[layout[1][lp]];
-			PrintString(phd_centerx + (phd_centerx >> 2), f + y++ * font_height, sel2 & (1 << i++) ? 1 : 6, txt, 0);
+#ifdef USE_SDL
+			int dik = convert_sdl_scancode_to_tomb_keycode(layout[1][lp]);
+#else 
+			int dik = layout[1][lp];
+#endif
+
+			txt = (waiting_for_key && sel2 & (1 << i)) ? SCRIPT_TEXT(TXT_Waiting) : keyboard_buttons[dik];
+			if (txt)
+				PrintString(phd_centerx + (phd_centerx >> 2), f + y++ * font_height, sel2 & (1 << i++) ? 1 : 6, txt, 0);
+			else
+				PrintString(phd_centerx + (phd_centerx >> 2), f + y++ * font_height, sel2 & (1 << i++) ? 1 : 6, "???", 0);
 		}
 
 		small_font = 0;
@@ -143,7 +154,11 @@ void DoOptions()
 		{
 			i = 0;
 
+#ifdef USE_SDL
+			if (keymap[SDL_SCANCODE_ESCAPE])
+#else
 			if (keymap[DIK_ESCAPE])
+#endif
 			{
 				SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 				sel2 = 0;
@@ -156,7 +171,11 @@ void DoOptions()
 			{
 				if (keymap[lp] && keyboard_buttons[lp])
 				{
+#ifdef USE_SDL
+					if (lp != SDL_SCANCODE_RETURN && lp != SDL_SCANCODE_LEFT && lp != SDL_SCANCODE_RIGHT && lp != SDL_SCANCODE_UP && lp != SDL_SCANCODE_DOWN)
+#else
 					if (lp != DIK_RETURN && lp != DIK_LEFT && lp != DIK_RIGHT && lp != DIK_UP && lp != DIK_DOWN)
+#endif
 					{
 						waiting_for_key = 0;
 
@@ -212,7 +231,9 @@ void DoOptions()
 			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 			sel2 = sel;
 			waiting_for_key = 1;
+#ifndef USE_SDL
 			memset(keymap, 0, sizeof(keymap));
+#endif
 		}
 
 		if (dbinput & IN_SELECT && ControlMethod == 2)
@@ -511,7 +532,11 @@ long S_DisplayPauseMenu(long reset)
 				return 1;
 			}
 
+#ifdef USE_SDL
+			if (dbinput & IN_SELECT && !keymap[SDL_SCANCODE_LALT])
+#else
 			if (dbinput & IN_SELECT && !keymap[DIK_LALT])
+#endif
 			{
 				SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 
