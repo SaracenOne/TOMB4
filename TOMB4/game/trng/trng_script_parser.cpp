@@ -411,6 +411,7 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 							// CUST_DISABLE_SCREAMING_HEAD	
 							case 0x0001: {
 								printf("CUST_DISABLE_SCREAMING_HEAD unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 								break;
 							}
 							// CUST_SET_SECRET_NUMBER	
@@ -428,11 +429,19 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 							// CUST_SET_CREDITS_LEVEL
 							case 0x0003: {
 								printf("CUST_SET_CREDITS_LEVEL unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+								break;
+							}
+							// CUST_DISABLE_FORCING_ANIM_96
+							case 0x0004: {
+								printf("CUST_DISABLE_FORCING_ANIM_96 unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 								break;
 							}
 							// CUST_ROLLINGBALL_PUSHING
 							case 0x0005: {
 								printf("CUST_ROLLINGBALL_PUSHING unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 								break;
 							}
 							// CUST_NEW_SOUND_ENGINE
@@ -443,6 +452,13 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 								unsigned short short_fade_out = NG_READ_16(gfScriptFile, offset);
 
 								printf("CUST_NEW_SOUND_ENGINE unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+								break;
+							}
+							// CUST_SPEED_MOVING
+							case 0x0007: {
+								printf("CUST_SPEED_MOVING unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 								break;
 							}
 							// CUST_SHATTER_RANGE
@@ -450,11 +466,13 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 								unsigned short first_static_as_shatter = NG_READ_16(gfScriptFile, offset);
 								unsigned short last_static_as_shatter = NG_READ_16(gfScriptFile, offset);
 								printf("CUST_SHATTER_RANGE unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 								break;
 							}
 							// CUST_WEAPON
 							case 0x0009: {
 								printf("CUST_WEAPON unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 								break;
 							}
 							// CUST_AMMO
@@ -488,21 +506,25 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 							// CUST_SET_INV_ITEM
 							case 0x000c: {
 								printf("CUST_SET_INV_ITEM unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 								break;
 							}
 							// CUST_SET_JEEP_KEY_SLOT
 							case 0x000d: {
 								printf("CUST_SET_JEEP_KEY_SLOT unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 								break;
 							}
 							// CUST_STATIC_TRANSPARENCY
 							case 0x000e: {
 								printf("CUST_STATIC_TRANSPARENCY unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 								break;
 							}
 							// CUST_SET_STATIC_DAMAGE
 							case 0x000f: {
 								printf("CUST_SET_STATIC_DAMAGE unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 								break;
 							}
 							// CUST_LOOK_TRASPARENT
@@ -512,74 +534,143 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 								printf("CUST_LOOK_TRASPARENT unimplemented!\n");
 								break;
 							}
+							// CUST_HAIR_TYPE
+							case 0x0011: {
+								printf("CUST_HAIR_TYPE unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+								break;
+							}
+							// CUST_KEEP_DEAD_ENEMIES
+							case 0x0012: {
+								printf("CUST_KEEP_DEAD_ENEMIES unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+								break;
+							}
 							// CUST_SET_OLD_CD_TRIGGER
 							case 0x0013: {
 								printf("CUST_SET_OLD_CD_TRIGGER unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+								break;
+							}
+							// CUST_ESCAPE_FLY_CAMERA
+							case 0x0014: {
+								printf("CUST_ESCAPE_FLY_CAMERA unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 								break;
 							}
 							// CUST_PAUSE_FLY_CAMERA
 							case 0x0015: {
 								printf("CUST_PAUSE_FLY_CAMERA unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 								break;
 							}
 							// CUST_TEXT_ON_FLY_SCREEN
 							case 0x0016: {
 								printf("CUST_TEXT_ON_FLY_SCREEN unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 								break;
 							}
-							// CUST_NO_TIME_IN_SAVELIST
-							case 0x001a: {
-								printf("CUST_NO_TIME_IN_SAVELIST unimplemented!\n");
+							// CUST_CD_SINGLE_PLAYBACK
+							case 0x0017: {
+								printf("CUST_CD_SINGLE_PLAYBACK unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 								break;
 							}
-							// CUST_PARALLEL_BARS
-							case 0x001b: {
-								printf("CUST_PARALLEL_BARS unimplemented!\n");
-								break;
-							}
-							// CUST_CAMERA
-							case 0x001c: {
-								printf("CUST_CAMERA unimplemented!\n");
-								break;
-							}
-							// CUST_ADD_DEATH_ANIMATION 
+							// CUST_ADD_DEATH_ANIMATION
 							case 0x0018: {
+								// Death animation for immortal creatures.
 								printf("CUST_ADD_DEATH_ANIMATION unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 								break;
 							}
 							// CUST_BAR 
 							case 0x0019: {
 								printf("CUST_BAR unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+								break;
+							}
+							// CUST_NO_TIME_IN_SAVELIST
+							case 0x001a: {
+								printf("CUST_NO_TIME_IN_SAVELIST unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+								break;
+							}
+							// CUST_PARALLEL_BARS
+							case 0x001b: {
+								printf("CUST_PARALLEL_BARS unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+								break;
+							}
+							// CUST_CAMERA
+							case 0x001c: {
+								printf("CUST_CAMERA unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+								break;
+							}
+							// CUST_DISABLE_MISSING_SOUNDS
+							case 0x001d: {
+								printf("CUST_DISABLE_MISSING_SOUNDS unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+								break;
+							}
+							// CUST_INNER_SCREENSHOT
+							case 0x001e: {
+								printf("CUST_INNER_SCREENSHOT unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+								break;
+							}
+							// CUST_FMV_CUTSCENE
+							case 0x001f: {
+								printf("CUST_FMV_CUTSCENE unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 								break;
 							}
 							// CUST_FIX_WATER_FOG_BUG 
 							case 0x0020: {
 								printf("CUST_FIX_WATER_FOG_BUG unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 								break;
 							}
 							// CUST_SAVE_LOCUST 
 							case 0x0021: {
 								printf("CUST_SAVE_LOCUST unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 								break;
 							}
 							// CUST_LIGHT_OBJECT 
 							case 0x0022: {
 								printf("CUST_LIGHT_OBJECT unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+								break;
+							}
+							// CUST_HARPOON
+							case 0x0023: {
+								printf("CUST_HARPOON unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 								break;
 							}
 							// CUST_SCREENSHOT_CAPTURE
 							case 0x0024: {
 								printf("CUST_SCREENSHOT_CAPTURE unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 								break;
 							}
 							// CUST_RAIN
 							case 0x0025: {
 								printf("CUST_RAIN unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 								break;
 							}
 							// CUST_TR5_UNDERWATER_COLLISIONS 
 							case 0x0026: {
 								printf("CUST_TR5_UNDERWATER_COLLISIONS unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+								break;
+							}
+							// CUST_DARTS 
+							case 0x0027: {
+								printf("CUST_DARTS unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 								break;
 							}
 							// CUST_FLARE 
@@ -634,40 +725,84 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 							 // CUST_SET_TEXT_COLOR 
 							case 0x0029: {
 								printf("CUST_SET_TEXT_COLOR unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 								break;
 							}
 							 // CUST_SET_STILL_COLLISION 
 							case 0x002a: {
 								printf("CUST_SET_STILL_COLLISION unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 								break;
 							}
 							 // CUST_WATERFALL_SPEED 
 							case 0x002b: {
 								printf("CUST_WATERFALL_SPEED unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 								break;
 							}
 							 // CUST_ROLLING_BOAT 
 							case 0x002c: {
 								printf("CUST_ROLLING_BOAT unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 								break;
 							}
 							 // CUST_SFX 
 							case 0x002d: {
 								printf("CUST_SFX unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 								break;
 							}
 							 // CUST_TITLE_FMV 
 							case 0x002e: {
 								printf("CUST_TITLE_FMV unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+								break;
+							}
+							 // CUST_KEEP_LARA_HP 
+							case 0x002f: {
+								printf("CUST_KEEP_LARA_HP unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+								break;
+							}
+							// CUST_BINOCULARS
+							case 0x0030: {
+								printf("CUST_BINOCULARS unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 								break;
 							}
 							// CUST_BACKGROUND
 							case 0x0031: {
 								printf("CUST_BACKGROUND unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+								break;
+							}
+							// CUST_DISABLE_PUSH_AWAY_ANIMATION
+							case 0x0032: {
+								printf("CUST_DISABLE_PUSH_AWAY_ANIMATION unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+								break;
+							}
+							// CUST_SLOT_FLAGS
+							case 0x0034: {
+								printf("CUST_SLOT_FLAGS unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+								break;
+							}
+							// CUST_FIX_BUGS
+							case 0x0035: {
+								printf("CUST_FIX_BUGS unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+								break;
+							}
+							// CUST_SHATTER_SPECIFIC
+							case 0x0036: {
+								printf("CUST_SHATTER_SPECIFIC unimplemented!\n");
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 								break;
 							}
 							default: {
 								printf("Unimplemented NG customization category: %u\n", customization_category);
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 								break;
 							}
 						}
