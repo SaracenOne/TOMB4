@@ -804,8 +804,15 @@ void TestTriggers(short* data, long heavy, long HeavyFlags)
 	}
 
 	camera_item = 0;
-	int last_item = -1; // TRNG
-
+	
+	// TRNG, for retroactively using the timerfield.
+	const int MAX_TRIGGERED_ITEMS = 128;
+	int triggered_items[MAX_TRIGGERED_ITEMS] = {};
+	int trigger_items_count = 0;
+	for (int i = 0; i < MAX_TRIGGERED_ITEMS; i++) {
+		triggered_items[i] = -1;
+	}
+	
 	do
 	{
 		trigger = *data++;
@@ -815,7 +822,12 @@ void TestTriggers(short* data, long heavy, long HeavyFlags)
 		{
 		case TO_OBJECT:
 			item = &items[value];
-			last_item = value;
+
+			// For TRNG timerfields
+			triggered_items[trigger_items_count] = value;
+			trigger_items_count++;
+			if (trigger_items_count > MAX_TRIGGERED_ITEMS)
+				trigger_items_count = MAX_TRIGGERED_ITEMS;
 
 			if (key >= 2 || ((type == ANTIPAD || type == ANTITRIGGER || type == HEAVYANTITRIGGER) && item->flags & IFL_ANTITRIGGER_ONESHOT) ||
 				(type == SWITCH && item->flags & IFL_SWITCH_ONESHOT) ||
@@ -1020,7 +1032,11 @@ void TestTriggers(short* data, long heavy, long HeavyFlags)
 		case TO_BODYBAG:
 			if (NGUseNGActions()) {
 				trigger = *data++;
-				last_item = NGActionTrigger(value, (trigger & 0x7fff), timer);
+				int last_item = NGActionTrigger(value, (trigger & 0x7fff), timer);
+				triggered_items[trigger_items_count] = last_item;
+				trigger_items_count++;
+				if (trigger_items_count > MAX_TRIGGERED_ITEMS)
+					trigger_items_count = MAX_TRIGGERED_ITEMS;
 			}
 			break;
 		case TO_FLYBY:
@@ -1098,11 +1114,12 @@ void TestTriggers(short* data, long heavy, long HeavyFlags)
 			printf("FMV support is unimplemented!");
 			break;
 		case TO_TIMERFIELD:
-			if (last_item >= 0) {
-				// TODO, this should affect previous items too.
-				timer = value;
-				item = &items[last_item];
-				item->timer = timer * 30;
+			for (int i = 0; i < trigger_items_count; i++) {
+				if (triggered_items[i] >= 0) {
+					timer = value;
+					item = &items[triggered_items[i]];
+					item->timer = timer * 30;
+				}
 			}
 			break;
 		default:
