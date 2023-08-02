@@ -36,6 +36,8 @@ extern void NGRestoreBackupTriggerRoomAndIndex();
 // Move the item in a direction by the number of units
 extern void NGMoveItemByUnits(unsigned short item_id, NG_DIRECTIONS direction, unsigned int units);
 
+extern void NGRotateItemY(unsigned short item_id, short rotation);
+
 extern int NGAction(unsigned short param, unsigned short extra, bool first_frame);
 extern int NGActionTrigger(unsigned short param, unsigned short extra, unsigned short timer);
 extern void NGSetup();

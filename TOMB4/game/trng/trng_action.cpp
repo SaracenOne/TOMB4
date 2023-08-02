@@ -63,8 +63,9 @@ void NGItemActivator(int item_id, bool anti) {
 
 int NGFindIndexForLaraStartPosWithMatchingOCB(unsigned int ocb) {
 	for (int i = 0; i < nAIObjects; i++) {
-		if (AIObjects[i].object_number == LARA_START_POS && ocb == AIObjects[i].trigger_flags);
-		return i;
+		if (AIObjects[i].object_number == LARA_START_POS && ocb == AIObjects[i].trigger_flags) {
+			return i;
+		}
 	}
 
 	return -1;
@@ -107,6 +108,29 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame) {
 	unsigned char action_data = (unsigned char)(extra >> 8) & 0xff;
 
 	switch (action_type) {
+		case TURN_ANIMATING_MOVING_ENDLESSLY_IN_WAY: {
+			unsigned short item_id = param;
+			// TODO: values are estimated and may not be accurate
+			switch (action_data) {
+				// Clockwise slowly (one degree per frame)
+				case 0x00:
+					NGSetAutoRotationPerFrame(item_id, 182);
+					break;
+				// Clockwise fastly (two degrees per frame)
+				case 0x01:
+					NGSetAutoRotationPerFrame(item_id, 182 * 2);
+					break;
+				// Inverse Clockwise slowly (one degree per frame)
+				case 0x02:
+					NGSetAutoRotationPerFrame(item_id, -182);
+					break;
+				// Inverse Clockwise fastly (two degrees per frame)
+				case 0x03:
+					NGSetAutoRotationPerFrame(item_id, -182 * 2);
+					break;
+			}
+			break;
+		}
 		case PERFORM_FLIPEFFECT_ON_ITEM: {
 			effect_routines[action_data](&items[param]);
 			break;

@@ -18,6 +18,7 @@ unsigned int ng_room_offset_table[0xff];
 // The state here can subseqeuently be serialized as additional data for savegames.
 struct NG_ITEM_EXTRADATA {
 	short frozen_ticks = 0;
+	short auto_rotation_per_frame = 0;
 	bool collison_disabled = false; // Will only disable the ObjectCollision routine. Doors and enemies stll have collision.
 	short move_north_south_timer = 0;
 	short move_east_west_timer = 0;
@@ -46,6 +47,8 @@ int ng_floorstate_data_size = 0;
 char* ng_oneshot_floorstate = NULL;
 int ng_last_floor_trigger = -1;
 int ng_current_floor_trigger = -1;
+
+int lara_damage_resistence = 1000;
 
 enum TRNG_INPUT {
 	TRNG_INPUT_UP,
@@ -235,6 +238,8 @@ void NGUpdateAllItems() {
 			ng_items_extradata[i].frozen_ticks--;
 		}
 
+		NGRotateItemY(i, NGGetAutoRotationPerFrame(i));
+
 		const int SPEED_RATE = 32;
 
 		if (ng_items_extradata[i].move_north_south_timer > 0) {
@@ -305,6 +310,28 @@ void NGFrameStartUpdate() {
 		}
 	}
 
+	// Cold and damage rooms
+	{
+		ROOM_INFO* r = &room[lara_item->room_number];
+		if (r) {
+			int room_flags = r->flags;
+
+			// Lara is in a damage room.
+			if (room_flags & 0x10) {
+				// TODO
+			} else {
+
+			}
+
+			// Lara is in a damage room.
+			if (room_flags & ROOM_COLD) {
+				// TODO
+			}
+			else {
+
+			}
+		}
+	}
 }
 
 void NGDrawPhase() {
@@ -358,6 +385,14 @@ bool NGIsItemFrozen(unsigned int item_num) {
 
 void NGSetItemFreezeTimer(unsigned int item_num, int ticks) {
 	ng_items_extradata[item_num].frozen_ticks = ticks;
+}
+
+short NGGetAutoRotationPerFrame(unsigned int item_num) {
+	return ng_items_extradata[item_num].auto_rotation_per_frame;
+}
+
+void NGSetAutoRotationPerFrame(unsigned int item_num, short degress_per_frame) {
+	ng_items_extradata[item_num].auto_rotation_per_frame = degress_per_frame;
 }
 
 //
@@ -447,6 +482,8 @@ void NGSetupExtraState() {
 	memset(ng_oneshot_floorstate, 0x00, ng_floorstate_data_size);
 
 	memset(ng_input_lock_timers, 0x00, sizeof(ng_input_lock_timers));
+
+	lara_damage_resistence = 1000;
 }
 
 void NGFrameFinishExtraState() {

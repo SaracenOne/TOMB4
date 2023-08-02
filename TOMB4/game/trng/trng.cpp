@@ -165,6 +165,10 @@ void NGMoveItemByUnits(unsigned short item_id, NG_DIRECTIONS direction, unsigned
 	}
 }
 
+void NGRotateItemY(unsigned short item_id, short rotation) {
+	items[item_id].pos.y_rot += rotation;
+}
+
 void NGSetup() {
 	NGSetupExtraState();
 	NGLoadTablesForLevel(gfCurrentLevel);

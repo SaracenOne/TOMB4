@@ -27,6 +27,8 @@ extern void NGEnableInput(unsigned char input);
 
 extern bool NGIsItemFrozen(unsigned int item_num);
 extern void NGSetItemFreezeTimer(unsigned int item_num, int ticks);
+extern short NGGetAutoRotationPerFrame(unsigned int item_num);
+extern void NGSetAutoRotationPerFrame(unsigned int item_num, short degress_per_frame);
 
 extern short NGGetItemNorthSouthTimer(unsigned int item_num);
 extern void NGSetItemNorthSouthTimer(unsigned int item_num, short timer);
