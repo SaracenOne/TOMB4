@@ -56,16 +56,12 @@ void ProcessObjectMeshVertices(MESH_DATA* mesh)
 	clip = clipflags;
 
 #ifdef LEVEL_EDITOR
-#ifndef FORCE_TRAIN_FOG
 	if (gfLevelFlags & GF_TRAIN)
-#endif
 #else
-#ifndef FORCE_TRAIN_FOG
 	if (gfLevelFlags & GF_TRAIN || gfCurrentLevel == 5 || gfCurrentLevel == 6)
 #endif
-#endif
 		DistanceFogStart = 12.0F * 1024.0F;
-#ifndef FORCE_TRAIN_FOG
+#ifdef FORCE_TRAIN_FOG
 	else
 		DistanceFogStart = tomb4.distance_fog * 1024.0F;
 #endif
@@ -316,16 +312,12 @@ void ProcessStaticMeshVertices(MESH_DATA* mesh)
 	clip = clipflags;
 
 #ifdef LEVEL_EDITOR
-#ifndef FORCE_TRAIN_FOG
 	if (gfLevelFlags & GF_TRAIN)
-#endif
 #else
-#ifndef FORCE_TRAIN_FOG
 	if (gfLevelFlags & GF_TRAIN || gfCurrentLevel == 5 || gfCurrentLevel == 6)
 #endif
-#endif
 		DistanceFogStart = 12.0F * 1024.0F;
-#ifndef FORCE_TRAIN_FOG
+#ifdef FORCE_TRAIN_FOG
 	else
 		DistanceFogStart = tomb4.distance_fog * 1024.0F;
 #endif
@@ -869,17 +861,18 @@ void phd_PutPolygons(short* objptr, long clip)
 			else if (pTex->drawtype <= 2)
 			{
 #ifdef FORCE_TRAIN_FOG
+				if (pTex->drawtype == 2) {
+					for (int j = 0; j < 4; j++)
+					{
+						int clr_a = (MyVertexBuffer[quad[j]].color & 0xFF000000) >> 24;
+						int spc_a = (MyVertexBuffer[quad[j]].specular & 0xFF000000) >> 24;
 
-				for (int j = 0; j < 4; j++)
-				{
-					int clr_a = (MyVertexBuffer[quad[j]].color & 0xFF000000) >> 24;
-					int spc_a = (MyVertexBuffer[quad[j]].specular & 0xFF000000) >> 24;
+						spc_a += (0xFF - clr_a);
+						if (spc_a > 0xFF)
+							spc_a = 0xFF;
 
-					spc_a += (0xFF - clr_a);
-					if (spc_a > 0xFF)
-						spc_a = 0xFF;
-
-					MyVertexBuffer[quad[j]].specular = (MyVertexBuffer[quad[j]].specular & ~0xFF000000) | ((spc_a << 24) & 0xFF000000);
+						MyVertexBuffer[quad[j]].specular = (MyVertexBuffer[quad[j]].specular & ~0xFF000000) | ((spc_a << 24) & 0xFF000000);
+					}
 				}
 #endif
 				AddQuadSorted(MyVertexBuffer, quad[0], quad[1], quad[2], quad[3], pTex, 0);
@@ -971,16 +964,18 @@ void phd_PutPolygons(short* objptr, long clip)
 			else if (pTex->drawtype <= 2)
 			{
 #ifdef FORCE_TRAIN_FOG
-				for (int j = 0; j < 3; j++)
-				{
-					int clr_a = (MyVertexBuffer[tri[j]].color & 0xFF000000) >> 24;
-					int spc_a = (MyVertexBuffer[tri[j]].specular & 0xFF000000) >> 24;
+				if (pTex->drawtype == 2) {
+					for (int j = 0; j < 3; j++)
+					{
+						int clr_a = (MyVertexBuffer[tri[j]].color & 0xFF000000) >> 24;
+						int spc_a = (MyVertexBuffer[tri[j]].specular & 0xFF000000) >> 24;
 
-					spc_a += (0xFF - clr_a);
-					if (spc_a > 0xFF)
-						spc_a = 0xFF;
+						spc_a += (0xFF - clr_a);
+						if (spc_a > 0xFF)
+							spc_a = 0xFF;
 
-					MyVertexBuffer[tri[j]].specular = (MyVertexBuffer[tri[j]].specular & ~0xFF000000) | ((spc_a << 24) & 0xFF000000);
+						MyVertexBuffer[tri[j]].specular = (MyVertexBuffer[tri[j]].specular & ~0xFF000000) | ((spc_a << 24) & 0xFF000000);
+					}
 				}
 #endif
 
