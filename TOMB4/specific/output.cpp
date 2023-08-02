@@ -50,7 +50,7 @@ void ProcessObjectMeshVertices(MESH_DATA* mesh)
 	short* clip;
 	static float DistanceFogStart;
 	float zv, fR, fG, fB, val, num;
-	long lp, cR, cG, cB, sA, sR, sG, sB;
+	long lp, cR, cG, cB, cA, sA, sR, sG, sB;
 	short clipFlag;
 
 	clip = clipflags;
@@ -163,6 +163,8 @@ void ProcessObjectMeshVertices(MESH_DATA* mesh)
 			cG = ambientG;
 			cB = ambientB;
 		}
+
+		cA = 0xFF;
 		
 		if (vPos.z > DistanceFogStart)
 		{
@@ -180,9 +182,12 @@ void ProcessObjectMeshVertices(MESH_DATA* mesh)
 			{
 				val = (vPos.z - DistanceFogStart) / 512.0F;
 				sA -= long(val * (255.0F / 8.0F));
+				cA -= long(val * (255.0F / 8.0F));
 
 				if (sA < 0)
 					sA = 0;
+				if (cA < 0)
+					cA = 0;
 			}
 #ifndef FORCE_TRAIN_FOG
 			else
@@ -287,7 +292,7 @@ void ProcessObjectMeshVertices(MESH_DATA* mesh)
 		if (cG > 255) cG = 255; else if (cG < 0) cG = 0;
 		if (cB > 255) cB = 255; else if (cB < 0) cB = 0;
 
-		MyVertexBuffer[i].color = GlobalAlpha | RGBONLY(cR, cG, cB);
+		MyVertexBuffer[i].color = RGBA(cR, cG, cB, cA);
 		MyVertexBuffer[i].specular = RGBA(sR, sG, sB, sA);
 	}
 
@@ -305,7 +310,7 @@ void ProcessStaticMeshVertices(MESH_DATA* mesh)
 	short* clip;
 	static float DistanceFogStart;
 	float zv, val, val2, num;
-	long sA, sR, sG, sB, cR, cG, cB, pR, pG, pB;
+	long sA, sR, sG, sB, cR, cG, cB, cA, pR, pG, pB;
 	short clipFlag;
 
 	clip = clipflags;
@@ -350,6 +355,7 @@ void ProcessStaticMeshVertices(MESH_DATA* mesh)
 		cR = (cR * pR) >> 8;
 		cG = (cG * pG) >> 8;
 		cB = (cB * pB) >> 8;
+		cA = 0xFF;
 		sA = 0xFF;
 		sR = 0;
 		sG = 0;
@@ -398,9 +404,12 @@ void ProcessStaticMeshVertices(MESH_DATA* mesh)
 			{
 				val = (vPos.z - DistanceFogStart) / 512.0F;
 				sA -= long(val * (255.0F / 8.0F));
+				cA -= long(val * (255.0F / 8.0F));
 
 				if (sA < 0)
 					sA = 0;
+				if (cA < 0)
+					cA = 0;
 			}
 #ifndef FORCE_TRAIN_FOG
 			else
@@ -502,7 +511,7 @@ void ProcessStaticMeshVertices(MESH_DATA* mesh)
 		if (cG > 255) cG = 255; else if (cG < 0) cG = 0;
 		if (cB > 255) cB = 255; else if (cB < 0) cB = 0;
 
-		MyVertexBuffer[i].color = GlobalAlpha | RGBONLY(cR, cG, cB);
+		MyVertexBuffer[i].color = RGBA(cR, cG, cB, cA);
 		MyVertexBuffer[i].specular = RGBA(sR, sG, sB, sA);
 	}
 
@@ -858,7 +867,23 @@ void phd_PutPolygons(short* objptr, long clip)
 			if (!pTex->drawtype)
 				AddQuadZBuffer(MyVertexBuffer, quad[0], quad[1], quad[2], quad[3], pTex, 0);
 			else if (pTex->drawtype <= 2)
+			{
+#ifdef FORCE_TRAIN_FOG
+
+				for (int j = 0; j < 4; j++)
+				{
+					int clr_a = (MyVertexBuffer[quad[j]].color & 0xFF000000) >> 24;
+					int spc_a = (MyVertexBuffer[quad[j]].specular & 0xFF000000) >> 24;
+
+					spc_a += (0xFF - clr_a);
+					if (spc_a > 0xFF)
+						spc_a = 0xFF;
+
+					MyVertexBuffer[quad[j]].specular = (MyVertexBuffer[quad[j]].specular & ~0xFF000000) | ((spc_a << 24) & 0xFF000000);
+				}
+#endif
 				AddQuadSorted(MyVertexBuffer, quad[0], quad[1], quad[2], quad[3], pTex, 0);
+			}
 
 			if (envmap)
 			{
@@ -944,7 +969,23 @@ void phd_PutPolygons(short* objptr, long clip)
 			if (!pTex->drawtype)
 				AddTriZBuffer(MyVertexBuffer, tri[0], tri[1], tri[2], pTex, 0);
 			else if (pTex->drawtype <= 2)
+			{
+#ifdef FORCE_TRAIN_FOG
+				for (int j = 0; j < 3; j++)
+				{
+					int clr_a = (MyVertexBuffer[tri[j]].color & 0xFF000000) >> 24;
+					int spc_a = (MyVertexBuffer[tri[j]].specular & 0xFF000000) >> 24;
+
+					spc_a += (0xFF - clr_a);
+					if (spc_a > 0xFF)
+						spc_a = 0xFF;
+
+					MyVertexBuffer[tri[j]].specular = (MyVertexBuffer[tri[j]].specular & ~0xFF000000) | ((spc_a << 24) & 0xFF000000);
+				}
+#endif
+
 				AddTriSorted(MyVertexBuffer, tri[0], tri[1], tri[2], pTex, 0);
+			}
 
 			if (envmap)
 			{
