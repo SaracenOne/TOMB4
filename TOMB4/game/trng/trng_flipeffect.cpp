@@ -322,7 +322,7 @@ bool NGFlipEffect(unsigned short param, short extra, bool oneshot, bool skip_che
 				if (skip_checks || !NGIsOneShotTriggeredForTile()) {
 					char original_trigger_timer = TriggerTimer;
 					TriggerTimer = action_data_1;
-					effect_routines[param](0);
+					effect_routines[param](lara_item);
 					TriggerTimer = original_trigger_timer;
 				}
 			} else {
