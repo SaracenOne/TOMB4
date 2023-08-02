@@ -107,9 +107,13 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame) {
 	unsigned char action_type = (unsigned char)extra & 0xff;
 	unsigned char action_data = (unsigned char)(extra >> 8) & 0xff;
 
+	short item_id = -1;
+	if (first_frame) {
+		item_id = param;
+	}
+
 	switch (action_type) {
 		case TURN_ANIMATING_MOVING_ENDLESSLY_IN_WAY: {
-			unsigned short item_id = param;
 			// TODO: values are estimated and may not be accurate
 			switch (action_data) {
 				// Clockwise slowly (one degree per frame)
@@ -132,13 +136,14 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame) {
 			break;
 		}
 		case PERFORM_FLIPEFFECT_ON_ITEM: {
-			effect_routines[action_data](&items[param]);
+			if (first_frame) {
+				effect_routines[action_data](&items[item_id]);
+			}
 			break;
 		}
 		case FREEZE_ENEMY_FOR_SECONDS: {
-			unsigned short item_id = param;
-			if (!NGIsItemFrozen(param)) {
-				if (first_frame) {
+			if (first_frame) {
+				if (!NGIsItemFrozen(param)) {
 					if (action_data == 0) {
 						NGSetItemFreezeTimer(item_id, -1);
 					}
@@ -151,12 +156,11 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame) {
 		}
 		case UNFREEZE_ENEMY_WITH_EFFECT: {
 			if (!first_frame) {
-				unsigned short item_id = param;
 				if (action_data != 0x00) {
 					Log(0, "Unimplemented action data for UNFREEZE_ENEMY_WITH_EFFECT");
 				}
 
-				if (NGIsItemFrozen(param)) {
+				if (NGIsItemFrozen(item_id)) {
 					// TODO: action_data signifies a special effect when unfreezeing
 					NGSetItemFreezeTimer(item_id, 0);
 				}
@@ -165,7 +169,7 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame) {
 		}
 		case HURT_ENEMY: {
 			if (first_frame) {
-				NGHurtEnemy(param, action_data & 0x7f);
+				NGHurtEnemy(item_id, action_data & 0x7f);
 			}
 			break;
 		}
@@ -175,10 +179,10 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame) {
 				if (lara_start_pos_id >= 0) {
 					AIOBJECT *ai = &AIObjects[lara_start_pos_id];
 					if (ai) {
-						items[param].pos.x_pos = ai->x;
-						items[param].pos.y_pos = ai->y;
-						items[param].pos.z_pos = ai->z;
-						items[param].pos.y_rot = ai->y_rot;
+						items[item_id].pos.x_pos = ai->x;
+						items[item_id].pos.y_pos = ai->y;
+						items[item_id].pos.z_pos = ai->z;
+						items[item_id].pos.y_rot = ai->y_rot;
 					}
 				}
 			}
@@ -187,132 +191,131 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame) {
 		case TRIGGER_MOVEABLE_ACTIVATE_WITH_TIMER: {
 			if (first_frame) {
 				items[param].timer = (action_data & 0x7f) * 30;
-				NGItemActivator(param, false);
+				NGItemActivator(item_id, false);
 			}
 			break;
 		}
 		case UNTRIGGER_MOVEABLE_ACTIVATE_WITH_TIMER: {
 			if (first_frame) {
-				NGItemActivator(param, true);
+				NGItemActivator(item_id, true);
 			}
 			break;
 		}
 		case SHOW_TRIGGER_COUNTDOWN_TIMER_FOR_ENEMY: {
 			if (first_frame) {
-				NGSetDisplayTimerForMoveableWithType(param, (NGTimerTrackerType)(action_data & 0x7f));
+				NGSetDisplayTimerForMoveableWithType(item_id, (NGTimerTrackerType)(action_data & 0x7f));
 			}
 			break;
 		}
 		case FORCE_ANIMATION_0_TO_31_ON_ITEM: {
 			if (first_frame) {
-				NGForceItemAnimation(param, action_data & 0x1f);
+				NGForceItemAnimation(item_id, action_data & 0x1f);
 			}
 			break;
 		}
 		case FORCE_ANIMATION_32_TO_63_ON_ITEM: {
 			if (first_frame) {
-				NGForceItemAnimation(param, (action_data & 0x1f) + 32);
+				NGForceItemAnimation(item_id, (action_data & 0x1f) + 32);
 			}
 			break;
 		}
 		case FORCE_ANIMATION_64_TO_95_ON_ITEM: {
 			if (first_frame) {
-				NGForceItemAnimation(param, (action_data & 0x1f) + 64);
+				NGForceItemAnimation(item_id, (action_data & 0x1f) + 64);
 			}
 			break;
 		}
 		case OPEN_OR_CLOSE_DOOR_ITEM: {
 			if (first_frame) {
-				items[param].timer = (action_data & 0x7f) * 30;
-				NGItemActivator(param, false);
+				items[item_id].timer = (action_data & 0x7f) * 30;
+				NGItemActivator(item_id, false);
 
 				if (action_data) {
-					items[param].flags |= IFL_CODEBITS;
+					items[item_id].flags |= IFL_CODEBITS;
 				} else {
-					items[param].flags &= ~IFL_CODEBITS;
+					items[item_id].flags &= ~IFL_CODEBITS;
 				}
-				return param;
 			}
 			break;
 		}
 		case MOVE_ITEM_UP_FOR_CLICKS:
 			if (first_frame) {
-				if (NGGetItemUpDownTimer(param) == 0) {
-					NGSetItemUpDownTimer(param, (action_data + 1) * 8);
+				if (NGGetItemUpDownTimer(item_id) == 0) {
+					NGSetItemUpDownTimer(item_id, (action_data + 1) * 8);
 				}
 			}
 			break;
 		case MOVE_ITEM_DOWN_FOR_CLICKS:
 			if (first_frame) {
-				if (NGGetItemUpDownTimer(param) == 0) {
-					NGSetItemUpDownTimer(param, (action_data + 1) * -8);
+				if (NGGetItemUpDownTimer(item_id) == 0) {
+					NGSetItemUpDownTimer(item_id, (action_data + 1) * -8);
 				}
 			}
 			break;
 		case MOVE_ITEM_WEST_FOR_CLICKS:
 			if (first_frame) {
-				if (NGGetItemEastWestTimer(param) == 0) {
-					NGSetItemEastWestTimer(param, (action_data + 1) * -8);
+				if (NGGetItemEastWestTimer(item_id) == 0) {
+					NGSetItemEastWestTimer(item_id, (action_data + 1) * -8);
 				}
 			}
 			break;
 		case MOVE_ITEM_SOUTH_FOR_CLICKS:
 			if (first_frame) {
-				if (NGGetItemNorthSouthTimer(param) == 0) {
-					NGSetItemNorthSouthTimer(param, (action_data + 1) * -8);
+				if (NGGetItemNorthSouthTimer(item_id) == 0) {
+					NGSetItemNorthSouthTimer(item_id, (action_data + 1) * -8);
 				}
 			}
 			break;
 		case MOVE_ITEM_EAST_FOR_CLICKS:
 			if (first_frame) {
-				if (NGGetItemEastWestTimer(param) == 0) {
-					NGSetItemEastWestTimer(param, (action_data + 1) * 8);
+				if (NGGetItemEastWestTimer(item_id) == 0) {
+					NGSetItemEastWestTimer(item_id, (action_data + 1) * 8);
 				}
 			}
 			break;
 		case MOVE_ITEM_NORTH_FOR_CLICKS:
 			if (first_frame) {
-				if (NGGetItemNorthSouthTimer(param) == 0) {
-					NGSetItemNorthSouthTimer(param, (action_data + 1) * 8);
+				if (NGGetItemNorthSouthTimer(item_id) == 0) {
+					NGSetItemNorthSouthTimer(item_id, (action_data + 1) * 8);
 				}
 			}
 			break;
 		case DISABLE_ITEM_COLLISION:
 			if (first_frame)
-				NGDisableItemCollision(param);
+				NGDisableItemCollision(item_id);
 			break;
 		case ENABLE_ITEM_COLLISION:
 			if (first_frame)
-				NGEnableItemCollision(param);
+				NGEnableItemCollision(item_id);
 			break;
 		case MOVE_ITEM_UP_BY_UNITS_X8: {
 			if (first_frame)
-				NGMoveItemByUnits(param, NG_UP, 8 * ((action_data)+1));
+				NGMoveItemByUnits(item_id, NG_UP, 8 * ((action_data)+1));
 			break;
 		}
 		case MOVE_ITEM_DOWN_BY_UNITS_X8: {
 			if (first_frame)
-				NGMoveItemByUnits(param, NG_DOWN, 8 * ((action_data)+1));
+				NGMoveItemByUnits(item_id, NG_DOWN, 8 * ((action_data)+1));
 			break;
 		}
 		case MOVE_ITEM_WEST_BY_UNITS_X8: {
 			if (first_frame)
-				NGMoveItemByUnits(param, NG_WEST, 8 * ((action_data)+1));
+				NGMoveItemByUnits(item_id, NG_WEST, 8 * ((action_data)+1));
 			break;
 		}
 		case MOVE_ITEM_NORTH_BY_UNITS_X8: {
 			if (first_frame)
-				NGMoveItemByUnits(param, NG_NORTH, 8 * ((action_data)+1));
+				NGMoveItemByUnits(item_id, NG_NORTH, 8 * ((action_data)+1));
 			break;
 		}
 		case MOVE_ITEM_EAST_BY_UNITS_X8: {
 			if (first_frame)
-				NGMoveItemByUnits(param, NG_EAST, 8 * ((action_data)+1));
+				NGMoveItemByUnits(item_id, NG_EAST, 8 * ((action_data)+1));
 			break;
 		}
 		case MOVE_ITEM_SOUTH_BY_UNITS_X8: {
 			if (first_frame)
-				NGMoveItemByUnits(param, NG_SOUTH, 8 * ((action_data)+1));
+				NGMoveItemByUnits(item_id, NG_SOUTH, 8 * ((action_data)+1));
 			break;
 		}
 		default:
@@ -320,5 +323,5 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame) {
 				printf("Unimplemented NGTrigger %u\n", action_type);
 			break;
 		};
-	return -1;
+	return item_id;
 };

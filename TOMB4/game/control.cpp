@@ -1099,8 +1099,10 @@ void TestTriggers(short* data, long heavy, long HeavyFlags)
 			break;
 		case TO_TIMERFIELD:
 			if (last_item >= 0) {
+				// TODO, this should affect previous items too.
+				timer = value;
 				item = &items[last_item];
-				item->timer = value * 30;
+				item->timer = timer * 30;
 			}
 			break;
 		default:
