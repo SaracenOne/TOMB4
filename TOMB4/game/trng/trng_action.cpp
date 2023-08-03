@@ -82,7 +82,7 @@ void NGHurtEnemy(unsigned short item_id, unsigned short damage) {
 	}
 }
 
-int NGActionTrigger(unsigned short param, unsigned short extra, unsigned short timer) {
+int NGActionTrigger(unsigned short param, unsigned short extra, short timer) {
 	unsigned char action_type = (unsigned char)extra & 0xff;
 	unsigned char action_data = (unsigned char)(extra >> 8) & 0xff;
 
@@ -190,7 +190,7 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame) {
 		}
 		case TRIGGER_MOVEABLE_ACTIVATE_WITH_TIMER: {
 			if (first_frame) {
-				items[param].timer = (action_data & 0x7f) * 30;
+				items[param].timer = ((short)(action_data & 0x7f)) * 30;
 				NGItemActivator(item_id, false);
 			}
 			break;
@@ -227,7 +227,7 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame) {
 		}
 		case OPEN_OR_CLOSE_DOOR_ITEM: {
 			if (first_frame) {
-				items[item_id].timer = (action_data & 0x7f) * 30;
+				items[item_id].timer = ((short)(action_data & 0x7f)) * 30;
 				NGItemActivator(item_id, false);
 
 				if (action_data) {

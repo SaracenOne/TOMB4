@@ -29,5 +29,7 @@ enum NG_ACTION_TYPE {
 	MOVE_ITEM_SOUTH_BY_UNITS_X8 = 68,
 };
 
-extern int NGActionTrigger(unsigned short param, unsigned short extra, unsigned short timer);
+extern void NGItemActivator(int item_id, bool anti);
+
+extern int NGActionTrigger(unsigned short param, unsigned short extra, short timer);
 extern int NGAction(unsigned short param, unsigned short extra, bool skip_checks);

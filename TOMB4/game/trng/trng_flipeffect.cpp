@@ -1,6 +1,7 @@
 #include "../../tomb4/pch.h"
 
 #include "trng.h"
+#include "trng_action.h"
 #include "trng_extra_state.h"
 #include "trng_flipeffect.h"
 #include "trng_script_parser.h"
@@ -178,6 +179,25 @@ bool set_volume_for_audio_track_on_channel(unsigned char volume, unsigned char c
 	return true;
 }
 
+// NGLE - 145
+bool activate_item_group_with_timer(unsigned char item_group, unsigned char timer) {
+	NG_ITEM_GROUP current_item_group = current_item_groups[item_group];
+	int index = 0;
+	for (int i = 0; i < NG_ITEM_GROUP_MAX_LIST; i++) {
+		int current_script_item = current_item_group.item_list[i];
+		if (current_script_item < 0) {
+			break;
+		}
+		int current_item = ng_script_id_table[current_script_item];
+
+		items[current_item].timer = ((short)timer) * 30;
+		NGItemActivator(current_item, false);
+
+		index++;
+	}
+	return true;
+}
+
 // NGLE - 407
 bool set_lara_holsters(unsigned int holster_type, unsigned char unused) {
 	switch (holster_type) {
@@ -292,6 +312,11 @@ bool NGFlipEffect(unsigned short param, short extra, bool oneshot, bool skip_che
 		case SET_VOLUME_OF_AUDIO_TRACK_ON_CHANNEL: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFloorStatePressedThisFrameOrLastFrame())
 				return set_volume_for_audio_track_on_channel(action_data_1, action_data_2);
+			break;
+		}
+		case ACTIVATE_ITEM_GROUP_WITH_TIMER: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFloorStatePressedThisFrameOrLastFrame())
+				return activate_item_group_with_timer(action_data_1, action_data_2);
 			break;
 		}
 		case SET_LARA_HOLSTER_TYPE: {

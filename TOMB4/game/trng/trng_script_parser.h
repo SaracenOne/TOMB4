@@ -49,7 +49,7 @@ struct NG_ORGANIZER_RECORD {
 
 #define NG_ITEM_GROUP_MAX_LIST 4096
 struct NG_ITEM_GROUP {
-	unsigned short item_list[NG_ITEM_GROUP_MAX_LIST];
+	short item_list[NG_ITEM_GROUP_MAX_LIST];
 };
 
 struct NG_ITEM_GROUP_RECORD {
