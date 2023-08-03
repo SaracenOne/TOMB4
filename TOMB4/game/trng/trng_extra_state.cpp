@@ -29,8 +29,10 @@ NG_ITEM_EXTRADATA *ng_items_extradata = NULL;
 
 // TODO: In the original, there's some behaviour which allows multiple timers to run
 // at once, displaying the last activated on until it runs out. Needs investigation.
+#define TIMER_TRACKER_TIMEOUT 30
 NGTimerTrackerType timer_tracker_type = TTT_ONLY_SHOW_SECONDS;
 int timer_tracker = -1;
+int timer_tracker_remaining_until_timeout = 0;
 
 int ng_cinema_timer = -1;
 int ng_cinema_type = 0;
@@ -334,33 +336,38 @@ void NGFrameStartUpdate() {
 
 void NGDrawPhase() {
 	if (timer_tracker >= 0) {
-		if (items[timer_tracker].timer >= 0) {
+		if (items[timer_tracker].timer <= 0) {
+			if (timer_tracker_remaining_until_timeout > 0)
+				timer_tracker_remaining_until_timeout--;
+		}
+
+		if (items[timer_tracker].timer > 0 || timer_tracker_remaining_until_timeout > 0) {
 			char format_buffer[64];
 			int remainder = items[timer_tracker].timer % 30;
 			int seconds = items[timer_tracker].timer / 30;
 
 			switch (timer_tracker_type) {
-			case TTT_ONLY_SHOW_SECONDS:
-				sprintf(format_buffer, "%d", seconds);
-				break;
-			case TTT_SECONDS_AND_ONE_DECIMAL_POINT_SEPERATOR:
-				sprintf(format_buffer, "%d.%01d", seconds, remainder);
-				break;
-			case TTT_SECONDS_AND_TWO_DECIMAL_POINT_SEPERATOR:
-				sprintf(format_buffer, "%d.%02d", seconds, remainder);
-				break;
-			case TTT_SECONDS_AND_ONE_DECIMAL_COLON_SEPERATOR:
-				sprintf(format_buffer, "%d:%01d", seconds, remainder);
-				break;
-			case TTT_SECONDS_AND_TWO_DECIMAL_COLON_SEPERATOR:
-				sprintf(format_buffer, "%d:%02d", seconds, remainder);
-				break;
-			case TTT_SECONDS_WITH_THREE_NOUGHTS:
-				sprintf(format_buffer, "%03d", seconds);
-				break;
-			default:
-				sprintf(format_buffer, "%d", items[timer_tracker].timer);
-				break;
+				case TTT_ONLY_SHOW_SECONDS:
+					sprintf(format_buffer, "%d", seconds);
+					break;
+				case TTT_SECONDS_AND_ONE_DECIMAL_POINT_SEPERATOR:
+					sprintf(format_buffer, "%d.%01d", seconds, remainder);
+					break;
+				case TTT_SECONDS_AND_TWO_DECIMAL_POINT_SEPERATOR:
+					sprintf(format_buffer, "%d.%02d", seconds, remainder);
+					break;
+				case TTT_SECONDS_AND_ONE_DECIMAL_COLON_SEPERATOR:
+					sprintf(format_buffer, "%d:%01d", seconds, remainder);
+					break;
+				case TTT_SECONDS_AND_TWO_DECIMAL_COLON_SEPERATOR:
+					sprintf(format_buffer, "%d:%02d", seconds, remainder);
+					break;
+				case TTT_SECONDS_WITH_THREE_NOUGHTS:
+					sprintf(format_buffer, "%03d", seconds);
+					break;
+				default:
+					sprintf(format_buffer, "%d", items[timer_tracker].timer);
+					break;
 			}
 			PrintString(phd_centerx, phd_winymax - font_height * 0.25, 0, format_buffer, FF_CENTER);
 		}
@@ -438,6 +445,11 @@ void NGSetCinemaTypeAndTimer(int type, int ticks) {
 void NGSetDisplayTimerForMoveableWithType(int item_id, NGTimerTrackerType new_timer_tracker_type) {
 	timer_tracker = item_id;
 	timer_tracker_type = new_timer_tracker_type;
+	if (items[timer_tracker].timer > 0) {
+		timer_tracker_remaining_until_timeout = 0;
+	} else {
+		timer_tracker_remaining_until_timeout = TIMER_TRACKER_TIMEOUT;
+	}
 }
 
 void NGUpdateFloorstateData(bool update_oneshot) {
@@ -454,6 +466,7 @@ void NGUpdateFloorstateData(bool update_oneshot) {
 void NGSetupExtraState() {
 	timer_tracker_type = TTT_ONLY_SHOW_SECONDS;
 	timer_tracker = -1;
+	timer_tracker_remaining_until_timeout = 0;
 
 	ng_items_extradata = (NG_ITEM_EXTRADATA*)game_malloc(ITEM_COUNT * sizeof(NG_ITEM_EXTRADATA));
 	memset(ng_items_extradata, 0x00, ITEM_COUNT * sizeof(NG_ITEM_EXTRADATA));
