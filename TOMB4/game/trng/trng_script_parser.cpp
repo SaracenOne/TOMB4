@@ -715,7 +715,7 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 										get_game_mod_level_flare_info(current_level).has_sparks = flare_flags & 0x0001;
 										get_game_mod_level_flare_info(current_level).has_fire = flare_flags & 0x0002; // Unsupported
 										get_game_mod_level_flare_info(current_level).sparks_include_smoke = flare_flags & 0x0004;
-										get_game_mod_level_flare_info(current_level).has_glow = flare_flags & 0x0008; // Unsupported
+										get_game_mod_level_flare_info(current_level).has_glow = flare_flags & 0x0008;
 										get_game_mod_level_flare_info(current_level).flat_light = flare_flags & 0x0010;
 									}
 								}

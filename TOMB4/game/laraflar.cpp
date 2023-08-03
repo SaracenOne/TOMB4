@@ -134,12 +134,44 @@ long DoFlareLight(PHD_VECTOR* pos, long flare_age)
 	} else {
 		TriggerDynamic(x, y, z, falloff, r, g, b);
 	}
+	
 	if (flare_info.has_sparks) {
 		if (flare_age < flare_info.flare_lifetime_in_ticks - 24) {
 			unsigned long flare_spark_rnd = GetRandomControl();
 			TriggerFlareSparks(pos->x, pos->y, pos->z, 0, flare_spark_rnd * -0.025, 0, flare_info.sparks_include_smoke);
 		}
 	}
+
+	if (flare_info.has_glow) {
+		SPARKS *sptr = &spark[GetFreeSpark()];
+		sptr->On = 1;
+		sptr->sR = flare_info.light_color_r;
+		sptr->sG = flare_info.light_color_g;
+		sptr->sB = flare_info.light_color_b;
+		sptr->dR = sptr->sR;
+		sptr->dG = sptr->sG;
+		sptr->dB = sptr->sB;
+		sptr->Life = 4;
+		sptr->sLife = 4;
+		sptr->ColFadeSpeed = 2;
+		sptr->FadeToBlack = 0;
+		sptr->TransType = 2;
+		sptr->x = pos->x;
+		sptr->y = pos->y;
+		sptr->z = pos->z;
+		sptr->Zvel = 0;
+		sptr->Yvel = 0;
+		sptr->Xvel = 0;
+		sptr->Flags = 10;
+		sptr->Scalar = 3;
+		sptr->MaxYvel = 0;
+		sptr->Def = objects[DEFAULT_SPRITES].mesh_index + 11;
+		sptr->Gravity = 0;
+		sptr->Size = 64;
+		sptr->dSize = sptr->Size;
+		sptr->sSize = sptr->Size;
+	}
+
 	return ret;
 }
 
