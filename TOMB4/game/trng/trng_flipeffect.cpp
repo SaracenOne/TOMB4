@@ -52,6 +52,24 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 	return result;
 }
 
+bool NGTriggerItemGroupWithTimer(unsigned char item_group, unsigned char timer, bool anti) {
+	NG_ITEM_GROUP current_item_group = current_item_groups[item_group];
+	int index = 0;
+	for (int i = 0; i < NG_ITEM_GROUP_MAX_LIST; i++) {
+		int current_script_item = current_item_group.item_list[i];
+		if (current_script_item < 0) {
+			break;
+		}
+		int current_item = ng_script_id_table[current_script_item];
+
+		items[current_item].timer = ((short)timer) * 30;
+		NGItemActivator(current_item, anti);
+
+		index++;
+	}
+	return true;
+}
+
 // NGLE - 51
 bool disable_input_for_time(unsigned char input, unsigned char timer) {
 	NGDisableInputForTime(input, (int)timer * 30);
@@ -181,21 +199,12 @@ bool set_volume_for_audio_track_on_channel(unsigned char volume, unsigned char c
 
 // NGLE - 145
 bool activate_item_group_with_timer(unsigned char item_group, unsigned char timer) {
-	NG_ITEM_GROUP current_item_group = current_item_groups[item_group];
-	int index = 0;
-	for (int i = 0; i < NG_ITEM_GROUP_MAX_LIST; i++) {
-		int current_script_item = current_item_group.item_list[i];
-		if (current_script_item < 0) {
-			break;
-		}
-		int current_item = ng_script_id_table[current_script_item];
+	return NGTriggerItemGroupWithTimer(item_group, timer, false);
+}
 
-		items[current_item].timer = ((short)timer) * 30;
-		NGItemActivator(current_item, false);
-
-		index++;
-	}
-	return true;
+// NGLE - 146
+bool untrigger_item_group_with_timer(unsigned char item_group, unsigned char timer) {
+	return NGTriggerItemGroupWithTimer(item_group, timer, true);
 }
 
 // NGLE - 407
@@ -317,6 +326,11 @@ bool NGFlipEffect(unsigned short param, short extra, bool oneshot, bool skip_che
 		case ACTIVATE_ITEM_GROUP_WITH_TIMER: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFloorStatePressedThisFrameOrLastFrame())
 				return activate_item_group_with_timer(action_data_1, action_data_2);
+			break;
+		}
+		case UNTRIGGER_ITEM_GROUP_WITH_TIMER: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFloorStatePressedThisFrameOrLastFrame())
+				return untrigger_item_group_with_timer(action_data_1, action_data_2);
 			break;
 		}
 		case SET_LARA_HOLSTER_TYPE: {
