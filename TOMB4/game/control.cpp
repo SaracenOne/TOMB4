@@ -47,6 +47,7 @@
 #include "trng/trng.h"
 #include "trng/trng_flipeffect.h"
 #include "trng/trng_extra_state.h"
+#include "trng/trng_condition.h"
 
 ITEM_INFO* items;
 ANIM_STRUCT* anims;
@@ -791,7 +792,11 @@ void TestTriggers(short* data, long heavy, long HeavyFlags)
 
 		case MONKEY:
 			if (NGUseNGConditionals()) {
-				return;
+				value = *data++ & 0x3FF;
+				char extra = (flags >> 9);
+
+				if (!NGCondition(value, extra, timer))
+					return;
 			} else {
 				state = lara_item->current_anim_state;
 
