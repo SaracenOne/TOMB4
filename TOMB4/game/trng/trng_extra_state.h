@@ -48,6 +48,7 @@ extern void NGSetDisplayTimerForMoveableWithType(int item_id, NGTimerTrackerType
 
 extern void NGDrawPhase();
 
-extern bool NGIsOneShotTriggeredForTile();
-extern bool NGCheckFloorStatePressedThisFrameOrLastFrame();
-extern bool NGCheckFloorStatePressedThisFrameOrLastFrame();
+extern bool NGIsFlipeffectOneShotTriggeredForTile();
+extern bool NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(bool heavy);
+
+extern bool NGCheckActionFloorStatePressedThisFrameOrLastFrame(bool heavy);

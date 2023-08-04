@@ -371,6 +371,73 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 						offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 						break;
 					}
+					case 0x0e: {
+						// AddEffect
+						unsigned short id = NG_READ_16(gfScriptFile, offset);
+						unsigned short effect_type = NG_READ_16(gfScriptFile, offset); // Obsolete
+						unsigned short flags_effects = NG_READ_16(gfScriptFile, offset);
+						unsigned short joint_type = NG_READ_16(gfScriptFile, offset);
+						short disp_x = NG_READ_16(gfScriptFile, offset);
+						short disp_y = NG_READ_16(gfScriptFile, offset);
+						short disp_z = NG_READ_16(gfScriptFile, offset);
+						unsigned short durate_emit = NG_READ_16(gfScriptFile, offset);
+						unsigned short durate_pause = NG_READ_16(gfScriptFile, offset);
+
+						switch ((NG_ADD_EFFECT_TYPE)effect_type) {
+							case NG_ADD_MIST: {
+								if (offset == command_block_end_position)
+									break;
+								unsigned short size_of_mist_ball = NG_READ_16(gfScriptFile, offset);
+								if (offset == command_block_end_position)
+									break;
+								unsigned short number_of_mist_balls = NG_READ_16(gfScriptFile, offset);
+								if (offset == command_block_end_position)
+									break;
+								unsigned short color_of_mist = NG_READ_16(gfScriptFile, offset);
+								if (offset == command_block_end_position)
+									break;
+								unsigned short persistence_of_mist = NG_READ_16(gfScriptFile, offset);
+								if (offset == command_block_end_position)
+									break;
+								break;
+							}
+							case NG_ADD_LIGHT_BLINK:
+							case NG_ADD_LIGHT_FLAT:
+							case NG_ADD_LIGHT_GLOVE:
+							case NG_ADD_LIGHT_SPOT: {
+								if (offset == command_block_end_position)
+									break;
+								unsigned short light_intensity = NG_READ_16(gfScriptFile, offset);
+								if (offset == command_block_end_position)
+									break;
+								unsigned short maximum_spotlight_distance = NG_READ_16(gfScriptFile, offset);
+								if (offset == command_block_end_position)
+									break;
+								unsigned short light_color = NG_READ_16(gfScriptFile, offset);
+								if (offset == command_block_end_position)
+									break;
+								break;
+							}
+							case NG_ADD_FLAME: {
+								if (offset == command_block_end_position)
+									break;
+								unsigned short flame_intensity = NG_READ_16(gfScriptFile, offset);
+								if (offset == command_block_end_position)
+									break;
+								unsigned short lara_burn_settings = NG_READ_16(gfScriptFile, offset);
+								if (offset == command_block_end_position)
+									break;
+								unsigned short flame_direction = NG_READ_16(gfScriptFile, offset);
+								if (offset == command_block_end_position)
+									break;
+								unsigned short flame_unknown = NG_READ_16(gfScriptFile, offset);
+								if (offset == command_block_end_position)
+									break;
+								break;
+							}
+						}
+						break;
+					}
 					case 0x0f: {
 						// Detector
 						printf("Detector is not implemented!\n");
@@ -817,73 +884,6 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 						offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 						break;
 					}
-					case 0x0e: {
-						// AddEffect
-						unsigned short id = NG_READ_16(gfScriptFile, offset);
-						unsigned short effect_type = NG_READ_16(gfScriptFile, offset); // Obsolete
-						unsigned short flags_effects = NG_READ_16(gfScriptFile, offset);
-						unsigned short joint_type = NG_READ_16(gfScriptFile, offset);
-						short disp_x = NG_READ_16(gfScriptFile, offset);
-						short disp_y = NG_READ_16(gfScriptFile, offset);
-						short disp_z = NG_READ_16(gfScriptFile, offset);
-						unsigned short durate_emit = NG_READ_16(gfScriptFile, offset);
-						unsigned short durate_pause = NG_READ_16(gfScriptFile, offset);
-
-						switch ((NG_ADD_EFFECT_TYPE)effect_type) {
-							case NG_ADD_MIST: {
-								if (offset == command_block_end_position)
-									break;
-								unsigned short size_of_mist_ball = NG_READ_16(gfScriptFile, offset);
-								if (offset == command_block_end_position)
-									break;
-								unsigned short number_of_mist_balls = NG_READ_16(gfScriptFile, offset);
-								if (offset == command_block_end_position)
-									break;
-								unsigned short color_of_mist = NG_READ_16(gfScriptFile, offset);
-								if (offset == command_block_end_position)
-									break;
-								unsigned short persistence_of_mist = NG_READ_16(gfScriptFile, offset);
-								if (offset == command_block_end_position)
-									break;
-								break;
-							}
-							case NG_ADD_LIGHT_BLINK:
-							case NG_ADD_LIGHT_FLAT:
-							case NG_ADD_LIGHT_GLOVE:
-							case NG_ADD_LIGHT_SPOT: {
-								if (offset == command_block_end_position)
-									break;
-								unsigned short light_intensity = NG_READ_16(gfScriptFile, offset);
-								if (offset == command_block_end_position)
-									break;
-								unsigned short maximum_spotlight_distance = NG_READ_16(gfScriptFile, offset);
-								if (offset == command_block_end_position)
-									break;
-								unsigned short light_color = NG_READ_16(gfScriptFile, offset);
-								if (offset == command_block_end_position)
-									break;
-								break;
-							}
-							case NG_ADD_FLAME: {
-								if (offset == command_block_end_position)
-									break;
-								unsigned short flame_intensity = NG_READ_16(gfScriptFile, offset);
-								if (offset == command_block_end_position)
-									break;
-								unsigned short lara_burn_settings = NG_READ_16(gfScriptFile, offset);
-								if (offset == command_block_end_position)
-									break;
-								unsigned short flame_direction = NG_READ_16(gfScriptFile, offset);
-								if (offset == command_block_end_position)
-									break;
-								unsigned short flame_unknown = NG_READ_16(gfScriptFile, offset);
-								if (offset == command_block_end_position)
-									break;
-								break;
-							}
-						}
-						break;
-					}
 					case 0x15:
 						// TriggerGroup (legacy?)
 						// Older builds of TRNG seem to use this opcode for TriggerGroups. Not sure why it changed though.
@@ -942,7 +942,12 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 						level_global_triggers_table[level_global_trigger_count].global_trigger.parameter = NG_READ_32(gfScriptFile, offset);
 						level_global_triggers_table[level_global_trigger_count].global_trigger.condition_trigger_group = NG_READ_16(gfScriptFile, offset);
 						level_global_triggers_table[level_global_trigger_count].global_trigger.perform_trigger_group = NG_READ_16(gfScriptFile, offset);
-						level_global_triggers_table[level_global_trigger_count].global_trigger.on_false_trigger_group = NG_READ_16(gfScriptFile, offset);
+						// The block may end here on older version of TRNG
+						if (offset < command_block_end_position) {
+							level_global_triggers_table[level_global_trigger_count].global_trigger.on_false_trigger_group = NG_READ_16(gfScriptFile, offset);
+						} else {
+							level_global_triggers_table[level_global_trigger_count].global_trigger.on_false_trigger_group = 0xffff;
+						}
 
 						level_global_trigger_count++;
 

@@ -2,6 +2,7 @@
 
 #include "trng.h"
 #include "trng_action.h"
+#include "trng_condition.h"
 #include "trng_extra_state.h"
 #include "trng_flipeffect.h"
 #include "trng_script_parser.h"
@@ -14,31 +15,45 @@
 
 // FlipEffects
 
-bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char execution_type, bool skip_checks) {
-	if (execution_type == 1 && !NGCheckFloorStatePressedThisFrameOrLastFrame() && !skip_checks) {
-		return false;
-	}
+bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char execution_type) {
+	// Multiple performing
+	// Execution Type 0
+	if (execution_type == 0) {
 
-	if (execution_type == 2) {
+	}
+	// Single performing
+	// Execution Type 1
+	else if (execution_type == 1) {
+
+	}
+	// Continous Performing
+	// Execution Type 2
+	else if (execution_type == 2) {
 		printf("TriggerGroup execution type 2 not implemented yet!");
+		return false;
+	} else {
+		printf("Unknown TriggerGroup execution type not implemented yet!");
 		return false;
 	}
 
 	NG_TRIGGER_GROUP& trigger_group = current_trigger_groups[trigger_group_id];
 	int index = 0;
-	bool result;
+	bool result = false;
 	while (index < NG_TRIGGER_GROUP_DATA_SIZE) {
 		// Flipeffect
 		if (trigger_group.data[index].first_field == 0x2000) {
-			result = NGFlipEffect(trigger_group.data[index].second_field, trigger_group.data[index].third_field & 0x7fff, false, true);
+			result = NGFlipEffect(trigger_group.data[index].second_field, trigger_group.data[index].third_field & 0x7fff, false, false, true);
 		}
 		// ActionNG
 		else if (trigger_group.data[index].first_field == 0x5000) {
 			result = NGAction(ng_script_id_table[trigger_group.data[index].second_field], trigger_group.data[index].third_field & 0x7fff, true) != -1;
 		}
+		// ConditionNG
+		else if (trigger_group.data[index].first_field == 0x8000 || trigger_group.data[index].first_field == 0x9000) {
+			result = NGCondition(trigger_group.data[index].second_field, (trigger_group.data[index].third_field >> 8) & 0xff, trigger_group.data[index].third_field & 0xff);
+		}
 		// End
 		else if (trigger_group.data[index].first_field == 0x0000) {
-			result = true;
 			break;
 		}
 		else {
@@ -181,8 +196,8 @@ bool disarm_lara(unsigned char remove_weapons_only, unsigned char _unusued) {
 }
 
 // NGLE - 118
-bool perform_triggergroup_from_script_in_specific_way(unsigned char trigger_group_id, unsigned char execution_type, bool skip_checks) {
-	return NGTriggerGroupFunction(trigger_group_id, execution_type, skip_checks);
+bool perform_triggergroup_from_script_in_specific_way(unsigned char trigger_group_id, unsigned char execution_type) {
+	return NGTriggerGroupFunction(trigger_group_id, execution_type);
 }
 
 // NGLE - 129
@@ -207,33 +222,9 @@ bool untrigger_item_group_with_timer(unsigned char item_group, unsigned char tim
 	return NGTriggerItemGroupWithTimer(item_group, timer, true);
 }
 
-// NGLE - 407
-bool set_lara_holsters(unsigned int holster_type, unsigned char unused) {
-	switch (holster_type) {
-		case 0x0d: {
-			lara.holster = LARA_HOLSTERS;
-			break;
-		};
-		case 0x0e: {
-			lara.holster = LARA_HOLSTERS_PISTOLS;
-			break;
-		};
-		case 0x10: {
-			lara.holster = LARA_HOLSTERS_SIXSHOOTER;
-			break;
-		};
-		case 0x0f: {
-			lara.holster = LARA_HOLSTERS_UZIS;
-			break;
-		};
-		case 0x00: {
-			lara.holster = LARA;
-			break;
-		};
-		default: {
-			lara.holster = holster_type;
-		}
-	}
+// NGLE - 231
+bool variables_add_value_to_variable(unsigned char variable, unsigned char value) {
+	printf("variables_add_value_to_variable is not implemented!\n");
 	return true;
 }
 
@@ -252,113 +243,147 @@ bool camera_set_cinema_effect_type_for_seconds(unsigned char action_data_1, unsi
 }
 
 // NGLE - 371
-bool perform_triggergroup_from_script_in_single_execution_mode(unsigned char trigger_group_id_lower, unsigned char trigger_group_id_upper, bool skip_checks) {
+bool perform_triggergroup_from_script_in_single_execution_mode(unsigned char trigger_group_id_lower, unsigned char trigger_group_id_upper) {
 	unsigned short trigger_group_id = (trigger_group_id_upper << 8) | trigger_group_id_lower;
-	return NGTriggerGroupFunction(trigger_group_id, 0, skip_checks);
+	return NGTriggerGroupFunction(trigger_group_id, 1);
 }
 
 // NGLE - 372
-bool perform_triggergroup_from_script_in_multi_execution_mode(unsigned char trigger_group_id_lower, unsigned char trigger_group_id_upper, bool skip_checks) {
+bool perform_triggergroup_from_script_in_multi_execution_mode(unsigned char trigger_group_id_lower, unsigned char trigger_group_id_upper) {
 	unsigned short trigger_group_id = (trigger_group_id_upper << 8) | trigger_group_id_lower;
-	return NGTriggerGroupFunction(trigger_group_id, 1, skip_checks);
+	return NGTriggerGroupFunction(trigger_group_id, 0);
 }
 
+// NGLE - 407
+bool set_lara_holsters(unsigned int holster_type, unsigned char unused) {
+	switch (holster_type) {
+	case 0x0d: {
+		lara.holster = LARA_HOLSTERS;
+		break;
+	};
+	case 0x0e: {
+		lara.holster = LARA_HOLSTERS_PISTOLS;
+		break;
+	};
+	case 0x10: {
+		lara.holster = LARA_HOLSTERS_SIXSHOOTER;
+		break;
+	};
+	case 0x0f: {
+		lara.holster = LARA_HOLSTERS_UZIS;
+		break;
+	};
+	case 0x00: {
+		lara.holster = LARA;
+		break;
+	};
+	default: {
+		lara.holster = holster_type;
+	}
+	}
+	return true;
+}
 
-bool NGFlipEffect(unsigned short param, short extra, bool oneshot, bool skip_checks) {
+bool NGFlipEffect(unsigned short param, short extra, bool oneshot, bool heavy, bool skip_checks) {
 	char action_data_1 = (char)extra & 0xff;
 	char action_data_2 = (char)(extra >> 8) & 0xff;
 
 	switch (param) {
 		case DISABLE_INPUT_FOR_TIME: {
-			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFloorStatePressedThisFrameOrLastFrame())
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return disable_input_for_time(action_data_1, action_data_2);
 			break;
 		}
 		case ENABLE_INPUT: {
-			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFloorStatePressedThisFrameOrLastFrame())
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return enable_input(action_data_1, action_data_2);
 			break;
 		}
 		case KILL_AND_OR_SET_LARA_ON_FIRE: {
-			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFloorStatePressedThisFrameOrLastFrame())
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return kill_and_or_set_lara_on_fire(action_data_1, action_data_2);
 			break;
 		}
 		case PLAY_CD_TRACK_ON_CHANNEL_1: {
-			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFloorStatePressedThisFrameOrLastFrame())
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return play_cd_track_channel_1(action_data_1, action_data_2);
 			break;
 		}
 		case FORCE_LARA_ANIMATION_0_255_OF_SLOT_ANIMATION: {
-			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFloorStatePressedThisFrameOrLastFrame())
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return force_lara_animation_0_255_of_slot_animation(action_data_1, action_data_2);
 			break;
 		}
 		case FORCE_LARA_ANIMATION_256_512_OF_SLOT_ANIMATION: {
-			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFloorStatePressedThisFrameOrLastFrame())
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return force_lara_animation_256_512_of_slot_animation(action_data_1, action_data_2);
 			break;
 		}
 		case REMOVE_WEAPONS_OR_FLARES_FROM_LARAS_HANDS: {
-			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFloorStatePressedThisFrameOrLastFrame())
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return remove_weapons_or_flares_from_laras_hands(action_data_1, action_data_2);
 			break;
 		}
 		case DISARM_LARA: {
-			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFloorStatePressedThisFrameOrLastFrame())
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return disarm_lara(action_data_1, action_data_2);
 			break;
 		}
 		case PERFORM_TRIGGERGROUP_FROM_SCRIPT_IN_SPECIFIC_WAY:
-			if (skip_checks || !NGIsOneShotTriggeredForTile())
-				return perform_triggergroup_from_script_in_specific_way(action_data_1, action_data_2, skip_checks);
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+				return perform_triggergroup_from_script_in_specific_way(action_data_1, action_data_2);
 			break;
 		case PLAY_CD_TRACK_ON_CHANNEL_2: {
-			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFloorStatePressedThisFrameOrLastFrame())
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return play_cd_track_channel_2(action_data_1, action_data_2);
 			break;
 		}
 		case SET_VOLUME_OF_AUDIO_TRACK_ON_CHANNEL: {
-			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFloorStatePressedThisFrameOrLastFrame())
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return set_volume_for_audio_track_on_channel(action_data_1, action_data_2);
 			break;
 		}
 		case ACTIVATE_ITEM_GROUP_WITH_TIMER: {
-			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFloorStatePressedThisFrameOrLastFrame())
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return activate_item_group_with_timer(action_data_1, action_data_2);
 			break;
 		}
 		case UNTRIGGER_ITEM_GROUP_WITH_TIMER: {
-			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFloorStatePressedThisFrameOrLastFrame())
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return untrigger_item_group_with_timer(action_data_1, action_data_2);
 			break;
 		}
-		case SET_LARA_HOLSTER_TYPE: {
-			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFloorStatePressedThisFrameOrLastFrame())
-				return set_lara_holsters(action_data_1, action_data_2);
+		case VARIABLES_ADD_VALUE_TO_VARIABLE: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+				return variables_add_value_to_variable(action_data_1, action_data_2);
 			break;
 		}
 		case CAMERA_SHOW_BLACK_SCREEN_FOR_SECONDS_WITH_FINAL_CURTAIN_EFFECT: {
-			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFloorStatePressedThisFrameOrLastFrame())
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return camera_show_black_screen_for_seconds_with_final_curtain_effect(action_data_1, action_data_2);
 			break;
 		}
 		case PERFORM_TRIGGERGROUP_FROM_SCRIPT_IN_SINGLE_EXECUTION:
-			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFloorStatePressedThisFrameOrLastFrame())
-				return perform_triggergroup_from_script_in_single_execution_mode(action_data_1, action_data_2, skip_checks);
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+				return perform_triggergroup_from_script_in_single_execution_mode(action_data_1, action_data_2);
 			break;
 		case PERFORM_TRIGGERGROUP_FROM_SCRIPT_IN_MULTI_EXECUTION:
-			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFloorStatePressedThisFrameOrLastFrame())
-				return perform_triggergroup_from_script_in_multi_execution_mode(action_data_1, action_data_2, skip_checks);
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+				return perform_triggergroup_from_script_in_multi_execution_mode(action_data_1, action_data_2);
 			break;
 		case CAMERA_SET_CINEMA_EFFECT_TYPE_FOR_SECONDS: {
-			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFloorStatePressedThisFrameOrLastFrame())
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return camera_set_cinema_effect_type_for_seconds(action_data_1, action_data_2);
+			break;
+		}
+		case SET_LARA_HOLSTER_TYPE: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+				return set_lara_holsters(action_data_1, action_data_2);
 			break;
 		}
 		default: {
 			if (param < 47) {
-				if (skip_checks || !NGIsOneShotTriggeredForTile()) {
+				if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile()) {
 					char original_trigger_timer = TriggerTimer;
 					TriggerTimer = action_data_1;
 					effect_routines[param](lara_item);

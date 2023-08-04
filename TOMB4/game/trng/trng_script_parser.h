@@ -77,6 +77,8 @@ struct NG_LEVEL {
 	NG_LEVEL_RECORD_DATA *records = NULL;
 };
 
+extern NG_LEVEL ng_levels[MAX_NG_LEVELS];
+
 enum NG_ADD_EFFECT_TYPE {
 	NG_ADD_NOTHING,
 	NG_ADD_FLAME,

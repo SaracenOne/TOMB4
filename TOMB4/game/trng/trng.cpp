@@ -170,8 +170,8 @@ void NGRotateItemY(unsigned short item_id, short rotation) {
 }
 
 void NGSetup() {
-	NGSetupExtraState();
 	NGLoadTablesForLevel(gfCurrentLevel);
+	NGSetupExtraState();
 }
 
 void NGFrameFinish() {

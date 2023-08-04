@@ -15,6 +15,7 @@ enum NG_FLIPEFFECTS {
 	UNTRIGGER_ITEM_GROUP_WITH_TIMER = 146,
 	ATTRACT_LARA_IN_DIRECTION_IN_AIR = 153,
 	ATTRACT_LARA_IN_DIRECTION_ON_GROUND_AND_IN_AIR = 158,
+	VARIABLES_ADD_VALUE_TO_VARIABLE = 231,
 	CAMERA_SHOW_BLACK_SCREEN_FOR_SECONDS_WITH_FINAL_CURTAIN_EFFECT = 367,
 	CAMERA_SET_CINEMA_EFFECT_TYPE_FOR_SECONDS = 369,
 	PERFORM_TRIGGERGROUP_FROM_SCRIPT_IN_SINGLE_EXECUTION = 371,
@@ -22,4 +23,5 @@ enum NG_FLIPEFFECTS {
 	SET_LARA_HOLSTER_TYPE = 407
 };
 
-extern bool NGFlipEffect(unsigned short param, short extra, bool oneshot, bool skip_checks);
+extern bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char execution_type);
+extern bool NGFlipEffect(unsigned short param, short extra, bool oneshot, bool heavy, bool skip_checks);

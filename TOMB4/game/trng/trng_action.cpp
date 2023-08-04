@@ -82,15 +82,15 @@ void NGHurtEnemy(unsigned short item_id, unsigned short damage) {
 	}
 }
 
-int NGActionTrigger(unsigned short param, unsigned short extra, short timer) {
+int NGActionTrigger(unsigned short param, unsigned short extra, short timer, bool heavy) {
 	unsigned char action_type = (unsigned char)extra & 0xff;
 	unsigned char action_data = (unsigned char)(extra >> 8) & 0xff;
 
-	int result = NGAction(param, extra, !NGCheckFloorStatePressedThisFrameOrLastFrame());
+	int result = NGAction(param, extra, !NGCheckActionFloorStatePressedThisFrameOrLastFrame(heavy));
 
 	// Replicates a weird bug in the original
 	if (action_type == TRIGGER_MOVEABLE_ACTIVATE_WITH_TIMER || action_type == UNTRIGGER_MOVEABLE_ACTIVATE_WITH_TIMER || action_type == OPEN_OR_CLOSE_DOOR_ITEM) {
-		if (!NGCheckFloorStatePressedThisFrameOrLastFrame()) {
+		if (!NGCheckActionFloorStatePressedThisFrameOrLastFrame(heavy)) {
 			ITEM_INFO* item;
 
 			item = &items[param];
@@ -110,6 +110,10 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame) {
 	short item_id = -1;
 	if (first_frame) {
 		item_id = param;
+	}
+
+	if (item_id < 0) {
+		return -1;
 	}
 
 	switch (action_type) {

@@ -31,5 +31,5 @@ enum NG_ACTION_TYPE {
 
 extern void NGItemActivator(int item_id, bool anti);
 
-extern int NGActionTrigger(unsigned short param, unsigned short extra, short timer);
-extern int NGAction(unsigned short param, unsigned short extra, bool skip_checks);
+extern int NGActionTrigger(unsigned short param, unsigned short extra, short timer, bool heavy);
+extern int NGAction(unsigned short param, unsigned short extra, bool first_frame);

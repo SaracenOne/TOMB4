@@ -4,6 +4,7 @@
 #include "../../specific/function_stubs.h"
 #include "../../specific/3dmath.h"
 #include "../control.h"
+#include "../gameflow.h"
 #include "../effects.h"
 #include "../objects.h"
 #include "../lara.h"
@@ -11,6 +12,8 @@
 #include "../text.h"
 #include "trng.h"
 #include "trng_extra_state.h"
+#include "trng_flipeffect.h"
+#include "trng_script_parser.h"
 
 unsigned int ng_room_offset_table[0xff];
 
@@ -26,6 +29,13 @@ struct NG_ITEM_EXTRADATA {
 };
 
 NG_ITEM_EXTRADATA *ng_items_extradata = NULL;
+
+struct NG_GLOBAL_TRIGGER_STATE {
+	bool is_disabled = false;
+	bool is_halted = false;
+};
+
+NG_GLOBAL_TRIGGER_STATE ng_global_trigger_states[MAX_NG_GLOBAL_TRIGGERS];
 
 // TODO: In the original, there's some behaviour which allows multiple timers to run
 // at once, displaying the last activated on until it runs out. Needs investigation.
@@ -43,12 +53,31 @@ int backup_ng_trigger_index = -1;
 int backup_ng_trigger_room = -1;
 int pending_ng_room = -1;
 
-int ng_floorstate_data_size = 0;
-char* ng_oneshot_floorstate = NULL;
-int ng_last_floor_trigger = -1;
-int ng_current_floor_trigger = -1;
+int ng_flipeffect_floorstate_data_size = 0;
+char* ng_flipeffect_oneshot_floorstate = NULL;
+
+int ng_last_flipeffect_floor_trigger = -1;
+int ng_current_flipeffect_floor_trigger = -1;
+
+int ng_last_action_floor_trigger = -1;
+int ng_current_action_floor_trigger = -1;
+
+int ng_heavy_last_flipeffect_floor_trigger = -1;
+int ng_heavy_current_flipeffect_floor_trigger = -1;
+
+int ng_heavy_last_action_floor_trigger = -1;
+int ng_heavy_current_action_floor_trigger = -1;
 
 int lara_damage_resistence = 1000;
+
+// Variables
+int current_value = 0;
+int global_alfa = 0;
+int global_beta = 0;
+int global_delta = 0;
+int local_alfa = 0;
+int local_beta = 0;
+int local_delta = 0;
 
 enum TRNG_INPUT {
 	TRNG_INPUT_UP,
@@ -106,21 +135,39 @@ void NGRestoreBackupTriggerRoomAndIndex() {
 	current_ng_trigger_room = backup_ng_trigger_room;
 }
 
-bool NGIsOneShotTriggeredForTile() {
+bool NGIsFlipeffectOneShotTriggeredForTile() {
 	int index = ng_room_offset_table[current_ng_trigger_room] + current_ng_trigger_index;
 
-	bool result = ng_oneshot_floorstate[index];
+	bool result = ng_flipeffect_oneshot_floorstate[index];
 
 	return result;
 }
 
 // This method is not accurate since it seems like rollingballs can interrupted the check.
-bool NGCheckFloorStatePressedThisFrameOrLastFrame() {
+bool NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(bool heavy) {
 	int index = ng_room_offset_table[current_ng_trigger_room] + current_ng_trigger_index;
 
-	if (ng_current_floor_trigger == index|| ng_last_floor_trigger == index)
-		return true;
+	if (!heavy) {
+		if (ng_current_flipeffect_floor_trigger == index || ng_last_flipeffect_floor_trigger == index)
+			return true;
+	} else {
+		if (ng_heavy_current_flipeffect_floor_trigger == index || ng_heavy_last_flipeffect_floor_trigger == index)
+			return true;
+	}
 
+	return false;
+}
+
+extern bool NGCheckActionFloorStatePressedThisFrameOrLastFrame(bool heavy) {
+	int index = ng_room_offset_table[current_ng_trigger_room] + current_ng_trigger_index;
+
+	if (!heavy) {
+		if (ng_current_action_floor_trigger == index || ng_last_action_floor_trigger == index)
+			return true;
+	} else {
+		if (ng_heavy_current_action_floor_trigger == index || ng_heavy_last_action_floor_trigger == index)
+			return true;
+	}
 
 	return false;
 }
@@ -271,7 +318,77 @@ void NGUpdateAllItems() {
 	}
 }
 
+void NGExecuteSingleGlobalTrigger(int global_trigger_id) {
+	NG_GLOBAL_TRIGGER* global_trigger = &ng_levels[gfCurrentLevel].records->global_triggers_table[global_trigger_id].global_trigger;
+
+	bool global_trigger_condition_passed = false;
+	
+	unsigned int condition_trigger_group_id = global_trigger->condition_trigger_group;
+
+	// What the difference between GT_CONDITION_GROUP and GT_ALWAYS?
+	switch (global_trigger->type) {
+		case 0x000b: // GT_CONDITION_GROUP
+			global_trigger_condition_passed = true;
+			break;
+		case 0x0020: // GT_ALWAYS
+			global_trigger_condition_passed = true;
+			break;
+		default:
+			printf("Unsupported GlobalTrigger type!\n");
+			return;
+	}
+
+	// FGT_NOT_TRUE
+	if (global_trigger->flags & 0x0002)
+		global_trigger_condition_passed = !global_trigger_condition_passed;
+
+	if (ng_global_trigger_states[global_trigger_id].is_disabled) {
+		global_trigger_condition_passed = false;
+	}
+
+	if (global_trigger_condition_passed) {
+		if (!ng_global_trigger_states[global_trigger_id].is_halted && (condition_trigger_group_id == 0xffff || NGTriggerGroupFunction(condition_trigger_group_id, 0))) {
+			unsigned int perform_trigger_group_id = global_trigger->perform_trigger_group;
+
+			if (perform_trigger_group_id != 0xffff) {
+				NGTriggerGroupFunction(perform_trigger_group_id, 0);
+			}
+
+			// FGT_SINGLE_SHOT / FGT_SINGLE_SHOT_RESUMED
+			if (global_trigger->flags & 0x0001 || global_trigger->flags & 0x0020)
+				ng_global_trigger_states[global_trigger_id].is_halted = true;
+		} else {
+			// FGT_SINGLE_SHOT_RESUMED
+			if (global_trigger->flags & 0x0020)
+				ng_global_trigger_states[global_trigger_id].is_halted = false;
+
+			//if (global_trigger_id > 30) {
+			//	return;
+			//}
+
+			//if (global_trigger_id == 26) {
+			//	printf("");
+			//	return;
+			//}
+
+			unsigned int on_false_trigger_group_id = global_trigger->on_false_trigger_group;
+			if (on_false_trigger_group_id != 0xffff) {
+				NGTriggerGroupFunction(on_false_trigger_group_id, 0);
+			}
+		}
+	}
+}
+
+void NGProcessGlobalTriggers() {
+	int global_trigger_count = ng_levels[gfCurrentLevel].records->global_trigger_count;
+	for (int i = 0; i < global_trigger_count; i++) {
+		NGExecuteSingleGlobalTrigger(i);
+	}
+}
+
 void NGFrameStartUpdate() {
+	NGProcessGlobalTriggers();
+
 	if (ng_cinema_timer > 0 || ng_cinema_type > 0) {
 		switch (ng_cinema_type) {
 			case 0: { // None / curtain effect
@@ -452,44 +569,110 @@ void NGSetDisplayTimerForMoveableWithType(int item_id, NGTimerTrackerType new_ti
 	}
 }
 
-void NGUpdateFloorstateData(bool update_oneshot) {
+void NGUpdateFlipeffectFloorstateData(bool update_oneshot, bool heavy) {
 	int index = ng_room_offset_table[current_ng_trigger_room] + current_ng_trigger_index;
 
 	// Since this is flagged as oneshot, store the oneshot data here.
 	if (update_oneshot) {
-		ng_oneshot_floorstate[index] = true;
+		ng_flipeffect_oneshot_floorstate[index] = true;
 	}
-	ng_current_floor_trigger = index;
-	ng_last_floor_trigger = index;
+	if (heavy) {
+		ng_heavy_current_flipeffect_floor_trigger = index;
+		ng_heavy_last_flipeffect_floor_trigger = index;
+	} else {
+		ng_current_flipeffect_floor_trigger = index;
+		ng_last_flipeffect_floor_trigger = index;
+	}
+}
+
+void NGUpdateActionFloorstateData(bool heavy) {
+	int index = ng_room_offset_table[current_ng_trigger_room] + current_ng_trigger_index;
+
+	if (heavy) {
+		ng_heavy_current_action_floor_trigger = index;
+		ng_heavy_last_action_floor_trigger = index;
+	} else {
+		ng_current_action_floor_trigger = index;
+		ng_last_action_floor_trigger = index;
+	}
 }
 
 void NGSetupExtraState() {
+	// Variables
+	current_value = 0;
+	global_alfa = 0;
+	global_beta = 0;
+	global_delta = 0;
+	local_alfa = 0;
+	local_beta = 0;
+	local_delta = 0;
+
+	// Timer Trackers
 	timer_tracker_type = TTT_ONLY_SHOW_SECONDS;
 	timer_tracker = -1;
 	timer_tracker_remaining_until_timeout = 0;
 
+	// Items
 	ng_items_extradata = (NG_ITEM_EXTRADATA*)game_malloc(ITEM_COUNT * sizeof(NG_ITEM_EXTRADATA));
 	memset(ng_items_extradata, 0x00, ITEM_COUNT * sizeof(NG_ITEM_EXTRADATA));
 
+	// Global triggers
+	{
+		for (int i = 0; i < MAX_NG_GLOBAL_TRIGGERS; i++) {
+			ng_global_trigger_states[i].is_disabled = false;
+			ng_global_trigger_states[i].is_halted = false;
+		}
+		int global_trigger_count = ng_levels[gfCurrentLevel].records->global_trigger_count;
+		for (int i = 0; i < global_trigger_count; i++) {
+			NG_GLOBAL_TRIGGER* global_trigger = &ng_levels[gfCurrentLevel].records->global_triggers_table[i].global_trigger;
+			// FGT_DISABLED
+			if (global_trigger->flags & 0x0008) {
+				ng_global_trigger_states[i].is_disabled = true;
+			}
+		}
+	}
+
+	// Cinema
 	ng_cinema_timer = -1;
 	ng_cinema_type = 0;
 
-	ng_floorstate_data_size = 0;
+	// Floorstate
+	ng_last_flipeffect_floor_trigger = -1;
+	ng_current_flipeffect_floor_trigger = -1;
+	ng_last_action_floor_trigger = -1;
+	ng_current_action_floor_trigger = -1;
+	ng_heavy_last_flipeffect_floor_trigger = -1;
+	ng_heavy_current_flipeffect_floor_trigger = -1;
+	ng_heavy_last_action_floor_trigger = -1;
+	ng_heavy_current_action_floor_trigger = -1;
+
+	ng_flipeffect_floorstate_data_size = 0;
 	for (int i = 0; i < number_rooms; i++) {
-		ng_room_offset_table[i] = ng_floorstate_data_size;
-		ng_floorstate_data_size += room[i].x_size * room[i].y_size;
+		ng_room_offset_table[i] = ng_flipeffect_floorstate_data_size;
+		ng_flipeffect_floorstate_data_size += room[i].x_size * room[i].y_size;
 	}
+	ng_flipeffect_oneshot_floorstate = (char*)game_malloc(ng_flipeffect_floorstate_data_size);
+	memset(ng_flipeffect_oneshot_floorstate, 0x00, ng_flipeffect_floorstate_data_size);
 
-	ng_oneshot_floorstate = (char*)game_malloc(ng_floorstate_data_size);
-
-	memset(ng_oneshot_floorstate, 0x00, ng_floorstate_data_size);
-
+	// Input lock
 	memset(ng_input_lock_timers, 0x00, sizeof(ng_input_lock_timers));
 
+	// Damage
 	lara_damage_resistence = 1000;
 }
 
 void NGFrameFinishExtraState() {
-	ng_last_floor_trigger = ng_current_floor_trigger;
-	ng_current_floor_trigger = -1;
+	// Lara
+	ng_last_flipeffect_floor_trigger = ng_current_flipeffect_floor_trigger;
+	ng_current_flipeffect_floor_trigger = -1;
+
+	ng_last_action_floor_trigger = ng_current_action_floor_trigger;
+	ng_current_action_floor_trigger = -1;
+
+	// Heavy
+	ng_heavy_last_flipeffect_floor_trigger = ng_heavy_current_flipeffect_floor_trigger;
+	ng_heavy_current_flipeffect_floor_trigger = -1;
+
+	ng_heavy_last_action_floor_trigger = ng_heavy_current_action_floor_trigger;
+	ng_heavy_current_action_floor_trigger = -1;
 }

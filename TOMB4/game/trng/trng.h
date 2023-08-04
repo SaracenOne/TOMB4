@@ -38,8 +38,8 @@ extern void NGMoveItemByUnits(unsigned short item_id, NG_DIRECTIONS direction, u
 
 extern void NGRotateItemY(unsigned short item_id, short rotation);
 
-extern int NGAction(unsigned short param, unsigned short extra, bool first_frame);
-extern int NGActionTrigger(unsigned short param, unsigned short extra, short timer);
+extern int NGAction(unsigned short param, unsigned short extra, bool first_frame, bool heavy);
+extern int NGActionTrigger(unsigned short param, unsigned short extra, short timer, bool heavy);
 extern void NGSetup();
 
 extern void NGUpdateAllItems();
@@ -54,7 +54,8 @@ extern bool NGUseNGConditionals();
 extern bool NGUseNGFlipEffects();
 extern bool NGUseNGActions();
 
-extern void NGUpdateFloorstateData(bool update_oneshot);
+extern void NGUpdateFlipeffectFloorstateData(bool update_oneshot, bool heavy);
+extern void NGUpdateActionFloorstateData(bool heavy);
 
 extern void NGInit();
 extern void NGCleanup();

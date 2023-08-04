@@ -1012,7 +1012,8 @@ void TestTriggers(short* data, long heavy, long HeavyFlags)
 			if (NGUseNGFlipEffects()) {
 				trigger = *data++;
 				is_ng_oneshot = flags & IFL_INVISIBLE;
-				NGFlipEffect(value, (trigger & 0x7fff), is_ng_oneshot, false);
+				NGFlipEffect(value, (trigger & 0x7fff), is_ng_oneshot, heavy, false);
+				NGUpdateFlipeffectFloorstateData(is_ng_oneshot, heavy);
 			} else {
 				TriggerTimer = timer;
 				neweffect = value;
@@ -1037,11 +1038,12 @@ void TestTriggers(short* data, long heavy, long HeavyFlags)
 		case TO_BODYBAG:
 			if (NGUseNGActions()) {
 				trigger = *data++;
-				int last_item = NGActionTrigger(value, (trigger & 0x7fff), timer);
+				int last_item = NGActionTrigger(value, (trigger & 0x7fff), timer, heavy);
 				triggered_items[trigger_items_count] = last_item;
 				trigger_items_count++;
 				if (trigger_items_count > MAX_TRIGGERED_ITEMS)
 					trigger_items_count = MAX_TRIGGERED_ITEMS;
+				NGUpdateActionFloorstateData(heavy);
 			}
 			break;
 		case TO_FLYBY:
@@ -1142,10 +1144,6 @@ void TestTriggers(short* data, long heavy, long HeavyFlags)
 	{
 		flipeffect = neweffect;
 		fliptimer = 0;
-	}
-
-	if (!heavy) {
-		NGUpdateFloorstateData(is_ng_oneshot);
 	}
 }
 
