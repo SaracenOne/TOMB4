@@ -322,6 +322,24 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame) {
 				NGMoveItemByUnits(item_id, NG_SOUTH, 8 * ((action_data)+1));
 			break;
 		}
+		case CREATURE_FORCE_FRAME_OF_CURRENT_ANIMATION: {
+			if (first_frame) {
+				ITEM_INFO* item = &items[item_id];
+				if (item) {
+					item->frame_number = anims[item->anim_number].frame_base + action_data;
+				}
+			}
+			break;
+		}
+		case CREATURE_FORCE_STATE_ID: {
+			if (first_frame) {
+				ITEM_INFO* item = &items[item_id];
+				if (item) {
+					item->current_anim_state = action_data; // Do we need to change the goal state too or not?
+				}
+			}
+			break;
+		}
 		default:
 			if (first_frame)
 				printf("Unimplemented NGTrigger %u\n", action_type);
