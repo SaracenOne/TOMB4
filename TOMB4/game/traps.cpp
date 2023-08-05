@@ -1793,7 +1793,7 @@ void ControlRollingBall(short item_number)
 			fz = phd_sqrt(SQUARE(camera.pos.x - item->pos.x_pos) + SQUARE(camera.pos.y - item->pos.y_pos) + SQUARE(camera.pos.z - item->pos.z_pos));
 
 			// NGLE: This flag silences the RollingBall.
-			if (!item->trigger_flags & 0x01 || !global_info.trng_rollingball_extended_ocb) {
+			if (!(item->trigger_flags & 0x01) || !global_info.trng_rollingball_extended_ocb) {
 				if (fz < 0x4000)
 					camera.bounce = -(((0x4000 - fz) * abs(item->fallspeed)) >> W2V_SHIFT);
 
