@@ -30,8 +30,7 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 	// Continous Performing
 	// Execution Type 2
 	else if (execution_type == 2) {
-		printf("TriggerGroup execution type 2 not implemented yet!");
-		return false;
+		NGSetTriggerGroupContinuous(trigger_group_id, true);
 	} else {
 		printf("Unknown TriggerGroup execution type not implemented yet!");
 		return false;

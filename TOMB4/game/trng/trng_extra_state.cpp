@@ -37,6 +37,13 @@ struct NG_GLOBAL_TRIGGER_STATE {
 
 NG_GLOBAL_TRIGGER_STATE ng_global_trigger_states[MAX_NG_GLOBAL_TRIGGERS];
 
+struct NG_TRIGGER_GROUP_STATE {
+	bool continuous = false;
+	bool one_shot = false;
+};
+
+NG_TRIGGER_GROUP_STATE ng_trigger_group_states[MAX_NG_TRIGGER_GROUPS];
+
 // TODO: In the original, there's some behaviour which allows multiple timers to run
 // at once, displaying the last activated on until it runs out. Needs investigation.
 #define TIMER_TRACKER_TIMEOUT 30
@@ -365,15 +372,6 @@ void NGExecuteSingleGlobalTrigger(int global_trigger_id) {
 			if (global_trigger->flags & 0x0020)
 				ng_global_trigger_states[global_trigger_id].is_halted = false;
 
-			//if (global_trigger_id > 30) {
-			//	return;
-			//}
-
-			//if (global_trigger_id == 26) {
-			//	printf("");
-			//	return;
-			//}
-
 			unsigned int on_false_trigger_group_id = global_trigger->on_false_trigger_group;
 			if (on_false_trigger_group_id != 0xffff) {
 				NGTriggerGroupFunction(on_false_trigger_group_id, 0);
@@ -389,8 +387,18 @@ void NGProcessGlobalTriggers() {
 	}
 }
 
+void NGProcessTriggerGroups() {
+	int trigger_group_count = ng_levels[gfCurrentLevel].records->trigger_group_count;
+	for (int i = 0; i < MAX_NG_TRIGGER_GROUPS; i++) {
+		if (NGIsTriggerGroupContinuous(i)) {
+			NGTriggerGroupFunction(i, 0);
+		}
+	}
+}
+
 void NGFrameStartUpdate() {
 	NGProcessGlobalTriggers();
+	NGProcessTriggerGroups();
 
 	if (ng_cinema_timer > 0 || ng_cinema_type > 0) {
 		switch (ng_cinema_type) {
@@ -562,6 +570,14 @@ void NGSetCinemaTypeAndTimer(int type, int ticks) {
 	ng_cinema_timer = ticks;
 }
 
+extern bool NGIsTriggerGroupContinuous(int trigger_group_id) {
+	return ng_trigger_group_states[trigger_group_id].continuous;
+}
+
+extern void NGSetTriggerGroupContinuous(int trigger_group_id, bool is_continuous) {
+	ng_trigger_group_states[trigger_group_id].continuous = is_continuous;
+}
+
 void NGSetDisplayTimerForMoveableWithType(int item_id, NGTimerTrackerType new_timer_tracker_type) {
 	timer_tracker = item_id;
 	timer_tracker_type = new_timer_tracker_type;
@@ -635,6 +651,14 @@ void NGSetupExtraState() {
 			if (global_trigger->flags & 0x0008) {
 				ng_global_trigger_states[i].is_disabled = true;
 			}
+		}
+	}
+
+	// Trigger groups
+	{
+		for (int i = 0; i < MAX_NG_TRIGGER_GROUPS; i++) {
+			ng_trigger_group_states[i].continuous = false;
+			ng_trigger_group_states[i].one_shot = false;
 		}
 	}
 
