@@ -7,6 +7,17 @@ enum NGTimerTrackerType {
 	TTT_SECONDS_WITH_THREE_NOUGHTS,
 };
 
+extern int current_value;
+extern int global_alfa;
+extern int global_beta;
+extern int global_delta;
+extern int global_timer;
+extern int local_alfa;
+extern int local_beta;
+extern int local_delta;
+extern int local_timer;
+extern int last_input_number;
+
 extern void NGStorePendingRoomNumber(int room_number);
 extern int NGRestorePendingRoomNumber();
 extern void NGUpdateCurrentTriggerRoomAndIndex(int new_room, int new_index);

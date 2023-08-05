@@ -2,6 +2,7 @@
 
 #include "trng.h"
 #include "trng_action.h"
+#include "trng_arithmetic.h"
 #include "trng_condition.h"
 #include "trng_extra_state.h"
 #include "trng_flipeffect.h"
@@ -224,9 +225,28 @@ bool untrigger_item_group_with_timer(unsigned char item_group, unsigned char tim
 
 // NGLE - 231
 bool variables_add_value_to_variable(unsigned char variable, unsigned char value) {
-	printf("variables_add_value_to_variable is not implemented!\n");
+	NGNumericOperation(NG_ADD, variable, value);
 	return true;
 }
+
+// NGLE - 233
+bool variables_subtract_value_from_variable(unsigned char variable, unsigned char value) {
+	NGNumericOperation(NG_SUBTRACT, variable, value);
+	return true;
+}
+
+// NGLE - 251
+bool variables_multiply_variable_by_value(unsigned char variable, unsigned char value) {
+	NGNumericOperation(NG_MULTIPLY, variable, value);
+	return true;
+}
+
+// NGLE - 253
+bool variables_divide_variable_by_value(unsigned char variable, unsigned char value) {
+	NGNumericOperation(NG_DIVIDE, variable, value);
+	return true;
+}
+
 
 // NGLE - 367
 bool camera_show_black_screen_for_seconds_with_final_curtain_effect(unsigned char timer, unsigned char unused) {
@@ -356,6 +376,21 @@ bool NGFlipEffect(unsigned short param, short extra, bool oneshot, bool heavy, b
 		case VARIABLES_ADD_VALUE_TO_VARIABLE: {
 			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return variables_add_value_to_variable(action_data_1, action_data_2);
+			break;
+		}
+		case VARIABLES_SUBTRACT_VALUE_FROM_VARIABLE: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+				return variables_subtract_value_from_variable(action_data_1, action_data_2);
+			break;
+		}
+		case VARIABLES_MULTIPLY_VARIABLE_BY_VALUE: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+				return variables_multiply_variable_by_value(action_data_1, action_data_2);
+			break;
+		}
+		case VARIABLES_DIVIDE_VARIABLE_BY_VALUE: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+				return variables_divide_variable_by_value(action_data_1, action_data_2);
 			break;
 		}
 		case CAMERA_SHOW_BLACK_SCREEN_FOR_SECONDS_WITH_FINAL_CURTAIN_EFFECT: {

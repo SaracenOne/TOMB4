@@ -75,9 +75,12 @@ int current_value = 0;
 int global_alfa = 0;
 int global_beta = 0;
 int global_delta = 0;
+int global_timer = 0;
 int local_alfa = 0;
 int local_beta = 0;
 int local_delta = 0;
+int local_timer = 0;
+int last_input_number = 0;
 
 enum TRNG_INPUT {
 	TRNG_INPUT_UP,
@@ -603,9 +606,12 @@ void NGSetupExtraState() {
 	global_alfa = 0;
 	global_beta = 0;
 	global_delta = 0;
+	global_timer = 0;
 	local_alfa = 0;
 	local_beta = 0;
 	local_delta = 0;
+	local_timer = 0;
+	last_input_number = 0;
 
 	// Timer Trackers
 	timer_tracker_type = TTT_ONLY_SHOW_SECONDS;

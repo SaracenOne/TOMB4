@@ -10,6 +10,7 @@
 #include "../lot.h"
 #include "../lara.h"
 #include "trng.h"
+#include "trng_arithmetic.h"
 #include "trng_condition.h"
 #include "trng_extra_state.h"
 
@@ -42,13 +43,13 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 	}
 	// Lara status is enabled/disabled
 	case LARA_STATUS_IS_ENABLED_OR_DISABLED: {
-			switch (param) {
-				// Poisoned
+		switch (param) {
+			// Poisoned
 			case 2:
 				if ((lara_item->poisoned) == (bool)extra)
 					return true;
 				break;
-				// Lara touching floor
+			// Lara touching floor
 			case 4:
 				if ((lara_item->pos.y_pos == lara_item->floor) == (bool)extra)
 					return true;
@@ -56,8 +57,8 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 			default:
 				printf("Unimplemented NGCondition Lara Status %u\n", param);
 				break;
-			}
-			break;
+		}
+		break;
 	}
 	case LARA_IS_TOUCHING_MOVEABLE: {
 		printf("Unimplemented NGCondition LARA_IS_TOUCHING_MOVEABLE\n");
@@ -78,6 +79,24 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 		printf("Unimplemented NGCondition LARA_IS_HOLDING_OR_DRIVING_ITEMS\n");
 		return false;
 		break;
+	}
+	case NUMERIC_VALUE_IS_LESS_THAN: {
+		if (extra < NGNumericGetVariable(param))
+			return true;
+		else
+			return false;
+	}
+	case NUMERIC_VALUE_IS_EQUAL_OR_GREATER_TO: {
+		if (extra >= NGNumericGetVariable(param))
+			return true;
+		else
+			return false;
+	}
+	case NUMERIC_VALUE_IS_EQUAL_TO: {
+		if (extra == NGNumericGetVariable(param))
+			return true;
+		else
+			return false;
 	}
 	case LARA_IS_LESS_OR_EVEN_CLICKS_DISTANT_TO_MOVEABLE: {
 		printf("Unimplemented NGCondition LARA_IS_LESS_OR_EVEN_CLICKS_DISTANT_TO_MOVEABLE\n");

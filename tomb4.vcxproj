@@ -244,6 +244,7 @@
     <ClInclude Include="TOMB4\game\traps.h" />
     <ClInclude Include="TOMB4\game\trng\trng.h" />
     <ClInclude Include="TOMB4\game\trng\trng_action.h" />
+    <ClInclude Include="TOMB4\game\trng\trng_arithmetic.h" />
     <ClInclude Include="TOMB4\game\trng\trng_condition.h" />
     <ClInclude Include="TOMB4\game\trng\trng_extra_state.h" />
     <ClInclude Include="TOMB4\game\trng\trng_flipeffect.h" />
@@ -381,6 +382,10 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../tomb4/pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../tomb4/pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\trng\trng_arithmetic.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../tomb4/pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="TOMB4\game\trng\trng_condition.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../tomb4/pch.h</PrecompiledHeaderFile>
