@@ -9,6 +9,7 @@
 #include "../items.h"
 #include "../lot.h"
 #include "../lara.h"
+#include "../newinv.h"
 #include "trng.h"
 #include "trng_arithmetic.h"
 #include "trng_condition.h"
@@ -17,9 +18,8 @@
 bool NGCondition(short param, unsigned char extra, short timer) {
 	switch (timer) {
 	case INVENTORY_ITEM_IS_PRESENT: {
-		printf("Unimplemented NGCondition INVENTORY_ITEM_IS_PRESENT\n");
-		return false;
-		break;
+		// TODO: Does not yet cover all object types
+		return have_i_got_object(param);
 	}
 	case INVENTORY_ITEM_HAS_AT_LEAST: {
 		printf("Unimplemented NGCondition INVENTORY_ITEM_HAS_AT_LEAST\n");
