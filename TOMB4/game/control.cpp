@@ -623,7 +623,11 @@ void TestTriggers(short* data, long heavy, long HeavyFlags)
 	short camera_flags, camera_timer, type, trigger, value, flags, state;
 	static uchar HeavyTriggered;
 	char timer;
+
+	// NGLE
 	bool is_ng_oneshot = false;
+	bool should_update_flipeffect_floorstate = false;
+	bool should_update_action_floorstate = false;
 
 	switch_off = 0;
 	flip = -1;
@@ -1013,7 +1017,7 @@ void TestTriggers(short* data, long heavy, long HeavyFlags)
 				trigger = *data++;
 				is_ng_oneshot = flags & IFL_INVISIBLE;
 				NGFlipEffect(value, (trigger & 0x7fff), is_ng_oneshot, heavy, false);
-				NGUpdateFlipeffectFloorstateData(is_ng_oneshot, heavy);
+				should_update_flipeffect_floorstate = true;
 			} else {
 				TriggerTimer = timer;
 				neweffect = value;
@@ -1043,7 +1047,7 @@ void TestTriggers(short* data, long heavy, long HeavyFlags)
 				trigger_items_count++;
 				if (trigger_items_count > MAX_TRIGGERED_ITEMS)
 					trigger_items_count = MAX_TRIGGERED_ITEMS;
-				NGUpdateActionFloorstateData(heavy);
+				should_update_action_floorstate = true;
 			}
 			break;
 		case TO_FLYBY:
@@ -1145,6 +1149,12 @@ void TestTriggers(short* data, long heavy, long HeavyFlags)
 		flipeffect = neweffect;
 		fliptimer = 0;
 	}
+
+	if (should_update_flipeffect_floorstate)
+		NGUpdateFlipeffectFloorstateData(is_ng_oneshot, heavy);
+
+	if (should_update_action_floorstate)
+		NGUpdateActionFloorstateData(heavy);
 }
 
 short GetDoor(FLOOR_INFO* floor)
