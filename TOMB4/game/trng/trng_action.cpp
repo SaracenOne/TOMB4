@@ -205,6 +205,18 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame) {
 			}
 			break;
 		}
+		case EFFECT_ADD_TO_ENEMY: {
+			if (first_frame) {
+				printf("EFFECT_ADD_TO_ENEMY not yet implemented!\n");
+			}
+			break;
+		}
+		case EFFECT_REMOVE_TO_ENEMY: {
+			if (first_frame) {
+				printf("EFFECT_REMOVE_TO_ENEMY not yet implemented!\n");
+			}
+			break;
+		}
 		case SHOW_TRIGGER_COUNTDOWN_TIMER_FOR_ENEMY: {
 			if (first_frame) {
 				NGSetDisplayTimerForMoveableWithType(item_id, (NGTimerTrackerType)(action_data & 0x7f));
