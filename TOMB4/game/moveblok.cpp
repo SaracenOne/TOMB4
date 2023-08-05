@@ -95,7 +95,7 @@ void InitialiseMovingBlock(short item_number)
 	}
 }
 
-static long TestBlockPush(ITEM_INFO* item, long height, ushort quadrant)
+static long TestBlockPush(ITEM_INFO* item, long height, ushort quadrant, bool can_push_over_ledges)
 {
 	ITEM_INFO** itemlist;
 	ITEM_INFO* collided;
@@ -103,19 +103,6 @@ static long TestBlockPush(ITEM_INFO* item, long height, ushort quadrant)
 	ROOM_INFO* r;
 	long x, y, z, rx, rz;
 	short room_number;
-
-	// TRNG
-	MOD_GLOBAL_INFO global_info = get_game_mod_global_info();
-	
-	bool can_push_over_ledges = false;
-
-	if (global_info.trng_pushable_extended_ocb && item->trigger_flags & 0x40) {
-		if (item->trigger_flags & 0x100) { // TRNG: Pushing disabled
-			return 0;
-		}
-
-		can_push_over_ledges = item->trigger_flags & 0x20;
-	}
 
 	x = item->pos.x_pos;
 	y = item->pos.y_pos;
@@ -418,7 +405,16 @@ void MovableBlock(short item_number)
 		{
 			if (input & IN_ACTION)
 			{
-				if (!TestBlockPush(item, 1024, quadrant))
+				// TRNG
+				MOD_GLOBAL_INFO global_info = get_game_mod_global_info();
+				bool can_push_over_ledges = false;
+				if (global_info.trng_pushable_extended_ocb && item->trigger_flags & 0x40) {
+					if (!(item->trigger_flags & 0x100)) { // TRNG: Pushing disabled
+						can_push_over_ledges = item->trigger_flags & 0x20;
+					}
+				}
+
+				if (!TestBlockPush(item, 1024, quadrant, can_push_over_ledges))
 					lara_item->goal_anim_state = 2;
 			}
 			else
@@ -624,7 +620,16 @@ void MovableBlockCollision(short item_number, ITEM_INFO* laraitem, COLL_INFO* co
 
 		if (input & IN_FORWARD)
 		{
-			if (!TestBlockPush(item, 1024, quadrant))
+			// TRNG
+			MOD_GLOBAL_INFO global_info = get_game_mod_global_info();
+			bool can_push_over_ledges = false;
+			if (global_info.trng_pushable_extended_ocb && item->trigger_flags & 0x40) {
+				if (!(item->trigger_flags & 0x100)) { // TRNG: Pushing disabled
+					can_push_over_ledges = item->trigger_flags & 0x20;
+				}
+			}
+
+			if (!TestBlockPush(item, 1024, quadrant, can_push_over_ledges))
 				return;
 
 			laraitem->goal_anim_state = AS_PUSHBLOCK;

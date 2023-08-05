@@ -21,6 +21,8 @@
 #include "../specific/input.h"
 #include "lara.h"
 
+#include "debris.h"
+#include "../game//trng/trng_action.h"
 #include "../tomb4/mod_config.h"
 
 short SPxzoffs[8] = { 0, 0, 0x200, 0, 0, 0, -0x200, 0 };
@@ -1765,6 +1767,165 @@ long TestBoundsCollideTeethSpikes(ITEM_INFO* item)
 	return xMin <= x + rad && xMax >= x - rad && zMin <= z + rad && zMax >= z - rad;
 }
 
+const int MAX_ROLLING_BALL_VALID_ROOMS = 22;
+
+int GetRollingBallRooms(ITEM_INFO* item, short* valid_rooms)
+{
+	short* doors;
+	long j;
+	short room_count;
+
+	room_count = 1;
+	valid_rooms[0] = item->room_number;
+	doors = room[item->room_number].door;
+
+	if (doors) {
+		for (int i = *doors++; i > 0; i--, doors += 16)
+		{
+			for (j = 0; j < room_count; j++)
+			{
+				if (valid_rooms[j] == *doors)
+					break;
+			}
+
+			if (j == room_count)
+			{
+				valid_rooms[room_count] = *doors;
+				room_count++;
+			}
+		}
+	}
+
+	return room_count;
+}
+
+void RollingBallBaddieCollision(ITEM_INFO* rolling_ball, short* valid_rooms, int valid_room_count)
+{
+	ITEM_INFO* item;
+	OBJECT_INFO* obj;
+	long dx, dy, dz;
+	short item_number;
+
+	for (int i = 0; i < valid_room_count; i++)
+	{
+		for (item_number = room[valid_rooms[i]].item_number; item_number != NO_ITEM; item_number = item->next_item)
+		{
+			item = &items[item_number];
+
+			if (item->collidable && item->status != ITEM_INVISIBLE && item != lara_item && item != rolling_ball)
+			{
+				obj = &objects[item->object_number];
+
+				if (obj->collision && obj->intelligent)
+				{
+					dx = rolling_ball->pos.x_pos - item->pos.x_pos;
+					dy = rolling_ball->pos.y_pos - item->pos.y_pos;
+					dz = rolling_ball->pos.z_pos - item->pos.z_pos;
+
+					if (dx > -2048 && dx < 2048 && dz > -2048 && dz < 2048 && dy > -2048 && dy < 2048)
+					{
+						if (TestBoundsCollide(item, rolling_ball, 500))
+						{
+							DoLotsOfBlood(item->pos.x_pos, rolling_ball->pos.y_pos - 256, item->pos.z_pos, (GetRandomControl() & 3) + 8,
+								rolling_ball->pos.y_rot, item->room_number, 3);
+							item->hit_points = 0;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return;
+}
+
+void RollingBallCollideStaticObjects(long x, long y, long z, long height, short *valid_rooms, int valid_room_count)
+{
+	MESH_INFO* mesh;
+	STATIC_INFO* sinfo;
+	ROOM_INFO* r;
+	PHD_VECTOR pos;
+	long j;
+	static long RollingBallBounds[6] = { 0, 0, 0, 0, 0, 0 };
+	static long CollidedStaticBounds[6] = { 0, 0, 0, 0, 0, 0 };
+
+	pos.x = x;
+	pos.y = y;
+	pos.z = z;
+	RollingBallBounds[0] = x + 256;
+	RollingBallBounds[1] = x - 256;
+	RollingBallBounds[2] = y;
+	RollingBallBounds[3] = y - height;
+	RollingBallBounds[4] = z + 256;
+	RollingBallBounds[5] = z - 256;
+
+	int i = 0;
+	for (int i = 0; i < valid_room_count; i++)
+	{
+		r = &room[valid_rooms[i]];
+		mesh = r->mesh;
+
+		for (j = r->num_meshes; j > 0; j--, mesh++)
+		{
+			sinfo = &static_objects[mesh->static_number];
+
+			if (mesh->Flags & 1)
+			{
+				if (mesh->static_number >= SHATTER0 && mesh->static_number <= SHATTER9)
+				{
+					CollidedStaticBounds[2] = mesh->y + sinfo->y_maxc;
+					CollidedStaticBounds[3] = mesh->y + sinfo->y_minc;
+
+					if (mesh->y_rot == -0x8000)
+					{
+						CollidedStaticBounds[0] = mesh->x - sinfo->x_minc;
+						CollidedStaticBounds[1] = mesh->x - sinfo->x_maxc;
+						CollidedStaticBounds[4] = mesh->z - sinfo->z_minc;
+						CollidedStaticBounds[5] = mesh->z - sinfo->z_maxc;
+					}
+					else if (mesh->y_rot == -0x4000)
+					{
+						CollidedStaticBounds[0] = mesh->x - sinfo->z_minc;
+						CollidedStaticBounds[1] = mesh->x - sinfo->z_maxc;
+						CollidedStaticBounds[4] = mesh->z + sinfo->x_maxc;
+						CollidedStaticBounds[5] = mesh->z + sinfo->x_minc;
+					}
+					else if (mesh->y_rot == 0x4000)
+					{
+						CollidedStaticBounds[0] = mesh->x + sinfo->z_maxc;
+						CollidedStaticBounds[1] = mesh->x + sinfo->z_minc;
+						CollidedStaticBounds[4] = mesh->z - sinfo->x_minc;
+						CollidedStaticBounds[5] = mesh->z - sinfo->x_maxc;
+					}
+					else
+					{
+						CollidedStaticBounds[0] = mesh->x + sinfo->x_maxc;
+						CollidedStaticBounds[1] = mesh->x + sinfo->x_minc;
+						CollidedStaticBounds[4] = mesh->z + sinfo->z_maxc;
+						CollidedStaticBounds[5] = mesh->z + sinfo->z_minc;
+					}
+
+					if (RollingBallBounds[0] > CollidedStaticBounds[1] &&
+						RollingBallBounds[1] < CollidedStaticBounds[0] &&
+						RollingBallBounds[2] > CollidedStaticBounds[3] &&
+						RollingBallBounds[3] < CollidedStaticBounds[2] &&
+						RollingBallBounds[4] > CollidedStaticBounds[5] &&
+						RollingBallBounds[5] < CollidedStaticBounds[4])
+					{
+						ShatterObject(0, mesh, -128, valid_rooms[i], 0);
+						SoundEffect(SFX_HIT_ROCK, (PHD_3DPOS*)&pos, SFX_DEFAULT);
+						SmashedMeshRoom[SmashedMeshCount] = valid_rooms[i];
+						SmashedMesh[SmashedMeshCount] = mesh;
+						SmashedMeshCount++;
+						mesh->Flags &= ~1;
+					}
+				}
+			}
+		}
+		i++;
+	}
+}
+
 void ControlRollingBall(short item_number)
 {
 	ITEM_INFO* item;
@@ -1979,9 +2140,151 @@ void ControlRollingBall(short item_number)
 	item->pos.x_rot -= (abs(item->item_flags[0]) + abs(item->item_flags[1])) >> 1;
 	GetHeight(GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number), item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
 	TestTriggers(trigger_index, 1, 0);
+
 	// NGLE: can activate regular triggers with this OCB code.
-	if (global_info.trng_rollingball_extended_ocb && item->trigger_flags & 0x40) {
-		TestTriggers(trigger_index, 0, 0);
+	if (global_info.trng_rollingball_extended_ocb) {
+		if (item->trigger_flags & 0x02 || item->trigger_flags & 0x10) {
+			short valid_rooms[MAX_ROLLING_BALL_VALID_ROOMS];
+			int valid_room_count = GetRollingBallRooms(item, valid_rooms);
+
+			// Enemy collision
+			if (item->trigger_flags & 0x02) {
+				RollingBallBaddieCollision(item, valid_rooms, valid_room_count);
+			}
+
+			// Shatter object collision
+			if (item->trigger_flags & 0x10) {
+				RollingBallCollideStaticObjects(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, 512, valid_rooms, valid_room_count);
+			}
+		}
+
+		// Water Splash (TODO)
+		if (item->trigger_flags & 0x20) {
+
+		}
+
+		// Triggers
+		if (item->trigger_flags & 0x40) {
+			TestTriggers(trigger_index, 0, 0);
+		}
+	}
+}
+
+// Added support for TRNG pushable rolling balls, but the implementation is still buggy.
+// The bounds are likely not calculated correctly, it doesn't reset its position to the center
+// of a tile, and lacks special invulnerability frames which makes it easy to die when pushing them.
+void RollingBallPush(short item_number, ITEM_INFO* l) {
+	ITEM_INFO* item;
+	item = &items[item_number];
+
+	MOD_GLOBAL_INFO global_info = get_game_mod_global_info();
+	if (global_info.trng_rollingball_extended_ocb) {
+		if (lara.GeneralPtr == (void*)item_number) {
+			if (l->anim_number == ANIM_BLOCKSWITCH) {
+				short quadrant = ushort(l->pos.y_rot + 0x2000) / 0x4000;
+
+				// FrameOfMoving
+				if (l->frame_number >= anims[l->anim_number].frame_base + 20 && l->frame_number < anims[l->anim_number].frame_base + 50) {
+					switch (quadrant)
+					{
+					case NORTH:
+						item->pos.z_pos += 6;
+						break;
+					case EAST:
+						item->pos.x_pos += 6;
+						break;
+					case SOUTH:
+						item->pos.z_pos -= 6;
+						break;
+					case WEST:
+						item->pos.x_pos -= 6;
+						break;
+					}
+				}
+				else if (l->frame_number >= anims[l->anim_number].frame_base + 50) {
+					switch (quadrant)
+					{
+					case NORTH:
+						if (item->item_flags[1] <= 64)
+							item->item_flags[1] = 64;
+						item->item_flags[1] += 6 << 1;
+						break;
+					case EAST:
+						if (item->item_flags[0] <= 64)
+							item->item_flags[0] = 64;
+						item->item_flags[0] += 6 << 1;
+						break;
+					case SOUTH:
+						if (item->item_flags[1] >= -64)
+							item->item_flags[1] = -64;
+						item->item_flags[1] -= 6 << 1;
+						break;
+					case WEST:
+						if (item->item_flags[0] >= -64)
+							item->item_flags[0] = -64;
+						item->item_flags[0] -= 6 << 1;
+						break;
+					}
+				}
+			}
+			else {
+				lara.GeneralPtr = NULL;
+			}
+		}
+
+		if ((item->trigger_flags & 0x04 && item->status == ITEM_INACTIVE) || item->trigger_flags & 0x08) {
+			if (lara.GeneralPtr != (void*)item_number && (input & IN_ACTION && lara.gun_status == LG_NO_ARMS &&
+				l->current_anim_state == AS_STOP && l->anim_number == ANIM_BREATH))
+			{
+				static short RollingBallBounds[12] = { -700, 700, -512, 512, -700, 700, -0, 0, -5460, 5460, -0, 0 };
+				{
+					// Save rotation
+					short rotx = item->pos.x_rot;
+					short roty = item->pos.y_rot;
+					// Change y rotation to Lara's y rotation quadrant
+					item->pos.x_rot = 0;
+					item->pos.y_rot = (l->pos.y_rot + 0x2000) & 0xC000;
+					if (TestLaraPosition(RollingBallBounds, item, l))
+					{
+						short quadrant = ushort(l->pos.y_rot + 0x2000) / 0x4000;
+						if (1) {
+
+							l->current_anim_state = AS_SWITCHON;
+							l->anim_number = ANIM_BLOCKSWITCH;
+							item->goal_anim_state = 0;
+
+							l->goal_anim_state = AS_STOP;
+							l->frame_number = anims[l->anim_number].frame_base;
+							lara.IsMoving = 0;
+							lara.head_y_rot = 0;
+							lara.head_x_rot = 0;
+							lara.torso_y_rot = 0;
+							lara.torso_x_rot = 0;
+							lara.gun_status = LG_HANDS_BUSY;
+							lara.GeneralPtr = (void*)item_number;
+
+							NGItemActivator(item_number, false);
+						} else {
+							l->anim_number = ANIM_PPREADY;
+							l->frame_number = anims[ANIM_PPREADY].frame_base;
+							l->current_anim_state = AS_PPREADY;
+
+							l->goal_anim_state = AS_STOP;
+							l->frame_number = anims[l->anim_number].frame_base;
+							lara.IsMoving = 0;
+							lara.head_y_rot = 0;
+							lara.head_x_rot = 0;
+							lara.torso_y_rot = 0;
+							lara.torso_x_rot = 0;
+							lara.gun_status = LG_HANDS_BUSY;
+						}
+					}
+					// Restore rotation
+					item->pos.x_rot = rotx;
+					item->pos.y_rot = roty;
+				}
+			}
+		}
 	}
 }
 
@@ -1990,6 +2293,9 @@ void RollingBallCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 	ITEM_INFO* item;
 
 	item = &items[item_number];
+
+	// NGLE
+	RollingBallPush(item_number, lara_item);
 
 	if (!TestBoundsCollide(item, l, coll->radius) || !TestCollision(item, l))
 		return;
