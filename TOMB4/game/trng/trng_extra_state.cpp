@@ -341,7 +341,7 @@ void NGExecuteSingleGlobalTrigger(int global_trigger_id) {
 
 	bool global_trigger_condition_passed = false;
 	
-	short condition_trigger_group_id = global_trigger->condition_trigger_group;
+	unsigned short condition_trigger_group_id = global_trigger->condition_trigger_group;
 
 	// What the difference between GT_CONDITION_GROUP and GT_ALWAYS?
 	switch (global_trigger->type) {
@@ -365,10 +365,10 @@ void NGExecuteSingleGlobalTrigger(int global_trigger_id) {
 	}
 
 	if (global_trigger_condition_passed) {
-		if (!ng_global_trigger_states[record_id].is_halted && (condition_trigger_group_id == -1 || NGTriggerGroupFunction(condition_trigger_group_id, 0))) {
+		if (!ng_global_trigger_states[record_id].is_halted && (condition_trigger_group_id == 0xffff || NGTriggerGroupFunction(condition_trigger_group_id, 0))) {
 			unsigned int perform_trigger_group_id = global_trigger->perform_trigger_group;
 
-			if (perform_trigger_group_id != -1) {
+			if (perform_trigger_group_id != 0xffff) {
 				NGTriggerGroupFunction(perform_trigger_group_id, 0);
 			}
 
@@ -381,7 +381,7 @@ void NGExecuteSingleGlobalTrigger(int global_trigger_id) {
 				ng_global_trigger_states[record_id].is_halted = false;
 
 			unsigned int on_false_trigger_group_id = global_trigger->on_false_trigger_group;
-			if (on_false_trigger_group_id != -1) {
+			if (on_false_trigger_group_id != 0xffff) {
 				NGTriggerGroupFunction(on_false_trigger_group_id, 0);
 			}
 		}
@@ -409,7 +409,7 @@ void NGExecuteOrganizer(int organizer_id) {
 
 	bool global_trigger_condition_passed = false;
 
-	for (int i = 0; i < organizer->appointment_count; i++) {
+	for (unsigned int i = 0; i < organizer->appointment_count; i++) {
 		if (ng_organizer_states[record_id].current_tick == organizer->appointments[i].time) {
 			NGTriggerGroupFunction(organizer->appointments[i].trigger_group, 0);
 			if (i == organizer->appointment_count-1) {
@@ -694,7 +694,7 @@ void NGSetupExtraState() {
 		for (int i = 0; i < global_trigger_count; i++) {
 			NG_GLOBAL_TRIGGER* global_trigger = &ng_levels[gfCurrentLevel].records->global_triggers_table[i].global_trigger;
 			int record_id = ng_levels[gfCurrentLevel].records->global_triggers_table[i].record_id;
-			if (global_trigger->flags != -1) {
+			if (global_trigger->flags != 0xffff) {
 				// FGT_DISABLED
 				if (global_trigger->flags & 0x0008) {
 					ng_global_trigger_states[record_id].is_disabled = true;
@@ -722,7 +722,7 @@ void NGSetupExtraState() {
 		for (int i = 0; i < organizer_count; i++) {
 			NG_ORGANIZER* organizer = &ng_levels[gfCurrentLevel].records->organizer_table[i].organizer;
 			int record_id = ng_levels[gfCurrentLevel].records->organizer_table[i].record_id;
-			if (organizer->flags != -1) {
+			if (organizer->flags != 0xffff) {
 				// FO_ENABLED
 				if (organizer->flags & 0x0001) {
 					ng_organizer_states[record_id].is_enabled = true;

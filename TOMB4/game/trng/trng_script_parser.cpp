@@ -255,7 +255,7 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 
 				unsigned char block_type = NG_READ_8(gfScriptFile, offset);
 
-				int command_block_end_position = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+				unsigned int command_block_end_position = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 
 				if (offset >= level_block_end_pos) {
 					if (offset != level_block_end_pos) {
@@ -938,7 +938,7 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 						level_global_triggers_table[level_global_trigger_count].record_id = id;
 
 						unsigned short flags = NG_READ_16(gfScriptFile, offset);
-						if (flags == -1)
+						if (flags == 0xffff)
 							flags = 0;
 
 						level_global_triggers_table[level_global_trigger_count].global_trigger.flags = flags;
@@ -977,7 +977,7 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 						level_organizer_table[level_organizer_count].record_id = id;
 
 						unsigned short flags = NG_READ_16(gfScriptFile, offset);;
-						if (flags == -1)
+						if (flags == 0xffff)
 							flags = 0;
 
 						level_organizer_table[level_organizer_count].organizer.flags = flags;

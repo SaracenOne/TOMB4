@@ -1,12 +1,12 @@
 #define MAX_NG_LEVELS 64
 
 struct NG_GLOBAL_TRIGGER {
-	short flags = 0x0;
+	unsigned short flags = 0x0;
 	unsigned short type = 0x00;
 	unsigned int parameter = 0x00;
-	short condition_trigger_group = 0x00;
-	short perform_trigger_group = 0x00;
-	short on_false_trigger_group = 0x00;
+	unsigned short condition_trigger_group = 0x00;
+	unsigned short perform_trigger_group = 0x00;
+	unsigned short on_false_trigger_group = 0x00;
 };
 
 struct NG_GLOBAL_TRIGGER_RECORD {

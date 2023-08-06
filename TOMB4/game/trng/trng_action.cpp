@@ -201,6 +201,7 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame) {
 		}
 		case UNTRIGGER_MOVEABLE_ACTIVATE_WITH_TIMER: {
 			if (first_frame) {
+				items[param].timer = ((short)(action_data & 0x7f)) * 30;
 				NGItemActivator(item_id, true);
 			}
 			break;
