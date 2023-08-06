@@ -66,8 +66,11 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 		break;
 	}
 	case LARA_IS_PERFORMING_ANIMATION: {
-		printf("Unimplemented NGCondition LARA_IS_PERFORMING_ANIMATION\n");
-		return false;
+		if (lara_item->current_anim_state - objects[LARA].anim_index == param) {
+			return true;
+		} else {
+			return false;
+		}
 		break;
 	}
 	case LARA_IS_TOUCHING_STATIC_ITEM: {

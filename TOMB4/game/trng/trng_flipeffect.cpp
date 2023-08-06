@@ -81,17 +81,17 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 			trigger_group.data[index].first_field & TGROUP_OR) {
 			bool current_result = false;
 
-			// Flipeffect
-			if (trigger_group.data[index].first_field & 0x2000) {
-				current_result = NGFlipEffect(trigger_group.data[index].second_field, trigger_group.data[index].third_field & 0x7fff, false, false, true);
-			}
 			// ActionNG
-			else if (trigger_group.data[index].first_field & 0x5000) {
+			if ((trigger_group.data[index].first_field & 0xF000) == 0x5000) {
 				current_result = NGAction(ng_script_id_table[trigger_group.data[index].second_field], trigger_group.data[index].third_field & 0x7fff, true) != -1;
 			}
 			// ConditionNG
-			else if (trigger_group.data[index].first_field & 0x8000 || trigger_group.data[index].first_field & 0x9000) {
+			else if ((trigger_group.data[index].first_field & 0xF000) == 0x8000 || (trigger_group.data[index].first_field & 0xF000) == 0x9000) {
 				current_result = NGCondition(trigger_group.data[index].second_field, (trigger_group.data[index].third_field >> 8) & 0xff, trigger_group.data[index].third_field & 0xff);
+			}
+			// Flipeffect
+			else if ((trigger_group.data[index].first_field & 0xF000) == 0x2000) {
+				current_result = NGFlipEffect(trigger_group.data[index].second_field, trigger_group.data[index].third_field & 0x7fff, false, false, true);
 			}
 			// End
 			else if (trigger_group.data[index].first_field == 0x0000) {
@@ -258,6 +258,22 @@ bool perform_triggergroup_from_script_in_specific_way(unsigned char trigger_grou
 	return NGTriggerGroupFunction(trigger_group_id, execution_type);
 }
 
+// NGLE - 127
+bool organizer_enable(unsigned char organizer_id_lower, unsigned char organizer_id_upper) {
+	unsigned short organizer_id = ((short)organizer_id_upper << 8) | (short)organizer_id_lower;
+	NGToggleOrganizer(organizer_id, true);
+
+	return true;
+}
+
+// NGLE - 128
+bool organizer_disable(unsigned char organizer_id_lower, unsigned char organizer_id_upper) {
+	unsigned short organizer_id = ((short)organizer_id_upper << 8) | (short)organizer_id_lower;
+	NGToggleOrganizer(organizer_id, false);
+
+	return true;
+}
+
 // NGLE - 129
 bool play_cd_track_channel_2(unsigned char track_id, unsigned char looping) {
 	TriggerChannelTrack(track_id, 1, looping);
@@ -410,6 +426,14 @@ bool NGFlipEffect(unsigned short param, short extra, bool oneshot, bool heavy, b
 			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return perform_triggergroup_from_script_in_specific_way(action_data_1, action_data_2);
 			break;
+		case ORGANIZER_ENABLE:
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+				return organizer_enable(action_data_1, action_data_2);
+			break;
+		case ORGANIZER_DISABLE:
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+				return organizer_disable(action_data_1, action_data_2);
+			break;
 		case PLAY_CD_TRACK_ON_CHANNEL_2: {
 			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return play_cd_track_channel_2(action_data_1, action_data_2);
@@ -483,7 +507,7 @@ bool NGFlipEffect(unsigned short param, short extra, bool oneshot, bool heavy, b
 				}
 			} else {
 				printf("Unimplemented NGFlipEffect %u\n", param);
-				return false;
+				return true;
 			}
 		}
 	}

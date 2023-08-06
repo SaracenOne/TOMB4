@@ -1,12 +1,12 @@
 #define MAX_NG_LEVELS 64
 
 struct NG_GLOBAL_TRIGGER {
-	unsigned short flags = 0x0;
+	short flags = 0x0;
 	unsigned short type = 0x00;
 	unsigned int parameter = 0x00;
-	unsigned short condition_trigger_group = 0x00;
-	unsigned short perform_trigger_group = 0x00;
-	unsigned short on_false_trigger_group = 0x00;
+	short condition_trigger_group = 0x00;
+	short perform_trigger_group = 0x00;
+	short on_false_trigger_group = 0x00;
 };
 
 struct NG_GLOBAL_TRIGGER_RECORD {
@@ -37,8 +37,9 @@ struct NG_ORGANIZER_APPOINTMENT {
 
 #define NG_ORGANIZER_MAX_APPOINTMENTS 4096
 struct NG_ORGANIZER {
-	unsigned short flags = 0;
-	unsigned short parameters = 0; // Unused
+	short flags = 0;
+	short parameters = 0; // Unused
+	unsigned int appointment_count = 0;
 	NG_ORGANIZER_APPOINTMENT appointments[NG_ORGANIZER_MAX_APPOINTMENTS];
 };
 

@@ -937,7 +937,11 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 
 						level_global_triggers_table[level_global_trigger_count].record_id = id;
 
-						level_global_triggers_table[level_global_trigger_count].global_trigger.flags = NG_READ_16(gfScriptFile, offset);
+						unsigned short flags = NG_READ_16(gfScriptFile, offset);
+						if (flags == -1)
+							flags = 0;
+
+						level_global_triggers_table[level_global_trigger_count].global_trigger.flags = flags;
 						level_global_triggers_table[level_global_trigger_count].global_trigger.type = NG_READ_16(gfScriptFile, offset);
 						level_global_triggers_table[level_global_trigger_count].global_trigger.parameter = NG_READ_32(gfScriptFile, offset);
 						level_global_triggers_table[level_global_trigger_count].global_trigger.condition_trigger_group = NG_READ_16(gfScriptFile, offset);
@@ -972,15 +976,32 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 
 						level_organizer_table[level_organizer_count].record_id = id;
 
-						level_organizer_table[level_organizer_count].organizer.flags = NG_READ_16(gfScriptFile, offset);
-						level_organizer_table[level_organizer_count].organizer.parameters = NG_READ_16(gfScriptFile, offset);
+						unsigned short flags = NG_READ_16(gfScriptFile, offset);;
+						if (flags == -1)
+							flags = 0;
 
-						unsigned char index = 0;
+						level_organizer_table[level_organizer_count].organizer.flags = flags;
+						level_organizer_table[level_organizer_count].organizer.parameters = NG_READ_16(gfScriptFile, offset);
+						if (level_organizer_table[level_organizer_count].organizer.parameters != -1) {
+							printf("Organizer parameters are not supported!\n");
+						}
+
+						level_organizer_table[level_organizer_count].organizer.appointment_count = 0;
+
+						unsigned int index = 0;
 						while (offset < data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short))) {
 							level_organizer_table[level_organizer_count].organizer.appointments[index].time = NG_READ_16(gfScriptFile, offset);
+							// !FO_TICK_TIME
+							if (!(flags & 0x04)) {
+								level_organizer_table[level_organizer_count].organizer.appointments[index].time *= 30;
+							}
+
 							level_organizer_table[level_organizer_count].organizer.appointments[index].trigger_group = NG_READ_16(gfScriptFile, offset);
 
 							index++;
+
+							level_organizer_table[level_organizer_count].organizer.appointment_count = index;
+
 							if (index > NG_ORGANIZER_MAX_APPOINTMENTS) {
 								printf("Organizer appointment size overflow!\n");
 								return;

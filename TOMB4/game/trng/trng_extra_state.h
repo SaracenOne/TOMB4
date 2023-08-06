@@ -58,6 +58,8 @@ extern void NGSetCinemaTypeAndTimer(int type, int ticks);
 extern bool NGIsTriggerGroupContinuous(int trigger_group_id);
 extern void NGSetTriggerGroupContinuous(int trigger_group_id, bool is_continuous);
 
+extern void NGToggleOrganizer(int organizer_id, bool is_enabled);
+
 extern void NGSetDisplayTimerForMoveableWithType(int item_id, NGTimerTrackerType timer_type);
 
 extern void NGDrawPhase();

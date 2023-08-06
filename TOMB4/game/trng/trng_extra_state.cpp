@@ -44,6 +44,13 @@ struct NG_TRIGGER_GROUP_STATE {
 
 NG_TRIGGER_GROUP_STATE ng_trigger_group_states[MAX_NG_TRIGGER_GROUPS];
 
+struct NG_ORGANIZER_STATE {
+	bool is_enabled = false;
+	int current_tick = 0;
+};
+
+NG_ORGANIZER_STATE ng_organizer_states[MAX_NG_ORGANIZERS];
+
 // TODO: In the original, there's some behaviour which allows multiple timers to run
 // at once, displaying the last activated on until it runs out. Needs investigation.
 #define TIMER_TRACKER_TIMEOUT 30
@@ -330,10 +337,11 @@ void NGUpdateAllItems() {
 
 void NGExecuteSingleGlobalTrigger(int global_trigger_id) {
 	NG_GLOBAL_TRIGGER* global_trigger = &ng_levels[gfCurrentLevel].records->global_triggers_table[global_trigger_id].global_trigger;
+	int record_id = ng_levels[gfCurrentLevel].records->global_triggers_table[global_trigger_id].record_id;
 
 	bool global_trigger_condition_passed = false;
 	
-	unsigned int condition_trigger_group_id = global_trigger->condition_trigger_group;
+	short condition_trigger_group_id = global_trigger->condition_trigger_group;
 
 	// What the difference between GT_CONDITION_GROUP and GT_ALWAYS?
 	switch (global_trigger->type) {
@@ -352,28 +360,28 @@ void NGExecuteSingleGlobalTrigger(int global_trigger_id) {
 	if (global_trigger->flags & 0x0002)
 		global_trigger_condition_passed = !global_trigger_condition_passed;
 
-	if (ng_global_trigger_states[global_trigger_id].is_disabled) {
+	if (ng_global_trigger_states[record_id].is_disabled) {
 		global_trigger_condition_passed = false;
 	}
 
 	if (global_trigger_condition_passed) {
-		if (!ng_global_trigger_states[global_trigger_id].is_halted && (condition_trigger_group_id == 0xffff || NGTriggerGroupFunction(condition_trigger_group_id, 0))) {
+		if (!ng_global_trigger_states[record_id].is_halted && (condition_trigger_group_id == -1 || NGTriggerGroupFunction(condition_trigger_group_id, 0))) {
 			unsigned int perform_trigger_group_id = global_trigger->perform_trigger_group;
 
-			if (perform_trigger_group_id != 0xffff) {
+			if (perform_trigger_group_id != -1) {
 				NGTriggerGroupFunction(perform_trigger_group_id, 0);
 			}
 
 			// FGT_SINGLE_SHOT / FGT_SINGLE_SHOT_RESUMED
 			if (global_trigger->flags & 0x0001 || global_trigger->flags & 0x0020)
-				ng_global_trigger_states[global_trigger_id].is_halted = true;
+				ng_global_trigger_states[record_id].is_halted = true;
 		} else {
 			// FGT_SINGLE_SHOT_RESUMED
 			if (global_trigger->flags & 0x0020)
-				ng_global_trigger_states[global_trigger_id].is_halted = false;
+				ng_global_trigger_states[record_id].is_halted = false;
 
 			unsigned int on_false_trigger_group_id = global_trigger->on_false_trigger_group;
-			if (on_false_trigger_group_id != 0xffff) {
+			if (on_false_trigger_group_id != -1) {
 				NGTriggerGroupFunction(on_false_trigger_group_id, 0);
 			}
 		}
@@ -388,7 +396,6 @@ void NGProcessGlobalTriggers() {
 }
 
 void NGProcessTriggerGroups() {
-	int trigger_group_count = ng_levels[gfCurrentLevel].records->trigger_group_count;
 	for (int i = 0; i < MAX_NG_TRIGGER_GROUPS; i++) {
 		if (NGIsTriggerGroupContinuous(i)) {
 			NGTriggerGroupFunction(i, 0);
@@ -396,9 +403,44 @@ void NGProcessTriggerGroups() {
 	}
 }
 
+void NGExecuteOrganizer(int organizer_id) {
+	NG_ORGANIZER* organizer = &ng_levels[gfCurrentLevel].records->organizer_table[organizer_id].organizer;
+	int record_id = ng_levels[gfCurrentLevel].records->organizer_table[organizer_id].record_id;
+
+	bool global_trigger_condition_passed = false;
+
+	for (int i = 0; i < organizer->appointment_count; i++) {
+		if (ng_organizer_states[record_id].current_tick == organizer->appointments[i].time) {
+			NGTriggerGroupFunction(organizer->appointments[i].trigger_group, 0);
+			if (i == organizer->appointment_count-1) {
+				// FO_LOOP
+				if (organizer->flags & 0x02) {
+					ng_organizer_states[record_id].current_tick = -1;
+				} else {
+					ng_organizer_states[record_id].is_enabled = false;
+				}
+			}
+		}
+	}
+
+	ng_organizer_states[record_id].current_tick += 1;
+}
+
+void NGProcessOrganizers() {
+	int organizer_count = ng_levels[gfCurrentLevel].records->organizer_count;
+	for (int i = 0; i < organizer_count; i++) {
+		int record_id = ng_levels[gfCurrentLevel].records->organizer_table[i].record_id;
+
+		if (ng_organizer_states[record_id].is_enabled) {
+			NGExecuteOrganizer(i);
+		}
+	}
+}
+
 void NGFrameStartUpdate() {
 	NGProcessGlobalTriggers();
 	NGProcessTriggerGroups();
+	NGProcessOrganizers();
 
 	if (ng_cinema_timer > 0 || ng_cinema_type > 0) {
 		switch (ng_cinema_type) {
@@ -570,6 +612,10 @@ void NGSetCinemaTypeAndTimer(int type, int ticks) {
 	ng_cinema_timer = ticks;
 }
 
+void NGToggleOrganizer(int organizer_id, bool is_enabled) {
+	ng_organizer_states[organizer_id].is_enabled = is_enabled;
+}
+
 extern bool NGIsTriggerGroupContinuous(int trigger_group_id) {
 	return ng_trigger_group_states[trigger_group_id].continuous;
 }
@@ -647,9 +693,12 @@ void NGSetupExtraState() {
 		int global_trigger_count = ng_levels[gfCurrentLevel].records->global_trigger_count;
 		for (int i = 0; i < global_trigger_count; i++) {
 			NG_GLOBAL_TRIGGER* global_trigger = &ng_levels[gfCurrentLevel].records->global_triggers_table[i].global_trigger;
-			// FGT_DISABLED
-			if (global_trigger->flags & 0x0008) {
-				ng_global_trigger_states[i].is_disabled = true;
+			int record_id = ng_levels[gfCurrentLevel].records->global_triggers_table[i].record_id;
+			if (global_trigger->flags != -1) {
+				// FGT_DISABLED
+				if (global_trigger->flags & 0x0008) {
+					ng_global_trigger_states[record_id].is_disabled = true;
+				}
 			}
 		}
 	}
@@ -659,6 +708,26 @@ void NGSetupExtraState() {
 		for (int i = 0; i < MAX_NG_TRIGGER_GROUPS; i++) {
 			ng_trigger_group_states[i].continuous = false;
 			ng_trigger_group_states[i].one_shot = false;
+		}
+	}
+
+	// Organizers
+	{
+		for (int i = 0; i < MAX_NG_ORGANIZERS; i++) {
+			ng_organizer_states[i].is_enabled = false;
+			ng_organizer_states[i].current_tick = 0;
+		}
+
+		int organizer_count = ng_levels[gfCurrentLevel].records->organizer_count;
+		for (int i = 0; i < organizer_count; i++) {
+			NG_ORGANIZER* organizer = &ng_levels[gfCurrentLevel].records->organizer_table[i].organizer;
+			int record_id = ng_levels[gfCurrentLevel].records->organizer_table[i].record_id;
+			if (organizer->flags != -1) {
+				// FO_ENABLED
+				if (organizer->flags & 0x0001) {
+					ng_organizer_states[record_id].is_enabled = true;
+				}
+			}
 		}
 	}
 
