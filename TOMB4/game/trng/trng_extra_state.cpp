@@ -389,9 +389,11 @@ void NGExecuteSingleGlobalTrigger(int global_trigger_id) {
 }
 
 void NGProcessGlobalTriggers() {
-	int global_trigger_count = ng_levels[gfCurrentLevel].records->global_trigger_count;
-	for (int i = 0; i < global_trigger_count; i++) {
-		NGExecuteSingleGlobalTrigger(i);
+	if (ng_levels[gfCurrentLevel].records) {
+		int global_trigger_count = ng_levels[gfCurrentLevel].records->global_trigger_count;
+		for (int i = 0; i < global_trigger_count; i++) {
+			NGExecuteSingleGlobalTrigger(i);
+		}
 	}
 }
 
@@ -427,12 +429,14 @@ void NGExecuteOrganizer(int organizer_id) {
 }
 
 void NGProcessOrganizers() {
-	int organizer_count = ng_levels[gfCurrentLevel].records->organizer_count;
-	for (int i = 0; i < organizer_count; i++) {
-		int record_id = ng_levels[gfCurrentLevel].records->organizer_table[i].record_id;
+	if (ng_levels[gfCurrentLevel].records) {
+		int organizer_count = ng_levels[gfCurrentLevel].records->organizer_count;
+		for (int i = 0; i < organizer_count; i++) {
+			int record_id = ng_levels[gfCurrentLevel].records->organizer_table[i].record_id;
 
-		if (ng_organizer_states[record_id].is_enabled) {
-			NGExecuteOrganizer(i);
+			if (ng_organizer_states[record_id].is_enabled) {
+				NGExecuteOrganizer(i);
+			}
 		}
 	}
 }
@@ -684,20 +688,26 @@ void NGSetupExtraState() {
 	ng_items_extradata = (NG_ITEM_EXTRADATA*)game_malloc(ITEM_COUNT * sizeof(NG_ITEM_EXTRADATA));
 	memset(ng_items_extradata, 0x00, ITEM_COUNT * sizeof(NG_ITEM_EXTRADATA));
 
+	// Records
+	NG_LEVEL_RECORD_DATA *current_record_data = ng_levels[gfCurrentLevel].records;
+
 	// Global triggers
 	{
 		for (int i = 0; i < MAX_NG_GLOBAL_TRIGGERS; i++) {
 			ng_global_trigger_states[i].is_disabled = false;
 			ng_global_trigger_states[i].is_halted = false;
 		}
-		int global_trigger_count = ng_levels[gfCurrentLevel].records->global_trigger_count;
-		for (int i = 0; i < global_trigger_count; i++) {
-			NG_GLOBAL_TRIGGER* global_trigger = &ng_levels[gfCurrentLevel].records->global_triggers_table[i].global_trigger;
-			int record_id = ng_levels[gfCurrentLevel].records->global_triggers_table[i].record_id;
-			if (global_trigger->flags != 0xffff) {
-				// FGT_DISABLED
-				if (global_trigger->flags & 0x0008) {
-					ng_global_trigger_states[record_id].is_disabled = true;
+
+		if (current_record_data) {
+			int global_trigger_count = current_record_data->global_trigger_count;
+			for (int i = 0; i < global_trigger_count; i++) {
+				NG_GLOBAL_TRIGGER* global_trigger = &current_record_data->global_triggers_table[i].global_trigger;
+				int record_id = current_record_data->global_triggers_table[i].record_id;
+				if (global_trigger->flags != 0xffff) {
+					// FGT_DISABLED
+					if (global_trigger->flags & 0x0008) {
+						ng_global_trigger_states[record_id].is_disabled = true;
+					}
 				}
 			}
 		}
@@ -718,14 +728,16 @@ void NGSetupExtraState() {
 			ng_organizer_states[i].current_tick = 0;
 		}
 
-		int organizer_count = ng_levels[gfCurrentLevel].records->organizer_count;
-		for (int i = 0; i < organizer_count; i++) {
-			NG_ORGANIZER* organizer = &ng_levels[gfCurrentLevel].records->organizer_table[i].organizer;
-			int record_id = ng_levels[gfCurrentLevel].records->organizer_table[i].record_id;
-			if (organizer->flags != 0xffff) {
-				// FO_ENABLED
-				if (organizer->flags & 0x0001) {
-					ng_organizer_states[record_id].is_enabled = true;
+		if (current_record_data) {
+			int organizer_count = current_record_data->organizer_count;
+			for (int i = 0; i < organizer_count; i++) {
+				NG_ORGANIZER* organizer = &current_record_data->organizer_table[i].organizer;
+				int record_id = current_record_data->organizer_table[i].record_id;
+				if (organizer->flags != 0xffff) {
+					// FO_ENABLED
+					if (organizer->flags & 0x0001) {
+						ng_organizer_states[record_id].is_enabled = true;
+					}
 				}
 			}
 		}
