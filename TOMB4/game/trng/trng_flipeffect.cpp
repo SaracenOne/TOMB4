@@ -8,6 +8,7 @@
 #include "trng_flipeffect.h"
 #include "trng_script_parser.h"
 #include "../../specific/function_stubs.h"
+#include "../../specific/audio.h"
 #include "../control.h"
 #include "../effects.h"
 #include "../objects.h"
@@ -178,11 +179,18 @@ bool kill_and_or_set_lara_on_fire(unsigned char death_type, unsigned char action
 
 // NGLE - 68
 bool play_cd_track_channel_1(unsigned char track_id, unsigned char looping) {
-	TriggerChannelTrack(track_id, 0, looping);
+	S_CDPlayExt(track_id, 0, looping, false);
 
 	return true;
 }
 
+// NGLE - 69
+bool stop_all_cd_tracks(unsigned char unused_1, unsigned char unused_2) {
+	S_CDStopExt(0);
+	S_CDStopExt(1);
+
+	return true;
+}
 
 // NGLE - 77
 bool force_lara_animation_0_255_of_slot_animation(unsigned char animation_index, unsigned char object_id) {
@@ -276,13 +284,22 @@ bool organizer_disable(unsigned char organizer_id_lower, unsigned char organizer
 
 // NGLE - 129
 bool play_cd_track_channel_2(unsigned char track_id, unsigned char looping) {
-	TriggerChannelTrack(track_id, 1, looping);
+	S_CDPlayExt(track_id, 1, looping, false);
 
 	return true;
 }
 
+// NGLE - 130
+bool stop_cd_track_on_channel(unsigned char channel_id, unsigned char unused) {
+	S_CDStopExt(channel_id);
+
+	return true;
+}
+
+
 // NGLE - 133
 bool set_volume_for_audio_track_on_channel(unsigned char volume, unsigned char channel) {
+	S_CDSetChannelVolume(volume, channel);
 	return true;
 }
 
@@ -294,6 +311,12 @@ bool activate_item_group_with_timer(unsigned char item_group, unsigned char time
 // NGLE - 146
 bool untrigger_item_group_with_timer(unsigned char item_group, unsigned char timer) {
 	return NGTriggerItemGroupWithTimer(item_group, timer, true);
+}
+
+// NGLE - 193
+bool play_track_on_channel_with_restore(unsigned char track_id, unsigned char channel_id) {
+	S_CDPlayExt(track_id, channel_id, false, true);
+	return true;
 }
 
 // NGLE - 231
@@ -402,6 +425,11 @@ bool NGFlipEffect(unsigned short param, short extra, bool oneshot, bool heavy, b
 				return play_cd_track_channel_1(action_data_1, action_data_2);
 			break;
 		}
+		case STOP_ALL_CD_TRACKS: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+				return stop_all_cd_tracks(action_data_1, action_data_2);
+			break;
+		}
 		case FORCE_LARA_ANIMATION_0_255_OF_SLOT_ANIMATION: {
 			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return force_lara_animation_0_255_of_slot_animation(action_data_1, action_data_2);
@@ -439,6 +467,11 @@ bool NGFlipEffect(unsigned short param, short extra, bool oneshot, bool heavy, b
 				return play_cd_track_channel_2(action_data_1, action_data_2);
 			break;
 		}
+		case STOP_CD_TRACK_ON_CHANNEL: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+				return stop_cd_track_on_channel(action_data_1, action_data_2);
+			break;
+		}
 		case SET_VOLUME_OF_AUDIO_TRACK_ON_CHANNEL: {
 			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return set_volume_for_audio_track_on_channel(action_data_1, action_data_2);
@@ -452,6 +485,11 @@ bool NGFlipEffect(unsigned short param, short extra, bool oneshot, bool heavy, b
 		case UNTRIGGER_ITEM_GROUP_WITH_TIMER: {
 			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return untrigger_item_group_with_timer(action_data_1, action_data_2);
+			break;
+		}
+		case PLAY_TRACK_ON_CHANNEL_WITH_RESTORE: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+				return play_track_on_channel_with_restore(action_data_1, action_data_2);
 			break;
 		}
 		case VARIABLES_ADD_VALUE_TO_VARIABLE: {

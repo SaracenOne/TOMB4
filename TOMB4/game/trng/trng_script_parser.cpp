@@ -243,6 +243,10 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 				return;
 			}
 
+			// Defaults for TRNG levels
+			ng_levels[current_level].old_cd_trigger_system = false;
+			ng_levels[current_level].new_audio_system = true;
+
 			unsigned int level_block_end_pos = level_block_start_position + level_block_size * sizeof(short);
 
 			int command_blocks_parsed = 0;
@@ -615,8 +619,7 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 							}
 							// CUST_SET_OLD_CD_TRIGGER
 							case 0x0013: {
-								printf("CUST_SET_OLD_CD_TRIGGER unimplemented!\n");
-								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+								ng_levels[current_level].old_cd_trigger_system = NG_READ_8(gfScriptFile, offset);
 								break;
 							}
 							// CUST_ESCAPE_FLY_CAMERA

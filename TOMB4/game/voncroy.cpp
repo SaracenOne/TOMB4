@@ -304,7 +304,7 @@ void DoVonCroyCutscene(ITEM_INFO* item, CREATURE_INFO* info)
 		}
 		else
 		{
-			if (XATrack != VonCroyCutTracks[item->item_flags[3]])
+			if (LegacyTrack != VonCroyCutTracks[item->item_flags[3]])
 				item->trigger_flags = 3;
 
 			if (item->current_anim_state == 1)
@@ -468,7 +468,7 @@ void VoncroyRaceControl(short item_number)
 
 	angle = CreatureTurn(item, VonCroy->maximum_turn);
 
-	if (bUseSpotCam && XATrack == 80)
+	if (bUseSpotCam && LegacyTrack == 80)
 	{
 		talk++;
 
@@ -505,7 +505,7 @@ void VoncroyRaceControl(short item_number)
 			torso_y = info.angle >> 1;
 		}
 
-		if (lara.location < item->item_flags[3] || XATrack == 80 && (XAFlag == 6 || XAFlag == 5))
+		if (lara.location < item->item_flags[3] || LegacyTrack == 80 && (LegacyTrackFlag == 6 || LegacyTrackFlag == 5))
 		{
 			item->goal_anim_state = 1;
 			break;

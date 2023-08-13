@@ -661,9 +661,8 @@ uchar* wav_file_buffer = 0;
 uchar* ADPCMBuffer = 0;
 bool acm_ready = 0;
 
-long XATrack = -1;
-long XAFlag = 7;
-static long XAReqTrack = 0;
+long LegacyTrack = -1;
+long LegacyTrackFlag = 7;
 
 #ifndef MA_AUDIO_ENGINE
 
@@ -771,8 +770,7 @@ void ACMEmulateCDPlay(long track, long mode)
 		Log(8, "Playing %s %s %d", name, "", track);
 
 	XATrack = track;
-	XAReqTrack = track;
-	XAFlag = 6;
+	LegacyTrackFlag = 6;
 	auido_play_mode = mode;
 	OpenStreamFile(name);
 
@@ -1090,6 +1088,21 @@ void S_CDPlay(long track, long mode)
 	}
 }
 
+void S_CDPlayExt(unsigned char track_id, unsigned char channel_id, bool looping, bool restore_old_track) {
+	if (looping) {
+		if (CurrentAtmosphere != track_id)
+		{
+			CurrentAtmosphere = (uchar)track_id;
+
+			if (IsAtmospherePlaying)
+				S_CDPlay(track_id, true);
+		}
+	}
+	else {
+		S_CDPlay(track_id, false);
+	}
+}
+
 void S_CDStop()
 {
 	if (acm_ready && audio_stream_fp)
@@ -1110,9 +1123,17 @@ void S_CDStop()
 		fclose(audio_stream_fp);
 		audio_stream_fp = 0;
 		audio_counter = 0;
-		XAFlag = 7;
+		LegacyTrackFlag = 7;
 		XATrack = -1;
 	}
+}
+
+void S_CDStopExt(unsigned char channel_id) {
+	S_CDStop();
+}
+
+void S_CDSetChannelVolume(unsigned char volume, unsigned char channel) {
+	return;
 }
 
 void S_StartSyncedAudio(long track)
@@ -1133,6 +1154,24 @@ void S_UnpauseAudio() {
 	return;
 }
 
+void S_Reset() {
+	return;
+}
+
+void SetUsingNewAudioSystem(bool enabled) {
+}
+
+void SetUsingOldTriggerMode(bool enabled) {
+}
+
+bool IsUsingNewAudioSystem() {
+	return false;
+}
+
+bool IsUsingOldTriggerMode() {
+	return true;
+}
+
 #else
 
 #include <stdio.h>
@@ -1145,7 +1184,10 @@ void S_UnpauseAudio() {
 #define MINIAUDIO_IMPLEMENTATION
 #include "../tomb4/libs/miniaudio/miniaudio.h"
 
-bool cd_active = false;
+bool new_audio_system = false;
+bool old_cd_trigger_mode = true;
+
+#define MA_AUDIO_STREAM_COUNT 2
 
 enum StreamMode {
 	STREAM_ONESHOT_AND_RESTORE_ATMOSPHERE,
@@ -1153,15 +1195,30 @@ enum StreamMode {
 	STREAM_ONESHOT_AND_SILENCE
 };
 
-ma_uint64 current_stream_length = 0;
-ma_bool32 current_stream_loops = false;
-ma_bool32 current_stream_paused = false;
-bool current_stream_finished = false;
-StreamMode current_stream_mode;
+struct ma_audio_stream_channel {
+	ma_uint64 current_stream_length = 0;
+	ma_bool32 current_stream_loops = false;
+	ma_bool32 current_stream_paused = false;
+	bool current_stream_finished = false;
+	StreamMode current_stream_mode = StreamMode::STREAM_ONESHOT_AND_RESTORE_ATMOSPHERE;
+	bool current_stream_active = false;
+	int current_track = -1;
+	int current_volume = 100;
 
-ma_decoder decoder;
-ma_device device;
-ma_device_config deviceConfig;
+	int restore_track = -1;
+	StreamMode restore_stream_mode = StreamMode::STREAM_ONESHOT_AND_RESTORE_ATMOSPHERE;
+
+	ma_decoder decoder;
+	ma_device device;
+	ma_device_config deviceConfig;
+};
+
+struct ma_callback_userdata {
+	int channel_id = -1;
+};
+
+ma_audio_stream_channel channels[MA_AUDIO_STREAM_COUNT];
+ma_callback_userdata callback_userdata[MA_AUDIO_STREAM_COUNT];
 
 void find_file_with_substring(const char* dir_path, const char* substring, char* found_filename)
 {
@@ -1195,113 +1252,88 @@ void find_file_with_substring(const char* dir_path, const char* substring, char*
 }
 
 void data_callback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount) {
-	ma_decoder* pDecoder = (ma_decoder*)pDevice->pUserData;
+	ma_callback_userdata *userdata = (ma_callback_userdata *)pDevice->pUserData;
+	int channel_id = userdata->channel_id;
+
+	ma_decoder* pDecoder = &channels[channel_id].decoder;
 	if (pDecoder == NULL) {
 		return;
 	}
 
-	if (!current_stream_paused) {
+	if (!channels[channel_id].current_stream_paused) {
 		ma_uint64 frames_read;
 		ma_data_source_read_pcm_frames(pDecoder, pOutput, frameCount, &frames_read);
 
-		current_stream_finished = false;
-		if (!current_stream_loops) {
+		channels[channel_id].current_stream_finished = false;
+		if (!channels[channel_id].current_stream_loops) {
 			if (frames_read == 0) {
-				current_stream_finished = true;
+				channels[channel_id].current_stream_finished = true;
 			}
 		}
 	}
 }
 
-void track_complete_callback() {
-	if (current_stream_mode == STREAM_ONESHOT_AND_RESTORE_ATMOSPHERE) {
-		if (CurrentAtmosphere && !IsAtmospherePlaying)
-		{
-			if (cd_active) {
-				S_CDStop();
-				S_CDPlay(CurrentAtmosphere, 1);
-				return;
-			}
-		}
-	} else {
-		if (cd_active) {
-			S_CDStop();
-			return;
+void stop_track_on_stream_channel(int channel_id) {
+	if (channel_id == 0) {
+		LegacyTrack = -1;
+		LegacyTrackFlag = 7;
+	}
+
+	channels[channel_id].current_track = -1;
+
+	if (channels[channel_id].device.pContext) {
+		if (ma_device_stop(&channels[channel_id].device) != MA_SUCCESS) {
+			printf("Failed to stop playback device.\n");
+			ma_device_uninit(&channels[channel_id].device);
+			ma_decoder_uninit(&channels[channel_id].decoder);
 		}
 	}
 }
 
-bool load_and_play_track(const char* path, StreamMode mode) {
-	S_CDStop();
+bool load_and_play_track(const char* path, StreamMode mode, int channel_id) {
+	stop_track_on_stream_channel(channel_id);
 
-	ma_result result = ma_decoder_init_file(path, NULL, &decoder);
+	ma_result result = ma_decoder_init_file(path, NULL, &channels[channel_id].decoder);
 	if (result != MA_SUCCESS) {
 		return false;
 	}
 
-	current_stream_mode = mode;
+	channels[channel_id].current_stream_mode = mode;
 
-	ma_data_source_set_looping(&decoder, current_stream_mode == STREAM_LOOP ? MA_TRUE : MA_FALSE);
+	ma_data_source_set_looping(&channels[channel_id].decoder, channels[channel_id].current_stream_mode == STREAM_LOOP ? MA_TRUE : MA_FALSE);
 
-	deviceConfig = ma_device_config_init(ma_device_type_playback);
-	deviceConfig.playback.format = decoder.outputFormat;
-	deviceConfig.playback.channels = decoder.outputChannels;
-	deviceConfig.sampleRate = decoder.outputSampleRate;
-	deviceConfig.dataCallback = data_callback;
-	deviceConfig.pUserData = &decoder;
+	channels[channel_id].deviceConfig = ma_device_config_init(ma_device_type_playback);
+	channels[channel_id].deviceConfig.playback.format = channels[channel_id].decoder.outputFormat;
+	channels[channel_id].deviceConfig.playback.channels = channels[channel_id].decoder.outputChannels;
+	channels[channel_id].deviceConfig.sampleRate = channels[channel_id].decoder.outputSampleRate;
+	channels[channel_id].deviceConfig.dataCallback = data_callback;
+	channels[channel_id].deviceConfig.pUserData = &callback_userdata[channel_id];
 
-	result = ma_data_source_get_length_in_pcm_frames(&decoder, &current_stream_length);
+	result = ma_data_source_get_length_in_pcm_frames(&channels[channel_id].decoder, &channels[channel_id].current_stream_length);
 	if (result != MA_SUCCESS) {
 		return false;
 	}
 
-	if (ma_device_init(NULL, &deviceConfig, &device) != MA_SUCCESS) {
+	if (ma_device_init(NULL, &channels[channel_id].deviceConfig, &channels[channel_id].device) != MA_SUCCESS) {
 		printf("Failed to open playback device.\n");
-		ma_decoder_uninit(&decoder);
+		ma_decoder_uninit(&channels[channel_id].decoder);
 		return false;
 	}
 
-	ma_data_source_get_length_in_pcm_frames(&decoder, &current_stream_length);
-	current_stream_loops = ma_data_source_is_looping(&decoder);
+	ma_data_source_get_length_in_pcm_frames(&channels[channel_id].decoder, &channels[channel_id].current_stream_length);
+	channels[channel_id].current_stream_loops = ma_data_source_is_looping(&channels[channel_id].decoder);
 
-	if (ma_device_start(&device) != MA_SUCCESS) {
+	if (ma_device_start(&channels[channel_id].device) != MA_SUCCESS) {
 		printf("Failed to start playback device.\n");
-		ma_device_uninit(&device);
-		ma_decoder_uninit(&decoder);
+		ma_device_uninit(&channels[channel_id].device);
+		ma_decoder_uninit(&channels[channel_id].decoder);
 		return false;
 	}
 
 	return true;
 }
 
-bool ACMInit()
-{
-	acm_ready = true;
-	return true;
-}
-
-void ACMClose()
-{
-	S_CDStop();
-	ma_device_uninit(&device);
-	ma_decoder_uninit(&decoder);
-	acm_ready = false;
-}
-
-void ACMSetVolume()
-{
-	long volume;
-
-	if (!MusicVolume)
-		volume = -10000;
-	else
-		volume = -4000 * (100 - MusicVolume) / 100;
-
-	ma_device_set_master_volume_db(&device, (float)volume * 0.01f);
-}
-
-void S_CDPlay(long track, long mode)
-{
+bool play_track_on_stream_channel(int channel_id, long track, StreamMode mode) {
 	char name[256];
 	memset(name, 0x00, sizeof(name));
 
@@ -1310,77 +1342,233 @@ void S_CDPlay(long track, long mode)
 	char path[256];
 	wsprintf(path, "audio\\%s", name);
 
-	if (load_and_play_track(path, (StreamMode)mode)) {
-		cd_active = true;
+	bool result = load_and_play_track(path, (StreamMode)mode, channel_id);
+
+	if (result) {
+		channels[channel_id].current_stream_active = true;
+		channels[channel_id].current_track = track;
 	}
 
-	XATrack = track;
-	XAReqTrack = track;
-	XAFlag = 6;
+	if (channel_id == 0) {
+		LegacyTrack = track;
+		LegacyTrackFlag = 6;
+	}
 
 	ACMSetVolume();
 
-	IsAtmospherePlaying = track == CurrentAtmosphere;
+	return result;
 }
 
-void S_CDStop() {
-	cd_active = false;
-	XATrack = -1;
-	XAFlag = 7;
+void track_complete_callback(int channel_id) {
+	if (channels[channel_id].current_stream_mode == STREAM_ONESHOT_AND_RESTORE_ATMOSPHERE) {
+		if (CurrentAtmosphere && !IsAtmospherePlaying)
+		{
+			if (channels[channel_id].current_stream_active) {
+				S_CDStop();
+				S_CDPlay(CurrentAtmosphere, 1);
+			}
+		}
+	}
+	else {
+		if (channels[channel_id].current_stream_active) {
+			stop_track_on_stream_channel(channel_id);
 
-	if (device.pContext) {
-		if (ma_device_stop(&device) != MA_SUCCESS) {
-			printf("Failed to stop playback device.\n");
-			ma_device_uninit(&device);
-			ma_decoder_uninit(&decoder);
-			return;
+			if (channels[channel_id].restore_track != -1) {
+				int next_track = channels[channel_id].restore_track;
+				StreamMode next_stream_mode = channels[channel_id].restore_stream_mode;
+
+				channels[channel_id].restore_track = -1;
+
+				play_track_on_stream_channel(channel_id, next_track, next_stream_mode);
+			}
+		}
+	}
+
+	channels[channel_id].current_stream_finished = false;
+}
+
+bool ACMInit()
+{
+	for (int i = 0; i < MA_AUDIO_STREAM_COUNT; i++) {
+		callback_userdata[i].channel_id = i;
+	}
+
+	acm_ready = true;
+	return true;
+}
+
+void ACMClose()
+{
+	S_CDStop();
+	for (int i = 0; i < MA_AUDIO_STREAM_COUNT; i++) {
+		ma_device_uninit(&channels[i].device);
+		ma_decoder_uninit(&channels[i].decoder);
+	}
+	acm_ready = false;
+}
+
+void ACMSetVolume()
+{
+	long volume;
+
+	for (int i = 0; i < MA_AUDIO_STREAM_COUNT; i++) {
+		float current_volume_float = (float)(channels[i].current_volume) / 100.0f;
+		float master_volume_float = (float)(MusicVolume) / 100.0f;
+
+		if (!MusicVolume || !channels[i].current_volume) {
+			volume = -10000;
+		} else {
+			volume = -4000 * (1.0f - (current_volume_float * master_volume_float));
+		}
+
+		ma_device_set_master_volume_db(&channels[i].device, (float)volume * 0.01f);
+	}
+}
+
+void S_CDPlay(long track, long mode) {
+	if (!new_audio_system || old_cd_trigger_mode) {
+		play_track_on_stream_channel(0, track, (StreamMode)mode);
+
+		IsAtmospherePlaying = track == CurrentAtmosphere;
+	} else {
+		if (mode == StreamMode::STREAM_LOOP) {
+			play_track_on_stream_channel(0, track, StreamMode::STREAM_LOOP);
+		} else {
+			play_track_on_stream_channel(1, track, StreamMode::STREAM_ONESHOT_AND_SILENCE);
 		}
 	}
 }
 
-void S_StartSyncedAudio(long track)
-{
+// TODO: restore should restore at the specific time of the original track
+void S_CDPlayExt(unsigned char track_id, unsigned char channel_id, bool looping, bool restore_old_track) {
+	if (IsUsingNewAudioSystem) {
+		if (channels[channel_id].current_track != track_id) {
+			if (restore_old_track) {
+				channels[channel_id].restore_track = channels[channel_id].current_track;
+				channels[channel_id].restore_stream_mode = channels[channel_id].restore_stream_mode;
+			}
+
+			play_track_on_stream_channel(channel_id, track_id, looping ? StreamMode::STREAM_LOOP : StreamMode::STREAM_ONESHOT_AND_SILENCE);
+		}
+	} else {
+		if (looping) {
+			if (CurrentAtmosphere != track_id)
+			{
+				CurrentAtmosphere = (uchar)track_id;
+
+				if (IsAtmospherePlaying)
+					S_CDPlay(track_id, true);
+			}
+		}
+		else {
+			S_CDPlay(track_id, false);
+		}
+	}
+}
+
+void S_CDStop() {
+	for (int i = 0; i < MA_AUDIO_STREAM_COUNT; i++) {
+		channels[i].current_stream_active = false;
+		stop_track_on_stream_channel(i);
+	}
+}
+
+void S_CDStopExt(unsigned char channel_id) {
+	if (IsUsingNewAudioSystem) {
+		stop_track_on_stream_channel(channel_id);
+	}
+	else {
+		S_CDStop();
+	}
+}
+
+void S_StartSyncedAudio(long track) {
 	S_CDStop();
 	S_CDPlay(track, 2);
 }
 
-void S_AudioUpdate() {
-	bool should_callback = false;
-	ma_mutex_lock(&device.startStopLock);
-	{
-		if (current_stream_finished) {
-			should_callback = true;
-		}
+void S_Reset() {
+	new_audio_system = false;
+	old_cd_trigger_mode = true;
+
+	for (int i = 0; i < MA_AUDIO_STREAM_COUNT; i++) {
+		channels[i].current_stream_length = 0;
+		channels[i].current_stream_loops = false;
+		channels[i].current_stream_paused = false;
+		channels[i].current_stream_finished = false;
+		channels[i].current_stream_mode = StreamMode::STREAM_ONESHOT_AND_RESTORE_ATMOSPHERE;
+		channels[i].current_stream_active = false;
+		channels[i].current_track = -1;
+		channels[i].current_volume = 100;
 	}
-	ma_mutex_unlock(&device.startStopLock);
-	if (should_callback)
-		track_complete_callback();
+
+	ACMSetVolume();
+}
+
+void S_AudioUpdate() {
+	for (int i = 0; i < MA_AUDIO_STREAM_COUNT; i++) {
+		bool should_callback = false;
+		ma_mutex_lock(&channels[i].device.startStopLock);
+		{
+			if (channels[i].current_stream_finished) {
+				should_callback = true;
+			}
+		}
+		ma_mutex_unlock(&channels[i].device.startStopLock);
+		if (should_callback)
+			track_complete_callback(i);
+	}
 }
 
 void S_PauseAudio() {
-	if (device.pContext) {
-		ma_mutex_lock(&device.startStopLock);
-		{
-			current_stream_paused = true;
+	for (int i = 0; i < MA_AUDIO_STREAM_COUNT; i++) {
+		if (channels[i].device.pContext) {
+			ma_mutex_lock(&channels[i].device.startStopLock);
+			{
+				channels[i].current_stream_paused = true;
+			}
+			ma_mutex_unlock(&channels[i].device.startStopLock);
+		} else {
+			channels[i].current_stream_paused = true;
 		}
-		ma_mutex_unlock(&device.startStopLock);
 	}
-	else {
-		current_stream_paused = true;
+}
+
+void S_CDSetChannelVolume(unsigned char volume, unsigned char channel) {
+	if (IsUsingNewAudioSystem()) {
+		channels[channel].current_volume = volume;
+		ACMSetVolume();
 	}
 }
 
 void S_UnpauseAudio() {
-	if (device.pContext) {
-		ma_mutex_lock(&device.startStopLock);
-		{
-			current_stream_paused = false;
+	for (int i = 0; i < MA_AUDIO_STREAM_COUNT; i++) {
+		if (channels[i].device.pContext) {
+			ma_mutex_lock(&channels[i].device.startStopLock);
+			{
+				channels[i].current_stream_paused = false;
+			}
+			ma_mutex_unlock(&channels[i].device.startStopLock);
+		} else {
+			channels[i].current_stream_paused = false;
 		}
-		ma_mutex_unlock(&device.startStopLock);
 	}
-	else {
-		current_stream_paused = false;
-	}
+}
+
+void SetUsingNewAudioSystem(bool enabled) {
+	new_audio_system = enabled;
+}
+
+void SetUsingOldTriggerMode(bool enabled) {
+	old_cd_trigger_mode = enabled;
+}
+
+bool IsUsingNewAudioSystem() {
+	return new_audio_system;
+}
+
+bool IsUsingOldTriggerMode() {
+	return old_cd_trigger_mode;
 }
 
 void FillADPCMBuffer(char* p, long track)

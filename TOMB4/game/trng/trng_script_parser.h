@@ -75,6 +75,8 @@ struct NG_LEVEL_RECORD_DATA {
 };
 
 struct NG_LEVEL {
+	bool new_audio_system = false;
+	bool old_cd_trigger_system = true;
 	NG_LEVEL_RECORD_DATA *records = NULL;
 };
 

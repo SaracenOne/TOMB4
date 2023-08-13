@@ -1,5 +1,6 @@
 #include "../../tomb4/pch.h"
 
+#include "../../specific/audio.h"
 #include "../../specific/function_stubs.h"
 #include "../control.h"
 #include "../effects.h"
@@ -170,6 +171,11 @@ void NGRotateItemY(unsigned short item_id, short rotation) {
 }
 
 void NGSetup() {
+	S_Reset(); // Reset audio channels.
+
+	SetUsingNewAudioSystem(ng_levels[gfCurrentLevel].new_audio_system);
+	SetUsingOldTriggerMode(ng_levels[gfCurrentLevel].old_cd_trigger_system);
+	
 	NGLoadTablesForLevel(gfCurrentLevel);
 	NGSetupExtraState();
 }

@@ -3428,18 +3428,3 @@ long GetMinimumCeiling(FLOOR_INFO* floor, long x, long z)
 
 	return height;
 }
-
-void TriggerChannelTrack(unsigned char track_id, unsigned char channel, bool looping) {
-	if (looping) {
-		if (CurrentAtmosphere != track_id)
-		{
-			CurrentAtmosphere = (uchar)track_id;
-
-			if (IsAtmospherePlaying)
-				S_CDPlay(track_id, true);
-		}
-	}
-	else {
-		S_CDPlay(track_id, false);
-	}
-}
