@@ -1,4 +1,5 @@
 #include "../tomb4/pch.h"
+#include "gameflow.h"
 #include "ahmet.h"
 #include "collide.h"
 #include "lara_states.h"
@@ -18,6 +19,7 @@
 #include "people.h"
 #include "effects.h"
 #include "lara.h"
+#include "../tomb4/mod_config.h"
 
 short ScalesBounds[12] = { -1408, -640, 0, 0, -512, 512, -1820, 1820, -5460, 5460, -1820, 1820 };
 static BITE_INFO ahmet_bite = { 0, 0, 0, 11 };
@@ -266,12 +268,16 @@ void AhmetControl(short item_number)
 
 	if (item->hit_points <= 0)
 	{
+		MOD_LEVEL_CREATURE_INFO creature_info = get_game_mod_level_creature_info(gfCurrentLevel);
+
 		if (item->current_anim_state == 7)
 		{
-			if (item->frame_number == anims[item->anim_number].frame_end)
-			{
-				item->frame_number = anims[item->anim_number].frame_end - 1;
-				return;
+			if (!creature_info.remove_ahmet_death_loop) {
+				if (item->frame_number == anims[item->anim_number].frame_end)
+				{
+					item->frame_number = anims[item->anim_number].frame_end - 1;
+					return;
+				}
 			}
 		}
 		else
@@ -282,7 +288,9 @@ void AhmetControl(short item_number)
 			lara.spaz_effect_count = item_number;
 		}
 
-		ExplodeAhmet(item);
+		if (!creature_info.remove_ahmet_death_flames) {
+			ExplodeAhmet(item);
+		}
 	}
 	else
 	{
