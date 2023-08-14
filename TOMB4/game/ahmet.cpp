@@ -266,10 +266,10 @@ void AhmetControl(short item_number)
 	angle = 0;
 	head = 0;
 
+	MOD_LEVEL_CREATURE_INFO creature_info = get_game_mod_level_creature_info(gfCurrentLevel);
+
 	if (item->hit_points <= 0)
 	{
-		MOD_LEVEL_CREATURE_INFO creature_info = get_game_mod_level_creature_info(gfCurrentLevel);
-
 		if (item->current_anim_state == 7)
 		{
 			if (!creature_info.remove_ahmet_death_loop) {
@@ -475,6 +475,7 @@ void AhmetControl(short item_number)
 	room_number = item->room_number;
 	floor = GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
 	GetHeight(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
-	TestTriggers(trigger_index, 1, 0);
+	if (!creature_info.disable_ahmet_heavy_trigger)
+		TestTriggers(trigger_index, 1, 0);
 	CreatureAnimation(item_number, angle, 0);
 }

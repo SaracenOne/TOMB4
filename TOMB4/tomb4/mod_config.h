@@ -14,6 +14,7 @@ struct MOD_LEVEL_CREATURE_INFO {
 	bool remove_knights_templar_sparks = false;
 	bool remove_ahmet_death_flames = false;
 	bool remove_ahmet_death_loop = false;
+	bool disable_ahmet_heavy_trigger = false;
 };
 
 struct MOD_LEVEL_AUDIO_INFO {

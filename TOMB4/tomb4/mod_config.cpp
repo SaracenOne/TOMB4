@@ -91,6 +91,7 @@ void LoadGameModLevelCreatureInfo(const json_t* creature, MOD_LEVEL_CREATURE_INF
 
     READ_JSON_BOOL(remove_ahmet_death_flames, creature, creature_info);
     READ_JSON_BOOL(remove_ahmet_death_loop, creature, creature_info);
+    READ_JSON_BOOL(disable_ahmet_heavy_trigger, creature, creature_info);
 }
 
 void LoadGameModLevel(const json_t *level, MOD_LEVEL_INFO *level_info) {
