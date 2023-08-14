@@ -1,5 +1,6 @@
 #include "../tomb4/pch.h"
 #include "mummy.h"
+#include "gameflow.h"
 #include "box.h"
 #include "objects.h"
 #include "../specific/function_stubs.h"
@@ -7,6 +8,7 @@
 #include "effects.h"
 #include "lara.h"
 #include "control.h"
+#include "../tomb4/mod_config.h"
 
 static BITE_INFO left_hand = { 0, 0, 0, 11 };
 static BITE_INFO right_hand = { 0, 0, 0, 14 };
@@ -63,34 +65,38 @@ void MummyControl(short item_number)
 
 	if (item->hit_status && info.distance < 0x900000)
 	{
-		if (item->current_anim_state != 7 && item->current_anim_state != 5 && item->current_anim_state != 8)
-		{
-			if (!(GetRandomControl() & 3) && (lara.gun_type == WEAPON_SHOTGUN || lara.gun_type == WEAPON_GRENADE || lara.gun_type == WEAPON_REVOLVER))
+		MOD_LEVEL_CREATURE_INFO creature_info = get_game_mod_level_creature_info(gfCurrentLevel);
+
+		if (!creature_info.remove_mummy_stun_animations) {
+			if (item->current_anim_state != 7 && item->current_anim_state != 5 && item->current_anim_state != 8)
 			{
-				item->anim_number = objects[MUMMY].anim_index + 10;
-				item->frame_number = anims[item->anim_number].frame_base;
-				item->current_anim_state = 7;
-				item->pos.y_rot += info.angle;
-				mummy->maximum_turn = 0;
-			}
-			else if (!(GetRandomControl() & 7) || lara.gun_type == WEAPON_SHOTGUN || lara.gun_type == WEAPON_GRENADE || lara.gun_type == WEAPON_REVOLVER)
-			{
-				if (item->current_anim_state == 3 || item->current_anim_state == 4)
+				if (!(GetRandomControl() & 3) && (lara.gun_type == WEAPON_SHOTGUN || lara.gun_type == WEAPON_GRENADE || lara.gun_type == WEAPON_REVOLVER))
 				{
-					item->anim_number = objects[MUMMY].anim_index + 20;
-					item->current_anim_state = 6;
+					item->anim_number = objects[MUMMY].anim_index + 10;
+					item->frame_number = anims[item->anim_number].frame_base;
+					item->current_anim_state = 7;
+					item->pos.y_rot += info.angle;
+					mummy->maximum_turn = 0;
 				}
-				else
+				else if (!(GetRandomControl() & 7) || lara.gun_type == WEAPON_SHOTGUN || lara.gun_type == WEAPON_GRENADE || lara.gun_type == WEAPON_REVOLVER)
 				{
-					item->anim_number = objects[MUMMY].anim_index + 3;
-					item->current_anim_state = 5;
+					if (item->current_anim_state == 3 || item->current_anim_state == 4)
+					{
+						item->anim_number = objects[MUMMY].anim_index + 20;
+						item->current_anim_state = 6;
+					}
+					else
+					{
+						item->anim_number = objects[MUMMY].anim_index + 3;
+						item->current_anim_state = 5;
+					}
+
+					item->frame_number = anims[item->anim_number].frame_base;
+					item->pos.y_rot += info.angle;
 				}
 
-				item->frame_number = anims[item->anim_number].frame_base;
-				item->pos.y_rot += info.angle;
+				stop = 1;
 			}
-
-			stop = 1;
 		}
 	}
 
