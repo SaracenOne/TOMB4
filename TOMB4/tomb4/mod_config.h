@@ -86,6 +86,9 @@ struct MOD_LEVEL_LARA_INFO {
 	long pigtail_right_x = 44;
 	long pigtail_right_y = -48;
 	long pigtail_right_z = -50;
+
+	int crawlspace_jump_animation = 421;
+	int crawlspace_jump_pit_deepness_threshold = 768;
 };
 
 struct MOD_GLOBAL_INFO {
