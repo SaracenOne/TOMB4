@@ -85,7 +85,8 @@ void LoadGameModLevelLaraInfo(const json_t* level, MOD_LEVEL_LARA_INFO *lara_inf
 
 void LoadGameModLevelCreatureInfo(const json_t* creature, MOD_LEVEL_CREATURE_INFO *creature_info) {
     READ_JSON_BOOL_AND_SET_FLAG(small_scorpion_is_poisonous, creature, creature_info, scorpion_poison_override_found);
-    READ_JSON_SINT32(small_scorpion_poison_strength, creature, creature_info)
+    READ_JSON_SINT32(small_scorpion_poison_strength, creature, creature_info);
+    READ_JSON_BOOL(remove_knights_templar_sparks, creature, creature_info);
 }
 
 void LoadGameModLevel(const json_t *level, MOD_LEVEL_INFO *level_info) {

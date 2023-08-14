@@ -819,8 +819,6 @@ void TrapObjects()
 
 void BaddyObjects()
 {
-	MOD_LEVEL_CREATURE_HEALTH_INFO creature_health_info = get_game_mod_level_creature_health_info(gfCurrentLevel);
-
 	OBJECT_INFO* obj;
 
 	obj = &objects[LARA];
@@ -869,7 +867,7 @@ void BaddyObjects()
 		obj->control = SkeletonControl;
 		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
-		obj->hit_points = creature_health_info.skeleton_hp;
+		obj->hit_points = 15;
 		obj->pivot_length = 50;
 		obj->radius = 128;
 		obj->object_mip = 5120;
@@ -897,7 +895,7 @@ void BaddyObjects()
 		obj->collision = CreatureCollision;
 		obj->pivot_length = 0;
 		obj->shadow_size = 128;
-		obj->hit_points = creature_health_info.von_croy_hp;
+		obj->hit_points = 15;
 		obj->radius = 128;
 		obj->object_mip = 5120;
 		obj->explodable_meshbits = 0x200000;
@@ -935,7 +933,7 @@ void BaddyObjects()
 		obj->control = GuideControl;
 		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
-		obj->hit_points = creature_health_info.guide_hp;
+		obj->hit_points = -16384;
 		obj->pivot_length = 0;
 		obj->radius = 128;
 		obj->object_mip = 5120;
@@ -973,7 +971,7 @@ void BaddyObjects()
 		obj->control = RagheadControl;
 		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
-		obj->hit_points = creature_health_info.baddy_1_hp;
+		obj->hit_points = 25;
 		obj->pivot_length = 50;
 		obj->radius = 102;
 		obj->bite_offset = 1;
@@ -1018,7 +1016,7 @@ void BaddyObjects()
 		obj->control = RagheadControl;
 		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
-		obj->hit_points = creature_health_info.baddy_2_hp;
+		obj->hit_points = 35;
 		obj->pivot_length = 50;
 		obj->radius = 102;
 		obj->bite_offset = 1;
@@ -1060,7 +1058,7 @@ void BaddyObjects()
 		obj->control = ScorpionControl;
 		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
-		obj->hit_points = creature_health_info.big_scorpion_hp;
+		obj->hit_points = 80;
 		obj->pivot_length = 50;
 		obj->radius = 512;
 		obj->object_mip = 5120;
@@ -1080,7 +1078,7 @@ void BaddyObjects()
 		obj->control = SmlscorpControl;
 		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
-		obj->hit_points = creature_health_info.small_scorpion_hp;
+		obj->hit_points = 8;
 		obj->pivot_length = 20;
 		obj->radius = 128;
 		obj->intelligent = 1;
@@ -1100,7 +1098,7 @@ void BaddyObjects()
 		obj->collision = CreatureCollision;
 		obj->pivot_length = 50;
 		obj->shadow_size = 128;
-		obj->hit_points = creature_health_info.mummy_hp;
+		obj->hit_points = 15;
 		obj->radius = 170;
 		obj->object_mip = 5120;
 		obj->intelligent = 1;
@@ -1124,7 +1122,7 @@ void BaddyObjects()
 		obj->collision = CreatureCollision;
 		obj->pivot_length = 50;
 		obj->shadow_size = 128;
-		obj->hit_points = creature_health_info.knights_templer_hp;
+		obj->hit_points = 15;
 		obj->radius = 128;
 		obj->object_mip = 5120;
 		obj->intelligent = 1;
@@ -1147,7 +1145,7 @@ void BaddyObjects()
 		obj->control = SphinxControl;
 		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
-		obj->hit_points = creature_health_info.sphinx_hp;
+		obj->hit_points = 1000;
 		obj->pivot_length = 500;
 		obj->radius = 512;
 		obj->object_mip = 5120;
@@ -1168,7 +1166,7 @@ void BaddyObjects()
 		obj->control = SethControl;
 		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
-		obj->hit_points = creature_health_info.seth_hp;
+		obj->hit_points = 500;
 		obj->pivot_length = 50;
 		obj->radius = 341;
 		obj->object_mip = 5120;
@@ -1207,7 +1205,7 @@ void BaddyObjects()
 		obj->control = HorsemanControl;
 		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
-		obj->hit_points = creature_health_info.horseman_hp;
+		obj->hit_points = 25;
 		obj->pivot_length = 50;
 		obj->radius = 409;
 		obj->object_mip = 5120;
@@ -1229,7 +1227,7 @@ void BaddyObjects()
 		obj->control = HammerheadControl;
 		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
-		obj->hit_points = creature_health_info.hammerhead_hp;
+		obj->hit_points = 45;
 		obj->pivot_length = 300;
 		obj->radius = 341;
 		obj->object_mip = 5120;
@@ -1254,7 +1252,7 @@ void BaddyObjects()
 		obj->control = CrocControl;
 		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
-		obj->hit_points = creature_health_info.crocodile_hp;
+		obj->hit_points = 36;
 		obj->pivot_length = 300;
 		obj->radius = 409;
 		obj->object_mip = 5120;
@@ -1280,7 +1278,7 @@ void BaddyObjects()
 		obj->collision = CreatureCollision;
 		obj->pivot_length = 50;
 		obj->shadow_size = 128;
-		obj->hit_points = creature_health_info.demigod_1_hp;
+		obj->hit_points = 200;
 		obj->radius = 341;
 		obj->object_mip = 5120;
 		obj->intelligent = 1;
@@ -1305,7 +1303,7 @@ void BaddyObjects()
 		obj->collision = CreatureCollision;
 		obj->pivot_length = 50;
 		obj->shadow_size = 128;
-		obj->hit_points = creature_health_info.demigod_2_hp;
+		obj->hit_points = 200;
 		obj->radius = 341;
 		obj->object_mip = 5120;
 		obj->intelligent = 1;
@@ -1328,7 +1326,7 @@ void BaddyObjects()
 		obj->collision = CreatureCollision;
 		obj->pivot_length = 50;
 		obj->shadow_size = 128;
-		obj->hit_points = creature_health_info.demigod_3_hp;
+		obj->hit_points = 200;
 		obj->radius = 341;
 		obj->object_mip = 5120;
 		obj->intelligent = 1;
@@ -1351,7 +1349,7 @@ void BaddyObjects()
 		obj->collision = CreatureCollision;
 		obj->pivot_length = 50;
 		obj->shadow_size = 128;
-		obj->hit_points = creature_health_info.mutant_hp;
+		obj->hit_points = 15;
 		obj->radius = 128;
 		obj->intelligent = 1;
 		obj->save_flags = 1;
@@ -1375,7 +1373,7 @@ void BaddyObjects()
 		obj->collision = CreatureCollision;
 		obj->pivot_length = 50;
 		obj->shadow_size = 128;
-		obj->hit_points = creature_health_info.troops_hp;
+		obj->hit_points = 40;
 		obj->radius = 102;
 		obj->bite_offset = 0;
 		obj->object_mip = 5120;
@@ -1400,7 +1398,7 @@ void BaddyObjects()
 		obj->collision = CreatureCollision;
 		obj->pivot_length = 50;
 		obj->shadow_size = 128;
-		obj->hit_points = creature_health_info.sas_hp;
+		obj->hit_points = 40;
 		obj->radius = 102;
 		obj->bite_offset = 0;
 		obj->object_mip = 5120;
@@ -1424,7 +1422,7 @@ void BaddyObjects()
 		obj->control = HarpyControl;
 		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
-		obj->hit_points = creature_health_info.harpy_hp;
+		obj->hit_points = 60;
 		obj->pivot_length = 50;
 		obj->radius = 409;
 		obj->object_mip = 5120;
@@ -1445,7 +1443,7 @@ void BaddyObjects()
 		obj->collision = CreatureCollision;
 		obj->pivot_length = 50;
 		obj->shadow_size = 128;
-		obj->hit_points = creature_health_info.wild_boar_hp;
+		obj->hit_points = 40;
 		obj->radius = 102;
 		obj->intelligent = 1;
 		obj->HitEffect = 1;
@@ -1467,7 +1465,7 @@ void BaddyObjects()
 		obj->control = DogControl;
 		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
-		obj->hit_points = creature_health_info.dog_hp;
+		obj->hit_points = 16;
 		obj->pivot_length = 300;
 		obj->radius = 341;
 		obj->object_mip = 5120;
@@ -1490,7 +1488,7 @@ void BaddyObjects()
 		obj->control = AhmetControl;
 		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
-		obj->hit_points = creature_health_info.ahmet_hp;
+		obj->hit_points = 80;
 		obj->pivot_length = 300;
 		obj->radius = 341;
 		obj->object_mip = 5120;
@@ -1513,7 +1511,7 @@ void BaddyObjects()
 			obj->control = BaboonControl;
 			obj->collision = CreatureCollision;
 			obj->shadow_size = 128;
-			obj->hit_points = creature_health_info.baboon_hp;
+			obj->hit_points = 30;
 			obj->pivot_length = 200;
 			obj->radius = 256;
 			obj->intelligent = 1;

@@ -11,6 +11,7 @@ enum CREATURE_HIT_TYPE {
 struct MOD_LEVEL_CREATURE_INFO {
 	bool small_scorpion_is_poisonous = true;
 	int small_scorpion_poison_strength = 512;
+	bool remove_knights_templar_sparks = false;
 };
 
 struct MOD_LEVEL_AUDIO_INFO {
