@@ -825,20 +825,22 @@ void phd_PutPolygons(short* objptr, long clip)
 			envmap = 1;
 			num = (quad[5] >> 2) & 0x1F;
 			num <<= 3;
-			normals[0] = mesh->Normals[quad[0]];
-			normals[1] = mesh->Normals[quad[1]];
-			normals[2] = mesh->Normals[quad[2]];
-			normals[3] = mesh->Normals[quad[3]];
-			D3DTransform(&normals[0], &D3DMView);
-			D3DTransform(&normals[1], &D3DMView);
-			D3DTransform(&normals[2], &D3DMView);
-			D3DTransform(&normals[3], &D3DMView);
+			if (mesh->Normals) {
+				normals[0] = mesh->Normals[quad[0]];
+				normals[1] = mesh->Normals[quad[1]];
+				normals[2] = mesh->Normals[quad[2]];
+				normals[3] = mesh->Normals[quad[3]];
+				D3DTransform(&normals[0], &D3DMView);
+				D3DTransform(&normals[1], &D3DMView);
+				D3DTransform(&normals[2], &D3DMView);
+				D3DTransform(&normals[3], &D3DMView);
 
-			for (int i = 0; i < 4; i++)
-			{
-				normals[i].x *= 0.125F;
-				normals[i].y *= 0.125F;
-				normals[i].z *= 0.125F;
+				for (int i = 0; i < 4; i++)
+				{
+					normals[i].x *= 0.125F;
+					normals[i].y *= 0.125F;
+					normals[i].z *= 0.125F;
+				}
 			}
 
 			envmap_texture.drawtype = 2;
@@ -932,18 +934,20 @@ void phd_PutPolygons(short* objptr, long clip)
 			envmap = 1;
 			num = (tri[4] >> 2) & 0x1F;
 			num <<= 3;
-			normals[0] = mesh->Normals[tri[0]];
-			normals[1] = mesh->Normals[tri[1]];
-			normals[2] = mesh->Normals[tri[2]];
-			D3DTransform(&normals[0], &D3DMView);
-			D3DTransform(&normals[1], &D3DMView);
-			D3DTransform(&normals[2], &D3DMView);
+			if (mesh->Normals) {
+				normals[0] = mesh->Normals[tri[0]];
+				normals[1] = mesh->Normals[tri[1]];
+				normals[2] = mesh->Normals[tri[2]];
+				D3DTransform(&normals[0], &D3DMView);
+				D3DTransform(&normals[1], &D3DMView);
+				D3DTransform(&normals[2], &D3DMView);
 
-			for (int i = 0; i < 3; i++)
-			{
-				normals[i].x *= 0.125F;
-				normals[i].y *= 0.125F;
-				normals[i].z *= 0.125F;
+				for (int i = 0; i < 3; i++)
+				{
+					normals[i].x *= 0.125F;
+					normals[i].y *= 0.125F;
+					normals[i].z *= 0.125F;
+				}
 			}
 
 			envmap_texture.drawtype = 2;
