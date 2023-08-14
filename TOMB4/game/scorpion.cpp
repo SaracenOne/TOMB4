@@ -11,6 +11,7 @@
 #include "lara.h"
 #include "deltapak.h"
 #include "gameflow.h"
+#include "../tomb4/mod_config.h"
 
 static BITE_INFO stinger{ 0, 0, 0, 8 };		//for the big one
 static BITE_INFO pincer{ 0, 0, 0, 23 };
@@ -441,8 +442,10 @@ void SmlscorpControl(short item_number)
 
 					if (item->current_anim_state == 5)
 					{
-						if (gfCurrentLevel > 3)
-							lara.dpoisoned += 512;
+						// Tomb4Plus
+						MOD_LEVEL_CREATURE_INFO creature_info = get_game_mod_level_creature_info(gfCurrentLevel);
+						if (creature_info.small_scorpion_is_poisonous)
+							lara.dpoisoned += creature_info.small_scorpion_poison_strength;
 
 						CreatureEffectT(item, &s_stinger, 3, item->pos.y_rot + 0x8000, DoBloodSplat);
 					}

@@ -29,14 +29,23 @@
         (my_struct)->value_name = (bool)json_getBoolean(value_name); } \
     }
 
+#define READ_JSON_BOOL_AND_SET_FLAG(value_name, json, my_struct, flag) { const json_t* value_name = json_getProperty(json, #value_name); \
+    if (value_name && JSON_BOOLEAN == json_getType(value_name)) { \
+        (my_struct)->value_name = (bool)json_getBoolean(value_name); } \
+    } \
+    flag = true;
+    
+
+bool scorpion_poison_override_found = false;
+
 GAME_MOD_CONFIG game_mod_config;
 
 extern MOD_GLOBAL_INFO& get_game_mod_global_info() {
     return game_mod_config.global_info;
 }
 
-MOD_LEVEL_CREATURE_HEALTH_INFO &get_game_mod_level_creature_health_info(int level) {
-    return game_mod_config.level_info[level].creature_health_info;
+MOD_LEVEL_CREATURE_INFO & get_game_mod_level_creature_info(int level) {
+    return game_mod_config.level_info[level].creature_info;
 }
 
 MOD_LEVEL_AUDIO_INFO &get_game_mod_level_audio_info(int level) {
@@ -74,10 +83,29 @@ void LoadGameModLevelLaraInfo(const json_t* level, MOD_LEVEL_LARA_INFO *lara_inf
     READ_JSON_SINT32(crawlspace_jump_pit_deepness_threshold, level, lara_info);
 }
 
+void LoadGameModLevelCreatureInfo(const json_t* creature, MOD_LEVEL_CREATURE_INFO *creature_info) {
+    READ_JSON_BOOL_AND_SET_FLAG(small_scorpion_is_poisonous, creature, creature_info, scorpion_poison_override_found);
+    READ_JSON_SINT32(small_scorpion_poison_strength, creature, creature_info)
+}
+
 void LoadGameModLevel(const json_t *level, MOD_LEVEL_INFO *level_info) {
     const json_t* lara_info = json_getProperty(level, "lara_info");
     if (lara_info && JSON_OBJ == json_getType(lara_info)) {
         LoadGameModLevelLaraInfo(lara_info, &level_info->lara_info);
+    }
+
+    const json_t* creature_info = json_getProperty(level, "creature_info");
+    if (creature_info && JSON_OBJ == json_getType(creature_info)) {
+        LoadGameModLevelCreatureInfo(creature_info, &level_info->creature_info);
+    }
+}
+
+void SetupLevelDefaults() {
+    for (int i = 0; i < MOD_LEVEL_COUNT; i++) {
+        if (i <= 3) {
+            if (!scorpion_poison_override_found)
+                game_mod_config.level_info[i].creature_info.small_scorpion_is_poisonous = false;
+        }
     }
 }
 
@@ -113,6 +141,8 @@ void LoadGameModConfigFirstPass() {
     for (int i = 0; i < MOD_LEVEL_COUNT; i++) {
         memcpy(&game_mod_config.level_info[i], &global_level_info, sizeof(MOD_LEVEL_INFO));
     }
+
+    SetupLevelDefaults();
 
     free(json_buf);
     return;
