@@ -276,7 +276,7 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 						// AssignSlot (WIP)
 						unsigned int slot_a = NG_READ_16(gfScriptFile, offset);
 						unsigned int slot_b = 0;
-						if (get_game_mod_global_info().trng_version_minor < 3) {
+						if (get_game_mod_global_info().trng_version_major == 1 && get_game_mod_global_info().trng_version_minor < 3) {
 							slot_b = NG_READ_16(gfScriptFile, offset);
 						} else {
 							slot_b = NG_READ_32(gfScriptFile, offset);
@@ -473,7 +473,7 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 					case 0x14: {
 						// Customize (WIP)
 						unsigned int customization_category = 0;
-						if (get_game_mod_global_info().trng_version_minor < 3) {
+						if (get_game_mod_global_info().trng_version_major == 1 && get_game_mod_global_info().trng_version_minor < 3) {
 							customization_category = NG_READ_16(gfScriptFile, offset);
 						} else {
 							customization_category = NG_READ_32(gfScriptFile, offset);
@@ -890,7 +890,7 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 					case 0x15:
 						// TriggerGroup (legacy?)
 						// Older builds of TRNG seem to use this opcode for TriggerGroups. Not sure why it changed though.
-						if (get_game_mod_global_info().trng_version_minor < 3) {
+						if (get_game_mod_global_info().trng_version_major == 1 && get_game_mod_global_info().trng_version_minor < 3) {
 							// TriggerGroup (WIP)
 							unsigned short id = NG_READ_16(gfScriptFile, offset);
 
@@ -1050,8 +1050,29 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 					case 0x1b: {
 						// Parameters (WIP)
 						printf("Parameters is not implemented!\n");
-						// Skip to the end
-						offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+						unsigned short param_type = NG_READ_16(gfScriptFile, offset);
+						switch (param_type) {
+							case 0x02: {
+								unsigned short id = NG_READ_16(gfScriptFile, offset);
+								unsigned short flags = NG_READ_16(gfScriptFile, offset);
+								if (flags == 0xffff) {
+									flags = 0;
+								}
+								unsigned short index_item = NG_READ_16(gfScriptFile, offset);
+								unsigned short direction = NG_READ_16(gfScriptFile, offset);
+								unsigned short distance = NG_READ_16(gfScriptFile, offset);
+								unsigned short speed = NG_READ_16(gfScriptFile, offset);
+								short moving_sound = NG_READ_16(gfScriptFile, offset);
+								short final_sound = NG_READ_16(gfScriptFile, offset);
+								break;
+							}
+							default: {
+								printf("Parameter type %u not implemented!\n", param_type);
+
+								// Skip to the end
+								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+							}
+						}
 						break;
 					}
 					case 0x1c: {

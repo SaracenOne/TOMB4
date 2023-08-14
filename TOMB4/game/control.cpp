@@ -625,7 +625,6 @@ void TestTriggers(short* data, long heavy, long HeavyFlags)
 	char timer;
 
 	// NGLE
-	bool is_ng_oneshot = false;
 	bool should_update_flipeffect_floorstate = false;
 	bool should_update_action_floorstate = false;
 
@@ -1015,8 +1014,7 @@ void TestTriggers(short* data, long heavy, long HeavyFlags)
 		case TO_FLIPEFFECT:
 			if (NGUseNGFlipEffects()) {
 				trigger = *data++;
-				is_ng_oneshot = flags & IFL_INVISIBLE;
-				NGFlipEffectTrigger(value, (trigger & 0x7fff), is_ng_oneshot, heavy);
+				NGFlipEffectTrigger(value, (trigger & 0x7fff), heavy);
 				should_update_flipeffect_floorstate = true;
 			} else {
 				TriggerTimer = timer;
@@ -1151,10 +1149,13 @@ void TestTriggers(short* data, long heavy, long HeavyFlags)
 	}
 
 	if (should_update_flipeffect_floorstate)
-		NGUpdateFlipeffectFloorstateData(is_ng_oneshot, heavy);
+		NGUpdateFlipeffectFloorstateData(heavy);
 
 	if (should_update_action_floorstate)
 		NGUpdateActionFloorstateData(heavy);
+
+	if (flags & IFL_INVISIBLE)
+		NGUpdateOneshot();
 }
 
 short GetDoor(FLOOR_INFO* floor)

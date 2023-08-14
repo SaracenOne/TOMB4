@@ -92,7 +92,7 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 			}
 			// Flipeffect
 			else if ((trigger_group.data[index].first_field & 0xF000) == 0x2000) {
-				current_result = NGFlipEffect(trigger_group.data[index].second_field, trigger_group.data[index].third_field & 0x7fff, false, false, true);
+				current_result = NGFlipEffect(trigger_group.data[index].second_field, trigger_group.data[index].third_field & 0x7fff, false, true);
 			}
 			// End
 			else if (trigger_group.data[index].first_field == 0x0000) {
@@ -400,144 +400,144 @@ bool set_lara_holsters(unsigned int holster_type, unsigned char unused) {
 	return true;
 }
 
-bool NGFlipEffect(unsigned short param, short extra, bool oneshot, bool heavy, bool skip_checks) {
+bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_checks) {
 	char action_data_1 = (char)extra & 0xff;
 	char action_data_2 = (char)(extra >> 8) & 0xff;
 
 	switch (param) {
 		case DISABLE_INPUT_FOR_TIME: {
-			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return disable_input_for_time(action_data_1, action_data_2);
 			break;
 		}
 		case ENABLE_INPUT: {
-			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return enable_input(action_data_1, action_data_2);
 			break;
 		}
 		case KILL_AND_OR_SET_LARA_ON_FIRE: {
-			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return kill_and_or_set_lara_on_fire(action_data_1, action_data_2);
 			break;
 		}
 		case PLAY_CD_TRACK_ON_CHANNEL_1: {
-			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return play_cd_track_channel_1(action_data_1, action_data_2);
 			break;
 		}
 		case STOP_ALL_CD_TRACKS: {
-			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return stop_all_cd_tracks(action_data_1, action_data_2);
 			break;
 		}
 		case FORCE_LARA_ANIMATION_0_255_OF_SLOT_ANIMATION: {
-			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return force_lara_animation_0_255_of_slot_animation(action_data_1, action_data_2);
 			break;
 		}
 		case FORCE_LARA_ANIMATION_256_512_OF_SLOT_ANIMATION: {
-			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return force_lara_animation_256_512_of_slot_animation(action_data_1, action_data_2);
 			break;
 		}
 		case REMOVE_WEAPONS_OR_FLARES_FROM_LARAS_HANDS: {
-			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return remove_weapons_or_flares_from_laras_hands(action_data_1, action_data_2);
 			break;
 		}
 		case DISARM_LARA: {
-			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return disarm_lara(action_data_1, action_data_2);
 			break;
 		}
 		case PERFORM_TRIGGERGROUP_FROM_SCRIPT_IN_SPECIFIC_WAY:
-			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return perform_triggergroup_from_script_in_specific_way(action_data_1, action_data_2);
 			break;
 		case ORGANIZER_ENABLE:
-			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return organizer_enable(action_data_1, action_data_2);
 			break;
 		case ORGANIZER_DISABLE:
-			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return organizer_disable(action_data_1, action_data_2);
 			break;
 		case PLAY_CD_TRACK_ON_CHANNEL_2: {
-			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return play_cd_track_channel_2(action_data_1, action_data_2);
 			break;
 		}
 		case STOP_CD_TRACK_ON_CHANNEL: {
-			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return stop_cd_track_on_channel(action_data_1, action_data_2);
 			break;
 		}
 		case SET_VOLUME_OF_AUDIO_TRACK_ON_CHANNEL: {
-			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return set_volume_for_audio_track_on_channel(action_data_1, action_data_2);
 			break;
 		}
 		case ACTIVATE_ITEM_GROUP_WITH_TIMER: {
-			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return activate_item_group_with_timer(action_data_1, action_data_2);
 			break;
 		}
 		case UNTRIGGER_ITEM_GROUP_WITH_TIMER: {
-			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return untrigger_item_group_with_timer(action_data_1, action_data_2);
 			break;
 		}
 		case PLAY_TRACK_ON_CHANNEL_WITH_RESTORE: {
-			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return play_track_on_channel_with_restore(action_data_1, action_data_2);
 			break;
 		}
 		case VARIABLES_ADD_VALUE_TO_VARIABLE: {
-			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return variables_add_value_to_variable(action_data_1, action_data_2);
 			break;
 		}
 		case VARIABLES_SUBTRACT_VALUE_FROM_VARIABLE: {
-			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return variables_subtract_value_from_variable(action_data_1, action_data_2);
 			break;
 		}
 		case VARIABLES_MULTIPLY_VARIABLE_BY_VALUE: {
-			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return variables_multiply_variable_by_value(action_data_1, action_data_2);
 			break;
 		}
 		case VARIABLES_DIVIDE_VARIABLE_BY_VALUE: {
-			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return variables_divide_variable_by_value(action_data_1, action_data_2);
 			break;
 		}
 		case CAMERA_SHOW_BLACK_SCREEN_FOR_SECONDS_WITH_FINAL_CURTAIN_EFFECT: {
-			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return camera_show_black_screen_for_seconds_with_final_curtain_effect(action_data_1, action_data_2);
 			break;
 		}
 		case PERFORM_TRIGGERGROUP_FROM_SCRIPT_IN_SINGLE_EXECUTION:
-			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return perform_triggergroup_from_script_in_single_execution_mode(action_data_1, action_data_2);
 			break;
 		case PERFORM_TRIGGERGROUP_FROM_SCRIPT_IN_MULTI_EXECUTION:
-			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return perform_triggergroup_from_script_in_multi_execution_mode(action_data_1, action_data_2);
 			break;
 		case CAMERA_SET_CINEMA_EFFECT_TYPE_FOR_SECONDS: {
-			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return camera_set_cinema_effect_type_for_seconds(action_data_1, action_data_2);
 			break;
 		}
 		case SET_LARA_HOLSTER_TYPE: {
-			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return set_lara_holsters(action_data_1, action_data_2);
 			break;
 		}
 		default: {
 			if (param < 47) {
-				if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile()) {
+				if (skip_checks || !NGIsOneShotTriggeredForTile()) {
 					char original_trigger_timer = TriggerTimer;
 					TriggerTimer = action_data_1;
 					effect_routines[param](lara_item);
@@ -553,11 +553,11 @@ bool NGFlipEffect(unsigned short param, short extra, bool oneshot, bool heavy, b
 	return false;
 }
 
-bool NGFlipEffectTrigger(unsigned short param, short extra, bool oneshot, bool heavy) {
+bool NGFlipEffectTrigger(unsigned short param, short extra, bool heavy) {
 	if (!heavy)
 		NGStoreBackupTriggerRoomAndIndex();
 	
-	bool result = NGFlipEffect(param, extra, oneshot, heavy, heavy);
+	bool result = NGFlipEffect(param, extra, heavy, false);
 	
 	if (!heavy)
 		NGRestoreBackupTriggerRoomAndIndex();

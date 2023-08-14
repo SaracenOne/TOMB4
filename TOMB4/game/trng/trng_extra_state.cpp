@@ -14,6 +14,7 @@
 #include "trng_extra_state.h"
 #include "trng_flipeffect.h"
 #include "trng_script_parser.h"
+#include "../sound.h"
 
 unsigned int ng_room_offset_table[0xff];
 
@@ -23,9 +24,12 @@ struct NG_ITEM_EXTRADATA {
 	short frozen_ticks = 0;
 	short auto_rotation_per_frame = 0;
 	bool collison_disabled = false; // Will only disable the ObjectCollision routine. Doors and enemies stll have collision.
-	short move_north_south_timer = 0;
-	short move_east_west_timer = 0;
-	short move_up_down_timer = 0;
+	unsigned short movement_speed = 0;
+	short movement_in_progress_sound = -1;
+	short movement_finished_sound = -1;
+	short move_north_south_units = 0;
+	short move_east_west_units = 0;
+	short move_up_down_units = 0;
 };
 
 NG_ITEM_EXTRADATA *ng_items_extradata = NULL;
@@ -67,8 +71,8 @@ int backup_ng_trigger_index = -1;
 int backup_ng_trigger_room = -1;
 int pending_ng_room = -1;
 
-int ng_flipeffect_floorstate_data_size = 0;
-char* ng_flipeffect_oneshot_floorstate = NULL;
+int ng_floorstate_data_size = 0;
+char *ng_oneshot_floorstate = NULL;
 
 int ng_last_flipeffect_floor_trigger = -1;
 int ng_current_flipeffect_floor_trigger = -1;
@@ -152,10 +156,10 @@ void NGRestoreBackupTriggerRoomAndIndex() {
 	current_ng_trigger_room = backup_ng_trigger_room;
 }
 
-bool NGIsFlipeffectOneShotTriggeredForTile() {
+bool NGIsOneShotTriggeredForTile() {
 	int index = ng_room_offset_table[current_ng_trigger_room] + current_ng_trigger_index;
 
-	bool result = ng_flipeffect_oneshot_floorstate[index];
+	bool result = ng_oneshot_floorstate[index];
 
 	return result;
 }
@@ -168,8 +172,8 @@ bool NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(bool heavy) {
 		if (ng_current_flipeffect_floor_trigger == index || ng_last_flipeffect_floor_trigger == index)
 			return true;
 	} else {
-		if (ng_heavy_current_flipeffect_floor_trigger == index || ng_heavy_last_flipeffect_floor_trigger == index)
-			return true;
+		//if (ng_heavy_current_flipeffect_floor_trigger == index || ng_heavy_last_flipeffect_floor_trigger == index)
+		//	return true;
 	}
 
 	return false;
@@ -182,8 +186,8 @@ extern bool NGCheckActionFloorStatePressedThisFrameOrLastFrame(bool heavy) {
 		if (ng_current_action_floor_trigger == index || ng_last_action_floor_trigger == index)
 			return true;
 	} else {
-		if (ng_heavy_current_action_floor_trigger == index || ng_heavy_last_action_floor_trigger == index)
-			return true;
+		//if (ng_heavy_current_action_floor_trigger == index || ng_heavy_last_action_floor_trigger == index)
+		//	return true;
 	}
 
 	return false;
@@ -304,33 +308,104 @@ void NGUpdateAllItems() {
 
 		NGRotateItemY(i, NGGetAutoRotationPerFrame(i));
 
-		const int SPEED_RATE = 32;
+		if (ng_items_extradata[i].move_north_south_units > 0) {
+			int move_by_amount = ng_items_extradata[i].movement_speed;
+			if (move_by_amount > ng_items_extradata[i].move_north_south_units)
+				move_by_amount = ng_items_extradata[i].move_north_south_units;
 
-		if (ng_items_extradata[i].move_north_south_timer > 0) {
-			NGMoveItemByUnits(i, NG_NORTH, SPEED_RATE);
-			ng_items_extradata[i].move_north_south_timer--;
+			NGMoveItemByUnits(i, NG_NORTH, move_by_amount);
+			ng_items_extradata[i].move_north_south_units -= move_by_amount;
+
+			if (move_by_amount == 0) {
+				if (ng_items_extradata[i].movement_finished_sound != -1)
+					SoundEffect(ng_items_extradata[i].movement_finished_sound, &items[i].pos, 0);
+			} else {
+				if (ng_items_extradata[i].movement_in_progress_sound != -1)
+					SoundEffect(ng_items_extradata[i].movement_in_progress_sound, &items[i].pos, 0);
+			}
 		}
-		else if (ng_items_extradata[i].move_north_south_timer < 0) {
-			NGMoveItemByUnits(i, NG_SOUTH, SPEED_RATE);
-			ng_items_extradata[i].move_north_south_timer++;
+		else if (ng_items_extradata[i].move_north_south_units < 0) {
+			int move_by_amount = -ng_items_extradata[i].movement_speed;
+			if (move_by_amount < ng_items_extradata[i].move_north_south_units)
+				move_by_amount = ng_items_extradata[i].move_north_south_units;
+
+			NGMoveItemByUnits(i, NG_NORTH, move_by_amount);
+			ng_items_extradata[i].move_north_south_units -= move_by_amount;
+
+			if (move_by_amount == 0) {
+				if (ng_items_extradata[i].movement_finished_sound != -1)
+					SoundEffect(ng_items_extradata[i].movement_finished_sound, &items[i].pos, 0);
+			} else {
+				if (ng_items_extradata[i].movement_in_progress_sound != -1)
+					SoundEffect(ng_items_extradata[i].movement_in_progress_sound, &items[i].pos, 0);
+			}
 		}
 
-		if (ng_items_extradata[i].move_east_west_timer > 0) {
-			NGMoveItemByUnits(i, NG_EAST, SPEED_RATE);
-			ng_items_extradata[i].move_east_west_timer--;
+		if (ng_items_extradata[i].move_east_west_units > 0) {
+			int move_by_amount = ng_items_extradata[i].movement_speed;
+			if (move_by_amount > ng_items_extradata[i].move_east_west_units)
+				move_by_amount = ng_items_extradata[i].move_east_west_units;
+
+			NGMoveItemByUnits(i, NG_EAST, move_by_amount);
+			ng_items_extradata[i].move_east_west_units -= move_by_amount;
+
+			if (move_by_amount == 0) {
+				if (ng_items_extradata[i].movement_finished_sound != -1)
+					SoundEffect(ng_items_extradata[i].movement_finished_sound, &items[i].pos, 0);
+			} else {
+				if (ng_items_extradata[i].movement_in_progress_sound != -1)
+					SoundEffect(ng_items_extradata[i].movement_in_progress_sound, &items[i].pos, 0);
+			}
 		}
-		else if (ng_items_extradata[i].move_east_west_timer < 0) {
-			NGMoveItemByUnits(i, NG_WEST, SPEED_RATE);
-			ng_items_extradata[i].move_east_west_timer++;
+		else if (ng_items_extradata[i].move_east_west_units < 0) {
+			int move_by_amount = -ng_items_extradata[i].movement_speed;
+			if (move_by_amount < ng_items_extradata[i].move_east_west_units)
+				move_by_amount = ng_items_extradata[i].move_east_west_units;
+
+			NGMoveItemByUnits(i, NG_EAST, move_by_amount);
+			ng_items_extradata[i].move_east_west_units -= move_by_amount;
+
+			if (move_by_amount == 0) {
+				if (ng_items_extradata[i].movement_finished_sound != -1)
+					SoundEffect(ng_items_extradata[i].movement_finished_sound, &items[i].pos, 0);
+			} else {
+				if (ng_items_extradata[i].movement_in_progress_sound != -1)
+					SoundEffect(ng_items_extradata[i].movement_in_progress_sound, &items[i].pos, 0);
+			}
 		}
 
-		if (ng_items_extradata[i].move_up_down_timer > 0) {
-			NGMoveItemByUnits(i, NG_UP, SPEED_RATE);
-			ng_items_extradata[i].move_up_down_timer--;
+		if (ng_items_extradata[i].move_up_down_units > 0) {
+			int move_by_amount = ng_items_extradata[i].movement_speed;
+			if (move_by_amount > ng_items_extradata[i].move_up_down_units)
+				move_by_amount = ng_items_extradata[i].move_up_down_units;
+
+
+			NGMoveItemByUnits(i, NG_UP, move_by_amount);
+			ng_items_extradata[i].move_up_down_units -= move_by_amount;
+
+			if (move_by_amount == 0) {
+				if (ng_items_extradata[i].movement_finished_sound != -1)
+					SoundEffect(ng_items_extradata[i].movement_finished_sound, &items[i].pos, 0);
+			} else {
+				if (ng_items_extradata[i].movement_in_progress_sound != -1)
+					SoundEffect(ng_items_extradata[i].movement_in_progress_sound, &items[i].pos, 0);
+			}
 		}
-		else if (ng_items_extradata[i].move_up_down_timer < 0) {
-			NGMoveItemByUnits(i, NG_DOWN, SPEED_RATE);
-			ng_items_extradata[i].move_up_down_timer++;
+		else if (ng_items_extradata[i].move_up_down_units < 0) {
+			int move_by_amount = -ng_items_extradata[i].movement_speed;
+			if (move_by_amount < ng_items_extradata[i].move_up_down_units)
+				move_by_amount = ng_items_extradata[i].move_up_down_units;
+
+			NGMoveItemByUnits(i, NG_UP, move_by_amount);
+			ng_items_extradata[i].move_up_down_units -= move_by_amount;
+
+			if (move_by_amount == 0) {
+				if (ng_items_extradata[i].movement_finished_sound != -1)
+					SoundEffect(ng_items_extradata[i].movement_finished_sound, &items[i].pos, 0);
+			} else {
+				if (ng_items_extradata[i].movement_in_progress_sound != -1)
+					SoundEffect(ng_items_extradata[i].movement_in_progress_sound, &items[i].pos, 0);
+			}
 		}
 	}
 }
@@ -569,28 +644,40 @@ void NGSetAutoRotationPerFrame(unsigned int item_num, short degress_per_frame) {
 }
 
 //
-short NGGetItemNorthSouthTimer(unsigned int item_num) {
-	return ng_items_extradata[item_num].move_north_south_timer;
+short NGGetItemNorthSouthUnits(unsigned int item_num) {
+	return ng_items_extradata[item_num].move_north_south_units;
 }
 
-void NGSetItemNorthSouthTimer(unsigned int item_num, short timer) {
-	ng_items_extradata[item_num].move_north_south_timer = timer;
+void NGSetItemNorthSouthUnits(unsigned int item_num, short units) {
+	ng_items_extradata[item_num].move_north_south_units = units;
 }
 
-short NGGetItemEastWestTimer(unsigned int item_num) {
-	return ng_items_extradata[item_num].move_east_west_timer;
+short NGGetItemEastWestUnits(unsigned int item_num) {
+	return ng_items_extradata[item_num].move_east_west_units;
 }
 
-void NGSetItemEastWestTimer(unsigned int item_num, short timer) {
-	ng_items_extradata[item_num].move_east_west_timer = timer;
+void NGSetItemEastWestUnits(unsigned int item_num, short units) {
+	ng_items_extradata[item_num].move_east_west_units = units;
 }
 
-short NGGetItemUpDownTimer(unsigned int item_num) {
-	return ng_items_extradata[item_num].move_up_down_timer;
+short NGGetItemUpDownUnits(unsigned int item_num) {
+	return ng_items_extradata[item_num].move_up_down_units;
 }
 
-void NGSetItemUpDownTimer(unsigned int item_num, short timer) {
-	ng_items_extradata[item_num].move_up_down_timer = timer;
+void NGSetItemUpDownUnits(unsigned int item_num, short units) {
+	ng_items_extradata[item_num].move_up_down_units = units;
+}
+
+extern void NGSetItemMovementSpeed(unsigned int item_num, unsigned int movement_speed) {
+	ng_items_extradata[item_num].movement_speed = movement_speed;
+}
+
+extern void NGSetItemMovementInProgressSound(unsigned int item_num, int sound_effect_id) {
+	ng_items_extradata[item_num].movement_in_progress_sound = sound_effect_id;
+}
+
+extern void NGSetItemMovementFinishedSound(unsigned int item_num, int sound_effect_id) {
+	ng_items_extradata[item_num].movement_finished_sound = sound_effect_id;
 }
 
 bool NGIsItemCollisionDisabled(unsigned int item_num) {
@@ -638,13 +725,9 @@ void NGSetDisplayTimerForMoveableWithType(int item_id, NGTimerTrackerType new_ti
 	}
 }
 
-void NGUpdateFlipeffectFloorstateData(bool update_oneshot, bool heavy) {
+void NGUpdateFlipeffectFloorstateData(bool heavy) {
 	int index = ng_room_offset_table[current_ng_trigger_room] + current_ng_trigger_index;
 
-	// Since this is flagged as oneshot, store the oneshot data here.
-	if (update_oneshot) {
-		ng_flipeffect_oneshot_floorstate[index] = true;
-	}
 	if (heavy) {
 		ng_heavy_current_flipeffect_floor_trigger = index;
 		ng_heavy_last_flipeffect_floor_trigger = index;
@@ -664,6 +747,11 @@ void NGUpdateActionFloorstateData(bool heavy) {
 		ng_current_action_floor_trigger = index;
 		ng_last_action_floor_trigger = index;
 	}
+}
+
+extern void NGUpdateOneshot() {
+	int index = ng_room_offset_table[current_ng_trigger_room] + current_ng_trigger_index;
+	ng_oneshot_floorstate[index] = true;
 }
 
 void NGSetupExtraState() {
@@ -757,13 +845,13 @@ void NGSetupExtraState() {
 	ng_heavy_last_action_floor_trigger = -1;
 	ng_heavy_current_action_floor_trigger = -1;
 
-	ng_flipeffect_floorstate_data_size = 0;
+	ng_floorstate_data_size = 0;
 	for (int i = 0; i < number_rooms; i++) {
-		ng_room_offset_table[i] = ng_flipeffect_floorstate_data_size;
-		ng_flipeffect_floorstate_data_size += room[i].x_size * room[i].y_size;
+		ng_room_offset_table[i] = ng_floorstate_data_size;
+		ng_floorstate_data_size += room[i].x_size * room[i].y_size;
 	}
-	ng_flipeffect_oneshot_floorstate = (char*)game_malloc(ng_flipeffect_floorstate_data_size);
-	memset(ng_flipeffect_oneshot_floorstate, 0x00, ng_flipeffect_floorstate_data_size);
+	ng_oneshot_floorstate = (char*)game_malloc(ng_floorstate_data_size);
+	memset(ng_oneshot_floorstate, 0x00, ng_floorstate_data_size);
 
 	// Input lock
 	memset(ng_input_lock_timers, 0x00, sizeof(ng_input_lock_timers));

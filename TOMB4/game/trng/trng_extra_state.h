@@ -41,12 +41,16 @@ extern void NGSetItemFreezeTimer(unsigned int item_num, int ticks);
 extern short NGGetAutoRotationPerFrame(unsigned int item_num);
 extern void NGSetAutoRotationPerFrame(unsigned int item_num, short degress_per_frame);
 
-extern short NGGetItemNorthSouthTimer(unsigned int item_num);
-extern void NGSetItemNorthSouthTimer(unsigned int item_num, short timer);
-extern short NGGetItemEastWestTimer(unsigned int item_num);
-extern void NGSetItemEastWestTimer(unsigned int item_num, short timer);
-extern short NGGetItemUpDownTimer(unsigned int item_num);
-extern void NGSetItemUpDownTimer(unsigned int item_num, short timer);
+extern short NGGetItemNorthSouthUnits(unsigned int item_num);
+extern void NGSetItemNorthSouthUnits(unsigned int item_num, short units);
+extern short NGGetItemEastWestUnits(unsigned int item_num);
+extern void NGSetItemEastWestUnits(unsigned int item_num, short units);
+extern short NGGetItemUpDownUnits(unsigned int item_num);
+extern void NGSetItemUpDownUnits(unsigned int item_num, short units);
+
+extern void NGSetItemMovementSpeed(unsigned int item_num, unsigned int movement_speed);
+extern void NGSetItemMovementInProgressSound(unsigned int item_num, int sound_effect_id);
+extern void NGSetItemMovementFinishedSound(unsigned int item_num, int sound_effect_id);
 
 extern bool NGIsItemCollisionDisabled(unsigned int item_num);
 extern void NGDisableItemCollision(unsigned int item_num);
@@ -64,7 +68,7 @@ extern void NGSetDisplayTimerForMoveableWithType(int item_id, NGTimerTrackerType
 
 extern void NGDrawPhase();
 
-extern bool NGIsFlipeffectOneShotTriggeredForTile();
+extern bool NGIsOneShotTriggeredForTile();
 extern bool NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(bool heavy);
 
 extern bool NGCheckActionFloorStatePressedThisFrameOrLastFrame(bool heavy);

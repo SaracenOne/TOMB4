@@ -35,5 +35,5 @@ enum NG_FLIPEFFECTS {
 };
 
 extern bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char execution_type);
-extern bool NGFlipEffect(unsigned short param, short extra, bool oneshot, bool heavy, bool skip_checks);
-extern bool NGFlipEffectTrigger(unsigned short param, short extra, bool oneshot, bool heavy);
+extern bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_checks);
+extern bool NGFlipEffectTrigger(unsigned short param, short extra, bool heavy);

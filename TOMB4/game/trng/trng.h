@@ -54,8 +54,9 @@ extern bool NGUseNGConditionals();
 extern bool NGUseNGFlipEffects();
 extern bool NGUseNGActions();
 
-extern void NGUpdateFlipeffectFloorstateData(bool update_oneshot, bool heavy);
+extern void NGUpdateFlipeffectFloorstateData(bool heavy);
 extern void NGUpdateActionFloorstateData(bool heavy);
+extern void NGUpdateOneshot();
 
 extern void NGInit();
 extern void NGCleanup();

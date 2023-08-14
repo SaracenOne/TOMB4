@@ -15,6 +15,7 @@
 #include "../lara1gun.h"
 #include "../sound.h"
 #include "../box.h"
+#include "../../tomb4/mod_config.h"
 
 void NGItemActivator(int item_id, bool anti) {
 	ITEM_INFO* item;
@@ -93,7 +94,12 @@ int NGActionTrigger(unsigned short param, unsigned short extra, short timer, boo
 	if(!heavy)
 		NGStoreBackupTriggerRoomAndIndex();
 
-	int result = NGAction(param, extra, (heavy || !NGCheckActionFloorStatePressedThisFrameOrLastFrame(heavy)));
+	bool oneshot_triggered = false;
+	if (get_game_mod_global_info().trng_version_major == 1 && get_game_mod_global_info().trng_version_minor < 3) {
+		oneshot_triggered = NGIsOneShotTriggeredForTile();
+	}
+
+	int result = NGAction(param, extra, !oneshot_triggered && (heavy || !NGCheckActionFloorStatePressedThisFrameOrLastFrame(heavy)));
 
 	// Replicates a weird bug in the original
 	if (action_type == TRIGGER_MOVEABLE_ACTIVATE_WITH_TIMER || action_type == UNTRIGGER_MOVEABLE_ACTIVATE_WITH_TIMER || action_type == OPEN_OR_CLOSE_DOOR_ITEM) {
@@ -369,43 +375,61 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame) {
 		}
 		case MOVE_ITEM_UP_FOR_CLICKS:
 			if (first_frame) {
-				if (NGGetItemUpDownTimer(item_id) == 0) {
-					NGSetItemUpDownTimer(item_id, (action_data + 1) * 8);
+				if (NGGetItemUpDownUnits(item_id) == 0) {
+					NGSetItemUpDownUnits(item_id, (action_data+1) * 256);
+					NGSetItemMovementSpeed(item_id, 32);
+					NGSetItemMovementInProgressSound(item_id, -1);
+					NGSetItemMovementFinishedSound(item_id, -1);
 				}
 			}
 			break;
 		case MOVE_ITEM_DOWN_FOR_CLICKS:
 			if (first_frame) {
-				if (NGGetItemUpDownTimer(item_id) == 0) {
-					NGSetItemUpDownTimer(item_id, (action_data + 1) * -8);
+				if (NGGetItemUpDownUnits(item_id) == 0) {
+					NGSetItemUpDownUnits(item_id, (action_data+1) * -256);
+					NGSetItemMovementSpeed(item_id, 32);
+					NGSetItemMovementInProgressSound(item_id, -1);
+					NGSetItemMovementFinishedSound(item_id, -1);
 				}
 			}
 			break;
 		case MOVE_ITEM_WEST_FOR_CLICKS:
 			if (first_frame) {
-				if (NGGetItemEastWestTimer(item_id) == 0) {
-					NGSetItemEastWestTimer(item_id, (action_data + 1) * -8);
+				if (NGGetItemEastWestUnits(item_id) == 0) {
+					NGSetItemEastWestUnits(item_id, (action_data+1) * -256);
+					NGSetItemMovementSpeed(item_id, 32);
+					NGSetItemMovementInProgressSound(item_id, -1);
+					NGSetItemMovementFinishedSound(item_id, -1);
 				}
 			}
 			break;
 		case MOVE_ITEM_SOUTH_FOR_CLICKS:
 			if (first_frame) {
-				if (NGGetItemNorthSouthTimer(item_id) == 0) {
-					NGSetItemNorthSouthTimer(item_id, (action_data + 1) * -8);
+				if (NGGetItemNorthSouthUnits(item_id) == 0) {
+					NGSetItemNorthSouthUnits(item_id, (action_data+1) * -256);
+					NGSetItemMovementSpeed(item_id, 32);
+					NGSetItemMovementInProgressSound(item_id, -1);
+					NGSetItemMovementFinishedSound(item_id, -1);
 				}
 			}
 			break;
 		case MOVE_ITEM_EAST_FOR_CLICKS:
 			if (first_frame) {
-				if (NGGetItemEastWestTimer(item_id) == 0) {
-					NGSetItemEastWestTimer(item_id, (action_data + 1) * 8);
+				if (NGGetItemEastWestUnits(item_id) == 0) {
+					NGSetItemEastWestUnits(item_id, (action_data+1) * 256);
+					NGSetItemMovementSpeed(item_id, 32);
+					NGSetItemMovementInProgressSound(item_id, -1);
+					NGSetItemMovementFinishedSound(item_id, -1);
 				}
 			}
 			break;
 		case MOVE_ITEM_NORTH_FOR_CLICKS:
 			if (first_frame) {
-				if (NGGetItemNorthSouthTimer(item_id) == 0) {
-					NGSetItemNorthSouthTimer(item_id, (action_data + 1) * 8);
+				if (NGGetItemNorthSouthUnits(item_id) == 0) {
+					NGSetItemNorthSouthUnits(item_id, (action_data+1) * 256);
+					NGSetItemMovementSpeed(item_id, 32);
+					NGSetItemMovementInProgressSound(item_id, -1);
+					NGSetItemMovementFinishedSound(item_id, -1);
 				}
 			}
 			break;

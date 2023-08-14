@@ -74,10 +74,36 @@ struct NG_LEVEL_RECORD_DATA {
 	NG_ITEM_GROUP_RECORD* item_group_table = NULL;
 };
 
+struct NG_MOVE_ITEM {
+	unsigned short flags;
+	unsigned short index_item;
+	unsigned short direction;
+	unsigned short distance;
+	unsigned short speed;
+	short moving_sound;
+	short final_sound;
+};
+
+struct NG_MOVE_ITEM_RECORD {
+	unsigned short record_id = 0;
+	NG_MOVE_ITEM move_item;
+};
+
+struct NG_BIG_NUMBER_RECORD {
+	unsigned short record_id = 0;
+	unsigned short big_number;
+};
+
+struct NG_LEVEL_PARAMS {
+	int big_number_count = 0;
+	NG_GLOBAL_TRIGGER_RECORD *big_number_table = NULL;
+};
+
 struct NG_LEVEL {
 	bool new_audio_system = false;
 	bool old_cd_trigger_system = true;
 	NG_LEVEL_RECORD_DATA *records = NULL;
+	NG_LEVEL_PARAMS* params = NULL;
 };
 
 extern NG_LEVEL ng_levels[MAX_NG_LEVELS];
@@ -98,6 +124,13 @@ extern NG_GLOBAL_TRIGGER current_global_triggers[MAX_NG_GLOBAL_TRIGGERS];
 extern NG_TRIGGER_GROUP current_trigger_groups[MAX_NG_TRIGGER_GROUPS];
 extern NG_ORGANIZER current_organizers[MAX_NG_ORGANIZERS];
 extern NG_ITEM_GROUP current_item_groups[MAX_NG_ITEM_GROUPS];
+
+#define MAX_NG_MOVE_ITEM_PARAMS 9999
+#define MAX_NG_BIG_NUMBER_PARAMS 9999
+
+// Params
+extern NG_MOVE_ITEM current_move_item_params[MAX_NG_MOVE_ITEM_PARAMS];
+extern unsigned short current_big_numbers_params[MAX_NG_BIG_NUMBER_PARAMS];
 
 extern void NGInitLevelArray();
 extern void NGLoadTablesForLevel(unsigned int level);
