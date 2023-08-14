@@ -1016,7 +1016,7 @@ void TestTriggers(short* data, long heavy, long HeavyFlags)
 			if (NGUseNGFlipEffects()) {
 				trigger = *data++;
 				is_ng_oneshot = flags & IFL_INVISIBLE;
-				NGFlipEffect(value, (trigger & 0x7fff), is_ng_oneshot, heavy, false);
+				NGFlipEffectTrigger(value, (trigger & 0x7fff), is_ng_oneshot, heavy);
 				should_update_flipeffect_floorstate = true;
 			} else {
 				TriggerTimer = timer;

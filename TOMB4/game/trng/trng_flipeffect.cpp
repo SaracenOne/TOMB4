@@ -552,3 +552,15 @@ bool NGFlipEffect(unsigned short param, short extra, bool oneshot, bool heavy, b
 
 	return false;
 }
+
+bool NGFlipEffectTrigger(unsigned short param, short extra, bool oneshot, bool heavy) {
+	if (!heavy)
+		NGStoreBackupTriggerRoomAndIndex();
+	
+	bool result = NGFlipEffect(param, extra, oneshot, heavy, heavy);
+	
+	if (!heavy)
+		NGRestoreBackupTriggerRoomAndIndex();
+
+	return result;
+}

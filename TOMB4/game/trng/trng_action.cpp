@@ -11,6 +11,10 @@
 #include "trng.h"
 #include "trng_action.h"
 #include "trng_extra_state.h"
+#include "../effect2.h"
+#include "../lara1gun.h"
+#include "../sound.h"
+#include "../box.h"
 
 void NGItemActivator(int item_id, bool anti) {
 	ITEM_INFO* item;
@@ -85,8 +89,11 @@ void NGHurtEnemy(unsigned short item_id, unsigned short damage) {
 int NGActionTrigger(unsigned short param, unsigned short extra, short timer, bool heavy) {
 	unsigned char action_type = (unsigned char)extra & 0xff;
 	unsigned char action_data = (unsigned char)(extra >> 8) & 0xff;
+	
+	if(!heavy)
+		NGStoreBackupTriggerRoomAndIndex();
 
-	int result = NGAction(param, extra, !NGCheckActionFloorStatePressedThisFrameOrLastFrame(heavy));
+	int result = NGAction(param, extra, (heavy || !NGCheckActionFloorStatePressedThisFrameOrLastFrame(heavy)));
 
 	// Replicates a weird bug in the original
 	if (action_type == TRIGGER_MOVEABLE_ACTIVATE_WITH_TIMER || action_type == UNTRIGGER_MOVEABLE_ACTIVATE_WITH_TIMER || action_type == OPEN_OR_CLOSE_DOOR_ITEM) {
@@ -99,6 +106,9 @@ int NGActionTrigger(unsigned short param, unsigned short extra, short timer, boo
 			}
 		}
 	}
+
+	if (!heavy)
+		NGRestoreBackupTriggerRoomAndIndex();
 
 	return result;
 }
@@ -142,6 +152,108 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame) {
 		case PERFORM_FLIPEFFECT_ON_ITEM: {
 			if (first_frame) {
 				effect_routines[action_data](&items[item_id]);
+			}
+			break;
+		}
+		// TODO: the kill behaviour needs to be re-evaluated
+		case KILL_OBJECT: {
+			if (first_frame) {
+				switch (action_data) {
+					// 0 vitality
+					case 0x00: {
+						items[item_id].hit_points = 0;
+						break;
+					}
+					// Remove immediately
+					case 0x01: {
+						ITEM_INFO *item = &items[item_id];
+						item->status = ITEM_INVISIBLE;
+						RemoveActiveItem(item_id);
+						DisableBaddieAI(item_id);
+						break;
+					}
+					// Explosion
+					case 0x02: {
+						ITEM_INFO* item = &items[item_id];
+
+						TriggerExplosionSparks(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, 3, -2, 0, item->room_number);
+						for (int i = 0; i < 3; i++)
+							TriggerExplosionSparks(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, 3, -1, 0, item->room_number);
+
+						SoundEffect(SFX_EXPLOSION1, &item->pos, 0x1800004);
+						SoundEffect(SFX_EXPLOSION2, &item->pos, 0);
+
+						item->status = ITEM_INVISIBLE;
+						RemoveActiveItem(item_id);
+						DisableBaddieAI(item_id);
+
+						break;
+					}
+					// Underwater Explosion
+					case 0x03: {
+						ITEM_INFO* item = &items[item_id];
+
+						TriggerUnderwaterExplosion(item, 0);
+
+						SoundEffect(SFX_EXPLOSION1, &item->pos, 0x1800004);
+						SoundEffect(SFX_EXPLOSION2, &item->pos, 0);
+
+						item->status = ITEM_INVISIBLE;
+						RemoveActiveItem(item_id);
+						DisableBaddieAI(item_id);
+
+						break;
+					}
+					// Explode Creature
+					case 0x04: {
+						ITEM_INFO* item = &items[item_id];
+
+						SoundEffect(SFX_EXPLOSION1, &item->pos, 0x1800004);
+						SoundEffect(SFX_EXPLOSION2, &item->pos, 0);
+
+						item->hit_points = 0;
+						CreatureDie(item_id, 1);
+
+						break;
+					}
+					// Creature Die
+					case 0x05: {
+						ITEM_INFO* item = &items[item_id];
+
+						bool is_invisible = item->flags & IFL_INVISIBLE;
+						CreatureDie(item_id, 0);
+						if (!is_invisible)
+							item->flags = item->flags & ~IFL_INVISIBLE;
+
+						item->after_death = 1;
+						item->hit_points = 0;
+
+						break;
+					}
+					// Hide
+					case 0x06: {
+						ITEM_INFO* item = &items[item_id];
+						item->status = ITEM_INVISIBLE;
+						RemoveActiveItem(item_id);
+						DisableBaddieAI(item_id);
+						break;
+					}
+					// Antitrigger
+					case 0x07: {
+						NGItemActivator(item_id, true);
+						break;
+					}
+					// Smoke emitter
+					case 0x08: {
+						ITEM_INFO* item = &items[item_id];
+						item->flags = item->flags & ~(IFL_CODEBITS | IFL_REVERSE);
+						break;
+					}
+					default: {
+						printf("Unimplemented KILL_OBJECT parameter\n");
+						break;
+					}
+				}
 			}
 			break;
 		}
