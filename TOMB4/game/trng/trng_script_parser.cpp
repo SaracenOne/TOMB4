@@ -590,7 +590,10 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 								unsigned short speed = NG_READ_16(gfScriptFile, offset);
 								unsigned short gravity = NG_READ_16(gfScriptFile, offset);
 								unsigned short id_add_effect_to_ammo = NG_READ_16(gfScriptFile, offset);
-								unsigned short id_trigger_group_at_end = NG_READ_16(gfScriptFile, offset);
+								unsigned short id_trigger_group_at_end = 0xffff;
+								if (offset < command_block_end_position) {
+									id_trigger_group_at_end = NG_READ_16(gfScriptFile, offset);
+								}
 								break;
 							}
 							// CUST_SHOW_AMMO_COUNTER
@@ -601,7 +604,10 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 								unsigned short format_flags = NG_READ_16(gfScriptFile, offset); // Obsolete
 								unsigned short blink_time = NG_READ_16(gfScriptFile, offset);
 								unsigned short size_character = NG_READ_16(gfScriptFile, offset);
-								unsigned short show_counter_flags = NG_READ_16(gfScriptFile, offset);
+								unsigned short show_counter_flags = 0xffff;
+								if (offset < command_block_end_position) {
+									show_counter_flags = NG_READ_16(gfScriptFile, offset);
+								}
 								break;
 							}
 							// CUST_SET_INV_ITEM
@@ -952,7 +958,7 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 						int command_block_end_position = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 
 						if (offset != command_block_end_position) {
-							NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: Customize block size mismatch");
+							NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: Customize block size mismatch for category %u", customization_category);
 						}
 
 						// Skip to the end
@@ -1308,7 +1314,7 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 					}
 				}
 				if (offset != command_block_end_position) {
-					NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: Command block size mismatch!");
+					NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: Command block size mismatch for command %u", block_type);
 				}
 				offset = command_block_end_position;
 			}
