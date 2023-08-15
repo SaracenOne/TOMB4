@@ -309,6 +309,13 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 						break;
 					}
 					case 0x06: {
+						// TextFormat
+						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: TextFormat unimplemented");
+						// Skip to the end
+						offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+						break;
+					}
+					case 0x07: {
 						// Rain
 						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Rain unimplemented");
 						// Skip to the end
@@ -1033,7 +1040,13 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 							flags = 0;
 
 						level_global_triggers_table[level_global_trigger_count].global_trigger.flags = flags;
-						level_global_triggers_table[level_global_trigger_count].global_trigger.type = NG_READ_16(gfScriptFile, offset);
+
+						unsigned short global_trigger_type = NG_READ_16(gfScriptFile, offset);
+						if (global_trigger_type != 0x000b && global_trigger_type != 0x0020) {
+							NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: Unimplmented GlobalTrigger type %u", global_trigger_type);
+						}
+						level_global_triggers_table[level_global_trigger_count].global_trigger.type = global_trigger_type;
+
 						level_global_triggers_table[level_global_trigger_count].global_trigger.parameter = NG_READ_32(gfScriptFile, offset);
 						level_global_triggers_table[level_global_trigger_count].global_trigger.condition_trigger_group = NG_READ_16(gfScriptFile, offset);
 						level_global_triggers_table[level_global_trigger_count].global_trigger.perform_trigger_group = NG_READ_16(gfScriptFile, offset);
