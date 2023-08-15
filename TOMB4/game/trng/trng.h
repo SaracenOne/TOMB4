@@ -59,3 +59,11 @@ extern void NGUpdateOneshot();
 
 extern void NGInit();
 extern void NGCleanup();
+
+enum NGLogType {
+	NG_LOG_TYPE_PRINT,
+	NG_LOG_TYPE_UNIMPLEMENTED_FEATURE,
+	NG_LOG_TYPE_ERROR,
+};
+
+extern void NGLog(NGLogType type, const char* s, ...);

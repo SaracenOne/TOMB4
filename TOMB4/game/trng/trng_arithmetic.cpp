@@ -565,7 +565,7 @@ unsigned int NGNumericGetVariable(unsigned int variable) {
 			return local_timer;
 		}
 		default: {
-			printf("Unsupported variable!\n");
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGNumericGetVariable: variable type %u unimplemented!", variable);
 			return 0;
 		}
 	}

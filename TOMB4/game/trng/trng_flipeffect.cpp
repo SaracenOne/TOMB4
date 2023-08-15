@@ -544,7 +544,7 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 					TriggerTimer = original_trigger_timer;
 				}
 			} else {
-				printf("Unimplemented NGFlipEffect %u\n", param);
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Unimplemented NGFlipEffect %u!", param);
 				return true;
 			}
 		}

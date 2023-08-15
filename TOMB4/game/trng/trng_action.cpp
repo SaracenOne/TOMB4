@@ -152,6 +152,9 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame) {
 				case 0x03:
 					NGSetAutoRotationPerFrame(item_id, -182 * 2);
 					break;
+				default:
+					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TURN_ANIMATING_MOVING_ENDLESSLY_IN_WAY: action data %u unimplemented!", action_data);
+					break;
 			}
 			break;
 		}
@@ -256,7 +259,7 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame) {
 						break;
 					}
 					default: {
-						printf("Unimplemented KILL_OBJECT parameter\n");
+						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "KILL_OBJECT: action data %u unimplemented!", action_data);
 						break;
 					}
 				}
@@ -279,7 +282,7 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame) {
 		case UNFREEZE_ENEMY_WITH_EFFECT: {
 			if (!first_frame) {
 				if (action_data != 0x00) {
-					Log(0, "Unimplemented action data for UNFREEZE_ENEMY_WITH_EFFECT");
+					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "UNFREEZE_ENEMY_WITH_EFFECT: action data %u unimplemented!", action_data);
 				}
 
 				if (NGIsItemFrozen(item_id)) {
@@ -326,13 +329,13 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame) {
 		}
 		case EFFECT_ADD_TO_ENEMY: {
 			if (first_frame) {
-				printf("EFFECT_ADD_TO_ENEMY not yet implemented!\n");
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "EFFECT_ADD_TO_ENEMY unimplemented");
 			}
 			break;
 		}
 		case EFFECT_REMOVE_TO_ENEMY: {
 			if (first_frame) {
-				printf("EFFECT_REMOVE_TO_ENEMY not yet implemented!\n");
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "EFFECT_REMOVE_TO_ENEMY unimplemented");
 			}
 			break;
 		}
@@ -491,7 +494,7 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame) {
 		}
 		default:
 			if (first_frame)
-				printf("Unimplemented NGTrigger %u\n", action_type);
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Unimplemented NGTrigger %u", action_type);
 			break;
 		};
 	return item_id;

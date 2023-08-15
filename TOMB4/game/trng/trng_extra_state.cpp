@@ -249,7 +249,7 @@ int NGValidateInputAgainstLockTimers(int input) {
 					input &= ~IN_PAUSE;
 					break;
 				default:
-					printf("Invalid input type\n");
+					NGLog(NG_LOG_TYPE_ERROR, "Invalid input type %u!", i);
 					break;
 			}
 		}
@@ -272,7 +272,7 @@ bool NGValidateInputWeaponHotkeys() {
 
 void NGDisableInputForTime(unsigned char input, int ticks) {
 	if (input > NG_INPUT_LOCK_TIMER_COUNT) {
-		printf("Invalid input id!");
+		NGLog(NG_LOG_TYPE_ERROR, "Invalid input type %u!", input);
 		return;
 	}
 
@@ -427,7 +427,7 @@ void NGExecuteSingleGlobalTrigger(int global_trigger_id) {
 			global_trigger_condition_passed = true;
 			break;
 		default:
-			printf("Unsupported GlobalTrigger type!\n");
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Unimplemented GlobalTrigger type %u!", global_trigger->type);
 			return;
 	}
 

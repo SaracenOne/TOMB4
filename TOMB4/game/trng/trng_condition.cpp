@@ -22,22 +22,22 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 		return have_i_got_object(param);
 	}
 	case INVENTORY_ITEM_HAS_AT_LEAST: {
-		printf("Unimplemented NGCondition INVENTORY_ITEM_HAS_AT_LEAST\n");
+		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: INVENTORY_ITEM_HAS_AT_LEAST unimplemented!");
 		return false;
 		break;
 	}
 	case KEYBOARD_SCANCODE_IS_CURRENTLY: {
-		printf("Unimplemented NGCondition KEYBOARD_SCANCODE_IS_CURRENTLY\n");
+		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: KEYBOARD_SCANCODE_IS_CURRENTLY unimplemented!");
 		return false;
 		break;
 	}
 	case CREATURE_IS_CURRENTLY_OF_STATE: {
-		printf("Unimplemented NGCondition CREATURE_IS_CURRENTLY_OF_STATE\n");
+		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: CREATURE_IS_CURRENTLY_OF_STATE unimplemented!");
 		return false;
 		break;
 	}
 	case CREATURE_CURRENT_ANIMATION_0_31_IS: {
-		printf("Unimplemented NGCondition CREATURE_CURRENT_ANIMATION_IS\n");
+		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: CREATURE_CURRENT_ANIMATION_IS unimplemented!");
 		return false;
 		break;
 	}
@@ -55,13 +55,13 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 					return true;
 				break;
 			default:
-				printf("Unimplemented NGCondition Lara Status %u\n", param);
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: Unimplemented NGCondition Lara Status %u!", param);
 				break;
 		}
 		break;
 	}
 	case LARA_IS_TOUCHING_MOVEABLE: {
-		printf("Unimplemented NGCondition LARA_IS_TOUCHING_MOVEABLE\n");
+		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: LARA_IS_TOUCHING_MOVEABLE unimplemented!");
 		return false;
 		break;
 	}
@@ -74,12 +74,12 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 		break;
 	}
 	case LARA_IS_TOUCHING_STATIC_ITEM: {
-		printf("Unimplemented NGCondition LARA_IS_TOUCHING_STATIC_ITEM\n");
+		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: LARA_IS_TOUCHING_STATIC_ITEM unimplemented!");
 		return false;
 		break;
 	}
 	case LARA_IS_HOLDING_OR_DRIVING_ITEMS: {
-		printf("Unimplemented NGCondition LARA_IS_HOLDING_OR_DRIVING_ITEMS\n");
+		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: LARA_IS_HOLDING_OR_DRIVING_ITEMS unimplemented!");
 		return false;
 		break;
 	}
@@ -102,17 +102,17 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 			return false;
 	}
 	case LARA_IS_LESS_OR_EVEN_CLICKS_DISTANT_TO_MOVEABLE: {
-		printf("Unimplemented NGCondition LARA_IS_LESS_OR_EVEN_CLICKS_DISTANT_TO_MOVEABLE\n");
+		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: LARA_IS_LESS_OR_EVEN_CLICKS_DISTANT_TO_MOVEABLE unimplemented!");
 		return false;
 		break;
 	}
 	case LARA_IS_TOUCHING_MOVEABLE_WITH_MESH_NUMBER: {
-		printf("Unimplemented NGCondition LARA_IS_TOUCHING_MOVEABLE_WITH_MESH_NUMBER\n");
+		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: LARA_IS_TOUCHING_MOVEABLE_WITH_MESH_NUMBER unimplemented!");
 		return false;
 		break;
 	}
 	default:
-		printf("Unimplemented NGCondition %u\n", timer);
+		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: %u unimplemented!", timer);
 		break;
 	};
 

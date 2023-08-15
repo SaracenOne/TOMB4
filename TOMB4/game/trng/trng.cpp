@@ -209,3 +209,20 @@ void NGInit() {
 void NGCleanup() {
 	NGScriptCleanup();
 }
+
+void NGLog(NGLogType type, const char* s, ...) {
+	switch (type) {
+		case NG_LOG_TYPE_PRINT: {
+			Log(0, "NGLogPrint: %s", s);
+			break;
+		}
+		case NG_LOG_TYPE_UNIMPLEMENTED_FEATURE: {
+			Log(0, "NGLogUnimplementedFeature: %s", s);
+			break;
+		}
+		case NG_LOG_TYPE_ERROR: {
+			Log(0, "NGLogError: %s", s);
+			break;
+		}
+	}
+}
