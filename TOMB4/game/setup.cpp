@@ -2000,6 +2000,8 @@ void InitialiseObjects()
 		obj = &objects[((gfMips[i] & 0xF) << 1) + ANIMATING1];
 		obj->object_mip = (gfMips[i] & 0xF0) << 6;
 	}
+
+	setup_custom_slots_for_level(gfCurrentLevel, objects);
 }
 
 void GetAIPickups()

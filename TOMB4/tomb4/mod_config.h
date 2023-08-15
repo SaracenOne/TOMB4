@@ -1,11 +1,55 @@
 #pragma once
 
+#include "../game/objects.h"
+
+struct MOD_LEVEL_CAMERA_INFO {
+	int chase_cam_distance = 1536;
+	int chase_camera_vertical_orientation = -1820;
+	int chase_camera_horizontal_orientation = 0;
+
+	int combat_cam_distance = 1536;
+	int combat_cam_vertical_orientation = -2730;
+
+	int look_camera_distance = -1024;
+	int look_camera_height = 16;
+
+	int camera_speed = 10;
+};
+
 enum CREATURE_HIT_TYPE {
 	CREATURE_HIT_SMOKE,
 	CREATURE_HIT_BLOOD,
 	CREATURE_HIT_NO_ACTION,
 	CREATURE_HIT_RICHOCHET,
 	CREATURE_HIT_CLEAR_DAMAGE
+};
+
+enum SLOT_EXPLODE_TYPE {
+	NO_EXPLOSION,
+	EXPLODE_IMMEDIATELY,
+	EXPLODE_AFTER_DEATH_ANIMATION
+};
+
+enum SLOT_HIT_TYPE {
+	HIT_NONE,
+	HIT_BLOOD,
+	HIT_FRAGMENTS,
+	HIT_SMOKE
+};
+
+struct MOD_LEVEL_OBJECT_INFO {
+	short hit_points = 0;
+	short damage_1 = 0;
+	short damage_2 = 0;
+	short damage_3 = 0;
+
+	bool override_hp : 1;
+	bool override_hit_type : 1;
+
+	bool explode_immediately : 1;
+	bool explode_after_death_animation : 1;
+	SLOT_HIT_TYPE hit_type: 2;
+	bool explosive_death_only : 1;
 };
 
 struct MOD_LEVEL_CREATURE_INFO {
@@ -89,11 +133,14 @@ struct MOD_LEVEL_FLARE_INFO {
 };
 
 struct MOD_LEVEL_INFO {
+	MOD_LEVEL_CAMERA_INFO camera_info;
 	MOD_LEVEL_CREATURE_INFO creature_info;
 	MOD_LEVEL_STAT_INFO stat_info;
 	MOD_LEVEL_LARA_INFO lara_info;
 	MOD_LEVEL_AUDIO_INFO audio_info;
 	MOD_LEVEL_FLARE_INFO flare_info;
+	MOD_LEVEL_OBJECT_INFO object_info[NUMBER_OBJECTS];
+	short slot_info[NUMBER_OBJECTS];
 };
 
 #define MOD_LEVEL_COUNT 64
@@ -106,8 +153,12 @@ struct GAME_MOD_CONFIG {
 
 extern GAME_MOD_CONFIG game_mod_config;
 
+extern void setup_custom_slots_for_level(int level, OBJECT_INFO* current_object_info_array);
+extern void assign_slot_for_level(int level, int dest_slot, int src_slot);
+
 extern MOD_GLOBAL_INFO &get_game_mod_global_info();
 
+extern MOD_LEVEL_CAMERA_INFO &get_game_mod_level_camera_info(int level);
 extern MOD_LEVEL_CREATURE_INFO &get_game_mod_level_creature_info(int level);
 extern MOD_LEVEL_AUDIO_INFO &get_game_mod_level_audio_info(int level);
 extern MOD_LEVEL_LARA_INFO &get_game_mod_level_lara_info(int level);

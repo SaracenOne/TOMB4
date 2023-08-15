@@ -273,7 +273,7 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 
 				switch (block_type) {
 					case 0x01: {
-						// AssignSlot (WIP)
+						// AssignSlot
 						unsigned int slot_a = NG_READ_16(gfScriptFile, offset);
 						unsigned int slot_b = 0;
 						if (get_game_mod_global_info().trng_version_major == 1 && get_game_mod_global_info().trng_version_minor < 3) {
@@ -281,6 +281,8 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 						} else {
 							slot_b = NG_READ_32(gfScriptFile, offset);
 						}
+
+						assign_slot_for_level(current_level, slot_a, slot_b);
 
 						break;
 					}
@@ -310,9 +312,25 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 					}
 					case 0x06: {
 						// TextFormat
-						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: TextFormat unimplemented");
-						// Skip to the end
-						offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+						unsigned short text_color_id = NG_READ_16(gfScriptFile, offset);
+						if (text_color_id != 0xffff) {
+							NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: TextFormat color unimplemented");
+						}
+						unsigned short text_format_flags = NG_READ_16(gfScriptFile, offset);
+						if (text_format_flags != 0xffff) {
+							NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: TextFormat flags unimplemented");
+						}
+
+						unsigned short text_blink_time = NG_READ_16(gfScriptFile, offset);
+						if (text_blink_time != 0xffff) {
+							NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: TextFormat blink time unimplemented");
+						}
+
+						unsigned short size_character_menu = NG_READ_16(gfScriptFile, offset);
+						if (size_character_menu != 0xffff) {
+							NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: TextFormat size character menu unimplemented");
+						}
+
 						break;
 					}
 					case 0x07: {

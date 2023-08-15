@@ -36,12 +36,36 @@
     flag = true;
     
 
+// Full overrides
 bool scorpion_poison_override_found = false;
 
 GAME_MOD_CONFIG game_mod_config;
 
+void setup_custom_slots_for_level(int level, OBJECT_INFO* current_object_info_array) {
+    OBJECT_INFO* backup_object_info_array = (OBJECT_INFO* )malloc(sizeof(OBJECT_INFO) * NUMBER_OBJECTS);
+
+    if (backup_object_info_array) {
+        memcpy(backup_object_info_array, current_object_info_array, sizeof(OBJECT_INFO) * NUMBER_OBJECTS);
+
+        for (int i = 0; i < NUMBER_OBJECTS; i++) {
+            if (game_mod_config.level_info[level].slot_info[i] != i) {
+                memcpy(&current_object_info_array[i], &backup_object_info_array[game_mod_config.level_info[level].slot_info[i]], sizeof(OBJECT_INFO));
+            }
+        }
+        free(backup_object_info_array);
+    }
+}
+
+void assign_slot_for_level(int level, int dest_slot, int src_slot) {
+    game_mod_config.level_info[level].slot_info[dest_slot] = src_slot;
+}
+
 extern MOD_GLOBAL_INFO& get_game_mod_global_info() {
     return game_mod_config.global_info;
+}
+
+extern MOD_LEVEL_CAMERA_INFO& get_game_mod_level_camera_info(int level) {
+    return game_mod_config.level_info[level].camera_info;
 }
 
 MOD_LEVEL_CREATURE_INFO & get_game_mod_level_creature_info(int level) {
@@ -62,6 +86,20 @@ MOD_LEVEL_STAT_INFO &get_game_mod_level_stat_info(int level) {
 
 MOD_LEVEL_FLARE_INFO& get_game_mod_level_flare_info(int level) {
     return game_mod_config.level_info[level].flare_info;
+}
+
+void LoadGameModLevelCameraInfo(const json_t* camera, MOD_LEVEL_CAMERA_INFO* camera_info) {
+    READ_JSON_SINT32(chase_cam_distance, camera, camera_info);
+    READ_JSON_SINT32(chase_camera_vertical_orientation, camera, camera_info);
+    READ_JSON_SINT32(chase_camera_horizontal_orientation, camera, camera_info);
+
+    READ_JSON_SINT32(combat_cam_distance, camera, camera_info);
+    READ_JSON_SINT32(combat_cam_vertical_orientation, camera, camera_info);
+
+    READ_JSON_SINT32(look_camera_distance, camera, camera_info);
+    READ_JSON_SINT32(look_camera_height, camera, camera_info);
+
+    READ_JSON_SINT32(camera_speed, camera, camera_info);
 }
 
 void LoadGameModLevelLaraInfo(const json_t* level, MOD_LEVEL_LARA_INFO *lara_info) {
@@ -108,6 +146,30 @@ void LoadGameModLevel(const json_t *level, MOD_LEVEL_INFO *level_info) {
     }
 }
 
+void SetupDefaultSlotInfoForLevel(MOD_LEVEL_INFO* level_info) {
+    for (int i = 0; i < NUMBER_OBJECTS; i++) {
+        level_info->slot_info[i] = i;
+    }
+}
+
+void SetupDefaultObjectInfoForLevel(MOD_LEVEL_INFO* level_info) {
+    MOD_LEVEL_OBJECT_INFO* obj = nullptr;
+
+    for (int i = 0; i < NUMBER_OBJECTS; i++) {
+        obj = &level_info->object_info[i];
+        obj->hit_points = -16384;
+        obj->damage_1 = 0;
+        obj->damage_2 = 0;
+        obj->damage_3 = 0;
+        obj->override_hit_type = false;
+        obj->override_hit_type = false;
+        obj->explode_immediately = false;
+        obj->explode_after_death_animation = false;
+        obj->hit_type = HIT_NONE;
+        obj->explosive_death_only = false;
+    }
+}
+
 void SetupLevelDefaults() {
     for (int i = 0; i < MOD_LEVEL_COUNT; i++) {
         if (i <= 3) {
@@ -119,30 +181,33 @@ void SetupLevelDefaults() {
 
 void LoadGameModConfigFirstPass() {
     char* json_buf = NULL;
-    if (LoadFile("game_mod_config.json", &json_buf) <= 0) {
-        return;
-    }
+    LoadFile("game_mod_config.json", &json_buf);
 
+    const json_t* level = nullptr;
+   
     json_t mem[32];
-    const json_t* root_json = json_create(json_buf, mem, sizeof mem / sizeof * mem);
-    if (!root_json) {
-        // Could not create JSON!
-        free(json_buf);
-        return;
+    if (json_buf) {
+        const json_t* root_json = json_create(json_buf, mem, sizeof mem / sizeof * mem);
+        if (root_json) {
+            const json_t* global = json_getProperty(root_json, "global_info");
+            if (global && JSON_OBJ == json_getType(global)) {
+                MOD_GLOBAL_INFO* mod_global_info = &game_mod_config.global_info;
+
+                READ_JSON_UINT8(trng_version_major, global, mod_global_info);
+                READ_JSON_UINT8(trng_version_minor, global, mod_global_info);
+                READ_JSON_UINT8(trng_version_maintainence, global, mod_global_info);
+                READ_JSON_UINT8(trng_version_build, global, mod_global_info);
+            }
+
+            level = json_getProperty(root_json, "global_level_info");
+        }
     }
 
-    const json_t* global = json_getProperty(root_json, "global_info");
-    if (global && JSON_OBJ == json_getType(global)) {
-        MOD_GLOBAL_INFO* mod_global_info = &game_mod_config.global_info;
-
-        READ_JSON_UINT8(trng_version_major, global, mod_global_info);
-        READ_JSON_UINT8(trng_version_minor, global, mod_global_info);
-        READ_JSON_UINT8(trng_version_maintainence, global, mod_global_info);
-        READ_JSON_UINT8(trng_version_build, global, mod_global_info);
-    }
-
-    const json_t* level = json_getProperty(root_json, "global_level_info");
     MOD_LEVEL_INFO global_level_info;
+
+    SetupDefaultSlotInfoForLevel(&global_level_info);
+    SetupDefaultObjectInfoForLevel(&global_level_info);
+
     if (level && JSON_OBJ == json_getType(level)) {
         LoadGameModLevel(level, &global_level_info);
     }
@@ -152,8 +217,8 @@ void LoadGameModConfigFirstPass() {
 
     SetupLevelDefaults();
 
-    free(json_buf);
-    return;
+    if (json_buf)
+        free(json_buf);
 }
 
 void LoadGameModConfigSecondPass() {
