@@ -540,13 +540,23 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 							}
 							// CUST_NEW_SOUND_ENGINE
 							case 0x0006: {
-								NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_NEW_SOUND_ENGINE unimplemented");
-
-
 								unsigned short new_sound_engine_flags = NG_READ_16(gfScriptFile, offset);
+								if (new_sound_engine_flags == 0xffff || new_sound_engine_flags == 0) {
+									new_sound_engine_flags = 0;
+								} else {
+									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_NEW_SOUND_ENGINE flags not supported!");
+								}
+
 								unsigned short sound_extension = NG_READ_16(gfScriptFile, offset); // Obsolete
 								unsigned short long_fade_out = NG_READ_16(gfScriptFile, offset);
+								if (long_fade_out != 0xffff) {
+									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_NEW_SOUND_ENGINE custom long_fade_out unsupported!");
+								}
+
 								unsigned short short_fade_out = NG_READ_16(gfScriptFile, offset);
+								if (short_fade_out != 0xffff) {
+									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_NEW_SOUND_ENGINE custom short_fade_out unsupported!");
+								}
 
 								offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 								break;
@@ -1309,7 +1319,7 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 						offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 						command_blocks_failed++;
 
-						NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: Unimplemented NG level data block type: %u!", block_type);
+						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Unimplemented NG level data block type: %u!", block_type);
 						break;
 					}
 				}
