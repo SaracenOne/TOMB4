@@ -46,7 +46,7 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 	else if (execution_type == 2) {
 		NGSetTriggerGroupContinuous(trigger_group_id, true);
 	} else {
-		printf("Unknown TriggerGroup execution type not implemented yet!");
+		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Unknown TriggerGroup execution type not implemented yet!");
 		return false;
 	}
 
@@ -65,7 +65,7 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 			trigger_group.data[index].first_field & TGROUP_USE_ITEM_USED_BY_LARA_INDEX ||
 			trigger_group.data[index].first_field & TGROUP_USE_OWNER_ANIM_ITEM_INDEX ||
 			trigger_group.data[index].first_field & TGROUP_USE_TRIGGER_ITEM_INDEX) {
-			printf("Unsupported TGROUP flags detected!\n");
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Unsupported TGROUP flags detected!");
 			return false;
 		}
 
@@ -99,7 +99,7 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 			else if (trigger_group.data[index].first_field == 0x0000) {
 				break;
 			} else {
-				printf("Unknown triggergroup command!\n");
+				NGLog(NG_LOG_TYPE_ERROR, "Unknown triggergroup command!");
 				operation_result = false;
 				break;
 			}
