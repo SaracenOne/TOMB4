@@ -220,8 +220,6 @@ long ControlPhase(long nframes, long demo_mode)
 	
 	MOD_GLOBAL_INFO global_info = get_game_mod_global_info();
 
-	NGFrameStartUpdate();
-
 	RegeneratePickups();
 
 	if (nframes > 10)
@@ -235,6 +233,9 @@ long ControlPhase(long nframes, long demo_mode)
 	for (framecount += nframes; framecount > 0; framecount -= 2)
 	{
 		GlobalCounter++;
+
+		NGFrameStartUpdate();
+
 		UpdateSky();
 		RPC_Update();
 
