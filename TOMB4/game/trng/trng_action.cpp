@@ -16,6 +16,7 @@
 #include "../sound.h"
 #include "../box.h"
 #include "../../tomb4/mod_config.h"
+#include "../camera.h"
 
 void NGItemActivator(int item_id, bool anti) {
 	ITEM_INFO* item;
@@ -311,6 +312,10 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame) {
 					}
 				}
 			}
+			break;
+		}
+		case ACTIVATE_CAMERA_WITH_TIMER: {
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ACTIVATE_CAMERA_WITH_TIMER unimplemented");
 			break;
 		}
 		case TRIGGER_MOVEABLE_ACTIVATE_WITH_TIMER: {
