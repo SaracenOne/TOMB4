@@ -179,7 +179,18 @@ void SetupLevelDefaults() {
     }
 }
 
+void SetupGlobalDefaults() {
+    MOD_GLOBAL_INFO* mod_global_info = &game_mod_config.global_info;
+
+    mod_global_info->plugin_count = 0;
+    for (int i = 0; i < MAX_PLUGIN_COUNT; i++) {
+        memset(mod_global_info->plugins[i], 0x00, MAX_PLUGIN_NAME_LEN);
+    }
+}
+
 void LoadGameModConfigFirstPass() {
+    SetupGlobalDefaults();
+
     char* json_buf = NULL;
     LoadFile("game_mod_config.json", &json_buf);
 
@@ -197,6 +208,27 @@ void LoadGameModConfigFirstPass() {
                 READ_JSON_UINT8(trng_version_minor, global, mod_global_info);
                 READ_JSON_UINT8(trng_version_maintainence, global, mod_global_info);
                 READ_JSON_UINT8(trng_version_build, global, mod_global_info);
+
+                const json_t* plugins = json_getProperty(global, "plugins");
+                if (plugins && JSON_ARRAY == json_getType(plugins)) {
+                    json_t const* plugin;
+                    mod_global_info->plugin_count = 0;
+                    for (plugin = json_getChild(plugins); plugin != 0; plugin = json_getSibling(plugin)) {
+                        if (mod_global_info->plugin_count < MAX_PLUGIN_COUNT) {
+                            if (JSON_TEXT == json_getType(plugin)) {
+                                int plugin_str_length = strlen(plugin->u.value);
+                                if (plugin_str_length < MAX_PLUGIN_NAME_LEN-1) {
+                                    memcpy(mod_global_info->plugins[mod_global_info->plugin_count], plugin->u.value, plugin_str_length);
+                                } else {
+                                    printf("Invalid plugin name. Too long\n");
+                                }
+                            }
+                        } else {
+                            break;
+                        }
+                        mod_global_info->plugin_count++;
+                    }
+                }
             }
 
             level = json_getProperty(root_json, "global_level_info");

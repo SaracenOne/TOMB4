@@ -90,6 +90,9 @@ struct MOD_LEVEL_LARA_INFO {
 	int crawlspace_jump_pit_deepness_threshold = 768;
 };
 
+#define MAX_PLUGIN_COUNT 64
+#define MAX_PLUGIN_NAME_LEN 256
+
 struct MOD_GLOBAL_INFO {
 	// Default to latest known version.
 	unsigned char trng_version_major = 1;
@@ -109,6 +112,9 @@ struct MOD_GLOBAL_INFO {
 
 	bool show_lara_in_title = false;
 	unsigned short max_particles = 256;
+
+	unsigned int plugin_count = 0;
+	char plugins[MAX_PLUGIN_COUNT][MAX_PLUGIN_NAME_LEN];
 };
 
 struct MOD_LEVEL_BAR_INFO {
