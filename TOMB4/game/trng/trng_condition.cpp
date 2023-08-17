@@ -1,6 +1,7 @@
 #include "../../tomb4/pch.h"
 
 #include "../../specific/function_stubs.h"
+#include "../../specific/dxshell.h"
 #include "../../specific/file.h"
 #include "../control.h"
 #include "../effects.h"
@@ -15,26 +16,116 @@
 #include "trng_condition.h"
 #include "trng_extra_state.h"
 
+// TODO: there may be some missing types still needing support
+int get_inventory_count(short object_number)
+{
+	if (object_number >= PUZZLE_ITEM1_COMBO1 && object_number <= PUZZLE_ITEM8_COMBO2)
+		return (lara.puzzleitemscombo >> (object_number - PUZZLE_ITEM1_COMBO1)) & 1;
+	else if (object_number >= PUZZLE_ITEM1 && object_number <= PUZZLE_ITEM12)
+		return lara.puzzleitems[object_number - PUZZLE_ITEM1];
+	else if (object_number >= KEY_ITEM1_COMBO1 && object_number <= KEY_ITEM8_COMBO2)
+		return (lara.keyitemscombo >> (object_number - KEY_ITEM1_COMBO1)) & 1;
+	else if (object_number >= KEY_ITEM1 && object_number <= KEY_ITEM12)
+		return (lara.keyitems >> (object_number - KEY_ITEM1)) & 1;
+	else if (object_number >= PICKUP_ITEM1_COMBO1 && object_number <= PICKUP_ITEM4_COMBO2)
+		return (lara.pickupitemscombo >> (object_number - PICKUP_ITEM1_COMBO1)) & 1;
+	else if (object_number >= PICKUP_ITEM1 && object_number <= PICKUP_ITEM4)
+		return (lara.pickupitems >> (object_number - PICKUP_ITEM1)) & 1;
+	else if (object_number >= QUEST_ITEM1 && object_number <= QUEST_ITEM6)
+		return (lara.questitems >> (object_number - QUEST_ITEM1)) & 1;
+	else if (object_number == CROWBAR_ITEM)
+		return lara.crowbar;
+	else if (object_number == PISTOLS_ITEM)
+		return lara.pistols_type_carried;
+	else if (object_number == PISTOLS_AMMO_ITEM)
+		return lara.num_pistols_ammo;
+	else if (object_number == SHOTGUN_ITEM)
+		return lara.shotgun_type_carried;
+	else if (object_number == SHOTGUN_AMMO1_ITEM)
+		return lara.num_shotgun_ammo1;
+	else if (object_number == SHOTGUN_AMMO2_ITEM)
+		return lara.num_shotgun_ammo2;
+	else if (object_number == SIXSHOOTER_ITEM)
+		return lara.sixshooter_type_carried;
+	else if (object_number == SIXSHOOTER_AMMO_ITEM)
+		return lara.num_revolver_ammo;
+	else if (object_number == UZI_ITEM)
+		return lara.uzis_type_carried;
+	else if (object_number == UZI_AMMO_ITEM)
+		return lara.num_uzi_ammo;
+	else if (object_number == CROSSBOW_ITEM)
+		return lara.crossbow_type_carried;
+	else if (object_number == CROSSBOW_AMMO1_ITEM)
+		return lara.num_crossbow_ammo1;
+	else if (object_number == CROSSBOW_AMMO2_ITEM)
+		return lara.num_crossbow_ammo2;
+	else if (object_number == CROSSBOW_AMMO3_ITEM)
+		return lara.num_crossbow_ammo3;
+	else if (object_number == GRENADE_GUN_ITEM)
+		return lara.grenade_type_carried;
+	else if (object_number == GRENADE_GUN_AMMO1_ITEM)
+		return lara.num_grenade_ammo1;
+	else if (object_number == GRENADE_GUN_AMMO2_ITEM)
+		return lara.num_grenade_ammo2;
+	else if (object_number == GRENADE_GUN_AMMO3_ITEM)
+		return lara.num_grenade_ammo3;
+	else if (object_number == SMALLMEDI_ITEM)
+		return lara.num_small_medipack;
+	else if (object_number == BIGMEDI_ITEM)
+		return lara.num_large_medipack;
+	else if (object_number == FLARE_ITEM)
+		return lara.num_flares;
+	else if (object_number == BINOCULARS_ITEM)
+		return lara.binoculars;
+	else
+		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: get_inventory_count: unimplemented inventory item type!");
+
+	return 0;
+}
+
 bool NGCondition(short param, unsigned char extra, short timer) {
 	switch (timer) {
+	case INVENTORY_ITEM_IS_MISSING: {
+		return get_inventory_count(param) == 0;
+		break;
+	}
 	case INVENTORY_ITEM_IS_PRESENT: {
-		// TODO: Does not yet cover all object types
-		return have_i_got_object(param);
+		return get_inventory_count(param) >= 0;
 	}
 	case INVENTORY_ITEM_HAS_AT_LEAST: {
-		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: INVENTORY_ITEM_HAS_AT_LEAST unimplemented!");
-		return false;
+		return get_inventory_count(param) >= extra;
+		break;
+	}
+	case INVENTORY_ITEM_HAS_LESS_THAN: {
+		return get_inventory_count(param) < extra;
 		break;
 	}
 	case KEYBOARD_SCANCODE_IS_CURRENTLY: {
-		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: KEYBOARD_SCANCODE_IS_CURRENTLY unimplemented!");
+		int scancode = param;
+		// TODO: find the difference between multishot and singleshot
+		switch (extra) {
+			// Inactive single shot
+			case 0: {
+				return keymap[scancode] == 0;
+			}
+			// Active single shot
+			case 1: {
+				return keymap[scancode] != 0;
+			}
+			// Inactive multi shot
+			case 2: {
+				return keymap[scancode] == 0;
+			}
+			// Inactive single shot
+			case 3: {
+				return keymap[scancode] != 0;
+			}
+		}
+
 		return false;
-		break;
 	}
 	case CREATURE_IS_CURRENTLY_OF_STATE: {
-		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: CREATURE_IS_CURRENTLY_OF_STATE unimplemented!");
-		return false;
-		break;
+		return items[param].current_anim_state == extra;
 	}
 	case CREATURE_CURRENT_ANIMATION_0_31_IS: {
 		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: CREATURE_CURRENT_ANIMATION_IS unimplemented!");
@@ -64,6 +155,26 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: LARA_IS_TOUCHING_MOVEABLE unimplemented!");
 		return false;
 		break;
+	}
+	case LARA_IS_VITALITY_IS_X_THAN: {
+		switch (extra) {
+			// Equal than
+			case 0: {
+				return lara_item->hit_points == param;
+			}
+			// Higher than
+			case 1: {
+				return lara_item->hit_points > param;
+			}
+			// Less than
+			case 2: {
+				return lara_item->hit_points < param;
+			}
+			default: {
+				NGLog(NG_LOG_TYPE_ERROR, "NGCondition: LARA_IS_VITALITY_IS_X_THAN unknown param!");
+			}
+		}
+		return false;
 	}
 	case LARA_IS_PERFORMING_ANIMATION: {
 		if (lara_item->current_anim_state - objects[LARA].anim_index == param) {
@@ -105,6 +216,42 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: LARA_IS_LESS_OR_EVEN_CLICKS_DISTANT_TO_MOVEABLE unimplemented!");
 		return false;
 		break;
+	}
+	case LARA_IS_IN_ROOM_TYPE: {
+		ROOM_INFO* r = &room[lara_item->room_number];
+		if (r) {
+			int room_flags = r->flags;
+			switch (param) {
+				case 0: {
+					return room_flags & ROOM_UNDERWATER;
+				}
+				case 2: {
+					return room_flags & ROOM_SKYBOX;
+				}
+				case 4: {
+					return room_flags & 0x10;
+				}
+				case 5: {
+					return room_flags & ROOM_NOT_INSIDE; // TODO: check this
+				}
+				case 10: {
+					return room_flags & ROOM_SNOW;
+				}
+				case 11: {
+					return room_flags & ROOM_RAIN;
+				}
+				case 12: {
+					// TODO: check if this is actually cold water
+					return room_flags & ROOM_COLD;
+				}
+				default: {
+					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: LARA_IS_IN_ROOM_TYPE unsupported room type!");
+					break;
+				}
+			}
+			return false;
+			break;
+		}
 	}
 	case LARA_IS_TOUCHING_MOVEABLE_WITH_MESH_NUMBER: {
 		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: LARA_IS_TOUCHING_MOVEABLE_WITH_MESH_NUMBER unimplemented!");
