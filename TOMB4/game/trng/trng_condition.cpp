@@ -124,13 +124,12 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 
 		return false;
 	}
+	case CREATURE_CURRENT_ANIMATION_0_31_IS:
+	case CREATURE_CURRENT_ANIMATION_32_63_IS:
+	case CREATURE_CURRENT_ANIMATION_64_95_IS:
+		return items[param].anim_number - objects[items[param].object_number].anim_index == param;
 	case CREATURE_IS_CURRENTLY_OF_STATE: {
 		return items[param].current_anim_state == extra;
-	}
-	case CREATURE_CURRENT_ANIMATION_0_31_IS: {
-		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: CREATURE_CURRENT_ANIMATION_IS unimplemented!");
-		return false;
-		break;
 	}
 	// Lara status is enabled/disabled
 	case LARA_STATUS_IS_ENABLED_OR_DISABLED: {
