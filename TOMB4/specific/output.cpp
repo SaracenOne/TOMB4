@@ -160,7 +160,7 @@ void ProcessObjectMeshVertices(MESH_DATA* mesh)
 			cB = ambientB;
 		}
 
-		cA = 0xFF;
+		cA = (GlobalAlpha >> 24);
 		
 		if (vPos.z > DistanceFogStart)
 		{
