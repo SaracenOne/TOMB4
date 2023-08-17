@@ -220,6 +220,27 @@ bool remove_weapons_or_flares_from_laras_hands(unsigned char unused1, unsigned c
 	return true;
 }
 
+// NGLE - 90
+bool recharge_lara_life_by_percentage(unsigned char action_data_1, unsigned char unused2) {
+	const int MAX_LARA_HEALTH = 1000; // May need this to be customizable.
+
+	if (action_data_1 <= 9) {
+		int health_multiple = (MAX_LARA_HEALTH / 1000);
+		lara_item->hit_points += (int)(health_multiple * (action_data_1 + 1));
+	} else if (action_data_1 <= 18) {
+		int health_multiple = (MAX_LARA_HEALTH / 100);
+		lara_item->hit_points += (int)(health_multiple * (action_data_1 - 8));
+	} else {
+		int health_multiple = (MAX_LARA_HEALTH / 10);
+		lara_item->hit_points += (int)(health_multiple * (action_data_1 - 17));
+	}
+
+	if (lara_item->hit_points > MAX_LARA_HEALTH)
+		lara_item->hit_points = MAX_LARA_HEALTH;
+
+	return true;
+}
+
 // NGLE - 96
 bool disarm_lara(unsigned char remove_weapons_only, unsigned char _unusued) {
 	lara.request_gun_type = WEAPON_NONE;
@@ -444,6 +465,11 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 		case REMOVE_WEAPONS_OR_FLARES_FROM_LARAS_HANDS: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return remove_weapons_or_flares_from_laras_hands(action_data_1, action_data_2);
+			break;
+		}
+		case RECHARGE_LARA_LIFE_BY_PERCENTAGE_OF_FULL_VITALITY: {
+			if ((skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) || action_data_2 == 1)
+				return recharge_lara_life_by_percentage(action_data_1, action_data_2);
 			break;
 		}
 		case DISARM_LARA: {
