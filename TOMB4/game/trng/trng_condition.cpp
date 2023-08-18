@@ -6,6 +6,7 @@
 #include "../control.h"
 #include "../effects.h"
 #include "../objects.h"
+#include "../draw.h"
 #include "../door.h"
 #include "../items.h"
 #include "../lot.h"
@@ -99,6 +100,36 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 	case INVENTORY_ITEM_HAS_LESS_THAN: {
 		return get_inventory_count(param) < extra;
 		break;
+	}
+	case VERTICAL_TRIGGER_ZONE: {
+		short *bounds = GetBoundsAccurate(lara_item);
+		int item_top_y = lara_item->pos.y_pos + bounds[2];
+		int item_bottom_y = lara_item->pos.y_pos; // + bounds[3];
+
+		int bottom_trigger_bounds = lara_item->floor - (param * 128);
+		int top_trigger_bounds = bottom_trigger_bounds - ((extra + 1) * 128);
+
+		return (item_top_y <= bottom_trigger_bounds && item_bottom_y >= top_trigger_bounds);
+	}
+	case VERTICAL_TRIGGER_ZONE_INVERSE: {
+		short* bounds = GetBoundsAccurate(lara_item);
+		int item_top_y = lara_item->pos.y_pos + bounds[2];
+		int item_bottom_y = lara_item->pos.y_pos; // + bounds[3];
+
+		int bottom_trigger_bounds = lara_item->floor - (param * 128);
+		int top_trigger_bounds = bottom_trigger_bounds - ((extra + 1) * 128);
+
+		return (item_top_y < top_trigger_bounds || item_bottom_y > bottom_trigger_bounds);
+	}
+	case VERTICAL_TRIGGER_ANTI_ZONE: {
+		short* bounds = GetBoundsAccurate(lara_item);
+		int item_top_y = lara_item->pos.y_pos + bounds[2];
+		int item_bottom_y = lara_item->pos.y_pos; // + bounds[3];
+
+		int bottom_trigger_bounds = lara_item->floor - (param * 128);
+		int top_trigger_bounds = bottom_trigger_bounds - ((extra + 1) * 128);
+
+		return !(item_top_y < bottom_trigger_bounds && item_bottom_y > top_trigger_bounds);
 	}
 	case KEYBOARD_SCANCODE_IS_CURRENTLY: {
 		int scancode = param;
