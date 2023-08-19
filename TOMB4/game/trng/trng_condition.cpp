@@ -91,7 +91,7 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 		break;
 	}
 	case INVENTORY_ITEM_IS_PRESENT: {
-		return get_inventory_count(param) >= 0;
+		return get_inventory_count(param) > 0;
 	}
 	case INVENTORY_ITEM_HAS_AT_LEAST: {
 		return get_inventory_count(param) >= extra;
