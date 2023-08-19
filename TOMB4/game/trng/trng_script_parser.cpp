@@ -362,9 +362,15 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 						unsigned short nef_flags = NG_READ_16(gfScriptFile, offset);
 						unsigned short tomb_flags = NG_READ_16(gfScriptFile, offset);
 						unsigned short extra_flags = NG_READ_16(gfScriptFile, offset);
-						unsigned short damage_1 = NG_READ_16(gfScriptFile, offset);
-						unsigned short damage_2 = NG_READ_16(gfScriptFile, offset);
-						unsigned short damage_3 = NG_READ_16(gfScriptFile, offset);
+						if (offset < command_block_end_position) {
+							unsigned short damage_1 = NG_READ_16(gfScriptFile, offset);
+						}
+						if (offset < command_block_end_position) {
+							unsigned short damage_2 = NG_READ_16(gfScriptFile, offset);
+						}
+						if (offset < command_block_end_position) {
+							unsigned short damage_3 = NG_READ_16(gfScriptFile, offset);
+						}
 
 						break;
 					}
@@ -1149,6 +1155,11 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 						unsigned int current_time = 0;
 						while (offset < data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short))) {
 							int relative_time = NG_READ_16(gfScriptFile, offset);
+
+							// Organizer complete
+							if (offset == command_block_end_position) {
+								break;
+							}
 	
 							// !FO_TICK_TIME
 							if (!(flags & 0x04)) {
