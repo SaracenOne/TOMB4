@@ -874,7 +874,8 @@ long DXCreate(long w, long h, long bpp, long Flags, DXPTR* dxptr, HWND hWnd, lon
 		}
 	}
 
-	if (Flags & DXF_ZBUFFER && Flags & DXF_HWR)
+	int nZBufferInfos = G_dxinfo->DDInfo[G_dxinfo->nDD].D3DDevices[G_dxinfo->nD3D].nZBufferInfos;
+	if (nZBufferInfos > 0 && Flags & DXF_ZBUFFER && Flags & DXF_HWR)
 	{
 		Log(3, "Creating ZBuffer");
 		memset(&desc, 0, sizeof(DDSURFACEDESCX));
@@ -883,7 +884,11 @@ long DXCreate(long w, long h, long bpp, long Flags, DXPTR* dxptr, HWND hWnd, lon
 		desc.ddsCaps.dwCaps = DDSCAPS_VIDEOMEMORY | DDSCAPS_ZBUFFER;
 		desc.dwWidth = G_dxptr->dwRenderWidth;
 		desc.dwHeight = G_dxptr->dwRenderHeight;
-		memcpy(&desc.ddpfPixelFormat, &G_dxinfo->DDInfo[G_dxinfo->nDD].D3DDevices[G_dxinfo->nD3D].ZBufferInfos->ddpf, sizeof(DDPIXELFORMAT));
+
+#ifndef USE_HIGHEST_BIT_DEPTH_ZBUFFER
+		nZBufferInfos = 1;
+#endif
+		memcpy(&desc.ddpfPixelFormat, &G_dxinfo->DDInfo[G_dxinfo->nDD].D3DDevices[G_dxinfo->nD3D].ZBufferInfos[nZBufferInfos - 1].ddpf, sizeof(DDPIXELFORMAT));
 
 		if (DXAttempt(G_dxptr->lpDD->CreateSurface(&desc, &G_dxptr->lpZBuffer, 0)) != DD_OK)
 		{
