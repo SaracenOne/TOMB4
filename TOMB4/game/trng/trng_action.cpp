@@ -61,9 +61,16 @@ void NGItemActivator(int item_id, bool anti) {
 		if (!anti)
 			return;
 
+		if (objects[item->object_number].intelligent) {
+			DisableBaddieAI(item_id);
+		}
+
 		RemoveActiveItem(item_id);
-		item->status = ITEM_INACTIVE;
-		item->flags &= ~IFL_CODEBITS;
+		item->touch_bits = 0;
+		// Not sure if this the correct behaviour, but keep the ITEM_INVISIBLE status if we have it.
+		if (item->status != ITEM_INVISIBLE)
+			item->status = ITEM_INACTIVE;
+		item->flags = item->flags & ~IFL_CODEBITS;
 	}
 }
 
