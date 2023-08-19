@@ -1033,7 +1033,7 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 							while (offset < data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short))) {
 								unsigned short first_field = NG_READ_16(gfScriptFile, offset);
 								// I assume this indicates the end of the command.
-								if (first_field == 0x0000) {
+								if (first_field == 0x0000 || first_field == 0xffff) {
 									break;
 								}
 								unsigned short second_field = NG_READ_16(gfScriptFile, offset);
@@ -1057,7 +1057,7 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 							while (offset < data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short))) {
 								unsigned short first_field = NG_READ_16(gfScriptFile, offset);
 								// I assume this indicates the end of the command.
-								if (first_field == 0x0000) {
+								if (first_field == 0x0000 || first_field == 0xffff) {
 									break;
 								}
 								unsigned short second_field = NG_READ_16(gfScriptFile, offset);
@@ -1395,7 +1395,7 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 						while (offset < data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short))) {
 							unsigned short first_field = NG_READ_16(gfScriptFile, offset);
 							// I assume this indicates the end of the command.
-							if (first_field == 0x0000) {
+							if (first_field == 0x0000 || first_field == 0xffff) {
 								break;
 							}
 							unsigned short second_field = NG_READ_16(gfScriptFile, offset);
