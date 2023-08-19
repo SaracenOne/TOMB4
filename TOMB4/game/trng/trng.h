@@ -57,6 +57,8 @@ extern void NGUpdateFlipeffectFloorstateData(bool heavy);
 extern void NGUpdateActionFloorstateData(bool heavy);
 extern void NGUpdateOneshot();
 
+extern int NGFindIndexForLaraStartPosWithMatchingOCB(unsigned int ocb);
+
 extern void NGInit();
 extern void NGCleanup();
 

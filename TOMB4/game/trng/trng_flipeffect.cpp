@@ -14,6 +14,8 @@
 #include "../objects.h"
 #include "../lara.h"
 #include "../traps.h"
+#include "../../specific/file.h"
+#include "../camera.h"
 
 enum TGROUP_FLAGS {
 	TGROUP_USE_FOUND_ITEM_INDEX = 0x01,
@@ -201,6 +203,44 @@ bool force_lara_animation_0_255_of_slot_animation(unsigned char animation_index,
 	lara_item->frame_number = anims[animation_index_offset].frame_base;
 
 	return true;
+}
+
+// NGLE - 79
+bool move_lara_to_lara_start_pos_in_x_way(unsigned char ocb, unsigned char teleport_type) {
+	int lara_start_pos_id = NGFindIndexForLaraStartPosWithMatchingOCB(ocb);
+	if (lara_start_pos_id >= 0) {
+		AIOBJECT* ai = &AIObjects[lara_start_pos_id];
+		if (ai) {
+			if (teleport_type == 1) {
+				// Keep sector displacement
+				lara_item->pos.x_pos = (ai->x & ~0x3ff) | (lara_item->pos.x_pos & 0x3ff);
+				int lara_y_offset =  lara_item->floor - lara_item->pos.y_pos;
+				lara_item->pos.z_pos = (ai->z & ~0x3ff) | (lara_item->pos.z_pos & 0x3ff);
+
+				FLOOR_INFO* ai_floor_info = GetFloor(lara_item->pos.x_pos, ai->y, lara_item->pos.z_pos, &ai->room_number);
+				lara_item->pos.y_pos = GetHeight(ai_floor_info, lara_item->pos.x_pos, ai->y, lara_item->pos.z_pos) - lara_y_offset;
+
+				camera.fixed_camera = 1;
+
+				lara_item->room_number = ai->room_number;
+
+				return true;
+			} else {
+				// Warp directly
+				lara_item->pos.x_pos = ai->x;
+				lara_item->pos.y_pos = ai->y;
+				lara_item->pos.z_pos = ai->z;
+				lara_item->pos.y_rot = ai->y_rot;
+				lara_item->room_number = ai->room_number;
+
+				camera.fixed_camera = 1;
+
+				return true;
+			}
+		}
+	}
+
+	return false;
 }
 
 // NGLE - 80
@@ -455,6 +495,11 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 		case FORCE_LARA_ANIMATION_0_255_OF_SLOT_ANIMATION: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return force_lara_animation_0_255_of_slot_animation(action_data_1, action_data_2);
+			break;
+		}
+		case MOVE_LARA_TO_START_POS_WITH_OCB_VALUE_IN_X_WAY: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+				return move_lara_to_lara_start_pos_in_x_way(action_data_1, action_data_2);
 			break;
 		}
 		case FORCE_LARA_ANIMATION_256_512_OF_SLOT_ANIMATION: {

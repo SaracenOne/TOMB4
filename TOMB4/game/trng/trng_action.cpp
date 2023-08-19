@@ -67,16 +67,6 @@ void NGItemActivator(int item_id, bool anti) {
 	}
 }
 
-int NGFindIndexForLaraStartPosWithMatchingOCB(unsigned int ocb) {
-	for (int i = 0; i < nAIObjects; i++) {
-		if (AIObjects[i].object_number == LARA_START_POS && ocb == AIObjects[i].trigger_flags) {
-			return i;
-		}
-	}
-
-	return -1;
-}
-
 void NGForceItemAnimation(unsigned short item_id, unsigned int animation) {
 	items[item_id].anim_number = objects[items[item_id].object_number].anim_index + animation;
 	items[item_id].frame_number = anims[items[item_id].anim_number].frame_base;
@@ -309,6 +299,7 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame) {
 						items[item_id].pos.y_pos = ai->y;
 						items[item_id].pos.z_pos = ai->z;
 						items[item_id].pos.y_rot = ai->y_rot;
+						items[item_id].room_number = ai->room_number;
 					}
 				}
 			}
