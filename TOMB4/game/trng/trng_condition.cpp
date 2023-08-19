@@ -16,6 +16,7 @@
 #include "trng_arithmetic.h"
 #include "trng_condition.h"
 #include "trng_extra_state.h"
+#include "../savegame.h"
 
 // TODO: there may be some missing types still needing support
 int get_inventory_count(short object_number)
@@ -155,6 +156,10 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 
 		return false;
 	}
+	case LARA_HAS_FOUND_EXACTLY_X_SECRETS:
+		return savegame.Game.Secrets == param;
+	case LARA_HAS_FOUND_AT_LEAST_X_SECRETS:
+		return savegame.Game.Secrets >= param;
 	case CREATURE_CURRENT_ANIMATION_0_31_IS:
 	case CREATURE_CURRENT_ANIMATION_32_63_IS:
 	case CREATURE_CURRENT_ANIMATION_64_95_IS:
