@@ -420,6 +420,12 @@ void NGExecuteSingleGlobalTrigger(int global_trigger_id) {
 
 	// What the difference between GT_CONDITION_GROUP and GT_ALWAYS?
 	switch (global_trigger->type) {
+		case 0x0003: {// GT_ENEMY_KILLED
+			int enemy_id = ng_script_id_table[global_trigger->parameter];
+			if (items[enemy_id].after_death > 0)
+				global_trigger_condition_passed = true;
+			break;
+		}
 		case 0x000b: // GT_CONDITION_GROUP
 			global_trigger_condition_passed = true;
 			break;
@@ -436,7 +442,7 @@ void NGExecuteSingleGlobalTrigger(int global_trigger_id) {
 		global_trigger_condition_passed = !global_trigger_condition_passed;
 
 	if (ng_global_trigger_states[record_id].is_disabled) {
-		global_trigger_condition_passed = false;
+		return;
 	}
 
 	if (global_trigger_condition_passed) {
@@ -459,6 +465,11 @@ void NGExecuteSingleGlobalTrigger(int global_trigger_id) {
 			if (on_false_trigger_group_id != 0xffff) {
 				NGTriggerGroupFunction(on_false_trigger_group_id, 0);
 			}
+		}
+	} else {
+		unsigned int on_false_trigger_group_id = global_trigger->on_false_trigger_group;
+		if (on_false_trigger_group_id != 0xffff) {
+			NGTriggerGroupFunction(on_false_trigger_group_id, 0);
 		}
 	}
 }

@@ -218,6 +218,7 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame) {
 						SoundEffect(SFX_EXPLOSION1, &item->pos, 0x1800004);
 						SoundEffect(SFX_EXPLOSION2, &item->pos, 0);
 
+						item->after_death = 1;
 						item->hit_points = 0;
 						CreatureDie(item_id, 1);
 
