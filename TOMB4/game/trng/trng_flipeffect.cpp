@@ -16,6 +16,8 @@
 #include "../traps.h"
 #include "../../specific/file.h"
 #include "../camera.h"
+#include "../sound.h"
+#include "../../specific/dxsound.h"
 
 enum TGROUP_FLAGS {
 	TGROUP_USE_FOUND_ITEM_INDEX = 0x01,
@@ -202,6 +204,71 @@ bool stop_all_cd_tracks(unsigned char unused_1, unsigned char unused_2) {
 	return true;
 }
 
+// NGLE - 70
+bool play_sound_from_first_group(unsigned char sound_sample, unsigned char timer) {
+	int indexed_sound_sample = sound_sample;
+
+	if (timer == 0) {
+		// INFINITE LOOP
+		ng_looped_sound_state[indexed_sound_sample] = -1;
+	} else if (timer == 0x1f) {
+		// ONESHOT
+		ng_looped_sound_state[indexed_sound_sample] = 0;
+	} else {
+		ng_looped_sound_state[indexed_sound_sample] = timer * 30;
+	}
+
+	SoundEffect(indexed_sound_sample, NULL, SFX_ALWAYS);
+
+	return true;
+}
+
+// NGLE - 71
+bool play_sound_from_second_group(unsigned char sound_sample, unsigned char timer) {
+	int indexed_sound_sample = 256 + sound_sample;
+
+	if (timer == 0) {
+		// INFINITE LOOP
+		ng_looped_sound_state[indexed_sound_sample] = -1;
+	} else if (timer == 0x1f) {
+		// ONESHOT
+		ng_looped_sound_state[indexed_sound_sample] = 0;
+	} else {
+		ng_looped_sound_state[indexed_sound_sample] = timer * 30;
+	}
+
+	SoundEffect(indexed_sound_sample, NULL, SFX_ALWAYS);
+
+	return true;
+}
+
+// NGLE - 72
+bool stop_sound_from_first_group(unsigned char sound_sample, unsigned char unused_2) {
+	int indexed_sound_sample = sound_sample;
+
+	StopSoundEffect(indexed_sound_sample);
+	ng_looped_sound_state[indexed_sound_sample] = 0;
+
+	return true;
+}
+
+// NGLE - 73
+bool stop_sound_from_second_group(unsigned char sound_sample, unsigned char unused_2) {
+	int indexed_sound_sample = 256 + sound_sample;
+
+	StopSoundEffect(indexed_sound_sample);
+	ng_looped_sound_state[indexed_sound_sample] = 0;
+
+	return true;
+}
+
+// NGLE - 74
+bool stop_all_sound_samples(unsigned char unused_1, unsigned char unused_2) {
+	S_SoundStopAllSamples();
+
+	return true;
+}
+
 // NGLE - 77
 bool force_lara_animation_0_255_of_slot_animation(unsigned char animation_index, unsigned char object_id) {
 	int animation_index_offset = objects[object_id].anim_index + animation_index;
@@ -382,6 +449,14 @@ bool untrigger_item_group_with_timer(unsigned char item_group, unsigned char tim
 	return NGTriggerItemGroupWithTimer(item_group, timer, true);
 }
 
+// NGLE - 168
+bool play_sound(unsigned char lower_sample_id, unsigned char upper_sample_id) {
+	int indexed_sound_sample = (int)lower_sample_id | ((int)(upper_sample_id) << 8 & 0xff00);
+	
+	SoundEffect(indexed_sound_sample, NULL, SFX_ALWAYS);
+	return true;
+}
+
 // NGLE - 193
 bool play_track_on_channel_with_restore(unsigned char track_id, unsigned char channel_id) {
 	S_CDPlayExt(track_id, channel_id, false, true);
@@ -499,6 +574,31 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 				return stop_all_cd_tracks(action_data_1, action_data_2);
 			break;
 		}
+		case PLAY_SOUND_FROM_FIRST_GROUP: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+				play_sound_from_first_group(action_data_1, action_data_2);
+			break;
+		}
+		case PLAY_SOUND_FROM_SECOND_GROUP: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+				play_sound_from_second_group(action_data_1, action_data_2);
+			break;
+		}
+		case STOP_SOUND_FROM_FIRST_GROUP: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+				stop_sound_from_first_group(action_data_1, action_data_2);
+			break;
+		}
+		case STOP_SOUND_FROM_SECOND_GROUP: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+				stop_sound_from_second_group(action_data_1, action_data_2);
+			break;
+		}
+		case STOP_ALL_SOUND_SAMPLES: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile())
+				stop_all_sound_samples(action_data_1, action_data_2);
+			break;
+		}
 		case FORCE_LARA_ANIMATION_0_255_OF_SLOT_ANIMATION: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return force_lara_animation_0_255_of_slot_animation(action_data_1, action_data_2);
@@ -564,6 +664,11 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 		case UNTRIGGER_ITEM_GROUP_WITH_TIMER: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return untrigger_item_group_with_timer(action_data_1, action_data_2);
+			break;
+		}
+		case PLAY_SOUND: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+				return play_sound(action_data_1, action_data_2);
 			break;
 		}
 		case PLAY_TRACK_ON_CHANNEL_WITH_RESTORE: {

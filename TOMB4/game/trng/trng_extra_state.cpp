@@ -124,6 +124,8 @@ enum TRNG_INPUT {
 	TRNG_INPUT_COUNT
 };
 
+int ng_looped_sound_state[NumSamples];
+
 #define NG_INPUT_LOCK_TIMER_COUNT TRNG_INPUT_COUNT
 int ng_input_lock_timers[NG_INPUT_LOCK_TIMER_COUNT];
 
@@ -585,6 +587,14 @@ void NGFrameStartUpdate() {
 		}
 	}
 
+	// Looping sounds
+	for (int i = 0; i < NumSamples; i++) {
+		if (ng_looped_sound_state[i] > 0) {
+			SoundEffect(i, NULL, SFX_ALWAYS);
+			ng_looped_sound_state[i] -= 1;
+		}
+	}
+
 	// Cold and damage rooms
 	{
 		ROOM_INFO* r = &room[lara_item->room_number];
@@ -856,6 +866,9 @@ void NGSetupExtraState() {
 			}
 		}
 	}
+
+	// Looped samples
+	memset(ng_looped_sound_state, 0x00, NumSamples * sizeof(int));
 
 	// Cinema
 	ng_cinema_timer = -1;

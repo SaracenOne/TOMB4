@@ -1,3 +1,5 @@
+#include "../sound.h"
+
 enum NGTimerTrackerType {
 	TTT_ONLY_SHOW_SECONDS = 0,
 	TTT_SECONDS_AND_ONE_DECIMAL_POINT_SEPERATOR,
@@ -6,6 +8,8 @@ enum NGTimerTrackerType {
 	TTT_SECONDS_AND_TWO_DECIMAL_COLON_SEPERATOR,
 	TTT_SECONDS_WITH_THREE_NOUGHTS,
 };
+
+extern int ng_looped_sound_state[NumSamples];
 
 extern int current_value;
 extern int global_alfa;
