@@ -25,8 +25,10 @@ void NGItemActivator(int item_id, bool anti) {
 
 	if (!item->active)
 	{
-		if (anti)
+		if (anti) {
+			item->flags &= ~(IFL_CODEBITS | IFL_REVERSE);
 			return;
+		}
 
 		item->flags |= IFL_CODEBITS;
 
@@ -58,8 +60,10 @@ void NGItemActivator(int item_id, bool anti) {
 			item->status = ITEM_ACTIVE;
 		}
 	} else {
-		if (!anti)
+		if (!anti) {
+			item->flags |= IFL_CODEBITS;
 			return;
+		}
 
 		if (objects[item->object_number].intelligent) {
 			DisableBaddieAI(item_id);
@@ -70,7 +74,8 @@ void NGItemActivator(int item_id, bool anti) {
 		// Not sure if this the correct behaviour, but keep the ITEM_INVISIBLE status if we have it.
 		if (item->status != ITEM_INVISIBLE)
 			item->status = ITEM_INACTIVE;
-		item->flags = item->flags & ~IFL_CODEBITS;
+
+		item->flags &= ~(IFL_CODEBITS | IFL_REVERSE);
 	}
 }
 
