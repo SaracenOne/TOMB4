@@ -23,6 +23,7 @@ struct NG_TRIGGER_GROUP_DATA {
 #define NG_TRIGGER_GROUP_DATA_SIZE 0xff
 struct NG_TRIGGER_GROUP {
 	NG_TRIGGER_GROUP_DATA data[NG_TRIGGER_GROUP_DATA_SIZE];
+	bool oneshot_triggered = false;
 };
 
 struct NG_TRIGGER_GROUP_RECORD {

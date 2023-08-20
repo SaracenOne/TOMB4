@@ -60,8 +60,7 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 
 	while (index < NG_TRIGGER_GROUP_DATA_SIZE) {
 		// Check of unsupported TGROUP flags
-		if (trigger_group.data[index].first_field & TGROUP_SINGLE_SHOT ||
-			trigger_group.data[index].first_field & TGROUP_SINGLE_SHOT_RESUMED ||
+		if (trigger_group.data[index].first_field & TGROUP_SINGLE_SHOT_RESUMED ||
 			trigger_group.data[index].first_field & TGROUP_USE_EXECUTOR_ITEM_INDEX ||
 			trigger_group.data[index].first_field & TGROUP_USE_FOUND_ITEM_INDEX ||
 			trigger_group.data[index].first_field & TGROUP_USE_ITEM_USED_BY_LARA_INDEX ||
@@ -69,6 +68,14 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 			trigger_group.data[index].first_field & TGROUP_USE_TRIGGER_ITEM_INDEX) {
 			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Unsupported TGROUP flags detected!");
 			return false;
+		}
+
+		if (trigger_group.data[index].first_field & TGROUP_SINGLE_SHOT) {
+			if (trigger_group.oneshot_triggered) {
+				operation_result = false;
+			} else {
+				trigger_group.oneshot_triggered = true;
+			}
 		}
 
 		if (trigger_group.data[index].first_field & TGROUP_ELSE) {

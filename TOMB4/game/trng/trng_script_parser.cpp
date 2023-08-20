@@ -130,6 +130,7 @@ void NGLoadTablesForLevel(unsigned int level) {
 			unsigned int id = ng_levels[level].records->trigger_group_table[i].record_id;
 
 			memcpy(&current_trigger_groups[id], &ng_levels[level].records->trigger_group_table[i].trigger_group, sizeof(NG_TRIGGER_GROUP));
+			current_trigger_groups[id].oneshot_triggered = false;
 		}
 		for (int i = 0; i < ng_levels[level].records->organizer_count; i++) {
 			unsigned int id = ng_levels[level].records->organizer_table[i].record_id;
