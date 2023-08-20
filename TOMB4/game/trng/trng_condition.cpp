@@ -219,6 +219,9 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 		}
 		break;
 	}
+	case LARA_IS_STATE: {
+		return lara_item->current_anim_state == param;
+	}
 	case LARA_IS_TOUCHING_STATIC_ITEM: {
 		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: LARA_IS_TOUCHING_STATIC_ITEM unimplemented!");
 		return false;
