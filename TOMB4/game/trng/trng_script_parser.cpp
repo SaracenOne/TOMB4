@@ -536,14 +536,12 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 
 						if (plugin_index == 0) {
 							switch (customization_category) {
-								// CUST_DISABLE_SCREAMING_HEAD	
-								case 0x0001: {
+								case CUST_DISABLE_SCREAMING_HEAD: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_DISABLE_SCREAMING_HEAD unimplemented (level %u)", current_level);
 									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 									break;
 								}
-								// CUST_SET_SECRET_NUMBER	
-								case 0x0002: {
+								case CUST_SET_SECRET_NUMBER: {
 									unsigned short secret_count = NG_READ_16(gfScriptFile, offset);
 									if (current_level == 0) {
 										for (int i = 0; i < MOD_LEVEL_COUNT; i++) {
@@ -555,28 +553,24 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 									}
 									break;
 								}
-								// CUST_SET_CREDITS_LEVEL
-								case 0x0003: {
+								case CUST_SET_CREDITS_LEVEL: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_SET_CREDITS_LEVEL unimplemented! (level %u)", current_level);
 									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 									break;
 								}
-								// CUST_DISABLE_FORCING_ANIM_96
-								case 0x0004: {
+								case CUST_DISABLE_FORCING_ANIM_96: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_DISABLE_FORCING_ANIM_96 unimplemented! (level %u)", current_level);
 
 									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 									break;
 								}
-								// CUST_ROLLINGBALL_PUSHING
-								case 0x0005: {
+								case CUST_ROLLINGBALL_PUSHING: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_ROLLINGBALL_PUSHING unimplemented! (level %u)", current_level);
 
 									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 									break;
 								}
-								// CUST_NEW_SOUND_ENGINE
-								case 0x0006: {
+								case CUST_NEW_SOUND_ENGINE: {
 									unsigned short new_sound_engine_flags = NG_READ_16(gfScriptFile, offset);
 									if (new_sound_engine_flags == 0xffff || new_sound_engine_flags == 0) {
 										new_sound_engine_flags = 0;
@@ -599,15 +593,13 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 									break;
 								}
-								// CUST_SPEED_MOVING
-								case 0x0007: {
+								case CUST_SPEED_MOVING: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_SPEED_MOVING unimplemented! (level %u)", current_level);
 
 									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 									break;
 								}
-								// CUST_SHATTER_RANGE
-								case 0x0008: {
+								case CUST_SHATTER_RANGE: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_SHATTER_RANGE unimplemented! (level %u)", current_level);
 
 
@@ -616,15 +608,13 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 									break;
 								}
-								// CUST_WEAPON
-								case 0x0009: {
+								case CUST_WEAPON: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_WEAPON unimplemented! (level %u)", current_level);
 
 									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 									break;
 								}
-								// CUST_AMMO
-								case 0x000a: {
+								case CUST_AMMO: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_AMMO unimplemented! (level %u)", current_level);
 
 									unsigned short ammo_slot = NG_READ_16(gfScriptFile, offset);
@@ -644,8 +634,7 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 									}
 									break;
 								}
-								// CUST_SHOW_AMMO_COUNTER
-								case 0x000b: {
+								case CUST_SHOW_AMMO_COUNTER: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_SHOW_AMMO_COUNTER unimplemented! (level %u)", current_level);
 
 									unsigned short color = NG_READ_16(gfScriptFile, offset);
@@ -658,203 +647,174 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 									}
 									break;
 								}
-								// CUST_SET_INV_ITEM
-								case 0x000c: {
+								case CUST_SET_INV_ITEM: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_SET_INV_ITEM unimplemented! (level %u)", current_level);
 
 									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 									break;
 								}
-								// CUST_SET_JEEP_KEY_SLOT
-								case 0x000d: {
+								case CUST_SET_JEEP_KEY_SLOT: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_SET_JEEP_KEY_SLOT unimplemented! (level %u)", current_level);
 
 									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 									break;
 								}
-								// CUST_STATIC_TRANSPARENCY
-								case 0x000e: {
+								case CUST_STATIC_TRANSPARENCY: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_STATIC_TRANSPARENCY unimplemented! (level %u)", current_level);
 
 									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 									break;
 								}
-								// CUST_SET_STATIC_DAMAGE
-								case 0x000f: {
+								case CUST_SET_STATIC_DAMAGE: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_SET_STATIC_DAMAGE unimplemented! (level %u)", current_level);
 
 									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 									break;
 								}
-								// CUST_LOOK_TRASPARENT
-								case 0x0010: {
+								case CUST_LOOK_TRASPARENT: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_LOOK_TRASPARENT unimplemented! (level %u)", current_level);
 
 									unsigned short is_enabled = NG_READ_16(gfScriptFile, offset);
 									break;
 								}
-								// CUST_HAIR_TYPE
-								case 0x0011: {
+								case CUST_HAIR_TYPE: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_HAIR_TYPE unimplemented! (level %u)", current_level);
 
 									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 									break;
 								}
-								// CUST_KEEP_DEAD_ENEMIES
-								case 0x0012: {
+								case CUST_KEEP_DEAD_ENEMIES: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_KEEP_DEAD_ENEMIES unimplemented! (level %u)", current_level);
 
 									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 									break;
 								}
-								// CUST_SET_OLD_CD_TRIGGER
-								case 0x0013: {
+								case CUST_SET_OLD_CD_TRIGGER: {
 									ng_levels[current_level].old_cd_trigger_system = NG_READ_8(gfScriptFile, offset);
 									break;
 								}
-								// CUST_ESCAPE_FLY_CAMERA
-								case 0x0014: {
+								case CUST_ESCAPE_FLY_CAMERA: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_ESCAPE_FLY_CAMERA unimplemented! (level %u)", current_level);
 
 									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 									break;
 								}
-								// CUST_PAUSE_FLY_CAMERA
-								case 0x0015: {
+								case CUST_PAUSE_FLY_CAMERA: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_PAUSE_FLY_CAMERA unimplemented! (level %u)", current_level);
 
 									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 									break;
 								}
-								// CUST_TEXT_ON_FLY_SCREEN
-								case 0x0016: {
+								case CUST_TEXT_ON_FLY_SCREEN: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_TEXT_ON_FLY_SCREEN unimplemented! (level %u)", current_level);
 
 									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 									break;
 								}
-								// CUST_CD_SINGLE_PLAYBACK
-								case 0x0017: {
+								case CUST_CD_SINGLE_PLAYBACK: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_CD_SINGLE_PLAYBACK unimplemented! (level %u)", current_level);
 
 									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 									break;
 								}
-								// CUST_ADD_DEATH_ANIMATION
-								case 0x0018: {
+								case CUST_ADD_DEATH_ANIMATION: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_ADD_DEATH_ANIMATION unimplemented! (level %u)", current_level);
 
 									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 									break;
 								}
-								// CUST_BAR 
-								case 0x0019: {
+								case CUST_BAR: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_ADD_DEATH_ANIMATION unimplemented! (level %u)", current_level);
 
 									printf("CUST_BAR unimplemented!\n");
 									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 									break;
 								}
-								// CUST_NO_TIME_IN_SAVELIST
-								case 0x001a: {
+								case CUST_NO_TIME_IN_SAVELIST: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_NO_TIME_IN_SAVELIST unimplemented! (level %u)", current_level);
 
 									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 									break;
 								}
-								// CUST_PARALLEL_BARS
-								case 0x001b: {
+								case CUST_PARALLEL_BARS: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_PARALLEL_BARS unimplemented! (level %u)", current_level);
 
 									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 									break;
 								}
-								// CUST_CAMERA
-								case 0x001c: {
+								case CUST_CAMERA: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_CAMERA unimplemented! (level %u)", current_level);
 
 									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 									break;
 								}
-								// CUST_DISABLE_MISSING_SOUNDS
-								case 0x001d: {
+								case CUST_DISABLE_MISSING_SOUNDS: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_DISABLE_MISSING_SOUNDS unimplemented! (level %u)", current_level);
 
 									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 									break;
 								}
-								// CUST_INNER_SCREENSHOT
-								case 0x001e: {
+								case CUST_INNER_SCREENSHOT: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_INNER_SCREENSHOT unimplemented! (level %u)", current_level);
 
 									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 									break;
 								}
-								// CUST_FMV_CUTSCENE
-								case 0x001f: {
+								case CUST_FMV_CUTSCENE: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_FMV_CUTSCENE unimplemented! (level %u)", current_level);
 
 									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 									break;
 								}
-								// CUST_FIX_WATER_FOG_BUG 
-								case 0x0020: {
+								case CUST_FIX_WATER_FOG_BUG: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_FIX_WATER_FOG_BUG unimplemented! (level %u)", current_level);
 
 									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 									break;
 								}
-								// CUST_SAVE_LOCUST 
-								case 0x0021: {
+								case CUST_SAVE_LOCUST: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_SAVE_LOCUST unimplemented! (level %u)", current_level);
 
 									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 									break;
 								}
-								// CUST_LIGHT_OBJECT 
-								case 0x0022: {
+								case CUST_LIGHT_OBJECT: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_LIGHT_OBJECT unimplemented! (level %u)", current_level);
 
 									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 									break;
 								}
-								// CUST_HARPOON
-								case 0x0023: {
+								case CUST_HARPOON: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_HARPOON unimplemented! (level %u)", current_level);
 
 									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 									break;
 								}
-								// CUST_SCREENSHOT_CAPTURE
-								case 0x0024: {
+								case CUST_SCREENSHOT_CAPTURE: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_SCREENSHOT_CAPTURE unimplemented! (level %u)", current_level);
 
 									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 									break;
 								}
-								// CUST_RAIN
-								case 0x0025: {
+								case CUST_RAIN: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_RAIN unimplemented! (level %u)", current_level);
 
 									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 									break;
 								}
-								// CUST_TR5_UNDERWATER_COLLISIONS 
-								case 0x0026: {
+								case CUST_TR5_UNDERWATER_COLLISIONS: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_TR5_UNDERWATER_COLLISIONS unimplemented! (level %u)", current_level);
 
 									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 									break;
 								}
-								// CUST_DARTS 
-								case 0x0027: {
+								case CUST_DARTS: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_DARTS unimplemented! (level %u)", current_level);
 
 									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 									break;
 								}
-								// CUST_FLARE 
-								case 0x0028: {
+								case CUST_FLARE: {
 									unsigned short flare_flags = NG_READ_16(gfScriptFile, offset);
 									unsigned short flare_lifetime_in_seconds = NG_READ_16(gfScriptFile, offset);
 									unsigned char flare_light_r = NG_READ_16(gfScriptFile, offset);
@@ -904,92 +864,96 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 
 									break;
 								}
-								// CUST_SET_TEXT_COLOR 
-								case 0x0029: {
+								case CUST_SET_TEXT_COLOR: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_SET_TEXT_COLOR unimplemented (level %u)", current_level);
 
 									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 									break;
 								}
-								// CUST_SET_STILL_COLLISION 
-								case 0x002a: {
+								case CUST_SET_STILL_COLLISION: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_SET_STILL_COLLISION unimplemented (level %u)", current_level);
 
 									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 									break;
 								}
-								// CUST_WATERFALL_SPEED 
-								case 0x002b: {
+								case CUST_WATERFALL_SPEED: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_WATERFALL_SPEED unimplemented (level %u)", current_level);
 
 									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 									break;
 								}
-								// CUST_ROLLING_BOAT 
-								case 0x002c: {
+								case CUST_ROLLING_BOAT: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_ROLLING_BOAT unimplemented (level %u)", current_level);
 
 									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 									break;
 								}
-								// CUST_SFX 
-								case 0x002d: {
+								case CUST_SFX: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_SFX unimplemented (level %u)", current_level);
 
 									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 									break;
 								}
-								// CUST_TITLE_FMV 
-								case 0x002e: {
+								case CUST_TITLE_FMV: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_TITLE_FMV unimplemented (level %u)", current_level);
 
 									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 									break;
 								}
-								// CUST_KEEP_LARA_HP 
-								case 0x002f: {
+								case CUST_KEEP_LARA_HP: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_KEEP_LARA_HP unimplemented (level %u)", current_level);
 
 									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 									break;
 								}
-								// CUST_BINOCULARS
-								case 0x0030: {
+								case CUST_BINOCULARS: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_BINOCULARS unimplemented (level %u)", current_level);
 
 									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 									break;
 								}
-								// CUST_BACKGROUND
-								case 0x0031: {
+								case CUST_BACKGROUND: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_BACKGROUND unimplemented (level %u)", current_level);
 
 									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 									break;
 								}
-								// CUST_DISABLE_PUSH_AWAY_ANIMATION
-								case 0x0032: {
+								case CUST_DISABLE_PUSH_AWAY_ANIMATION: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_DISABLE_PUSH_AWAY_ANIMATION unimplemented (level %u)", current_level);
 
 									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 									break;
 								}
-								// CUST_SLOT_FLAGS
-								case 0x0034: {
+								case CUST_SLOT_FLAGS: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_SLOT_FLAGS unimplemented (level %u)", current_level);
 
 									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 									break;
 								}
-								// CUST_FIX_BUGS
-								case 0x0035: {
-									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_FIX_BUGS unimplemented (level %u)", current_level);
+								case CUST_FIX_BUGS: {
+									unsigned short bug_fix_flags = NG_READ_16(gfScriptFile, offset);
+									if (bug_fix_flags & ~(BUGF_TRANSPARENT_WHITE_ON_FOG | BUGF_DART_NO_POISON_LARA | BUGF_LAND_WATER_SFX_ENEMIES)) {
+										NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: CUST_FIX_BUGS unknown flags!");
+									}
 
-									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+									if (bug_fix_flags & BUGF_TRANSPARENT_WHITE_ON_FOG) {
+										NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: BUGF_TRANSPARENT_WHITE_ON_FOG unsupported! (level %u)", current_level);
+									}
+									if (bug_fix_flags & BUGF_DART_NO_POISON_LARA) {
+										get_game_mod_level_misc_info(current_level).darts_poison_fix = true;
+									} else {
+										get_game_mod_level_misc_info(current_level).darts_poison_fix = false;
+									}
+
+									if (bug_fix_flags & BUGF_LAND_WATER_SFX_ENEMIES) {
+										get_game_mod_level_misc_info(current_level).enemy_gun_hit_underwater_sfx_fix = true;
+									} else {
+										get_game_mod_level_misc_info(current_level).enemy_gun_hit_underwater_sfx_fix = false;
+									}
+
 									break;
 								}
-								// CUST_SHATTER_SPECIFIC
-								case 0x0036: {
+								case CUST_SHATTER_SPECIFIC: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_SHATTER_SPECIFIC unimplemented (level %u)", current_level);
 
 									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));

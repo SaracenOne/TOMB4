@@ -138,6 +138,11 @@ struct MOD_LEVEL_FLARE_INFO {
 	bool flat_light = false;
 };
 
+struct MOD_LEVEL_MISC_INFO {
+	bool enemy_gun_hit_underwater_sfx_fix = false;
+	bool darts_poison_fix = false;
+};
+
 struct MOD_LEVEL_INFO {
 	MOD_LEVEL_CAMERA_INFO camera_info;
 	MOD_LEVEL_CREATURE_INFO creature_info;
@@ -145,6 +150,7 @@ struct MOD_LEVEL_INFO {
 	MOD_LEVEL_LARA_INFO lara_info;
 	MOD_LEVEL_AUDIO_INFO audio_info;
 	MOD_LEVEL_FLARE_INFO flare_info;
+	MOD_LEVEL_MISC_INFO misc_info;
 	MOD_LEVEL_OBJECT_INFO object_info[NUMBER_OBJECTS];
 	short slot_info[NUMBER_OBJECTS];
 };
@@ -170,6 +176,7 @@ extern MOD_LEVEL_AUDIO_INFO &get_game_mod_level_audio_info(int level);
 extern MOD_LEVEL_LARA_INFO &get_game_mod_level_lara_info(int level);
 extern MOD_LEVEL_STAT_INFO &get_game_mod_level_stat_info(int level);
 extern MOD_LEVEL_FLARE_INFO &get_game_mod_level_flare_info(int level);
+extern MOD_LEVEL_MISC_INFO& get_game_mod_level_misc_info(int level);
 
 extern void LoadGameModConfigFirstPass();
 extern void LoadGameModConfigSecondPass();

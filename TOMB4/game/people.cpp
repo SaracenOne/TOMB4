@@ -1,4 +1,5 @@
 #include "../tomb4/pch.h"
+#include "gameflow.h"
 #include "people.h"
 #include "sphere.h"
 #include "../specific/function_stubs.h"
@@ -10,6 +11,8 @@
 #include "box.h"
 #include "../specific/3dmath.h"
 #include "lara.h"
+
+#include "../tomb4/mod_config.h"
 
 short GunShot(long x, long y, long z, short speed, short yrot, short room_number)
 {
@@ -25,7 +28,11 @@ short GunHit(long x, long y, long z, short speed, short yrot, short room_number)
 	pos.z = 0;
 	GetJointAbsPosition(lara_item, &pos, (25 * GetRandomControl()) / 0x7FFF);
 	DoBloodSplat(pos.x, pos.y, pos.z, (GetRandomControl() & 3) + 3, lara_item->pos.y_rot, lara_item->room_number);
-	SoundEffect(SFX_LARA_INJURY, &lara_item->pos, SFX_DEFAULT);
+	if (game_mod_config.level_info[gfCurrentLevel].misc_info.enemy_gun_hit_underwater_sfx_fix) {
+		SoundEffect(SFX_LARA_INJURY, &lara_item->pos, SFX_DEFAULT);
+	} else {
+		SoundEffect(SFX_UNDERWATER_DOOR, &lara_item->pos, SFX_DEFAULT);
+	}
 	return GunShot(x, y, z, speed, yrot, room_number);
 }
 

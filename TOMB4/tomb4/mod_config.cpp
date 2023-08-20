@@ -57,7 +57,11 @@ void setup_custom_slots_for_level(int level, OBJECT_INFO* current_object_info_ar
 }
 
 void assign_slot_for_level(int level, int dest_slot, int src_slot) {
-    game_mod_config.level_info[level].slot_info[dest_slot] = src_slot;
+    if (src_slot < NUMBER_OBJECTS && dest_slot < NUMBER_OBJECTS && level < MOD_LEVEL_COUNT) {
+        game_mod_config.level_info[level].slot_info[dest_slot] = src_slot;
+    } else {
+        printf("Invalid slot assignment!\n");
+    }
 }
 
 extern MOD_GLOBAL_INFO& get_game_mod_global_info() {
@@ -86,6 +90,10 @@ MOD_LEVEL_STAT_INFO &get_game_mod_level_stat_info(int level) {
 
 MOD_LEVEL_FLARE_INFO& get_game_mod_level_flare_info(int level) {
     return game_mod_config.level_info[level].flare_info;
+}
+
+MOD_LEVEL_MISC_INFO& get_game_mod_level_misc_info(int level) {
+    return game_mod_config.level_info[level].misc_info;
 }
 
 void LoadGameModLevelCameraInfo(const json_t* camera, MOD_LEVEL_CAMERA_INFO* camera_info) {
@@ -134,6 +142,12 @@ void LoadGameModLevelCreatureInfo(const json_t* creature, MOD_LEVEL_CREATURE_INF
     READ_JSON_BOOL(remove_mummy_stun_animations, creature, creature_info);
 }
 
+void LoadGameModLevelMiscInfo(const json_t *misc, MOD_LEVEL_MISC_INFO *misc_info) {
+    READ_JSON_BOOL(enemy_gun_hit_underwater_sfx_fix, misc, misc_info);
+    READ_JSON_BOOL(darts_poison_fix, misc, misc_info);
+}
+
+
 void LoadGameModLevel(const json_t *level, MOD_LEVEL_INFO *level_info) {
     const json_t* lara_info = json_getProperty(level, "lara_info");
     if (lara_info && JSON_OBJ == json_getType(lara_info)) {
@@ -143,6 +157,11 @@ void LoadGameModLevel(const json_t *level, MOD_LEVEL_INFO *level_info) {
     const json_t* creature_info = json_getProperty(level, "creature_info");
     if (creature_info && JSON_OBJ == json_getType(creature_info)) {
         LoadGameModLevelCreatureInfo(creature_info, &level_info->creature_info);
+    }
+
+    const json_t* misc_info = json_getProperty(level, "misc_info");
+    if (misc_info && JSON_OBJ == json_getType(misc_info)) {
+        LoadGameModLevelMiscInfo(misc_info, &level_info->misc_info);
     }
 }
 

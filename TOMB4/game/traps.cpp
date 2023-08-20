@@ -1,4 +1,5 @@
 #include "../tomb4/pch.h"
+#include "gameflow.h"
 #include "traps.h"
 #include "control.h"
 #include "effect2.h"
@@ -2325,7 +2326,11 @@ void DartsControl(short item_number)
 	{
 		lara_item->hit_points -= 25;
 		lara_item->hit_status = 1;
-		lara.poisoned += 160;
+		if (get_game_mod_level_misc_info(gfCurrentLevel).darts_poison_fix) {
+			lara.dpoisoned += 160;
+		} else {
+			lara.poisoned += 160;
+		}
 		DoBloodSplat(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, (GetRandomControl() & 3) + 4, lara_item->pos.y_rot, lara_item->room_number);
 		KillItem(item_number);
 	}
