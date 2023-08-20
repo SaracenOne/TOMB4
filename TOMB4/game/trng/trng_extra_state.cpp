@@ -420,9 +420,24 @@ void NGExecuteSingleGlobalTrigger(int global_trigger_id) {
 
 	// What the difference between GT_CONDITION_GROUP and GT_ALWAYS?
 	switch (global_trigger->type) {
-		case 0x0003: {// GT_ENEMY_KILLED
+		case 0x0003: { // GT_ENEMY_KILLED
 			int enemy_id = ng_script_id_table[global_trigger->parameter];
 			if (items[enemy_id].after_death > 0)
+				global_trigger_condition_passed = true;
+			break;
+		}
+		case 0x0004: { // GT_LARA_HP_LESS_THAN
+			if (lara_item->hit_points < global_trigger->parameter)
+				global_trigger_condition_passed = true;
+			break;
+		}
+		case 0x0005: { // GT_LARA_HP_HIGHER_THAN
+			if (lara_item->hit_points > global_trigger->parameter)
+				global_trigger_condition_passed = true;
+			break;
+		}
+		case 0x000a: { // GT_LARA_IS_POISONED
+			if (lara_item->poisoned > global_trigger->parameter)
 				global_trigger_condition_passed = true;
 			break;
 		}

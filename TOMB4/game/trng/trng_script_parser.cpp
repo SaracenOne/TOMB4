@@ -1094,7 +1094,12 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 						level_global_triggers_table[level_global_trigger_count].global_trigger.flags = flags;
 
 						unsigned short global_trigger_type = NG_READ_16(gfScriptFile, offset);
-						if (global_trigger_type != 0x000b && global_trigger_type != 0x0020) {
+						if (global_trigger_type != 0x0003 &&
+							global_trigger_type != 0x0004 &&
+							global_trigger_type != 0x0005 &&
+							global_trigger_type != 0x000a &&
+							global_trigger_type != 0x000b &&
+							global_trigger_type != 0x0020) {
 							NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: Unimplemented GlobalTrigger type %u (level %u)", global_trigger_type, current_level);
 						}
 						level_global_triggers_table[level_global_trigger_count].global_trigger.type = global_trigger_type;
