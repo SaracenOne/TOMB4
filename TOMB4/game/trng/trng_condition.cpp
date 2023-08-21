@@ -156,6 +156,19 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 
 		return false;
 	}
+	case CREATURE_IS_CURRENTLY: {
+		switch (extra) {
+			case 0x03: {
+				return items[param].status == ITEM_ACTIVE;
+			}
+			default: {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "CREATURE_IS_CURRENTLY is not currently implemented!");
+				break;
+			}
+		}
+
+		return false;
+	}
 	case LARA_HAS_FOUND_EXACTLY_X_SECRETS:
 		return savegame.Game.Secrets == param;
 	case LARA_HAS_FOUND_AT_LEAST_X_SECRETS:
