@@ -212,7 +212,7 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 		return false;
 	}
 	case LARA_IS_PERFORMING_ANIMATION: {
-		if (lara_item->current_anim_state - objects[LARA].anim_index == param) {
+		if (lara_item->anim_number - objects[LARA].anim_index == param) {
 			return true;
 		} else {
 			return false;
