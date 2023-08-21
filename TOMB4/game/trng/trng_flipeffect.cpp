@@ -273,6 +273,8 @@ bool stop_sound_from_second_group(unsigned char sound_sample, unsigned char unus
 bool stop_all_sound_samples(unsigned char unused_1, unsigned char unused_2) {
 	S_SoundStopAllSamples();
 
+	memset(ng_looped_sound_state, 0x00, NumSamples * sizeof(int));
+
 	return true;
 }
 
