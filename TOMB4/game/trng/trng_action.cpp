@@ -374,8 +374,8 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame) {
 		}
 		case OPEN_OR_CLOSE_DOOR_ITEM: {
 			if (first_frame) {
-				items[item_id].timer = ((short)(action_data & 0x7f)) * 30;
 				NGItemActivator(item_id, false);
+				items[item_id].timer = 0;
 
 				if (action_data) {
 					items[item_id].flags |= IFL_CODEBITS;
