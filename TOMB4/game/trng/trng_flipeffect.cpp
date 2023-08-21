@@ -406,6 +406,78 @@ bool disarm_lara(unsigned char remove_weapons_only, unsigned char _unusued) {
 	return true;
 }
 
+// NGLE - 115
+bool set_room_type(unsigned char room_number, unsigned char room_type) {
+	ROOM_INFO* r = &room[room_number];
+	if (r) {
+		switch (room_type) {
+			case 0: {
+				r->flags |= ROOM_UNDERWATER;
+			}
+			case 2: {
+				r->flags |= ROOM_SKYBOX;
+			}
+			case 4: {
+				r->flags |= 0x10;
+			}
+			case 5: {
+				r->flags |= ROOM_NOT_INSIDE; // TODO: check this
+			}
+			case 10: {
+				r->flags |= ROOM_SNOW;
+			}
+			case 11: {
+				r->flags |= ROOM_RAIN;
+			}
+			case 12: {
+				r->flags |= ROOM_COLD;
+			}
+			default: {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "SET_ROOM_TYPE: unsupported room type!");
+				return false;
+			}
+		}
+	}
+
+	return true;
+}
+
+// NGLE - 116
+bool remove_room_type(unsigned char room_number, unsigned char room_type) {
+	ROOM_INFO* r = &room[room_number];
+	if (r) {
+		switch (room_type) {
+		case 0: {
+			r->flags &= ~ROOM_UNDERWATER;
+		}
+		case 2: {
+			r->flags &= ~ROOM_SKYBOX;
+		}
+		case 4: {
+			r->flags &= ~0x10;
+		}
+		case 5: {
+			r->flags &= ~ROOM_NOT_INSIDE; // TODO: check this
+		}
+		case 10: {
+			r->flags &= ~ROOM_SNOW;
+		}
+		case 11: {
+			r->flags &= ~ROOM_RAIN;
+		}
+		case 12: {
+			r->flags &= ~ROOM_COLD;
+		}
+		default: {
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "REMOVE_ROOM_TYPE: unsupported room type!");
+			return false;
+		}
+		}
+	}
+
+	return true;
+}
+
 // NGLE - 118
 bool perform_triggergroup_from_script_in_specific_way(unsigned char trigger_group_id, unsigned char execution_type) {
 	return NGTriggerGroupFunction(trigger_group_id, execution_type);
@@ -650,6 +722,16 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 		case DISARM_LARA: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return disarm_lara(action_data_1, action_data_2);
+			break;
+		}
+		case SET_ROOM_TYPE: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+				return set_room_type(action_data_1, action_data_2);
+			break;
+		}
+		case REMOVE_ROOM_TYPE: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+				return remove_room_type(action_data_1, action_data_2);
 			break;
 		}
 		case PERFORM_TRIGGERGROUP_FROM_SCRIPT_IN_SPECIFIC_WAY:
