@@ -89,6 +89,9 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 				operation_result = false;
 			}
 		}
+
+		if (trigger_group.data[index].first_field == 0x0000)
+			break;
 		
 		if ((!(trigger_group.data[index].first_field & TGROUP_OR) && (operation_result == true || !parsed_first_operation)) ||
 			trigger_group.data[index].first_field & TGROUP_OR) {
@@ -99,8 +102,12 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 				current_result = NGAction(ng_script_id_table[trigger_group.data[index].second_field], trigger_group.data[index].third_field & 0x7fff, true) != -1;
 			}
 			// ConditionNG
-			else if ((trigger_group.data[index].first_field & 0xF000) == 0x8000 || (trigger_group.data[index].first_field & 0xF000) == 0x9000) {
+			else if ((trigger_group.data[index].first_field & 0xF000) == 0x8000) {
 				current_result = NGCondition(trigger_group.data[index].second_field, (trigger_group.data[index].third_field >> 8) & 0xff, trigger_group.data[index].third_field & 0xff);
+			}
+			// ConditionNG (item id)
+			else if ((trigger_group.data[index].first_field & 0xF000) == 0x9000) {
+				current_result = NGCondition(ng_script_id_table[trigger_group.data[index].second_field], (trigger_group.data[index].third_field >> 8) & 0xff, trigger_group.data[index].third_field & 0xff);
 			}
 			// Flipeffect
 			else if ((trigger_group.data[index].first_field & 0xF000) == 0x2000) {
@@ -402,6 +409,20 @@ bool perform_triggergroup_from_script_in_specific_way(unsigned char trigger_grou
 	return NGTriggerGroupFunction(trigger_group_id, execution_type);
 }
 
+// NGLE - 125
+bool flipmap_on(unsigned char flipmap_id, unsigned char unused_2) {
+	NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "FLIPMAP_ON not yet implemented");
+
+	return false;
+}
+
+// NGLE - 126
+bool flipmap_off(unsigned char flipmap_id, unsigned char unused_2) {
+	NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "FLIPMAP_OFF not yet implemented");
+
+	return false;
+}
+
 // NGLE - 127
 bool organizer_enable(unsigned char organizer_id_lower, unsigned char organizer_id_upper) {
 	unsigned short organizer_id = ((short)organizer_id_upper << 8) | (short)organizer_id_lower;
@@ -633,6 +654,16 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return perform_triggergroup_from_script_in_specific_way(action_data_1, action_data_2);
 			break;
+		case FLIPMAP_ON: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+				return flipmap_on(action_data_1, action_data_2);
+			break;
+		}
+		case FLIPMAP_OFF: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+				return flipmap_off(action_data_1, action_data_2);
+			break;
+		}
 		case ORGANIZER_ENABLE:
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return organizer_enable(action_data_1, action_data_2);
