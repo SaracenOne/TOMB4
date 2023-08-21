@@ -79,6 +79,26 @@ int get_inventory_count(short object_number)
 		return lara.num_flares;
 	else if (object_number == BINOCULARS_ITEM)
 		return lara.binoculars;
+	else if (object_number == WATERSKIN1_EMPTY)
+		return lara.small_water_skin == 1;
+	else if (object_number == WATERSKIN1_1)
+		return lara.small_water_skin == 2;
+	else if (object_number == WATERSKIN1_2)
+		return lara.small_water_skin == 3;
+	else if (object_number == WATERSKIN1_3)
+		return lara.small_water_skin == 4;
+	else if (object_number == WATERSKIN2_EMPTY)
+		return lara.big_water_skin == 1;
+	else if (object_number == WATERSKIN2_1)
+		return lara.big_water_skin == 2;
+	else if (object_number == WATERSKIN2_2)
+		return lara.big_water_skin == 3;
+	else if (object_number == WATERSKIN2_3)
+		return lara.big_water_skin == 4;
+	else if (object_number == WATERSKIN2_4)
+		return lara.big_water_skin == 5;
+	else if (object_number == WATERSKIN2_5)
+		return lara.big_water_skin == 6;
 	else
 		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: get_inventory_count: unimplemented inventory item type!");
 
