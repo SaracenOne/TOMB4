@@ -52,7 +52,7 @@ void TemplarControl(short item_number)
 	{
 		MOD_LEVEL_CREATURE_INFO creature_info = get_game_mod_level_creature_info(gfCurrentLevel);
 
-		if (creature_info.remove_knights_templar_sparks) {
+		if (!creature_info.remove_knights_templar_sparks) {
 			pos.x = 0;
 			pos.y = 48;
 			pos.z = 448;
