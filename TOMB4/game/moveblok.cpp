@@ -104,6 +104,25 @@ static long TestBlockPush(ITEM_INFO* item, long height, ushort quadrant, bool ca
 	long x, y, z, rx, rz;
 	short room_number;
 
+	// TRNG
+	MOD_GLOBAL_INFO global_info = get_game_mod_global_info();
+
+	if (global_info.trng_pushable_extended_ocb && item->trigger_flags & 0x40) {
+		if (item->trigger_flags & 0x100) { // TRNG: Pushing disabled
+			return 0;
+		}
+
+		if (quadrant == EAST || quadrant == WEST) {
+			if (item->trigger_flags & 0x400) { // TRNG: East and West direction disabled
+				return 0;
+			}
+		} else if (quadrant == NORTH || quadrant == SOUTH) {
+			if (item->trigger_flags & 0x200) { // TRNG: North and South direction disabled
+				return 0;
+			}
+		}
+	}
+
 	x = item->pos.x_pos;
 	y = item->pos.y_pos;
 	z = item->pos.z_pos;
@@ -195,6 +214,16 @@ static long TestBlockPull(ITEM_INFO* item, long height, ushort quadrant)
 	if (global_info.trng_pushable_extended_ocb && item->trigger_flags & 0x40) {
 		if (item->trigger_flags & 0x80) { // TRNG: Pulling disabled
 			return 0;
+		}
+
+		if (quadrant == EAST || quadrant == WEST) {
+			if (item->trigger_flags & 0x400) { // TRNG: East and West direction disabled
+				return 0;
+			}
+		} else if (quadrant == NORTH || quadrant == SOUTH) {
+			if (item->trigger_flags & 0x200) { // TRNG: North and South direction disabled
+				return 0;
+			}
 		}
 	}
 
@@ -568,6 +597,21 @@ void MovableBlockCollision(short item_number, ITEM_INFO* laraitem, COLL_INFO* co
 
 		if (room_number == item->room_number)
 		{
+			// TRNG - disable movement in certain directions
+			if (global_info.trng_pushable_extended_ocb && item->trigger_flags & 0x40) {
+				quadrant = (ushort)(laraitem->pos.y_rot + 8192) >> 14;
+				if (quadrant == EAST || quadrant == WEST) {
+					if (item->trigger_flags & 0x400) { // TRNG: East and West direction disabled
+						return;
+					}
+				}
+				else if (quadrant == NORTH || quadrant == SOUTH) {
+					if (item->trigger_flags & 0x200) { // TRNG: North and South direction disabled
+						return;
+					}
+				}
+			}
+
 			bounds = GetBoundsAccurate(item);
 			MovingBlockBounds[0] = bounds[0] - 100;
 			MovingBlockBounds[1] = bounds[1] + 100;
