@@ -428,7 +428,11 @@ bool Page1(long& num, long textY, ulong selection)
 	strcpy(buffer, tomb4.reverb == 1 ? "off" : tomb4.reverb == 2 ? "Lara room" : "Camera room");
 	PrintString(phd_centerx + (phd_centerx >> 1), YPOS, CHECK_SEL(6), buffer, 0);
 
-	sprintf(buffer, "%i", tomb4.distance_fog);
+	if (tomb4.distance_fog == 0)
+		sprintf(buffer, "default");
+	else
+		sprintf(buffer, "%i", tomb4.distance_fog);
+
 	PrintString(phd_centerx + (phd_centerx >> 1), YPOS, CHECK_SEL(6), buffer, 0);
 
 	sprintf(buffer, "%.1f", tomb4.GUI_Scale);
@@ -544,10 +548,8 @@ bool Page1(long& num, long textY, ulong selection)
 		if (dbinput & IN_LEFT)
 		{
 			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
-			tomb4.distance_fog--;
-
-			if (tomb4.distance_fog < 3)
-				tomb4.distance_fog = 3;
+			if (tomb4.distance_fog > 0)
+				tomb4.distance_fog--;
 
 			changed = 1;
 		}

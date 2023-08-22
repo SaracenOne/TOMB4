@@ -30,6 +30,7 @@
 #include "../game/spotcam.h"
 #include "../game/effect2.h"
 #include "../tomb4/tomb4.h"
+#include "../tomb4/mod_config.h"
 
 D3DTLVERTEX SkinVerts[40][12];
 short SkinClip[40][12];
@@ -49,7 +50,9 @@ void ProcessObjectMeshVertices(MESH_DATA* mesh)
 	float* v;
 	short* clip;
 	static float DistanceFogStart;
-	float zv, fR, fG, fB, val, num;
+	static float DistanceFogEnd;
+	static float DistanceClipRange;
+	float zv, fR, fG, fB, val;
 	long lp, cR, cG, cB, cA, sA, sR, sG, sB;
 	short clipFlag;
 
@@ -60,13 +63,22 @@ void ProcessObjectMeshVertices(MESH_DATA* mesh)
 #else
 	if (gfLevelFlags & GF_TRAIN || gfCurrentLevel == 5 || gfCurrentLevel == 6)
 #endif
+	{
 		DistanceFogStart = 12.0F * 1024.0F;
-#ifdef FORCE_TRAIN_FOG
-	else
-		DistanceFogStart = tomb4.distance_fog * 1024.0F;
-#endif
+		DistanceFogEnd = 1024.0F * 20.0F;
+		DistanceClipRange = 1024.0F * 20.0F;
+	} else {
+		if (tomb4.distance_fog > 0) {
+			DistanceFogStart = tomb4.distance_fog * 1024.0F;
+			DistanceFogEnd = -1.0F;
+			DistanceClipRange = -1.0F;
+		} else {
+			DistanceFogStart = FogStart;
+			DistanceFogEnd = FogEnd;
+			DistanceClipRange = ClipRange;
+		}
+	}
 
-	num = 255.0F / DistanceFogStart;
 	mesh->SourceVB->Lock(DDLOCK_READONLY, (LPVOID*)&v, 0);
 
 	for (int i = 0; i < mesh->nVerts; i++)
@@ -164,35 +176,52 @@ void ProcessObjectMeshVertices(MESH_DATA* mesh)
 		
 		if (vPos.z > DistanceFogStart)
 		{
-			val = (vPos.z - DistanceFogStart) * num;
-
 #ifdef LEVEL_EDITOR
-#ifndef FORCE_TRAIN_FOG
 			if (gfLevelFlags & GF_TRAIN)
-#endif
 #else
-#ifndef FORCE_TRAIN_FOG
 			if (gfLevelFlags & GF_TRAIN || gfCurrentLevel == 5 || gfCurrentLevel == 6)
 #endif
-#endif		
 			{
 				val = (vPos.z - DistanceFogStart) / 512.0F;
 				sA -= long(val * (255.0F / 8.0F));
-				cA -= long(val * (255.0F / 8.0F));
 
 				if (sA < 0)
 					sA = 0;
-				if (cA < 0)
-					cA = 0;
-			}
-#ifndef FORCE_TRAIN_FOG
-			else
-			{
+				else if (sA > 255)
+					sA = 255;
+			} else {
+				if (DistanceFogEnd < 0.0F) {
+					val = (vPos.z - DistanceFogStart) * (255.0F / DistanceFogStart);
+				}
+				else {
+#ifdef FORCE_COLOURED_FOG
+					val = (vPos.z - DistanceFogStart) / (vPos.z - DistanceFogEnd) * 255;
+#else
+					val = (vPos.z - DistanceFogStart) * (255.0F / DistanceFogStart);
+#endif
+				}
+
+#ifdef FORCE_COLOURED_FOG
+				if (DistanceFogEnd < 0.0F) {
+					sA = 255 - long(val);
+					if (sA < 0)
+						sA = 0;
+					else if (sA > 255)
+						sA = 255;
+				}
+				else {
+					val = (vPos.z - DistanceFogStart) / 512.0F;
+					sA -= long(val * (255.0F / 8.0F));
+
+					if (sA < 0)
+						sA = 0;
+				}
+#else 
 				cR -= (long)val;
 				cG -= (long)val;
 				cB -= (long)val;
-			}
 #endif
+			}
 		}
 
 		if (cR - 128 <= 0)
@@ -227,18 +256,8 @@ void ProcessObjectMeshVertices(MESH_DATA* mesh)
 		{
 			zv = f_mpersp / vPos.z;
 
-#ifdef LEVEL_EDITOR
-#ifndef FORCE_TRAIN_FOG
-			if (gfLevelFlags & GF_TRAIN)
-#endif
-#else
-#ifndef FORCE_TRAIN_FOG
-			if (gfLevelFlags & GF_TRAIN || gfCurrentLevel == 5 || gfCurrentLevel == 6)
-#endif
-#endif
-			{
-				if (vPos.z > FogEnd)
-				{
+			if (DistanceClipRange >= 0) {
+				if (vPos.z > DistanceClipRange) {
 					clipFlag = 16;
 					vPos.z = f_zfar;
 				}
@@ -305,6 +324,8 @@ void ProcessStaticMeshVertices(MESH_DATA* mesh)
 	float* v;
 	short* clip;
 	static float DistanceFogStart;
+	static float DistanceFogEnd;
+	static float DistanceClipRange;
 	float zv, val, val2, num;
 	long sA, sR, sG, sB, cR, cG, cB, cA, pR, pG, pB;
 	short clipFlag;
@@ -316,11 +337,21 @@ void ProcessStaticMeshVertices(MESH_DATA* mesh)
 #else
 	if (gfLevelFlags & GF_TRAIN || gfCurrentLevel == 5 || gfCurrentLevel == 6)
 #endif
+	{
 		DistanceFogStart = 12.0F * 1024.0F;
-#ifdef FORCE_TRAIN_FOG
-	else
-		DistanceFogStart = tomb4.distance_fog * 1024.0F;
-#endif
+		DistanceFogEnd = 1024.0F * 20.0F;
+		DistanceClipRange = 1024.0F * 20.0F;
+	} else {
+		if (tomb4.distance_fog > 0) {
+			DistanceFogStart = tomb4.distance_fog * 1024.0F;
+			DistanceFogEnd = -1.0F;
+			DistanceClipRange = -1.0F;
+		} else {
+			DistanceFogStart = FogStart;
+			DistanceFogEnd = FogEnd;
+			DistanceClipRange = ClipRange;
+		}
+	}
 
 	num = 255.0F / DistanceFogStart;
 	pR = (StaticMeshShade & 0x1F) << 3;
@@ -382,35 +413,52 @@ void ProcessStaticMeshVertices(MESH_DATA* mesh)
 
 		if (vPos.z > DistanceFogStart)
 		{
-			val = (vPos.z - DistanceFogStart) * num;
-
 #ifdef LEVEL_EDITOR
-#ifndef FORCE_TRAIN_FOG
 			if (gfLevelFlags & GF_TRAIN)
-#endif
 #else
-#ifndef FORCE_TRAIN_FOG
 			if (gfLevelFlags & GF_TRAIN || gfCurrentLevel == 5 || gfCurrentLevel == 6)
-#endif
 #endif
 			{
 				val = (vPos.z - DistanceFogStart) / 512.0F;
 				sA -= long(val * (255.0F / 8.0F));
-				cA -= long(val * (255.0F / 8.0F));
 
 				if (sA < 0)
 					sA = 0;
-				if (cA < 0)
-					cA = 0;
+				else if (sA > 255)
+					sA = 255;
 			}
-#ifndef FORCE_TRAIN_FOG
 			else
 			{
+				if (DistanceFogEnd < 0.0F) {
+					val = (vPos.z - DistanceFogStart) * (255.0F / DistanceFogStart);
+				} else {
+#ifdef FORCE_COLOURED_FOG
+					val = (vPos.z - DistanceFogStart) / (vPos.z - DistanceFogEnd) * 255;
+#else
+					val = (vPos.z - DistanceFogStart) * (255.0F / DistanceFogStart);
+#endif
+				}
+
+#ifdef FORCE_COLOURED_FOG
+				if (DistanceFogEnd < 0.0F) {
+					sA = 255 - long(val);
+					if (sA < 0)
+						sA = 0;
+					else if (sA > 255)
+						sA = 255;
+				} else {
+					val = (vPos.z - DistanceFogStart) / 512.0F;
+					sA -= long(val * (255.0F / 8.0F));
+
+					if (sA < 0)
+						sA = 0;
+				}
+#else 
 				cR -= (long)val;
 				cG -= (long)val;
 				cB -= (long)val;
-			}
 #endif
+			}
 		}
 
 		if (cR - 128 <= 0)
@@ -445,18 +493,8 @@ void ProcessStaticMeshVertices(MESH_DATA* mesh)
 		{
 			zv = f_mpersp / vPos.z;
 
-#ifdef LEVEL_EDITOR
-#ifndef FORCE_TRAIN_FOG
-			if (gfLevelFlags & GF_TRAIN)
-#endif
-#else
-#ifndef FORCE_TRAIN_FOG
-			if (gfLevelFlags & GF_TRAIN || gfCurrentLevel == 5 || gfCurrentLevel == 6)
-#endif
-#endif
-			{
-				if (vPos.z > FogEnd)
-				{
+			if (DistanceClipRange >= 0) {
+				if (vPos.z > DistanceClipRange) {
 					clipFlag = 16;
 					vPos.z = f_zfar;
 				}
@@ -518,6 +556,7 @@ void ProcessTrainMeshVertices(MESH_DATA* mesh)
 	short* clip;
 	static float DistanceFogStart;
 	static float DistanceFogEnd;
+	static float DistanceClipRange;
 	float zv, val, zbak, num, fR, fG, fB;
 	long sA, sR, sG, sB, cR, cG, cB, dR, dG, dB;
 	short clipFlag;
@@ -525,6 +564,7 @@ void ProcessTrainMeshVertices(MESH_DATA* mesh)
 	clip = clipflags;
 	DistanceFogStart = 17.0F * 1024.0F;	//does not listen to custom distance fog
 	DistanceFogEnd = 25.0F * 1024.0F;
+	DistanceClipRange = 20.0F * 1024.0F;
 	num = 255.0F / DistanceFogStart;
 	mesh->SourceVB->Lock(DDLOCK_READONLY, (LPVOID*)&v, 0);
 
@@ -553,9 +593,7 @@ void ProcessTrainMeshVertices(MESH_DATA* mesh)
 		if (zbak > DistanceFogStart)
 		{
 #ifdef LEVEL_EDITOR
-#ifndef FORCE_TRAIN_FOG
 			if (gfLevelFlags & GF_TRAIN)
-#endif
 #else
 			if (gfLevelFlags & GF_TRAIN || gfCurrentLevel == 5 || gfCurrentLevel == 6)
 #endif
@@ -587,16 +625,12 @@ void ProcessTrainMeshVertices(MESH_DATA* mesh)
 				if (sR > dR) sR = dR;
 				if (sG > dG) sG = dG;
 				if (sB > dB) sB = dB;
-			}
-#ifndef FORCE_TRAIN_FOG
-			else
-			{
+			} else {
 				val = (zbak - DistanceFogStart) * num;
 				cR -= (long)val;
 				cG -= (long)val;
 				cB -= (long)val;
 			}
-#endif
 		}
 		
 		clipFlag = 0;
@@ -607,7 +641,7 @@ void ProcessTrainMeshVertices(MESH_DATA* mesh)
 		{
 			zv = f_mpersp / vPos.z;
 
-			if (vPos.z > FogEnd)
+			if (vPos.z > DistanceClipRange)
 			{
 				clipFlag = 16;
 				vPos.z = f_zfar;
@@ -862,7 +896,7 @@ void phd_PutPolygons(short* objptr, long clip)
 				AddQuadZBuffer(MyVertexBuffer, quad[0], quad[1], quad[2], quad[3], pTex, 0);
 			else if (pTex->drawtype <= 2)
 			{
-#ifdef FORCE_TRAIN_FOG
+#ifdef FORCE_COLOURED_FOG
 				if (pTex->drawtype == 2) {
 					for (int j = 0; j < 4; j++)
 					{
@@ -967,7 +1001,7 @@ void phd_PutPolygons(short* objptr, long clip)
 				AddTriZBuffer(MyVertexBuffer, tri[0], tri[1], tri[2], pTex, 0);
 			else if (pTex->drawtype <= 2)
 			{
-#ifdef FORCE_TRAIN_FOG
+#ifdef FORCE_COLOURED_FOG
 				if (pTex->drawtype == 2) {
 					for (int j = 0; j < 3; j++)
 					{

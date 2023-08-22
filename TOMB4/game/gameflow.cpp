@@ -497,6 +497,12 @@ void DoLevel(uchar Name, uchar Audio)
 		CurrentAtmosphere = Audio;
 	}
 
+	MOD_LEVEL_MISC_INFO misc_info = get_game_mod_level_misc_info(gfCurrentLevel);
+
+	FogStart = misc_info.fog_start_range;
+	FogEnd = misc_info.fog_end_range;
+	ClipRange = misc_info.far_view;
+
 	S_CDPlay(CurrentAtmosphere, 1);
 	IsAtmospherePlaying = 1;
 	ScreenFadedOut = 0;
@@ -918,6 +924,12 @@ void DoTitle(uchar Name, uchar Audio)
 		ScreenFadeSpeed = 8;
 		ScreenFading = 0;
 	}
+
+	MOD_LEVEL_MISC_INFO misc_info = get_game_mod_level_misc_info(gfCurrentLevel);
+
+	FogStart = misc_info.fog_start_range;
+	FogEnd = misc_info.fog_end_range;
+	ClipRange = misc_info.far_view;
 
 	MOD_GLOBAL_INFO global_info  = get_game_mod_global_info();
 

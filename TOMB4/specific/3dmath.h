@@ -26,6 +26,7 @@ extern float one;
 extern float mone;
 extern float FogStart;
 extern float FogEnd;
+extern float ClipRange;
 
 extern float* mMXPtr;
 extern float mW2V[indices_count];

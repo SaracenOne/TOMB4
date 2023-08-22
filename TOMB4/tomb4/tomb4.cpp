@@ -102,7 +102,7 @@ void init_tomb4_stuff()
 		REG_WriteLong(buf, tomb4.reverb);
 
 		sprintf(buf, "distance_fog");
-		tomb4.distance_fog = 12;						//default is 12
+		tomb4.distance_fog = 0;						//default is 0
 		REG_WriteLong(buf, tomb4.distance_fog);
 
 		sprintf(buf, "UIScale");
@@ -175,7 +175,7 @@ void init_tomb4_stuff()
 		REG_ReadLong(buf, tomb4.reverb, 1);
 
 		sprintf(buf, "distance_fog");
-		REG_ReadLong(buf, tomb4.distance_fog, 12);
+		REG_ReadLong(buf, tomb4.distance_fog, 0);
 
 		sprintf(buf, "UIScale");
 		REG_ReadFloat(buf, tomb4.GUI_Scale, 1.0F);

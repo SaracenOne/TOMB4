@@ -347,18 +347,33 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 						break;
 					}
 					case 0x03: {
-						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: LevelFarView unimplemented! (level %u)", current_level);
+						// LevelFarView
+						unsigned short far_view = NG_READ_16(gfScriptFile, offset);
 
-						// LevelFarView (WIP)
-						unsigned short level_far_view = NG_READ_16(gfScriptFile, offset);
+						if (current_level == 0) {
+							for (int i = 0; i < MOD_LEVEL_COUNT; i++) {
+								get_game_mod_level_misc_info(i).far_view = (unsigned int)far_view * 1024;
+							}
+						} else {
+							get_game_mod_level_misc_info(current_level).far_view = (unsigned int)far_view * 1024;
+						}
+
 						break;
 					}
 					case 0x04: {
-						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: FogRange unimplemented! (level %u)", current_level);
-
-						// FogRange (WIP)
+						// FogRange
 						unsigned short fog_start = NG_READ_16(gfScriptFile, offset);
 						unsigned short fog_end = NG_READ_16(gfScriptFile, offset);
+
+						if (current_level == 0) {
+							for (int i = 0; i < MOD_LEVEL_COUNT; i++) {
+								get_game_mod_level_misc_info(i).fog_start_range = (unsigned int)fog_start * 1024;
+								get_game_mod_level_misc_info(i).fog_end_range = (unsigned int)fog_end * 1024;
+							}
+						} else {
+							get_game_mod_level_misc_info(current_level).fog_start_range = (unsigned int)fog_start * 1024;
+							get_game_mod_level_misc_info(current_level).fog_end_range = (unsigned int)fog_end * 1024;
+						}
 
 						break;
 					}

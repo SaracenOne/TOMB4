@@ -147,6 +147,9 @@ void LoadGameModLevelCreatureInfo(const json_t* creature, MOD_LEVEL_CREATURE_INF
 void LoadGameModLevelMiscInfo(const json_t *misc, MOD_LEVEL_MISC_INFO *misc_info) {
     READ_JSON_BOOL(enemy_gun_hit_underwater_sfx_fix, misc, misc_info);
     READ_JSON_BOOL(darts_poison_fix, misc, misc_info);
+    READ_JSON_UINT32(fog_start_range, misc, misc_info);
+    READ_JSON_UINT32(fog_end_range, misc, misc_info);
+    READ_JSON_UINT32(far_view, misc, misc_info);
 }
 
 

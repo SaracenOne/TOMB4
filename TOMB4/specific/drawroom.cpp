@@ -17,6 +17,7 @@
 #include "../game/control.h"
 #include "../game/gameflow.h"
 #include "../tomb4/tomb4.h"
+#include "../tomb4/mod_config.h"
 
 static ROOM_DYNAMIC RoomDynamics[MAX_DYNAMICS];
 static long nRoomDynamics;
@@ -78,7 +79,9 @@ void ProcessRoomVertices(ROOM_INFO* r)
 	FVECTOR n;
 	short* clip;
 	static float DistanceFogStart;
-	float zv, fR, fG, fB, val, val2, num;
+	static float DistanceFogEnd;
+	static float DistanceClipRange;
+	float zv, fR, fG, fB, val, val2;
 	long cR, cG, cB, sA, sR, sG, sB, rndoff, col;
 	short clipFlag;
 	uchar rnd, abs;
@@ -91,11 +94,21 @@ void ProcessRoomVertices(ROOM_INFO* r)
 #else
 	if (gfLevelFlags & GF_TRAIN || gfCurrentLevel == 5 || gfCurrentLevel == 6)
 #endif
+	{
 		DistanceFogStart = 12.0F * 1024.0F;
-	else
-		DistanceFogStart = tomb4.distance_fog * 1024.0F;
-
-	num = 255.0F / DistanceFogStart;
+		DistanceFogEnd = 1024.0F * 20.0F;
+		DistanceClipRange = 1024.0F * 20.0F;
+	} else {
+		if (tomb4.distance_fog > 0) {
+			DistanceFogStart = tomb4.distance_fog * 1024.0F;
+			DistanceFogEnd = -1.0F;
+			DistanceClipRange = -1.0F;
+		} else {
+			DistanceFogStart = FogStart;
+			DistanceFogEnd = FogEnd;
+			DistanceClipRange = ClipRange;
+		}
+	};
 
 	for (int i = 0; i < r->nVerts; i++)
 	{
@@ -129,17 +142,9 @@ void ProcessRoomVertices(ROOM_INFO* r)
 		{
 			zv = f_mpersp / vPos.z;
 
-#ifdef LEVEL_EDITOR
-#ifndef FORCE_TRAIN_FOG
-			if (gfLevelFlags & GF_TRAIN)
-#endif
-#else
-#ifndef FORCE_TRAIN_FOG
-			if (gfLevelFlags & GF_TRAIN || gfCurrentLevel == 5 || gfCurrentLevel == 6)
-#endif
-#endif
+			if (DistanceClipRange >= 0.0f)
 			{
-				if (vPos.z > FogEnd)
+				if (vPos.z > DistanceClipRange)
 				{
 					clipFlag = 16;
 					vPos.z = f_zfar;
@@ -236,16 +241,10 @@ void ProcessRoomVertices(ROOM_INFO* r)
 
 		if (vPos.z > DistanceFogStart)
 		{
-			val = (vPos.z - DistanceFogStart) * num;
-
 #ifdef LEVEL_EDITOR
-#ifndef FORCE_TRAIN_FOG
 			if (gfLevelFlags & GF_TRAIN)
-#endif
 #else
-#ifndef FORCE_TRAIN_FOG
 			if (gfLevelFlags & GF_TRAIN || gfCurrentLevel == 5 || gfCurrentLevel == 6)
-#endif
 #endif
 			{
 				val = (vPos.z - DistanceFogStart) / 512.0F;
@@ -253,15 +252,53 @@ void ProcessRoomVertices(ROOM_INFO* r)
 
 				if (sA < 0)
 					sA = 0;
+				else if (sA > 255)
+					sA = 255;
 			}
-#ifndef FORCE_TRAIN_FOG
 			else
 			{
-				cR -= (long)val;
-				cG -= (long)val;
-				cB -= (long)val;
-			}
+				if (DistanceFogEnd < 0.0F) {
+					val = (vPos.z - DistanceFogStart) * (255.0F / DistanceFogStart);
+				} else {
+#ifdef FORCE_COLOURED_FOG
+					val = (vPos.z - DistanceFogStart) / (vPos.z - DistanceFogEnd) * 255;
+#else
+					val = (vPos.z - DistanceFogStart) * (255.0F / DistanceFogStart);
 #endif
+				}
+
+#ifdef FORCE_COLOURED_FOG
+				if (DistanceFogEnd < 0.0F) {
+					sA = 255 - long(val);
+					if (sA < 0)
+						sA = 0;
+					else if (sA > 255)
+						sA = 255;
+				} else {
+					val = (vPos.z - DistanceFogStart) / 512.0F;
+					sA -= long(val * (255.0F / 8.0F));
+
+					if (sA < 0)
+						sA = 0;
+				}
+#else 
+				cR -= (long)val;
+				if (cR < 0)
+					cR = 0;
+				else if (cR > 255)
+					cR = 255;
+				cG -= (long)val;
+				if (cG < 0)
+					cG = 0;
+				else if (cG > 255)
+					cG = 255;
+				cB -= (long)val;
+				if (cB < 0)
+					cB = 0;
+				else if (cB > 255)
+					cB = 255;
+#endif
+			}
 		}
 
 		if (cR - 128 <= 0)

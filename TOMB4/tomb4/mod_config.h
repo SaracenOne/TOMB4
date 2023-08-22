@@ -2,6 +2,10 @@
 
 #include "../game/objects.h"
 
+#define DEFAULT_FOG_START_VALUE 12288
+#define DEFAULT_FOG_END_VALUE 20480
+#define DEFAULT_FAR_VIEW_VALUE 20480
+
 struct MOD_LEVEL_CAMERA_INFO {
 	int chase_cam_distance = 1536;
 	int chase_camera_vertical_orientation = -1820;
@@ -143,6 +147,9 @@ struct MOD_LEVEL_FLARE_INFO {
 struct MOD_LEVEL_MISC_INFO {
 	bool enemy_gun_hit_underwater_sfx_fix = false;
 	bool darts_poison_fix = false;
+	unsigned int fog_start_range = DEFAULT_FOG_START_VALUE;
+	unsigned int fog_end_range = DEFAULT_FOG_END_VALUE;
+	unsigned int far_view = DEFAULT_FAR_VIEW_VALUE;
 };
 
 struct MOD_LEVEL_INFO {
