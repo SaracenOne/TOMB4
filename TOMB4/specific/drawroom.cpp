@@ -269,17 +269,17 @@ void ProcessRoomVertices(ROOM_INFO* r)
 
 #ifdef FORCE_COLOURED_FOG
 				if (DistanceFogEnd < 0.0F) {
-					sA = 255 - long(val);
-					if (sA < 0)
-						sA = 0;
-					else if (sA > 255)
-						sA = 255;
-				} else {
 					val = (vPos.z - DistanceFogStart) / 512.0F;
 					sA -= long(val * (255.0F / 8.0F));
 
 					if (sA < 0)
 						sA = 0;
+				} else {
+					sA = 255 - long(val);
+					if (sA < 0)
+						sA = 0;
+					else if (sA > 255)
+						sA = 255;
 				}
 #else 
 				cR -= (long)val;

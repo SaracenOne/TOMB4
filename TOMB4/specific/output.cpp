@@ -203,23 +203,35 @@ void ProcessObjectMeshVertices(MESH_DATA* mesh)
 
 #ifdef FORCE_COLOURED_FOG
 				if (DistanceFogEnd < 0.0F) {
-					sA = 255 - long(val);
-					if (sA < 0)
-						sA = 0;
-					else if (sA > 255)
-						sA = 255;
-				}
-				else {
 					val = (vPos.z - DistanceFogStart) / 512.0F;
 					sA -= long(val * (255.0F / 8.0F));
 
 					if (sA < 0)
 						sA = 0;
 				}
+				else {
+					sA = 255 - long(val);
+					if (sA < 0)
+						sA = 0;
+					else if (sA > 255)
+						sA = 255;
+				}
 #else 
 				cR -= (long)val;
+				if (cR < 0)
+					cR = 0;
+				else if (cR > 255)
+					cR = 255;
 				cG -= (long)val;
+				if (cG < 0)
+					cG = 0;
+				else if (cG > 255)
+					cG = 255;
 				cB -= (long)val;
+				if (cB < 0)
+					cB = 0;
+				else if (cB > 255)
+					cB = 255;
 #endif
 			}
 		}
@@ -441,22 +453,35 @@ void ProcessStaticMeshVertices(MESH_DATA* mesh)
 
 #ifdef FORCE_COLOURED_FOG
 				if (DistanceFogEnd < 0.0F) {
-					sA = 255 - long(val);
-					if (sA < 0)
-						sA = 0;
-					else if (sA > 255)
-						sA = 255;
-				} else {
 					val = (vPos.z - DistanceFogStart) / 512.0F;
 					sA -= long(val * (255.0F / 8.0F));
 
 					if (sA < 0)
 						sA = 0;
 				}
+				else {
+					sA = 255 - long(val);
+					if (sA < 0)
+						sA = 0;
+					else if (sA > 255)
+						sA = 255;
+				}
 #else 
 				cR -= (long)val;
+				if (cR < 0)
+					cR = 0;
+				else if (cR > 255)
+					cR = 255;
 				cG -= (long)val;
+				if (cG < 0)
+					cG = 0;
+				else if (cG > 255)
+					cG = 255;
 				cB -= (long)val;
+				if (cB < 0)
+					cB = 0;
+				else if (cB > 255)
+					cB = 255;
 #endif
 			}
 		}
