@@ -192,10 +192,9 @@ void ProcessObjectMeshVertices(MESH_DATA* mesh)
 			} else {
 				if (DistanceFogEnd < 0.0F) {
 					val = (vPos.z - DistanceFogStart) * (255.0F / DistanceFogStart);
-				}
-				else {
+				} else {
 #ifdef FORCE_COLOURED_FOG
-					val = (vPos.z - DistanceFogStart) / (vPos.z - DistanceFogEnd) * 255;
+					val = ((vPos.z - DistanceFogStart) / (DistanceFogEnd - DistanceFogStart)) * 255.0F;
 #else
 					val = (vPos.z - DistanceFogStart) * (255.0F / DistanceFogStart);
 #endif
@@ -445,7 +444,7 @@ void ProcessStaticMeshVertices(MESH_DATA* mesh)
 					val = (vPos.z - DistanceFogStart) * (255.0F / DistanceFogStart);
 				} else {
 #ifdef FORCE_COLOURED_FOG
-					val = (vPos.z - DistanceFogStart) / (vPos.z - DistanceFogEnd) * 255;
+					val = ((vPos.z - DistanceFogStart) / (DistanceFogEnd - DistanceFogStart)) * 255.0F;
 #else
 					val = (vPos.z - DistanceFogStart) * (255.0F / DistanceFogStart);
 #endif
