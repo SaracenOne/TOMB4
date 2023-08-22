@@ -151,6 +151,55 @@ extern void NGScriptCleanup() {
 	}
 }
 
+void NGSetupFlareCustomization(int current_level,
+	unsigned short flare_flags,
+	unsigned short flare_lifetime_in_seconds,
+	unsigned char flare_light_r,
+	unsigned char flare_light_g,
+	unsigned char flare_light_b,
+	unsigned char flare_light_intensity) {
+	if (flare_light_r != 0xff && flare_light_g != 0xff && flare_light_b != 0xff) {
+		get_game_mod_level_flare_info(current_level).light_color_r = flare_light_r;
+		get_game_mod_level_flare_info(current_level).light_color_g = flare_light_g;
+		get_game_mod_level_flare_info(current_level).light_color_b = flare_light_b;
+	}
+	if (flare_light_intensity != 0xff)
+		get_game_mod_level_flare_info(current_level).light_intensity = flare_light_intensity;
+	if (flare_lifetime_in_seconds != 0xffff)
+		get_game_mod_level_flare_info(current_level).flare_lifetime_in_ticks = flare_lifetime_in_seconds * 30;
+	if (flare_flags != 0xffff) {
+		get_game_mod_level_flare_info(current_level).has_sparks = flare_flags & 0x0001;
+		get_game_mod_level_flare_info(current_level).has_fire = flare_flags & 0x0002; // Unsupported
+		if (get_game_mod_level_flare_info(current_level).has_fire)
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Flare fire effect unimplemented!");
+		get_game_mod_level_flare_info(current_level).sparks_include_smoke = flare_flags & 0x0004;
+		get_game_mod_level_flare_info(current_level).has_glow = flare_flags & 0x0008;
+		get_game_mod_level_flare_info(current_level).flat_light = flare_flags & 0x0010;
+	}
+}
+
+void NGSetupBugfixCustomization(int current_level, unsigned short bug_fix_flags) {
+	if (bug_fix_flags & ~(BUGF_TRANSPARENT_WHITE_ON_FOG | BUGF_DART_NO_POISON_LARA | BUGF_LAND_WATER_SFX_ENEMIES)) {
+		NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: CUST_FIX_BUGS unknown flags!");
+	}
+
+	if (bug_fix_flags & BUGF_TRANSPARENT_WHITE_ON_FOG) {
+		NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: BUGF_TRANSPARENT_WHITE_ON_FOG unsupported! (level %u)", current_level);
+	}
+
+	if (bug_fix_flags & BUGF_DART_NO_POISON_LARA) {
+		get_game_mod_level_misc_info(current_level).darts_poison_fix = true;
+	} else {
+		get_game_mod_level_misc_info(current_level).darts_poison_fix = false;
+	}
+
+	if (bug_fix_flags & BUGF_LAND_WATER_SFX_ENEMIES) {
+		get_game_mod_level_misc_info(current_level).enemy_gun_hit_underwater_sfx_fix = true;
+	} else {
+		get_game_mod_level_misc_info(current_level).enemy_gun_hit_underwater_sfx_fix = false;
+	}
+}
+
 void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int len) {
 	bool ng_header_found = false;
 
@@ -252,6 +301,8 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 
 			int command_blocks_parsed = 0;
 			int command_blocks_failed = 0;
+
+			NGLog(NG_LOG_TYPE_PRINT, "NGReadNGGameflowInfo: === Parsing Level %u ===", current_level);
 
 			// Do the commands
 			while (1) {
@@ -547,8 +598,7 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 										for (int i = 0; i < MOD_LEVEL_COUNT; i++) {
 											get_game_mod_level_stat_info(i).secret_count = secret_count;
 										}
-									}
-									else {
+									} else {
 										get_game_mod_level_stat_info(current_level).secret_count = secret_count;
 									}
 									break;
@@ -803,9 +853,13 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 									break;
 								}
 								case CUST_TR5_UNDERWATER_COLLISIONS: {
-									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_TR5_UNDERWATER_COLLISIONS unimplemented! (level %u)", current_level);
-
-									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+									if (current_level == 0) {
+										for (int i = 0; i < MOD_LEVEL_COUNT; i++) {
+											get_game_mod_level_lara_info(i).use_tr5_swimming_collision = true;
+										}
+									} else {
+										get_game_mod_level_lara_info(current_level).use_tr5_swimming_collision = true;
+									}
 									break;
 								}
 								case CUST_DARTS: {
@@ -824,42 +878,10 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 
 									if (current_level == 0) {
 										for (int i = 0; i < MOD_LEVEL_COUNT; i++) {
-											if (flare_light_r != 0xff && flare_light_g != 0xff && flare_light_b != 0xff) {
-												get_game_mod_level_flare_info(i).light_color_r = flare_light_r;
-												get_game_mod_level_flare_info(i).light_color_g = flare_light_g;
-												get_game_mod_level_flare_info(i).light_color_b = flare_light_b;
-											}
-											if (flare_light_intensity != 0xff)
-												get_game_mod_level_flare_info(i).light_intensity = flare_light_intensity;
-											if (flare_lifetime_in_seconds != 0xffff)
-												get_game_mod_level_flare_info(i).flare_lifetime_in_ticks = flare_lifetime_in_seconds * 30;
-											if (flare_flags != 0xffff) {
-												get_game_mod_level_flare_info(i).has_sparks = flare_flags & 0x0001;
-												get_game_mod_level_flare_info(i).has_fire = flare_flags & 0x0002; // Unsupported
-												if (get_game_mod_level_flare_info(i).has_fire)
-													NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Flare fire effect unimplemented!");
-												get_game_mod_level_flare_info(i).sparks_include_smoke = flare_flags & 0x0004;
-												get_game_mod_level_flare_info(i).has_glow = flare_flags & 0x0008;
-												get_game_mod_level_flare_info(i).flat_light = flare_flags & 0x0010;
-											}
+											NGSetupFlareCustomization(i, flare_flags, flare_lifetime_in_seconds, flare_light_r, flare_light_g, flare_light_b, flare_light_intensity);
 										}
 									} else {
-										if (flare_light_r != 0xff && flare_light_g != 0xff && flare_light_b != 0xff) {
-											get_game_mod_level_flare_info(current_level).light_color_r = flare_light_r;
-											get_game_mod_level_flare_info(current_level).light_color_g = flare_light_g;
-											get_game_mod_level_flare_info(current_level).light_color_b = flare_light_b;
-										}
-										if (flare_light_intensity != 0xff)
-											get_game_mod_level_flare_info(current_level).light_intensity = flare_light_intensity;
-										if (flare_lifetime_in_seconds != 0xffff)
-											get_game_mod_level_flare_info(current_level).flare_lifetime_in_ticks = flare_lifetime_in_seconds * 30;
-										if (flare_flags != 0xffff) {
-											get_game_mod_level_flare_info(current_level).has_sparks = flare_flags & 0x0001;
-											get_game_mod_level_flare_info(current_level).has_fire = flare_flags & 0x0002; // Unsupported
-											get_game_mod_level_flare_info(current_level).sparks_include_smoke = flare_flags & 0x0004;
-											get_game_mod_level_flare_info(current_level).has_glow = flare_flags & 0x0008;
-											get_game_mod_level_flare_info(current_level).flat_light = flare_flags & 0x0010;
-										}
+										NGSetupFlareCustomization(current_level, flare_flags, flare_lifetime_in_seconds, flare_light_r, flare_light_g, flare_light_b, flare_light_intensity);
 									}
 
 									break;
@@ -932,25 +954,14 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 								}
 								case CUST_FIX_BUGS: {
 									unsigned short bug_fix_flags = NG_READ_16(gfScriptFile, offset);
-									if (bug_fix_flags & ~(BUGF_TRANSPARENT_WHITE_ON_FOG | BUGF_DART_NO_POISON_LARA | BUGF_LAND_WATER_SFX_ENEMIES)) {
-										NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: CUST_FIX_BUGS unknown flags!");
-									}
 
-									if (bug_fix_flags & BUGF_TRANSPARENT_WHITE_ON_FOG) {
-										NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: BUGF_TRANSPARENT_WHITE_ON_FOG unsupported! (level %u)", current_level);
-									}
-									if (bug_fix_flags & BUGF_DART_NO_POISON_LARA) {
-										get_game_mod_level_misc_info(current_level).darts_poison_fix = true;
+									if (current_level == 0) {
+										for (int i = 0; i < MOD_LEVEL_COUNT; i++) {
+											NGSetupBugfixCustomization(i, bug_fix_flags);
+										}
 									} else {
-										get_game_mod_level_misc_info(current_level).darts_poison_fix = false;
+										NGSetupBugfixCustomization(current_level, bug_fix_flags);
 									}
-
-									if (bug_fix_flags & BUGF_LAND_WATER_SFX_ENEMIES) {
-										get_game_mod_level_misc_info(current_level).enemy_gun_hit_underwater_sfx_fix = true;
-									} else {
-										get_game_mod_level_misc_info(current_level).enemy_gun_hit_underwater_sfx_fix = false;
-									}
-
 									break;
 								}
 								case CUST_SHATTER_SPECIFIC: {
@@ -1363,6 +1374,10 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 						// TriggerGroup (WIP)
 						unsigned short id = NG_READ_16(gfScriptFile, offset);
 
+						if (current_level == 5) {
+							printf("");
+						}
+
 						if (id > MAX_NG_TRIGGER_GROUPS) {
 							NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: TriggerGroup is not implemented! (level %u)", current_level);
 
@@ -1381,6 +1396,28 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 							}
 							unsigned short second_field = NG_READ_16(gfScriptFile, offset);
 							unsigned short third_field = NG_READ_16(gfScriptFile, offset);
+
+							if (current_level == 5) {
+								if (first_field & 0x5000) {
+									unsigned char action_type = (unsigned char)third_field & 0xff;
+									printf("");
+									if (action_type == 26) {
+										printf("");
+									}
+								}
+
+								if (first_field & 0x2000) {
+									if (second_field == 345 || second_field == 373 || second_field == 372 || second_field == 371 || second_field == 118) {
+										printf("");
+									}
+
+									// Organizers
+									if (second_field == 127) {
+										if (third_field == 5 || third_field == 6 || third_field == 7)
+											printf("");
+									}
+								}
+							}
 
 							level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].first_field = first_field;
 							level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].second_field = second_field;

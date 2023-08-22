@@ -127,6 +127,8 @@ void LoadGameModLevelLaraInfo(const json_t* level, MOD_LEVEL_LARA_INFO *lara_inf
 
     READ_JSON_SINT32(crawlspace_jump_animation, level, lara_info);
     READ_JSON_SINT32(crawlspace_jump_pit_deepness_threshold, level, lara_info);
+
+    READ_JSON_BOOL(use_tr5_swimming_collision, level, lara_info);
 }
 
 void LoadGameModLevelCreatureInfo(const json_t* creature, MOD_LEVEL_CREATURE_INFO *creature_info) {

@@ -508,6 +508,22 @@ void NGProcessTriggerGroups() {
 	}
 }
 
+/*
+void NGProcessTriggerGroups() {
+	for (int i = 0; i < MAX_NG_TRIGGER_GROUPS; i++) {
+		if (1) {
+			if (!current_trigger_groups[i].data[0].first_field == 0x0000) {
+				//if (i == 2 || i == 4 || i == 6) {
+				//if (i == 22 || i == 23 || i == 24) {
+				if (NGIsTriggerGroupContinuous(i)) {
+					NGTriggerGroupFunction(i, 0);
+				}
+			}
+		}
+	}
+}
+*/
+
 void NGExecuteOrganizer(int organizer_id) {
 	NG_ORGANIZER* organizer = &ng_levels[gfCurrentLevel].records->organizer_table[organizer_id].organizer;
 	int record_id = ng_levels[gfCurrentLevel].records->organizer_table[organizer_id].record_id;

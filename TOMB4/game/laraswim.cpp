@@ -1,4 +1,5 @@
 #include "../tomb4/pch.h"
+#include "gameflow.h"
 #include "laraswim.h"
 #include "lara_states.h"
 #include "lara.h"
@@ -12,6 +13,7 @@
 #include "effect2.h"
 
 #include "trng/trng.h"
+#include "../tomb4/mod_config.h"
 
 static void lara_as_swimcheat(ITEM_INFO* item, COLL_INFO* coll)
 {
@@ -449,7 +451,7 @@ void LaraTestWaterDepth(ITEM_INFO* item, COLL_INFO* coll)
 	}
 }
 
-void LaraSwimCollision(ITEM_INFO* item, COLL_INFO* coll)
+void LaraSwimCollisionTR4(ITEM_INFO* item, COLL_INFO* coll)
 {
 	long y;
 
@@ -517,6 +519,148 @@ void LaraSwimCollision(ITEM_INFO* item, COLL_INFO* coll)
 
 	if (lara.water_status != LW_FLYCHEAT)
 		LaraTestWaterDepth(item, coll);
+}
+
+void LaraSwimCollisionTR5(ITEM_INFO* item, COLL_INFO* coll)
+{
+	COLL_INFO coll2, coll3;
+	long ox, oy, oz, height;
+	short oxr, oyr, hit;
+
+	hit = 0;
+	ox = item->pos.x_pos;
+	oy = item->pos.y_pos;
+	oz = item->pos.z_pos;
+	oxr = item->pos.x_rot;
+	oyr = item->pos.y_rot;
+
+	if (oxr < -0x4000 || oxr > 0x4000)
+	{
+		lara.move_angle = item->pos.y_rot - 0x8000;
+		coll->facing = item->pos.y_rot - 0x8000;
+	}
+	else
+	{
+		lara.move_angle = item->pos.y_rot;
+		coll->facing = item->pos.y_rot;
+	}
+
+	height = 762 * phd_sin(item->pos.x_rot) >> W2V_SHIFT;
+
+	if (height < 0)
+		height = -height;
+
+	// Divesuit check would go here.
+	if (height < 200)
+		height = 200;
+
+	coll->bad_neg = -64;
+	memcpy(&coll2, coll, sizeof(COLL_INFO));
+	memcpy(&coll3, coll, sizeof(COLL_INFO));
+
+	GetCollisionInfo(coll, item->pos.x_pos, item->pos.y_pos + height / 2, item->pos.z_pos, item->room_number, height);
+
+	coll2.facing += 0x2000;
+	GetCollisionInfo(&coll2, item->pos.x_pos, item->pos.y_pos + height / 2, item->pos.z_pos, item->room_number, height);
+
+	coll3.facing -= 0x2000;
+	GetCollisionInfo(&coll3, item->pos.x_pos, item->pos.y_pos + height / 2, item->pos.z_pos, item->room_number, height);
+
+	ShiftItem(item, coll);
+
+	switch (coll->coll_type)
+	{
+	case CT_FRONT:
+
+		if (item->pos.x_rot > 4550)
+		{
+			item->pos.x_rot += 182;
+			hit = 1;
+		}
+		else if (item->pos.x_rot < -4550)
+		{
+			item->pos.x_rot -= 182;
+			hit = 1;
+		}
+		else if (item->pos.x_rot > 910)
+			item->pos.x_rot += 91;
+		else if (item->pos.x_rot < -910)
+			item->pos.x_rot -= 91;
+		else if (item->pos.x_rot > 0)
+			item->pos.x_rot += 45;
+		else if (item->pos.x_rot < 0)
+			item->pos.x_rot -= 45;
+		else
+		{
+			hit = 1;
+			item->fallspeed = 0;
+		}
+
+		if (coll2.coll_type == CT_LEFT)
+			item->pos.y_rot += 364;
+		else if (coll2.coll_type == CT_RIGHT)
+			item->pos.y_rot -= 364;
+		else if (coll3.coll_type == CT_LEFT)
+			item->pos.y_rot += 364;
+		else if (coll3.coll_type == CT_RIGHT)
+			item->pos.y_rot -= 364;
+
+		break;
+
+	case CT_TOP:
+
+		if (item->pos.x_rot >= -8190)
+		{
+			hit = 1;
+			item->pos.x_rot -= 182;
+		}
+
+		break;
+
+	case CT_TOP_FRONT:
+		item->fallspeed = 0;
+		hit = 1;
+		break;
+
+	case CT_LEFT:
+		item->pos.y_rot += 364;
+		hit = 1;
+		break;
+
+	case CT_RIGHT:
+		item->pos.y_rot -= 364;
+		hit = 1;
+		break;
+
+	case CT_CLAMP:
+		hit = 2;
+		item->pos.x_pos = coll->old.x;
+		item->pos.y_pos = coll->old.y;
+		item->pos.z_pos = coll->old.z;
+		item->fallspeed = 0;
+		break;
+	}
+
+	if (coll->mid_floor < 0 && coll->mid_floor != NO_HEIGHT)
+	{
+		hit = 1;
+		item->pos.x_rot += 182;
+		item->pos.y_pos += coll->mid_floor;
+	}
+
+	// Another divesuit check would go here.
+
+	if (hit != 2 && lara.water_status != LW_FLYCHEAT)
+		LaraTestWaterDepth(item, coll);
+}
+
+void LaraSwimCollision(ITEM_INFO* item, COLL_INFO* coll) {
+	if (get_game_mod_level_lara_info(gfCurrentLevel).use_tr5_swimming_collision) {
+		LaraSwimCollisionTR5(item, coll);
+	}
+	else {
+		LaraSwimCollisionTR4(item, coll);
+	}
 }
 
 void LaraWaterCurrent(COLL_INFO* coll)
