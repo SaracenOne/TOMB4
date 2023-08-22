@@ -181,6 +181,8 @@ bool NGIsOneShotTriggeredForTile() {
 	int index = ng_room_offset_table[ng_current_trigger_state.room] + ng_current_trigger_state.index;
 
 	bool result = ng_oneshot_floorstate[index];
+	if (!result)
+		printf("");
 
 	return result;
 }

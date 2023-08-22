@@ -71,7 +71,11 @@ long flip_status;
 long flipeffect = -1;
 long fliptimer = 0;
 
-short* trigger_index;
+// NGLE
+short *trigger_data;
+int trigger_index_room = -1;
+int trigger_index_floor = -1;
+
 long tiltxoff;
 long tiltyoff;
 long OnObject;
@@ -471,7 +475,7 @@ long ControlPhase(long nframes, long demo_mode)
 			mesh = SmashedMesh[SmashedMeshCount];
 			floor = GetFloor(mesh->x, mesh->y, mesh->z, &SmashedMeshRoom[SmashedMeshCount]);
 			GetHeight(floor, mesh->x, mesh->y, mesh->z);
-			TestTriggers(trigger_index, 1, 0);
+			TestTriggers(trigger_data, 1, 0, trigger_index_room, trigger_index_floor);
 			floor->stopper = 0;
 			SmashedMesh[SmashedMeshCount] = 0;
 		}
@@ -616,8 +620,10 @@ void AddRoomFlipItems(ROOM_INFO* r)
 	}
 }
 
-void TestTriggers(short* data, long heavy, long HeavyFlags)
+void TestTriggers(short* data, long heavy, long HeavyFlags, int room_number, int floor_index)
 {
+	NGUpdateCurrentTriggerRoomAndIndex(room_number, floor_index);
+
 	ITEM_INFO* item;
 	ITEM_INFO* camera_item;
 	long switch_off, flip, flip_available, neweffect, key, quad;
@@ -1516,8 +1522,9 @@ long GetHeight(FLOOR_INFO* floor, long x, long y, long z)
 	if (height == NO_HEIGHT)
 		return height;
 
-	trigger_index = 0;
-	NGUpdateCurrentTriggerRoomAndIndex(room_number, ((z - r->z) >> 10) + ((x - r->x) >> 10) * r->x_size); // NGLE
+	trigger_data = NULL;
+	trigger_index_room = -1;
+	trigger_index_floor = -1;
 
 	if (!floor->index)
 		return height;
@@ -1567,8 +1574,11 @@ long GetHeight(FLOOR_INFO* floor, long x, long y, long z)
 
 		case TRIGGER_TYPE:
 
-			if (!trigger_index)
-				trigger_index = data - 1;
+			if (!trigger_data) {
+				trigger_data = data - 1; // NGLE
+				trigger_index_room = room_number; // NGLE
+				trigger_index_floor = ((z - r->z) >> 10) + ((x - r->x) >> 10) * r->x_size; // NGLE
+			}
 
 			data++;
 
@@ -1594,7 +1604,9 @@ long GetHeight(FLOOR_INFO* floor, long x, long y, long z)
 			break;
 
 		case LAVA_TYPE:
-			trigger_index = data - 1;
+			trigger_data = data - 1; // NGLE
+			trigger_index_room = room_number; // NGLE
+			trigger_index_floor = ((z - r->z) >> 10) + ((x - r->x) >> 10) * r->x_size; // NGLE
 			break;
 
 		case CLIMB_TYPE:
@@ -1602,8 +1614,11 @@ long GetHeight(FLOOR_INFO* floor, long x, long y, long z)
 		case TRIGTRIGGER_TYPE:
 		case MINER_TYPE:
 
-			if (!trigger_index)
-				trigger_index = data - 1;
+			if (!trigger_data) {
+				trigger_data = data - 1; // NGLE
+				trigger_index_room = room_number; // NGLE
+				trigger_index_floor = ((z - r->z) >> 10) + ((x - r->x) >> 10) * r->x_size; // NGLE
+			}
 
 			break;
 
@@ -2748,7 +2763,7 @@ long GetTargetOnLOS(GAME_VECTOR* src, GAME_VECTOR* dest, long DrawTarget, long f
 							{
 								room_number = shotitem->room_number;
 								GetHeight(GetFloor(shotitem->pos.x_pos, shotitem->pos.y_pos - 256, shotitem->pos.z_pos, &room_number), shotitem->pos.x_pos, shotitem->pos.y_pos - 256, shotitem->pos.z_pos);
-								TestTriggers(trigger_index, 1, shotitem->flags & IFL_CODEBITS);
+								TestTriggers(trigger_data, 1, shotitem->flags & IFL_CODEBITS, trigger_index_room, trigger_index_floor);
 							}
 							else
 							{

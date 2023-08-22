@@ -62,7 +62,7 @@ void SphinxControl(short item_number)
 				SoundEffect(SFX_HIT_ROCK, &item->pos, SFX_DEFAULT);
 				mesh->Flags &= ~1;
 				floor->stopper = 0;
-				TestTriggers(trigger_index, 1, 0);
+				TestTriggers(trigger_data, 1, 0, trigger_index_room, trigger_index_floor);
 			}
 		}
 	}
@@ -164,7 +164,7 @@ void SphinxControl(short item_number)
 
 		if (item->frame_number == anims[item->anim_number].frame_base)
 		{
-			TestTriggers(trigger_index, 1, 0);
+			TestTriggers(trigger_data, 1, 0, trigger_index_room, trigger_index_floor);
 
 			if (item->touch_bits & 0x40)
 			{

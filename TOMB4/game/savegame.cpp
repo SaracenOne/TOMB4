@@ -844,7 +844,7 @@ void RestoreLevelData(long FullSave)
 					room_number = i;
 					floor = GetFloor(mesh->x, mesh->y, mesh->z, &room_number);
 					GetHeight(floor, mesh->x, mesh->y, mesh->z);
-					TestTriggers(trigger_index, 1, 0);
+					TestTriggers(trigger_data, 1, 0, trigger_index_room, trigger_index_floor);
 					floor->stopper = 0;
 				}
 

@@ -1696,7 +1696,7 @@ void GetAITarget(CREATURE_INFO* creature)
 		{
 			GetHeight(GetFloor(enemy->pos.x_pos, enemy->pos.y_pos, enemy->pos.z_pos, &enemy->room_number),
 				enemy->pos.x_pos, enemy->pos.y_pos, enemy->pos.z_pos);
-			TestTriggers(trigger_index, 1, 0);
+			TestTriggers(trigger_data, 1, 0, trigger_index_room, trigger_index_floor);
 			creature->patrol2 = ~creature->patrol2;
 		}
 	}
@@ -1708,7 +1708,7 @@ void GetAITarget(CREATURE_INFO* creature)
 		{
 			GetHeight(GetFloor(enemy->pos.x_pos, enemy->pos.y_pos, enemy->pos.z_pos, &enemy->room_number),
 				enemy->pos.x_pos, enemy->pos.y_pos, enemy->pos.z_pos);
-			TestTriggers(trigger_index, 1, 0);
+			TestTriggers(trigger_data, 1, 0, trigger_index_room, trigger_index_floor);
 			creature->reached_goal = 1;
 			creature->enemy = lara_item;
 			item->ai_bits &= ~AMBUSH;

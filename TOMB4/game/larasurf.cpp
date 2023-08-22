@@ -206,7 +206,9 @@ void LaraSurface(ITEM_INFO* item, COLL_INFO* coll)
 	coll->old.y = item->pos.y_pos;
 	coll->old.z = item->pos.z_pos;
 	coll->radius = 100;
-	coll->trigger = 0;
+	coll->trigger_data = 0; // NGLE
+	coll->trigger_index_room = -1; // NGLE
+	coll->trigger_index_floor = -1; // NGLE
 	coll->slopes_are_walls = 0;
 	coll->slopes_are_pits = 0;
 	coll->lava_is_pit = 0;
@@ -239,16 +241,10 @@ void LaraSurface(ITEM_INFO* item, COLL_INFO* coll)
 	if (lara.vehicle == NO_ITEM)
 		lara_collision_routines[item->current_anim_state](item, coll);
 
-	// NGLE
-	NGStoreBackupTriggerRoomAndIndex();
-
 	UpdateLaraRoom(item, 100);
 	LaraGun();
 
-	// NGLE
-	NGRestoreBackupTriggerRoomAndIndex();
-
-	TestTriggers(coll->trigger, 0, 0);
+	TestTriggers(coll->trigger_data, 0, 0, coll->trigger_index_room, coll->trigger_index_floor);
 }
 
 long LaraTestWaterClimbOut(ITEM_INFO* item, COLL_INFO* coll)

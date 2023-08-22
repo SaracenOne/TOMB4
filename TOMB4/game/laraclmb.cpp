@@ -310,10 +310,10 @@ short GetClimbTrigger(long x, long y, long z, short room_number)
 	floor = GetFloor(x, y, z, &room_number);
 	GetHeight(floor, x, y, z);
 
-	if (!trigger_index)
+	if (!trigger_data)
 		return 0;
 
-	data = trigger_index;
+	data = trigger_data;
 
 	if ((*data & 0x1F) == LAVA_TYPE)
 	{
@@ -597,7 +597,9 @@ long LaraCheckForLetGo(ITEM_INFO* item, COLL_INFO* coll)
 	room_number = item->room_number;
 	floor = GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
 	GetHeight(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
-	coll->trigger = trigger_index;
+	coll->trigger_data = trigger_data; // NGLE
+	coll->trigger_index_room = trigger_index_room; // NGLE
+	coll->trigger_index_floor = trigger_index_floor; // NGLE
 
 	if (!(input & IN_ACTION) || item->hit_points <= 0)
 	{

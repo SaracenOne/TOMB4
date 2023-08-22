@@ -535,7 +535,7 @@ void MovableBlock(short item_number)
 			room_number = item->room_number;
 			GetHeight(GetFloor(item->pos.x_pos, item->pos.y_pos - 256, item->pos.z_pos, &room_number),
 				item->pos.x_pos, item->pos.y_pos - 256, item->pos.z_pos);
-			TestTriggers(trigger_index, 1, item->flags & IFL_CODEBITS);
+			TestTriggers(trigger_data, 1, item->flags & IFL_CODEBITS, trigger_index_room, trigger_index_floor);
 			RemoveActiveItem(item_number);
 			item->status = ITEM_INACTIVE;
 

@@ -140,10 +140,10 @@ long GetSwitchTrigger(ITEM_INFO* item, short* ItemNos, long AttatchedToSwitch)
 	floor = GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &item->room_number);
 	GetHeight(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
 
-	if (!trigger_index)
+	if (!trigger_data)
 		return 0;
 
-	data = trigger_index;
+	data = trigger_data;
 
 	while ((*data & 0x1F) != TRIGGER_TYPE && !(*data & 0x8000)) data++;	//get to trigger
 
@@ -173,7 +173,7 @@ long GetSwitchTrigger(ITEM_INFO* item, short* ItemNos, long AttatchedToSwitch)
 void TestTriggersAtXYZ(long x, long y, long z, short room_number, short heavy, short flags)
 {
 	GetHeight(GetFloor(x, y, z, &room_number), x, y, z);
-	TestTriggers(trigger_index, heavy, flags);
+	TestTriggers(trigger_data, heavy, flags, trigger_index_room, trigger_index_floor);
 }
 
 void SwitchControl(short item_number)
@@ -897,7 +897,7 @@ void CogSwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 	item = &items[item_number];
 	GetHeight(GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &item->room_number),
 		item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
-	data = trigger_index;
+	data = trigger_data;
 
 	while ((*data & 0x1F) != TRIGGER_TYPE && !(*data & 0x8000)) data++;
 

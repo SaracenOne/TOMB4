@@ -201,7 +201,7 @@ void BaboonControl(short item_number)
 					item->current_anim_state = 21;
 					room_number = item->room_number;
 					GetHeight(GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number), item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
-					TestTriggers(trigger_index, 1, 0);
+					TestTriggers(trigger_data, 1, 0, trigger_index_room, trigger_index_floor);
 				}
 				else if (info.bite && info.distance < 1048576)
 					item->goal_anim_state = 9;

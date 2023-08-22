@@ -408,7 +408,6 @@ void SkeletonControl(short item_number)
 			GetJointAbsPosition(item, &pos, 16);
 
 			floor = &r->floor[((pos.z - r->z) >> 10) + r->x_size * ((pos.x - r->x) >> 10)];
-			NGUpdateCurrentTriggerRoomAndIndex(item->room_number, ((pos.z - r->z) >> 10) + r->x_size * ((pos.x - r->x) >> 10)); // NGLE
 
 			if (floor->stopper)
 			{
@@ -423,7 +422,7 @@ void SkeletonControl(short item_number)
 						mesh->Flags &= ~1;
 						floor->stopper = 0;
 						GetHeight(floor, pos.x, pos.y, pos.z);
-						TestTriggers(trigger_index, 1, 0);
+						TestTriggers(trigger_data, 1, 0, trigger_index_room, trigger_index_floor);
 					}
 				}
 			}

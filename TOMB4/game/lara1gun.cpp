@@ -607,7 +607,7 @@ void CrossbowHitSwitchType78(ITEM_INFO* item, ITEM_INFO* target, long MustHitLas
 				room_number = target->room_number;
 				GetHeight(GetFloor(target->pos.x_pos, target->pos.y_pos - 256, target->pos.z_pos, &room_number),
 					target->pos.x_pos, target->pos.y_pos - 256, target->pos.z_pos);
-				TestTriggers(trigger_index, 1, target->flags & IFL_CODEBITS);
+				TestTriggers(trigger_data, 1, target->flags & IFL_CODEBITS, trigger_index_room, trigger_index_floor);
 			}
 			else
 			{
@@ -1195,7 +1195,7 @@ void ControlGrenade(short item_number)
 							room_number = item->room_number;
 							GetHeight(GetFloor(target->pos.x_pos, target->pos.y_pos - 256, target->pos.z_pos, &room_number),
 								target->pos.x_pos, target->pos.y_pos - 256, target->pos.z_pos);
-							TestTriggers(trigger_index, 1, target->flags & IFL_CODEBITS);
+							TestTriggers(trigger_data, 1, target->flags & IFL_CODEBITS, trigger_index_room, trigger_index_floor);
 						}
 
 						if (target->object_number == SWITCH_TYPE7)
