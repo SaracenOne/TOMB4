@@ -1259,7 +1259,6 @@ void GetCollisionInfo(COLL_INFO* coll, long x, long y, long z, short room_number
 	coll->mid_ceiling = c;
 	coll->mid_type = height_type;
 	coll->trigger = trigger_index;
-	NGStoreBackupTriggerRoomAndIndex(); // NGLE
 	tilt = GetTiltType(floor, x, lara_item->pos.y_pos, z);
 	coll->tilt_x = (char)tilt;
 	coll->tilt_z = tilt >> 8;

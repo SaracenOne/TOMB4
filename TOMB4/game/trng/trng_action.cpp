@@ -94,8 +94,7 @@ int NGActionTrigger(unsigned short param, unsigned short extra, short timer, boo
 	unsigned char action_type = (unsigned char)extra & 0xff;
 	unsigned char action_data = (unsigned char)(extra >> 8) & 0xff;
 	
-	if(!heavy)
-		NGStoreBackupTriggerRoomAndIndex();
+	NGStoreBackupTriggerRoomAndIndex();
 
 	bool oneshot_triggered = false;
 	if (get_game_mod_global_info().trng_version_major == 1 && get_game_mod_global_info().trng_version_minor < 3) {
@@ -116,8 +115,7 @@ int NGActionTrigger(unsigned short param, unsigned short extra, short timer, boo
 		}
 	}
 
-	if (!heavy)
-		NGRestoreBackupTriggerRoomAndIndex();
+	NGRestoreBackupTriggerRoomAndIndex();
 
 	return result;
 }

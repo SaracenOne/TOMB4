@@ -464,6 +464,9 @@ void LaraAboveWater(ITEM_INFO* item, COLL_INFO* coll)
 	if (lara.vehicle == NO_ITEM)
 		lara_collision_routines[item->current_anim_state](item, coll);
 
+	// NGLE
+	NGStoreBackupTriggerRoomAndIndex();
+
 	UpdateLaraRoom(item, -381);
 	LaraGun();
 
@@ -2796,7 +2799,6 @@ void lara_as_deathslide(ITEM_INFO* item, COLL_INFO* coll)
 	camera.target_angle = 12740;
 	GetHeight(GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number), item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
 	coll->trigger = trigger_index;
-	NGStoreBackupTriggerRoomAndIndex(); // NGLE
 
 	if (!(input & IN_ACTION))
 	{

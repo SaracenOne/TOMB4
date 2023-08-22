@@ -65,10 +65,17 @@ int timer_tracker_remaining_until_timeout = 0;
 int ng_cinema_timer = -1;
 int ng_cinema_type = 0;
 
-int current_ng_trigger_index = -1;
-int current_ng_trigger_room = -1;
-int backup_ng_trigger_index = -1;
-int backup_ng_trigger_room = -1;
+struct TriggerState {
+	int index = -1;
+	int room = -1;
+};
+
+#define BACKUP_TRIGGER_STATE_COUNT 2
+TriggerState ng_backup_trigger_state[BACKUP_TRIGGER_STATE_COUNT];
+int ng_backup_trigger_state_count = 0;
+
+TriggerState ng_current_trigger_state;
+
 int pending_ng_room = -1;
 
 int ng_floorstate_data_size = 0;
@@ -138,28 +145,40 @@ int NGRestorePendingRoomNumber() {
 }
 
 void NGUpdateCurrentTriggerRoomAndIndex(int new_room, int new_index) {
-	current_ng_trigger_index = new_index;
-	current_ng_trigger_room = new_room;
+	ng_current_trigger_state.index = new_index;
+	ng_current_trigger_state.room = new_room;
 }
 
 void NGClearCurrentTriggerRoomAndIndex() {
-	current_ng_trigger_index = -1;
-	current_ng_trigger_room = -1;
+	ng_current_trigger_state.index = -1;
+	ng_current_trigger_state.room = -1;
 }
 
 // These may be needed since Lara's trigger index derived from earlier may get overwritten by something.
 void NGStoreBackupTriggerRoomAndIndex() {
-	backup_ng_trigger_index = current_ng_trigger_index;
-	backup_ng_trigger_room = current_ng_trigger_room;
+	ng_backup_trigger_state[ng_backup_trigger_state_count].index = ng_current_trigger_state.index;
+	ng_backup_trigger_state[ng_backup_trigger_state_count].room = ng_current_trigger_state.room;
+
+	ng_backup_trigger_state_count++;
+	if (ng_backup_trigger_state_count >= BACKUP_TRIGGER_STATE_COUNT) {
+		NGLog(NG_LOG_TYPE_ERROR, "NGStoreBackupTriggerRoomAndIndex: Overflow!");
+		exit(-1);
+	}
 }
 
 void NGRestoreBackupTriggerRoomAndIndex() {
-	current_ng_trigger_index = backup_ng_trigger_index;
-	current_ng_trigger_room = backup_ng_trigger_room;
+	ng_current_trigger_state.index = ng_backup_trigger_state[ng_backup_trigger_state_count - 1].index;
+	ng_current_trigger_state.room = ng_backup_trigger_state[ng_backup_trigger_state_count - 1].room;
+
+	ng_backup_trigger_state_count--;
+	if (ng_backup_trigger_state_count < 0) {
+		NGLog(NG_LOG_TYPE_ERROR, "NGRestoreBackupTriggerRoomAndIndex: Underflow!");
+		exit(-1);
+	}
 }
 
 bool NGIsOneShotTriggeredForTile() {
-	int index = ng_room_offset_table[current_ng_trigger_room] + current_ng_trigger_index;
+	int index = ng_room_offset_table[ng_current_trigger_state.room] + ng_current_trigger_state.index;
 
 	bool result = ng_oneshot_floorstate[index];
 
@@ -168,21 +187,21 @@ bool NGIsOneShotTriggeredForTile() {
 
 // This method is not accurate since it seems like rollingballs can interrupted the check.
 bool NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(bool heavy) {
-	int index = ng_room_offset_table[current_ng_trigger_room] + current_ng_trigger_index;
+	int index = ng_room_offset_table[ng_current_trigger_state.room] + ng_current_trigger_state.index;
 
 	if (!heavy) {
 		if (ng_current_flipeffect_floor_trigger == index || ng_last_flipeffect_floor_trigger == index)
 			return true;
 	} else {
-		//if (ng_heavy_current_flipeffect_floor_trigger == index || ng_heavy_last_flipeffect_floor_trigger == index)
-		//	return true;
+		if (ng_heavy_current_flipeffect_floor_trigger == index || ng_heavy_last_flipeffect_floor_trigger == index)
+			return true;
 	}
 
 	return false;
 }
 
 extern bool NGCheckActionFloorStatePressedThisFrameOrLastFrame(bool heavy) {
-	int index = ng_room_offset_table[current_ng_trigger_room] + current_ng_trigger_index;
+	int index = ng_room_offset_table[ng_current_trigger_state.room] + ng_current_trigger_state.index;
 
 	if (!heavy) {
 		if (ng_current_action_floor_trigger == index || ng_last_action_floor_trigger == index)
@@ -778,7 +797,7 @@ void NGSetDisplayTimerForMoveableWithType(int item_id, NGTimerTrackerType new_ti
 }
 
 void NGUpdateFlipeffectFloorstateData(bool heavy) {
-	int index = ng_room_offset_table[current_ng_trigger_room] + current_ng_trigger_index;
+	int index = ng_room_offset_table[ng_current_trigger_state.room] + ng_current_trigger_state.index;
 
 	if (heavy) {
 		ng_heavy_current_flipeffect_floor_trigger = index;
@@ -790,7 +809,7 @@ void NGUpdateFlipeffectFloorstateData(bool heavy) {
 }
 
 void NGUpdateActionFloorstateData(bool heavy) {
-	int index = ng_room_offset_table[current_ng_trigger_room] + current_ng_trigger_index;
+	int index = ng_room_offset_table[ng_current_trigger_state.room] + ng_current_trigger_state.index;
 
 	if (heavy) {
 		ng_heavy_current_action_floor_trigger = index;
@@ -802,7 +821,7 @@ void NGUpdateActionFloorstateData(bool heavy) {
 }
 
 extern void NGUpdateOneshot() {
-	int index = ng_room_offset_table[current_ng_trigger_room] + current_ng_trigger_index;
+	int index = ng_room_offset_table[ng_current_trigger_state.room] + ng_current_trigger_state.index;
 	ng_oneshot_floorstate[index] = true;
 }
 

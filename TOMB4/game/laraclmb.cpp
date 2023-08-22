@@ -598,7 +598,6 @@ long LaraCheckForLetGo(ITEM_INFO* item, COLL_INFO* coll)
 	floor = GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
 	GetHeight(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
 	coll->trigger = trigger_index;
-	NGStoreBackupTriggerRoomAndIndex(); // NGLE
 
 	if (!(input & IN_ACTION) || item->hit_points <= 0)
 	{

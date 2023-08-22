@@ -853,13 +853,11 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 }
 
 bool NGFlipEffectTrigger(unsigned short param, short extra, bool heavy) {
-	if (!heavy)
-		NGStoreBackupTriggerRoomAndIndex();
+	NGStoreBackupTriggerRoomAndIndex();
 	
 	bool result = NGFlipEffect(param, extra, heavy, false);
 	
-	if (!heavy)
-		NGRestoreBackupTriggerRoomAndIndex();
+	NGRestoreBackupTriggerRoomAndIndex();
 
 	return result;
 }
