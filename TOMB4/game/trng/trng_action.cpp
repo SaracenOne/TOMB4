@@ -105,7 +105,7 @@ int NGActionTrigger(unsigned short param, unsigned short extra, short timer, boo
 	int result = NGAction(param, extra, !oneshot_triggered && (heavy || !NGCheckActionFloorStatePressedThisFrameOrLastFrame(heavy)));
 
 	// Replicates a weird bug in the original
-	if (action_type == TRIGGER_MOVEABLE_ACTIVATE_WITH_TIMER || action_type == UNTRIGGER_MOVEABLE_ACTIVATE_WITH_TIMER || action_type == OPEN_OR_CLOSE_DOOR_ITEM) {
+	if (action_type == TRIGGER_MOVEABLE_ACTIVATE_WITH_TIMER || action_type == UNTRIGGER_MOVEABLE_ACTIVATE_WITH_TIMER) {
 		if (!NGCheckActionFloorStatePressedThisFrameOrLastFrame(heavy)) {
 			ITEM_INFO* item;
 
