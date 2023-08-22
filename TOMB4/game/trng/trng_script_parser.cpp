@@ -227,6 +227,8 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 		unsigned int options_header_block_end_pos = options_header_block_start_position + (options_header_block_size * sizeof(short));
 		unsigned short options_block_unknown_variable = NG_READ_16(gfScriptFile, offset);
 
+		unsigned short world_far_view = 20;
+
 		while (1) {
 			unsigned int data_block_start_start_position = offset;
 			unsigned char current_data_block_size_wide = NG_READ_8(gfScriptFile, offset);
@@ -241,9 +243,18 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 			}
 
 			switch (block_type) {
+				// SHOW_LARA_IN_TITLE
 				case 0xc8: {
-					unsigned char flags = NG_READ_16(gfScriptFile, offset);
+					unsigned short flags = NG_READ_16(gfScriptFile, offset);
 					get_game_mod_global_info().show_lara_in_title = flags & 0x40;
+					break;
+				}
+				// WorldFarView
+				case 0x05: {
+					world_far_view = NG_READ_16(gfScriptFile, offset);
+					for (int i = 0; i < MOD_LEVEL_COUNT; i++) {
+						get_game_mod_level_misc_info(i).far_view = (unsigned int)world_far_view * 1024;
+					}
 					break;
 				}
 				default: {
@@ -350,13 +361,8 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 						// LevelFarView
 						unsigned short far_view = NG_READ_16(gfScriptFile, offset);
 
-						if (current_level == 0) {
-							for (int i = 0; i < MOD_LEVEL_COUNT; i++) {
-								get_game_mod_level_misc_info(i).far_view = (unsigned int)far_view * 1024;
-							}
-						} else {
+						if (far_view < world_far_view)
 							get_game_mod_level_misc_info(current_level).far_view = (unsigned int)far_view * 1024;
-						}
 
 						break;
 					}
@@ -365,15 +371,8 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 						unsigned short fog_start = NG_READ_16(gfScriptFile, offset);
 						unsigned short fog_end = NG_READ_16(gfScriptFile, offset);
 
-						if (current_level == 0) {
-							for (int i = 0; i < MOD_LEVEL_COUNT; i++) {
-								get_game_mod_level_misc_info(i).fog_start_range = (unsigned int)fog_start * 1024;
-								get_game_mod_level_misc_info(i).fog_end_range = (unsigned int)fog_end * 1024;
-							}
-						} else {
-							get_game_mod_level_misc_info(current_level).fog_start_range = (unsigned int)fog_start * 1024;
-							get_game_mod_level_misc_info(current_level).fog_end_range = (unsigned int)fog_end * 1024;
-						}
+						get_game_mod_level_misc_info(current_level).fog_start_range = (unsigned int)fog_start * 1024;
+						get_game_mod_level_misc_info(current_level).fog_end_range = (unsigned int)fog_end * 1024;
 
 						break;
 					}
