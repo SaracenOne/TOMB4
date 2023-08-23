@@ -61,6 +61,8 @@ extern void NGUpdateOneshot();
 
 extern int NGFindIndexForLaraStartPosWithMatchingOCB(unsigned int ocb);
 
+extern bool NGLaraHasInfiniteAir();
+
 extern void NGInit();
 extern void NGCleanup();
 

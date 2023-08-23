@@ -23,6 +23,8 @@
 #include "../tomb4/tomb4.h"
 #include "../specific/dxsound.h"
 
+#include "trng/trng.h"
+
 COLL_INFO mycoll;
 
 static COLL_INFO* lara_coll = &mycoll;
@@ -605,12 +607,15 @@ void LaraControl(short item_number)
 
 		if (l->hit_points >= 0)
 		{
-			lara.air--;
+			// NGLE
+			if (!NGLaraHasInfiniteAir()) {
+				lara.air--;
 
-			if (lara.air < 0)
-			{
-				lara.air = -1;
-				l->hit_points -= 5;
+				if (lara.air < 0)
+				{
+					lara.air = -1;
+					l->hit_points -= 5;
+				}
 			}
 		}
 

@@ -281,6 +281,13 @@ bool disarm_lara(unsigned char remove_weapons_only, unsigned char _unusued) {
 	return true;
 }
 
+// NGLE - 104
+bool lara_toggle_infinite_air(unsigned char enabled, unsigned char _unused) {
+	ng_lara_infinite_air = enabled;
+
+	return true;
+}
+
 // NGLE - 115
 bool set_room_type(unsigned char room_number, unsigned char room_type) {
 	ROOM_INFO* r = &room[room_number];
@@ -597,6 +604,11 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 		case DISARM_LARA: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return disarm_lara(action_data_1, action_data_2);
+			break;
+		}
+		case LARA_TOGGLE_INFINITE_AIR: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+				return lara_toggle_infinite_air(action_data_1, action_data_2);
 			break;
 		}
 		case SET_ROOM_TYPE: {

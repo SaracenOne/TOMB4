@@ -83,6 +83,8 @@ int ng_heavy_current_action_floor_trigger = -1;
 
 int lara_damage_resistence = 1000;
 
+bool ng_lara_infinite_air = false;
+
 // Variables
 int current_value = 0;
 int global_alfa = 0;
@@ -753,6 +755,8 @@ extern void NGUpdateOneshot() {
 }
 
 void NGSetupExtraState() {
+	ng_lara_infinite_air = false;
+
 	// Variables
 	current_value = 0;
 	global_alfa = 0;

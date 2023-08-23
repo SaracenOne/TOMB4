@@ -213,6 +213,10 @@ int NGFindIndexForLaraStartPosWithMatchingOCB(unsigned int ocb) {
 	return -1;
 }
 
+bool NGLaraHasInfiniteAir() {
+	return ng_lara_infinite_air;
+}
+
 void NGInit() {
 	NGInitLevelArray();
 }

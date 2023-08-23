@@ -39,6 +39,8 @@ extern int ng_found_item_index;;
 
 extern int ng_looped_sound_state[NumSamples];
 
+extern bool ng_lara_infinite_air;
+
 extern int current_value;
 extern int global_alfa;
 extern int global_beta;
