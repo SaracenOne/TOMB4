@@ -225,6 +225,8 @@ void GenericDeadlyBoundingBoxCollision(short item_number, ITEM_INFO* l, COLL_INF
 
 	if (item->status != ITEM_INVISIBLE && item->item_flags[3] && TestBoundsCollide(item, l, coll->radius))
 	{
+		NGAddLaraCollision(item_number); // NGLE
+
 		dx = lara_item->pos.x_pos;
 		dy = lara_item->pos.y_pos;
 		dz = lara_item->pos.z_pos;
@@ -260,6 +262,8 @@ void GenericSphereBoxCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 
 	if (item->status != ITEM_INVISIBLE && TestBoundsCollide(item, l, coll->radius))
 	{
+		NGAddLaraCollision(item_number); // NGLE
+
 		TouchBits = TestCollision(item, l);
 
 		if (TouchBits)
@@ -329,6 +333,8 @@ void CreatureCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 
 	if (TestBoundsCollide(item, l, coll->radius) && TestCollision(item, l))
 	{
+		NGAddLaraCollision(item_number); // NGLE
+
 		if (lara.water_status != LW_UNDERWATER && lara.water_status != LW_SURFACE)
 		{
 			if (coll->enable_baddie_push)
@@ -669,7 +675,11 @@ void ObjectCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 	}
 
 	if (TestBoundsCollide(item, l, coll->radius) && TestCollision(item, l) && coll->enable_baddie_push)
+	{
+		NGAddLaraCollision(item_number); // NGLE
+
 		ItemPushLara(item, l, coll, 0, 1);
+	}
 }
 
 void ObjectCollisionNoBigPush(short item_number, ITEM_INFO* l, COLL_INFO* coll)
@@ -684,7 +694,11 @@ void ObjectCollisionNoBigPush(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 	item = &items[item_number];
 
 	if (TestBoundsCollide(item, l, coll->radius) && TestCollision(item, l) && coll->enable_baddie_push)
+	{
+		NGAddLaraCollision(item_number); // NGLE
+
 		ItemPushLara(item, l, coll, 0, 0);
+	}
 }
 
 void TrapCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)

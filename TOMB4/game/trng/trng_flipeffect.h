@@ -1,3 +1,5 @@
+#pragma once
+
 enum NG_FLIPEFFECTS {
 	DISABLE_INPUT_FOR_TIME = 51,
 	ENABLE_INPUT = 52,
@@ -46,6 +48,5 @@ enum NG_FLIPEFFECTS {
 	SET_LARA_HOLSTER_TYPE = 407
 };
 
-extern bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char execution_type);
 extern bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_checks);
 extern bool NGFlipEffectTrigger(unsigned short param, short extra, bool heavy);

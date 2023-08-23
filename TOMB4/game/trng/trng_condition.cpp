@@ -220,8 +220,23 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 		break;
 	}
 	case LARA_IS_TOUCHING_MOVEABLE: {
-		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: LARA_IS_TOUCHING_MOVEABLE unimplemented!");
-		return false;
+		int result = NGIsLaraCollidingWithItem(param);
+		if (result >= 0) {
+			ng_found_item_index = result;
+			return true;
+		}
+		break;
+	}
+	case LARA_IS_TOUCHING_SLOT: {
+		int result = NGIsLaraCollidingWithSlot(param);
+		if (result >= 0) {
+			ng_found_item_index = result;
+			return true;
+		}
+		break;
+	}
+	case LARA_IS_TOUCHING_CREATURE_TYPE: {
+		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: LARA_IS_TOUCHING_CREATURE_TYPE unimplemented!");
 		break;
 	}
 	case LARA_IS_VITALITY_IS_X_THAN: {

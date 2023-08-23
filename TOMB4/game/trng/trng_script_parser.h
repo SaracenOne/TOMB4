@@ -1,3 +1,7 @@
+#pragma once
+
+#include "trng_extra_state.h"
+
 #define MAX_NG_LEVELS 64
 
 enum CUST_ENUMS {
@@ -62,6 +66,20 @@ enum BUGF_ENUMS {
 	BUGF_LAND_WATER_SFX_ENEMIES = 0x04
 };
 
+enum TGROUP_FLAGS {
+	TGROUP_USE_FOUND_ITEM_INDEX = 0x01,
+	TGROUP_USE_TRIGGER_ITEM_INDEX = 0x02,
+	TGROUP_COMMAND = 0x03,
+	TGROUP_USE_OWNER_ANIM_ITEM_INDEX = 0x04,
+	TGROUP_SINGLE_SHOT_RESUMED = 0x08, // Might also be TGROUP_AND in early versions
+	TGROUP_OR = 0x10,
+	TGROUP_NOT = 0x20,
+	TGROUP_ELSE = 0x40,
+	TGROUP_USE_EXECUTOR_ITEM_INDEX = 0x100,
+	TGROUP_SINGLE_SHOT = 0x400,
+	TGROUP_USE_ITEM_USED_BY_LARA_INDEX = 0x800,
+};
+
 struct NG_GLOBAL_TRIGGER {
 	unsigned short flags = 0x0;
 	unsigned short type = 0x00;
@@ -120,11 +138,6 @@ struct NG_ITEM_GROUP_RECORD {
 	unsigned short record_id = 0;
 	NG_ITEM_GROUP item_group;
 };
-
-#define MAX_NG_GLOBAL_TRIGGERS 9999
-#define MAX_NG_TRIGGER_GROUPS 9999
-#define MAX_NG_ORGANIZERS 4999
-#define MAX_NG_ITEM_GROUPS 999
 
 struct NG_LEVEL_RECORD_DATA {
 	int global_trigger_count = 0;

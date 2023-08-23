@@ -9,12 +9,17 @@
 #include "../objects.h"
 #include "../lara.h"
 #include "../tomb4fx.h"
+#include "../sound.h"
 #include "../text.h"
+
 #include "trng.h"
 #include "trng_extra_state.h"
+#include "trng_condition.h"
 #include "trng_flipeffect.h"
 #include "trng_script_parser.h"
-#include "../sound.h"
+#include "trng_organizer.h"
+#include "trng_triggergroup.h"
+#include "trng_globaltrigger.h"
 
 unsigned int ng_room_offset_table[0xff];
 
@@ -34,25 +39,8 @@ struct NG_ITEM_EXTRADATA {
 
 NG_ITEM_EXTRADATA *ng_items_extradata = NULL;
 
-struct NG_GLOBAL_TRIGGER_STATE {
-	bool is_disabled = false;
-	bool is_halted = false;
-};
-
 NG_GLOBAL_TRIGGER_STATE ng_global_trigger_states[MAX_NG_GLOBAL_TRIGGERS];
-
-struct NG_TRIGGER_GROUP_STATE {
-	bool continuous = false;
-	bool one_shot = false;
-};
-
 NG_TRIGGER_GROUP_STATE ng_trigger_group_states[MAX_NG_TRIGGER_GROUPS];
-
-struct NG_ORGANIZER_STATE {
-	bool is_enabled = false;
-	int current_tick = 0;
-};
-
 NG_ORGANIZER_STATE ng_organizer_states[MAX_NG_ORGANIZERS];
 
 // TODO: In the original, there's some behaviour which allows multiple timers to run
@@ -181,8 +169,6 @@ bool NGIsOneShotTriggeredForTile() {
 	int index = ng_room_offset_table[ng_current_trigger_state.room] + ng_current_trigger_state.index;
 
 	bool result = ng_oneshot_floorstate[index];
-	if (!result)
-		printf("");
 
 	return result;
 }
@@ -433,83 +419,59 @@ void NGUpdateAllItems() {
 	}
 }
 
-void NGExecuteSingleGlobalTrigger(int global_trigger_id) {
-	NG_GLOBAL_TRIGGER* global_trigger = &ng_levels[gfCurrentLevel].records->global_triggers_table[global_trigger_id].global_trigger;
-	int record_id = ng_levels[gfCurrentLevel].records->global_triggers_table[global_trigger_id].record_id;
+#define MAX_LARA_COLLISONS 16
 
-	bool global_trigger_condition_passed = false;
-	
-	unsigned short condition_trigger_group_id = global_trigger->condition_trigger_group;
+int ng_found_item_index = -1;
 
-	// What the difference between GT_CONDITION_GROUP and GT_ALWAYS?
-	switch (global_trigger->type) {
-		case 0x0003: { // GT_ENEMY_KILLED
-			int enemy_id = ng_script_id_table[global_trigger->parameter];
-			if (items[enemy_id].after_death > 0)
-				global_trigger_condition_passed = true;
-			break;
-		}
-		case 0x0004: { // GT_LARA_HP_LESS_THAN
-			if (lara_item->hit_points < global_trigger->parameter)
-				global_trigger_condition_passed = true;
-			break;
-		}
-		case 0x0005: { // GT_LARA_HP_HIGHER_THAN
-			if (lara_item->hit_points > global_trigger->parameter)
-				global_trigger_condition_passed = true;
-			break;
-		}
-		case 0x000a: { // GT_LARA_IS_POISONED
-			if (lara_item->poisoned > global_trigger->parameter)
-				global_trigger_condition_passed = true;
-			break;
-		}
-		case 0x000b: // GT_CONDITION_GROUP
-			global_trigger_condition_passed = true;
-			break;
-		case 0x0020: // GT_ALWAYS
-			global_trigger_condition_passed = true;
-			break;
-		default:
-			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Unimplemented GlobalTrigger type %u!", global_trigger->type);
-			return;
-	}
+int ng_lara_collisons[MAX_LARA_COLLISONS];
+int ng_lara_collision_size = 0;
 
-	// FGT_NOT_TRUE
-	if (global_trigger->flags & 0x0002)
-		global_trigger_condition_passed = !global_trigger_condition_passed;
-
-	if (ng_global_trigger_states[record_id].is_disabled) {
+void NGAddLaraCollision(int item_number) {
+	if (ng_lara_collision_size >= MAX_LARA_COLLISONS-1)
 		return;
-	}
-
-	if (global_trigger_condition_passed) {
-		if (!ng_global_trigger_states[record_id].is_halted && (condition_trigger_group_id == 0xffff || NGTriggerGroupFunction(condition_trigger_group_id, 0))) {
-			unsigned int perform_trigger_group_id = global_trigger->perform_trigger_group;
-
-			if (perform_trigger_group_id != 0xffff) {
-				NGTriggerGroupFunction(perform_trigger_group_id, 0);
-			}
-
-			// FGT_SINGLE_SHOT / FGT_SINGLE_SHOT_RESUMED
-			if (global_trigger->flags & 0x0001 || global_trigger->flags & 0x0020)
-				ng_global_trigger_states[record_id].is_halted = true;
-		} else {
-			// FGT_SINGLE_SHOT_RESUMED
-			if (global_trigger->flags & 0x0020)
-				ng_global_trigger_states[record_id].is_halted = false;
-
-			unsigned int on_false_trigger_group_id = global_trigger->on_false_trigger_group;
-			if (on_false_trigger_group_id != 0xffff) {
-				NGTriggerGroupFunction(on_false_trigger_group_id, 0);
-			}
-		}
-	} else {
-		unsigned int on_false_trigger_group_id = global_trigger->on_false_trigger_group;
-		if (on_false_trigger_group_id != 0xffff) {
-			NGTriggerGroupFunction(on_false_trigger_group_id, 0);
+	
+	for (int i = 0; i < ng_lara_collision_size; i++) {
+		if (ng_lara_collisons[i] == item_number) {
+			return;
 		}
 	}
+
+	ng_lara_collisons[ng_lara_collision_size] = item_number;
+	ng_lara_collision_size++;
+}
+
+void NGClearLaraCollisions() {
+	ng_lara_collision_size = 0;
+}
+
+int NGIsLaraCollidingWithItem(int item_number) {
+	for (int i = 0; i < ng_lara_collision_size; i++) {
+		if (ng_lara_collisons[i] == item_number) {
+			return ng_lara_collisons[i];
+		}
+	}
+
+	return -1;
+}
+
+int NGIsLaraCollidingWithSlot(int slot_number) {
+	for (int i = 0; i < ng_lara_collision_size; i++) {
+		if (items[ng_lara_collisons[i]].object_number == slot_number) {
+			return ng_lara_collisons[i];
+		}
+	}
+
+	return -1;
+}
+
+int NGIsLaraCollidingWithCreature() {
+	for (int i = 0; i < ng_lara_collision_size; i++) {
+		if (objects[items[ng_lara_collisons[i]].object_number].intelligent) {
+			return ng_lara_collisons[i];
+		}
+	}
+
+	return -1;
 }
 
 void NGProcessGlobalTriggers() {
@@ -529,45 +491,6 @@ void NGProcessTriggerGroups() {
 	}
 }
 
-/*
-void NGProcessTriggerGroups() {
-	for (int i = 0; i < MAX_NG_TRIGGER_GROUPS; i++) {
-		if (1) {
-			if (!current_trigger_groups[i].data[0].first_field == 0x0000) {
-				//if (i == 2 || i == 4 || i == 6) {
-				//if (i == 22 || i == 23 || i == 24) {
-				if (NGIsTriggerGroupContinuous(i)) {
-					NGTriggerGroupFunction(i, 0);
-				}
-			}
-		}
-	}
-}
-*/
-
-void NGExecuteOrganizer(int organizer_id) {
-	NG_ORGANIZER* organizer = &ng_levels[gfCurrentLevel].records->organizer_table[organizer_id].organizer;
-	int record_id = ng_levels[gfCurrentLevel].records->organizer_table[organizer_id].record_id;
-
-	bool global_trigger_condition_passed = false;
-
-	for (unsigned int i = 0; i < organizer->appointment_count; i++) {
-		if (ng_organizer_states[record_id].current_tick == organizer->appointments[i].time) {
-			NGTriggerGroupFunction(organizer->appointments[i].trigger_group, 0);
-			if (i == organizer->appointment_count-1) {
-				// FO_LOOP
-				if (organizer->flags & 0x02) {
-					ng_organizer_states[record_id].current_tick = -1;
-				} else {
-					ng_organizer_states[record_id].is_enabled = false;
-				}
-			}
-		}
-	}
-
-	ng_organizer_states[record_id].current_tick += 1;
-}
-
 void NGProcessOrganizers() {
 	if (ng_levels[gfCurrentLevel].records) {
 		int organizer_count = ng_levels[gfCurrentLevel].records->organizer_count;
@@ -585,6 +508,8 @@ void NGFrameStartUpdate() {
 	NGProcessGlobalTriggers();
 	NGProcessTriggerGroups();
 	NGProcessOrganizers();
+
+	NGClearLaraCollisions();
 
 	if (ng_cinema_timer > 0 || ng_cinema_type > 0) {
 		switch (ng_cinema_type) {
@@ -904,9 +829,6 @@ void NGSetupExtraState() {
 		}
 	}
 
-	// Looped samples
-	memset(ng_looped_sound_state, 0x00, NumSamples * sizeof(int));
-
 	// Cinema
 	ng_cinema_timer = -1;
 	ng_cinema_type = 0;
@@ -932,8 +854,19 @@ void NGSetupExtraState() {
 	// Input lock
 	memset(ng_input_lock_timers, 0x00, sizeof(ng_input_lock_timers));
 
+	// Looped samples
+	memset(ng_looped_sound_state, 0x00, NumSamples * sizeof(int));
+
+	ng_found_item_index = -1;
+	ng_lara_collision_size = 0;
+
 	// Damage
 	lara_damage_resistence = 1000;
+
+	// Triggerstate
+	ng_current_trigger_state.room = -1;
+	ng_current_trigger_state.index = -1;
+	ng_backup_trigger_state_count = 0;
 }
 
 void NGFrameFinishExtraState() {
