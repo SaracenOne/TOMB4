@@ -24,6 +24,7 @@
 #include "../specific/dxsound.h"
 
 #include "trng/trng.h"
+#include "../tomb4/mod_config.h"
 
 COLL_INFO mycoll;
 
@@ -511,7 +512,8 @@ void LaraControl(short item_number)
 					lara.head_x_rot = 0;
 					lara.head_y_rot = 0;
 					UpdateLaraRoom(l, -381);
-					SoundEffect(SFX_LARA_BREATH, &l->pos, SFX_ALWAYS);
+					if (!get_game_mod_level_lara_info(gfCurrentLevel).disable_hardcoded_breath_sound)
+						SoundEffect(SFX_LARA_BREATH, &l->pos, SFX_ALWAYS);
 				}
 				else
 				{

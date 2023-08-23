@@ -94,6 +94,7 @@ struct MOD_LEVEL_LARA_INFO {
 	int crawlspace_jump_pit_deepness_threshold = 768;
 
 	bool use_tr5_swimming_collision = false;
+	bool disable_hardcoded_breath_sound = false;
 };
 
 #define MAX_PLUGIN_COUNT 64
