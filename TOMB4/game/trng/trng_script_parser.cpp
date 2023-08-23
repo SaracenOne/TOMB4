@@ -227,7 +227,7 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 		unsigned int options_header_block_end_pos = options_header_block_start_position + (options_header_block_size * sizeof(short));
 		unsigned short options_block_unknown_variable = NG_READ_16(gfScriptFile, offset);
 
-		unsigned short world_far_view = 20;
+		unsigned short world_far_view = 127;
 
 		while (1) {
 			unsigned int data_block_start_start_position = offset;
@@ -361,9 +361,10 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 						// LevelFarView
 						unsigned short far_view = NG_READ_16(gfScriptFile, offset);
 
-						if (far_view < world_far_view)
-							get_game_mod_level_misc_info(current_level).far_view = (unsigned int)far_view * 1024;
+						if (far_view > world_far_view)
+							far_view = world_far_view;
 
+						get_game_mod_level_misc_info(current_level).far_view = (unsigned int)far_view * 1024;
 						break;
 					}
 					case 0x04: {
