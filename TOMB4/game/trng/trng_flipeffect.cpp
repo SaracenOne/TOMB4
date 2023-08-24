@@ -3,7 +3,9 @@
 #include "../../specific/function_stubs.h"
 #include "../../specific/audio.h"
 #include "../control.h"
+#include "../debris.h"
 #include "../effects.h"
+#include "../effect2.h"
 #include "../objects.h"
 #include "../lara.h"
 #include "../traps.h"
@@ -426,11 +428,105 @@ bool untrigger_item_group_with_timer(unsigned char item_group, unsigned char tim
 	return NGTriggerItemGroupWithTimer(item_group, timer, true);
 }
 
+// NGLE - 160
+bool static_shatter(unsigned char static_id_lower, unsigned char static_id_upper) {
+	unsigned short static_id = ((short)static_id_upper << 8) | (short)static_id_lower;
+
+	NGStaticTableEntry* entry = &ng_static_id_table[static_id];
+	int room_number = entry->room_index;
+	if (room_number >= 0 && room_number < number_rooms) {
+		MESH_INFO* mesh = &room[room_number].mesh[entry->mesh_id];
+
+		PHD_3DPOS pos;
+		pos.x_pos = mesh->x;
+		pos.y_pos = mesh->y;
+		pos.z_pos = mesh->z;
+
+		if (mesh->Flags & 1) {
+			ShatterObject(0, mesh, 128, room_number, 0);
+			SmashedMeshRoom[SmashedMeshCount] = room_number;
+			SmashedMesh[SmashedMeshCount] = mesh;
+			SmashedMeshCount++;
+			mesh->Flags &= ~1;
+			SoundEffect(SFX_HIT_ROCK, &pos, SFX_DEFAULT);
+		}
+	}
+
+	return true;
+}
+
 // NGLE - 168
 bool play_sound(unsigned char lower_sample_id, unsigned char upper_sample_id) {
 	int indexed_sound_sample = (int)lower_sample_id | ((int)(upper_sample_id) << 8 & 0xff00);
 	
 	SoundEffect(indexed_sound_sample, NULL, SFX_ALWAYS);
+	return true;
+}
+
+// NGLE - 180
+bool static_explode(unsigned char static_id_lower, unsigned char static_id_upper) {
+	unsigned short static_id = ((short)static_id_upper << 8) | (short)static_id_lower;
+
+	NGStaticTableEntry* entry = &ng_static_id_table[static_id];
+	int room_number = entry->room_index;
+	if (room_number >= 0 && room_number < number_rooms) {
+		MESH_INFO* mesh = &room[room_number].mesh[entry->mesh_id];
+
+		PHD_3DPOS pos;
+		pos.x_pos = mesh->x;
+		pos.y_pos = mesh->y;
+		pos.z_pos = mesh->z;
+
+		if (mesh->Flags & 1) {
+			ShatterObject(0, mesh, 128, room_number, 0);
+			SmashedMeshRoom[SmashedMeshCount] = room_number;
+			SmashedMesh[SmashedMeshCount] = mesh;
+			SmashedMeshCount++;
+			mesh->Flags &= ~1;
+			
+			// TODO: explosion effect is not accurate
+			TriggerExplosionSparks(pos.x_pos, pos.y_pos, pos.z_pos, 3, -2, 0, room_number);
+			for (int i = 0; i < 3; i++)
+				TriggerExplosionSparks(pos.x_pos, pos.y_pos, pos.z_pos, 3, -1, 0, room_number);
+
+			SoundEffect(SFX_EXPLOSION1, 0, SFX_DEFAULT);
+			camera.bounce = -75;
+		}
+	}
+
+	return true;
+}
+
+
+// NGLE - 189
+bool static_visibility_set_as_invisible(unsigned char static_id_lower, unsigned char static_id_upper) {
+	unsigned short static_id = ((short)static_id_upper << 8) | (short)static_id_lower;
+
+	NGStaticTableEntry* entry = &ng_static_id_table[static_id];
+	int room_number = entry->room_index;
+	if (room_number >= 0 && room_number < number_rooms) {
+		MESH_INFO* mesh = &room[room_number].mesh[entry->mesh_id];
+		if (mesh->Flags & 1) {
+			mesh->Flags &= ~1;
+		}
+	}
+
+	return true;
+}
+
+// NGLE - 190
+bool static_visibility_render_newly_visible(unsigned char static_id_lower, unsigned char static_id_upper) {
+	unsigned short static_id = ((short)static_id_upper << 8) | (short)static_id_lower;
+
+	NGStaticTableEntry* entry = &ng_static_id_table[static_id];
+	int room_number = entry->room_index;
+	if (room_number >= 0 && room_number < number_rooms) {
+		MESH_INFO* mesh = &room[room_number].mesh[entry->mesh_id];
+		if (mesh->Flags & 1) {
+			mesh->Flags |= 1;
+		}
+	}
+
 	return true;
 }
 
@@ -668,9 +764,80 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 				return untrigger_item_group_with_timer(action_data_1, action_data_2);
 			break;
 		}
+		case ATTRACT_LARA_IN_DIRECTION_IN_AIR: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ATTRACT_LARA_IN_DIRECTION_IN_AIR unimplemented!");
+			break;
+		}
+		case ATTRACT_LARA_IN_DIRECTION_ON_GROUND_AND_IN_AIR: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ATTRACT_LARA_IN_DIRECTION_ON_GROUND_AND_IN_AIR unimplemented!");
+			break;
+		}
+		case STATIC_SHATTER: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				return static_shatter(action_data_1, action_data_2);
+			}
+			break;
+		}
+		case STATIC_SET_ICE_TRANSPARENCY: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "STATIC_SET_ICE_TRANSPARENCY unimplemented!");
+			break;
+		}
+		case STATIC_SET_GLASS_TRANSPARENCY: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "STATIC_SET_GLASS_TRANSPARENCY unimplemented!");
+			break;
+		}
+		case STATIC_REMOVE_TRANSPARENCY: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "STATIC_REMOVE_TRANSPARENCY unimplemented!");
+			break;
+		}
 		case PLAY_SOUND: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return play_sound(action_data_1, action_data_2);
+			break;
+		}
+		case STATIC_EXPLODE: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+				return static_explode(action_data_1, action_data_2);
+			break;
+		}
+		case STATIC_SET_POISON_ATTRIBUTE: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "STATIC_SET_POISON_ATTRIBUTE unimplemented!");
+			break;
+		}
+		case STATIC_REMOVE_POISON_ATTRIBUTE: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "STATIC_REMOVE_POISON_ATTRIBUTE unimplemented!");
+			break;
+		}
+		case STATIC_SET_DAMAGE_ATTRIBUTE: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "STATIC_SET_DAMAGE_ATTRIBUTE unimplemented!");
+			break;
+		}
+		case STATIC_REMOVE_DAMAGE_ATTRIBUTE: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "STATIC_REMOVE_DAMAGE_ATTRIBUTE unimplemented!");
+			break;
+		}
+		case STATIC_VISIBILITY_SET_AS_INVISIBLE: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+				return static_visibility_set_as_invisible(action_data_1, action_data_2);
+			break;
+		}
+		case STATIC_VISIBILITY_RENDER_NEWLY_VISIBLE: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+				return static_visibility_render_newly_visible(action_data_1, action_data_2);
+			break;
+		}
+		case STATIC_SET_COLOR: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "STATIC_SET_COLOR unimplemented!");
 			break;
 		}
 		case PLAY_TRACK_ON_CHANNEL_WITH_RESTORE: {

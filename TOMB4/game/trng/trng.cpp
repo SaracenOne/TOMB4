@@ -16,7 +16,9 @@
 
 bool ngle_footer_found = false;
 bool is_ngle_level = false;
+
 short ng_script_id_table[NG_SCRIPT_ID_TABLE_SIZE];
+NGStaticTableEntry ng_static_id_table[NG_STATIC_ID_TABLE_SIZE];
 
 #define NGLE_START_SIGNATURE 0x474e
 #define NGLE_END_SIGNATURE 0x454c474e
@@ -94,7 +96,9 @@ void NGLoadInfo(FILE* level_fp) {
 				}
 				// Statics Table
 				case 0x8021: {
-					fseek(level_fp, (chunk_size * sizeof(short)) - (sizeof(short) * 2), SEEK_CUR);
+					//fseek(level_fp, (chunk_size * sizeof(short)) - (sizeof(short) * 2), SEEK_CUR);
+					int target_offset = (chunk_size * sizeof(short)) - (sizeof(short) * 2);
+					fread(&ng_static_id_table, 1, target_offset, level_fp);
 					break;
 				}
 				// Level version

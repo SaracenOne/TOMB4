@@ -190,7 +190,7 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame) {
 						for (int i = 0; i < 3; i++)
 							TriggerExplosionSparks(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, 3, -1, 0, item->room_number);
 
-						SoundEffect(SFX_EXPLOSION1, &item->pos, 0x1800004);
+						SoundEffect(SFX_EXPLOSION1, &item->pos, 0x1800000 | SFX_SETPITCH);
 						SoundEffect(SFX_EXPLOSION2, &item->pos, 0);
 
 						item->status = ITEM_INVISIBLE;

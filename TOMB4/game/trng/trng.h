@@ -25,6 +25,13 @@ extern bool is_ngle_level;
 #define NG_SCRIPT_ID_TABLE_SIZE 8192
 extern short ng_script_id_table[NG_SCRIPT_ID_TABLE_SIZE];
 
+#define NG_STATIC_ID_TABLE_SIZE 8192
+struct NGStaticTableEntry {
+	short room_index;
+	short mesh_id;
+};
+extern NGStaticTableEntry ng_static_id_table[NG_STATIC_ID_TABLE_SIZE];
+
 extern void NGLoadInfo(FILE* level_fp);
 
 extern void NGStorePendingRoomNumber(int room_number);
