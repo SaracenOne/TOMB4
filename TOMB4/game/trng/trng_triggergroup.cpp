@@ -70,8 +70,12 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 			trigger_group.data[index].first_field & TGROUP_OR) {
 			bool current_result = false;
 
+			// ActionNG (statics)
+			if ((trigger_group.data[index].first_field & 0xF000) == 0x4000) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ActionNG (statics) unsupported!");
+			}
 			// ActionNG
-			if ((trigger_group.data[index].first_field & 0xF000) == 0x5000) {
+			else if ((trigger_group.data[index].first_field & 0xF000) == 0x5000) {
 				if (trigger_group.data[index].first_field & TGROUP_USE_FOUND_ITEM_INDEX) {
 					current_result = NGAction(ng_found_item_index, trigger_group.data[index].third_field & 0x7fff, true) != -1;
 				} else {
@@ -81,7 +85,7 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 			// ConditionNG
 			else if ((trigger_group.data[index].first_field & 0xF000) == 0x8000) {
 				if (trigger_group.data[index].first_field & TGROUP_USE_FOUND_ITEM_INDEX) {
-					current_result = NGCondition(ng_found_item_index, (trigger_group.data[index].third_field >> 8) & 0xff, trigger_group.data[index].third_field & 0xff);
+					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TGROUP_USE_FOUND_ITEM_INDEX used on condition");
 				} else {
 					current_result = NGCondition(trigger_group.data[index].second_field, (trigger_group.data[index].third_field >> 8) & 0xff, trigger_group.data[index].third_field & 0xff);
 				}
@@ -98,7 +102,7 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 			// Flipeffect
 			else if ((trigger_group.data[index].first_field & 0xF000) == 0x2000) {
 				if (trigger_group.data[index].first_field & TGROUP_USE_FOUND_ITEM_INDEX) {
-					current_result = NGFlipEffect(ng_found_item_index, trigger_group.data[index].third_field & 0x7fff, false, true);
+					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TGROUP_USE_FOUND_ITEM_INDEX used on flipeffect");
 				} else {
 					current_result = NGFlipEffect(trigger_group.data[index].second_field, trigger_group.data[index].third_field & 0x7fff, false, true);
 				}

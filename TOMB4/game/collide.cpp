@@ -225,7 +225,7 @@ void GenericDeadlyBoundingBoxCollision(short item_number, ITEM_INFO* l, COLL_INF
 
 	if (item->status != ITEM_INVISIBLE && item->item_flags[3] && TestBoundsCollide(item, l, coll->radius))
 	{
-		NGAddLaraCollision(item_number); // NGLE
+		NGAddLaraMoveableCollision(item_number); // NGLE
 
 		dx = lara_item->pos.x_pos;
 		dy = lara_item->pos.y_pos;
@@ -262,7 +262,7 @@ void GenericSphereBoxCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 
 	if (item->status != ITEM_INVISIBLE && TestBoundsCollide(item, l, coll->radius))
 	{
-		NGAddLaraCollision(item_number); // NGLE
+		NGAddLaraMoveableCollision(item_number); // NGLE
 
 		TouchBits = TestCollision(item, l);
 
@@ -333,7 +333,7 @@ void CreatureCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 
 	if (TestBoundsCollide(item, l, coll->radius) && TestCollision(item, l))
 	{
-		NGAddLaraCollision(item_number); // NGLE
+		NGAddLaraMoveableCollision(item_number); // NGLE
 
 		if (lara.water_status != LW_UNDERWATER && lara.water_status != LW_SURFACE)
 		{
@@ -634,10 +634,10 @@ void LaraBaddieCollision(ITEM_INFO* l, COLL_INFO* coll)
 		if (coll->enable_baddie_push)
 		{
 			r = &room[nearby_rooms[i]];
-			mesh = r->mesh;
 
-			for (j = r->num_meshes; j > 0; j--, mesh++)
-			{
+			for (j = 0; j < r->num_meshes; j++) {
+				mesh = &r->mesh[j];
+
 				if (!(mesh->Flags & 1))
 					continue;
 
@@ -653,8 +653,10 @@ void LaraBaddieCollision(ITEM_INFO* l, COLL_INFO* coll)
 					pos.z_pos = mesh->z;
 					pos.y_rot = mesh->y_rot;
 
-					if (TestBoundsCollideStatic(bounds, &pos, coll->radius))
+					if (TestBoundsCollideStatic(bounds, &pos, coll->radius)) {
 						ItemPushLaraStatic(l, bounds, &pos, coll);
+						NGAddLaraStaticCollision(i, j);
+					}
 				}
 			}
 		}
@@ -676,7 +678,7 @@ void ObjectCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 
 	if (TestBoundsCollide(item, l, coll->radius) && TestCollision(item, l) && coll->enable_baddie_push)
 	{
-		NGAddLaraCollision(item_number); // NGLE
+		NGAddLaraMoveableCollision(item_number); // NGLE
 
 		ItemPushLara(item, l, coll, 0, 1);
 	}
@@ -695,7 +697,7 @@ void ObjectCollisionNoBigPush(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 
 	if (TestBoundsCollide(item, l, coll->radius) && TestCollision(item, l) && coll->enable_baddie_push)
 	{
-		NGAddLaraCollision(item_number); // NGLE
+		NGAddLaraMoveableCollision(item_number); // NGLE
 
 		ItemPushLara(item, l, coll, 0, 0);
 	}

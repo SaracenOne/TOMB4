@@ -35,7 +35,7 @@ extern NG_GLOBAL_TRIGGER_STATE ng_global_trigger_states[MAX_NG_GLOBAL_TRIGGERS];
 extern NG_TRIGGER_GROUP_STATE ng_trigger_group_states[MAX_NG_TRIGGER_GROUPS];
 extern NG_ORGANIZER_STATE ng_organizer_states[MAX_NG_ORGANIZERS];
 
-extern int ng_found_item_index;;
+extern int ng_found_item_index;
 
 extern int ng_looped_sound_state[NumSamples];
 
@@ -86,11 +86,14 @@ extern void NGSetItemMovementSpeed(unsigned int item_num, unsigned int movement_
 extern void NGSetItemMovementInProgressSound(unsigned int item_num, int sound_effect_id);
 extern void NGSetItemMovementFinishedSound(unsigned int item_num, int sound_effect_id);
 
-extern void NGAddLaraCollision(int item_number);
+extern void NGAddLaraMoveableCollision(int item_number);
+extern void NGAddLaraStaticCollision(int room_number, int mesh_number);
 extern void NGClearLaraCollisions();
-extern int NGIsLaraCollidingWithItem(int item_number);
-extern int NGIsLaraCollidingWithSlot(int slot_number);
+extern int NGIsLaraCollidingWithMoveableID(int item_number);
+extern int NGIsLaraCollidingWithMoveableSlot(int slot_number);
 extern int NGIsLaraCollidingWithCreature();
+extern int NGIsLaraCollidingWithStaticID(int id);
+extern int NGIsLaraCollidingWithStaticSlot(int slot);
 
 extern bool NGIsItemCollisionDisabled(unsigned int item_num);
 extern void NGDisableItemCollision(unsigned int item_num);

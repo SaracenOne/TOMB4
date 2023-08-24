@@ -220,16 +220,16 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 		}
 		break;
 	}
-	case LARA_IS_TOUCHING_MOVEABLE: {
-		int result = NGIsLaraCollidingWithItem(param);
+	case LARA_IS_TOUCHING_MOVEABLE_ID: {
+		int result = NGIsLaraCollidingWithMoveableID(param);
 		if (result >= 0) {
 			ng_found_item_index = result;
 			return true;
 		}
 		break;
 	}
-	case LARA_IS_TOUCHING_SLOT: {
-		int result = NGIsLaraCollidingWithSlot(param);
+	case LARA_IS_TOUCHING_MOVEABLE_SLOT: {
+		int result = NGIsLaraCollidingWithMoveableSlot(param);
 		if (result >= 0) {
 			ng_found_item_index = result;
 			return true;
@@ -271,9 +271,18 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 	case LARA_IS_STATE: {
 		return lara_item->current_anim_state == param;
 	}
-	case LARA_IS_TOUCHING_STATIC_ITEM: {
-		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: LARA_IS_TOUCHING_STATIC_ITEM unimplemented!");
-		return false;
+	case LARA_IS_TOUCHING_STATIC_SLOT: {
+		int result = NGIsLaraCollidingWithStaticID(param);
+		if (result >= 0) {
+			return true;
+		}
+		break;
+	}
+	case LARA_IS_TOUCHING_STATIC_ID: {
+		int result = NGIsLaraCollidingWithStaticID(param);
+		if (result >= 0) {
+			return true;
+		}
 		break;
 	}
 	case LARA_IS_HOLDING_OR_DRIVING_ITEMS: {

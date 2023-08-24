@@ -441,45 +441,75 @@ void NGUpdateAllItems() {
 	}
 }
 
-#define MAX_LARA_COLLISONS 16
-
 int ng_found_item_index = -1;
 
-int ng_lara_collisons[MAX_LARA_COLLISONS];
-int ng_lara_collision_size = 0;
+#define MAX_LARA_COLLISONS 16
+int ng_lara_moveable_collisions[MAX_LARA_COLLISONS];
+int ng_lara_moveable_collision_size = 0;
 
-void NGAddLaraCollision(int item_number) {
-	if (ng_lara_collision_size >= MAX_LARA_COLLISONS-1)
+#define MAX_LARA_STATIC_COLLISONS 16
+int ng_lara_static_collisions[MAX_LARA_STATIC_COLLISONS];
+int ng_lara_static_collision_size = 0;
+
+void NGAddLaraMoveableCollision(int item_number) {
+	if (ng_lara_moveable_collision_size >= MAX_LARA_COLLISONS-1)
 		return;
 	
-	for (int i = 0; i < ng_lara_collision_size; i++) {
-		if (ng_lara_collisons[i] == item_number) {
+	for (int i = 0; i < ng_lara_moveable_collision_size; i++) {
+		if (ng_lara_moveable_collisions[i] == item_number) {
 			return;
 		}
 	}
 
-	ng_lara_collisons[ng_lara_collision_size] = item_number;
-	ng_lara_collision_size++;
+	ng_lara_moveable_collisions[ng_lara_moveable_collision_size] = item_number;
+	ng_lara_moveable_collision_size++;
+}
+
+extern void NGAddLaraStaticCollision(int room_number, int mesh_number) {
+	if (ng_lara_static_collision_size >= MAX_LARA_STATIC_COLLISONS-1)
+		return;
+
+	int current_static_id = -1;
+
+	// Very slow, replace this with caching
+	for (int i = 0; i < NG_STATIC_ID_TABLE_SIZE; i++) {
+		if (ng_static_id_table[i].room_index == room_number && ng_static_id_table[i].mesh_id == mesh_number) {
+			current_static_id = i;
+			break;
+		}
+	}
+
+	if (current_static_id >= 0) {
+		for (int i = 0; i < ng_lara_static_collision_size; i++) {
+			if (ng_lara_static_collisions[i] == current_static_id) {
+				return;
+			}
+		}
+
+		ng_lara_static_collisions[ng_lara_static_collision_size] = current_static_id;
+		ng_lara_static_collision_size++;
+	}
 }
 
 void NGClearLaraCollisions() {
-	ng_lara_collision_size = 0;
+	ng_lara_moveable_collision_size = 0;
+	ng_lara_static_collision_size = 0;
 }
 
-int NGIsLaraCollidingWithItem(int item_number) {
-	for (int i = 0; i < ng_lara_collision_size; i++) {
-		if (ng_lara_collisons[i] == item_number) {
-			return ng_lara_collisons[i];
+int NGIsLaraCollidingWithMoveableID(int item_number) {
+	for (int i = 0; i < ng_lara_moveable_collision_size; i++) {
+		if (ng_lara_moveable_collisions[i] == item_number) {
+			return ng_lara_moveable_collisions[i];
 		}
 	}
 
 	return -1;
 }
 
-int NGIsLaraCollidingWithSlot(int slot_number) {
-	for (int i = 0; i < ng_lara_collision_size; i++) {
-		if (items[ng_lara_collisons[i]].object_number == slot_number) {
-			return ng_lara_collisons[i];
+int NGIsLaraCollidingWithMoveableSlot(int slot_number) {
+	for (int i = 0; i < ng_lara_moveable_collision_size; i++) {
+		if (items[ng_lara_moveable_collisions[i]].object_number == slot_number) {
+			return ng_lara_moveable_collisions[i];
 		}
 	}
 
@@ -487,9 +517,41 @@ int NGIsLaraCollidingWithSlot(int slot_number) {
 }
 
 int NGIsLaraCollidingWithCreature() {
-	for (int i = 0; i < ng_lara_collision_size; i++) {
-		if (objects[items[ng_lara_collisons[i]].object_number].intelligent) {
-			return ng_lara_collisons[i];
+	for (int i = 0; i < ng_lara_moveable_collision_size; i++) {
+		if (objects[items[ng_lara_moveable_collisions[i]].object_number].intelligent) {
+			return ng_lara_moveable_collisions[i];
+		}
+	}
+
+	return -1;
+}
+
+int NGIsLaraCollidingWithStaticID(int id) {
+	for (int i = 0; i < ng_lara_static_collision_size; i++) {
+		if (ng_lara_static_collisions[i] == id) {
+			return ng_lara_static_collisions[i];
+		}
+	}
+
+	return -1;
+}
+
+int NGIsLaraCollidingWithStaticSlot(int slot) {
+	for (int i = 0; i < ng_lara_static_collision_size; i++) {
+		int static_id = ng_lara_static_collisions[i];
+
+		if (static_id >= 0) {
+			NGStaticTableEntry* entry = &ng_static_id_table[static_id];
+
+			if (entry->room_index >= 0 && entry->room_index < number_rooms) {
+
+				if (entry->mesh_id >= 0 && room[entry->room_index].num_meshes) {
+
+					if (room[entry->room_index].mesh[entry->mesh_id].static_number == slot) {
+						return static_id;
+					}
+				}
+			}
 		}
 	}
 
@@ -911,7 +973,8 @@ void NGSetupExtraState() {
 	memset(ng_looped_sound_state, 0x00, NumSamples * sizeof(int));
 
 	ng_found_item_index = -1;
-	ng_lara_collision_size = 0;
+	ng_lara_moveable_collision_size = 0;
+	ng_lara_static_collision_size = 0;
 
 	// Damage
 	lara_damage_resistence = 1000;

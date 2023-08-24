@@ -48,7 +48,7 @@ bool NGExecuteSingleGlobalTrigger(int global_trigger_id, int inventory_object_id
 			break;
 		}
 		case 0x000d: { // GT_COLLIDE_ITEM
-			int result = NGIsLaraCollidingWithItem(ng_script_id_table[global_trigger->parameter]);
+			int result = NGIsLaraCollidingWithMoveableID(ng_script_id_table[global_trigger->parameter]);
 			if (result >= 0) {
 				global_trigger_condition_passed = true;
 				ng_found_item_index = result;
@@ -56,7 +56,7 @@ bool NGExecuteSingleGlobalTrigger(int global_trigger_id, int inventory_object_id
 			break;
 		}
 		case 0x000e: { // GT_COLLIDE_SLOT
-			int result = NGIsLaraCollidingWithSlot(global_trigger->parameter);
+			int result = NGIsLaraCollidingWithMoveableSlot(global_trigger->parameter);
 			if (result >= 0) {
 				global_trigger_condition_passed = true;
 				ng_found_item_index = result;
@@ -68,6 +68,13 @@ bool NGExecuteSingleGlobalTrigger(int global_trigger_id, int inventory_object_id
 			if (result >= 0) {
 				global_trigger_condition_passed = true;
 				ng_found_item_index = result;
+			}
+			break;
+		}
+		case 0x0012: { // GT_COLLIDE_STATIC_SLOT
+			int result = NGIsLaraCollidingWithStaticSlot(global_trigger->parameter);
+			if (result >= 0) {
+				global_trigger_condition_passed = true;
 			}
 			break;
 		}
