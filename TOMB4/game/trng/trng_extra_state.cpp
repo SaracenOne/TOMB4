@@ -35,9 +35,29 @@ struct NG_ITEM_EXTRADATA {
 	short move_north_south_units = 0;
 	short move_east_west_units = 0;
 	short move_up_down_units = 0;
+	unsigned int mesh_visibility_mask = 0xffffffff;
 };
 
 NG_ITEM_EXTRADATA *ng_items_extradata = NULL;
+
+void NGResetItemExtraData(int item_number) {
+	NG_ITEM_EXTRADATA *current_extradata = &ng_items_extradata[item_number];
+
+	if (current_extradata) {
+		current_extradata->frozen_ticks = 0;
+		current_extradata->auto_rotation_per_frame = 0;
+		current_extradata->collison_disabled = false; // Will only disable the ObjectCollision routine. Doors and enemies stll have collision.
+		current_extradata->movement_speed = 0;
+		current_extradata->movement_in_progress_sound = -1;
+		current_extradata->movement_finished_sound = -1;
+		current_extradata->move_north_south_units = 0;
+		current_extradata->move_east_west_units = 0;
+		current_extradata->move_up_down_units = 0;
+		current_extradata->mesh_visibility_mask = 0xffffffff;
+	} else {
+		NGLog(NG_LOG_TYPE_ERROR, "NGResetItemExtraData: invalid item_number!");
+	}
+}
 
 NG_GLOBAL_TRIGGER_STATE ng_global_trigger_states[MAX_NG_GLOBAL_TRIGGERS];
 NG_TRIGGER_GROUP_STATE ng_trigger_group_states[MAX_NG_TRIGGER_GROUPS];
@@ -692,6 +712,17 @@ void NGEnableItemCollision(unsigned int item_num) {
 	ng_items_extradata[item_num].collison_disabled = false;
 }
 
+void NGToggleItemMeshVisibilityMaskBit(unsigned int item_num, unsigned int mask_bit, bool enabled) {
+	if (enabled)
+		ng_items_extradata[item_num].mesh_visibility_mask |= (1 << mask_bit);
+	else
+		ng_items_extradata[item_num].mesh_visibility_mask &= ~(1 << mask_bit);
+}
+
+unsigned int NGGetItemMeshVisibilityMask(unsigned int item_num) {
+	return ng_items_extradata[item_num].mesh_visibility_mask;
+}
+
 void NGSetCurtainTimer(int ticks) {
 	if (ng_cinema_type == 0) {
 		ng_cinema_timer = ticks;
@@ -725,6 +756,16 @@ void NGSetDisplayTimerForMoveableWithType(int item_id, NGTimerTrackerType new_ti
 	}
 }
 
+int ng_draw_item_number = NO_ITEM;
+
+void NGSetCurrentDrawItemNumber(int item_num) {
+	ng_draw_item_number = item_num;
+}
+
+int NGGetCurrentDrawItemNumber() {
+	return ng_draw_item_number;
+}
+
 void NGUpdateFlipeffectFloorstateData(bool heavy) {
 	int index = ng_room_offset_table[ng_current_trigger_state.room] + ng_current_trigger_state.index;
 
@@ -755,6 +796,7 @@ extern void NGUpdateOneshot() {
 }
 
 void NGSetupExtraState() {
+	ng_draw_item_number = NO_ITEM;
 	ng_lara_infinite_air = false;
 
 	// Variables
@@ -776,7 +818,9 @@ void NGSetupExtraState() {
 
 	// Items
 	ng_items_extradata = (NG_ITEM_EXTRADATA*)game_malloc(ITEM_COUNT * sizeof(NG_ITEM_EXTRADATA));
-	memset(ng_items_extradata, 0x00, ITEM_COUNT * sizeof(NG_ITEM_EXTRADATA));
+	for (int i = 0; i < ITEM_COUNT; i++) {
+		NGResetItemExtraData(i);
+	}
 
 	// Records
 	NG_LEVEL_RECORD_DATA *current_record_data = ng_levels[gfCurrentLevel].records;

@@ -346,6 +346,18 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame) {
 			}
 			break;
 		}
+		case ENEMY_SET_MESH_AS_INVISIBLE: {
+			if (first_frame) {
+				NGToggleItemMeshVisibilityMaskBit(param, action_data, false);
+			}
+			break;
+		}
+		case ENEMY_SET_MESH_AS_VISIBLE: {
+			if (first_frame) {
+				NGToggleItemMeshVisibilityMaskBit(param, action_data, true);
+			}
+			break;
+		}
 		case SHOW_TRIGGER_COUNTDOWN_TIMER_FOR_ENEMY: {
 			if (first_frame) {
 				NGSetDisplayTimerForMoveableWithType(item_id, (NGTimerTrackerType)(action_data & 0x7f));

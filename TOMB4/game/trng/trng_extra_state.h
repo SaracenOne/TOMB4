@@ -96,6 +96,9 @@ extern bool NGIsItemCollisionDisabled(unsigned int item_num);
 extern void NGDisableItemCollision(unsigned int item_num);
 extern void NGEnableItemCollision(unsigned int item_num);
 
+extern void NGToggleItemMeshVisibilityMaskBit(unsigned int item_num, unsigned int mask_bit, bool enabled);
+extern unsigned int NGGetItemMeshVisibilityMask(unsigned int item_num);
+
 extern void NGSetCurtainTimer(int ticks);
 extern void NGSetCinemaTypeAndTimer(int type, int ticks);
 

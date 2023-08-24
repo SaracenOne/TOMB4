@@ -28,6 +28,7 @@
 #include "gameflow.h"
 
 #include "trng/trng_extra_state.h"
+#include "trng/trng.h"
 
 static BITE_INFO EnemyBites[2] =
 {
@@ -395,6 +396,9 @@ void DrawAnimatingItem(ITEM_INFO* item)
 	short* rot2;
 	long frac, rate, clip, bit, rnd;
 
+	// NGLE
+	unsigned int mesh_visibility_mask = NGGetItemMeshVisibilityMask(NGGetCurrentDrawItemNumber());
+
 	frac = GetFrames(item, frm, &rate);
 	obj = &objects[item->object_number];
 	bite = &EnemyBites[obj->bite_offset];
@@ -477,12 +481,15 @@ void DrawAnimatingItem(ITEM_INFO* item)
 
 				bit <<= 1;
 
-				if (bit & item->mesh_bits)
-				{
-					if (bit & item->meshswap_meshbits)
-						phd_PutPolygons_I(meshpp[1], clip);
-					else
-						phd_PutPolygons_I(meshpp[0], clip);
+				// NGLE
+				if (bit & mesh_visibility_mask) {
+					if (bit & item->mesh_bits)
+					{
+						if (bit & item->meshswap_meshbits)
+							phd_PutPolygons_I(meshpp[1], clip);
+						else
+							phd_PutPolygons_I(meshpp[0], clip);
+					}
 				}
 
 				if (item->fired_weapon && i == bite->mesh_num - 1)
@@ -540,12 +547,15 @@ void DrawAnimatingItem(ITEM_INFO* item)
 
 				bit <<= 1;
 
-				if (bit & item->mesh_bits)
-				{
-					if (bit & item->meshswap_meshbits)
-						phd_PutPolygons(meshpp[1], clip);
-					else
-						phd_PutPolygons(meshpp[0], clip);
+				// NGLE
+				if (bit & mesh_visibility_mask) {
+					if (bit & item->mesh_bits)
+					{
+						if (bit & item->meshswap_meshbits)
+							phd_PutPolygons(meshpp[1], clip);
+						else
+							phd_PutPolygons(meshpp[0], clip);
+					}
 				}
 
 				if (item->fired_weapon && i == bite->mesh_num - 1)
@@ -1310,6 +1320,8 @@ void PrintObjects(short room_number)
 		{
 			if (item->after_death)
 				GlobalAlpha = 0xFE000000 * item->after_death;
+
+			NGSetCurrentDrawItemNumber(item_number); // NGLE
 
 			if (obj->draw_routine)
 				obj->draw_routine(item);

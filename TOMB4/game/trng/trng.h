@@ -55,6 +55,9 @@ extern bool NGUseNGConditionals();
 extern bool NGUseNGFlipEffects();
 extern bool NGUseNGActions();
 
+extern void NGSetCurrentDrawItemNumber(int item_num);
+extern int NGGetCurrentDrawItemNumber();
+
 extern void NGUpdateFlipeffectFloorstateData(bool heavy);
 extern void NGUpdateActionFloorstateData(bool heavy);
 extern void NGUpdateOneshot();
