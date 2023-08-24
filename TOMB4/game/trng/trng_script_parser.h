@@ -83,7 +83,7 @@ enum TGROUP_FLAGS {
 struct NG_GLOBAL_TRIGGER {
 	unsigned short flags = 0x0;
 	unsigned short type = 0x00;
-	unsigned int parameter = 0x00;
+	int parameter = 0x00;
 	unsigned short condition_trigger_group = 0x00;
 	unsigned short perform_trigger_group = 0x00;
 	unsigned short on_false_trigger_group = 0x00;

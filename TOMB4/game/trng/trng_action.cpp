@@ -159,6 +159,10 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame) {
 			}
 			break;
 		}
+		case TURN_VERTICAL_ANIMATION_MOVING_ENDLESS_IN_WAY: {
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TURN_VERTICAL_ANIMATION_MOVING_ENDLESS_IN_WAY: unimplemented!");
+			break;
+		}
 		case PERFORM_FLIPEFFECT_ON_ITEM: {
 			if (first_frame) {
 				effect_routines[action_data](&items[item_id]);
@@ -318,6 +322,10 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame) {
 		}
 		case ACTIVATE_CAMERA_WITH_TIMER: {
 			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ACTIVATE_CAMERA_WITH_TIMER unimplemented");
+			break;
+		}
+		case SET_MOVEABLE_AS_TARGET_FOR_CAMERA: {
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "SET_MOVEABLE_AS_TARGET_FOR_CAMERA unimplemented");
 			break;
 		}
 		case TRIGGER_MOVEABLE_ACTIVATE_WITH_TIMER: {
@@ -513,7 +521,7 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame) {
 		}
 		default:
 			if (first_frame)
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Unimplemented NGTrigger %u", action_type);
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Unimplemented NGAction %u", action_type);
 			break;
 		};
 	return item_id;

@@ -33,6 +33,10 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 	bool parsed_first_operation = false;
 	bool operation_result = false;
 
+	if (trigger_group.data[index].first_field == 0x0000) {
+		NGLog(NG_LOG_TYPE_ERROR, "Attempted to execute NULL TriggerGroup (%u)!", trigger_group_id);
+	}
+
 	while (index < NG_TRIGGER_GROUP_DATA_SIZE) {
 		// Check of unsupported TGROUP flags
 		if (trigger_group.data[index].first_field & TGROUP_SINGLE_SHOT_RESUMED ||

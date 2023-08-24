@@ -297,28 +297,35 @@ bool set_room_type(unsigned char room_number, unsigned char room_type) {
 		switch (room_type) {
 			case 0: {
 				r->flags |= ROOM_UNDERWATER;
+				break;
 			}
 			case 2: {
 				r->flags |= ROOM_SKYBOX;
+				break;
 			}
 			case 4: {
 				r->flags |= 0x10;
+				break;
 			}
 			case 5: {
 				r->flags |= ROOM_NOT_INSIDE; // TODO: check this
+				break;
 			}
 			case 10: {
 				r->flags |= ROOM_SNOW;
+				break;
 			}
 			case 11: {
 				r->flags |= ROOM_RAIN;
+				break;
 			}
 			case 12: {
 				r->flags |= ROOM_COLD;
+				break;
 			}
 			default: {
 				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "SET_ROOM_TYPE: unsupported room type!");
-				return false;
+				break;
 			}
 		}
 	}
@@ -622,6 +629,27 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 	char action_data_2 = (char)(extra >> 8) & 0xff;
 
 	switch (param) {
+		case INVENTORY_INCREASE_INVENTORY_ITEMS_BY_ONE_IN_X_WAY: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "INVENTORY_INCREASE_INVENTORY_ITEMS_BY_ONE_IN_X_WAY unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case INVENTORY_DECREASE_INVENTORY_ITEMS_BY_ONE: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "INVENTORY_DECREASE_INVENTORY_ITEMS_BY_ONE unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case INVENTORY_SET_INVENTORY_ITEMS: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "INVENTORY_SET_INVENTORY_ITEMS unimplemented!");
+				return true;
+			}
+			break;
+		}
 		case DISABLE_INPUT_FOR_TIME: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return disable_input_for_time(action_data_1, action_data_2);
@@ -765,13 +793,17 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 			break;
 		}
 		case ATTRACT_LARA_IN_DIRECTION_IN_AIR: {
-			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
 				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ATTRACT_LARA_IN_DIRECTION_IN_AIR unimplemented!");
+				return true;
+			}
 			break;
 		}
 		case ATTRACT_LARA_IN_DIRECTION_ON_GROUND_AND_IN_AIR: {
-			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
 				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ATTRACT_LARA_IN_DIRECTION_ON_GROUND_AND_IN_AIR unimplemented!");
+				return true;
+			}
 			break;
 		}
 		case STATIC_SHATTER: {
@@ -780,19 +812,39 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 			}
 			break;
 		}
+		case STATIC_REMOVE_COLLISION_FROM: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "STATIC_REMOVE_COLLISION_FROM unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case STATIC_RESTORE_COLLISION_TO: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "STATIC_RESTORE_COLLISION_TO unimplemented!");
+				return true;
+			}
+			break;
+		}
 		case STATIC_SET_ICE_TRANSPARENCY: {
-			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
 				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "STATIC_SET_ICE_TRANSPARENCY unimplemented!");
+				return true;
+			}
 			break;
 		}
 		case STATIC_SET_GLASS_TRANSPARENCY: {
-			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
 				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "STATIC_SET_GLASS_TRANSPARENCY unimplemented!");
+				return true;
+			}
 			break;
 		}
 		case STATIC_REMOVE_TRANSPARENCY: {
-			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
 				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "STATIC_REMOVE_TRANSPARENCY unimplemented!");
+				return true;
+			}
 			break;
 		}
 		case PLAY_SOUND: {
@@ -806,23 +858,31 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 			break;
 		}
 		case STATIC_SET_POISON_ATTRIBUTE: {
-			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
 				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "STATIC_SET_POISON_ATTRIBUTE unimplemented!");
+				return true;
+			}
 			break;
 		}
 		case STATIC_REMOVE_POISON_ATTRIBUTE: {
-			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
 				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "STATIC_REMOVE_POISON_ATTRIBUTE unimplemented!");
+				return true;
+			}
 			break;
 		}
 		case STATIC_SET_DAMAGE_ATTRIBUTE: {
-			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
 				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "STATIC_SET_DAMAGE_ATTRIBUTE unimplemented!");
+				return true;
+			}
 			break;
 		}
 		case STATIC_REMOVE_DAMAGE_ATTRIBUTE: {
-			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
 				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "STATIC_REMOVE_DAMAGE_ATTRIBUTE unimplemented!");
+				return true;
+			}
 			break;
 		}
 		case STATIC_VISIBILITY_SET_AS_INVISIBLE: {
@@ -836,13 +896,29 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 			break;
 		}
 		case STATIC_SET_COLOR: {
-			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
 				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "STATIC_SET_COLOR unimplemented!");
+				return true;
+			}
 			break;
 		}
 		case PLAY_TRACK_ON_CHANNEL_WITH_RESTORE: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return play_track_on_channel_with_restore(action_data_1, action_data_2);
+			break;
+		}
+		case TEXT_PRINT_FORMATTED_TEXT_NGEXTRA_STRING_WITH_FORMATTING_DATA: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TEXT_PRINT_FORMATTED_TEXT_NGEXTRA_STRING_WITH_FORMATTING_DATA unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case DIARY_ADD_EXTRA_NG_STIRNG_TO_DIARY: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "DIARY_ADD_EXTRA_NG_STIRNG_TO_DIARY unimplemented!");
+				return true;
+			}
 			break;
 		}
 		case VARIABLES_ADD_VALUE_TO_VARIABLE: {
@@ -863,6 +939,20 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 		case VARIABLES_DIVIDE_VARIABLE_BY_VALUE: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return variables_divide_variable_by_value(action_data_1, action_data_2);
+			break;
+		}
+		case SCREEN_FLASH_SCREEN_WITH_LIGHT_COLOR_FOR_DURATION: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "SCREEN_FLASH_SCREEN_WITH_LIGHT_COLOR_FOR_DURATION unimplemented!");
+				return true;
+			}
+			break;		
+		}
+		case SPRITE_SHOW_SPRITE_WITH_DATA_IN_PARAMETERS_FOR_DURATION: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "SPRITE_SHOW_SPRITE_WITH_DATA_IN_PARAMETERS_FOR_DURATION unimplemented!");
+				return true;
+			}
 			break;
 		}
 		case CAMERA_SHOW_BLACK_SCREEN_FOR_SECONDS_WITH_FINAL_CURTAIN_EFFECT: {
