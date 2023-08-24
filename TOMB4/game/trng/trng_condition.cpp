@@ -17,6 +17,7 @@
 #include "trng_condition.h"
 #include "trng_extra_state.h"
 #include "../savegame.h"
+#include "../lara_states.h"
 
 // TODO: there may be some missing types still needing support
 int get_inventory_count(short object_number)
@@ -276,7 +277,78 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 		break;
 	}
 	case LARA_IS_HOLDING_OR_DRIVING_ITEMS: {
-		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: LARA_IS_HOLDING_OR_DRIVING_ITEMS unimplemented!");
+		switch (param) {
+			// Holding pistols
+			case 1: {
+				return lara.gun_type == WEAPON_PISTOLS && lara.gun_status == LG_READY;
+			}
+			case 2: {
+				return lara.gun_type == WEAPON_REVOLVER && lara.gun_status == LG_READY;
+			}
+			case 3: {
+				return lara.gun_type == WEAPON_UZI && lara.gun_status == LG_READY;
+			}
+			case 4: {
+				return lara.gun_type == WEAPON_SHOTGUN && lara.gun_status == LG_READY;
+			}
+			case 5: {
+				return lara.gun_type == WEAPON_GRENADE && lara.gun_status == LG_READY;
+			}
+			case 6: {
+				return lara.gun_type == WEAPON_CROSSBOW && lara.gun_status == LG_READY;
+			}
+			case 7: {
+				return lara.gun_type == WEAPON_FLARE;
+			}
+			case 8: {
+				return lara.gun_type == WEAPON_TORCH && !lara.LitTorch;
+			}
+			case 9: {
+				return lara.gun_type == WEAPON_TORCH && lara.LitTorch;
+			}
+			case 10: {
+				if (lara.vehicle != NO_ITEM)
+					return items[lara.vehicle].object_number == JEEP;
+				break;
+			}
+			case 11: {
+				if (lara.vehicle != NO_ITEM)
+					return items[lara.vehicle].object_number == MOTORBIKE;
+				break;
+			}
+			case 12: {
+				if (lara.vehicle != NO_ITEM)
+					return items[lara.vehicle].object_number == RUBBER_BOAT;
+				break;
+			}
+			case 13: {
+				if (lara.vehicle != NO_ITEM)
+					return items[lara.vehicle].object_number == MOTOR_BOAT;
+				break;
+			}
+			case 14: {
+				return lara.RopePtr != -1;
+			}
+			case 15: {
+				return lara_item->current_anim_state == AS_POLESTAT ||
+					lara_item->current_anim_state == AS_POLEUP ||
+					lara_item->current_anim_state == AS_POLEDOWN ||
+					lara_item->current_anim_state == AS_POLELEFT ||
+					lara_item->current_anim_state == AS_POLERIGHT;
+			}
+			case 16: {
+				return lara.gun_type == WEAPON_TORCH;
+			}
+			case 17: {
+				if (lara.vehicle != NO_ITEM)
+					return items[lara.vehicle].object_number == KAYAK;
+				break;
+			}
+			default: {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: LARA_IS_HOLDING_OR_DRIVING_ITEMS unimplemented type: %u!", param);
+			}
+		}
+
 		return false;
 		break;
 	}
