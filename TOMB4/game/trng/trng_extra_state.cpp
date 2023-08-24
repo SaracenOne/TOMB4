@@ -496,13 +496,18 @@ int NGIsLaraCollidingWithCreature() {
 	return -1;
 }
 
-void NGProcessGlobalTriggers() {
+bool NGProcessGlobalTriggers(int inventory_object_id) {
+	bool management_replaced = false;
 	if (ng_levels[gfCurrentLevel].records) {
 		int global_trigger_count = ng_levels[gfCurrentLevel].records->global_trigger_count;
 		for (int i = 0; i < global_trigger_count; i++) {
-			NGExecuteSingleGlobalTrigger(i);
+			if (NGExecuteSingleGlobalTrigger(i, inventory_object_id)) {
+				management_replaced = true;
+			}
 		}
 	}
+
+	return management_replaced;
 }
 
 void NGProcessTriggerGroups() {
@@ -527,7 +532,7 @@ void NGProcessOrganizers() {
 }
 
 void NGFrameStartUpdate() {
-	NGProcessGlobalTriggers();
+	NGProcessGlobalTriggers(NO_ITEM);
 	NGProcessTriggerGroups();
 	NGProcessOrganizers();
 

@@ -217,6 +217,10 @@ bool NGLaraHasInfiniteAir() {
 	return ng_lara_infinite_air;
 }
 
+bool NGTestUseInventoryObjectAndManagementReplaced(short inventory_object_id) {
+	return NGProcessGlobalTriggers(inventory_object_id);
+}
+
 void NGInit() {
 	NGInitLevelArray();
 }

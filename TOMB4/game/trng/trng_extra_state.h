@@ -109,6 +109,8 @@ extern void NGToggleOrganizer(int organizer_id, bool is_enabled);
 
 extern void NGSetDisplayTimerForMoveableWithType(int item_id, NGTimerTrackerType timer_type);
 
+extern bool NGProcessGlobalTriggers(int inventory_object_id);
+
 extern void NGDrawPhase();
 
 extern bool NGIsOneShotTriggeredForTile();

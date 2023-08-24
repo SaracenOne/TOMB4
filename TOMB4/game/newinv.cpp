@@ -24,6 +24,7 @@
 #include "../tomb4/tomb4.h"
 #include "../specific/dxsound.h"
 #include "../specific/drawbars.h"
+#include "trng/trng.h"
 
 #pragma warning(push)
 #pragma warning(disable : 4838)
@@ -1732,6 +1733,10 @@ void use_current_item()
 	lara_item->mesh_bits = -1;
 	invobject = rings[RING_INVENTORY]->current_object_list[rings[RING_INVENTORY]->curobjinlist].invitem;
 	gmeobject = inventry_objects_list[invobject].object_number;
+
+	// NGLE
+	if (NGTestUseInventoryObjectAndManagementReplaced(gmeobject))
+		return;
 
 	if (lara.water_status == LW_ABOVE_WATER || lara.water_status == LW_WADE)
 	{
