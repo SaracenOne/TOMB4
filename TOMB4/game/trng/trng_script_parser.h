@@ -96,8 +96,13 @@ struct NG_GLOBAL_TRIGGER_RECORD {
 
 struct NG_TRIGGER_GROUP_DATA {
 	unsigned short first_field = 0x00;
-	unsigned short second_field = 0x00;
-	unsigned short third_field = 0x00;
+	unsigned short plugin_id = 0;
+
+	unsigned short second_field_lower = 0x00;
+	unsigned short second_field_upper = 0x00;
+	
+	unsigned short third_field_lower = 0x00;
+	unsigned short third_field_upper = 0x00;
 };
 
 #define NG_TRIGGER_GROUP_DATA_SIZE 0xff

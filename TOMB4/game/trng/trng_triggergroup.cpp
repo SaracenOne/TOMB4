@@ -74,51 +74,64 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 			trigger_group.data[index].first_field & TGROUP_OR) {
 			bool current_result = false;
 
-			// ActionNG (statics)
-			if ((trigger_group.data[index].first_field & 0xF000) == 0x4000) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ActionNG (statics) unsupported!");
-			}
-			// ActionNG
-			else if ((trigger_group.data[index].first_field & 0xF000) == 0x5000) {
-				if (trigger_group.data[index].first_field & TGROUP_USE_FOUND_ITEM_INDEX) {
-					current_result = NGAction(ng_found_item_index, trigger_group.data[index].third_field & 0x7fff, true) != -1;
-				} else {
-					current_result = NGAction(ng_script_id_table[trigger_group.data[index].second_field], trigger_group.data[index].third_field & 0x7fff, true) != -1;
+			if (trigger_group.data[index].plugin_id != 0) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Plugin triggers are not yet supported (trigger_id: %u, plugin_id:%u, first_field:0x%x, second_field:%u, third_field:0x%x)",
+					trigger_group_id,
+					trigger_group.data[index].plugin_id,
+					trigger_group.data[index].first_field,
+					((int)trigger_group.data[index].second_field_upper << 16 | (int)trigger_group.data[index].second_field_lower),
+					((int)trigger_group.data[index].third_field_upper << 16 | (int)trigger_group.data[index].third_field_lower));
+			} else {
+				// ActionNG (statics)
+				if ((trigger_group.data[index].first_field & 0xF000) == 0x4000) {
+					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ActionNG (statics) unsupported!");
 				}
-			}
-			// ConditionNG
-			else if ((trigger_group.data[index].first_field & 0xF000) == 0x8000) {
-				if (trigger_group.data[index].first_field & TGROUP_USE_FOUND_ITEM_INDEX) {
-					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TGROUP_USE_FOUND_ITEM_INDEX used on condition");
-				} else {
-					current_result = NGCondition(trigger_group.data[index].second_field, (trigger_group.data[index].third_field >> 8) & 0xff, trigger_group.data[index].third_field & 0xff);
+				// ActionNG
+				else if ((trigger_group.data[index].first_field & 0xF000) == 0x5000) {
+					if (trigger_group.data[index].first_field & TGROUP_USE_FOUND_ITEM_INDEX) {
+						current_result = NGAction(ng_found_item_index, trigger_group.data[index].third_field_lower & 0x7fff, true) != -1;
+					}
+					else {
+						current_result = NGAction(ng_script_id_table[trigger_group.data[index].second_field_lower], trigger_group.data[index].third_field_lower & 0x7fff, true) != -1;
+					}
 				}
-			}
-			// ConditionNG (item id)
-			else if ((trigger_group.data[index].first_field & 0xF000) == 0x9000) {
-				if (trigger_group.data[index].first_field & TGROUP_USE_FOUND_ITEM_INDEX) {
-					current_result = NGCondition(ng_found_item_index, (trigger_group.data[index].third_field >> 8) & 0xff, trigger_group.data[index].third_field & 0xff);
-				} else {
-					current_result = NGCondition(ng_script_id_table[trigger_group.data[index].second_field], (trigger_group.data[index].third_field >> 8) & 0xff, trigger_group.data[index].third_field & 0xff);
+				// ConditionNG
+				else if ((trigger_group.data[index].first_field & 0xF000) == 0x8000) {
+					if (trigger_group.data[index].first_field & TGROUP_USE_FOUND_ITEM_INDEX) {
+						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TGROUP_USE_FOUND_ITEM_INDEX used on condition");
+					}
+					else {
+						current_result = NGCondition(trigger_group.data[index].second_field_lower, (trigger_group.data[index].third_field_lower >> 8) & 0xff, trigger_group.data[index].third_field_lower & 0xff);
+					}
+				}
+				// ConditionNG (item id)
+				else if ((trigger_group.data[index].first_field & 0xF000) == 0x9000) {
+					if (trigger_group.data[index].first_field & TGROUP_USE_FOUND_ITEM_INDEX) {
+						current_result = NGCondition(ng_found_item_index, (trigger_group.data[index].third_field_lower >> 8) & 0xff, trigger_group.data[index].third_field_lower & 0xff);
+					}
+					else {
+						current_result = NGCondition(ng_script_id_table[trigger_group.data[index].second_field_lower], (trigger_group.data[index].third_field_lower >> 8) & 0xff, trigger_group.data[index].third_field_lower & 0xff);
 
+					}
 				}
-			}
-			// Flipeffect
-			else if ((trigger_group.data[index].first_field & 0xF000) == 0x2000) {
-				if (trigger_group.data[index].first_field & TGROUP_USE_FOUND_ITEM_INDEX) {
-					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TGROUP_USE_FOUND_ITEM_INDEX used on flipeffect");
-				} else {
-					current_result = NGFlipEffect(trigger_group.data[index].second_field, trigger_group.data[index].third_field & 0x7fff, false, true);
+				// Flipeffect
+				else if ((trigger_group.data[index].first_field & 0xF000) == 0x2000) {
+					if (trigger_group.data[index].first_field & TGROUP_USE_FOUND_ITEM_INDEX) {
+						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TGROUP_USE_FOUND_ITEM_INDEX used on flipeffect");
+					}
+					else {
+						current_result = NGFlipEffect(trigger_group.data[index].second_field_lower, trigger_group.data[index].third_field_lower & 0x7fff, false, true);
+					}
 				}
-			}
-			// End
-			else if (trigger_group.data[index].first_field == 0x0000) {
-				break;
-			}
-			else {
-				NGLog(NG_LOG_TYPE_ERROR, "Unknown triggergroup command!");
-				operation_result = false;
-				break;
+				// End
+				else if (trigger_group.data[index].first_field == 0x0000) {
+					break;
+				}
+				else {
+					NGLog(NG_LOG_TYPE_ERROR, "Unknown triggergroup command!");
+					operation_result = false;
+					break;
+				}
 			}
 
 			if (trigger_group.data[index].first_field & TGROUP_NOT)

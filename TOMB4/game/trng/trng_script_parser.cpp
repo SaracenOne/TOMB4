@@ -1036,9 +1036,12 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 								unsigned short second_field = NG_READ_16(gfScriptFile, offset);
 								unsigned short third_field = NG_READ_16(gfScriptFile, offset);
 
+								level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].plugin_id = 0;
 								level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].first_field = first_field;
-								level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].second_field = second_field;
-								level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].third_field = third_field;
+								level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].second_field_lower = second_field;
+								level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].second_field_upper = 0;
+								level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].third_field_lower = third_field;
+								level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].third_field_upper = 0;;
 
 								data_index++;
 								if (data_index > NG_TRIGGER_GROUP_DATA_SIZE) {
@@ -1050,6 +1053,14 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 						} else {
 							unsigned short id = NG_READ_16(gfScriptFile, offset);
 
+							if (id > MAX_NG_TRIGGER_GROUPS) {
+								NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: TriggerGroup id is not valid!  (level %u)", current_level);
+								return;
+								// Broken
+							}
+
+							level_trigger_group_table[level_trigger_group_count].record_id = id;
+
 							unsigned char data_index = 0;
 							while (offset < data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short))) {
 								unsigned short first_field = NG_READ_16(gfScriptFile, offset);
@@ -1057,13 +1068,34 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 								if (first_field == 0x0000 || first_field == 0xffff) {
 									break;
 								}
-								unsigned short second_field = NG_READ_16(gfScriptFile, offset);
-								unsigned short third_field = NG_READ_16(gfScriptFile, offset);
 
-								unsigned int what = NG_READ_32(gfScriptFile, offset);
+								unsigned short plugin_id = NG_READ_16(gfScriptFile, offset);
+								unsigned short second_field_lower = NG_READ_16(gfScriptFile, offset);
+								unsigned short second_field_upper = NG_READ_16(gfScriptFile, offset);
+								unsigned short third_field_lower = NG_READ_16(gfScriptFile, offset);
+								unsigned short third_field_upper = NG_READ_16(gfScriptFile, offset);
 
-								NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: PluginTriggerGroup is not implemented! (level %u)", current_level);
+								NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TriggerGroup %u - Plugin TriggerGroup plugin_id:%u, first_field:0x%x, second_field:%u, third_field:0x%x",
+									id,
+									plugin_id,
+									first_field,
+									((int)second_field_upper << 16 | (int)second_field_lower),
+									((int)third_field_upper << 16 | (int)third_field_lower));
+
+								level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].plugin_id = plugin_id;
+								level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].first_field = first_field;
+								level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].second_field_lower = second_field_lower;
+								level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].second_field_upper = second_field_upper;
+								level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].third_field_lower = third_field_lower;
+								level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].third_field_upper = third_field_upper;
+
+								data_index++;
+								if (data_index > NG_TRIGGER_GROUP_DATA_SIZE) {
+									NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: TriggerGroup size overflow! (level %u)", current_level);
+									return;
+								}
 							}
+							level_trigger_group_count++;
 						}
 						break;
 					case 0x16: {
@@ -1093,7 +1125,9 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 							global_trigger_type != 0x000d &&
 							global_trigger_type != 0x000e &&
 							global_trigger_type != 0x000f &&
-							global_trigger_type != 0x0020) {
+							global_trigger_type != 0x0012 &&
+							global_trigger_type != 0x0020 &&
+							global_trigger_type != 0x0027) {
 							NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: Unimplemented GlobalTrigger type %u (level %u)", global_trigger_type, current_level);
 						}
 						level_global_triggers_table[level_global_trigger_count].global_trigger.type = global_trigger_type;
@@ -1392,10 +1426,6 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 						// TriggerGroup (WIP)
 						unsigned short id = NG_READ_16(gfScriptFile, offset);
 
-						if (current_level == 5) {
-							printf("");
-						}
-
 						if (id > MAX_NG_TRIGGER_GROUPS) {
 							NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: TriggerGroup is not implemented! (level %u)", current_level);
 
@@ -1415,31 +1445,12 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 							unsigned short second_field = NG_READ_16(gfScriptFile, offset);
 							unsigned short third_field = NG_READ_16(gfScriptFile, offset);
 
-							if (current_level == 5) {
-								if (first_field & 0x5000) {
-									unsigned char action_type = (unsigned char)third_field & 0xff;
-									printf("");
-									if (action_type == 26) {
-										printf("");
-									}
-								}
-
-								if (first_field & 0x2000) {
-									if (second_field == 345 || second_field == 373 || second_field == 372 || second_field == 371 || second_field == 118) {
-										printf("");
-									}
-
-									// Organizers
-									if (second_field == 127) {
-										if (third_field == 5 || third_field == 6 || third_field == 7)
-											printf("");
-									}
-								}
-							}
-
+							level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].plugin_id = 0;
 							level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].first_field = first_field;
-							level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].second_field = second_field;
-							level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].third_field = third_field;
+							level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].second_field_lower = second_field;
+							level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].second_field_upper = 0;
+							level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].third_field_lower = third_field;
+							level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].second_field_upper = 0;
 
 							data_index++;
 							if (data_index > NG_TRIGGER_GROUP_DATA_SIZE) {
@@ -1464,7 +1475,8 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 					}
 				}
 				if (offset != command_block_end_position) {
-					NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: Command block size mismatch for command %u! (level %u)", block_type, current_level);
+					int size_difference = offset - command_block_end_position;
+					NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: Command block size mismatch for command %u! (level %u), off by %i", block_type, current_level, size_difference);
 				}
 				offset = command_block_end_position;
 			}
