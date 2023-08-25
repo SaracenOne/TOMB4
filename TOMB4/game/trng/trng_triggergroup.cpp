@@ -75,12 +75,23 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 			bool current_result = false;
 
 			if (trigger_group.data[index].plugin_id != 0) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Plugin triggers are not yet supported (trigger_id: %u, plugin_id:%u, first_field:0x%x, second_field:%u, third_field:0x%x)",
-					trigger_group_id,
-					trigger_group.data[index].plugin_id,
-					trigger_group.data[index].first_field,
-					((int)trigger_group.data[index].second_field_upper << 16 | (int)trigger_group.data[index].second_field_lower),
-					((int)trigger_group.data[index].third_field_upper << 16 | (int)trigger_group.data[index].third_field_lower));
+				char *plugin_string = NGGetPluginString(trigger_group.data[index].plugin_id);
+
+				if (plugin_string) {
+					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Plugin triggers are not yet supported (trigger_id: %u, plugin:%s, first_field:0x%x, second_field:%u, third_field:0x%x)",
+						trigger_group_id,
+						plugin_string,
+						trigger_group.data[index].first_field,
+						((int)trigger_group.data[index].second_field_upper << 16 | (int)trigger_group.data[index].second_field_lower),
+						((int)trigger_group.data[index].third_field_upper << 16 | (int)trigger_group.data[index].third_field_lower));
+				} else {
+					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Plugin triggers are not yet supported (trigger_id: %u, plugin_id:%u, first_field:0x%x, second_field:%u, third_field:0x%x)",
+						trigger_group_id,
+						trigger_group.data[index].plugin_id,
+						trigger_group.data[index].first_field,
+						((int)trigger_group.data[index].second_field_upper << 16 | (int)trigger_group.data[index].second_field_lower),
+						((int)trigger_group.data[index].third_field_upper << 16 | (int)trigger_group.data[index].third_field_lower));
+				}
 			} else {
 				// ActionNG (statics)
 				if ((trigger_group.data[index].first_field & 0xF000) == 0x4000) {

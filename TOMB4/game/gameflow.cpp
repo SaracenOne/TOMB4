@@ -989,8 +989,6 @@ void LoadGameflow()
 
 	gfScriptFile = (uchar*)s;
 
-	NGReadNGGameflowInfo((char*)gfScriptFile, gameflow_len - (sizeof(unsigned int) * 2), gameflow_len);
-
 	Gameflow = (GAMEFLOW*)s;
 	s += sizeof(GAMEFLOW);
 
@@ -1009,15 +1007,20 @@ void LoadGameflow()
 	gfScriptWad = (uchar*)s;
 	s += Gameflow->ScriptLen;
 
+	int language_len = 0;
 	for (l = 0;; l++)
 	{
 		d = 0;
 
-		if (LoadFile(s, &d))
+		language_len = LoadFile(s, &d);
+		if (language_len > 0)
 			break;
 
 		s += strlen(s) + 1;
 	}
+
+	NGReadNGExtraStrings(d, language_len - (sizeof(unsigned int) * 2), language_len);
+	NGReadNGGameflowInfo((char*)gfScriptFile, gameflow_len - (sizeof(unsigned int) * 2), gameflow_len);
 
 	gfStringOffset = (ushort*)d;
 	gfLanguageFile = (uchar*)d;

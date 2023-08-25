@@ -2,7 +2,14 @@
 
 #include "trng_extra_state.h"
 
+#define MAX_NG_STRINGS 16384
 #define MAX_NG_LEVELS 64
+#define MAX_NG_PLUGINS 256
+
+struct NG_PLUGIN {
+	int plugin_string_id = 0;
+	bool is_enabled = false;
+};
 
 enum CUST_ENUMS {
 	CUST_DISABLE_SCREAMING_HEAD = 0x01,
@@ -213,7 +220,11 @@ extern NG_ITEM_GROUP current_item_groups[MAX_NG_ITEM_GROUPS];
 extern NG_MOVE_ITEM current_move_item_params[MAX_NG_MOVE_ITEM_PARAMS];
 extern unsigned short current_big_numbers_params[MAX_NG_BIG_NUMBER_PARAMS];
 
-extern void NGInitLevelArray();
-extern void NGLoadTablesForLevel(unsigned int level);
+extern char *NGGetString(short string_id);
+extern char *NGGetPluginString(short plugin_id);
+
+extern void NGScriptInit();
 extern void NGScriptCleanup();
+extern void NGLoadTablesForLevel(unsigned int level);
 extern void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int len);
+extern void NGReadNGExtraStrings(char* gfLanguageFile, unsigned int offset, unsigned int len);

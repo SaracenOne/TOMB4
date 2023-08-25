@@ -1,11 +1,15 @@
 #include "../../tomb4/pch.h"
 
+#include "../gameflow.h"
+
 #include "trng.h"
 #include "trng_script_parser.h"
 
 #include "../../tomb4/mod_config.h"
 
+char *ng_strings[MAX_NG_STRINGS];
 NG_LEVEL ng_levels[MAX_NG_LEVELS];
+NG_PLUGIN ng_plugins[MAX_NG_PLUGINS];
 
 NG_GLOBAL_TRIGGER current_global_triggers[MAX_NG_GLOBAL_TRIGGERS];
 NG_TRIGGER_GROUP current_trigger_groups[MAX_NG_TRIGGER_GROUPS];
@@ -21,9 +25,18 @@ scr_offset += sizeof(short)
 #define NG_READ_32(scr_buffer, scr_offset) (unsigned int)(((unsigned char)scr_buffer[scr_offset]) | (((unsigned int)(unsigned char)scr_buffer[scr_offset + 1]) << 8) | (((unsigned int)(unsigned char)scr_buffer[scr_offset + 2]) << 16) | (((unsigned int)(unsigned char)scr_buffer[scr_offset + 3]) << 24)); \
 scr_offset += sizeof(int)
 
-void NGInitLevelArray() {
+void NGScriptInit() {
 	for (int i = 0; i < MAX_NG_LEVELS; i++) {
 		ng_levels[i].records = NULL;
+	}
+
+	for (int i = 0; i < MAX_NG_STRINGS; i++) {
+		ng_strings[i] = NULL;
+	}
+
+	for (int i = 0; i < MAX_NG_PLUGINS; i++) {
+		ng_plugins[i].is_enabled;
+		ng_plugins[i].plugin_string_id = 0;
 	}
 }
 
@@ -114,6 +127,50 @@ bool NGReallocateLevel(NG_LEVEL& level, unsigned int global_triggers_table_count
 	}
 }
 
+char *NGGetString(short string_id) {
+	if (string_id >= 0) {
+		if (string_id > TXT_NUM_STRINGS) {
+			NGLog(NG_LOG_TYPE_ERROR, "Invalid string ID");
+		} else {
+			return SCRIPT_TEXT(string_id);
+		}
+	} else {
+		short ng_string_id = string_id & ~(0x8000);
+		if (ng_string_id < MAX_NG_STRINGS) {
+			return ng_strings[ng_string_id];
+		} else {
+			NGLog(NG_LOG_TYPE_ERROR, "MAX_NG_STRINGS exceeded!");
+		}
+	}
+
+	return NULL;
+}
+
+char *NGGetPluginString(short plugin_id) {
+	if (plugin_id < MAX_NG_PLUGINS) {
+		if (ng_plugins[plugin_id].is_enabled) {
+			return NGGetString(ng_plugins[plugin_id].plugin_string_id);
+		}
+	} else {
+		NGLog(NG_LOG_TYPE_ERROR, "MAX_NG_STRINGS exceeded!");
+	}
+
+	return NULL;
+}
+
+void NGScriptCleanup() {
+	for (int i = 0; i < MAX_NG_LEVELS; i++) {
+		NGFreeLevel(ng_levels[i]);
+	}
+
+	for (int i = 0; i < MAX_NG_STRINGS; i++) {
+		if (ng_strings) {
+			free(ng_strings[i]);
+			ng_strings[i] = NULL;
+		}
+	}
+}
+
 void NGLoadTablesForLevel(unsigned int level) {
 	memset(&current_global_triggers, 0x00, sizeof(NG_GLOBAL_TRIGGER) * MAX_NG_GLOBAL_TRIGGERS);
 	memset(&current_trigger_groups, 0x00, sizeof(NG_TRIGGER_GROUP) * MAX_NG_TRIGGER_GROUPS);
@@ -142,12 +199,6 @@ void NGLoadTablesForLevel(unsigned int level) {
 
 			memcpy(&current_item_groups[id], &ng_levels[level].records->item_group_table[i].item_group, sizeof(NG_ITEM_GROUP));
 		}
-	}
-}
-
-extern void NGScriptCleanup() {
-	for (int i = 0; i < MAX_NG_LEVELS; i++) {
-		NGFreeLevel(ng_levels[i]);
 	}
 }
 
@@ -200,7 +251,7 @@ void NGSetupBugfixCustomization(int current_level, unsigned short bug_fix_flags)
 	}
 }
 
-void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int len) {
+void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int len) {
 	bool ng_header_found = false;
 
 	unsigned int footer_ident = NG_READ_32(gfScriptFile, offset);
@@ -243,18 +294,41 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 			}
 
 			switch (block_type) {
-				// SHOW_LARA_IN_TITLE
-				case 0xc8: {
-					unsigned short flags = NG_READ_16(gfScriptFile, offset);
-					get_game_mod_global_info().show_lara_in_title = flags & 0x40;
-					break;
-				}
 				// WorldFarView
 				case 0x05: {
 					world_far_view = NG_READ_16(gfScriptFile, offset);
 					for (int i = 0; i < MOD_LEVEL_COUNT; i++) {
 						get_game_mod_level_misc_info(i).far_view = (unsigned int)world_far_view * 1024;
 					}
+					break;
+				}
+				// Plugin
+				case 0x2b: {
+					unsigned short plugin_id = NG_READ_16(gfScriptFile, offset);
+					if (plugin_id >= MAX_NG_PLUGINS) {
+						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Plugin id exceeds MAX_NG_PLUGINS!");
+						break;
+					}
+
+					unsigned short plugin_string_id = NG_READ_16(gfScriptFile, offset);
+
+					unsigned short plugin_settings = NG_READ_16(gfScriptFile, offset);
+					if (plugin_settings != 0xffff)
+						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Plugin settings is not supported!");
+
+					unsigned short disable_array = NG_READ_16(gfScriptFile, offset);
+					if (disable_array != 0xffff)
+						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Plugin disable array is not supported!");
+
+					ng_plugins[plugin_id].is_enabled = true;
+					ng_plugins[plugin_id].plugin_string_id = plugin_string_id;
+
+					break;
+				}
+				// SHOW_LARA_IN_TITLE
+				case 0xc8: {
+					unsigned short flags = NG_READ_16(gfScriptFile, offset);
+					get_game_mod_global_info().show_lara_in_title = flags & 0x40;
 					break;
 				}
 				default: {
@@ -266,7 +340,8 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 
 			int command_block_end_position = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 			if (offset != command_block_end_position) {
-				NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: Command header block size mismatch!");
+				int size_difference = offset - command_block_end_position;
+				NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: Options command block size mismatch for command %u! off by %i", block_type, size_difference);
 			}
 			offset = command_block_end_position;
 		}
@@ -592,15 +667,15 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 					case 0x14: {
 						// Customize (WIP)
 						unsigned int customization_category = 0;
-						unsigned int plugin_index = 0;
+						unsigned int plugin_id = 0;
 						if (get_game_mod_global_info().trng_version_major == 1 && get_game_mod_global_info().trng_version_minor < 3) {
 							customization_category = NG_READ_16(gfScriptFile, offset);
 						} else {
 							customization_category = NG_READ_16(gfScriptFile, offset);
-							plugin_index = NG_READ_16(gfScriptFile, offset);
+							plugin_id = NG_READ_16(gfScriptFile, offset);
 						}
 
-						if (plugin_index == 0) {
+						if (plugin_id == 0) {
 							switch (customization_category) {
 								case CUST_DISABLE_SCREAMING_HEAD: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_DISABLE_SCREAMING_HEAD unimplemented (level %u)", current_level);
@@ -1003,7 +1078,12 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 							offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 						} else {
 							if (offset != command_block_end_position) {
-								NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Plugin customizations are not currently supported (level %u)", current_level);
+								char* plugin_string = NGGetPluginString(plugin_id);
+								if (plugin_string) {
+									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Plugin (%s) customizations are not currently supported (level %u)", plugin_string, current_level);
+								} else {
+									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Plugin (%u) customizations are not currently supported (level %u)", plugin_id, current_level);
+								}
 							}
 
 							// Skip to the end
@@ -1075,12 +1155,26 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 								unsigned short third_field_lower = NG_READ_16(gfScriptFile, offset);
 								unsigned short third_field_upper = NG_READ_16(gfScriptFile, offset);
 
-								NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TriggerGroup %u - Plugin TriggerGroup plugin_id:%u, first_field:0x%x, second_field:%u, third_field:0x%x",
-									id,
-									plugin_id,
-									first_field,
-									((int)second_field_upper << 16 | (int)second_field_lower),
-									((int)third_field_upper << 16 | (int)third_field_lower));
+								if (plugin_id != 0) {
+									char* plugin_string = NGGetPluginString(plugin_id);
+									if (plugin_string) {
+										NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TriggerGroup %u - Plugin TriggerGroup plugin:%s, first_field:0x%x, second_field:%u, third_field:0x%x (level %u)",
+											id,
+											plugin_string,
+											first_field,
+											((int)second_field_upper << 16 | (int)second_field_lower),
+											((int)third_field_upper << 16 | (int)third_field_lower),
+											current_level);
+									} else {
+										NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TriggerGroup %u - Plugin TriggerGroup plugin_id:%u, first_field:0x%x, second_field:%u, third_field:0x%x (level %u)",
+											id,
+											plugin_id,
+											first_field,
+											((int)second_field_upper << 16 | (int)second_field_lower),
+											((int)third_field_upper << 16 | (int)third_field_lower),
+											current_level);
+									}
+								}
 
 								level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].plugin_id = plugin_id;
 								level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].first_field = first_field;
@@ -1253,16 +1347,15 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 					case 0x1b: {
 						// Parameters (WIP)
 						unsigned int param_category = 0;
-						unsigned int plugin_index = 0;
+						unsigned int plugin_id = 0;
 						if (get_game_mod_global_info().trng_version_major == 1 && get_game_mod_global_info().trng_version_minor < 3) {
 							param_category = NG_READ_16(gfScriptFile, offset);
-						}
-						else {
+						} else {
 							param_category = NG_READ_16(gfScriptFile, offset);
-							plugin_index = NG_READ_16(gfScriptFile, offset);
+							plugin_id = NG_READ_16(gfScriptFile, offset);
 						}
 
-						if (plugin_index == 0) {
+						if (plugin_id == 0) {
 							switch (param_category) {
 								// PARAM_MOVE_ITEM
 								case 0x02: {
@@ -1270,8 +1363,7 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 									unsigned short flags = NG_READ_16(gfScriptFile, offset);
 									if (flags == 0xffff || flags == 0) {
 										flags = 0;
-									}
-									else {
+									} else {
 										NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: PARAM_MOVE_ITEM flags unsupported! (level %u)", current_level);
 									}
 									unsigned short index_item = NG_READ_16(gfScriptFile, offset);
@@ -1294,7 +1386,15 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 								}
 							}
 						} else {
-							NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Plugin parameters are not currently supported (level %u)", current_level);
+							if (offset != command_block_end_position) {
+								char* plugin_string = NGGetPluginString(plugin_id);
+								if (plugin_string) {
+									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Plugin (%s) parameters are not currently supported (level %u)", plugin_string, current_level);
+								}
+								else {
+									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Plugin (%u) parameters are not currently supported (level %u)", plugin_id, current_level);
+								}
+							}
 
 							// Skip to the end
 							offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
@@ -1476,7 +1576,7 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 				}
 				if (offset != command_block_end_position) {
 					int size_difference = offset - command_block_end_position;
-					NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: Command block size mismatch for command %u! (level %u), off by %i", block_type, current_level, size_difference);
+					NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: Level command block size mismatch for command %u! (level %u), off by %i", block_type, current_level, size_difference);
 				}
 				offset = command_block_end_position;
 			}
@@ -1495,5 +1595,64 @@ void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int 
 		free(level_trigger_group_table);
 		free(level_organizer_table);
 		free(level_item_group_table);
+	}
+}
+
+void NGReadNGExtraStrings(char *gfLanguageFile, unsigned int offset, unsigned int len) {
+	unsigned int footer_ident = NG_READ_32(gfLanguageFile, offset);
+	if (footer_ident != 0x454c474e) { // NGLE
+		return;
+	}
+
+	unsigned int footer_offset = NG_READ_32(gfLanguageFile, offset);
+	offset -= footer_offset;
+
+	unsigned short header_ident = NG_READ_16(gfLanguageFile, offset);
+	if (header_ident != 0x474e) { // NGLE
+		return;
+	}
+
+	unsigned short block_len = NG_READ_16(gfLanguageFile, offset);
+	unsigned short block_type = NG_READ_16(gfLanguageFile, offset);
+
+	if (block_type != 0x800a) {
+		return;
+	}
+
+	unsigned short string_count = NG_READ_16(gfLanguageFile, offset);
+
+	for (int i = 0; i < string_count; i++) {
+		unsigned int string_id = NG_READ_16(gfLanguageFile, offset);
+		unsigned int string_len = NG_READ_16(gfLanguageFile, offset);
+		string_len *= 2; // Two byte
+
+		if (string_id < 0 || string_id >= MAX_NG_STRINGS) {
+			NGLog(NG_LOG_TYPE_ERROR, "Invalid string ID %u!", string_id);
+			continue;
+		}
+
+		char *current_string = (char *)malloc(string_len);
+		if (current_string) {
+			memset(current_string, 0x00, string_len);
+
+			for (int j = 0; j < string_len; j++) {
+				current_string[j] = NG_READ_8(gfLanguageFile, offset);
+				if (current_string[j] != 0x00) {
+					current_string[j] ^= 0xa5;
+				}
+			}
+			
+			// Detect duplicates...
+			if (ng_strings[string_id]) {
+				free(ng_strings[string_id]);
+				ng_strings[string_id] = NULL;
+				NGLog(NG_LOG_TYPE_ERROR, "Duplicate string ID %u!", string_id);
+			}
+
+			ng_strings[string_id] = current_string;
+			NGLog(NG_LOG_TYPE_PRINT, "NGString (%u): %s", string_id, current_string);
+		} else {
+			NGLog(NG_LOG_TYPE_ERROR, "Failed to allocate memory for string %u!", string_id);
+		}
 	}
 }
