@@ -107,15 +107,18 @@ struct MOD_GLOBAL_INFO {
 	unsigned char trng_version_maintainence = 0;
 	unsigned char trng_version_build = 7;
 
-	bool trng_flipeffects_enabled = true; // TRNG (special TRNG flipeffects. Disable if conflicting with FURR)
-	bool trng_conditionals_enabled = true; // TRNG replaces monkeybar trigger type with customizable conditional conditional
-	bool trng_actions_enabled = true;
-	bool trng_rollingball_extended_ocb = true; // TRNG (moveable and regular trigger activation)
-	bool trng_statics_extended_ocb = true; // TRNG (touch inflicting poison)
-
+	// TRNG Stuff
+	bool trng_flipeffects_enabled = false; // TRNG (special TRNG flipeffects. Disable if conflicting with FURR)
+	bool trng_conditionals_enabled = false; // TRNG replaces monkeybar trigger type with customizable conditional conditional
+	bool trng_actions_enabled = false;
+	bool trng_rollingball_extended_ocb = false; // TRNG (moveable and regular trigger activation)
+	bool trng_statics_extended_ocb = false; // TRNG (touch inflicting poison)
 	// Climable pushables (both implementations have different quirks. Will attempt to more accurately recreate them later)
-	bool trng_pushable_extended_ocb = true; // TRNG (climable pushables)
-	bool trep_pushable_extended_ocb = true; // TREP (climable pushables)
+	bool trng_pushable_extended_ocb = false; // TRNG (climable pushables)
+	bool trng_allow_256_vertex_hack = false; // TRNG seems to have a special hack which allows meshes of 256 verticies
+
+	// TREP stuff
+	bool trep_pushable_extended_ocb = false; // TREP (climable pushables)
 
 	bool show_lara_in_title = false;
 	unsigned short max_particles = 256;

@@ -611,12 +611,20 @@ void finish_level_effect(ITEM_INFO* item)
 
 void turn180_effect(ITEM_INFO* item)
 {
+	// TRLE - safety check
+	if (!item)
+		return;
+
 	item->pos.y_rot += 0x8000;
 	item->pos.x_rot = -item->pos.x_rot;
 }
 
 void floor_shake_effect(ITEM_INFO* item)
 {
+	// TRLE - safety check
+	if (!item)
+		return;
+
 	long dx, dy, dz, dist;
 
 	dx = item->pos.x_pos - camera.pos.x;
@@ -800,6 +808,10 @@ void shoot_left_gun(ITEM_INFO* item)
 
 void swap_meshes_with_meshswap1(ITEM_INFO* item)
 {
+	// TRLE - safety check
+	if (!item)
+		return;
+
 	OBJECT_INFO* obj;
 	short* tmp;
 
@@ -815,6 +827,10 @@ void swap_meshes_with_meshswap1(ITEM_INFO* item)
 
 void swap_meshes_with_meshswap2(ITEM_INFO* item)
 {
+	// TRLE - safety check
+	if (!item)
+		return;
+
 	OBJECT_INFO* obj;
 	short* tmp;
 
@@ -830,6 +846,10 @@ void swap_meshes_with_meshswap2(ITEM_INFO* item)
 
 void swap_meshes_with_meshswap3(ITEM_INFO* item)
 {
+	// TRLE
+	if (!item)
+		return;
+
 	OBJECT_INFO* obj;
 	short* tmp;
 
@@ -849,11 +869,19 @@ void swap_meshes_with_meshswap3(ITEM_INFO* item)
 
 void invisibility_on(ITEM_INFO* item)
 {
+	// TRLE
+	if (!item)
+		return;
+
 	item->status = ITEM_INVISIBLE;
 }
 
 void invisibility_off(ITEM_INFO* item)
 {
+	// TRLE
+	if (!item)
+		return;
+
 	item->status = ITEM_ACTIVE;
 }
 

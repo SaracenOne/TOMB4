@@ -652,6 +652,8 @@ void ProcessMeshData(long num_meshes)
 	last_mesh_ptr = 0;
 	mesh = (MESH_DATA*)num_meshes;
 
+	bool allow_256_vertex_hack = get_game_mod_global_info().trng_allow_256_vertex_hack;
+
 	for (int i = 0; i < num_meshes; i++)
 	{
 		mesh_ptr = meshes[i];
@@ -680,7 +682,7 @@ void ProcessMeshData(long num_meshes)
 			// However, some of these values seem to work in TRNG. Not sure what's going on, so I'm
 			// hardcoding a check for 256 polycount for now, but may need to revisit if other
 			// numbers are encountered.
-			if (!mesh->nVerts && mesh_ptr[5] != 256) {
+			if (!mesh->nVerts && (mesh_ptr[5] != 256 || !allow_256_vertex_hack)) {
 				lp = (mesh_ptr[5] >> 8);
 			} else {
 				// TRLE: Add support for high vertex meshes. May allow some TREP and NGLE levels to load.

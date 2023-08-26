@@ -296,6 +296,7 @@ void LoadGameModConfigSecondPass() {
     if (global && JSON_OBJ == json_getType(global)) {
         MOD_GLOBAL_INFO* mod_global_info = &game_mod_config.global_info;
 
+        // TRNG
         READ_JSON_UINT8(trng_version_major, global, mod_global_info);
         READ_JSON_UINT8(trng_version_minor, global, mod_global_info);
         READ_JSON_UINT8(trng_version_maintainence, global, mod_global_info);
@@ -306,7 +307,12 @@ void LoadGameModConfigSecondPass() {
         READ_JSON_BOOL(trng_rollingball_extended_ocb, global, mod_global_info);
         READ_JSON_BOOL(trng_statics_extended_ocb, global, mod_global_info);
         READ_JSON_BOOL(trng_pushable_extended_ocb, global, mod_global_info);
+        READ_JSON_BOOL(trng_allow_256_vertex_hack, global, mod_global_info);
 
+        // TREP
+        READ_JSON_BOOL(trep_pushable_extended_ocb, global, mod_global_info);
+
+        // Misc
         READ_JSON_BOOL(show_lara_in_title, global, mod_global_info);
         READ_JSON_UINT16(max_particles, global, mod_global_info);
     }

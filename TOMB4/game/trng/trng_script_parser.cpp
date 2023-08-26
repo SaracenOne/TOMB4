@@ -272,6 +272,15 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 	//offset += 3;
 
 	if (ng_header_found) {
+		// TRNG Stuff
+		get_game_mod_global_info().trng_flipeffects_enabled = true;
+		get_game_mod_global_info().trng_conditionals_enabled = true;
+		get_game_mod_global_info().trng_actions_enabled = true;
+		get_game_mod_global_info().trng_rollingball_extended_ocb = true;
+		get_game_mod_global_info().trng_statics_extended_ocb = true;
+		get_game_mod_global_info().trng_pushable_extended_ocb = true;
+		get_game_mod_global_info().trng_allow_256_vertex_hack = true;
+
 		unsigned int options_header_block_start_position = offset;
 
 		unsigned short options_header_block_size = NG_READ_16(gfScriptFile, offset);
