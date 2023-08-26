@@ -325,7 +325,7 @@ bool set_room_type(unsigned char room_number, unsigned char room_type) {
 			}
 			default: {
 				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "SET_ROOM_TYPE: unsupported room type!");
-				break;
+				return false;
 			}
 		}
 	}
@@ -338,31 +338,38 @@ bool remove_room_type(unsigned char room_number, unsigned char room_type) {
 	ROOM_INFO* r = &room[room_number];
 	if (r) {
 		switch (room_type) {
-		case 0: {
-			r->flags &= ~ROOM_UNDERWATER;
-		}
-		case 2: {
-			r->flags &= ~ROOM_SKYBOX;
-		}
-		case 4: {
-			r->flags &= ~0x10;
-		}
-		case 5: {
-			r->flags &= ~ROOM_NOT_INSIDE; // TODO: check this
-		}
-		case 10: {
-			r->flags &= ~ROOM_SNOW;
-		}
-		case 11: {
-			r->flags &= ~ROOM_RAIN;
-		}
-		case 12: {
-			r->flags &= ~ROOM_COLD;
-		}
-		default: {
-			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "REMOVE_ROOM_TYPE: unsupported room type!");
-			return false;
-		}
+			case 0: {
+				r->flags &= ~ROOM_UNDERWATER;
+				break;
+			}
+			case 2: {
+				r->flags &= ~ROOM_SKYBOX;
+				break;
+			}
+			case 4: {
+				r->flags &= ~0x10;
+				break;
+			}
+			case 5: {
+				r->flags &= ~ROOM_NOT_INSIDE; // TODO: check this
+				break;
+			}
+			case 10: {
+				r->flags &= ~ROOM_SNOW;
+				break;
+			}
+			case 11: {
+				r->flags &= ~ROOM_RAIN;
+				break;
+			}
+			case 12: {
+				r->flags &= ~ROOM_COLD;
+				break;
+			}
+			default: {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "REMOVE_ROOM_TYPE: unsupported room type!");
+				return false;
+			}
 		}
 	}
 
