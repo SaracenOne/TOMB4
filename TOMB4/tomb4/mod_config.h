@@ -115,10 +115,14 @@ struct MOD_GLOBAL_INFO {
 	bool trng_statics_extended_ocb = false; // TRNG (touch inflicting poison)
 	// Climable pushables (both implementations have different quirks. Will attempt to more accurately recreate them later)
 	bool trng_pushable_extended_ocb = false; // TRNG (climable pushables)
-	bool trng_allow_256_vertex_hack = false; // TRNG seems to have a special hack which allows meshes of 256 verticies
+	bool trng_hack_allow_meshes_with_exactly_256_vertices = false; // TRNG seems to have a special hack which allows meshes of 256 verticies
 
 	// TREP stuff
 	bool trep_pushable_extended_ocb = false; // TREP (climable pushables)
+
+	// Tomo stuff
+	bool tomo_enable_weather_flipeffect = false;
+	bool tomo_swap_whitelight_for_teleporter = false;
 
 	bool show_lara_in_title = false;
 	unsigned short max_particles = 256;

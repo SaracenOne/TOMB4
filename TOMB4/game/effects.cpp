@@ -25,6 +25,7 @@
 #include "gameflow.h"
 
 #include "delstuff.h"
+#include "../tomb4/mod_config.h"
 
 FX_INFO* effects;
 OBJECT_VECTOR* sound_effects;
@@ -878,11 +879,25 @@ void invisibility_on(ITEM_INFO* item)
 
 void invisibility_off(ITEM_INFO* item)
 {
-	// TRLE
-	if (!item)
-		return;
+	if (game_mod_config.global_info.tomo_enable_weather_flipeffect) {
+		switch (TriggerTimer) {
+			case 1: // Rain
+				WeatherType = 1;
+				break;
+			case 2: // Snow
+				WeatherType = 2;
+				break;
+			case 3: // No weather
+				WeatherType = 0;
+				break;
+		}
+	} else {
+		// TRLE
+		if (!item)
+			return;
 
-	item->status = ITEM_ACTIVE;
+		item->status = ITEM_ACTIVE;
+	}
 }
 
 void reset_hair(ITEM_INFO* item)

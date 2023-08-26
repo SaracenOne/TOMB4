@@ -307,10 +307,14 @@ void LoadGameModConfigSecondPass() {
         READ_JSON_BOOL(trng_rollingball_extended_ocb, global, mod_global_info);
         READ_JSON_BOOL(trng_statics_extended_ocb, global, mod_global_info);
         READ_JSON_BOOL(trng_pushable_extended_ocb, global, mod_global_info);
-        READ_JSON_BOOL(trng_allow_256_vertex_hack, global, mod_global_info);
+        READ_JSON_BOOL(trng_hack_allow_meshes_with_exactly_256_vertices, global, mod_global_info);
 
         // TREP
         READ_JSON_BOOL(trep_pushable_extended_ocb, global, mod_global_info);
+
+        // TOMO
+        READ_JSON_BOOL(tomo_enable_weather_flipeffect, global, mod_global_info);
+        READ_JSON_BOOL(tomo_swap_whitelight_for_teleporter, global, mod_global_info);
 
         // Misc
         READ_JSON_BOOL(show_lara_in_title, global, mod_global_info);

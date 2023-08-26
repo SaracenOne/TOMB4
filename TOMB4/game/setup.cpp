@@ -67,6 +67,7 @@
 
 // TRLE mod config
 #include "../tomb4/mod_config.h"
+#include "../tomb4//tomb4plus/teleporter.h"
 
 void ObjectObjects()
 {
@@ -515,7 +516,10 @@ void ObjectObjects()
 	obj->save_flags = 1;
 
 	obj = &objects[WHITE_LIGHT];
-	obj->control = ControlElectricalLight;
+	if (game_mod_config.global_info.tomo_swap_whitelight_for_teleporter)
+		obj->control = ControlTeleporter;
+	else
+		obj->control = ControlElectricalLight;
 	obj->draw_routine = 0;
 	obj->using_drawanimating_item = 0;
 	obj->save_flags = 1;
