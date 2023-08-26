@@ -446,12 +446,15 @@ void DrawAnimatingItem(ITEM_INFO* item)
 			rot2 = frm[1] + 9;
 			gar_RotYXZsuperpack_I(&rot, &rot2, 0);
 
-			if (item->mesh_bits & 1)
-			{
-				if (item->meshswap_meshbits & 1)
-					phd_PutPolygons_I(meshpp[1], clip);
-				else
-					phd_PutPolygons_I(meshpp[0], clip);
+			// NGLE
+			if (bit & mesh_visibility_mask) {
+				if (item->mesh_bits & 1)
+				{
+					if (item->meshswap_meshbits & 1)
+						phd_PutPolygons_I(meshpp[1], clip);
+					else
+						phd_PutPolygons_I(meshpp[0], clip);
+				}
 			}
 
 			meshpp += 2;
@@ -512,12 +515,15 @@ void DrawAnimatingItem(ITEM_INFO* item)
 			rot = frm[0] + 9;
 			gar_RotYXZsuperpack(&rot, 0);
 
-			if (item->mesh_bits & 1)
-			{
-				if (item->meshswap_meshbits & 1)
-					phd_PutPolygons(meshpp[1], clip);
-				else
-					phd_PutPolygons(meshpp[0], clip);
+			// NGLE
+			if (bit & mesh_visibility_mask) {
+				if (item->mesh_bits & 1)
+				{
+					if (item->meshswap_meshbits & 1)
+						phd_PutPolygons(meshpp[1], clip);
+					else
+						phd_PutPolygons(meshpp[0], clip);
+				}
 			}
 
 			meshpp += 2;
