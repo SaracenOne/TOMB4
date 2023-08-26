@@ -11,9 +11,6 @@
     <Filter Include="TOMB4\tomb4">
       <UniqueIdentifier>{ad226c30-b016-4a1f-aebc-23a4995db70c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="TOMB4\global">
-      <UniqueIdentifier>{b59565fa-63f4-4f60-8fa6-b6d276a8b4b4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="TOMB4\specific">
       <UniqueIdentifier>{20418847-c257-4ca3-aa9f-335a8c09ee31}</UniqueIdentifier>
     </Filter>
@@ -40,6 +37,18 @@
     </Filter>
     <Filter Include="TOMB4\game\trep">
       <UniqueIdentifier>{27d6677f-1b77-45db-be7b-95d0482f3b67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TOMB4\game\trng\objects">
+      <UniqueIdentifier>{8d1ddace-15fe-4237-8291-ecfd4e83f04f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TOMB4\global">
+      <UniqueIdentifier>{b59565fa-63f4-4f60-8fa6-b6d276a8b4b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TOMB4\game\trng\plugins">
+      <UniqueIdentifier>{b7bbf474-9cc2-4db4-8293-156cb6405d01}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TOMB4\tomb4\tomb4plus">
+      <UniqueIdentifier>{36728013-d7f2-4ae1-be78-51915b0f1405}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -380,7 +389,6 @@
     <ClInclude Include="TOMB4\tomb4\libs\zlib\zlib.h">
       <Filter>TOMB4\tomb4\libs\zlib</Filter>
     </ClInclude>
-    <ClInclude Include="TOMB4\specific\drawbars.h" />
     <ClInclude Include="TOMB4\tomb4\mod_config.h">
       <Filter>TOMB4\tomb4</Filter>
     </ClInclude>
@@ -410,6 +418,21 @@
     </ClInclude>
     <ClInclude Include="TOMB4\game\trng\trng_arithmetic.h">
       <Filter>TOMB4\game\trng</Filter>
+    </ClInclude>
+    <ClInclude Include="TOMB4\specific\drawbars.h">
+      <Filter>TOMB4\specific</Filter>
+    </ClInclude>
+    <ClInclude Include="TOMB4\game\trng\trng_triggergroup.h">
+      <Filter>TOMB4\game\trng</Filter>
+    </ClInclude>
+    <ClInclude Include="TOMB4\game\trng\trng_globaltrigger.h">
+      <Filter>TOMB4\game\trng</Filter>
+    </ClInclude>
+    <ClInclude Include="TOMB4\game\trng\trng_organizer.h">
+      <Filter>TOMB4\game\trng</Filter>
+    </ClInclude>
+    <ClInclude Include="TOMB4\tomb4\tomb4plus\teleporter.h">
+      <Filter>TOMB4\tomb4\tomb4plus</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -781,6 +804,21 @@
     </ClCompile>
     <ClCompile Include="TOMB4\game\trng\trng_arithmetic.cpp">
       <Filter>TOMB4\game\trng</Filter>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\trng\objects\trng_speedboat.cpp">
+      <Filter>TOMB4\game\trng\objects</Filter>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\trng\trng_triggergroup.cpp">
+      <Filter>TOMB4\game\trng</Filter>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\trng\trng_globaltrigger.cpp">
+      <Filter>TOMB4\game\trng</Filter>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\trng\trng_organizer.cpp">
+      <Filter>TOMB4\game\trng</Filter>
+    </ClCompile>
+    <ClCompile Include="TOMB4\tomb4\tomb4plus\teleporter.cpp">
+      <Filter>TOMB4\tomb4\tomb4plus</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
