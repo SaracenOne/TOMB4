@@ -520,9 +520,10 @@ bool static_visibility_set_as_invisible(unsigned char static_id_lower, unsigned 
 	int room_number = entry->room_index;
 	if (room_number >= 0 && room_number < number_rooms) {
 		MESH_INFO* mesh = &room[room_number].mesh[entry->mesh_id];
-		if (mesh->Flags & 1) {
+		if (mesh)
 			mesh->Flags &= ~1;
-		}
+		else
+			NGLog(NG_LOG_TYPE_ERROR, "static_visibility_set_as_invisible: Missing static mesh!");
 	}
 
 	return true;
@@ -536,9 +537,10 @@ bool static_visibility_render_newly_visible(unsigned char static_id_lower, unsig
 	int room_number = entry->room_index;
 	if (room_number >= 0 && room_number < number_rooms) {
 		MESH_INFO* mesh = &room[room_number].mesh[entry->mesh_id];
-		if (mesh->Flags & 1) {
+		if (mesh)
 			mesh->Flags |= 1;
-		}
+		else
+			NGLog(NG_LOG_TYPE_ERROR, "static_visibility_render_newly_visible: Missing static mesh!");
 	}
 
 	return true;
