@@ -77,6 +77,12 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 			if (trigger_group.data[index].plugin_id != 0) {
 				char *plugin_string = NGGetPluginString(trigger_group.data[index].plugin_id);
 
+				if ((trigger_group.data[index].first_field & 0xF000) == 0x8000 || (trigger_group.data[index].first_field & 0xF000) == 0x9000) {
+					current_result = false;
+				} else {
+					current_result = true;
+				}
+
 				if (plugin_string) {
 					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Plugin triggers are not yet supported (trigger_id: %u, plugin:%s, first_field:0x%x, second_field:%u, third_field:0x%x)",
 						trigger_group_id,
@@ -96,6 +102,9 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 				// ActionNG (statics)
 				if ((trigger_group.data[index].first_field & 0xF000) == 0x4000) {
 					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ActionNG (statics) unsupported!");
+					if (!current_result) {
+						current_result = true;
+					}
 				}
 				// ActionNG
 				else if ((trigger_group.data[index].first_field & 0xF000) == 0x5000) {
@@ -104,6 +113,11 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 					}
 					else {
 						current_result = NGAction(ng_script_id_table[trigger_group.data[index].second_field_lower], trigger_group.data[index].third_field_lower & 0x7fff, true) != -1;
+					}
+
+					if (!current_result) {
+						NGLog(NG_LOG_TYPE_ERROR, "ActionNG returned false!");
+						current_result = true;
 					}
 				}
 				// ConditionNG
@@ -133,12 +147,16 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 					else {
 						current_result = NGFlipEffect(trigger_group.data[index].second_field_lower, trigger_group.data[index].third_field_lower & 0x7fff, false, true);
 					}
+
+					if (!current_result) {
+						NGLog(NG_LOG_TYPE_ERROR, "Flipeffect returned false!");
+						current_result = true;
+					}
 				}
 				// End
 				else if (trigger_group.data[index].first_field == 0x0000) {
 					break;
-				}
-				else {
+				} else {
 					NGLog(NG_LOG_TYPE_ERROR, "Unknown triggergroup command!");
 					operation_result = false;
 					break;

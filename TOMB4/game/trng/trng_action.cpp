@@ -130,6 +130,7 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame) {
 	}
 
 	if (item_id < 0) {
+		NGLog(NG_LOG_TYPE_ERROR, "ActionNG: Negative item ID!");
 		return -1;
 	}
 
