@@ -124,13 +124,17 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame) {
 	unsigned char action_type = (unsigned char)extra & 0xff;
 	unsigned char action_data = (unsigned char)(extra >> 8) & 0xff;
 
+	if (param < 0) {
+		NGLog(NG_LOG_TYPE_ERROR, "ActionNG: Negative item ID!");
+		return -1;
+	}
+
 	short item_id = -1;
 	if (first_frame) {
 		item_id = param;
 	}
 
 	if (item_id < 0) {
-		NGLog(NG_LOG_TYPE_ERROR, "ActionNG: Negative item ID!");
 		return -1;
 	}
 
@@ -322,11 +326,11 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame) {
 			break;
 		}
 		case ACTIVATE_CAMERA_WITH_TIMER: {
-			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ACTIVATE_CAMERA_WITH_TIMER unimplemented");
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ACTIVATE_CAMERA_WITH_TIMER unimplemented!");
 			break;
 		}
 		case SET_MOVEABLE_AS_TARGET_FOR_CAMERA: {
-			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "SET_MOVEABLE_AS_TARGET_FOR_CAMERA unimplemented");
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "SET_MOVEABLE_AS_TARGET_FOR_CAMERA unimplemented!");
 			break;
 		}
 		case TRIGGER_MOVEABLE_ACTIVATE_WITH_TIMER: {
@@ -343,15 +347,21 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame) {
 			}
 			break;
 		}
+		case ACTIVATE_OR_UNTRIGGER_FLYBY_SEQUENCE: {
+			if (first_frame) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ACTIVATE_OR_UNTRIGGER_FLYBY_SEQUENCE unimplemented!");
+			}
+			break;
+		}
 		case EFFECT_ADD_TO_ENEMY: {
 			if (first_frame) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "EFFECT_ADD_TO_ENEMY unimplemented");
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "EFFECT_ADD_TO_ENEMY unimplemented!");
 			}
 			break;
 		}
 		case EFFECT_REMOVE_TO_ENEMY: {
 			if (first_frame) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "EFFECT_REMOVE_TO_ENEMY unimplemented");
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "EFFECT_REMOVE_TO_ENEMY unimplemented!");
 			}
 			break;
 		}
@@ -373,6 +383,12 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame) {
 			}
 			break;
 		}
+		case SET_ENEMY_TRANSPARENCY_LEVEL: {
+			if (first_frame) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "SET_ENEMY_TRANSPARENCY_LEVEL: unimplemented!");
+			}
+			break;
+		}
 		case FORCE_ANIMATION_0_TO_31_ON_ITEM: {
 			if (first_frame) {
 				NGForceItemAnimation(item_id, action_data & 0x1f);
@@ -388,6 +404,12 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame) {
 		case FORCE_ANIMATION_64_TO_95_ON_ITEM: {
 			if (first_frame) {
 				NGForceItemAnimation(item_id, (action_data & 0x1f) + 64);
+			}
+			break;
+		}
+		case TURN_VERTICALLY_FASTLY_IN_CLOCKWISE_DIRECTION: {
+			if (first_frame) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TURN_VERTICALLY_FASTLY_IN_CLOCKWISE_DIRECTION unimplemented!");
 			}
 			break;
 		}
