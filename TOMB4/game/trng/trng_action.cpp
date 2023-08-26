@@ -395,10 +395,18 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame) {
 				NGItemActivator(item_id, false);
 				items[item_id].timer = 0;
 
+				bool reverse = (items[item_id].flags & IFL_REVERSE) ? true : false;
+
 				if (action_data) {
-					items[item_id].flags |= IFL_CODEBITS;
+					if (reverse)
+						items[item_id].flags &= IFL_CODEBITS;
+					else
+						items[item_id].flags |= IFL_CODEBITS;
 				} else {
-					items[item_id].flags &= ~IFL_CODEBITS;
+					if (reverse)
+						items[item_id].flags |= IFL_CODEBITS;
+					else
+						items[item_id].flags &= IFL_CODEBITS;
 				}
 			}
 			break;
