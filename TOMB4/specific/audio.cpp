@@ -1220,6 +1220,16 @@ struct ma_callback_userdata {
 ma_audio_stream_channel channels[MA_AUDIO_STREAM_COUNT];
 ma_callback_userdata callback_userdata[MA_AUDIO_STREAM_COUNT];
 
+int count_matching_characters(const char* s1, const char* s2) {
+	int count = 0;
+	while (*s1 && *s2 && *s1 == *s2) {
+		count++;
+		s1++;
+		s2++;
+	}
+	return count;
+}
+
 void find_file_with_substring(const char* dir_path, const char* substring, char* found_filename)
 {
 	char win32_path[256];
@@ -1238,10 +1248,10 @@ void find_file_with_substring(const char* dir_path, const char* substring, char*
 			continue; // Skip directories
 		}
 
-		int cmp_res = _stricmp(find_file_data.cFileName, substring);
+		int cmp_count = count_matching_characters(substring, find_file_data.cFileName);
 		int str_len = strlen(substring);
 
-		if (cmp_res >= str_len || cmp_res == 0) {
+		if (cmp_count >= str_len) {
 			strncpy(found_filename, find_file_data.cFileName, 256 - 1);
 			found_filename[256 - 1] = '\0';
 			break;
