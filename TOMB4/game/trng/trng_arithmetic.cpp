@@ -6,6 +6,9 @@
 
 unsigned char NGNumericOperationByte(NGNumericOperationType number_operation_type, unsigned char variable, unsigned int value) {
 	switch (number_operation_type) {
+		case NG_SET: {
+			return value;
+		}
 		case NG_ADD: {
 			return variable + value;
 		}
@@ -25,6 +28,10 @@ unsigned char NGNumericOperationByte(NGNumericOperationType number_operation_typ
 
 unsigned short NGNumericOperationShort(NGNumericOperationType number_operation_type, unsigned short variable, unsigned int value) {
 	switch (number_operation_type) {
+		case NG_SET: {
+			return value;
+			break;
+		}
 		case NG_ADD: {
 			return variable + value;
 			break;
@@ -48,6 +55,10 @@ unsigned short NGNumericOperationShort(NGNumericOperationType number_operation_t
 
 unsigned long NGNumericOperationLong(NGNumericOperationType number_operation_type, unsigned long variable, unsigned int value) {
 	switch (number_operation_type) {
+		case NG_SET: {
+			return value;
+			break;
+		}
 		case NG_ADD: {
 			return variable + value;
 			break;

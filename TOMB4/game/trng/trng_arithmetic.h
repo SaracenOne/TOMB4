@@ -1,7 +1,8 @@
 #pragma once
 
 enum NGNumericOperationType {
-	NG_ADD = 0,
+	NG_SET = 0,
+	NG_ADD,
 	NG_SUBTRACT,
 	NG_MULTIPLY,
 	NG_DIVIDE,
