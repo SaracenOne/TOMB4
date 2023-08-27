@@ -17,6 +17,7 @@
 #include "../box.h"
 #include "../../tomb4/mod_config.h"
 #include "../camera.h"
+#include "../spotcam.h"
 
 void NGItemActivator(int item_id, bool anti) {
 	ITEM_INFO* item;
@@ -349,7 +350,14 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame) {
 		}
 		case ACTIVATE_OR_UNTRIGGER_FLYBY_SEQUENCE: {
 			if (first_frame) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ACTIVATE_OR_UNTRIGGER_FLYBY_SEQUENCE unimplemented!");
+				if (action_data == 0) {
+					bUseSpotCam = 1;
+					InitialiseSpotCam(param);
+				} else if (action_data == 1){
+					bUseSpotCam = 0;
+				} else {
+					NGLog(NG_LOG_TYPE_ERROR, "ACTIVATE_OR_UNTRIGGER_FLYBY_SEQUENCE invalid action data!");
+				}
 			}
 			break;
 		}
@@ -464,10 +472,10 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame) {
 				}
 			}
 			break;
-		case MOVE_ITEM_SOUTH_FOR_CLICKS:
+		case MOVE_ITEM_NORTH_FOR_CLICKS:
 			if (first_frame) {
 				if (NGGetItemNorthSouthUnits(item_id) == 0) {
-					NGSetItemNorthSouthUnits(item_id, (action_data+1) * -256);
+					NGSetItemNorthSouthUnits(item_id, (action_data+1) * 256);
 					NGSetItemMovementSpeed(item_id, 32);
 					NGSetItemMovementInProgressSound(item_id, -1);
 					NGSetItemMovementFinishedSound(item_id, -1);
@@ -477,21 +485,26 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame) {
 		case MOVE_ITEM_EAST_FOR_CLICKS:
 			if (first_frame) {
 				if (NGGetItemEastWestUnits(item_id) == 0) {
-					NGSetItemEastWestUnits(item_id, (action_data+1) * 256);
+					NGSetItemEastWestUnits(item_id, (action_data + 1) * 256);
 					NGSetItemMovementSpeed(item_id, 32);
 					NGSetItemMovementInProgressSound(item_id, -1);
 					NGSetItemMovementFinishedSound(item_id, -1);
 				}
 			}
 			break;
-		case MOVE_ITEM_NORTH_FOR_CLICKS:
+		case MOVE_ITEM_SOUTH_FOR_CLICKS:
 			if (first_frame) {
 				if (NGGetItemNorthSouthUnits(item_id) == 0) {
-					NGSetItemNorthSouthUnits(item_id, (action_data+1) * 256);
+					NGSetItemNorthSouthUnits(item_id, (action_data + 1) * -256);
 					NGSetItemMovementSpeed(item_id, 32);
 					NGSetItemMovementInProgressSound(item_id, -1);
 					NGSetItemMovementFinishedSound(item_id, -1);
 				}
+			}
+			break;
+		case MOVE_CONTINUOUSLY_UPSTAIRS_DOWNSTAIRS_FOR_X_CLICKS:
+			if (first_frame) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "MOVE_CONTINUOUSLY_UPSTAIRS_DOWNSTAIRS_FOR_X_CLICKS unimplemented!");
 			}
 			break;
 		case DISABLE_ITEM_COLLISION:

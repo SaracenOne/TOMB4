@@ -758,6 +758,13 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 				return lara_toggle_infinite_air(action_data_1, action_data_2);
 			break;
 		}
+		case LARA_ENABLE_OR_DISABLE_WEAPONS: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_ENABLE_OR_DISABLE_WEAPONS unimplemented!");
+				return true;
+			}
+			break;
+		}
 		case GLOBAL_TRIGGER_ENABLE_DISABLE: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
 				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "GLOBAL_TRIGGER_ENABLE_DISABLE unimplemented!");
@@ -947,6 +954,13 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 		case DIARY_ADD_EXTRA_NG_STIRNG_TO_DIARY: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
 				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "DIARY_ADD_EXTRA_NG_STIRNG_TO_DIARY unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case DIARY_SHOW_DIARY_AT_PAGE: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "DIARY_SHOW_DIARY_AT_PAGE unimplemented!");
 				return true;
 			}
 			break;
