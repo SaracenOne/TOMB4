@@ -413,14 +413,14 @@ bool organizer_disable(unsigned char organizer_id_lower, unsigned char organizer
 }
 
 // NGLE - 129
-bool play_cd_track_channel_2(unsigned char track_id, unsigned char looping) {
+bool sound_play_cd_track_channel_2(unsigned char track_id, unsigned char looping) {
 	S_CDPlayExt(track_id, 1, looping, false);
 
 	return true;
 }
 
 // NGLE - 130
-bool stop_cd_track_on_channel(unsigned char channel_id, unsigned char unused) {
+bool sound_stop_cd_track_on_channel(unsigned char channel_id, unsigned char unused) {
 	S_CDStopExt(channel_id);
 
 	return true;
@@ -428,18 +428,18 @@ bool stop_cd_track_on_channel(unsigned char channel_id, unsigned char unused) {
 
 
 // NGLE - 133
-bool set_volume_for_audio_track_on_channel(unsigned char volume, unsigned char channel) {
+bool sound_set_x_volume_for_audio_track_on_channel(unsigned char volume, unsigned char channel) {
 	S_CDSetChannelVolume(volume, channel);
 	return true;
 }
 
 // NGLE - 145
-bool activate_item_group_with_timer(unsigned char item_group, unsigned char timer) {
+bool itemgroup_activate_item_group_with_timer(unsigned char item_group, unsigned char timer) {
 	return NGTriggerItemGroupWithTimer(item_group, timer, false);
 }
 
 // NGLE - 146
-bool untrigger_item_group_with_timer(unsigned char item_group, unsigned char timer) {
+bool itemgroup_untrigger_item_group_with_timer(unsigned char item_group, unsigned char timer) {
 	return NGTriggerItemGroupWithTimer(item_group, timer, true);
 }
 
@@ -471,7 +471,7 @@ bool static_shatter(unsigned char static_id_lower, unsigned char static_id_upper
 }
 
 // NGLE - 168
-bool play_sound(unsigned char lower_sample_id, unsigned char upper_sample_id) {
+bool sound_play_sound_single_playback_of_global_sound_map(unsigned char lower_sample_id, unsigned char upper_sample_id) {
 	int indexed_sound_sample = (int)lower_sample_id | ((int)(upper_sample_id) << 8 & 0xff00);
 	
 	SoundEffect(indexed_sound_sample, NULL, SFX_ALWAYS);
@@ -1009,6 +1009,41 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 			}
 			break;
 		}
+		case LARA_INCREASE_AIR_FOR_LARA_OF_X_UNITS_IN_WAY: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_INCREASE_AIR_FOR_LARA_OF_X_UNITS_IN_WAY unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case LARA_DECREASE_DAMAGE_BAR_OF_DAMAGE_ROOM_OF_X_UNITS_IN_WAY: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_DECREASE_DAMAGE_BAR_OF_DAMAGE_ROOM_OF_X_UNITS_IN_WAY unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case LARA_DECREASE_COLD_BAR_OF_COLD_ROOM_OF_X_UNITS_IN_WAY: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_DECREASE_COLD_BAR_OF_COLD_ROOM_OF_X_UNITS_IN_WAY unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case LARA_HEALTH_POISON_LARA_WITH_X_INTENSITY_OF_POISON: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_HEALTH_POISON_LARA_WITH_X_INTENSITY_OF_POISON unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case LARA_REMOVE_POSION_FROM_LARA: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_REMOVE_POSION_FROM_LARA unimplemented!");
+				return true;
+			}
+			break;
+		}
 		case SET_ROOM_TYPE: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return set_room_type(action_data_1, action_data_2);
@@ -1019,10 +1054,60 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 				return remove_room_type(action_data_1, action_data_2);
 			break;
 		}
+		case WEATHER_SET_RAIN_OR_SNOW_INTENSITY_FOR_X_ROOM_WITH_NEW_INTENSITY_VALUE: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "WEATHER_SET_RAIN_OR_SNOW_INTENSITY_FOR_X_ROOM_WITH_NEW_INTENSITY_VALUE unimplemented!");
+				return true;
+			}
+			break;
+		}
 		case PERFORM_TRIGGERGROUP_FROM_SCRIPT_IN_SPECIFIC_WAY:
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return perform_triggergroup_from_script_in_specific_way(action_data_1, action_data_2);
 			break;
+
+		case CAMERA_SET_CURRENT_CAMERA_AS_FOLLOR_CAMERA_ON_AXIS_UNTIL_CONDITION: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "CAMERA_SET_CURRENT_CAMERA_AS_FOLLOR_CAMERA_ON_AXIS_UNTIL_CONDITION unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case CAMERA_STOP_CURRENT_AXIS_OR_EFFECT_CAMERA_AND_THE_CAMERA_LINKED_WITH_IT: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "CAMERA_STOP_CURRENT_AXIS_OR_EFFECT_CAMERA_AND_THE_CAMERA_LINKED_WITH_IT unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case LARA_DISABLE_X_SKILL: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_DISABLE_X_SKILL unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case LARA_RESTORE_X_SKILL: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_RESTORE_X_SKILL unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case CAMERA_USE_CURRENT_CAMERA_TO_PERFORM_X_EFFECT_AT_DISTANCE_FROM_TARGET: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "CAMERA_USE_CURRENT_CAMERA_TO_PERFORM_X_EFFECT_AT_DISTANCE_FROM_TARGET unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case FLIPMAP_ENABLED_X_FLIPMAP_WITH_BUTTONS_FOR_ACTIVATION: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "FLIPMAP_ENABLED_X_FLIPMAP_WITH_BUTTONS_FOR_ACTIVATION unimplemented!");
+				return true;
+			}
+			break;
+		}
 		case FLIPMAP_ON: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return flipmap_on(action_data_1, action_data_2);
@@ -1041,41 +1126,209 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return organizer_disable(action_data_1, action_data_2);
 			break;
-		case PLAY_CD_TRACK_ON_CHANNEL_2: {
+		case SOUND_PLAY_CD_TRACK_ON_CHANNEL_2: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
-				return play_cd_track_channel_2(action_data_1, action_data_2);
+				return sound_play_cd_track_channel_2(action_data_1, action_data_2);
 			break;
 		}
-		case STOP_CD_TRACK_ON_CHANNEL: {
+		case SOUND_STOP_CD_TRACK_ON_CHANNEL: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
-				return stop_cd_track_on_channel(action_data_1, action_data_2);
+				return sound_stop_cd_track_on_channel(action_data_1, action_data_2);
 			break;
 		}
-		case SET_VOLUME_OF_AUDIO_TRACK_ON_CHANNEL: {
-			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
-				return set_volume_for_audio_track_on_channel(action_data_1, action_data_2);
-			break;
-		}
-		case ACTIVATE_ITEM_GROUP_WITH_TIMER: {
-			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
-				return activate_item_group_with_timer(action_data_1, action_data_2);
-			break;
-		}
-		case UNTRIGGER_ITEM_GROUP_WITH_TIMER: {
-			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
-				return untrigger_item_group_with_timer(action_data_1, action_data_2);
-			break;
-		}
-		case ATTRACT_LARA_IN_DIRECTION_IN_AIR: {
+		case SOUND_PLAY_X_IMPORTED_FILE_IN_LOOP_MODE_ON_CHANNEL: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ATTRACT_LARA_IN_DIRECTION_IN_AIR unimplemented!");
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "SOUND_PLAY_X_IMPORTED_FILE_IN_LOOP_MODE_ON_CHANNEL unimplemented!");
 				return true;
 			}
 			break;
 		}
-		case ATTRACT_LARA_IN_DIRECTION_ON_GROUND_AND_IN_AIR: {
+		case SOUND_PLAY_X_IMPORTED_FILE_IN_SINGLE_PLAY_MODE_ON_CHANNEL: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ATTRACT_LARA_IN_DIRECTION_ON_GROUND_AND_IN_AIR unimplemented!");
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "SOUND_PLAY_X_IMPORTED_FILE_IN_SINGLE_PLAY_MODE_ON_CHANNEL unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case SOUND_SET_X_VOLUME_OF_AUDIO_TRACK_ON_CHANNEL: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+				return sound_set_x_volume_for_audio_track_on_channel(action_data_1, action_data_2);
+			break;
+		}
+		case LARA_ATTRACT_LARA_IN_DIRECTION_ON_GROUND_WITH_SPEED: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_ATTRACT_LARA_IN_DIRECTION_ON_GROUND unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case LARA_ATTRACT_LARA_IN_DIRECTION_IN_AIR_WITH_SPEED: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_ATTRACT_LARA_IN_DIRECTION_ON_IN_AIR unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case LARA_ATTRACT_LARA_UP_DOWN: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_ATTRACT_LARA_UP_DOWN unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case ITEMGROUP_MOVE_CONTINUOUSLY_FORWARD_BACKWARD_X_ITEMGROUP_OF_CLICKS: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ITEMGROUP_MOVE_CONTINUOUSLY_FORWARD_BACKWARD_X_ITEMGROUP_OF_CLICKS unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case ITEMGROUP_MOVE_UP_X_ITEMGROUP_FOR_CLICKS: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ITEMGROUP_MOVE_UP_X_ITEMGROUP_FOR_CLICKS unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case ITEMGROUP_MOVE_DOWN_X_ITEMGROUP_FOR_CLICKS: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ITEMGROUP_MOVE_DOWN_X_ITEMGROUP_FOR_CLICKS unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case ITEMGROUP_MOVE_TO_WEST_X_ITEMGROUP_FOR_CLICKS: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ITEMGROUP_MOVE_TO_WEST_X_ITEMGROUP_FOR_CLICKS unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case ITEMGROUP_MOVE_TO_NORTH_X_ITEMGROUP_FOR_CLICKS: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ITEMGROUP_MOVE_TO_NORTH_X_ITEMGROUP_FOR_CLICKS unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case ITEMGROUP_MOVE_TO_EAST_X_ITEMGROUP_FOR_CLICKS: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ITEMGROUP_MOVE_TO_EAST_X_ITEMGROUP_FOR_CLICKS unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case ITEMGROUP_MOVE_TO_SOUTH_X_ITEMGROUP_FOR_CLICKS: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ITEMGROUP_MOVE_TO_EAST_X_ITEMGROUP_FOR_CLICKS unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case ITEMGROUP_MOVE_CONTINOUSLY_UPSTAIRS_DOWNSTAIRS_X_ITEMGROUP_FOR_CLICKS: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ITEMGROUP_MOVE_TO_EAST_X_ITEMGROUP_FOR_CLICKS unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case ITEMGROUP_ACTIVATE_ITEMGROUP_WITH_TIMER: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+				return itemgroup_activate_item_group_with_timer(action_data_1, action_data_2);
+			break;
+		}
+		case ITEMGROUP_UNTRIGGER_ITEMGROUP_WITH_TIMER: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+				return itemgroup_untrigger_item_group_with_timer(action_data_1, action_data_2);
+			break;
+		}
+		case ITEMGROUP_DISABLE_ALL_CONTINUOUS_ACTIONS_X_ITEMGROUP: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ITEMGROUP_DISABLE_ALL_CONTINUOUS_ACTIONS_X_ITEMGROUP unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case TEXT_PRINT_EXTRANG_STRING_ONSCREEN_FREEZE_GAME_AND_WAIT_FOR_ESCAPE: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TEXT_PRINT_EXTRANG_STRING_ONSCREEN_FREEZE_GAME_AND_WAIT_FOR_ESCAPE unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case TEXT_PRINT_STANDARD_STRING_ONSCREEN_FREEZE_GAME_AND_WAIT_FOR_ESCAPE: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TEXT_PRINT_STANDARD_STRING_ONSCREEN_FREEZE_GAME_AND_WAIT_FOR_ESCAPE unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case WEATHER_SKY_X_ENABLE_DISABLE_THE_LAYER: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "WEATHER_SKY_X_ENABLE_DISABLE_THE_LAYER unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case WEATHER_SKY_X_ENABLE_DISABLE_LIGHTNING: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "WEATHER_SKY_X_ENABLE_DISABLE_LIGHTNING unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case WEATHER_SKY_SET_NEW_X_COLOR_FOR_LAYER: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "WEATHER_SKY_SET_NEW_X_COLOR_FOR_LAYER unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case WEATHER_SKY_SET_NEW_X_SPEED_FOR_LAYER: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "WEATHER_SKY_SET_NEW_X_SPEED_FOR_LAYER unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case WEATHER_SKY_CHANGE_SLOWLY_THE_COLOR_OF_LAYER1_TO_X_COLOR_IN_SECONDS: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "WEATHER_SKY_CHANGE_SLOWLY_THE_COLOR_OF_LAYER1_TO_X_COLOR_IN_SECONDS unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case WEATHER_SKY_CHANGE_SLOWLY_THE_COLOR_OF_LAYER2_TO_X_COLOR_IN_SECONDS: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "WEATHER_SKY_CHANGE_SLOWLY_THE_COLOR_OF_LAYER2_TO_X_COLOR_IN_SECONDS unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case WEATHER_SET_X_NEW_STATE_FOR_SNOW_IN_CURRENT_LEVEL: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "WEATHER_SET_X_NEW_STATE_FOR_SNOW_IN_CURRENT_LEVEL unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case WEATHER_SET_X_NEW_STATE_FOR_RAIN_IN_CURRENT_LEVEL: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "WEATHER_SET_X_NEW_STATE_FOR_RAIN_IN_CURRENT_LEVEL unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case LARA_ATTRACT_LARA_IN_DIRECTION_ON_GROUND_AND_IN_AIR_WITH_SPEED: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_ATTRACT_LARA_IN_DIRECTION_ON_GROUND_AND_IN_AIR_WITH_SPEED unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case DISTANCE_SET_LEVEL_FAR_VIEW_DISTANCE_TO_X_NUMBER_OF_SECTORS: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "DISTANCE_SET_LEVEL_FAR_VIEW_DISTANCE_TO_X_NUMBER_OF_SECTORS unimplemented!");
 				return true;
 			}
 			break;
@@ -1121,14 +1374,119 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 			}
 			break;
 		}
-		case PLAY_SOUND: {
+		case STATIC_MOVE_STATIC_WITH_DATA_IN_X_PARAMETERS_LIST: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "STATIC_MOVE_STATIC_WITH_DATA_IN_X_PARAMETERS_LIST unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case MOVEABLE_MOVE_MOVEABLE_WITH_DATA_IN_X_PARAMETERS_LIST: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "MOVEABLE_MOVE_MOVEABLE_WITH_DATA_IN_X_PARAMETERS_LIST unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case SOUND_PLAY_SOUND_SINGLE_PLAYBACK_OF_GLOBAL_SOUND_MAP: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
-				return play_sound(action_data_1, action_data_2);
+				return sound_play_sound_single_playback_of_global_sound_map(action_data_1, action_data_2);
+			break;
+		}
+		case LARA_FORCE_X_ANIMATION_FOR_LARA_PRESERVE_STATE_ID: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_FORCE_X_ANIMATION_FOR_LARA_PRESERVE_STATE_ID unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case LARA_FORCE_X_ANIMATION_FOR_LARA_SET_NEW_STATE_ID: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_FORCE_X_ANIMATION_FOR_LARA_SET_NEW_STATE_ID unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case LARA_FORCE_X_ANIMATION_FOR_LARA_SET_NEUTRAL_STATE_ID: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_FORCE_X_ANIMATION_FOR_LARA_SET_NEUTRAL_STATE_ID unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case STATIC_ROTATE_STATIC_WITH_DATA_OF_X_PARAMETER_LIST: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "STATIC_ROTATE_STATIC_WITH_DATA_OF_X_PARAMETER_LIST unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case MOVEABLE_ROTATE_MOVEABLE_WITH_DATA_IN_X_PARAMETERS_LIST: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "MOVEABLE_ROTATE_MOVEABLE_WITH_DATA_IN_X_PARAMETERS_LIST unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case STATIC_STOP_ALL_ROTATION_FOR_X_STATIC: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "STATIC_STOP_ALL_ROTATION_FOR_X_STATIC unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case STATIC_STOP_ALL_ROTATION_FOR_STATICS_IN_X_ROOM: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "STATIC_STOP_ALL_ROTATION_FOR_STATICS_IN_X_ROOM unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case MOVEABLE_STOP_ALL_ROTATION_FOR_MOVEABLES_IN_X_ROOM: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "MOVEABLE_STOP_ALL_ROTATION_FOR_MOVEABLES_IN_X_ROOM unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case STATIC_STOP_THE_MOTION_OF_X_STATIC: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "STATIC_STOP_THE_MOTION_OF_X_STATIC unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case MOVEABLE_STOP_ALL_MOTIONS_OF_ALL_MOVEABLES_IN_X_ROOM: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "MOVEABLE_STOP_ALL_MOTIONS_OF_ALL_MOVEABLES_IN_X_ROOM unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case STATIC_STOP_THE_MOVEMENTS_OF_ALL_STATICS_IN_X_ROOM: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "STATIC_STOP_THE_MOVEMENTS_OF_ALL_STATICS_IN_X_ROOM unimplemented!");
+				return true;
+			}
 			break;
 		}
 		case STATIC_EXPLODE: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return static_explode(action_data_1, action_data_2);
+			break;
+		}
+		case STATIC_SET_EXPLOSIVE_ATTRIBUTE: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "STATIC_SET_EXPLOSIVE_ATTRIBUTE unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case STATIC_REMOVE_EXPLOSIVE_ATTRIBUTE: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "STATIC_REMOVE_EXPLOSIVE_ATTRIBUTE unimplemented!");
+				return true;
+			}
 			break;
 		}
 		case STATIC_SET_POISON_ATTRIBUTE: {
@@ -1159,6 +1517,20 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 			}
 			break;
 		}
+		case STATIC_SET_BURNING_ATTRIBUTE: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "STATIC_SET_BURNING_ATTRIBUTE unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case STATIC_REMOVE_BURNING_ATTRIBUTE: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "STATIC_REMOVE_BURNING_ATTRIBUTE unimplemented!");
+				return true;
+			}
+			break;
+		}
 		case STATIC_VISIBILITY_SET_AS_INVISIBLE: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return static_visibility_set_as_invisible(action_data_1, action_data_2);
@@ -1176,9 +1548,79 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 			}
 			break;
 		}
+		case TRIGGERGROUP_STOP_X_TRIGGERGROUP: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TRIGGERGROUP_STOP_X_TRIGGERGROUP unimplemented!");
+				return true;
+			}
+			break;
+		}
 		case PLAY_TRACK_ON_CHANNEL_WITH_RESTORE: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return play_track_on_channel_with_restore(action_data_1, action_data_2);
+			break;
+		}
+		case WEATHER_SET_X_DISTANCE_FOG_VALUE: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "WEATHER_SET_X_DISTANCE_FOG_VALUE unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case WEATHER_CHANGE_START_FOR_DISTANCE_TO_X_DISTANCE_IN_SECONDS: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "WEATHER_CHANGE_START_FOR_DISTANCE_TO_X_DISTANCE_IN_SECONDS unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case WEATHER_PULSE_START_DISTANCE_FOG_FROM_CURRENT_TO_X_DISTANCE_IN_SECONDS: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "WEATHER_PULSE_START_DISTANCE_FOG_FROM_CURRENT_TO_X_DISTANCE_IN_SECONDS unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case WEATHER_ENABLE_OR_DISABLE_ALL_FOG: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "WEATHER_ENABLE_OR_DISABLE_ALL_FOG unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case WEATHER_STOP_THE_PULSE_START_DISTANCE_FOG_AND_SET_NEW_X_FOG_DISTANCE: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "WEATHER_STOP_THE_PULSE_START_DISTANCE_FOG_AND_SET_NEW_X_FOG_DISTANCE unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case LARA_LIGHT_OR_PUT_OUT_THE_TORCH_IN_LARAS_HAND: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_LIGHT_OR_PUT_OUT_THE_TORCH_IN_LARAS_HAND unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case LARA_GIVE_OR_REMOVE_THE_TORCH_TO_OR_FROM_HAND_OF_LARA: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_GIVE_OR_REMOVE_THE_TORCH_TO_OR_FROM_HAND_OF_LARA unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case TEXT_VERTICAL_SCROLLING_OF_EXTRANG_X_STRING_WITH_SPEED: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TEXT_VERTICAL_SCROLLING_OF_EXTRANG_X_STRING_WITH_SPEED unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case TEXT_ABORT_ALL_VERTICAL_SCROLLING_TEXT_OPERATIONS: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TEXT_ABORT_ALL_VERTICAL_SCROLLING_TEXT_OPERATIONS unimplemented!");
+				return true;
+			}
 			break;
 		}
 		case TEXT_PRINT_FORMATTED_TEXT_NGEXTRA_STRING_WITH_FORMATTING_DATA: {
