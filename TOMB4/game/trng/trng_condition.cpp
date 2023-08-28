@@ -21,6 +21,85 @@
 #include "trng_triggergroup.h"
 #include "../../tomb4/tomb4plus/inventory.h"
 
+#define SECTOR_SIZE 1024
+
+enum GRID_FRAGMENT_TYPE {
+	FRAGMENT_TYPE_SQUARE_FRAGMENT,
+	FRAGMENT_TYPE_HORIZONTAL_STRIP_FRAGMENT,
+	FRAGMENT_TYPE_VERTICAL_STRIP_FRAGMENT,
+	FRAGMENT_TYPE_TWO_CROSSED_STRIPES,
+	FRAGMENT_TYPE_DIAGONAL_UPPER_RIGHT_LOWER_LEFT_PASSING_LINE, // DIAGONAL_BOTTOM_UP_PASSING_POINT
+	FRAGMENT_TYPE_DIAGONAL_UPPER_LEFT_LOWER_RIGHT_PASSING_LINE, // DIAGONAL_TOP_DOWN_PASSING_POINT
+	FRAGMENT_TYPE_TWO_CROSS_DIAGONALS_PASSING_LINE
+};
+
+bool NGGridFragmentCondition(int x_pos, int y_pos, int grid_size, int x_target_coordinate, int y_target_coordinate, GRID_FRAGMENT_TYPE grid_fragment_type, bool inverted) {
+	int fragment_size = SECTOR_SIZE / grid_size;
+	// Flipped these around to match
+	int touching_fragment_x = x_pos / fragment_size;
+	int touching_fragment_y = y_pos / fragment_size;
+
+	if (grid_fragment_type == FRAGMENT_TYPE_SQUARE_FRAGMENT) {
+		return (touching_fragment_x == x_target_coordinate && touching_fragment_y == y_target_coordinate) != inverted;
+	} else if (grid_fragment_type == FRAGMENT_TYPE_VERTICAL_STRIP_FRAGMENT) {
+		return (touching_fragment_x == x_target_coordinate) != inverted;
+	} else if (grid_fragment_type == FRAGMENT_TYPE_HORIZONTAL_STRIP_FRAGMENT) {
+		return (touching_fragment_y == y_target_coordinate) != inverted;
+	} else if (grid_fragment_type == FRAGMENT_TYPE_TWO_CROSSED_STRIPES) {
+		return (touching_fragment_x == x_target_coordinate || touching_fragment_y == y_target_coordinate) != inverted;
+	} else if (grid_fragment_type == FRAGMENT_TYPE_DIAGONAL_UPPER_RIGHT_LOWER_LEFT_PASSING_LINE) {
+		return (touching_fragment_x + touching_fragment_y == x_target_coordinate + y_target_coordinate) != inverted;
+	} else if (grid_fragment_type == FRAGMENT_TYPE_DIAGONAL_UPPER_LEFT_LOWER_RIGHT_PASSING_LINE) {
+		return (touching_fragment_x - touching_fragment_y == x_target_coordinate - y_target_coordinate) != inverted;
+	} else if (grid_fragment_type == FRAGMENT_TYPE_TWO_CROSS_DIAGONALS_PASSING_LINE) {
+		return ((touching_fragment_x + touching_fragment_y == x_target_coordinate + y_target_coordinate) || (touching_fragment_x - touching_fragment_y == x_target_coordinate - y_target_coordinate)) != inverted;
+	} else {
+		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGGridFragmentCondition: grid fragment type unsupported %u!", (unsigned int)grid_fragment_type);
+	}
+	
+	return false;
+}
+
+bool NGGridFragmentConditionTrigger(int param, unsigned char extra, int grid_size) {
+	int lara_sector_displacement_y = (lara_item->pos.x_pos & 0x3ff);
+	int lara_sector_displacement_x = (lara_item->pos.z_pos & 0x3ff);
+
+	bool inverted = extra & 0x02;
+	bool pad_trigger = extra & 0x01;
+
+	if (pad_trigger) {
+		if (lara_item->pos.y_pos != lara_item->floor)
+			return false;
+	}
+
+	if (param >= 0 && param < 16) {
+		int index = param;
+		return NGGridFragmentCondition(lara_sector_displacement_x, lara_sector_displacement_y, grid_size, index / 4, index % 4, FRAGMENT_TYPE_SQUARE_FRAGMENT, inverted);
+	} else if (param >= 32 && param < 36) {
+		int index = param - 32;
+		return NGGridFragmentCondition(lara_sector_displacement_x, lara_sector_displacement_y, grid_size, 0, index, FRAGMENT_TYPE_HORIZONTAL_STRIP_FRAGMENT, inverted);
+	} else if (param >= 48 && param < 52) {
+		int index = param - 48;
+		return NGGridFragmentCondition(lara_sector_displacement_x, lara_sector_displacement_y, grid_size, index, 0, FRAGMENT_TYPE_VERTICAL_STRIP_FRAGMENT, inverted);
+	} else if (param >= 96 && param < 112) {
+		int index = param - 96;
+		return NGGridFragmentCondition(lara_sector_displacement_x, lara_sector_displacement_y, grid_size, index / 4, index % 4, FRAGMENT_TYPE_TWO_CROSSED_STRIPES, inverted);
+	} else if (param >= 128 && param < 144) {
+		int index = param - 128;
+		return NGGridFragmentCondition(lara_sector_displacement_x, lara_sector_displacement_y, grid_size, index / 4, index % 4, FRAGMENT_TYPE_DIAGONAL_UPPER_RIGHT_LOWER_LEFT_PASSING_LINE, inverted);
+	} else if (param >= 144 && param < 160) {
+		int index = param - 144;
+		return NGGridFragmentCondition(lara_sector_displacement_x, lara_sector_displacement_y, grid_size, index / 4, index % 4, FRAGMENT_TYPE_DIAGONAL_UPPER_LEFT_LOWER_RIGHT_PASSING_LINE, inverted);
+	} else if (param >= 192 && param < 208) {
+		int index = param - 192;
+		return NGGridFragmentCondition(lara_sector_displacement_x, lara_sector_displacement_y, grid_size, index / 4, index % 4, FRAGMENT_TYPE_TWO_CROSS_DIAGONALS_PASSING_LINE, inverted);
+	} else {
+		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGGridFragmentTrigger: param %u unsupported!", param);
+	}
+
+	return false;
+}
+
 bool NGCondition(short param, unsigned char extra, short timer) {
 	switch (timer) {
 	case INVENTORY_ITEM_IS_MISSING: {
@@ -37,6 +116,19 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 	case INVENTORY_ITEM_HAS_LESS_THAN: {
 		return T4PlusGetInventoryCount(param) < extra;
 		break;
+	}
+	case LARA_IS_PERFORMING_X_ACTION: {
+		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_IS_PERFORMING_X_ACTION is not currently implemented!");
+		return false;
+	}
+	case FRAGMENTED_TRIGGGER_CHECK_IN_WAY_IF_LARA_IS_IN_FRAGMENT_OF_2X2_SECTOR_GRID: {
+		return NGGridFragmentConditionTrigger(param, extra, 2);
+	}
+	case FRAGMENTED_TRIGGGER_CHECK_IN_WAY_IF_LARA_IS_IN_FRAGMENT_OF_3X3_SECTOR_GRID: {
+		return NGGridFragmentConditionTrigger(param, extra, 3);
+	}
+	case FRAGMENTED_TRIGGGER_CHECK_IN_WAY_IF_LARA_IS_IN_FRAGMENT_OF_4X4_SECTOR_GRID: {
+		return NGGridFragmentConditionTrigger(param, extra, 4);
 	}
 	case VERTICAL_TRIGGER_ZONE: {
 		short *bounds = GetBoundsAccurate(lara_item);
