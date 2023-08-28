@@ -100,6 +100,12 @@ int get_inventory_count(short object_number)
 		return lara.big_water_skin == 5;
 	else if (object_number == WATERSKIN2_5)
 		return lara.big_water_skin == 6;
+	else if (object_number == EXAMINE1)
+		return lara.examine1;
+	else if (object_number == EXAMINE2)
+		return lara.examine2;
+	else if (object_number == EXAMINE3)
+		return lara.examine3;
 	else
 		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: get_inventory_count: unimplemented inventory item type!");
 
