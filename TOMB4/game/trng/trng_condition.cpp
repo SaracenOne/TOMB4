@@ -192,7 +192,9 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 		return NGTriggerGroupFunction(param, 0);
 	}
 	case MULTIPLE_CONDITION_OF_X_MULTIENVCONDITION_SCRIPT_COMMAND: {
+#ifndef SILENCE_EXCESSIVE_LOGS
 		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "MULTIPLE_CONDITION_OF_X_MULTIENVCONDITION_SCRIPT_COMMAND is not currently implemented!");
+#endif
 		return false;
 	}
 	case CREATURE_IS_CURRENTLY: {

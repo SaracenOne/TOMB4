@@ -1,6 +1,7 @@
 #include "../../tomb4/pch.h"
 
 #include "trng.h"
+#include "trng_action.h"
 #include "trng_condition.h"
 #include "trng_flipeffect.h"
 #include "trng_extra_state.h"
@@ -108,9 +109,9 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 				// ActionNG
 				else if ((trigger_group.data[index].first_field & 0xF000) == 0x5000) {
 					if (trigger_group.data[index].first_field & TGROUP_USE_FOUND_ITEM_INDEX) {
-						current_result = NGAction(ng_found_item_index, trigger_group.data[index].third_field_lower & 0x7fff, true) != -1;
+						current_result = NGAction(ng_found_item_index, trigger_group.data[index].third_field_lower & 0x7fff, true, true) != -1;
 					} else {
-						current_result = NGAction(ng_script_id_table[trigger_group.data[index].second_field_lower], trigger_group.data[index].third_field_lower & 0x7fff, true) != -1;
+						current_result = NGAction(ng_script_id_table[trigger_group.data[index].second_field_lower], trigger_group.data[index].third_field_lower & 0x7fff, true, true) != -1;
 					}
 
 					if (!current_result) {

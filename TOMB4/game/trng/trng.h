@@ -1,5 +1,7 @@
 #pragma once
 
+#define SILENCE_EXCESSIVE_LOGS // Debug macro to silence log commands which are commonly called every frame.
+
 enum NG_DEGREES {
 	DEGREES_45 = 0,
 	DEGREES_90,
@@ -46,8 +48,6 @@ extern void NGMoveItemByUnits(unsigned short item_id, NG_DIRECTIONS direction, u
 
 extern void NGRotateItemY(unsigned short item_id, short rotation);
 
-extern int NGAction(unsigned short param, unsigned short extra, bool first_frame);
-extern int NGActionTrigger(unsigned short param, unsigned short extra, short timer, bool heavy);
 extern void NGSetup();
 
 extern void NGUpdateAllItems();

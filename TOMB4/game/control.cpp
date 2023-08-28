@@ -48,6 +48,7 @@
 #include "trng/trng_flipeffect.h"
 #include "trng/trng_extra_state.h"
 #include "trng/trng_condition.h"
+#include "trng/trng_action.h"
 
 ITEM_INFO* items;
 ANIM_STRUCT* anims;
@@ -628,7 +629,6 @@ void TestTriggers(short* data, long heavy, long HeavyFlags, int room_number, int
 	ITEM_INFO* camera_item;
 	long switch_off, flip, flip_available, neweffect, key, quad;
 	short camera_flags, camera_timer, type, trigger, value, flags, state;
-	static uchar HeavyTriggered;
 	char timer;
 
 	// NGLE
@@ -640,7 +640,6 @@ void TestTriggers(short* data, long heavy, long HeavyFlags, int room_number, int
 	flip_available = 0;
 	neweffect = -1;
 	key = 0;
-	HeavyTriggered = 0;
 
 	if (!heavy)
 	{
@@ -924,7 +923,6 @@ void TestTriggers(short* data, long heavy, long HeavyFlags, int room_number, int
 					item->touch_bits = 0;
 					AddActiveItem(value);
 					item->status = ITEM_ACTIVE;
-					HeavyTriggered = (uchar)heavy;
 				}
 			}
 

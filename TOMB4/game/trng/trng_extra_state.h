@@ -117,6 +117,6 @@ extern bool NGProcessGlobalTriggers(int inventory_object_id);
 extern void NGDrawPhase();
 
 extern bool NGIsOneShotTriggeredForTile();
-extern bool NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(bool heavy);
+extern bool NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(bool is_heavy_triggered);
 
-extern bool NGCheckActionFloorStatePressedThisFrameOrLastFrame(bool heavy);
+extern bool NGCheckActionFloorStatePressedThisFrameOrLastFrame(bool is_heavy_triggered);

@@ -91,7 +91,7 @@ void NGHurtEnemy(unsigned short item_id, unsigned short damage) {
 	}
 }
 
-int NGActionTrigger(unsigned short param, unsigned short extra, short timer, bool heavy) {
+int NGActionTrigger(unsigned short param, unsigned short extra, short timer, bool is_heavy_triggered) {
 	unsigned char action_type = (unsigned char)extra & 0xff;
 	unsigned char action_data = (unsigned char)(extra >> 8) & 0xff;
 	
@@ -102,11 +102,11 @@ int NGActionTrigger(unsigned short param, unsigned short extra, short timer, boo
 		oneshot_triggered = NGIsOneShotTriggeredForTile();
 	}
 
-	int result = NGAction(param, extra, !oneshot_triggered && (heavy || !NGCheckActionFloorStatePressedThisFrameOrLastFrame(heavy)));
+	int result = NGAction(param, extra, !oneshot_triggered && (is_heavy_triggered || !NGCheckActionFloorStatePressedThisFrameOrLastFrame(is_heavy_triggered)), is_heavy_triggered);
 
 	// Replicates a weird bug in the original
 	if (action_type == TRIGGER_MOVEABLE_ACTIVATE_WITH_TIMER || action_type == UNTRIGGER_MOVEABLE_ACTIVATE_WITH_TIMER) {
-		if (!NGCheckActionFloorStatePressedThisFrameOrLastFrame(heavy)) {
+		if (!NGCheckActionFloorStatePressedThisFrameOrLastFrame(is_heavy_triggered)) {
 			ITEM_INFO* item;
 
 			item = &items[param];
@@ -121,7 +121,7 @@ int NGActionTrigger(unsigned short param, unsigned short extra, short timer, boo
 	return result;
 }
 
-int NGAction(unsigned short param, unsigned short extra, bool first_frame) {
+int NGAction(unsigned short param, unsigned short extra, bool first_frame, bool is_heavy_triggered) {
 	unsigned char action_type = (unsigned char)extra & 0xff;
 	unsigned char action_data = (unsigned char)(extra >> 8) & 0xff;
 
@@ -327,11 +327,28 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame) {
 			break;
 		}
 		case ACTIVATE_CAMERA_WITH_TIMER: {
-			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ACTIVATE_CAMERA_WITH_TIMER unimplemented!");
+			camera.number = param;
+
+			if ((camera.type == LOOK_CAMERA || camera.type == COMBAT_CAMERA) && !(camera.fixed[camera.number].flags & 1))
+				break;
+
+			if (camera.number != camera.last) {
+				camera.timer = action_data * 30;
+
+				camera.speed = 0;
+				if (is_heavy_triggered) {
+					camera.type = HEAVY_CAMERA;
+				} else {
+					camera.type = FIXED_CAMERA;
+				}
+			}
+
+			camera.number = param;
+			camera.timer = action_data * 30;
 			break;
 		}
 		case SET_MOVEABLE_AS_TARGET_FOR_CAMERA: {
-			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "SET_MOVEABLE_AS_TARGET_FOR_CAMERA unimplemented!");
+			camera.item = &items[param];
 			break;
 		}
 		case TRIGGER_MOVEABLE_ACTIVATE_WITH_TIMER: {
@@ -362,15 +379,19 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame) {
 			break;
 		}
 		case EFFECT_ADD_TO_ENEMY: {
+#ifndef SILENCE_EXCESSIVE_LOGS
 			if (first_frame) {
 				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "EFFECT_ADD_TO_ENEMY unimplemented!");
 			}
+#endif
 			break;
 		}
 		case EFFECT_REMOVE_TO_ENEMY: {
+#ifndef SILENCE_EXCESSIVE_LOGS
 			if (first_frame) {
 				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "EFFECT_REMOVE_TO_ENEMY unimplemented!");
 			}
+#endif
 			break;
 		}
 		case ENEMY_SET_MESH_AS_INVISIBLE: {

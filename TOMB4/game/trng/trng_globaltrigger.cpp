@@ -22,6 +22,13 @@ bool NGExecuteSingleGlobalTrigger(int global_trigger_id, int inventory_object_id
 	if (inventory_object_id == NO_ITEM) {
 		// What the difference between GT_CONDITION_GROUP and GT_ALWAYS?
 		switch (global_trigger->type) {
+		case 0001: { // GT_USED_INVENTORY_ITEM
+#ifndef SILENCE_EXCESSIVE_LOGS
+			NGLOG(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "GT_USED_INVENTORY_ITEM globaltrigger type not yet supported!");
+#endif
+			global_trigger_condition_passed = false;
+			break;
+		}
 		case 0x0003: { // GT_ENEMY_KILLED
 			int enemy_id = ng_script_id_table[global_trigger->parameter];
 			if (items[enemy_id].after_death > 0)

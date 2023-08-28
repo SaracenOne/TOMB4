@@ -196,10 +196,10 @@ bool NGIsOneShotTriggeredForTile() {
 }
 
 // This method is not accurate since it seems like rollingballs can interrupted the check.
-bool NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(bool heavy) {
+bool NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(bool is_heavy_triggered) {
 	int index = ng_room_offset_table[ng_current_trigger_state.room] + ng_current_trigger_state.index;
 
-	if (!heavy) {
+	if (!is_heavy_triggered) {
 		if (ng_current_flipeffect_floor_trigger == index || ng_last_flipeffect_floor_trigger == index)
 			return true;
 	} else {
@@ -210,15 +210,15 @@ bool NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(bool heavy) {
 	return false;
 }
 
-extern bool NGCheckActionFloorStatePressedThisFrameOrLastFrame(bool heavy) {
+extern bool NGCheckActionFloorStatePressedThisFrameOrLastFrame(bool is_heavy_triggered) {
 	int index = ng_room_offset_table[ng_current_trigger_state.room] + ng_current_trigger_state.index;
 
-	if (!heavy) {
+	if (!is_heavy_triggered) {
 		if (ng_current_action_floor_trigger == index || ng_last_action_floor_trigger == index)
 			return true;
 	} else {
-		//if (ng_heavy_current_action_floor_trigger == index || ng_heavy_last_action_floor_trigger == index)
-		//	return true;
+		if (ng_heavy_current_action_floor_trigger == index || ng_heavy_last_action_floor_trigger == index)
+			return true;
 	}
 
 	return false;
