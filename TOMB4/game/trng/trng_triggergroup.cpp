@@ -50,9 +50,8 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 
 		if (trigger_group.data[index].first_field & TGROUP_SINGLE_SHOT) {
 			if (trigger_group.oneshot_triggered) {
-				operation_result = false;
-			}
-			else {
+				return false;
+			} else {
 				trigger_group.oneshot_triggered = true;
 			}
 		}
@@ -110,8 +109,7 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 				else if ((trigger_group.data[index].first_field & 0xF000) == 0x5000) {
 					if (trigger_group.data[index].first_field & TGROUP_USE_FOUND_ITEM_INDEX) {
 						current_result = NGAction(ng_found_item_index, trigger_group.data[index].third_field_lower & 0x7fff, true) != -1;
-					}
-					else {
+					} else {
 						current_result = NGAction(ng_script_id_table[trigger_group.data[index].second_field_lower], trigger_group.data[index].third_field_lower & 0x7fff, true) != -1;
 					}
 
@@ -124,8 +122,7 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 				else if ((trigger_group.data[index].first_field & 0xF000) == 0x8000) {
 					if (trigger_group.data[index].first_field & TGROUP_USE_FOUND_ITEM_INDEX) {
 						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TGROUP_USE_FOUND_ITEM_INDEX used on condition");
-					}
-					else {
+					} else {
 						current_result = NGCondition(trigger_group.data[index].second_field_lower, (trigger_group.data[index].third_field_lower >> 8) & 0xff, trigger_group.data[index].third_field_lower & 0xff);
 					}
 				}
@@ -133,8 +130,7 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 				else if ((trigger_group.data[index].first_field & 0xF000) == 0x9000) {
 					if (trigger_group.data[index].first_field & TGROUP_USE_FOUND_ITEM_INDEX) {
 						current_result = NGCondition(ng_found_item_index, (trigger_group.data[index].third_field_lower >> 8) & 0xff, trigger_group.data[index].third_field_lower & 0xff);
-					}
-					else {
+					} else {
 						current_result = NGCondition(ng_script_id_table[trigger_group.data[index].second_field_lower], (trigger_group.data[index].third_field_lower >> 8) & 0xff, trigger_group.data[index].third_field_lower & 0xff);
 
 					}
@@ -143,8 +139,7 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 				else if ((trigger_group.data[index].first_field & 0xF000) == 0x2000) {
 					if (trigger_group.data[index].first_field & TGROUP_USE_FOUND_ITEM_INDEX) {
 						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TGROUP_USE_FOUND_ITEM_INDEX used on flipeffect");
-					}
-					else {
+					} else {
 						current_result = NGFlipEffect(trigger_group.data[index].second_field_lower, trigger_group.data[index].third_field_lower & 0x7fff, false, true);
 					}
 
