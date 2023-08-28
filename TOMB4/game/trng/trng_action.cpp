@@ -451,14 +451,14 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame, bool 
 
 				if (action_data) {
 					if (reverse)
-						items[item_id].flags &= IFL_CODEBITS;
+						items[item_id].flags &= ~(IFL_CODEBITS);
 					else
 						items[item_id].flags |= IFL_CODEBITS;
 				} else {
 					if (reverse)
 						items[item_id].flags |= IFL_CODEBITS;
 					else
-						items[item_id].flags &= IFL_CODEBITS;
+						items[item_id].flags &= ~(IFL_CODEBITS);
 				}
 			}
 			break;
