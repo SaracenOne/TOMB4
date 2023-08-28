@@ -18,6 +18,7 @@
 #include "trng_extra_state.h"
 #include "../savegame.h"
 #include "../lara_states.h"
+#include "trng_triggergroup.h"
 
 // TODO: there may be some missing types still needing support
 int get_inventory_count(short object_number)
@@ -183,6 +184,17 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 
 		return false;
 	}
+	case KEYBOARD_COMMAND_GAME_IS_CURRENTLY: {
+		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "KEYBOARD_COMMAND_GAME_IS_CURRENTLY is not currently implemented!");
+		return false;
+	}
+	case MULTIPLE_CONDITION_OF_X_TRIGGERGROUP_SCRIPT_COMMAND: {
+		return NGTriggerGroupFunction(param, 0);
+	}
+	case MULTIPLE_CONDITION_OF_X_MULTIENVCONDITION_SCRIPT_COMMAND: {
+		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "MULTIPLE_CONDITION_OF_X_MULTIENVCONDITION_SCRIPT_COMMAND is not currently implemented!");
+		return false;
+	}
 	case CREATURE_IS_CURRENTLY: {
 		switch (extra) {
 			case 0x03: {
@@ -196,10 +208,18 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 
 		return false;
 	}
-	case LARA_HAS_FOUND_EXACTLY_X_SECRETS:
-		return savegame.Game.Secrets == param;
 	case LARA_HAS_FOUND_AT_LEAST_X_SECRETS:
 		return savegame.Game.Secrets >= param;
+	case LARA_HAS_FOUND_EXACTLY_X_SECRETS:
+		return savegame.Game.Secrets == param;
+	case KEYPAD_LAST_NUMBER_TYPED_IN_KEYPAD_IS_X_VALUE: {
+		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "KEYPAD_LAST_NUMBER_TYPED_IN_KEYPAD_IS_X_VALUE is not currently implemented!");
+		return false;
+	}
+	case TIMER_TIMER_SCREEN_VALUE_IS_Y_THAN_X_SECONDS: {
+		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TIMER_TIMER_SCREEN_VALUE_IS_Y_THAN_X_SECONDS is not currently implemented!");
+		return false;
+	}
 	case CREATURE_CURRENT_ANIMATION_0_31_IS:
 	case CREATURE_CURRENT_ANIMATION_32_63_IS:
 	case CREATURE_CURRENT_ANIMATION_64_95_IS:
@@ -276,6 +296,10 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 	}
 	case LARA_IS_STATE: {
 		return lara_item->current_anim_state == param;
+	}
+	case ANIMTEXTURE_THE_X_ANIMRANGE_TEXTURE_IS_ENABLED_OR_DISABLED: {
+		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ANIMTEXTURE_THE_X_ANIMRANGE_TEXTURE_IS_ENABLED_OR_DISABLED is not currently implemented!");
+		return false;
 	}
 	case LARA_IS_TOUCHING_STATIC_SLOT: {
 		int result = NGIsLaraCollidingWithStaticID(param);
