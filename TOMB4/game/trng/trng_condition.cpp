@@ -19,115 +19,23 @@
 #include "../savegame.h"
 #include "../lara_states.h"
 #include "trng_triggergroup.h"
-
-// TODO: there may be some missing types still needing support
-int get_inventory_count(short object_number)
-{
-	if (object_number >= PUZZLE_ITEM1_COMBO1 && object_number <= PUZZLE_ITEM8_COMBO2)
-		return (lara.puzzleitemscombo >> (object_number - PUZZLE_ITEM1_COMBO1)) & 1;
-	else if (object_number >= PUZZLE_ITEM1 && object_number <= PUZZLE_ITEM12)
-		return lara.puzzleitems[object_number - PUZZLE_ITEM1];
-	else if (object_number >= KEY_ITEM1_COMBO1 && object_number <= KEY_ITEM8_COMBO2)
-		return (lara.keyitemscombo >> (object_number - KEY_ITEM1_COMBO1)) & 1;
-	else if (object_number >= KEY_ITEM1 && object_number <= KEY_ITEM12)
-		return (lara.keyitems >> (object_number - KEY_ITEM1)) & 1;
-	else if (object_number >= PICKUP_ITEM1_COMBO1 && object_number <= PICKUP_ITEM4_COMBO2)
-		return (lara.pickupitemscombo >> (object_number - PICKUP_ITEM1_COMBO1)) & 1;
-	else if (object_number >= PICKUP_ITEM1 && object_number <= PICKUP_ITEM4)
-		return (lara.pickupitems >> (object_number - PICKUP_ITEM1)) & 1;
-	else if (object_number >= QUEST_ITEM1 && object_number <= QUEST_ITEM6)
-		return (lara.questitems >> (object_number - QUEST_ITEM1)) & 1;
-	else if (object_number == CROWBAR_ITEM)
-		return lara.crowbar;
-	else if (object_number == PISTOLS_ITEM)
-		return lara.pistols_type_carried;
-	else if (object_number == PISTOLS_AMMO_ITEM)
-		return lara.num_pistols_ammo;
-	else if (object_number == SHOTGUN_ITEM)
-		return lara.shotgun_type_carried;
-	else if (object_number == SHOTGUN_AMMO1_ITEM)
-		return lara.num_shotgun_ammo1;
-	else if (object_number == SHOTGUN_AMMO2_ITEM)
-		return lara.num_shotgun_ammo2;
-	else if (object_number == SIXSHOOTER_ITEM)
-		return lara.sixshooter_type_carried;
-	else if (object_number == SIXSHOOTER_AMMO_ITEM)
-		return lara.num_revolver_ammo;
-	else if (object_number == UZI_ITEM)
-		return lara.uzis_type_carried;
-	else if (object_number == UZI_AMMO_ITEM)
-		return lara.num_uzi_ammo;
-	else if (object_number == CROSSBOW_ITEM)
-		return lara.crossbow_type_carried;
-	else if (object_number == CROSSBOW_AMMO1_ITEM)
-		return lara.num_crossbow_ammo1;
-	else if (object_number == CROSSBOW_AMMO2_ITEM)
-		return lara.num_crossbow_ammo2;
-	else if (object_number == CROSSBOW_AMMO3_ITEM)
-		return lara.num_crossbow_ammo3;
-	else if (object_number == GRENADE_GUN_ITEM)
-		return lara.grenade_type_carried;
-	else if (object_number == GRENADE_GUN_AMMO1_ITEM)
-		return lara.num_grenade_ammo1;
-	else if (object_number == GRENADE_GUN_AMMO2_ITEM)
-		return lara.num_grenade_ammo2;
-	else if (object_number == GRENADE_GUN_AMMO3_ITEM)
-		return lara.num_grenade_ammo3;
-	else if (object_number == SMALLMEDI_ITEM)
-		return lara.num_small_medipack;
-	else if (object_number == BIGMEDI_ITEM)
-		return lara.num_large_medipack;
-	else if (object_number == FLARE_ITEM)
-		return lara.num_flares;
-	else if (object_number == BINOCULARS_ITEM)
-		return lara.binoculars;
-	else if (object_number == WATERSKIN1_EMPTY)
-		return lara.small_water_skin == 1;
-	else if (object_number == WATERSKIN1_1)
-		return lara.small_water_skin == 2;
-	else if (object_number == WATERSKIN1_2)
-		return lara.small_water_skin == 3;
-	else if (object_number == WATERSKIN1_3)
-		return lara.small_water_skin == 4;
-	else if (object_number == WATERSKIN2_EMPTY)
-		return lara.big_water_skin == 1;
-	else if (object_number == WATERSKIN2_1)
-		return lara.big_water_skin == 2;
-	else if (object_number == WATERSKIN2_2)
-		return lara.big_water_skin == 3;
-	else if (object_number == WATERSKIN2_3)
-		return lara.big_water_skin == 4;
-	else if (object_number == WATERSKIN2_4)
-		return lara.big_water_skin == 5;
-	else if (object_number == WATERSKIN2_5)
-		return lara.big_water_skin == 6;
-	else if (object_number == EXAMINE1)
-		return lara.examine1;
-	else if (object_number == EXAMINE2)
-		return lara.examine2;
-	else if (object_number == EXAMINE3)
-		return lara.examine3;
-	else
-		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: get_inventory_count: unimplemented inventory item type!");
-
-	return 0;
-}
+#include "../../tomb4/tomb4plus/inventory.h"
 
 bool NGCondition(short param, unsigned char extra, short timer) {
 	switch (timer) {
 	case INVENTORY_ITEM_IS_MISSING: {
-		return get_inventory_count(param) == 0;
+		return T4PlusGetInventoryCount(param) == 0;
 		break;
 	}
 	case INVENTORY_ITEM_IS_PRESENT: {
-		return get_inventory_count(param) > 0;
+		return T4PlusGetInventoryCount(param) > 0;
 	}
 	case INVENTORY_ITEM_HAS_AT_LEAST: {
-		return get_inventory_count(param) >= extra;
+		return T4PlusGetInventoryCount(param) >= extra;
 		break;
 	}
 	case INVENTORY_ITEM_HAS_LESS_THAN: {
-		return get_inventory_count(param) < extra;
+		return T4PlusGetInventoryCount(param) < extra;
 		break;
 	}
 	case VERTICAL_TRIGGER_ZONE: {

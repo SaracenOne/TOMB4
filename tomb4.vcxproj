@@ -289,6 +289,7 @@
     <ClInclude Include="TOMB4\tomb4\mod_config.h" />
     <ClInclude Include="TOMB4\tomb4\pch.h" />
     <ClInclude Include="TOMB4\tomb4\tomb4.h" />
+    <ClInclude Include="TOMB4\tomb4\tomb4plus\inventory.h" />
     <ClInclude Include="TOMB4\tomb4\tomb4plus\teleporter.h" />
     <ClInclude Include="TOMB4\tomb4\troyestuff.h" />
   </ItemGroup>
@@ -496,6 +497,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="TOMB4\tomb4\tomb4.cpp" />
+    <ClCompile Include="TOMB4\tomb4\tomb4plus\inventory.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
     <ClCompile Include="TOMB4\tomb4\tomb4plus\teleporter.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../tomb4/pch.h</PrecompiledHeaderFile>
     </ClCompile>

@@ -21,6 +21,7 @@
 #include "trng_flipeffect.h"
 #include "trng_script_parser.h"
 #include "trng_triggergroup.h"
+#include "../../tomb4/tomb4plus/inventory.h"
 
 bool NGTriggerItemGroupWithTimer(unsigned char item_group, unsigned char timer, bool anti) {
 	NG_ITEM_GROUP current_item_group = current_item_groups[item_group];
@@ -38,6 +39,52 @@ bool NGTriggerItemGroupWithTimer(unsigned char item_group, unsigned char timer, 
 
 		index++;
 	}
+	return true;
+}
+
+// NGLE - 47
+bool inventory_remove_inventory_item(unsigned char inventory_id, unsigned char _unused) {
+	short object_number = inventory_id + PUZZLE_ITEM1;
+
+	T4PlusSetInventoryCount(object_number, 0);
+
+	return true;
+}
+
+// NGLE - 48
+bool inventory_increase_inventory_items_by_one_in_x_way(unsigned char inventory_id, unsigned char show_popup) {
+	short object_number = inventory_id + PUZZLE_ITEM1;
+	
+	if (show_popup)
+		T4ShowObjectPickup(object_number);
+
+	int current_inventory_count = T4PlusGetInventoryCount(object_number);
+	current_inventory_count++;
+	T4PlusSetInventoryCount(object_number, current_inventory_count);
+
+	return true;
+}
+
+// NGLE - 49
+bool inventory_decrease_inventory_items_by_one_in_x_way(unsigned char inventory_id, unsigned char _unused) {
+	short object_number = inventory_id + PUZZLE_ITEM1;
+
+	int current_inventory_count = T4PlusGetInventoryCount(object_number);
+	current_inventory_count--;
+	if (current_inventory_count < 0)
+		current_inventory_count = 0;
+
+	T4PlusSetInventoryCount(object_number, current_inventory_count);
+
+	return true;
+}
+
+// NGLE - 50
+bool inventory_set_inventory_items(unsigned char inventory_id, unsigned char count) {
+	short object_number = inventory_id + PUZZLE_ITEM1;
+
+	T4PlusSetInventoryCount(object_number, count);
+
 	return true;
 }
 
@@ -647,29 +694,26 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 	switch (param) {
 		case INVENTORY_REMOVE_INVENTORY_ITEM: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "INVENTORY_REMOVE_INVENTORY_ITEM unimplemented!");
-				return true;
+				return inventory_remove_inventory_item(action_data_1, action_data_2);
 			}
 			break;
 		}
 		case INVENTORY_INCREASE_INVENTORY_ITEMS_BY_ONE_IN_X_WAY: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "INVENTORY_INCREASE_INVENTORY_ITEMS_BY_ONE_IN_X_WAY unimplemented!");
-				return true;
+				return inventory_increase_inventory_items_by_one_in_x_way(action_data_1, action_data_2);
 			}
 			break;
 		}
 		case INVENTORY_DECREASE_INVENTORY_ITEMS_BY_ONE: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "INVENTORY_DECREASE_INVENTORY_ITEMS_BY_ONE unimplemented!");
-				return true;
+				return inventory_decrease_inventory_items_by_one_in_x_way(action_data_1, action_data_2);
+
 			}
 			break;
 		}
 		case INVENTORY_SET_INVENTORY_ITEMS: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "INVENTORY_SET_INVENTORY_ITEMS unimplemented!");
-				return true;
+				return inventory_set_inventory_items(action_data_1, action_data_2);
 			}
 			break;
 		}
@@ -2329,6 +2373,20 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 		case VARIABLES_GENERATE_IN_X_NUMERIC_VARIABLE_A_RANDOM_CURRENTVALUE: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
 				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "VARIABLES_GENERATE_IN_X_NUMERIC_VARIABLE_A_RANDOM_CURRENTVALUE unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case VARIABLES_PERFORM_OPERATION_X_NUMERICVARIABLE_AND_NUMBER: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "VARIABLES_PERFORM_OPERATION_X_NUMERICVARIABLE_AND_NUMBER unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case INVENTORY_POP_UP_INVENTORY_TO_SELECT_X_ITEM_IN_WAY: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "INVENTORY_POP_UP_INVENTORY_TO_SELECT_X_ITEM_IN_WAY unimplemented!");
 				return true;
 			}
 			break;
