@@ -657,6 +657,20 @@ bool perform_triggergroup_from_script_in_multi_execution_mode(unsigned char trig
 	return NGTriggerGroupFunction(trigger_group_id, 0);
 }
 
+// NGLE - 374
+bool enable_global_trigger_with_id(unsigned char global_trigger_id_lower, unsigned char global_trigger_id_upper) {
+	unsigned short global_trigger_id = (global_trigger_id_upper << 8) | global_trigger_id_lower;
+	ng_global_trigger_states[global_trigger_id].is_disabled = false;
+	return true;
+}
+
+// NGLE - 375
+bool disable_global_trigger_with_id(unsigned char global_trigger_id_lower, unsigned char global_trigger_id_upper) {
+	unsigned short global_trigger_id = (global_trigger_id_upper << 8) | global_trigger_id_lower;
+	ng_global_trigger_states[global_trigger_id].is_disabled = true;
+	return true;
+}
+
 // NGLE - 407
 bool set_lara_holsters(unsigned int holster_type, unsigned char unused) {
 	switch (holster_type) {
@@ -2427,15 +2441,13 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 		}
 		case GLOBAL_TRIGGER_ENABLE_WITH_ID: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "GLOBAL_TRIGGER_ENABLE_WITH_ID unimplemented!");
-				return true;
+				return enable_global_trigger_with_id(action_data_1, action_data_2);
 			}
 			break;
 		}
 		case GLOBAL_TRIGGER_DISABLE_WITH_ID: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "GLOBAL_TRIGGER_DISABLE_WITH_ID unimplemented!");
-				return true;
+				return disable_global_trigger_with_id(action_data_1, action_data_2);
 			}
 			break;
 		}
