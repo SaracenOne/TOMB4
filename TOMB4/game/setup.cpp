@@ -68,6 +68,7 @@
 // TRLE mod config
 #include "../tomb4/mod_config.h"
 #include "../tomb4//tomb4plus/t4plus_teleporter.h"
+#include "trng/trng_objects.h"
 
 void ObjectObjects()
 {
@@ -1981,6 +1982,9 @@ void InitialiseObjects()
 	BaddyObjects();
 	ObjectObjects();
 	TrapObjects();
+
+	NGSetupNGObjects(); // NGLE
+
 	InitialiseHair();
 	InitialiseEffects();
 

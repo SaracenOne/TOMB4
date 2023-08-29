@@ -242,6 +242,8 @@
     <ClInclude Include="TOMB4\game\tomb4fx.h" />
     <ClInclude Include="TOMB4\game\train.h" />
     <ClInclude Include="TOMB4\game\traps.h" />
+    <ClInclude Include="TOMB4\game\trng\objects\trng_parallel_bars.h" />
+    <ClInclude Include="TOMB4\game\trng\objects\trng_tightrope.h" />
     <ClInclude Include="TOMB4\game\trng\trng.h" />
     <ClInclude Include="TOMB4\game\trng\trng_action.h" />
     <ClInclude Include="TOMB4\game\trng\trng_arithmetic.h" />
@@ -249,6 +251,7 @@
     <ClInclude Include="TOMB4\game\trng\trng_extra_state.h" />
     <ClInclude Include="TOMB4\game\trng\trng_flipeffect.h" />
     <ClInclude Include="TOMB4\game\trng\trng_globaltrigger.h" />
+    <ClInclude Include="TOMB4\game\trng\trng_objects.h" />
     <ClInclude Include="TOMB4\game\trng\trng_organizer.h" />
     <ClInclude Include="TOMB4\game\trng\trng_script_parser.h" />
     <ClInclude Include="TOMB4\game\trng\trng_triggergroup.h" />
@@ -377,11 +380,17 @@
     <ClCompile Include="TOMB4\game\tomb4fx.cpp" />
     <ClCompile Include="TOMB4\game\train.cpp" />
     <ClCompile Include="TOMB4\game\traps.cpp" />
+    <ClCompile Include="TOMB4\game\trng\objects\trng_parallel_bars.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
     <ClCompile Include="TOMB4\game\trng\objects\trng_speedboat.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\trng\objects\trng_tightrope.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="TOMB4\game\trng\trng.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../tomb4/pch.h</PrecompiledHeaderFile>
@@ -418,6 +427,9 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../tomb4/pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="TOMB4\game\trng\trng_globaltrigger.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\trng\trng_objects.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../tomb4/pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="TOMB4\game\trng\trng_organizer.cpp">

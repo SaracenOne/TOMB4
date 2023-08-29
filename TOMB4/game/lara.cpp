@@ -26,9 +26,11 @@
 #include "../tomb4/tomb4.h"
 
 #include "trng/trng.h"
+#include "trng/objects/trng_tightrope.h"
+#include "trng/objects/trng_parallel_bars.h"
 #include "../tomb4/mod_config.h"
 
-void(*lara_control_routines[118])(ITEM_INFO* item, COLL_INFO* coll) =
+void(*lara_control_routines[NUM_LARA_STATES + 1])(ITEM_INFO* item, COLL_INFO* coll) =
 {
 	lara_as_walk,
 	lara_as_run,
@@ -147,10 +149,32 @@ void(*lara_control_routines[118])(ITEM_INFO* item, COLL_INFO* coll) =
 	lara_as_rope,
 	lara_as_rope,
 	lara_void_func,
-	lara_as_controlled
+	lara_as_controlled,
+	// TRNG - imported from Tomb5
+	lara_as_swimcheat,
+	lara_as_trpose,
+	lara_as_null,
+	lara_as_trwalk,
+	lara_as_trfall,
+	lara_as_trfall,
+	lara_as_null,
+	lara_as_null,
+	lara_as_switchon,
+	lara_as_null,
+	lara_as_parallelbars,
+	lara_as_pbleapoff,
+	lara_as_null,
+	lara_as_null,
+	lara_as_null,
+	lara_as_null,
+	lara_as_null,
+	lara_as_null,
+	lara_as_null,
+	lara_as_null,
+	lara_as_null
 };
 
-void(*lara_collision_routines[118])(ITEM_INFO* item, COLL_INFO* coll) =
+void(*lara_collision_routines[NUM_LARA_STATES + 1])(ITEM_INFO* item, COLL_INFO* coll) =
 {
 	lara_col_walk,
 	lara_col_run,
@@ -268,6 +292,28 @@ void(*lara_collision_routines[118])(ITEM_INFO* item, COLL_INFO* coll) =
 	lara_void_func,
 	lara_col_ropefwd,
 	lara_col_ropefwd,
+	lara_void_func,
+	lara_void_func,
+	// TRNG - imported from Tomb5
+	lara_col_swim,
+	lara_default_col,
+	lara_default_col,
+	lara_default_col,
+	lara_default_col,
+	lara_default_col,
+	lara_default_col,
+	lara_default_col,
+	lara_default_col,
+	lara_default_col,
+	lara_default_col,
+	lara_default_col,
+	lara_void_func,
+	lara_void_func,
+	lara_void_func,
+	lara_void_func,
+	lara_void_func,
+	lara_void_func,
+	lara_void_func,
 	lara_void_func,
 	lara_void_func
 };

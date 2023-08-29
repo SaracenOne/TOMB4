@@ -21,6 +21,9 @@
 #include "trng_triggergroup.h"
 #include "trng_globaltrigger.h"
 
+// Includes tightrope state variables
+NG_LARA_EXTRASTATE ng_lara_extrastate;
+
 unsigned int ng_room_offset_table[0xff];
 
 // NG_ITEM_EXTRADATA is persistent supllementary data used by TRNG triggers.
@@ -863,6 +866,10 @@ extern void NGUpdateOneshot() {
 }
 
 void NGSetupExtraState() {
+	ng_lara_extrastate.TightRopeFall = 0;
+	ng_lara_extrastate.TightRopeOff = 0;
+	ng_lara_extrastate.TightRopeOnCount = 0;
+
 	ng_draw_item_number = NO_ITEM;
 	ng_lara_infinite_air = false;
 

@@ -440,6 +440,15 @@
     <ClInclude Include="TOMB4\tomb4\tomb4plus\t4plus_savegame.h">
       <Filter>TOMB4\tomb4\tomb4plus</Filter>
     </ClInclude>
+    <ClInclude Include="TOMB4\game\trng\objects\trng_parallel_bars.h">
+      <Filter>TOMB4\game\trng\objects</Filter>
+    </ClInclude>
+    <ClInclude Include="TOMB4\game\trng\objects\trng_tightrope.h">
+      <Filter>TOMB4\game\trng\objects</Filter>
+    </ClInclude>
+    <ClInclude Include="TOMB4\game\trng\trng_objects.h">
+      <Filter>TOMB4\game\trng</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TOMB4\game\lara.cpp">
@@ -831,6 +840,15 @@
     </ClCompile>
     <ClCompile Include="TOMB4\tomb4\tomb4plus\t4plus_savegame.cpp">
       <Filter>TOMB4\tomb4\tomb4plus</Filter>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\trng\objects\trng_tightrope.cpp">
+      <Filter>TOMB4\game\trng\objects</Filter>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\trng\objects\trng_parallel_bars.cpp">
+      <Filter>TOMB4\game\trng\objects</Filter>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\trng\trng_objects.cpp">
+      <Filter>TOMB4\game\trng</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

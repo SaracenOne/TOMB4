@@ -15,7 +15,7 @@
 #include "trng/trng.h"
 #include "../tomb4/mod_config.h"
 
-static void lara_as_swimcheat(ITEM_INFO* item, COLL_INFO* coll)
+void lara_as_swimcheat(ITEM_INFO* item, COLL_INFO* coll)
 {
 	if (input & IN_FORWARD)
 		item->pos.x_rot -= 546;

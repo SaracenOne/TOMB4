@@ -168,8 +168,8 @@ void LaraCollideStop(ITEM_INFO* item, COLL_INFO* coll);
 void SnapLaraToEdgeOfBlock(ITEM_INFO* item, COLL_INFO* coll, short angle);
 long LaraHangTest(ITEM_INFO* item, COLL_INFO* coll);
 
-extern void (*lara_control_routines[118])(ITEM_INFO* item, COLL_INFO* coll);
-extern void (*lara_collision_routines[118])(ITEM_INFO* item, COLL_INFO* coll);
+extern void (*lara_control_routines[])(ITEM_INFO* item, COLL_INFO* coll);
+extern void (*lara_collision_routines[])(ITEM_INFO* item, COLL_INFO* coll);
 
 extern LARA_INFO lara;
 extern ITEM_INFO* lara_item;
