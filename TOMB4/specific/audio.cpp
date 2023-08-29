@@ -1208,6 +1208,7 @@ struct ma_audio_stream_channel {
 	int restore_track = -1;
 	StreamMode restore_stream_mode = StreamMode::STREAM_ONESHOT_AND_RESTORE_ATMOSPHERE;
 
+	ma_decoder_config decoder_config;
 	ma_decoder decoder;
 	ma_device device;
 	ma_device_config deviceConfig;
@@ -1261,6 +1262,14 @@ void find_file_with_substring(const char* dir_path, const char* substring, char*
 	FindClose(hFind);
 }
 
+int strcicmp(char const* a, char const* b) {
+	for (;; a++, b++) {
+		int d = tolower((unsigned char)*a) - tolower((unsigned char)*b);
+		if (d != 0 || !*a)
+			return d;
+	}
+}
+
 void data_callback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount) {
 	ma_callback_userdata *userdata = (ma_callback_userdata *)pDevice->pUserData;
 	int channel_id = userdata->channel_id;
@@ -1303,7 +1312,7 @@ void stop_track_on_stream_channel(int channel_id) {
 bool load_and_play_track(const char* path, StreamMode mode, int channel_id) {
 	stop_track_on_stream_channel(channel_id);
 
-	ma_result result = ma_decoder_init_file(path, NULL, &channels[channel_id].decoder);
+	ma_result result = ma_decoder_init_file(path, &channels[channel_id].decoder_config, &channels[channel_id].decoder);
 	if (result != MA_SUCCESS) {
 		return false;
 	}
@@ -1348,6 +1357,23 @@ bool play_track_on_stream_channel(int channel_id, long track, StreamMode mode) {
 	memset(name, 0x00, sizeof(name));
 
 	find_file_with_substring("audio", TrackFileNames[track], name);
+
+	// Not sure if we should detect vorbis by filename since ogg is container format.
+	// May need to investigate the spec further.
+	char *ext = strrchr(name, '.');
+	if (ext) {
+		if (strcicmp(ext, "wav") == 0) {
+			channels[channel_id].decoder_config.encodingFormat = ma_encoding_format_wav;
+		} else if (strcicmp(ext, "mp3") == 0) {
+			channels[channel_id].decoder_config.encodingFormat = ma_encoding_format_mp3;
+		} else if (strcicmp(ext, "flac") == 0) {
+			channels[channel_id].decoder_config.encodingFormat = ma_encoding_format_flac;
+		} else {
+			channels[channel_id].decoder_config.encodingFormat = ma_encoding_format_unknown;
+		}
+	} else {
+		channels[channel_id].decoder_config.encodingFormat = ma_encoding_format_unknown;
+	}
 
 	char path[256];
 	wsprintf(path, "audio\\%s", name);
