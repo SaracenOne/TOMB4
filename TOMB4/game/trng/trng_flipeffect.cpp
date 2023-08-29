@@ -2,16 +2,18 @@
 
 #include "../../specific/function_stubs.h"
 #include "../../specific/audio.h"
+#include "../camera.h"
 #include "../control.h"
 #include "../debris.h"
 #include "../effects.h"
 #include "../effect2.h"
-#include "../objects.h"
+#include "../gameflow.h"
 #include "../lara.h"
+#include "../objects.h"
+#include "../savegame.h"
+#include "../sound.h"
 #include "../traps.h"
 #include "../../specific/file.h"
-#include "../camera.h"
-#include "../sound.h"
 #include "../../specific/dxsound.h"
 
 #include "trng.h"
@@ -21,7 +23,10 @@
 #include "trng_flipeffect.h"
 #include "trng_script_parser.h"
 #include "trng_triggergroup.h"
-#include "../../tomb4/tomb4plus/inventory.h"
+
+#include "../../tomb4/mod_config.h"
+#include "../../tomb4/tomb4plus/t4plus_inventory.h"
+#include "../../tomb4/tomb4plus/t4plus_savegame.h"
 
 bool NGTriggerItemGroupWithTimer(unsigned char item_group, unsigned char timer, bool anti) {
 	NG_ITEM_GROUP current_item_group = current_item_groups[item_group];
@@ -671,8 +676,14 @@ bool disable_global_trigger_with_id(unsigned char global_trigger_id_lower, unsig
 	return true;
 }
 
+// NGLE - 404
+bool trigger_secret(unsigned char secret_number, unsigned char unused) {
+	T4TriggerSecret(secret_number);
+	return true;
+}
+
 // NGLE - 407
-bool set_lara_holsters(unsigned int holster_type, unsigned char unused) {
+bool set_lara_holsters(unsigned char holster_type, unsigned char unused) {
 	switch (holster_type) {
 	case 0x0d: {
 		lara.holster = LARA_HOLSTERS;
@@ -2449,6 +2460,11 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
 				return disable_global_trigger_with_id(action_data_1, action_data_2);
 			}
+			break;
+		}
+		case TRIGGER_SECRET: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+				return trigger_secret(action_data_1, action_data_2);
 			break;
 		}
 		case SET_LARA_HOLSTER_TYPE: {

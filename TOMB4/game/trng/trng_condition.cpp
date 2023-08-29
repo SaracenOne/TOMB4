@@ -19,7 +19,7 @@
 #include "../savegame.h"
 #include "../lara_states.h"
 #include "trng_triggergroup.h"
-#include "../../tomb4/tomb4plus/inventory.h"
+#include "../../tomb4/tomb4plus/t4plus_inventory.h"
 
 #define SECTOR_SIZE 1024
 

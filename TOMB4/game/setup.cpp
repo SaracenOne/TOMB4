@@ -67,7 +67,7 @@
 
 // TRLE mod config
 #include "../tomb4/mod_config.h"
-#include "../tomb4//tomb4plus/teleporter.h"
+#include "../tomb4//tomb4plus/t4plus_teleporter.h"
 
 void ObjectObjects()
 {

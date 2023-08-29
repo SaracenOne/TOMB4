@@ -44,6 +44,7 @@
 #include "../specific/file.h"
 
 #include "../tomb4/mod_config.h"
+#include "../tomb4/tomb4plus/t4plus_savegame.h"
 #include "trng/trng.h"
 #include "trng/trng_flipeffect.h"
 #include "trng/trng_extra_state.h"
@@ -1028,19 +1029,7 @@ void TestTriggers(short* data, long heavy, long HeavyFlags, int room_number, int
 			break;
 
 		case TO_SECRET:
-
-			if (!(savegame.Level.Secrets & 1 << value))
-			{
-				MOD_LEVEL_AUDIO_INFO mod_audio_info = get_game_mod_level_audio_info(gfCurrentLevel);
-
-				if (mod_audio_info.secret_track >= 0)
-				{
-					S_CDPlay(mod_audio_info.secret_track, 0);
-				}
-				savegame.Level.Secrets |= 1 << value;
-				savegame.Game.Secrets++;
-			}
-
+			T4TriggerSecret(value); // TRLE
 			break;
 		case TO_BODYBAG:
 			if (NGUseNGActions()) {

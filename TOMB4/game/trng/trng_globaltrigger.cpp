@@ -89,7 +89,7 @@ bool NGExecuteSingleGlobalTrigger(int global_trigger_id, int inventory_object_id
 			global_trigger_condition_passed = true;
 			break;
 		case 0x0027: // GT_SELECTED_INVENTORY_ITEM
-			break;
+			return false;
 		default:
 			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Unimplemented GlobalTrigger type %u!", global_trigger->type);
 			return false;

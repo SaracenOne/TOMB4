@@ -16,6 +16,7 @@
 #include "gameflow.h"
 #include "../specific/output.h"
 #include "../tomb4/tomb4.h"
+#include "../tomb4/tomb4plus/t4plus_inventory.h"
 
 DISPLAYPU pickups[8];
 long PickupX;
@@ -232,19 +233,6 @@ void DrawPickups()
 
 void AddDisplayPickup(short object_number)
 {
-	DISPLAYPU* pu;
-
-	for (int i = 0; i < 8; i++)
-	{
-		pu = &pickups[i];
-
-		if (pu->life < 0)
-		{
-			pu->life = 45;
-			pu->object_number = object_number;
-			break;
-		}
-	}
-
+	T4ShowObjectPickup(object_number); // TRLE
 	DEL_picked_up_object(object_number);
 }

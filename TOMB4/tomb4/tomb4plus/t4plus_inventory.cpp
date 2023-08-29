@@ -4,6 +4,7 @@
 #include "../../game/objects.h"
 #include "../../specific/function_stubs.h"
 #include "../../game/health.h"
+#include "t4plus_inventory.h"
 
 // TODO: there may be some missing types still needing support
 
@@ -209,15 +210,11 @@ void T4PlusSetInventoryCount(short object_number, int count)
 }
 
 void T4ShowObjectPickup(int object_number) {
-	DISPLAYPU* pu;
+	for (int i = 0; i < MAX_PICKUP_DISPLAYABLE_COUNT; i++) {
+		DISPLAYPU *pu = &pickups[i];
 
-	for (int i = 0; i < 8; i++)
-	{
-		pu = &pickups[i];
-
-		if (pu->life < 0)
-		{
-			pu->life = 45;
+		if (pu->life < 0) {
+			pu->life = MAX_PICKUP_DISPLAYABLE_LIFETIME;
 			pu->object_number = object_number;
 			break;
 		}
