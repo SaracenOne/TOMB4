@@ -459,6 +459,11 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 		return false;
 		break;
 	}
+	case SOUND_THE_X_SOUND_EFFECT_IS_PLAYING: {
+		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: SOUND_THE_X_SOUND_EFFECT_IS_PLAYING unimplemented!");
+		return false;
+		break;
+	}
 	default:
 		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: %u unimplemented!", timer);
 		break;
