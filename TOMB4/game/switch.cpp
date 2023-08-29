@@ -13,6 +13,7 @@
 #include "../specific/input.h"
 #include "lara.h"
 #include "newinv.h"
+#include "../tomb4/mod_config.h"
 
 static PHD_VECTOR FullBlockSwitchPos = { 0, 256, 0 };
 static PHD_VECTOR SwitchPos = { 0, 0, 0 };
@@ -236,12 +237,24 @@ void SwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 		{
 			if (MoveLaraPosition(&SwitchPos, item, l))
 			{
+				MOD_GLOBAL_INFO global_info = get_game_mod_global_info();
 				if (item->current_anim_state == 1)
 				{
 					if (item->trigger_flags)
 					{
-						l->anim_number = ANIM_HIDDENPICKUP;
-						l->current_anim_state = AS_HIDDENPICKUP;
+						// TRNG - custom animation overwrite
+						if (global_info.trng_switch_extended_ocb && (item->trigger_flags) >= 4)
+						{
+							l->anim_number = (item->trigger_flags & 0x1fff);
+							if (item->trigger_flags & 0x2000)
+								l->anim_number++;
+							l->current_anim_state = AS_SWITCHOFF;
+						}
+						else
+						{
+							l->anim_number = ANIM_HIDDENPICKUP;
+							l->current_anim_state = AS_HIDDENPICKUP;
+						}
 					}
 					else
 					{
@@ -262,8 +275,16 @@ void SwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 						l->anim_number = ANIM_SMALLSWITCH;
 					else
 					{
-						l->anim_number = ANIM_HIDDENPICKUP;
-						l->current_anim_state = AS_HIDDENPICKUP;
+						// TRNG - custom animation overwrite
+						if (global_info.trng_switch_extended_ocb && (item->trigger_flags) >= 4) {
+							l->anim_number = item->trigger_flags & 0x1fff;
+							l->current_anim_state = AS_SWITCHOFF;
+						}
+						else
+						{
+							l->anim_number = ANIM_HIDDENPICKUP;
+							l->current_anim_state = AS_HIDDENPICKUP;
+						}
 					}
 
 					item->goal_anim_state = 1;

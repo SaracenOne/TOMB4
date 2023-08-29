@@ -279,6 +279,8 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 		get_game_mod_global_info().trng_rollingball_extended_ocb = true;
 		get_game_mod_global_info().trng_statics_extended_ocb = true;
 		get_game_mod_global_info().trng_pushable_extended_ocb = true;
+		// TODO: check for version 1.2.2.3
+		get_game_mod_global_info().trng_switch_extended_ocb = true;
 		get_game_mod_global_info().trng_hack_allow_meshes_with_exactly_256_vertices = true;
 
 		unsigned int options_header_block_start_position = offset;

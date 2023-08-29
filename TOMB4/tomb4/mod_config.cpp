@@ -307,6 +307,7 @@ void LoadGameModConfigSecondPass() {
         READ_JSON_BOOL(trng_rollingball_extended_ocb, global, mod_global_info);
         READ_JSON_BOOL(trng_statics_extended_ocb, global, mod_global_info);
         READ_JSON_BOOL(trng_pushable_extended_ocb, global, mod_global_info);
+        READ_JSON_BOOL(trng_switch_extended_ocb, global, mod_global_info);
         READ_JSON_BOOL(trng_hack_allow_meshes_with_exactly_256_vertices, global, mod_global_info);
 
         // TREP
