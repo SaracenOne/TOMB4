@@ -2704,6 +2704,10 @@ long GetTargetOnLOS(GAME_VECTOR* src, GAME_VECTOR* dest, long DrawTarget, long f
 						SoundEffect(SFX_HIT_ROCK, (PHD_3DPOS*)Mesh, SFX_DEFAULT);
 					}
 
+					// TRLE - added gun ricochet sound effect
+					if (get_game_mod_level_misc_info(gfCurrentLevel).enable_ricochet_sound_effect)
+						SoundEffect(SFX_LARA_RICOCHET, (PHD_3DPOS*)&target, SFX_DEFAULT);
+
 					TriggerRicochetSpark(&target, lara_item->pos.y_rot, 3, 0);
 					TriggerRicochetSpark(&target, lara_item->pos.y_rot, 3, 0);
 				}
@@ -2785,8 +2789,12 @@ long GetTargetOnLOS(GAME_VECTOR* src, GAME_VECTOR* dest, long DrawTarget, long f
 		target.y -= (target.y - src->y) >> 5;
 		target.z -= (target.z - src->z) >> 5;
 
-		if (firing && !ricochet)
+		if (firing && !ricochet) {
+			// TRLE - added gun ricochet sound effect
+			if (get_game_mod_level_misc_info(gfCurrentLevel).enable_ricochet_sound_effect)
+				SoundEffect(SFX_LARA_RICOCHET, (PHD_3DPOS*)&target, SFX_DEFAULT);
 			TriggerRicochetSpark(&target, lara_item->pos.y_rot, 8, 0);
+		}
 	}
 	else if (firing && LaserSight)
 		FireCrossBowFromLaserSight(src, &target);

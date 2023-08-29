@@ -154,6 +154,7 @@ struct MOD_LEVEL_FLARE_INFO {
 };
 
 struct MOD_LEVEL_MISC_INFO {
+	bool enable_ricochet_sound_effect = false;
 	bool enemy_gun_hit_underwater_sfx_fix = false;
 	bool darts_poison_fix = false;
 	unsigned int fog_start_range = DEFAULT_FOG_START_VALUE;
