@@ -131,32 +131,38 @@ bool NGExecuteSingleGlobalTrigger(int global_trigger_id, int inventory_object_id
 			management_replaced = true;
 	}
 
+	bool global_trigger_should_on_false_triggergroup = false;
+
 	if (global_trigger_condition_passed) {
-		if (!ng_global_trigger_states[record_id].is_halted && (condition_trigger_group_id == 0xffff || NGTriggerGroupFunction(condition_trigger_group_id, 0))) {
-			unsigned int perform_trigger_group_id = global_trigger->perform_trigger_group;
+		if ((condition_trigger_group_id == 0xffff || NGTriggerGroupFunction(condition_trigger_group_id, 0))) {
+			if (!ng_global_trigger_states[record_id].is_halted) {
+				unsigned int perform_trigger_group_id = global_trigger->perform_trigger_group;
 
-			if (perform_trigger_group_id != 0xffff) {
-				NGTriggerGroupFunction(perform_trigger_group_id, 0);
+				if (perform_trigger_group_id != 0xffff) {
+					NGTriggerGroupFunction(perform_trigger_group_id, 0);
+				} else {
+					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Unimplemented 'default' perform parameter in GlobalTrigger");
+				}
+
+				// FGT_SINGLE_SHOT / FGT_SINGLE_SHOT_RESUMED
+				if (global_trigger->flags & 0x0001 || global_trigger->flags & 0x0020)
+					ng_global_trigger_states[record_id].is_halted = true;
 			} else {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Unimplemented 'default' perform parameter in GlobalTrigger");
+				// I assume a halted GlobalTrigger should run the on false triggergroup, but may need to check this.
+				global_trigger_should_on_false_triggergroup = true;
 			}
-
-			// FGT_SINGLE_SHOT / FGT_SINGLE_SHOT_RESUMED
-			if (global_trigger->flags & 0x0001 || global_trigger->flags & 0x0020)
-				ng_global_trigger_states[record_id].is_halted = true;
-		}
-		else {
+		} else {
 			// FGT_SINGLE_SHOT_RESUMED
 			if (global_trigger->flags & 0x0020)
 				ng_global_trigger_states[record_id].is_halted = false;
 
-			unsigned int on_false_trigger_group_id = global_trigger->on_false_trigger_group;
-			if (on_false_trigger_group_id != 0xffff) {
-				NGTriggerGroupFunction(on_false_trigger_group_id, 0);
-			}
+			global_trigger_should_on_false_triggergroup = true;
 		}
+	} else {
+		global_trigger_should_on_false_triggergroup = true;
 	}
-	else {
+
+	if (global_trigger_should_on_false_triggergroup) {
 		unsigned int on_false_trigger_group_id = global_trigger->on_false_trigger_group;
 		if (on_false_trigger_group_id != 0xffff) {
 			NGTriggerGroupFunction(on_false_trigger_group_id, 0);
