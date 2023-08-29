@@ -225,7 +225,7 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 	case CREATURE_CURRENT_ANIMATION_0_31_IS:
 	case CREATURE_CURRENT_ANIMATION_32_63_IS:
 	case CREATURE_CURRENT_ANIMATION_64_95_IS:
-		return items[param].anim_number - objects[items[param].object_number].anim_index == param;
+		return items[param].anim_number - objects[items[param].object_number].anim_index == extra;
 	case CREATURE_IS_CURRENTLY_OF_STATE: {
 		return items[param].current_anim_state == extra;
 	}
@@ -265,7 +265,9 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 		break;
 	}
 	case LARA_IS_TOUCHING_CREATURE_TYPE: {
+#ifndef SILENCE_EXCESSIVE_LOGS
 		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: LARA_IS_TOUCHING_CREATURE_TYPE unimplemented!");
+#endif
 		break;
 	}
 	case LARA_IS_VITALITY_IS_X_THAN: {
