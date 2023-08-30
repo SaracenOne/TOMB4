@@ -1559,7 +1559,7 @@ long GetHeight(FLOOR_INFO* floor, long x, long y, long z)
 			data++;
 			break;
 
-		case TRIGGER_TYPE:
+		case TRIGGER_TYPE: {
 
 			if (!trigger_data) {
 				trigger_data = data - 1; // NGLE
@@ -1567,7 +1567,23 @@ long GetHeight(FLOOR_INFO* floor, long x, long y, long z)
 				trigger_index_floor = ((z - r->z) >> 10) + ((x - r->x) >> 10) * r->x_size; // NGLE
 			}
 
-			data++;
+			// NGLE - parsing code for NGConditionals.
+			// Mainly going to be used for fragment conditionals
+			// to have granular floor height variation.
+			bool floor_object_trigger_valid = true;
+			short trigger_type = (type >> 8) & 0x3F;
+			short flags = *data++;
+			unsigned char timer = flags & 0xff;
+			if (trigger_type == MONKEY)
+			{
+				if (NGUseNGConditionals())
+				{
+					unsigned char value = *data++ & 0x3FF;
+					char extra = (flags >> 9);
+
+					floor_object_trigger_valid = NGCondition(value, extra, timer);
+				}
+			}
 
 			do
 			{
@@ -1577,18 +1593,38 @@ long GetHeight(FLOOR_INFO* floor, long x, long y, long z)
 				{
 					if ((trigger & 0x3C00) == (TO_CAMERA << 10) || (trigger & 0x3C00) == (TO_FLYBY << 10))
 						trigger = *data++;
+					else
+					{
+						// NGLE skips
+						if ((trigger & 0x3C00) == (TO_FLIPEFFECT << 10)) {
+							if (NGUseNGFlipEffects()) {
+								trigger = *data++;
+							}
+						}
+
+						if ((trigger & 0x3C00) == (TO_BODYBAG << 10)) {
+							if (NGUseNGActions()) {
+								trigger = *data++;
+							}
+						}
+					}
 
 					continue;
 				}
 
 				item = &items[trigger & 0x3FF];
 
-				if (objects[item->object_number].floor && !(item->flags & 0x8000))
-					objects[item->object_number].floor(item, x, y, z, &height);
+				// NGLE
+				if (floor_object_trigger_valid)
+				{
+					if (objects[item->object_number].floor && !(item->flags & 0x8000))
+						objects[item->object_number].floor(item, x, y, z, &height);
+				}
 
 			} while (!(trigger & 0x8000));
 
 			break;
+		}
 
 		case LAVA_TYPE:
 			trigger_data = data - 1; // NGLE
@@ -1872,8 +1908,25 @@ long GetCeiling(FLOOR_INFO* floor, long x, long y, long z)
 				data++;
 				break;
 
-			case TRIGGER_TYPE:
-				data++;
+			case TRIGGER_TYPE: {
+
+				// NGLE - parsing code for NGConditionals.
+				// Mainly going to be used for fragment conditionals
+				// to have granular ceiling height variation.
+				bool ceiling_object_trigger_valid = true;
+				short trigger_type = (type >> 8) & 0x3F;
+				short flags = *data++;
+				unsigned char timer = flags & 0xff;
+				if (trigger_type == MONKEY)
+				{
+					if (NGUseNGConditionals())
+					{
+						unsigned char value = *data++ & 0x3FF;
+						char extra = (flags >> 9);
+
+						ceiling_object_trigger_valid = NGCondition(value, extra, timer);
+					}
+				}
 
 				do
 				{
@@ -1883,17 +1936,37 @@ long GetCeiling(FLOOR_INFO* floor, long x, long y, long z)
 					{
 						if ((trigger & 0x3C00) == (TO_CAMERA << 10) || (trigger & 0x3C00) == (TO_FLYBY << 10))
 							trigger = *data++;
+						else
+						{
+							// NGLE skips
+							if ((trigger & 0x3C00) == (TO_FLIPEFFECT << 10)) {
+								if (NGUseNGFlipEffects()) {
+									trigger = *data++;
+								}
+							}
+
+							if ((trigger & 0x3C00) == (TO_BODYBAG << 10)) {
+								if (NGUseNGActions()) {
+									trigger = *data++;
+								}
+							}
+						}
 					}
 					else
 					{
 						item = &items[trigger & 0x3FF];
 
-						if (objects[item->object_number].ceiling && !(item->flags & 0x8000))
-							objects[item->object_number].ceiling(item, x, y, z, &height);
+						// NGLE
+						if (ceiling_object_trigger_valid)
+						{
+							if (objects[item->object_number].ceiling && !(item->flags & 0x8000))
+								objects[item->object_number].ceiling(item, x, y, z, &height);
+						}
 					}
 
 				} while (!(trigger & 0x8000));
 				break;
+			}
 
 			case LAVA_TYPE:
 			case CLIMB_TYPE:
