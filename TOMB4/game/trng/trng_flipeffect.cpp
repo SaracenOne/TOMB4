@@ -2423,9 +2423,16 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 			}
 			break;		
 		}
-		case SPRITE_SHOW_SPRITE_WITH_DATA_IN_PARAMETERS_FOR_DURATION: {
+		case SPRITE_SHOW_SPRITE_WITH_DATA_IN_X_PARAMETERS_FOR_DURATION: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
 				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "SPRITE_SHOW_SPRITE_WITH_DATA_IN_PARAMETERS_FOR_DURATION unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case SPRITE_REMOVE_FROM_SCREEN_THE_SPRITE_WITH_DATA_IN_X_PARAMETERS: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "SPRITE_REMOVE_FROM_SCREEN_THE_SPRITE_WITH_DATA_IN_X_PARAMETERS unimplemented!");
 				return true;
 			}
 			break;
