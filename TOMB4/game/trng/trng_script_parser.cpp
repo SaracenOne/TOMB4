@@ -437,10 +437,21 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 					}
 					case 0x02: {
 						// Snow
-						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Snow unimplemented! (level %u)", current_level);
-
-						// Skip to the end
-						offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+						unsigned short snow_type = NG_READ_8(gfScriptFile, offset);
+						switch (snow_type) {
+							case 0:
+								get_game_mod_level_misc_info(current_level).snow_type = WEATHER_DISABLED;
+								break;
+							case 1:
+								get_game_mod_level_misc_info(current_level).snow_type = WEATHER_ENABLED_IN_SPECIFIC_ROOMS;
+								break;
+							case 2:
+								get_game_mod_level_misc_info(current_level).snow_type = WEATHER_ENABLED_ALL_OUTSIDE;
+								break;
+							default:
+								NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: unknown snow type! (level %u)", current_level);
+								break;
+						}
 						break;
 					}
 					case 0x03: {
@@ -488,9 +499,21 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 					}
 					case 0x07: {
 						// Rain
-						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Rain unimplemented! (level %u)", current_level);
-						// Skip to the end
-						offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+						unsigned short rain_type = NG_READ_8(gfScriptFile, offset);
+						switch (rain_type) {
+							case 0:
+								get_game_mod_level_misc_info(current_level).rain_type = WEATHER_DISABLED;
+								break;
+							case 1:
+								get_game_mod_level_misc_info(current_level).rain_type = WEATHER_ENABLED_IN_SPECIFIC_ROOMS;
+								break;
+							case 2:
+								get_game_mod_level_misc_info(current_level).rain_type = WEATHER_ENABLED_ALL_OUTSIDE;
+								break;
+							default:
+								NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: unknown rain type! (level %u)", current_level);
+								break;
+						}
 						break;
 					}
 					case 0x08: {
@@ -1054,15 +1077,27 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 									break;
 								}
 								case CUST_FIX_BUGS: {
-									unsigned short bug_fix_flags = NG_READ_16(gfScriptFile, offset);
+									unsigned char bug_fix_flags_lower = NG_READ_8(gfScriptFile, offset);
+									unsigned char bug_fix_flags_upper = 0;
+
+									if (offset != command_block_end_position) {
+										bug_fix_flags_upper = NG_READ_8(gfScriptFile, offset);
+										if (bug_fix_flags_upper) {
+											NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_FIX_BUGS unknown upper bits! (level %u)", current_level);
+										}
+									}
 
 									if (current_level == 0) {
 										for (int i = 0; i < MOD_LEVEL_COUNT; i++) {
-											NGSetupBugfixCustomization(i, bug_fix_flags);
+											NGSetupBugfixCustomization(i, (bug_fix_flags_upper << 8) | bug_fix_flags_lower);
 										}
 									} else {
-										NGSetupBugfixCustomization(current_level, bug_fix_flags);
+										NGSetupBugfixCustomization(current_level, (bug_fix_flags_upper << 8) | bug_fix_flags_lower);
 									}
+
+									// Sometimes this can be one or two bytes, so just set it
+									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+
 									break;
 								}
 								case CUST_SHATTER_SPECIFIC: {
@@ -1775,7 +1810,7 @@ void NGReadNGExtraStrings(char *gfLanguageFile, unsigned int offset, unsigned in
 		if (current_string) {
 			memset(current_string, 0x00, string_len);
 
-			for (int j = 0; j < string_len; j++) {
+			for (unsigned int j = 0; j < string_len; j++) {
 				current_string[j] = NG_READ_8(gfLanguageFile, offset);
 				if (current_string[j] != 0x00) {
 					current_string[j] ^= 0xa5;

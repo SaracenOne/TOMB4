@@ -26,6 +26,7 @@
 
 #include "delstuff.h"
 #include "../tomb4/mod_config.h"
+#include "../tomb4/tomb4plus/t4plus_weather.h"
 
 FX_INFO* effects;
 OBJECT_VECTOR* sound_effects;
@@ -882,13 +883,16 @@ void invisibility_off(ITEM_INFO* item)
 	if (game_mod_config.global_info.tomo_enable_weather_flipeffect) {
 		switch (TriggerTimer) {
 			case 1: // Rain
-				WeatherType = 1;
+				rain_type = WEATHER_ENABLED_ALL_OUTSIDE;
+				snow_type = WEATHER_DISABLED;
 				break;
 			case 2: // Snow
-				WeatherType = 2;
+				rain_type = WEATHER_DISABLED;
+				snow_type = WEATHER_ENABLED_ALL_OUTSIDE;
 				break;
 			case 3: // No weather
-				WeatherType = 0;
+				rain_type = WEATHER_DISABLED;
+				snow_type = WEATHER_DISABLED;
 				break;
 		}
 	} else {

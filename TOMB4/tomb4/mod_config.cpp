@@ -4,6 +4,11 @@
 
 #include "libs/tiny-json/tiny-json.h"
 
+#define READ_JSON_INTEGER_CAST(value_name, json, my_struct, my_type) { const json_t* value_name = json_getProperty(json, #value_name); \
+    if (value_name && JSON_INTEGER == json_getType(value_name)) { \
+        (my_struct)->value_name = (my_type)json_getInteger(value_name); } \
+    }
+
 #define READ_JSON_UINT8(value_name, json, my_struct) { const json_t* value_name = json_getProperty(json, #value_name); \
     if (value_name && JSON_INTEGER == json_getType(value_name)) { \
         (my_struct)->value_name = (unsigned char)json_getInteger(value_name); } \
@@ -146,6 +151,9 @@ void LoadGameModLevelCreatureInfo(const json_t* creature, MOD_LEVEL_CREATURE_INF
 }
 
 void LoadGameModLevelMiscInfo(const json_t *misc, MOD_LEVEL_MISC_INFO *misc_info) {
+    READ_JSON_INTEGER_CAST(rain_type, misc, misc_info, WeatherType);
+    READ_JSON_INTEGER_CAST(snow_type, misc, misc_info, WeatherType);
+
     READ_JSON_BOOL(enable_ricochet_sound_effect, misc, misc_info);
     READ_JSON_BOOL(enemy_gun_hit_underwater_sfx_fix, misc, misc_info);
     READ_JSON_BOOL(darts_poison_fix, misc, misc_info);

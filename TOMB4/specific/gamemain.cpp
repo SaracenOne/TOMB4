@@ -17,6 +17,7 @@
 #include "specificfx.h"
 
 #include "../game/trng/trng.h"
+#include "../tomb4/tomb4plus/t4plus_weather.h"
 
 LPDIRECT3DVERTEXBUFFER DestVB;
 WATERTAB WaterTable[22][64];

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../game/objects.h"
+#include "tomb4plus/t4plus_weather.h"
 
 #define DEFAULT_FOG_START_VALUE 12288
 #define DEFAULT_FOG_END_VALUE 20480
@@ -154,6 +155,9 @@ struct MOD_LEVEL_FLARE_INFO {
 };
 
 struct MOD_LEVEL_MISC_INFO {
+	WeatherType rain_type = WEATHER_DISABLED;
+	WeatherType snow_type = WEATHER_DISABLED;
+
 	bool enable_ricochet_sound_effect = false;
 	bool enemy_gun_hit_underwater_sfx_fix = false;
 	bool darts_poison_fix = false;
