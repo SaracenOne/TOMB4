@@ -199,6 +199,12 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 	}
 	case CREATURE_IS_CURRENTLY: {
 		switch (extra) {
+			case 0x00: {
+				return items[param].after_death;
+			}
+			case 0x02: {
+				return items[param].after_death == 0;
+			}
 			case 0x03: {
 				return items[param].status == ITEM_ACTIVE;
 			}
