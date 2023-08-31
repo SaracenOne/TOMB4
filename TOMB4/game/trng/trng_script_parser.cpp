@@ -1317,7 +1317,7 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 
 						level_organizer_table[level_organizer_count].organizer.flags = flags;
 						level_organizer_table[level_organizer_count].organizer.parameters = NG_READ_16(gfScriptFile, offset);
-						if (level_organizer_table[level_organizer_count].organizer.parameters != -1) {
+						if (!(level_organizer_table[level_organizer_count].organizer.parameters == 0 || level_organizer_table[level_organizer_count].organizer.parameters == -1)) {
 							NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Organizer parameters are not supported! (level %u)", current_level);
 
 						}
