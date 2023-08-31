@@ -237,15 +237,20 @@ void SwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 		{
 			if (MoveLaraPosition(&SwitchPos, item, l))
 			{
+				// TRNG
 				MOD_GLOBAL_INFO global_info = get_game_mod_global_info();
-				if (item->current_anim_state == 1)
+				bool inverted_state = false;
+				if (global_info.trng_switch_extended_ocb && item->trigger_flags & 0x1000)
+					inverted_state = true;
+				
+				if (item->current_anim_state == inverted_state ? 0 : 1)
 				{
 					if (item->trigger_flags)
 					{
 						// TRNG - custom animation overwrite
 						if (global_info.trng_switch_extended_ocb && (item->trigger_flags) >= 4)
 						{
-							l->anim_number = (item->trigger_flags & 0x1fff);
+							l->anim_number = (item->trigger_flags & 0xfff); // TRNG
 							if (item->trigger_flags & 0x2000)
 								l->anim_number++;
 							l->current_anim_state = AS_SWITCHOFF;
@@ -262,7 +267,7 @@ void SwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 						l->current_anim_state = AS_SWITCHOFF;
 					}
 
-					item->goal_anim_state = 0;
+					item->goal_anim_state = inverted_state ? 1 : 0; // TRNG
 				}
 				else
 				{
@@ -277,8 +282,8 @@ void SwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 					{
 						// TRNG - custom animation overwrite
 						if (global_info.trng_switch_extended_ocb && (item->trigger_flags) >= 4) {
-							l->anim_number = item->trigger_flags & 0x1fff;
-							l->current_anim_state = AS_SWITCHOFF;
+							l->anim_number = item->trigger_flags & 0xfff;
+							l->current_anim_state = AS_SWITCHON;
 						}
 						else
 						{
@@ -287,7 +292,7 @@ void SwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 						}
 					}
 
-					item->goal_anim_state = 1;
+					item->goal_anim_state = inverted_state ? 0 : 1; // TRNG
 				}
 
 				l->frame_number = anims[l->anim_number].frame_base;
