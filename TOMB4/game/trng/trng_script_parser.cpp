@@ -437,7 +437,7 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 					}
 					case 0x02: {
 						// Snow
-						unsigned short snow_type = NG_READ_8(gfScriptFile, offset);
+						unsigned short snow_type = NG_READ_16(gfScriptFile, offset);
 						switch (snow_type) {
 							case 0:
 								get_game_mod_level_misc_info(current_level).snow_type = WEATHER_DISABLED;
@@ -499,7 +499,7 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 					}
 					case 0x07: {
 						// Rain
-						unsigned short rain_type = NG_READ_8(gfScriptFile, offset);
+						unsigned short rain_type = NG_READ_16(gfScriptFile, offset);
 						switch (rain_type) {
 							case 0:
 								get_game_mod_level_misc_info(current_level).rain_type = WEATHER_DISABLED;
