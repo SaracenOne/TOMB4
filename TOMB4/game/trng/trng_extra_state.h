@@ -49,16 +49,41 @@ extern int ng_looped_sound_state[NumSamples];
 
 extern bool ng_lara_infinite_air;
 
-extern int current_value;
-extern int global_alfa;
-extern int global_beta;
-extern int global_delta;
-extern int global_timer;
-extern int local_alfa;
-extern int local_beta;
-extern int local_delta;
-extern int local_timer;
-extern int last_input_number;
+// Timers
+enum NGTimerPosition {
+	NG_TIMER_POSITION_INVISIBLE = 0,
+	NG_TIMER_POSITION_BOTTOM_CENTER,
+	NG_TIMER_POSITION_TOP_CENTER,
+	NG_TIMER_POSITION_CENTER_CENTER,
+	NG_TIMER_POSITION_TOP_LEFT,
+	NG_TIMER_POSITION_TOP_RIGHT,
+	NG_TIMER_POSITION_BOTTOM_LEFT,
+	NG_TIMER_POSITION_BOTTOM_RIGHT,
+	NG_TIMER_POSITION_DOWN_DAMAGE_BAR,
+	NG_TIMER_POSITION_DOWN_COLD_BAR,
+	NG_TIMER_POSITION_DOWN_LEFT_BARS,
+	NG_TIMER_POSITION_DOWN_RIGHT_BARS,
+};
+
+extern int ng_global_timer;
+extern char ng_global_timer_frame_increment;
+extern NGTimerPosition ng_global_timer_position;
+extern int ng_global_timer_time_until_hide;
+
+extern int ng_local_timer;
+extern char ng_local_timer_frame_increment;
+extern NGTimerPosition ng_local_timer_position;
+extern int ng_local_timer_time_until_hide;
+
+// Variables
+extern int ng_current_value;
+extern int ng_global_alfa;
+extern int ng_global_beta;
+extern int ng_global_delta;
+extern int ng_local_alfa;
+extern int ng_local_beta;
+extern int ng_local_delta;
+extern int ng_last_input_number;
 
 extern void NGStorePendingRoomNumber(int room_number);
 extern int NGRestorePendingRoomNumber();

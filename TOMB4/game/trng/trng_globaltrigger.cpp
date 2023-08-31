@@ -88,6 +88,24 @@ bool NGExecuteSingleGlobalTrigger(int global_trigger_id, int inventory_object_id
 		case 0x0020: // GT_ALWAYS
 			global_trigger_condition_passed = true;
 			break;
+		case 0x0021: // GT_TRNG_G_TIMER_EQUALS
+			// We don't evaluate AT ALL if the timer is inactive
+			if (ng_global_timer_frame_increment == 0)
+				return false;
+
+			if (ng_global_timer == global_trigger->parameter) {
+				global_trigger_condition_passed = true;
+			}
+			break;
+		case 0x0022: // GT_TRNG_L_TIMER_EQUALS
+			// We don't evaluate AT ALL if the timer is inactive
+			if (ng_local_timer_frame_increment == 0)
+				return false;
+
+			if (ng_local_timer == global_trigger->parameter) {
+				global_trigger_condition_passed = true;
+			}
+			break;
 		case 0x0027: // GT_SELECTED_INVENTORY_ITEM
 			return false;
 		default:

@@ -108,17 +108,26 @@ int lara_damage_resistence = 1000;
 
 bool ng_lara_infinite_air = false;
 
+// Timers
+int ng_global_timer = 0;
+char ng_global_timer_frame_increment = 0;
+NGTimerPosition ng_global_timer_position = NG_TIMER_POSITION_INVISIBLE;
+int ng_global_timer_time_until_hide = 0;
+
+int ng_local_timer = 0;
+char ng_local_timer_frame_increment = 0;
+NGTimerPosition ng_local_timer_position = NG_TIMER_POSITION_INVISIBLE;
+int ng_local_timer_time_until_hide = 0;
+
 // Variables
-int current_value = 0;
-int global_alfa = 0;
-int global_beta = 0;
-int global_delta = 0;
-int global_timer = 0;
-int local_alfa = 0;
-int local_beta = 0;
-int local_delta = 0;
-int local_timer = 0;
-int last_input_number = 0;
+int ng_current_value = 0;
+int ng_global_alfa = 0;
+int ng_global_beta = 0;
+int ng_global_delta = 0;
+int ng_local_alfa = 0;
+int ng_local_beta = 0;
+int ng_local_delta = 0;
+int ng_last_input_number = 0;
 
 enum TRNG_INPUT {
 	TRNG_INPUT_UP,
@@ -601,6 +610,12 @@ void NGFrameStartUpdate() {
 	NGProcessTriggerGroups();
 	NGProcessOrganizers();
 
+	// If a timer has reached zero, reset its incrementation value
+	if (ng_local_timer <= 0)
+		ng_local_timer_frame_increment = 0;
+	if (ng_global_timer <= 0)
+		ng_global_timer_frame_increment = 0;
+
 	NGClearLaraCollisions();
 
 	if (ng_cinema_timer > 0 || ng_cinema_type > 0) {
@@ -671,6 +686,69 @@ void NGFrameStartUpdate() {
 			}
 		}
 	}
+
+	// Timers
+	ng_global_timer += ng_global_timer_frame_increment;
+	if (ng_global_timer < 0)
+		ng_global_timer = 0;
+
+	if (ng_global_timer_time_until_hide > 0)
+		ng_global_timer_time_until_hide--;
+
+	ng_local_timer += ng_local_timer_frame_increment;
+	if (ng_local_timer < 0)
+		ng_local_timer = 0;
+
+	if (ng_local_timer_time_until_hide > 0)
+		ng_local_timer_time_until_hide--;
+}
+
+void NGDrawTimer(int timer, NGTimerPosition timer_position, int timer_time_until_hide) {
+	if (timer_time_until_hide != 0) {
+		if (timer_position != NG_TIMER_POSITION_INVISIBLE) {
+			char format_buffer[80];
+			int remainder = timer % 30;
+			int seconds = timer / 30;
+
+			sprintf(format_buffer, "%.2d:%.2d:%.1d", seconds / 60, seconds % 60, (334 * (remainder)) / 1000);
+
+			// TODO: the scaling of the text is not correct at all
+			switch (timer_position) {
+			case NG_TIMER_POSITION_BOTTOM_CENTER:
+				PrintString(phd_centerx, phd_winymax - font_height * 0.25, 0, format_buffer, FF_CENTER);
+				break;
+			case NG_TIMER_POSITION_TOP_CENTER:
+				PrintString(phd_centerx, font_height, 0, format_buffer, FF_CENTER);
+				break;
+			case NG_TIMER_POSITION_CENTER_CENTER:
+				PrintString(phd_centerx, phd_centery - font_height * 0.5, 0, format_buffer, FF_CENTER);
+				break;
+			case NG_TIMER_POSITION_TOP_LEFT:
+				PrintString(0, font_height, 0, format_buffer, 0);
+				break;
+			case NG_TIMER_POSITION_TOP_RIGHT:
+				PrintString(phd_winxmax, font_height, 0, format_buffer, FF_RJUSTIFY);
+				break;
+			case NG_TIMER_POSITION_BOTTOM_LEFT:
+				PrintString(0, phd_winymax - font_height * 0.25, 0, format_buffer, 0);
+				break;
+			case NG_TIMER_POSITION_BOTTOM_RIGHT:
+				PrintString(phd_winxmax, phd_winymax - font_height * 0.25, 0, format_buffer, FF_RJUSTIFY);
+				break;
+			case NG_TIMER_POSITION_DOWN_DAMAGE_BAR:
+			case NG_TIMER_POSITION_DOWN_COLD_BAR:
+				PrintString(phd_centerx, phd_winymax - font_height * 0.25, 0, format_buffer, FF_CENTER);
+				break;
+			case NG_TIMER_POSITION_DOWN_LEFT_BARS:
+				PrintString(0, font_height, 0, format_buffer, 0);
+			case NG_TIMER_POSITION_DOWN_RIGHT_BARS:
+				PrintString(phd_winxmax, font_height, 0, format_buffer, FF_RJUSTIFY);
+				break;
+			default:
+				break;
+			}
+		}
+	}
 }
 
 void NGDrawPhase() {
@@ -711,6 +789,10 @@ void NGDrawPhase() {
 			PrintString(phd_centerx, phd_winymax - font_height * 0.25, 0, format_buffer, FF_CENTER);
 		}
 	}
+
+	// Timers
+	NGDrawTimer(ng_local_timer, ng_local_timer_position, ng_local_timer_time_until_hide);
+	NGDrawTimer(ng_global_timer, ng_global_timer_position, ng_global_timer_time_until_hide);
 }
 
 bool NGIsItemFrozen(unsigned int item_num) {
@@ -873,17 +955,26 @@ void NGSetupExtraState() {
 	ng_draw_item_number = NO_ITEM;
 	ng_lara_infinite_air = false;
 
+	// Timers
+	ng_global_timer = 0;
+	ng_global_timer_frame_increment = 0;
+	ng_global_timer_position = NG_TIMER_POSITION_INVISIBLE;
+	ng_global_timer_time_until_hide = 0;
+
+	ng_local_timer = 0;
+	ng_local_timer_frame_increment = 0;
+	ng_local_timer_position = NG_TIMER_POSITION_INVISIBLE;
+	ng_local_timer_time_until_hide = 0;
+
 	// Variables
-	current_value = 0;
-	global_alfa = 0;
-	global_beta = 0;
-	global_delta = 0;
-	global_timer = 0;
-	local_alfa = 0;
-	local_beta = 0;
-	local_delta = 0;
-	local_timer = 0;
-	last_input_number = 0;
+	ng_current_value = 0;
+	ng_global_alfa = 0;
+	ng_global_beta = 0;
+	ng_global_delta = 0;
+	ng_local_alfa = 0;
+	ng_local_beta = 0;
+	ng_local_delta = 0;
+	ng_last_input_number = 0;
 
 	// Timer Trackers
 	timer_tracker_type = TTT_ONLY_SHOW_SECONDS;

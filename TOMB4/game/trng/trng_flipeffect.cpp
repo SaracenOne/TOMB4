@@ -635,6 +635,98 @@ bool variables_divide_x_variable_by_value(unsigned char variable, unsigned char 
 	return true;
 }
 
+// NGLE - 264
+bool variables_start_the_x_trng_timer_in_mode(unsigned char set_global_timer, unsigned char countdown_timer) {
+	if (set_global_timer) {
+		if (countdown_timer)
+			ng_global_timer_frame_increment = -1;
+		else
+			ng_global_timer_frame_increment = 1;
+	} else {
+		if (countdown_timer)
+			ng_local_timer_frame_increment = -1;
+		else
+			ng_local_timer_frame_increment = 1;
+	}
+
+	return true;
+}
+
+// NGLE - 265
+bool variables_stop_the_x_trng_timer(unsigned char set_global_timer, unsigned char _unused) {
+	if (set_global_timer) {
+		ng_global_timer_frame_increment = 0;
+	} else {
+		ng_local_timer_frame_increment = 0;
+	}
+
+	return true;
+}
+
+// NGLE - 266
+bool variables_initialize_the_x_trng_timer_to_seconds(unsigned char set_global_timer, unsigned char seconds) {
+	if (set_global_timer)
+		ng_global_timer = (int)(seconds) * 30;
+	else
+		ng_local_timer = (int)(seconds) * 30;
+
+	return true;
+}
+
+// NGLE - 267
+bool variables_initialize_the_x_trng_timer_to_big_number_seconds(unsigned char set_global_timer, unsigned char big_number_id) {
+	NGLog(NG_LOG_TYPE_ERROR, "variables_initialize_the_x_trng_timer_to_big_number_seconds: unimplemented!");
+	return true;
+}
+
+// NGLE - 268
+bool variables_initialize_the_x_trng_timer_to_frame_ticks(unsigned char set_global_timer, unsigned char frame_ticks) {
+	if (set_global_timer)
+		ng_global_timer = (int)(frame_ticks);
+	else
+		ng_local_timer = (int)(frame_ticks);
+
+	return true;
+}
+
+// NGLE - 269
+bool variables_show_x_trng_timer_in_position(unsigned char set_global_timer, unsigned char position) {
+
+	if (position == NGTimerPosition::NG_TIMER_POSITION_DOWN_DAMAGE_BAR) {
+		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NG_TIMER_POSITION_DOWN_DAMAGE_BAR unimplemented!");
+	} else if (position == NGTimerPosition::NG_TIMER_POSITION_DOWN_COLD_BAR) {
+		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NG_TIMER_POSITION_DOWN_COLD_BAR unimplemented!");
+	} else if (position == NGTimerPosition::NG_TIMER_POSITION_DOWN_LEFT_BARS) {
+		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NG_TIMER_POSITION_DOWN_LEFT_BARS unimplemented!");
+	} else if (position == NGTimerPosition::NG_TIMER_POSITION_DOWN_RIGHT_BARS) {
+		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NG_TIMER_POSITION_DOWN_RIGHT_BARS unimplemented!");
+	}
+
+	if (set_global_timer) {
+		ng_global_timer_position = (NGTimerPosition)(position);
+		ng_global_timer_time_until_hide = -1;
+	} else {
+		ng_local_timer_position = (NGTimerPosition)(position);
+		ng_local_timer_time_until_hide = -1;
+	}
+
+	return true;
+}
+
+// NGLE - 270
+bool variables_hide_the_x_trng_timer_in_seconds(unsigned char set_global_timer, unsigned char seconds) {
+	if (set_global_timer) {
+		if (ng_global_timer_time_until_hide < 0) {
+			ng_global_timer_time_until_hide = (int)(seconds) * 30;
+		}
+	} else {
+		if (ng_local_timer_time_until_hide < 0) {
+			ng_local_timer_time_until_hide = (int)(seconds) * 30;
+		}
+	}
+
+	return true;
+}
 
 // NGLE - 367
 bool camera_show_black_screen_for_seconds_with_final_curtain_effect(unsigned char timer, unsigned char unused) {
@@ -2115,24 +2207,21 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 			}
 			break;
 		}
-		case VARIABLES_START_TRNG_TIMER_TO_X_MODE: {
+		case VARIABLES_START_THE_X_TRNG_TIMER_TO_MODE: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "VARIABLES_START_TRNG_TIMER_TO_X_MODE unimplemented!");
-				return true;
+				return variables_start_the_x_trng_timer_in_mode(action_data_1, action_data_2);
 			}
 			break;
 		}
 		case VARIABLES_STOP_THE_X_TRNG_TIMER: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "VARIABLES_STOP_THE_X_TRNG_TIMER unimplemented!");
-				return true;
+				return variables_stop_the_x_trng_timer(action_data_1, action_data_2);
 			}
 			break;
 		}
 		case VARIABLES_INITIALIZE_TRNG_TIMER_TO_X_SECONDS: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "VARIABLES_INITIALIZE_TRNG_TIMER_TO_X_SECONDS unimplemented!");
-				return true;
+				return variables_initialize_the_x_trng_timer_to_seconds(action_data_1, action_data_2);
 			}
 			break;
 		}
@@ -2145,28 +2234,27 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 		}
 		case VARIABLES_INITIALIZE_X_TRNG_TIMER_TO_FRAME_TICKS: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "VARIABLES_INITIALIZE_X_TRNG_TIMER_TO_FRAME_TICKS unimplemented!");
+				return variables_initialize_the_x_trng_timer_to_frame_ticks(action_data_1, action_data_2);
+			}
+			break;
+		}
+		case VARIABLES_SHOW_X_TRNG_TIMER_IN_POSITION: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				variables_show_x_trng_timer_in_position(action_data_1, action_data_2);
 				return true;
 			}
 			break;
 		}
-		case VARIABLES_SHOW_TRNG_TIMER_IN_X_POSITION: {
+		case VARIABLES_HIDE_X_TRNG_TIMER_IN_SECONDS: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "VARIABLES_SHOW_TRNG_TIMER_IN_X_POSITION unimplemented!");
+				variables_hide_the_x_trng_timer_in_seconds(action_data_1, action_data_2);
 				return true;
 			}
 			break;
 		}
-		case VARIABLES_HIDE_TRNG_TIMER_IN_X_POSITION: {
+		case VARIABLES_COPY_X_NUMERIC_VARIABLE_TO_CURRENTVALUE: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "VARIABLES_HIDE_TRNG_TIMER_IN_X_POSITION unimplemented!");
-				return true;
-			}
-			break;
-		}
-		case VARIABLES_COPY_X_NUMBERIC_VARIABLE_TO_CURRENTVALUE: {
-			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "VARIABLES_COPY_X_NUMBERIC_VARIABLE_TO_CURRENTVALUE unimplemented!");
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "VARIABLES_COPY_X_NUMERIC_VARIABLE_TO_CURRENTVALUE unimplemented!");
 				return true;
 			}
 			break;
