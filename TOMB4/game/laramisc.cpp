@@ -289,7 +289,12 @@ void AnimateLara(ITEM_INFO* item)
 				if (item->frame_number == *cmd)
 				{
 					FXType = cmd[1] & 0xC000;
-					effect_routines[cmd[1] & 0x3FFF](item);
+					int effect_id = cmd[1] & 0x3FFF;
+					if (NGUseNGFlipEffects() && effect_id >= 47) {
+						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "AnimateLara: Extended Lara flipeffects not yet supported!");
+					} else {
+						effect_routines[effect_id](item);
+					}
 				}
 
 				cmd += 2;
