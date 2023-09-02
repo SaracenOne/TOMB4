@@ -27,6 +27,7 @@
 #include "../../tomb4/mod_config.h"
 #include "../../tomb4/tomb4plus/t4plus_inventory.h"
 #include "../../tomb4/tomb4plus/t4plus_savegame.h"
+#include "../flmtorch.h"
 
 bool NGTriggerItemGroupWithTimer(unsigned char item_group, unsigned char timer, bool anti) {
 	NG_ITEM_GROUP current_item_group = current_item_groups[item_group];
@@ -602,6 +603,40 @@ bool static_visibility_render_newly_visible(unsigned char static_id_lower, unsig
 // NGLE - 193
 bool play_track_on_channel_with_restore(unsigned char track_id, unsigned char channel_id) {
 	S_CDPlayExt(track_id, channel_id, false, true);
+	return true;
+}
+
+// NGLE - 199
+bool lara_light_or_put_out_torch_in_laras_hand(unsigned char light_torch, unsigned char _unused) {
+	lara.LitTorch = light_torch;
+	return true;
+}
+
+// NGLE - 200
+bool lara_give_or_remove_torch_to_or_from_hand_of_lara(unsigned char give_torch, unsigned char _unused) {
+	if (give_torch) {
+		if (lara.gun_type != WEAPON_TORCH) {
+			lara.request_gun_type = WEAPON_TORCH;
+			lara.gun_type = WEAPON_TORCH;
+			lara.flare_control_left = 1;
+			lara.left_arm.anim_number = objects[TORCH_ANIM].anim_index;
+			lara.gun_status = LG_READY;
+			lara.left_arm.lock = 0;
+			lara.left_arm.frame_number = 0;
+			lara.left_arm.frame_base = anims[objects[TORCH_ANIM].anim_index].frame_ptr;
+			lara.mesh_ptrs[LM_LHAND] = meshes[objects[TORCH_ANIM].mesh_index + LM_LHAND * 2];
+		}
+	} else {
+		if (lara.gun_type == WEAPON_TORCH) {
+			lara.flare_control_left = 0;
+			lara.LitTorch = 0;
+			lara.left_arm.lock = 0;
+			lara.gun_type = WEAPON_NONE;
+			lara.request_gun_type = WEAPON_NONE;
+			lara.gun_status = LG_NO_ARMS;
+			lara.mesh_ptrs[LM_LHAND] = meshes[objects[LARA].mesh_index + LM_LHAND * 2];
+		}
+	}
 	return true;
 }
 
@@ -1764,15 +1799,13 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 		}
 		case LARA_LIGHT_OR_PUT_OUT_THE_TORCH_IN_LARAS_HAND: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_LIGHT_OR_PUT_OUT_THE_TORCH_IN_LARAS_HAND unimplemented!");
-				return true;
+				return lara_light_or_put_out_torch_in_laras_hand(action_data_1, action_data_2);
 			}
 			break;
 		}
-		case LARA_GIVE_OR_REMOVE_THE_TORCH_TO_OR_FROM_HAND_OF_LARA: {
+		case LARA_GIVE_OR_REMOVE_TORCH_TO_OR_FROM_HAND_OF_LARA: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_GIVE_OR_REMOVE_THE_TORCH_TO_OR_FROM_HAND_OF_LARA unimplemented!");
-				return true;
+				return lara_give_or_remove_torch_to_or_from_hand_of_lara(action_data_1, action_data_2);
 			}
 			break;
 		}
