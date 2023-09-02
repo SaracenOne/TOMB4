@@ -24,6 +24,7 @@
 #include "../specific/dxsound.h"
 
 #include "trng/trng.h"
+#include "trng/trng_flipeffect.h"
 #include "../tomb4/mod_config.h"
 
 COLL_INFO mycoll;
@@ -214,6 +215,15 @@ void AnimateLara(ITEM_INFO* item)
 				switch (*cmd++)
 				{
 				case ACMD_SETPOS:
+					// TRNG
+					if (NGUseNGAnimCommands) {
+						unsigned char command_id = (cmd[0] & 0xff00) >> 8;
+						if (command_id == 0xa0) {
+							cmd += 3;
+							break;
+						}
+					}
+
 					TranslateItem(item, cmd[0], cmd[1], cmd[2]);
 					UpdateLaraRoom(item, -381);
 					cmd += 3;
@@ -262,9 +272,20 @@ void AnimateLara(ITEM_INFO* item)
 		{
 			switch (*cmd++)
 			{
-			case ACMD_SETPOS:
+			case ACMD_SETPOS: {
+				int offset_frame = item->frame_number - anim->frame_base;
+
+				// TRNG
+				if (NGUseNGAnimCommands) {
+					unsigned char command_frame = (cmd[0] & 0xff);
+					unsigned char command_id = (cmd[0] & 0xff00) >> 8;
+					if (command_id == 0xa0 && (offset_frame == command_frame || command_frame == 0xff)) {
+						NGFlipEffect(cmd[1], cmd[2], false, true);
+					}
+				}
 				cmd += 3;
 				break;
+			}
 
 			case ACMD_JUMPVEL:
 				cmd += 2;
@@ -289,12 +310,7 @@ void AnimateLara(ITEM_INFO* item)
 				if (item->frame_number == *cmd)
 				{
 					FXType = cmd[1] & 0xC000;
-					int effect_id = cmd[1] & 0x3FFF;
-					if (NGUseNGFlipEffects() && effect_id >= 47) {
-						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "AnimateLara: Extended Lara flipeffects not yet supported!");
-					} else {
-						effect_routines[effect_id](item);
-					}
+					effect_routines[cmd[1] & 0x3FFF](item);
 				}
 
 				cmd += 2;

@@ -276,6 +276,7 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 		get_game_mod_global_info().trng_flipeffects_enabled = true;
 		get_game_mod_global_info().trng_conditionals_enabled = true;
 		get_game_mod_global_info().trng_actions_enabled = true;
+		get_game_mod_global_info().trng_ng_anim_commands_enabled = true;
 		get_game_mod_global_info().trng_rollingball_extended_ocb = true;
 		get_game_mod_global_info().trng_statics_extended_ocb = true;
 		get_game_mod_global_info().trng_pushable_extended_ocb = true;

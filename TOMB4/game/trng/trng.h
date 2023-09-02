@@ -61,6 +61,7 @@ extern void NGFrameFinish();
 extern bool NGUseNGConditionals();
 extern bool NGUseNGFlipEffects();
 extern bool NGUseNGActions();
+extern bool NGUseNGAnimCommands();
 
 extern void NGSetCurrentDrawItemNumber(int item_num);
 extern int NGGetCurrentDrawItemNumber();

@@ -207,6 +207,12 @@ bool NGUseNGActions() {
 	return global_info.trng_actions_enabled && ngle_footer_found;
 }
 
+bool NGUseNGAnimCommands() {
+	MOD_GLOBAL_INFO global_info = get_game_mod_global_info();
+
+	return global_info.trng_ng_anim_commands_enabled && ngle_footer_found;
+}
+
 int NGFindIndexForLaraStartPosWithMatchingOCB(unsigned int ocb) {
 	for (int i = 0; i < nAIObjects; i++) {
 		if (AIObjects[i].object_number == LARA_START_POS && ocb == AIObjects[i].trigger_flags) {
