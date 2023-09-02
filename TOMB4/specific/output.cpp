@@ -1031,25 +1031,42 @@ void phd_PutPolygons(short* objptr, long clip)
 
 			if (envmap)
 			{
-				clrbak[0] = MyVertexBuffer[tri[0]].color;
-				clrbak[1] = MyVertexBuffer[tri[1]].color;
-				clrbak[2] = MyVertexBuffer[tri[2]].color;
-				spcbak[0] = MyVertexBuffer[tri[0]].specular;
-				spcbak[1] = MyVertexBuffer[tri[1]].specular;
-				spcbak[2] = MyVertexBuffer[tri[2]].specular;
-				RGB_M(MyVertexBuffer[tri[0]].color, num);
-				RGB_M(MyVertexBuffer[tri[1]].color, num);
-				RGB_M(MyVertexBuffer[tri[2]].color, num);
-				RGB_M(MyVertexBuffer[tri[0]].specular, num);
-				RGB_M(MyVertexBuffer[tri[1]].specular, num);
-				RGB_M(MyVertexBuffer[tri[2]].specular, num);
+				// TRLE: modified to fade the environment map out into the colored fog
+				for (int i = 0; i < 3; i++) {
+					clrbak[i] = MyVertexBuffer[tri[i]].color;
+					spcbak[i] = MyVertexBuffer[tri[i]].specular;
+
+#ifdef FORCE_COLOURED_FOG
+					// Get the specular alpha
+					unsigned char spc_alpha = (MyVertexBuffer[tri[i]].color >> 24) & 0xff;
+
+					// Copy it to a 32 bit in integer
+					int spc_alpha_32 = spc_alpha;
+
+					// Invert the specular alpha
+					unsigned char spc_alpha_inverted = 0xff - spc_alpha;
+
+					// Add the inverted specular to the 32bit specular
+					spc_alpha_32 += spc_alpha_inverted;
+					if (spc_alpha_32 > 255)
+						spc_alpha_32 = 255;
+#endif
+
+					// Multiply the colours by the actual shininess value
+					RGB_M(MyVertexBuffer[tri[i]].color, num);
+					RGB_M(MyVertexBuffer[tri[i]].specular, num);
+
+#ifdef FORCE_COLOURED_FOG
+					// Write it back to the buffer
+					MyVertexBuffer[tri[i]].specular &= 0x00ffffff;
+					MyVertexBuffer[tri[i]].specular |= (spc_alpha_32 << 24);
+#endif
+				}
 				AddTriSorted(MyVertexBuffer, tri[0], tri[1], tri[2], &envmap_texture, 0);
-				MyVertexBuffer[tri[0]].color = clrbak[0];
-				MyVertexBuffer[tri[1]].color = clrbak[1];
-				MyVertexBuffer[tri[2]].color = clrbak[2];
-				MyVertexBuffer[tri[0]].specular = spcbak[0];
-				MyVertexBuffer[tri[1]].specular = spcbak[1];
-				MyVertexBuffer[tri[2]].specular = spcbak[2];
+				for (int i = 0; i < 3; i++) {
+					MyVertexBuffer[tri[i]].color = clrbak[i];
+					MyVertexBuffer[tri[i]].specular = spcbak[i];
+				}
 			}
 		}
 		else
