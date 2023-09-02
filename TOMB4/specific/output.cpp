@@ -172,7 +172,7 @@ void ProcessObjectMeshVertices(MESH_DATA* mesh)
 			cB = ambientB;
 		}
 
-		cA = (GlobalAlpha >> 24);
+		cA = (GlobalAlpha >> 24) & 0xff;
 		
 		if (vPos.z > DistanceFogStart)
 		{
@@ -204,16 +204,23 @@ void ProcessObjectMeshVertices(MESH_DATA* mesh)
 				if (DistanceFogEnd < 0.0F) {
 					val = (vPos.z - DistanceFogStart) / 512.0F;
 					sA -= long(val * (255.0F / 8.0F));
+					cA -= long(val * (255.0F / 8.0F));
 
 					if (sA < 0)
 						sA = 0;
-				}
-				else {
-					sA = 255 - long(val);
+					if (cA < 0)
+						cA = 0;
+				} else {
+					sA -= long(val);
+					cA -= long(val);
 					if (sA < 0)
 						sA = 0;
 					else if (sA > 255)
 						sA = 255;
+					if (cA < 0)
+						cA = 0;
+					else if (cA > 255)
+						cA = 255;
 				}
 #else 
 				cR -= (long)val;
@@ -454,16 +461,23 @@ void ProcessStaticMeshVertices(MESH_DATA* mesh)
 				if (DistanceFogEnd < 0.0F) {
 					val = (vPos.z - DistanceFogStart) / 512.0F;
 					sA -= long(val * (255.0F / 8.0F));
+					cA -= long(val * (255.0F / 8.0F));
 
 					if (sA < 0)
 						sA = 0;
-				}
-				else {
+					if (cA < 0)
+						cA = 0;
+				} else {
 					sA = 255 - long(val);
+					cA = 255 - long(val);
 					if (sA < 0)
 						sA = 0;
 					else if (sA > 255)
 						sA = 255;
+					if (cA < 0)
+						cA = 0;
+					else if (cA > 255)
+						cA = 255;
 				}
 #else 
 				cR -= (long)val;
@@ -936,35 +950,6 @@ void phd_PutPolygons(short* objptr, long clip)
 				}
 #endif
 				AddQuadSorted(MyVertexBuffer, quad[0], quad[1], quad[2], quad[3], pTex, 0);
-			}
-
-			if (envmap)
-			{
-				clrbak[0] = MyVertexBuffer[quad[0]].color;
-				clrbak[1] = MyVertexBuffer[quad[1]].color;
-				clrbak[2] = MyVertexBuffer[quad[2]].color;
-				clrbak[3] = MyVertexBuffer[quad[3]].color;
-				spcbak[0] = MyVertexBuffer[quad[0]].specular;
-				spcbak[1] = MyVertexBuffer[quad[1]].specular;
-				spcbak[2] = MyVertexBuffer[quad[2]].specular;
-				spcbak[3] = MyVertexBuffer[quad[3]].specular;
-				RGB_M(MyVertexBuffer[quad[0]].color, num);
-				RGB_M(MyVertexBuffer[quad[1]].color, num);
-				RGB_M(MyVertexBuffer[quad[2]].color, num);
-				RGB_M(MyVertexBuffer[quad[3]].color, num);
-				RGB_M(MyVertexBuffer[quad[0]].specular, num);
-				RGB_M(MyVertexBuffer[quad[1]].specular, num);
-				RGB_M(MyVertexBuffer[quad[2]].specular, num);
-				RGB_M(MyVertexBuffer[quad[3]].specular, num);
-				AddQuadSorted(MyVertexBuffer, quad[0], quad[1], quad[2], quad[3], &envmap_texture, 0);
-				MyVertexBuffer[quad[0]].color = clrbak[0];
-				MyVertexBuffer[quad[1]].color = clrbak[1];
-				MyVertexBuffer[quad[2]].color = clrbak[2];
-				MyVertexBuffer[quad[3]].color = clrbak[3];
-				MyVertexBuffer[quad[0]].specular = spcbak[0];
-				MyVertexBuffer[quad[1]].specular = spcbak[1];
-				MyVertexBuffer[quad[2]].specular = spcbak[2];
-				MyVertexBuffer[quad[3]].specular = spcbak[3];
 			}
 		}
 		else
