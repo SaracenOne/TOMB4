@@ -396,7 +396,7 @@ void ProcessStaticMeshVertices(MESH_DATA* mesh)
 		cR = (cR * pR) >> 8;
 		cG = (cG * pG) >> 8;
 		cB = (cB * pB) >> 8;
-		cA = 0xFF;
+		cA = (GlobalAlpha >> 24) & 0xff;
 		sA = 0xFF;
 		sR = 0;
 		sG = 0;
@@ -468,8 +468,8 @@ void ProcessStaticMeshVertices(MESH_DATA* mesh)
 					if (cA < 0)
 						cA = 0;
 				} else {
-					sA = 255 - long(val);
-					cA = 255 - long(val);
+					sA -= long(val);
+					cA -= long(val);
 					if (sA < 0)
 						sA = 0;
 					else if (sA > 255)
