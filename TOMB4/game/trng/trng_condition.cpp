@@ -200,13 +200,19 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 	case CREATURE_IS_CURRENTLY: {
 		switch (extra) {
 			case 0x00: {
-				return items[param].after_death;
+				return (items[param].status == ITEM_DEACTIVATED);
+			}
+			case 0x01: {
+				return !items[param].active && items[param].status != ITEM_DEACTIVATED;
 			}
 			case 0x02: {
-				return items[param].after_death == 0;
+				return items[param].status == ITEM_INACTIVE || items[param].status == ITEM_ACTIVE;
 			}
 			case 0x03: {
 				return items[param].status == ITEM_ACTIVE;
+			}
+			case 0x04: {
+				return items[param].status != ITEM_ACTIVE;
 			}
 			default: {
 				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "CREATURE_IS_CURRENTLY is not currently implemented!");

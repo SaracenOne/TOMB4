@@ -414,7 +414,8 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame, bool 
 		}
 		case SET_ENEMY_TRANSPARENCY_LEVEL: {
 			if (first_frame) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "SET_ENEMY_TRANSPARENCY_LEVEL: unimplemented!");
+				NGSetAfterDeathOverride(item_id, action_data);
+				items[item_id].after_death = action_data;
 			}
 			break;
 		}

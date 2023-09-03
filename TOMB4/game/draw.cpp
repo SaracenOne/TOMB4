@@ -1321,6 +1321,12 @@ void PrintObjects(short room_number)
 		item = &items[item_number];
 		obj = &objects[item->object_number];
 
+		// NGLE
+		short after_death_override = NGGetAfterDeathOverride(item_number);
+		if (after_death_override != 0)
+			item->after_death = after_death_override;
+
+
 		if (item->status != ITEM_INVISIBLE)
 		{
 			if (item->after_death)

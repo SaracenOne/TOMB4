@@ -39,6 +39,7 @@ struct NG_ITEM_EXTRADATA {
 	short move_east_west_units = 0;
 	short move_up_down_units = 0;
 	unsigned int mesh_visibility_mask = 0xffffffff;
+	short after_death_override = 0;
 };
 
 NG_ITEM_EXTRADATA *ng_items_extradata = NULL;
@@ -57,6 +58,7 @@ void NGResetItemExtraData(int item_number) {
 		current_extradata->move_east_west_units = 0;
 		current_extradata->move_up_down_units = 0;
 		current_extradata->mesh_visibility_mask = 0xffffffff;
+		current_extradata->after_death_override = 0;
 	} else {
 		NGLog(NG_LOG_TYPE_ERROR, "NGResetItemExtraData: invalid item_number!");
 	}
@@ -906,6 +908,14 @@ void NGSetDisplayTimerForMoveableWithType(int item_id, NGTimerTrackerType new_ti
 	} else {
 		timer_tracker_remaining_until_timeout = TIMER_TRACKER_TIMEOUT;
 	}
+}
+
+extern void NGSetAfterDeathOverride(int item_id, short after_death) {
+	ng_items_extradata[item_id].after_death_override = after_death;
+}
+
+extern short NGGetAfterDeathOverride(int item_id) {
+	return ng_items_extradata[item_id].after_death_override;
 }
 
 int ng_draw_item_number = NO_ITEM;
