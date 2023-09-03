@@ -437,16 +437,22 @@ bool perform_triggergroup_from_script_in_specific_way(unsigned char trigger_grou
 
 // NGLE - 125
 bool flipmap_on(unsigned char flipmap_id, unsigned char unused_2) {
-	NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "FLIPMAP_ON not yet implemented");
+	flipmap[flipmap_id] |= IFL_CODEBITS;
 
-	return false;
+	if (!flip_stats[flipmap_id])
+		FlipMap(flipmap_id);
+
+	return true;
 }
 
 // NGLE - 126
 bool flipmap_off(unsigned char flipmap_id, unsigned char unused_2) {
-	NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "FLIPMAP_OFF not yet implemented");
+	flipmap[flipmap_id] &= ~(IFL_CODEBITS);
 
-	return false;
+	if (flip_stats[flipmap_id])
+		FlipMap(flipmap_id);
+
+	return true;
 }
 
 // NGLE - 127
