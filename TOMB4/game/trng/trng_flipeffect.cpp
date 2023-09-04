@@ -1442,13 +1442,13 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 			break;
 		}
 		case LARA_ATTRACT_LARA_IN_DIRECTION_ON_GROUND_WITH_SPEED: {
-			if (skip_checks || !NGIsOneShotTriggeredForTile()) {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
 				return lara_attract_lara_in_direction_on_ground_with_speed(action_data_1, action_data_2);
 			}
 			break;
 		}
 		case LARA_ATTRACT_LARA_IN_DIRECTION_IN_AIR_WITH_SPEED: {
-			if (skip_checks || !NGIsOneShotTriggeredForTile()) {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
 				return lara_attract_lara_in_direction_in_air_with_speed(action_data_1, action_data_2);
 			}
 			break;
