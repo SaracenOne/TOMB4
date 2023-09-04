@@ -142,6 +142,12 @@ void RestoreLaraData(long FullSave)
 	lara.spaz_effect = 0;
 	lara.left_arm.frame_base = (short*)((long)lara.left_arm.frame_base + (long)objects[PISTOLS_ANIM].frame_base);
 	lara.right_arm.frame_base = (short*)((long)lara.right_arm.frame_base + (long)objects[PISTOLS_ANIM].frame_base);
+	// Tomb4Plus - we've modified the GeneralPtr to be an index rather than a memory address since it was buggy and barely used as memory address directly.
+	// Added a check to make sure the item is within range to prevent crashing with old savegames.
+	if (lara.GeneralPtr >= ITEM_COUNT) {
+		Log(0, "RestoreLaraData: GeneralPtr overflow!");
+		lara.GeneralPtr = 0;
+	}
 
 	if (lara.burn)
 	{
