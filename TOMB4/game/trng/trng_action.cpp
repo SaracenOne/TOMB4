@@ -24,8 +24,7 @@ void NGItemActivator(int item_id, bool anti) {
 
 	item = &items[item_id];
 
-	if (!item->active)
-	{
+	if (!item->active) {
 		if (anti) {
 			item->flags &= ~(IFL_CODEBITS | IFL_REVERSE);
 			return;
@@ -33,17 +32,13 @@ void NGItemActivator(int item_id, bool anti) {
 
 		item->flags |= IFL_CODEBITS;
 
-		if (objects[item->object_number].intelligent)
-		{
-			if (item->status == ITEM_INACTIVE)
-			{
+		if (objects[item->object_number].intelligent) {
+			if (item->status == ITEM_INACTIVE) {
 				item->touch_bits = 0;
 				item->status = ITEM_ACTIVE;
 				AddActiveItem(item_id);
 				EnableBaddieAI(item_id, 1);
-			}
-			else if (item->status == ITEM_INVISIBLE)
-			{
+			} else if (item->status == ITEM_INVISIBLE) {
 				item->touch_bits = 0;
 
 				if (EnableBaddieAI(item_id, 0))
@@ -53,9 +48,7 @@ void NGItemActivator(int item_id, bool anti) {
 
 				AddActiveItem(item_id);
 			}
-		}
-		else
-		{
+		} else {
 			item->touch_bits = 0;
 			AddActiveItem(item_id);
 			item->status = ITEM_ACTIVE;
@@ -66,15 +59,10 @@ void NGItemActivator(int item_id, bool anti) {
 			return;
 		}
 
-		if (objects[item->object_number].intelligent) {
-			DisableBaddieAI(item_id);
+		if (item->object_number == EARTHQUAKE) {
+			item->item_flags[0] = 0;
+			item->item_flags[1] = 100;
 		}
-
-		RemoveActiveItem(item_id);
-		item->touch_bits = 0;
-		// Not sure if this the correct behaviour, but keep the ITEM_INVISIBLE status if we have it.
-		if (item->status != ITEM_INVISIBLE)
-			item->status = ITEM_INACTIVE;
 
 		item->flags &= ~(IFL_CODEBITS | IFL_REVERSE);
 	}
