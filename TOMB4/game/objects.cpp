@@ -655,7 +655,7 @@ void PoleCollision(short item_num, ITEM_INFO* l, COLL_INFO* coll)
 	item = &items[item_num];
 
 	if (input & IN_ACTION && lara.gun_status == LG_NO_ARMS && l->current_anim_state == AS_STOP && l->anim_number == ANIM_BREATH ||
-		lara.IsMoving && lara.GeneralPtr == (void*)item_num)
+		lara.IsMoving && lara.GeneralPtr == item_num)
 	{
 		roty = item->pos.y_rot;
 		item->pos.y_rot = l->pos.y_rot;
@@ -671,11 +671,11 @@ void PoleCollision(short item_num, ITEM_INFO* l, COLL_INFO* coll)
 				lara.gun_status = LG_HANDS_BUSY;
 			}
 			else
-				lara.GeneralPtr = (void*)item_num;
+				lara.GeneralPtr = item_num;
 		}
 		else
 		{
-			if (lara.IsMoving && lara.GeneralPtr == (void*)item_num)
+			if (lara.IsMoving && lara.GeneralPtr == item_num)
 			{
 				lara.IsMoving = 0;
 				lara.gun_status = LG_NO_ARMS;

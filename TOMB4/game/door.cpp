@@ -168,7 +168,7 @@ void DoorCollision(short item_num, ITEM_INFO* l, COLL_INFO* coll)
 
 	if (item->trigger_flags == 2 && item->status != ITEM_ACTIVE && ((input & IN_ACTION || GLOBAL_inventoryitemchosen == CROWBAR_ITEM) &&
 		l->current_anim_state == AS_STOP && l->anim_number == ANIM_BREATH && !l->gravity_status && lara.gun_status == LG_NO_ARMS ||
-		lara.IsMoving && lara.GeneralPtr == (void*)item_num))
+		lara.IsMoving && lara.GeneralPtr == item_num))
 	{
 		item->pos.y_rot ^= 0x8000;
 
@@ -219,9 +219,9 @@ void DoorCollision(short item_num, ITEM_INFO* l, COLL_INFO* coll)
 				return;
 			}
 
-			lara.GeneralPtr = (void*)item_num;
+			lara.GeneralPtr = item_num;
 		}
-		else if (lara.IsMoving && lara.GeneralPtr == (void*)item_num)
+		else if (lara.IsMoving && lara.GeneralPtr == item_num)
 		{
 			lara.IsMoving = 0;
 			lara.gun_status = LG_NO_ARMS;
@@ -273,7 +273,7 @@ void PushPullKickDoorCollision(short item_num, ITEM_INFO* l, COLL_INFO* coll)
 	item = &items[item_num];
 
 	if (input & IN_ACTION && l->current_anim_state == AS_STOP && l->anim_number == ANIM_BREATH && item->status != ITEM_ACTIVE &&
-		!l->gravity_status && lara.gun_status == LG_NO_ARMS || lara.IsMoving && lara.GeneralPtr == (void*)item_num)
+		!l->gravity_status && lara.gun_status == LG_NO_ARMS || lara.IsMoving && lara.GeneralPtr == item_num)
 	{
 		pull = 0;
 
@@ -297,7 +297,7 @@ void PushPullKickDoorCollision(short item_num, ITEM_INFO* l, COLL_INFO* coll)
 					goin = 1;
 				}
 				else
-					lara.GeneralPtr = (void*)item_num;
+					lara.GeneralPtr = item_num;
 			}
 			else
 			{
@@ -311,7 +311,7 @@ void PushPullKickDoorCollision(short item_num, ITEM_INFO* l, COLL_INFO* coll)
 						goin = 1;
 					}
 					else
-						lara.GeneralPtr = (void*)item_num;
+						lara.GeneralPtr = item_num;
 				}
 				else
 				{
@@ -323,7 +323,7 @@ void PushPullKickDoorCollision(short item_num, ITEM_INFO* l, COLL_INFO* coll)
 						goin = 1;
 					}
 					else
-						lara.GeneralPtr = (void*)item_num;
+						lara.GeneralPtr = item_num;
 				}
 			}
 
@@ -337,7 +337,7 @@ void PushPullKickDoorCollision(short item_num, ITEM_INFO* l, COLL_INFO* coll)
 				lara.gun_status = LG_HANDS_BUSY;
 			}
 		}
-		else if (lara.IsMoving && lara.GeneralPtr == (void*)item_num)
+		else if (lara.IsMoving && lara.GeneralPtr == item_num)
 		{
 			lara.IsMoving = 0;
 			lara.gun_status = LG_NO_ARMS;
@@ -357,7 +357,7 @@ void DoubleDoorCollision(short item_num, ITEM_INFO* l, COLL_INFO* coll)
 	item = &items[item_num];
 
 	if (input & IN_ACTION && l->current_anim_state == AS_STOP && l->anim_number == ANIM_BREATH && item->status != ITEM_ACTIVE &&
-		!l->gravity_status && lara.gun_status == LG_NO_ARMS || lara.IsMoving && lara.GeneralPtr == (void*)item_num)
+		!l->gravity_status && lara.gun_status == LG_NO_ARMS || lara.IsMoving && lara.GeneralPtr == item_num)
 	{
 		item->pos.y_rot ^= 0x8000;
 
@@ -378,9 +378,9 @@ void DoubleDoorCollision(short item_num, ITEM_INFO* l, COLL_INFO* coll)
 				lara.torso_y_rot = 0;
 			}
 			else
-				lara.GeneralPtr = (void*)item_num;
+				lara.GeneralPtr = item_num;
 		}
-		else if (lara.IsMoving && lara.GeneralPtr == (void*)item_num)
+		else if (lara.IsMoving && lara.GeneralPtr == item_num)
 		{
 			lara.IsMoving = 0;
 			lara.gun_status = LG_NO_ARMS;
@@ -397,7 +397,7 @@ void UnderwaterDoorCollision(short item_num, ITEM_INFO* l, COLL_INFO* coll)
 	item = &items[item_num];
 
 	if (input & IN_ACTION && item->status != ITEM_ACTIVE && l->current_anim_state == AS_TREAD && lara.water_status == LW_UNDERWATER &&
-		lara.gun_status == LG_NO_ARMS || lara.IsMoving && lara.GeneralPtr == (void*)item_num)
+		lara.gun_status == LG_NO_ARMS || lara.IsMoving && lara.GeneralPtr == item_num)
 	{
 		l->pos.y_rot ^= 0x8000;
 
@@ -417,9 +417,9 @@ void UnderwaterDoorCollision(short item_num, ITEM_INFO* l, COLL_INFO* coll)
 				lara.gun_status = LG_HANDS_BUSY;
 			}
 			else
-				lara.GeneralPtr = (void*)item_num;
+				lara.GeneralPtr = item_num;
 		}
-		else if (lara.IsMoving && lara.GeneralPtr == (void*)item_num)
+		else if (lara.IsMoving && lara.GeneralPtr == item_num)
 		{
 			lara.IsMoving = 0;
 			lara.gun_status = LG_NO_ARMS;

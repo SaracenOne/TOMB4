@@ -23,7 +23,8 @@ void lara_as_pbleapoff(ITEM_INFO* item, COLL_INFO* coll) {
 	ITEM_INFO* pitem;
 	long Dist;
 
-	pitem = (ITEM_INFO*)lara.GeneralPtr;
+	int item_num = lara.GeneralPtr;
+	pitem = &items[item_num];
 
 	item->gravity_status = 1;
 
@@ -116,5 +117,6 @@ void ParallelBarsCollision(short item_num, ITEM_INFO* l, COLL_INFO* coll)
 		l->pos.z_pos += item->pos.z_pos - ((pos.z + pos2.z) >> 1);
 
 	l->pos.y_pos += item->pos.y_pos - ((pos.y + pos2.y) >> 1);
-	lara.GeneralPtr = item;
+
+	lara.GeneralPtr = item_num;
 }

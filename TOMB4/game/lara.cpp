@@ -2914,7 +2914,7 @@ void lara_as_pulley(ITEM_INFO* item, COLL_INFO* coll)
 {
 	ITEM_INFO* p;
 
-	p = (ITEM_INFO*)lara.GeneralPtr;
+	p = &items[lara.GeneralPtr];
 	lara.look = 0;
 	coll->enable_spaz = 0;
 	coll->enable_baddie_push = 0;

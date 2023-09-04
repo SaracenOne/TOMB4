@@ -179,7 +179,7 @@ void TightRopeCollision(short item_num, ITEM_INFO* l, COLL_INFO* coll) {
 	item = &items[item_num];
 
 	if (input & IN_ACTION && l->current_anim_state == AS_STOP && l->anim_number == ANIM_BREATH && !l->gravity_status &&
-		lara.gun_status == LG_NO_ARMS || lara.IsMoving && lara.GeneralPtr == (void*)item_num)
+		lara.gun_status == LG_NO_ARMS || lara.IsMoving && lara.GeneralPtr == item_num)
 	{
 		item->pos.y_rot += 0x8000;
 
@@ -200,9 +200,9 @@ void TightRopeCollision(short item_num, ITEM_INFO* l, COLL_INFO* coll) {
 				ng_lara_extrastate.TightRopeFall = 0;
 			}
 			else
-				lara.GeneralPtr = (void*)item_num;
+				lara.GeneralPtr = item_num;
 		}
-		else if (lara.IsMoving && lara.GeneralPtr == (void*)item_num)
+		else if (lara.IsMoving && lara.GeneralPtr == item_num)
 			lara.IsMoving = 0;
 
 		item->pos.y_rot += 0x8000;

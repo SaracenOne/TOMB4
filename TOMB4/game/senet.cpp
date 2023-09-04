@@ -414,7 +414,7 @@ void GameStixCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 	item = &items[item_number];
 
 	if (input & IN_ACTION && l->current_anim_state == AS_STOP && l->anim_number == ANIM_BREATH && lara.gun_status == LG_NO_ARMS && !item->active ||
-		lara.IsMoving && lara.GeneralPtr == (void*)item_number)
+		lara.IsMoving && lara.GeneralPtr == item_number)
 	{
 		item->pos.y_rot ^= 0x8000;
 
@@ -435,7 +435,7 @@ void GameStixCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 				AddActiveItem(item_number);
 			}
 			else
-				lara.GeneralPtr = (void*)item_number;
+				lara.GeneralPtr = item_number;
 		}
 
 		item->pos.y_rot ^= 0x8000;

@@ -2180,7 +2180,7 @@ void RollingBallPush(short item_number, ITEM_INFO* l) {
 
 	MOD_GLOBAL_INFO global_info = get_game_mod_global_info();
 	if (global_info.trng_rollingball_extended_ocb) {
-		if (lara.GeneralPtr == (void*)item_number) {
+		if (lara.GeneralPtr == item_number) {
 			if (l->anim_number == ANIM_BLOCKSWITCH) {
 				short quadrant = ushort(l->pos.y_rot + 0x2000) / 0x4000;
 
@@ -2234,7 +2234,7 @@ void RollingBallPush(short item_number, ITEM_INFO* l) {
 		}
 
 		if ((item->trigger_flags & 0x04 && item->status == ITEM_INACTIVE) || item->trigger_flags & 0x08) {
-			if (lara.GeneralPtr != (void*)item_number && (input & IN_ACTION && lara.gun_status == LG_NO_ARMS &&
+			if (lara.GeneralPtr != item_number && (input & IN_ACTION && lara.gun_status == LG_NO_ARMS &&
 				l->current_anim_state == AS_STOP && l->anim_number == ANIM_BREATH))
 			{
 				static short RollingBallBounds[12] = { -700, 700, -512, 512, -700, 700, -0, 0, -5460, 5460, -0, 0 };
@@ -2262,7 +2262,7 @@ void RollingBallPush(short item_number, ITEM_INFO* l) {
 							lara.torso_y_rot = 0;
 							lara.torso_x_rot = 0;
 							lara.gun_status = LG_HANDS_BUSY;
-							lara.GeneralPtr = (void*)item_number;
+							lara.GeneralPtr = item_number;
 
 							NGItemActivator(item_number, false);
 						} else {
@@ -2630,7 +2630,7 @@ void FloorTrapDoorCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 	item = &items[item_number];
 
 	if (input & IN_ACTION && item->status != ITEM_ACTIVE && l->current_anim_state == AS_STOP && l->anim_number == ANIM_BREATH
-		&& lara.gun_status == LG_NO_ARMS || lara.IsMoving && lara.GeneralPtr == (void*)item_number)
+		&& lara.gun_status == LG_NO_ARMS || lara.IsMoving && lara.GeneralPtr == item_number)
 	{
 		if (TestLaraPosition(FloorTrapDoorBounds, item, l))
 		{
@@ -2660,7 +2660,7 @@ void FloorTrapDoorCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 				ForcedFixedCamera.room_number = item->room_number;
 			}
 			else
-				lara.GeneralPtr = (void*)item_number;
+				lara.GeneralPtr = item_number;
 		}
 	}
 	else if (item->current_anim_state == 1)

@@ -121,13 +121,13 @@ void FireCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 			l->frame_number = anims[l->anim_number].frame_base;
 			lara.flare_control_left = 0;
 			lara.left_arm.lock = 3;
-			lara.GeneralPtr = (void*)item_number;
+			lara.GeneralPtr = item_number;
 		}
 
 		item->pos.y_rot = rot;
 	}
 
-	if (lara.GeneralPtr == (void*)item_number && item->status != ITEM_ACTIVE && l->current_anim_state == AS_CONTROLLED &&
+	if (lara.GeneralPtr == item_number && item->status != ITEM_ACTIVE && l->current_anim_state == AS_CONTROLLED &&
 		l->anim_number >= ANIM_LIGHT_TORCH1 && l->anim_number <= ANIM_LIGHT_TORCH5 && l->frame_number - anims[l->anim_number].frame_base == 40)
 	{
 		if (item->object_number == SPRINKLER)

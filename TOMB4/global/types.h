@@ -769,7 +769,7 @@ struct LARA_INFO
 	ushort RopeFrameRate;
 	ushort RopeY;
 	long RopePtr;
-	void* GeneralPtr;
+	int GeneralPtr;
 	long RopeOffset;
 	ulong RopeDownVel;
 	char RopeFlag;
