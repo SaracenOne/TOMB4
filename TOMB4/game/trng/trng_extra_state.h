@@ -124,7 +124,15 @@ extern void NGAddLaraStaticCollision(int room_number, int mesh_number);
 extern void NGClearLaraCollisions();
 extern int NGIsLaraCollidingWithMoveableID(int item_number);
 extern int NGIsLaraCollidingWithMoveableSlot(int slot_number);
-extern int NGIsLaraCollidingWithCreature();
+
+enum NGCreatureType {
+	NG_CREATURE_TYPE_ANY,
+	NG_CREATURE_TYPE_MORTAL,
+	NG_CREATURE_TYPE_IMMORTAL,
+	NG_CREATURE_TYPE_FRIEND
+};
+
+extern int NGIsLaraCollidingWithCreature(NGCreatureType creature_type);
 extern int NGIsLaraCollidingWithStaticID(int id);
 extern int NGIsLaraCollidingWithStaticSlot(int slot);
 

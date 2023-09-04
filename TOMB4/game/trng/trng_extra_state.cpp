@@ -530,10 +530,52 @@ int NGIsLaraCollidingWithMoveableSlot(int slot_number) {
 	return -1;
 }
 
-int NGIsLaraCollidingWithCreature() {
+// Note, in TRNG, a 'friend' seems to only refer to Von Croy and the Guide, but not 'Troops'. I don't know exactly how this
+// is determined, but I'm only able to assume at this point that it's dictated by object ID. If this is wrong, please let me know.
+bool NGIsObjectFriendType(int object_id) {
+	if (object_id == VON_CROY || object_id == GUIDE) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+int NGIsLaraCollidingWithCreature(NGCreatureType creature_type) {
 	for (int i = 0; i < ng_lara_moveable_collision_size; i++) {
 		if (objects[items[ng_lara_moveable_collisions[i]].object_number].intelligent) {
-			return ng_lara_moveable_collisions[i];
+			switch (creature_type) {
+				case NG_CREATURE_TYPE_ANY: {
+					return ng_lara_moveable_collisions[i];
+				}
+				case NG_CREATURE_TYPE_MORTAL: {
+					int object_id = items[ng_lara_moveable_collisions[i]].object_number;
+
+					if(!objects[object_id].undead && !NGIsObjectFriendType(object_id)) {
+						return ng_lara_moveable_collisions[i];
+					}
+					break;
+				}
+				case NG_CREATURE_TYPE_IMMORTAL: {
+					int object_id = items[ng_lara_moveable_collisions[i]].object_number;
+
+					if(objects[object_id].undead && !NGIsObjectFriendType(object_id)) {
+						return ng_lara_moveable_collisions[i];
+					}
+					break;
+				}
+				case NG_CREATURE_TYPE_FRIEND: {
+					int object_id = items[ng_lara_moveable_collisions[i]].object_number;
+
+					if(NGIsObjectFriendType(object_id)) {
+						return ng_lara_moveable_collisions[i];
+					}
+					break;
+				}
+				default: {
+					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGIsLaraCollidingWithCreature: creature_type %u unimplemented!", creature_type);
+					break;
+				}
+			}
 		}
 	}
 

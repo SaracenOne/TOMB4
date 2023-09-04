@@ -54,8 +54,10 @@ extern MESH_INFO* SmashedMesh[16];
 extern short SmashedMeshRoom[16];
 extern short SmashedMeshCount;
 
-extern long flipmap[10];
-extern long flip_stats[10];
+#define MAX_FLIPMAPS 32 // bumped from 10
+
+extern long flipmap[MAX_FLIPMAPS];
+extern long flip_stats[MAX_FLIPMAPS];
 extern long flip_status;
 extern long flipeffect;
 extern long fliptimer;

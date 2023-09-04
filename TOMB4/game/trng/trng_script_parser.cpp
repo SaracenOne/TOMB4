@@ -1704,6 +1704,8 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 						// TriggerGroup (WIP)
 						unsigned short id = NG_READ_16(gfScriptFile, offset);
 
+						NGLog(NG_LOG_TYPE_PRINT, "Triggergroup %u: (level %u)", id, current_level);
+
 						if (id > MAX_NG_TRIGGER_GROUPS) {
 							NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: TriggerGroup is not implemented! (level %u)", current_level);
 
@@ -1722,6 +1724,8 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 							}
 							unsigned short second_field = NG_READ_16(gfScriptFile, offset);
 							unsigned short third_field = NG_READ_16(gfScriptFile, offset);
+
+							NGLog(NG_LOG_TYPE_PRINT, "0x%04x, 0x%04x, 0x%04x", first_field, second_field, third_field);
 
 							level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].plugin_id = 0;
 							level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].first_field = first_field;

@@ -20,6 +20,7 @@
 #include "../lara_states.h"
 #include "trng_triggergroup.h"
 #include "../../tomb4/tomb4plus/t4plus_inventory.h"
+#include "../../specific/3dmath.h"
 
 #define SECTOR_SIZE 1024
 
@@ -199,33 +200,40 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 	}
 	case CREATURE_IS_CURRENTLY: {
 		switch (extra) {
+			// Enemy is dead
 			case 0x00: {
 				return (items[param].status == ITEM_DEACTIVATED);
 			}
+			// Enemy has not yet been activated
 			case 0x01: {
 				return !items[param].active && items[param].status != ITEM_DEACTIVATED;
 			}
+			// Enemy is living
 			case 0x02: {
 				return items[param].status == ITEM_INACTIVE || items[param].status == ITEM_ACTIVE;
 			}
+			// Enemy is active
 			case 0x03: {
 				return items[param].status == ITEM_ACTIVE;
 			}
+			// Enemy is not active
 			case 0x04: {
 				return items[param].status != ITEM_ACTIVE;
 			}
 			default: {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "CREATURE_IS_CURRENTLY is not currently implemented!");
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "CREATURE_IS_CURRENTLY %u is not currently implemented!", extra);
 				break;
 			}
 		}
 
 		return false;
 	}
-	case LARA_HAS_FOUND_AT_LEAST_X_SECRETS:
+	case LARA_HAS_FOUND_AT_LEAST_X_SECRETS: {
 		return savegame.Game.Secrets >= param;
-	case LARA_HAS_FOUND_EXACTLY_X_SECRETS:
+	}
+	case LARA_HAS_FOUND_EXACTLY_X_SECRETS: {
 		return savegame.Game.Secrets == param;
+	}
 	case KEYPAD_LAST_NUMBER_TYPED_IN_KEYPAD_IS_X_VALUE: {
 		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "KEYPAD_LAST_NUMBER_TYPED_IN_KEYPAD_IS_X_VALUE is not currently implemented!");
 		return false;
@@ -258,6 +266,7 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: Unimplemented NGCondition Lara Status %u!", param);
 				break;
 		}
+		return false;
 		break;
 	}
 	case LARA_IS_TOUCHING_MOVEABLE_ID: {
@@ -277,10 +286,41 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 		break;
 	}
 	case LARA_IS_TOUCHING_CREATURE_TYPE: {
-#ifndef SILENCE_EXCESSIVE_LOGS
-		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: LARA_IS_TOUCHING_CREATURE_TYPE unimplemented!");
-#endif
-		break;
+		switch (param) {
+			// Mortal creatures
+			case 0x00: {
+				int result = NGIsLaraCollidingWithCreature(NG_CREATURE_TYPE_MORTAL);
+				if (result >= 0) {
+					ng_found_item_index = result;
+					return true;
+				}
+				break;
+			}
+			// Immortal creatures
+			case 0x01: {
+				int result = NGIsLaraCollidingWithCreature(NG_CREATURE_TYPE_IMMORTAL);
+				if (result >= 0) {
+					ng_found_item_index = result;
+					return true;
+				}
+				break;
+			}
+			// Friends
+			case 0x02: {
+				int result = NGIsLaraCollidingWithCreature(NG_CREATURE_TYPE_FRIEND);
+				if (result >= 0) {
+					ng_found_item_index = result;
+					return true;
+				}
+				break;
+			}
+			default: {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: LARA_IS_TOUCHING_CREATURE_TYPE %u unimplemented!", param);
+				break;
+			}
+		}
+
+		return false;
 	}
 	case LARA_IS_VITALITY_IS_X_THAN: {
 		switch (extra) {
@@ -426,7 +466,16 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 			return false;
 	}
 	case LARA_IS_LESS_OR_EVEN_CLICKS_DISTANT_TO_MOVEABLE: {
-		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: LARA_IS_LESS_OR_EVEN_CLICKS_DISTANT_TO_MOVEABLE unimplemented!");
+		// TODO: I'm not sure this is accurate. More testing will be required.
+		long dx = (lara_item->pos.x_pos - items[param].pos.x_pos) >> 5;
+		long dy = (lara_item->pos.x_pos - items[param].pos.x_pos) >> 5;
+		long dz = (lara_item->pos.z_pos - items[param].pos.z_pos) >> 5;
+		long distance = SQUARE(dx) + SQUARE(dy) + SQUARE(dz);
+		long check_distance = (extra * 256);
+
+		if (distance < check_distance)
+			return true;
+
 		return false;
 		break;
 	}

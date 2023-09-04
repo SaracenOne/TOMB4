@@ -67,8 +67,8 @@ MESH_INFO* SmashedMesh[16];
 short SmashedMeshRoom[16];
 short SmashedMeshCount = 0;
 
-long flipmap[10];
-long flip_stats[10];
+long flipmap[MAX_FLIPMAPS];
+long flip_stats[MAX_FLIPMAPS];
 long flip_status;
 long flipeffect = -1;
 long fliptimer = 0;

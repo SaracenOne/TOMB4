@@ -71,7 +71,7 @@ bool NGExecuteSingleGlobalTrigger(int global_trigger_id, int inventory_object_id
 			break;
 		}
 		case 0x000f: { // GT_COLLIDE_CREATURE
-			int result = NGIsLaraCollidingWithCreature();
+			int result = NGIsLaraCollidingWithCreature(NG_CREATURE_TYPE_ANY);
 			if (result >= 0) {
 				global_trigger_condition_passed = true;
 				ng_found_item_index = result;
