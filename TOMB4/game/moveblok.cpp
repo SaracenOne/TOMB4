@@ -580,7 +580,8 @@ void MovableBlockCollision(short item_number, ITEM_INFO* laraitem, COLL_INFO* co
 			item->pos.y_pos = GetHeight(GetFloor(item->pos.x_pos, item->pos.y_pos - 256, item->pos.z_pos, &room_number),
 				item->pos.x_pos, item->pos.y_pos, item->pos.z_pos) + (climbable_block_height * 256);
 		}
-		else {
+		else
+		{
 			item->pos.y_pos = GetHeight(GetFloor(item->pos.x_pos, item->pos.y_pos - 256, item->pos.z_pos, &room_number),
 				item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
 		}
@@ -622,6 +623,13 @@ void MovableBlockCollision(short item_number, ITEM_INFO* laraitem, COLL_INFO* co
 
 			if (TestLaraPosition(MovingBlockBounds, item, laraitem))
 			{
+				if (climbable_block_height != 0 && item->status == ITEM_INACTIVE) {
+					// NGLE: remove the block collision immediately
+					AlterFloorHeight(item, climbable_block_height * 256);
+
+					item->status = ITEM_ACTIVE;
+				}
+
 				if ((ushort(yrot + 0x2000) / 0x4000) + ((ushort)item->pos.y_rot / 0x4000) & 1)
 					if (climbable_block_height == 0)
 						MovingBlockPos.z = bounds[0] - 35;
@@ -642,6 +650,14 @@ void MovableBlockCollision(short item_number, ITEM_INFO* laraitem, COLL_INFO* co
 					lara.IsMoving = 0;
 					lara.gun_status = LG_HANDS_BUSY;
 					lara.CornerX = (long)item;
+
+					// NGLE: restore it once we can grab it
+					if (climbable_block_height != 0 && item->status == ITEM_ACTIVE)
+					{
+						AlterFloorHeight(item, -climbable_block_height * 256);
+
+						item->status = ITEM_INACTIVE;
+					}
 				}
 				else
 					lara.GeneralPtr = (void*)item_number;
@@ -677,6 +693,11 @@ void MovableBlockCollision(short item_number, ITEM_INFO* laraitem, COLL_INFO* co
 				return;
 
 			laraitem->goal_anim_state = AS_PUSHBLOCK;
+
+			if (climbable_block_height > 0) {
+				// NGLE: Reset the floorstate and position back to normal
+				AlterFloorHeight(item, climbable_block_height * 256);
+			}
 		}
 		else if (input & IN_BACK)
 		{
@@ -684,16 +705,17 @@ void MovableBlockCollision(short item_number, ITEM_INFO* laraitem, COLL_INFO* co
 				return;
 
 			laraitem->goal_anim_state = AS_PULLBLOCK;
+
+			if (climbable_block_height > 0) {
+				// NGLE: Reset the floorstate and position back to normal
+				AlterFloorHeight(item, climbable_block_height * 256);
+			}
 		}
 		else
 			return;
 
 		AddActiveItem(item_number);
 		item->status = ITEM_ACTIVE;
-		if (climbable_block_height > 0) {
-			// NGLE: Reset the floorstate and position back to normal
-			AlterFloorHeight(item, climbable_block_height * 256);
-		}
 		lara.head_x_rot = 0;
 		lara.head_y_rot = 0;
 		lara.torso_x_rot = 0;
