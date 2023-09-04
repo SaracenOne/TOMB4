@@ -166,10 +166,18 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame, bool 
 		// TODO: the kill behaviour needs to be re-evaluated
 		case KILL_OBJECT: {
 			if (first_frame) {
+				ITEM_INFO* item = &items[item_id];
+				// The behaviour for what determines what items we can't kill is very weird.
+				// You can explode creatures over and over again even after death, but only after they've been active once.
+				// This should recreate behaviour I've observed, but it's still probably not accurate.
+				if ((objects[item->object_number].intelligent && !(item->flags & IFL_TRIGGERED)))
+					return true;
+
 				switch (action_data) {
 					// 0 vitality
 					case 0x00: {
-						items[item_id].hit_points = 0;
+						ITEM_INFO* item = &items[item_id];
+						item->hit_points = 0;
 						break;
 					}
 					// Remove immediately
@@ -177,7 +185,11 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame, bool 
 						ITEM_INFO *item = &items[item_id];
 						item->status = ITEM_INVISIBLE;
 						RemoveActiveItem(item_id);
-						DisableBaddieAI(item_id);
+						if (objects[item->object_number].intelligent)
+							DisableBaddieAI(item_id);
+						item->hit_points = -16384;
+						item->collidable = 0;
+						item->flags |= IFL_INVISIBLE | IFL_CLEARBODY;
 						break;
 					}
 					// Explosion
@@ -193,7 +205,8 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame, bool 
 
 						item->status = ITEM_INVISIBLE;
 						RemoveActiveItem(item_id);
-						DisableBaddieAI(item_id);
+						if (objects[item->object_number].intelligent)
+							DisableBaddieAI(item_id);
 
 						break;
 					}
@@ -207,8 +220,6 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame, bool 
 						SoundEffect(SFX_EXPLOSION2, &item->pos, 0);
 
 						item->status = ITEM_INVISIBLE;
-						RemoveActiveItem(item_id);
-						DisableBaddieAI(item_id);
 
 						break;
 					}
@@ -241,15 +252,23 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame, bool 
 					}
 					// Hide
 					case 0x06: {
-						ITEM_INFO* item = &items[item_id];
+						// TODO: This one is weird, not quite sure how to properly recreate it behaviour
+						ITEM_INFO *item = &items[item_id];
 						item->status = ITEM_INVISIBLE;
 						RemoveActiveItem(item_id);
-						DisableBaddieAI(item_id);
+						if (objects[item->object_number].intelligent)
+							DisableBaddieAI(item_id);
 						break;
 					}
 					// Antitrigger
 					case 0x07: {
-						NGItemActivator(item_id, true);
+						ITEM_INFO* item = &items[item_id];
+						if (item->status != ITEM_INVISIBLE)
+							item->status = ITEM_INACTIVE;
+						item->flags = item->flags & ~(IFL_CODEBITS | IFL_REVERSE);
+						RemoveActiveItem(item_id);
+						if (objects[item->object_number].intelligent)
+							DisableBaddieAI(item_id);
 						break;
 					}
 					// Smoke emitter
