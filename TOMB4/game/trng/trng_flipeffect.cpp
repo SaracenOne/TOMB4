@@ -29,6 +29,50 @@
 #include "../../tomb4/tomb4plus/t4plus_savegame.h"
 #include "../flmtorch.h"
 
+void NGAttractLaraInDirection(unsigned char direction, unsigned char speed) {
+	switch (direction) {
+		// West
+	case 0x00:
+		lara_item->pos.x_pos -= speed;
+		break;
+		// North West
+	case 0x01:
+		lara_item->pos.z_pos += speed;
+		lara_item->pos.x_pos -= speed;
+		break;
+		// North
+	case 0x02:
+		lara_item->pos.z_pos += speed;
+		break;
+		// North East
+	case 0x03:
+		lara_item->pos.z_pos += speed;
+		lara_item->pos.x_pos += speed;
+		break;
+		// East
+	case 0x04:
+		lara_item->pos.x_pos += speed;
+		break;
+		// South East
+	case 0x05:
+		lara_item->pos.x_pos += speed;
+		lara_item->pos.z_pos -= speed;
+		break;
+		// South
+	case 0x06:
+		lara_item->pos.z_pos -= speed;
+		break;
+		// South West
+	case 0x07:
+		lara_item->pos.x_pos -= speed;
+		lara_item->pos.z_pos -= speed;
+		break;
+	default:
+		NGLog(NG_LOG_TYPE_ERROR, "lara_attract_lara_in_direction_on_ground_and_in_air_with_speed: unknown direction!");
+		break;
+	}
+}
+
 bool NGTriggerItemGroupWithTimer(unsigned char item_group, unsigned char timer, bool anti) {
 	NG_ITEM_GROUP current_item_group = current_item_groups[item_group];
 	int index = 0;
@@ -498,6 +542,22 @@ bool sound_set_x_volume_for_audio_track_on_channel(unsigned char volume, unsigne
 	return true;
 }
 
+// NGLE - 134
+bool lara_attract_lara_in_direction_on_ground_with_speed(unsigned char direction, unsigned char speed) {
+	if (lara_item->pos.y_pos == lara_item->floor)
+		NGAttractLaraInDirection(direction, speed);
+
+	return true;
+}
+
+// NGLE - 135
+bool lara_attract_lara_in_direction_in_air_with_speed(unsigned char direction, unsigned char speed) {
+	if (lara_item->pos.y_pos != lara_item->floor)
+		NGAttractLaraInDirection(direction, speed);
+
+	return true;
+}
+
 // NGLE - 145
 bool itemgroup_activate_item_group_with_timer(unsigned char item_group, unsigned char timer) {
 	return NGTriggerItemGroupWithTimer(item_group, timer, false);
@@ -506,6 +566,13 @@ bool itemgroup_activate_item_group_with_timer(unsigned char item_group, unsigned
 // NGLE - 146
 bool itemgroup_untrigger_item_group_with_timer(unsigned char item_group, unsigned char timer) {
 	return NGTriggerItemGroupWithTimer(item_group, timer, true);
+}
+
+// NGLE - 158
+bool lara_attract_lara_in_direction_on_ground_and_in_air_with_speed(unsigned char direction, unsigned char speed) {
+	NGAttractLaraInDirection(direction, speed);
+
+	return true;
 }
 
 // NGLE - 160
@@ -1375,16 +1442,14 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 			break;
 		}
 		case LARA_ATTRACT_LARA_IN_DIRECTION_ON_GROUND_WITH_SPEED: {
-			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_ATTRACT_LARA_IN_DIRECTION_ON_GROUND unimplemented!");
-				return true;
+			if (skip_checks || !NGIsOneShotTriggeredForTile()) {
+				return lara_attract_lara_in_direction_on_ground_with_speed(action_data_1, action_data_2);
 			}
 			break;
 		}
 		case LARA_ATTRACT_LARA_IN_DIRECTION_IN_AIR_WITH_SPEED: {
-			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_ATTRACT_LARA_IN_DIRECTION_ON_IN_AIR unimplemented!");
-				return true;
+			if (skip_checks || !NGIsOneShotTriggeredForTile()) {
+				return lara_attract_lara_in_direction_in_air_with_speed(action_data_1, action_data_2);
 			}
 			break;
 		}
@@ -1539,9 +1604,8 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 			break;
 		}
 		case LARA_ATTRACT_LARA_IN_DIRECTION_ON_GROUND_AND_IN_AIR_WITH_SPEED: {
-			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_ATTRACT_LARA_IN_DIRECTION_ON_GROUND_AND_IN_AIR_WITH_SPEED unimplemented!");
-				return true;
+			if (skip_checks || !NGIsOneShotTriggeredForTile()) {
+				return lara_attract_lara_in_direction_on_ground_and_in_air_with_speed(action_data_1, action_data_2);
 			}
 			break;
 		}
