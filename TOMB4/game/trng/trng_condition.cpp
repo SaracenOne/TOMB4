@@ -467,9 +467,9 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 	}
 	case LARA_IS_LESS_OR_EVEN_CLICKS_DISTANT_TO_MOVEABLE: {
 		// TODO: I'm not sure this is accurate. More testing will be required.
-		long dx = (lara_item->pos.x_pos - items[param].pos.x_pos) >> 5;
-		long dy = (lara_item->pos.x_pos - items[param].pos.x_pos) >> 5;
-		long dz = (lara_item->pos.z_pos - items[param].pos.z_pos) >> 5;
+		long dx = (lara_item->pos.x_pos - items[param].pos.x_pos) >> 4;
+		long dy = (lara_item->pos.x_pos - items[param].pos.x_pos) >> 4;
+		long dz = (lara_item->pos.z_pos - items[param].pos.z_pos) >> 4;
 		long distance = SQUARE(dx) + SQUARE(dy) + SQUARE(dz);
 		long check_distance = (extra * 256);
 
