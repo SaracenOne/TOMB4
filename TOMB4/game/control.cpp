@@ -2920,7 +2920,7 @@ void AnimateItem(ITEM_INFO* item)
 				{
 				case ACMD_SETPOS:
 					// TRNG
-					if (NGUseNGAnimCommands) {
+					if (NGUseNGAnimCommands()) {
 						unsigned char command_id = (cmd[0] & 0xff00) >> 8;
 						if (command_id == 0xa0) {
 							cmd += 3;
@@ -2981,7 +2981,7 @@ void AnimateItem(ITEM_INFO* item)
 				int offset_frame = item->frame_number - anim->frame_base;
 
 				// TRNG
-				if (NGUseNGAnimCommands) {
+				if (NGUseNGAnimCommands()) {
 					unsigned char command_frame = (cmd[0] & 0xff);
 					unsigned char command_id = (cmd[0] & 0xff00) >> 8;
 					if (command_id == 0xa0 && (offset_frame == command_frame || command_frame == 0xff)) {
