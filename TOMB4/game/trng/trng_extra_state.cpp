@@ -934,6 +934,14 @@ void NGToggleOrganizer(int organizer_id, bool is_enabled) {
 	ng_organizer_states[organizer_id].is_enabled = is_enabled;
 }
 
+bool NGIsOrganizerEnabled(int organizer_id) {
+	return ng_organizer_states[organizer_id].is_enabled;
+}
+
+void NGResetOrganizer(int organizer_id) {
+	ng_organizer_states[organizer_id].current_tick = 0;
+}
+
 extern bool NGIsTriggerGroupContinuous(int trigger_group_id) {
 	return ng_trigger_group_states[trigger_group_id].continuous;
 }
