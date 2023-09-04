@@ -458,7 +458,13 @@ bool flipmap_off(unsigned char flipmap_id, unsigned char unused_2) {
 // NGLE - 127
 bool organizer_enable(unsigned char organizer_id_lower, unsigned char organizer_id_upper) {
 	unsigned short organizer_id = ((short)organizer_id_upper << 8) | (short)organizer_id_lower;
+	bool should_reset = NGIsOrganizerEnabled(organizer_id) == false;
+
 	NGToggleOrganizer(organizer_id, true);
+
+	// Docs say that if the organizer is disabled, if enable with flipeffect, it should always start from the beginning.
+	if (should_reset)
+		NGResetOrganizer(organizer_id);
 
 	return true;
 }
@@ -843,6 +849,11 @@ bool set_lara_holsters(unsigned char holster_type, unsigned char unused) {
 	}
 	}
 	return true;
+}
+
+// NGLE - 411
+bool lara_set_x_opacity_for_lara_for_seconds(unsigned char opacity, unsigned char seconds) {
+	return false;
 }
 
 bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_checks) {
