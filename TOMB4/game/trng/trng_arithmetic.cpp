@@ -21,6 +21,12 @@ unsigned char NGNumericOperationByte(NGNumericOperationType number_operation_typ
 		case NG_DIVIDE: {
 			return variable / value;
 		}
+		case NG_BIT_SET: {
+			return variable | (1 << value);
+		}
+		case NG_BIT_CLEAR: {
+			return variable & ~(1 << value);
+		}
 	}
 
 	return 0;
@@ -48,6 +54,12 @@ unsigned short NGNumericOperationShort(NGNumericOperationType number_operation_t
 			return variable / value;
 			break;
 		}
+		case NG_BIT_SET: {
+			return variable | (1 << value);
+		}
+		case NG_BIT_CLEAR: {
+			return variable & ~(1 << value);
+		}
 	}
 	
 	return 0;
@@ -74,6 +86,12 @@ unsigned long NGNumericOperationLong(NGNumericOperationType number_operation_typ
 		case NG_DIVIDE: {
 			return variable / value;
 			break;
+		}
+		case NG_BIT_SET: {
+			return variable | (1 << value);
+		}
+		case NG_BIT_CLEAR: {
+			return variable & ~(1 << value);
 		}
 	}
 

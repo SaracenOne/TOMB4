@@ -737,6 +737,18 @@ bool variables_subtract_value_from_x_variable(unsigned char variable, unsigned c
 	return true;
 }
 
+// NGLE - 234
+bool variables_set_in_x_variable_the_bit(unsigned char variable, unsigned char bit) {
+	NGNumericOperation(NG_BIT_SET, variable, bit);
+	return true;
+}
+
+// NGLE - 235
+bool variables_clear_in_x_variable_the_bit(unsigned char variable, unsigned char bit) {
+	NGNumericOperation(NG_BIT_CLEAR, variable, bit);
+	return true;
+}
+
 // NGLE - 251
 bool variables_multiply_x_variable_by_value(unsigned char variable, unsigned char value) {
 	NGNumericOperation(NG_MULTIPLY, variable, value);
@@ -2117,15 +2129,13 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 		}
 		case VARIABLES_SET_IN_X_VARIABLE_THE_BIT: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "VARIABLES_SET_IN_X_VARIABLE_THE_BIT unimplemented!");
-				return true;
+				return variables_set_in_x_variable_the_bit(action_data_1, action_data_2);
 			}
 			break;
 		}
 		case VARIABLES_CLEAR_IN_X_VARIABLE_THE_BIT: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "VARIABLES_CLEAR_IN_X_VARIABLE_THE_BIT unimplemented!");
-				return true;
+				return variables_clear_in_x_variable_the_bit(action_data_1, action_data_2);
 			}
 			break;
 		}

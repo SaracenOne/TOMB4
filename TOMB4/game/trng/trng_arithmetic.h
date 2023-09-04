@@ -6,6 +6,8 @@ enum NGNumericOperationType {
 	NG_SUBTRACT,
 	NG_MULTIPLY,
 	NG_DIVIDE,
+	NG_BIT_SET,
+	NG_BIT_CLEAR,
 };
 
 extern unsigned char NGNumericOperationByte(NGNumericOperationType number_operation, unsigned char variable, unsigned int value);
