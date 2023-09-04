@@ -467,12 +467,20 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 					}
 					case 0x04: {
 						// FogRange
-						unsigned short fog_start = NG_READ_16(gfScriptFile, offset);
-						unsigned short fog_end = NG_READ_16(gfScriptFile, offset);
+						// Negative font values appear to control the intensity, but that is currently unsupported
+						short fog_start = NG_READ_16(gfScriptFile, offset);
+						if (fog_start < 0) {
+							NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "FogRange: negative fog range values currently unsupported!");
+						} else {
+							get_game_mod_level_misc_info(current_level).fog_start_range = (unsigned int)fog_start * 1024;
+						}
 
-						get_game_mod_level_misc_info(current_level).fog_start_range = (unsigned int)fog_start * 1024;
-						get_game_mod_level_misc_info(current_level).fog_end_range = (unsigned int)fog_end * 1024;
-
+						short fog_end = NG_READ_16(gfScriptFile, offset);
+						if (fog_end < 0) {
+							NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "FogRange: negative fog range values currently unsupported!");
+						} else {
+							get_game_mod_level_misc_info(current_level).fog_end_range = (unsigned int)fog_end * 1024;
+						}
 						break;
 					}
 					case 0x06: {
