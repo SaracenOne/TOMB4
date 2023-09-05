@@ -18,6 +18,7 @@ bool ngle_footer_found = false;
 bool is_ngle_level = false;
 
 short ng_script_id_table[NG_SCRIPT_ID_TABLE_SIZE];
+short ng_room_remap_table[NG_ROOM_REMAP_TABLE_SIZE];
 NGStaticTableEntry ng_static_id_table[NG_STATIC_ID_TABLE_SIZE];
 
 #define NGLE_START_SIGNATURE 0x474e
@@ -28,6 +29,8 @@ void NGLoadInfo(FILE* level_fp) {
 	ngle_footer_found = false;
 
 	memset(&ng_script_id_table, 0x00, NG_SCRIPT_ID_TABLE_SIZE * sizeof(short));
+	memset(&ng_room_remap_table, -1, NG_ROOM_REMAP_TABLE_SIZE * sizeof(short));
+	memset(&ng_static_id_table, 0x00, NG_STATIC_ID_TABLE_SIZE * sizeof(short));
 
 	long level_version = 0;
 	long ngle_ident = 0;
@@ -96,7 +99,6 @@ void NGLoadInfo(FILE* level_fp) {
 				}
 				// Statics Table
 				case 0x8021: {
-					//fseek(level_fp, (chunk_size * sizeof(short)) - (sizeof(short) * 2), SEEK_CUR);
 					int target_offset = (chunk_size * sizeof(short)) - (sizeof(short) * 2);
 					fread(&ng_static_id_table, 1, target_offset, level_fp);
 					break;
@@ -115,6 +117,12 @@ void NGLoadInfo(FILE* level_fp) {
 					for (int i = 0; i < 4; i++) {
 						fread(&version_info[i], 1, sizeof(unsigned short), level_fp);
 					}
+					break;
+				}
+				// Room remap table
+				case 0x8037: {
+					int target_offset = (chunk_size * sizeof(short)) - (sizeof(short) * 2);
+					fread(&ng_room_remap_table, 1, target_offset, level_fp);
 					break;
 				}
 				// Plugin Names (?)

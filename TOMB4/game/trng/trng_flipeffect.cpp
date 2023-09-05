@@ -580,7 +580,7 @@ bool static_shatter(unsigned char static_id_lower, unsigned char static_id_upper
 	unsigned short static_id = ((short)static_id_upper << 8) | (short)static_id_lower;
 
 	NGStaticTableEntry* entry = &ng_static_id_table[static_id];
-	int room_number = entry->room_index;
+	int room_number = ng_room_remap_table[entry->remapped_room_index];
 	if (room_number >= 0 && room_number < number_rooms) {
 		MESH_INFO* mesh = &room[room_number].mesh[entry->mesh_id];
 
@@ -615,7 +615,7 @@ bool static_explode(unsigned char static_id_lower, unsigned char static_id_upper
 	unsigned short static_id = ((short)static_id_upper << 8) | (short)static_id_lower;
 
 	NGStaticTableEntry* entry = &ng_static_id_table[static_id];
-	int room_number = entry->room_index;
+	int room_number = ng_room_remap_table[entry->remapped_room_index];
 	if (room_number >= 0 && room_number < number_rooms) {
 		MESH_INFO* mesh = &room[room_number].mesh[entry->mesh_id];
 
@@ -650,7 +650,7 @@ bool static_visibility_set_as_invisible(unsigned char static_id_lower, unsigned 
 	unsigned short static_id = ((short)static_id_upper << 8) | (short)static_id_lower;
 
 	NGStaticTableEntry* entry = &ng_static_id_table[static_id];
-	int room_number = entry->room_index;
+	int room_number = ng_room_remap_table[entry->remapped_room_index];
 	if (room_number >= 0 && room_number < number_rooms) {
 		MESH_INFO* mesh = &room[room_number].mesh[entry->mesh_id];
 		if (mesh)
@@ -667,7 +667,7 @@ bool static_visibility_render_newly_visible(unsigned char static_id_lower, unsig
 	unsigned short static_id = ((short)static_id_upper << 8) | (short)static_id_lower;
 
 	NGStaticTableEntry* entry = &ng_static_id_table[static_id];
-	int room_number = entry->room_index;
+	int room_number = ng_room_remap_table[entry->remapped_room_index];
 	if (room_number >= 0 && room_number < number_rooms) {
 		MESH_INFO* mesh = &room[room_number].mesh[entry->mesh_id];
 		if (mesh)

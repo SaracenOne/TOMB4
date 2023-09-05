@@ -487,7 +487,7 @@ extern void NGAddLaraStaticCollision(int room_number, int mesh_number) {
 
 	// Very slow, replace this with caching
 	for (int i = 0; i < NG_STATIC_ID_TABLE_SIZE; i++) {
-		if (ng_static_id_table[i].room_index == room_number && ng_static_id_table[i].mesh_id == mesh_number) {
+		if (ng_room_remap_table[ng_static_id_table[i].remapped_room_index] == room_number && ng_static_id_table[i].mesh_id == mesh_number) {
 			current_static_id = i;
 			break;
 		}
@@ -599,12 +599,14 @@ int NGIsLaraCollidingWithStaticSlot(int slot) {
 		if (static_id >= 0) {
 			NGStaticTableEntry* entry = &ng_static_id_table[static_id];
 
-			if (entry->room_index >= 0 && entry->room_index < number_rooms) {
+			if (entry->remapped_room_index >= 0 && entry->remapped_room_index < NG_ROOM_REMAP_TABLE_SIZE) {
+				if (ng_room_remap_table[entry->remapped_room_index] >= 0 && ng_room_remap_table[entry->remapped_room_index] < number_rooms) {
 
-				if (entry->mesh_id >= 0 && room[entry->room_index].num_meshes) {
+					if (entry->mesh_id >= 0 && room[ng_room_remap_table[entry->remapped_room_index]].num_meshes) {
 
-					if (room[entry->room_index].mesh[entry->mesh_id].static_number == slot) {
-						return static_id;
+						if (room[ng_room_remap_table[entry->remapped_room_index]].mesh[entry->mesh_id].static_number == slot) {
+							return static_id;
+						}
 					}
 				}
 			}
