@@ -20,6 +20,7 @@
 #include "trng_organizer.h"
 #include "trng_triggergroup.h"
 #include "trng_globaltrigger.h"
+#include "../../specific/file.h"
 
 // Includes tightrope state variables
 NG_LARA_EXTRASTATE ng_lara_extrastate;
@@ -176,6 +177,19 @@ void NGUpdateCurrentTriggerRoomAndIndex(int new_room, int new_index) {
 void NGClearCurrentTriggerRoomAndIndex() {
 	ng_current_trigger_state.index = -1;
 	ng_current_trigger_state.room = -1;
+}
+
+int NGGetPluginIDForFloorData(short *floor_data_ptr) {
+	int index = floor_data_ptr - floor_data;
+	if (ng_floor_id_table) {
+		if (index < ng_floor_id_size) {
+			int plugin_id = ng_floor_id_table[index];
+			return plugin_id;
+		} else {
+			NGLog(NG_LOG_TYPE_ERROR, "NGGetPluginIDForFloorData: Overflow!");
+		}
+	}
+	return 0;
 }
 
 // These may be needed since Lara's trigger index derived from earlier may get overwritten by something.

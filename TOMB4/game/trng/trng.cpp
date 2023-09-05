@@ -17,6 +17,9 @@
 bool ngle_footer_found = false;
 bool is_ngle_level = false;
 
+int ng_floor_id_size = 0;
+char *ng_floor_id_table = NULL;
+
 short ng_script_id_table[NG_SCRIPT_ID_TABLE_SIZE];
 short ng_room_remap_table[NG_ROOM_REMAP_TABLE_SIZE];
 NGStaticTableEntry ng_static_id_table[NG_STATIC_ID_TABLE_SIZE];
@@ -35,6 +38,9 @@ void NGLoadInfo(FILE* level_fp) {
 	long level_version = 0;
 	long ngle_ident = 0;
 	long ngle_offset = 0;
+
+	ng_floor_id_size = 0;
+	ng_floor_id_table = NULL;
 
 	// Check footer for NGLE info
 	fseek(level_fp, -8L, SEEK_END);
@@ -125,15 +131,16 @@ void NGLoadInfo(FILE* level_fp) {
 					fread(&ng_room_remap_table, 1, target_offset, level_fp);
 					break;
 				}
-				// Plugin Names (?)
+				// Plugin Names
 				case 0x8047: {
-					unsigned short unk1;
-					fread(&unk1, 1, sizeof(unsigned short), level_fp);
+					fseek(level_fp, (chunk_size * sizeof(short)) - (sizeof(short) * 2), SEEK_CUR);
 					break;
 				}
-				// Floor ID table (?)
+				// Floor ID table
 				case 0x8048: {
-					fseek(level_fp, (chunk_size * sizeof(short)) - (sizeof(short) * 2), SEEK_CUR);
+					ng_floor_id_size = (chunk_size * sizeof(short)) - (sizeof(short) * 2);
+					ng_floor_id_table = (char *)game_malloc(ng_floor_id_size);
+					fread(ng_floor_id_table, 1, ng_floor_id_size, level_fp);
 					break;
 				}
 				default: {

@@ -805,8 +805,13 @@ void TestTriggers(short* data, long heavy, long HeavyFlags, int room_number, int
 				value = *data++ & 0x3FF;
 				char extra = (flags >> 9);
 
-				if (!NGCondition(value, extra, timer))
-					return;
+				int plugin_id = NGGetPluginIDForFloorData(data + 1);
+				if (plugin_id == 0) {
+					if (!NGCondition(value, extra, timer))
+						return;
+				} else {
+					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Plugin Trigger Conditionals are currently not supported!");
+				}
 			} else {
 				state = lara_item->current_anim_state;
 
@@ -1020,8 +1025,13 @@ void TestTriggers(short* data, long heavy, long HeavyFlags, int room_number, int
 		case TO_FLIPEFFECT:
 			if (NGUseNGFlipEffects()) {
 				trigger = *data++;
-				NGFlipEffectTrigger(value, (trigger & 0x7fff), heavy);
-				should_update_flipeffect_floorstate = true;
+				int plugin_id = NGGetPluginIDForFloorData(data);
+				if (plugin_id == 0) {
+					NGFlipEffectTrigger(value, (trigger & 0x7fff), heavy);
+					should_update_flipeffect_floorstate = true;
+				} else {
+					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Plugin Trigger FlipEffects are currently not supported!");
+				}
 			} else {
 				TriggerTimer = timer;
 				neweffect = value;
@@ -1034,12 +1044,17 @@ void TestTriggers(short* data, long heavy, long HeavyFlags, int room_number, int
 		case TO_BODYBAG:
 			if (NGUseNGActions()) {
 				trigger = *data++;
-				int last_item = NGActionTrigger(value, (trigger & 0x7fff), timer, heavy);
-				triggered_items[trigger_items_count] = last_item;
-				trigger_items_count++;
-				if (trigger_items_count > MAX_TRIGGERED_ITEMS)
-					trigger_items_count = MAX_TRIGGERED_ITEMS;
-				should_update_action_floorstate = true;
+				int plugin_id = NGGetPluginIDForFloorData(data);
+				if (plugin_id == 0) {
+					int last_item = NGActionTrigger(value, (trigger & 0x7fff), timer, heavy);
+					triggered_items[trigger_items_count] = last_item;
+					trigger_items_count++;
+					if (trigger_items_count > MAX_TRIGGERED_ITEMS)
+						trigger_items_count = MAX_TRIGGERED_ITEMS;
+					should_update_action_floorstate = true;
+				} else {
+					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Plugin Trigger NGActions are currently not supported!");
+				}
 			}
 			break;
 		case TO_FLYBY:
@@ -1581,7 +1596,13 @@ long GetHeight(FLOOR_INFO* floor, long x, long y, long z)
 					unsigned char value = *data++ & 0x3FF;
 					char extra = (flags >> 9);
 
-					floor_object_trigger_valid = NGCondition(value, extra, timer);
+					int plugin_id = NGGetPluginIDForFloorData(data + 1);
+					if (plugin_id == 0) {
+						floor_object_trigger_valid = NGCondition(value, extra, timer);
+					} else {
+						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Plugin Trigger Conditionals are currently not supported!");
+						floor_object_trigger_valid = false;
+					}
 				}
 			}
 
@@ -1924,7 +1945,13 @@ long GetCeiling(FLOOR_INFO* floor, long x, long y, long z)
 						unsigned char value = *data++ & 0x3FF;
 						char extra = (flags >> 9);
 
-						ceiling_object_trigger_valid = NGCondition(value, extra, timer);
+						int plugin_id = NGGetPluginIDForFloorData(data + 1);
+						if (plugin_id == 0) {
+							ceiling_object_trigger_valid = NGCondition(value, extra, timer);
+						} else {
+							NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Plugin Trigger Conditionals are currently not supported!");
+							ceiling_object_trigger_valid = false;
+						}
 					}
 				}
 

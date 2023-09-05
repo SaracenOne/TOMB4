@@ -24,6 +24,9 @@ enum NG_DIRECTIONS {
 
 extern bool is_ngle_level;
 
+extern int ng_floor_id_size;
+extern char *ng_floor_id_table;
+
 #define NG_SCRIPT_ID_TABLE_SIZE 8192
 extern short ng_script_id_table[NG_SCRIPT_ID_TABLE_SIZE];
 
@@ -45,6 +48,8 @@ extern void NGUpdateCurrentTriggerRoomAndIndex(int new_room, int new_index);
 extern void NGClearCurrentTriggerRoomAndIndex();
 extern void NGStoreBackupTriggerRoomAndIndex();
 extern void NGRestoreBackupTriggerRoomAndIndex();
+
+extern int NGGetPluginIDForFloorData(short* floor_data_ptr);
 
 // Move the item in a direction by the number of units
 extern void NGMoveItemByUnits(unsigned short item_id, NG_DIRECTIONS direction, unsigned int units);
