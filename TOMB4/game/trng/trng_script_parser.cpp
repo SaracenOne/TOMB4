@@ -1618,8 +1618,21 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 						// TestPosition (WIP)
 						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: TestPosition is not implemented! (level %u)", current_level);
 
-						// Skip to the end
-						offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+						unsigned short id = NG_READ_16(gfScriptFile, offset);
+						unsigned short flags = NG_READ_16(gfScriptFile, offset);
+						unsigned short moveable_slot = NG_READ_16(gfScriptFile, offset);
+						unsigned short x_distance_min = NG_READ_16(gfScriptFile, offset);
+						unsigned short x_distance_max = NG_READ_16(gfScriptFile, offset);
+						unsigned short y_distance_min = NG_READ_16(gfScriptFile, offset);
+						unsigned short y_distance_max = NG_READ_16(gfScriptFile, offset);
+						unsigned short z_distance_min = NG_READ_16(gfScriptFile, offset);
+						unsigned short z_distance_max = NG_READ_16(gfScriptFile, offset);
+						unsigned short h_orient_diff_min = NG_READ_16(gfScriptFile, offset);
+						unsigned short h_orient_diff_max = NG_READ_16(gfScriptFile, offset);
+						unsigned short v_orient_diff_min = NG_READ_16(gfScriptFile, offset);
+						unsigned short v_orient_diff_max = NG_READ_16(gfScriptFile, offset);
+						unsigned short r_orient_diff_min = NG_READ_16(gfScriptFile, offset);
+						unsigned short r_orient_diff_max = NG_READ_16(gfScriptFile, offset);
 						break;
 					}
 					case 0x20: {
