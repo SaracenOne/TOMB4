@@ -447,20 +447,32 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 		return false;
 		break;
 	}
-	case NUMERIC_VALUE_IS_LESS_THAN: {
-		if (extra < NGNumericGetVariable(param))
-			return true;
-		else
-			return false;
-	}
-	case NUMERIC_VALUE_IS_EQUAL_OR_GREATER_TO: {
+	case VARIABLES_THE_X_NUMERIC_VARIABLE_IS_EQUAL_OR_GREATER_TO: {
 		if (extra >= NGNumericGetVariable(param))
 			return true;
 		else
 			return false;
 	}
-	case NUMERIC_VALUE_IS_EQUAL_TO: {
+	case VARIABLES_THE_X_NUMERIC_VARIABLE_IS_LESS_THAN: {
+		if (extra < NGNumericGetVariable(param))
+			return true;
+		else
+			return false;
+	}
+	case VARIABLES_THE_X_NUMERIC_VARIABLE_IS_EQUAL_TO: {
 		if (extra == NGNumericGetVariable(param))
+			return true;
+		else
+			return false;
+	}
+	case VARIABLES_THE_X_NUMERIC_VARIABLE_HAS_THE_BIT_SET: {
+		if (NGNumericGetVariable(param) & (1 << extra))
+			return true;
+		else
+			return false;
+	}
+	case VARIABLES_THE_X_NUMERIC_VARIABLE_HAS_THE_BIT_CLEAR: {
+		if (!(NGNumericGetVariable(param) & (1 << extra)))
 			return true;
 		else
 			return false;
