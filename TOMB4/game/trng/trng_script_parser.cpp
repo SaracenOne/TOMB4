@@ -424,15 +424,27 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 				switch (block_type) {
 					case 0x01: {
 						// AssignSlot
-						unsigned int slot_a = NG_READ_16(gfScriptFile, offset);
-						unsigned int slot_b = 0;
+						unsigned int plugin_id = 0;
+						unsigned short slot_a = NG_READ_16(gfScriptFile, offset);
+						unsigned short slot_b = 0;
 						if (get_game_mod_global_info().trng_version_major == 1 && get_game_mod_global_info().trng_version_minor < 3) {
 							slot_b = NG_READ_16(gfScriptFile, offset);
 						} else {
-							slot_b = NG_READ_32(gfScriptFile, offset);
+							slot_b = NG_READ_16(gfScriptFile, offset);
+							plugin_id = NG_READ_16(gfScriptFile, offset);
 						}
-
-						assign_slot_for_level(current_level, slot_a, slot_b);
+#
+						if (plugin_id != 0) {
+							char* plugin_string = NGGetPluginString(plugin_id);
+							if (plugin_string) {
+								NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Plugin (%s) AssignSlot(%u, %u) commands are not currently supported (level %u)", plugin_string, slot_a, slot_b, current_level);
+							}
+							else {
+								NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Plugin (%u) AssignSlot(%u, %u) are not currently supported (level %u)", plugin_id, slot_a, slot_b, current_level);
+							}
+						} else {
+							assign_slot_for_level(current_level, slot_a, slot_b);
+						}
 
 						break;
 					}
