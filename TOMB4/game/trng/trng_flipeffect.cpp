@@ -602,6 +602,36 @@ bool static_shatter(unsigned char static_id_lower, unsigned char static_id_upper
 	return true;
 }
 
+// NGLE - 161
+bool static_remove_collision_for_x_static(unsigned char static_id_lower, unsigned char static_id_upper) {
+	unsigned short static_id = ((short)static_id_upper << 8) | (short)static_id_lower;
+
+	NGStaticTableEntry* entry = &ng_static_id_table[static_id];
+	int room_number = ng_room_remap_table[entry->remapped_room_index];
+	if (room_number >= 0 && room_number < number_rooms) {
+		MESH_INFO* mesh = &room[room_number].mesh[entry->mesh_id];
+
+		mesh->Flags |= 4; // Add no-collision flag
+	}
+
+	return true;
+}
+
+// NGLE - 162
+bool static_restore_collision_for_x_static(unsigned char static_id_lower, unsigned char static_id_upper) {
+	unsigned short static_id = ((short)static_id_upper << 8) | (short)static_id_lower;
+
+	NGStaticTableEntry *entry = &ng_static_id_table[static_id];
+	int room_number = ng_room_remap_table[entry->remapped_room_index];
+	if (room_number >= 0 && room_number < number_rooms) {
+		MESH_INFO* mesh = &room[room_number].mesh[entry->mesh_id];
+
+		mesh->Flags &= ~4; // Removes no-collision flag
+	}
+
+	return true;
+}
+
 // NGLE - 168
 bool sound_play_sound_single_playback_of_global_sound_map(unsigned char lower_sample_id, unsigned char upper_sample_id) {
 	int indexed_sound_sample = (int)lower_sample_id | ((int)(upper_sample_id) << 8 & 0xff00);
@@ -1636,15 +1666,13 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 		}
 		case STATIC_REMOVE_COLLISION_FROM: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "STATIC_REMOVE_COLLISION_FROM unimplemented!");
-				return true;
+				return static_remove_collision_for_x_static(action_data_1, action_data_2);
 			}
 			break;
 		}
 		case STATIC_RESTORE_COLLISION_TO: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "STATIC_RESTORE_COLLISION_TO unimplemented!");
-				return true;
+				return static_restore_collision_for_x_static(action_data_1, action_data_2);
 			}
 			break;
 		}

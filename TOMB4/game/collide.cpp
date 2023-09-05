@@ -15,6 +15,7 @@
 
 #include "trng/trng.h"
 #include "trng/trng_extra_state.h"
+#include "../tomb4/mod_config.h"
 
 static short StarGateBounds[24] =
 {
@@ -605,6 +606,8 @@ void LaraBaddieCollision(ITEM_INFO* l, COLL_INFO* coll)
 		}
 	}
 
+	MOD_GLOBAL_INFO mod_config_global = get_game_mod_global_info();
+
 	for (i = 0; i < num_nearby_rooms; i++)
 	{
 		r = &room[nearby_rooms[i]];
@@ -640,6 +643,15 @@ void LaraBaddieCollision(ITEM_INFO* l, COLL_INFO* coll)
 
 				if (!(mesh->Flags & 1))
 					continue;
+
+				// TRNG
+				if (mod_config_global.trng_statics_extended_ocb) {
+					STATIC_INFO static_info = static_objects[mesh->static_number];
+
+					// No collision flag is enabled
+					if ((mesh->Flags & 4))
+						continue;
+				}
 
 				dx = l->pos.x_pos - mesh->x;
 				dy = l->pos.y_pos - mesh->y;

@@ -707,8 +707,13 @@ bool LoadRooms()
 			memcpy(r->mesh, FileData, size);
 			FileData += size;
 
-			for (int j = 0; j < r->num_meshes; j++)
-				r->mesh[j].Flags = 1;
+			if (is_ngle_level) {
+				for (int j = 0; j < r->num_meshes; j++)
+					r->mesh[j].Flags |= 1;
+			} else {
+				for (int j = 0; j < r->num_meshes; j++)
+					r->mesh[j].Flags = 1;
+			}
 		}
 		else
 			r->mesh = 0;
