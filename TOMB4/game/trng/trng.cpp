@@ -137,6 +137,7 @@ void NGLoadInfo(FILE* level_fp) {
 					break;
 				}
 				default: {
+					NGLog(NG_LOG_TYPE_PRINT, "NGLoadInfo: Unknown NG level chunk ident: 0x%04x", chunk_ident);
 					fseek(level_fp, (chunk_size * sizeof(short)) - (sizeof(short) * 2), SEEK_CUR);
 					break;
 				}
