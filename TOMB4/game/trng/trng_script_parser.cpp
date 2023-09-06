@@ -866,7 +866,7 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 									offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 									break;
 								}
-								case CUST_LOOK_TRASPARENT: {
+								case CUST_LOOK_TRANSPARENT: {
 									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_LOOK_TRASPARENT unimplemented! (level %u)", current_level);
 
 									unsigned short is_enabled = NG_READ_16(gfScriptFile, offset);
