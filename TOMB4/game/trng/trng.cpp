@@ -139,8 +139,12 @@ void NGLoadInfo(FILE* level_fp) {
 				// Floor ID table
 				case 0x8048: {
 					ng_floor_id_size = (chunk_size * sizeof(short)) - (sizeof(short) * 2);
-					ng_floor_id_table = (char *)game_malloc(ng_floor_id_size);
-					fread(ng_floor_id_table, 1, ng_floor_id_size, level_fp);
+					if (ng_floor_id_size > sizeof(short)) {
+						ng_floor_id_table = (char*)game_malloc(ng_floor_id_size);
+						fread(ng_floor_id_table, 1, ng_floor_id_size, level_fp);
+					} else {
+						fseek(level_fp, (chunk_size * sizeof(short)) - (sizeof(short) * 2), SEEK_CUR);
+					}
 					break;
 				}
 				default: {
