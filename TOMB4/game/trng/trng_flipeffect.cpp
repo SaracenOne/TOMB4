@@ -1415,9 +1415,9 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 				return perform_triggergroup_from_script_in_specific_way(action_data_1, action_data_2);
 			break;
 
-		case CAMERA_SET_CURRENT_CAMERA_AS_FOLLOR_CAMERA_ON_AXIS_UNTIL_CONDITION: {
+		case CAMERA_SET_CURRENT_CAMERA_AS_FOLLOW_CAMERA_ON_AXIS_UNTIL_CONDITION: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "CAMERA_SET_CURRENT_CAMERA_AS_FOLLOR_CAMERA_ON_AXIS_UNTIL_CONDITION unimplemented!");
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "CAMERA_SET_CURRENT_CAMERA_AS_FOLLOW_CAMERA_ON_AXIS_UNTIL_CONDITION unimplemented!");
 				return true;
 			}
 			break;
