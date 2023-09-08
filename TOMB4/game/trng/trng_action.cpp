@@ -286,6 +286,8 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame, bool 
 			break;
 		}
 		case FREEZE_ENEMY_FOR_SECONDS: {
+			// TODO: need to re-examine this function. Right now, the implementation of 'freezing' an enemy simply disable their control
+			// update, but it's possible it might affect their status instead.
 			if (first_frame) {
 				if (!NGIsItemFrozen(param)) {
 					if (action_data == 0) {
