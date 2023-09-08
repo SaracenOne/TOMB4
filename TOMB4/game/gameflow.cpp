@@ -188,6 +188,9 @@ void DoGameflow()
 		case CMD_LEVEL:
 			gfLevelFlags = gf[1] | (gf[2] << 8);
 
+			// Tomb4Plus
+			InitFont();
+
 			if (!(gfLevelFlags & GF_NOLEVEL))
 				DoLevel(gf[3], gf[4]);
 			else
@@ -254,6 +257,10 @@ void DoGameflow()
 
 		case CMD_TITLE:
 			gfLevelFlags = gf[0] | (gf[1] << 8);
+
+			// Tomb4Plus
+			InitFont();
+
 			DoTitle(gf[2], gf[3]);
 			gfResidentCut[0] = 0;
 			gfResidentCut[1] = 0;
@@ -499,9 +506,9 @@ void DoLevel(uchar Name, uchar Audio)
 
 	MOD_LEVEL_MISC_INFO misc_info = get_game_mod_level_misc_info(gfCurrentLevel);
 
-	FogStart = misc_info.fog_start_range;
-	FogEnd = misc_info.fog_end_range;
-	ClipRange = misc_info.far_view;
+	FogStart = (float)misc_info.fog_start_range;
+	FogEnd = (float)misc_info.fog_end_range;
+	ClipRange = (float)misc_info.far_view;
 
 	S_CDPlay(CurrentAtmosphere, 1);
 	IsAtmospherePlaying = 1;
@@ -927,9 +934,9 @@ void DoTitle(uchar Name, uchar Audio)
 
 	MOD_LEVEL_MISC_INFO misc_info = get_game_mod_level_misc_info(gfCurrentLevel);
 
-	FogStart = misc_info.fog_start_range;
-	FogEnd = misc_info.fog_end_range;
-	ClipRange = misc_info.far_view;
+	FogStart = (float)misc_info.fog_start_range;
+	FogEnd = (float)misc_info.fog_end_range;
+	ClipRange = (float)misc_info.far_view;
 
 	MOD_GLOBAL_INFO global_info  = get_game_mod_global_info();
 

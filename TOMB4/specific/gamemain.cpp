@@ -72,7 +72,7 @@ unsigned int __stdcall GameMain(void* ptr)
 		InitialiseFunctionTable();
 		HWInitialise();
 		InitWindow(0, 0, App.dx.dwRenderWidth, App.dx.dwRenderHeight, 20, 20480, 80, App.dx.dwRenderWidth, App.dx.dwRenderHeight);
-		InitFont();
+		// T4Plus - Moved init fonts to a per-level basis
 		TIME_Init();
 		App.SetupComplete = 1;
 		S_CDStop();
