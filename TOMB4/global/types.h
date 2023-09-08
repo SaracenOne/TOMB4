@@ -2169,9 +2169,9 @@ struct CHARDEF
 	float v;
 	short w;
 	short h;
-	short YOffset;
-	char TopShade;
-	char BottomShade;
+	short y_offset;
+	char top_shade;
+	char bottom_shade;
 };
 
 struct STRINGHEADER

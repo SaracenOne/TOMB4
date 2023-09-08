@@ -1,11 +1,23 @@
 #pragma once
 
 #include "../game/objects.h"
+#include "../game/text.h"
+
 #include "tomb4plus/t4plus_weather.h"
 
 #define DEFAULT_FOG_START_VALUE 12288
 #define DEFAULT_FOG_END_VALUE 20480
 #define DEFAULT_FAR_VIEW_VALUE 20480
+
+// This may need increasing...
+#define MAXIMUM_JSON_ALLOCATION_BLOCKS 32768 
+
+struct MOD_LEVEL_FONT_INFO {
+	int custom_glyph_scale_width = DEFAULT_GLYPH_SCALE_WIDTH;
+	int custom_glyph_scale_height = DEFAULT_GLYPH_SCALE_HEIGHT;
+
+	CHARDEF custom_font_table[CHAR_TABLE_COUNT];
+};
 
 struct MOD_LEVEL_CAMERA_INFO {
 	int chase_cam_distance = 1536;
@@ -168,6 +180,7 @@ struct MOD_LEVEL_MISC_INFO {
 };
 
 struct MOD_LEVEL_INFO {
+	MOD_LEVEL_FONT_INFO font_info;
 	MOD_LEVEL_CAMERA_INFO camera_info;
 	MOD_LEVEL_CREATURE_INFO creature_info;
 	MOD_LEVEL_STAT_INFO stat_info;
@@ -194,6 +207,7 @@ extern void assign_slot_for_level(int level, int dest_slot, int src_slot);
 
 extern MOD_GLOBAL_INFO &get_game_mod_global_info();
 
+extern MOD_LEVEL_FONT_INFO &get_game_mod_level_font_info(int level);
 extern MOD_LEVEL_CAMERA_INFO &get_game_mod_level_camera_info(int level);
 extern MOD_LEVEL_CREATURE_INFO &get_game_mod_level_creature_info(int level);
 extern MOD_LEVEL_AUDIO_INFO &get_game_mod_level_audio_info(int level);

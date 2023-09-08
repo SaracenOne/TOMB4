@@ -7,6 +7,8 @@
 #include "../specific/function_stubs.h"
 #include "../specific/gamemain.h"
 #include "../specific/function_table.h"
+#include "../tomb4/mod_config.h"
+#include "gameflow.h"
 
 long stash_font_height;
 long smol_font_height;
@@ -67,6 +69,9 @@ char AccentTable[46][2] =
 	{'~', ' '}
 };
 
+int custom_glyph_scale_width = 512;
+int custom_glyph_scale_height = 240;
+
 #pragma warning(push)
 #pragma warning(disable : 4838)
 #pragma warning(disable : 4309)
@@ -85,118 +90,17 @@ static CVECTOR ShadeFromTo[10][2] =
 };
 #pragma warning(pop)
 
-static CHARDEF CharDef[106] =
-{
-	{0.68235302F, 0.203922F, 4, 13, -11, 0, 11},
-	{0.384314F, 0.227451F, 7, 5, -10, 1, 5},
-	{0.321569F, 0.101961F, 14, 12, -10, 1, 11},
-	{0.30588201F, 0.14902F, 10, 14, -10, 1, 13},
-	{0.83921599F, 0.050980002F, 15, 12, -9, 2, 12},
-	{0.156863F, 0.101961F, 14, 12, -10, 1, 11},
-	{0.61960799F, 0.223529F, 5, 5, -11, 0, 4},
-	{0.80000001F, 0.152941F, 6, 16, -12, 0, 13},
-	{0.133333F, 0.156863F, 6, 16, -11, 0, 14},
-	{0.721569F, 0.231373F, 5, 5, -11, 0, 4},
-	{0.086274996F, 0.156863F, 11, 11, -9, 2, 11},
-	{0.698039F, 0.231373F, 5, 5, -2, 8, 12},
-	{0.41568601F, 0.235294F, 8, 3, -4, 6, 9},
-	{0.44705901F, 0.235294F, 5, 4, -2, 8, 11},
-	{0.83137298F, 0.14902F, 9, 15, -12, 0, 12},
-	{0.34509799F, 0.192157F, 10, 10, -8, 3, 11},
-	{0.78431398F, 0.21568599F, 6, 10, -8, 3, 11},
-	{0.180392F, 0.203922F, 9, 10, -8, 3, 11},
-	{0.34509799F, 0.14902F, 8, 11, -8, 3, 12},
-	{0.243137F, 0.156863F, 11, 11, -8, 3, 12},
-	{0.55686301F, 0.188235F, 9, 12, -9, 2, 12},
-	{0.90980399F, 0.196078F, 9, 11, -9, 2, 11},
-	{0.470588F, 0.184314F, 9, 12, -9, 2, 12},
-	{0.086274996F, 0.2F, 9, 11, -9, 2, 11},
-	{0.431373F, 0.192157F, 9, 11, -8, 3, 12},
-	{0.59607798F, 0.223529F, 5, 9, -7, 4, 11},
-	{0.533333F, 0.223529F, 5, 10, -7, 4, 12},
-	{0.698039F, 0.156863F, 12, 10, -8, 3, 11},
-	{0.82352901F, 0.20784301F, 11, 7, -7, 4, 9},
-	{0.941176F, 0.156863F, 12, 10, -8, 3, 11},
-	{0.047059F, 0.152941F, 10, 13, -11, 0, 11},
-	{0.25882399F, 0.050980002F, 16, 14, -10, 1, 13},
-	{0.50980401F, 0.050980002F, 14, 13, -11, 0, 11},
-	{0.83921599F, 0.098039001F, 13, 13, -11, 0, 11},
-	{0.51764703F, 0.137255F, 11, 13, -11, 0, 11},
-	{0, 0.101961F, 13, 13, -11, 0, 11},
-	{0.054901998F, 0.101961F, 13, 13, -11, 0, 11},
-	{0.25882399F, 0.105882F, 12, 13, -11, 0, 11},
-	{0.71372497F, 0.105882F, 12, 13, -11, 0, 11},
-	{0.78431398F, 0.050980002F, 14, 13, -11, 0, 11},
-	{0.870588F, 0.21176501F, 5, 13, -11, 0, 11},
-	{0.21960799F, 0.203922F, 5, 16, -11, 0, 14},
-	{0.90196103F, 0.058823999F, 13, 13, -11, 0, 11},
-	{0.56470603F, 0.137255F, 11, 13, -11, 0, 11},
-	{0.188235F, 0.050980002F, 18, 13, -11, 0, 11},
-	{0.56470603F, 0.050980002F, 14, 13, -11, 0, 11},
-	{0.21176501F, 0.101961F, 12, 13, -11, 0, 11},
-	{0.78431398F, 0.101961F, 12, 13, -11, 0, 11},
-	{0.941176F, 0, 14, 15, -11, 0, 13},
-	{0.61960799F, 0.050980002F, 14, 13, -11, 0, 11},
-	{0.61176503F, 0.137255F, 11, 13, -11, 0, 11},
-	{0.67451F, 0.050980002F, 14, 13, -11, 0, 11},
-	{0.384314F, 0.050980002F, 15, 13, -11, 0, 11},
-	{0.321569F, 0.050980002F, 15, 13, -11, 0, 11},
-	{0.094117999F, 0.050980002F, 23, 13, -11, 0, 11},
-	{0.72941202F, 0.050980002F, 13, 14, -11, 0, 12},
-	{0.44705901F, 0.050980002F, 15, 13, -11, 0, 11},
-	{0.89411801F, 0.109804F, 12, 13, -11, 0, 11},
-	{0.243137F, 0.235294F, 6, 4, -4, 6, 9},
-	{0.97254902F, 0.231373F, 6, 4, -4, 6, 9},
-	{0.34509799F, 0.231373F, 8, 4, -4, 6, 9},
-	{0.55686301F, 0.235294F, 7, 3, -3, 7, 9},
-	{0.470588F, 0.231373F, 8, 4, -4, 6, 9},
-	{0.94902003F, 0.231373F, 5, 5, -11, 0, 4},
-	{0.384314F, 0.192157F, 11, 9, -7, 4, 11},
-	{0.37647101F, 0.137255F, 11, 14, -12, 0, 11},
-	{0.28235301F, 0.203922F, 9, 9, -7, 4, 11},
-	{0, 0.152941F, 11, 12, -10, 1, 11},
-	{0.64313698F, 0.203922F, 9, 9, -7, 4, 11},
-	{0.65882403F, 0.14902F, 10, 14, -12, 0, 11},
-	{0.470588F, 0.137255F, 12, 12, -7, 4, 14},
-	{0.423529F, 0.137255F, 11, 14, -12, 0, 11},
-	{0.76078397F, 0.105882F, 6, 12, -10, 1, 11},
-	{0.156863F, 0.2F, 6, 16, -10, 1, 14},
-	{0.109804F, 0.101961F, 12, 14, -12, 0, 11},
-	{0.321569F, 0.203922F, 6, 13, -11, 0, 11},
-	{0.37647101F, 0.101961F, 18, 9, -7, 4, 11},
-	{0.59607798F, 0.188235F, 12, 9, -7, 4, 11},
-	{0.243137F, 0.2F, 10, 9, -7, 4, 11},
-	{0.95686299F, 0.058823999F, 11, 13, -7, 4, 14},
-	{0.203922F, 0.152941F, 10, 13, -7, 4, 14},
-	{0.039216001F, 0.203922F, 10, 9, -7, 4, 11},
-	{0.74509799F, 0.203922F, 9, 9, -7, 4, 11},
-	{0, 0.2F, 9, 11, -9, 2, 11},
-	{0.698039F, 0.196078F, 11, 9, -7, 4, 11},
-	{0.50980401F, 0.188235F, 12, 9, -7, 4, 11},
-	{0.51764703F, 0.101961F, 18, 9, -7, 4, 11},
-	{0.94902003F, 0.196078F, 11, 9, -7, 4, 11},
-	{0.156863F, 0.14902F, 11, 13, -7, 4, 14},
-	{0.90980399F, 0.16078401F, 8, 9, -7, 4, 11},
-	{0.870588F, 0.16078401F, 9, 13, -7, 4, 14},
-	{0.50980401F, 0.223529F, 6, 9, -7, 4, 11},
-	{0.76078397F, 0.152941F, 10, 13, -10, 1, 12},
-	{0.12548999F, 0.21960799F, 5, 12, -10, 1, 11},
-	{0, 0.050980002F, 24, 13, -10, 6, 11},
-	{0.75294101F, 0, 24, 13, -10, 6, 11},
-	{0.65882403F, 0, 24, 13, -10, 6, 11},
-	{0.84705901F, 0, 24, 13, -10, 6, 11},
-	{0.58823502F, 0.101961F, 18, 9, -8, 6, 11},
-	{0.65882403F, 0.101961F, 13, 12, -9, 6, 11},
-	{0.44705901F, 0.101961F, 18, 9, -8, 6, 11},
-	{0.941176F, 0.109804F, 13, 12, -9, 6, 11},
-	{0, 0, 41, 13, -10, 6, 11},
-	{0.32941201F, 0, 41, 13, -10, 6, 11},
-	{0.16470601F, 0, 41, 13, -10, 6, 11},
-	{0.49411801F, 0, 41, 13, -10, 6, 11}
-};
+static CHARDEF CharDef[CHAR_TABLE_COUNT];
 
 void InitFont()
 {
+	MOD_LEVEL_FONT_INFO fontInfo = get_game_mod_level_font_info(gfCurrentLevel);
+
+	custom_glyph_scale_width = fontInfo.custom_glyph_scale_width;
+	custom_glyph_scale_height = fontInfo.custom_glyph_scale_height;
+
+	memcpy(CharDef, fontInfo.custom_font_table, sizeof(CHARDEF) * CHAR_TABLE_COUNT);
+
 	D3DTLVERTEX v;
 	static CHARDEF copy[106];
 	static long init = 1;
@@ -254,7 +158,7 @@ void InitFont()
 		{
 			copy[i].h = CharDef[i].h;
 			copy[i].w = CharDef[i].w;
-			copy[i].YOffset = CharDef[i].YOffset;
+			copy[i].y_offset = CharDef[i].y_offset;
 		}
 
 		init = 0;
@@ -264,10 +168,10 @@ void InitFont()
 	{
 		h = short((float)copy[i].h * float(phd_winymax / 240.0F));
 		w = short((float)copy[i].w * float(phd_winxmax / 512.0F));
-		yoff = short((float)copy[i].YOffset * float(phd_winymax / 240.0F));
+		yoff = short((float)copy[i].y_offset * float(phd_winymax / 240.0F));
 		CharDef[i].h = h;
 		CharDef[i].w = w;
-		CharDef[i].YOffset = yoff;
+		CharDef[i].y_offset = yoff;
 	}
 
 	font_height = long(float(3.0F * phd_winymax / 40.0F));
@@ -309,10 +213,10 @@ void UpdatePulseColour()
 	}
 }
 
-long GetStringLength(const char* string, long* top, long* bottom)
+long GetStringLengthScaled(const char* string, long* top, long* bottom, float glyph_scale_width, float glyph_scale_height)
 {
 	CHARDEF* def;
-	long s, accent, length, lowest, highest, y;
+	long s, accent, length, lowest, highest;
 
 	s = *string++;
 	length = 0;
@@ -358,23 +262,26 @@ long GetStringLength(const char* string, long* top, long* bottom)
 				def = &CharDef[s - '!'];
 			}
 
-			if (ScaleFlag)
-				length += def->w - def->w / 4;
-			else
-				length += def->w;
+			float scaled_glypth_width = def->w * glyph_scale_width;
+			float scaled_glypth_height = def->h * glyph_scale_height;
 
-			y = def->YOffset;
+			if (ScaleFlag)
+				length += long(scaled_glypth_width - scaled_glypth_width / 4);
+			else
+				length += long(scaled_glypth_width);
+
+			long scaled_y_offset = long(def->y_offset * glyph_scale_height);
 
 			if (top)
 			{
-				if (y < highest)
-					highest = def->YOffset;
+				if (scaled_y_offset < highest)
+					highest = long(scaled_y_offset);
 			}
 
 			if (bottom)
 			{
-				if (def->h + y > lowest)
-					lowest = def->h + y;
+				if (long(scaled_glypth_height) + scaled_y_offset > lowest)
+					lowest = long(scaled_glypth_height) + scaled_y_offset;
 			}
 		}
 
@@ -395,7 +302,15 @@ long GetStringLength(const char* string, long* top, long* bottom)
 	return length;
 }
 
-void DrawChar(long x, long y, ushort col, CHARDEF* def)
+long GetStringLength(const char* string, long* top, long* bottom)
+{
+	float glyph_scale_width = (float)DEFAULT_GLYPH_SCALE_WIDTH / (float)custom_glyph_scale_width;
+	float glyph_scale_height = (float)DEFAULT_GLYPH_SCALE_HEIGHT / (float)custom_glyph_scale_height;
+
+	return GetStringLengthScaled(string, top, bottom, glyph_scale_width, glyph_scale_height);
+}
+
+void DrawCharScaled(long x, long y, ushort col, CHARDEF* def, float glyph_scale_width, float glyph_scale_height)
 {
 	D3DTLVERTEX* v;
 	TEXTURESTRUCT tex;
@@ -404,8 +319,8 @@ void DrawChar(long x, long y, ushort col, CHARDEF* def)
 
 	v = MyVertexBuffer;
 
-	y1 = y + phd_winymin + def->YOffset;
-	y2 = y + phd_winymin + def->h + def->YOffset;
+	y1 = y + phd_winymin + long(def->y_offset * glyph_scale_height);
+	y2 = y + phd_winymin + long((def->h * glyph_scale_height) + (def->y_offset * glyph_scale_height));
 
 	if (small_font)
 	{
@@ -414,18 +329,18 @@ void DrawChar(long x, long y, ushort col, CHARDEF* def)
 	}
 
 	x1 = x + phd_winxmin;
-	x2 = x1 + def->w;
+	x2 = x1 + long(def->w * glyph_scale_width);
 	setXY4(v, x1, y1, x2, y1, x2, y2, x1, y2, (long)f_mznear, clipflags);
 
-	top = *(long*)&FontShades[col][2 * def->TopShade];
-	bottom = *(long*)&FontShades[col][2 * def->BottomShade];
+	top = *(long*)&FontShades[col][2 * def->top_shade];
+	bottom = *(long*)&FontShades[col][2 * def->bottom_shade];
 	v[0].color = top;
 	v[1].color = top;
 	v[2].color = bottom;
 	v[3].color = bottom;
 
-	top = *(long*)&FontShades[col][(2 * def->TopShade) + 1];
-	bottom = *(long*)&FontShades[col][(2 * def->BottomShade) + 1];
+	top = *(long*)&FontShades[col][(2 * def->top_shade) + 1];
+	bottom = *(long*)&FontShades[col][(2 * def->bottom_shade) + 1];
 	v[0].specular = top;
 	v[1].specular = top;
 	v[2].specular = bottom;
@@ -451,7 +366,15 @@ void DrawChar(long x, long y, ushort col, CHARDEF* def)
 	AddQuadClippedSorted(v, 0, 1, 2, 3, &tex, 0);
 }
 
-void PrintString(long x, long y, uchar col, const char* string, ushort flags)
+void DrawChar(long x, long y, ushort col, CHARDEF* def)
+{
+	float glyph_scale_width = (float)DEFAULT_GLYPH_SCALE_WIDTH / (float)custom_glyph_scale_width;
+	float glyph_scale_height = (float)DEFAULT_GLYPH_SCALE_HEIGHT / (float)custom_glyph_scale_height;
+
+	DrawCharScaled(x, y, col, def, glyph_scale_width, glyph_scale_height);
+}
+
+void PrintStringScaled(long x, long y, uchar col, const char* string, ushort flags, float glyph_scale_width, float glyph_scale_height)
 {
 	CHARDEF* def;
 	CHARDEF* accent;
@@ -462,7 +385,7 @@ void PrintString(long x, long y, uchar col, const char* string, ushort flags)
 		return;
 
 	ScaleFlag = (flags & FF_SMALL) != 0;
-	x2 = GetStringLength(string, 0, &bottom);
+	x2 = GetStringLengthScaled(string, 0, &bottom, glyph_scale_width, glyph_scale_height);
 
 	if (flags & FF_CENTER)
 		x2 = x - (x2 >> 1);
@@ -484,7 +407,7 @@ void PrintString(long x, long y, uchar col, const char* string, ushort flags)
 			}
 			else
 			{
-				l = GetStringLength(string, &top, &bottom2);
+				l = GetStringLengthScaled(string, &top, &bottom2, glyph_scale_width, glyph_scale_height);
 
 				if (flags & FF_CENTER)
 					x2 = x - (l >> 1);
@@ -530,10 +453,10 @@ void PrintString(long x, long y, uchar col, const char* string, ushort flags)
 		{
 			def = &CharDef[AccentTable[s - 128][0] - '!'];
 			accent = &CharDef[AccentTable[s - 128][1] - '!'];
-			DrawChar(x2, y, col, def);
+			DrawCharScaled(x2, y, col, def, glyph_scale_width, glyph_scale_height);
 
 			if (AccentTable[s - 128][1] != ' ')
-				DrawChar(def->w / 2 + x2 - 3, y + def->YOffset, col, accent);
+				DrawCharScaled(def->w / 2 + x2 - 3, y + def->y_offset, col, accent, glyph_scale_width, glyph_scale_height);
 		}
 		else
 		{
@@ -542,16 +465,26 @@ void PrintString(long x, long y, uchar col, const char* string, ushort flags)
 			else
 				def = &CharDef[s - '!'];
 
-			DrawChar(x2, y, col, def);
+			DrawCharScaled(x2, y, col, def, glyph_scale_width, glyph_scale_height);
 		}
 
+		float scaled_glypth_width = def->w * glyph_scale_width;
+
 		if (ScaleFlag)
-			x2 += def->w - def->w / 4;
+			x2 += long(scaled_glypth_width - scaled_glypth_width / 4);
 		else
-			x2 += def->w;
+			x2 += long(scaled_glypth_width);
 
 		s = *string++;
 	}
 
 	ScaleFlag = 0;
+}
+
+void PrintString(long x, long y, uchar col, const char* string, ushort flags)
+{
+	const float glyph_scale_width = (float)DEFAULT_GLYPH_SCALE_WIDTH / (float)custom_glyph_scale_width;
+	const float glyph_scale_height = (float)DEFAULT_GLYPH_SCALE_HEIGHT / (float)custom_glyph_scale_height;
+
+	PrintStringScaled(x, y, col, string, flags, glyph_scale_width, glyph_scale_height);
 }

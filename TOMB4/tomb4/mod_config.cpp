@@ -3,10 +3,26 @@
 #include "../specific/file.h"
 
 #include "libs/tiny-json/tiny-json.h"
+#include "../specific/function_stubs.h"
 
 #define READ_JSON_INTEGER_CAST(value_name, json, my_struct, my_type) { const json_t* value_name = json_getProperty(json, #value_name); \
     if (value_name && JSON_INTEGER == json_getType(value_name)) { \
         (my_struct)->value_name = (my_type)json_getInteger(value_name); } \
+    }
+
+#define READ_JSON_SINT8(value_name, json, my_struct) { const json_t* value_name = json_getProperty(json, #value_name); \
+    if (value_name && JSON_INTEGER == json_getType(value_name)) { \
+        (my_struct)->value_name = (signed char)json_getInteger(value_name); } \
+    }
+
+#define READ_JSON_SINT16(value_name, json, my_struct) { const json_t* value_name = json_getProperty(json, #value_name); \
+    if (value_name && JSON_INTEGER == json_getType(value_name)) { \
+        (my_struct)->value_name = (signed short)json_getInteger(value_name); } \
+    }
+
+#define READ_JSON_SINT32(value_name, json, my_struct) { const json_t* value_name = json_getProperty(json, #value_name); \
+    if (value_name && JSON_INTEGER == json_getType(value_name)) { \
+        (my_struct)->value_name = (signed int)json_getInteger(value_name); } \
     }
 
 #define READ_JSON_UINT8(value_name, json, my_struct) { const json_t* value_name = json_getProperty(json, #value_name); \
@@ -17,11 +33,6 @@
 #define READ_JSON_UINT16(value_name, json, my_struct) { const json_t* value_name = json_getProperty(json, #value_name); \
     if (value_name && JSON_INTEGER == json_getType(value_name)) { \
         (my_struct)->value_name = (unsigned short)json_getInteger(value_name); } \
-    }
-
-#define READ_JSON_SINT32(value_name, json, my_struct) { const json_t* value_name = json_getProperty(json, #value_name); \
-    if (value_name && JSON_INTEGER == json_getType(value_name)) { \
-        (my_struct)->value_name = (signed int)json_getInteger(value_name); } \
     }
 
 #define READ_JSON_UINT32(value_name, json, my_struct) { const json_t* value_name = json_getProperty(json, #value_name); \
@@ -39,6 +50,11 @@
         (my_struct)->value_name = (bool)json_getBoolean(value_name); } \
     } \
     flag = true;
+
+#define READ_JSON_FLOAT32(value_name, json, my_struct) { const json_t* value_name = json_getProperty(json, #value_name); \
+    if (value_name && JSON_REAL == json_getType(value_name)) { \
+        (my_struct)->value_name = (float)json_getReal(value_name); } \
+    }
     
 
 // Full overrides
@@ -73,6 +89,10 @@ extern MOD_GLOBAL_INFO& get_game_mod_global_info() {
     return game_mod_config.global_info;
 }
 
+extern MOD_LEVEL_FONT_INFO& get_game_mod_level_font_info(int level) {
+    return game_mod_config.level_info[level].font_info;
+}
+
 extern MOD_LEVEL_CAMERA_INFO& get_game_mod_level_camera_info(int level) {
     return game_mod_config.level_info[level].camera_info;
 }
@@ -99,6 +119,33 @@ MOD_LEVEL_FLARE_INFO& get_game_mod_level_flare_info(int level) {
 
 MOD_LEVEL_MISC_INFO& get_game_mod_level_misc_info(int level) {
     return game_mod_config.level_info[level].misc_info;
+}
+
+void LoadGameModLevelFontInfo(const json_t* font, MOD_LEVEL_FONT_INFO* font_info) {
+    READ_JSON_SINT32(custom_glyph_scale_width, font, font_info);
+    READ_JSON_SINT32(custom_glyph_scale_height, font, font_info);
+
+    const json_t* char_table = json_getProperty(font, "custom_font_table");
+    if (char_table && JSON_ARRAY == json_getType(char_table)) {
+        json_t const *char_table_entry;
+        int char_table_index = 0;
+        for (char_table_entry = json_getChild(char_table); char_table_entry != 0; char_table_entry = json_getSibling(char_table_entry)) {
+            if (char_table_index >= CHAR_TABLE_COUNT)
+                break;
+
+            READ_JSON_FLOAT32(u, char_table_entry, &font_info->custom_font_table[char_table_index]);
+            READ_JSON_FLOAT32(v, char_table_entry, &font_info->custom_font_table[char_table_index]);
+
+            READ_JSON_SINT16(w, char_table_entry, &font_info->custom_font_table[char_table_index]);
+            READ_JSON_SINT16(h, char_table_entry, &font_info->custom_font_table[char_table_index]);
+            READ_JSON_SINT16(y_offset, char_table_entry, &font_info->custom_font_table[char_table_index]);
+
+            READ_JSON_SINT8(top_shade, char_table_entry, &font_info->custom_font_table[char_table_index]);
+            READ_JSON_SINT8(bottom_shade, char_table_entry, &font_info->custom_font_table[char_table_index]);
+
+            char_table_index++;
+        }
+    }
 }
 
 void LoadGameModLevelCameraInfo(const json_t* camera, MOD_LEVEL_CAMERA_INFO* camera_info) {
@@ -164,6 +211,11 @@ void LoadGameModLevelMiscInfo(const json_t *misc, MOD_LEVEL_MISC_INFO *misc_info
 
 
 void LoadGameModLevel(const json_t *level, MOD_LEVEL_INFO *level_info) {
+    const json_t* font_info = json_getProperty(level, "font_info");
+    if (font_info && JSON_OBJ == json_getType(font_info)) {
+        LoadGameModLevelFontInfo(font_info, &level_info->font_info);
+    }
+
     const json_t* lara_info = json_getProperty(level, "lara_info");
     if (lara_info && JSON_OBJ == json_getType(lara_info)) {
         LoadGameModLevelLaraInfo(lara_info, &level_info->lara_info);
@@ -178,6 +230,13 @@ void LoadGameModLevel(const json_t *level, MOD_LEVEL_INFO *level_info) {
     if (misc_info && JSON_OBJ == json_getType(misc_info)) {
         LoadGameModLevelMiscInfo(misc_info, &level_info->misc_info);
     }
+}
+
+void SetupDefaultFontInfoForLevel(MOD_LEVEL_INFO* level_info) {
+    level_info->font_info.custom_glyph_scale_width = 512;
+    level_info->font_info.custom_glyph_scale_height = 240;
+
+    memcpy(level_info->font_info.custom_font_table, DEFAULT_CHAR_TABLE, sizeof(CHARDEF) * CHAR_TABLE_COUNT);
 }
 
 void SetupDefaultSlotInfoForLevel(MOD_LEVEL_INFO* level_info) {
@@ -230,47 +289,55 @@ void LoadGameModConfigFirstPass() {
 
     const json_t* level = nullptr;
    
-    json_t mem[32];
+    json_t* mem = NULL;
     if (json_buf) {
-        const json_t* root_json = json_create(json_buf, mem, sizeof mem / sizeof * mem);
-        if (root_json) {
-            const json_t* global = json_getProperty(root_json, "global_info");
-            if (global && JSON_OBJ == json_getType(global)) {
-                MOD_GLOBAL_INFO* mod_global_info = &game_mod_config.global_info;
+        mem = (json_t*)malloc(MAXIMUM_JSON_ALLOCATION_BLOCKS * sizeof(json_t));
+        if (mem) {
+            const json_t* root_json = json_create(json_buf, mem, MAXIMUM_JSON_ALLOCATION_BLOCKS);
+            if (root_json) {
+                const json_t* global = json_getProperty(root_json, "global_info");
+                if (global && JSON_OBJ == json_getType(global)) {
+                    MOD_GLOBAL_INFO* mod_global_info = &game_mod_config.global_info;
 
-                READ_JSON_UINT8(trng_version_major, global, mod_global_info);
-                READ_JSON_UINT8(trng_version_minor, global, mod_global_info);
-                READ_JSON_UINT8(trng_version_maintainence, global, mod_global_info);
-                READ_JSON_UINT8(trng_version_build, global, mod_global_info);
+                    READ_JSON_UINT8(trng_version_major, global, mod_global_info);
+                    READ_JSON_UINT8(trng_version_minor, global, mod_global_info);
+                    READ_JSON_UINT8(trng_version_maintainence, global, mod_global_info);
+                    READ_JSON_UINT8(trng_version_build, global, mod_global_info);
 
-                const json_t* plugins = json_getProperty(global, "plugins");
-                if (plugins && JSON_ARRAY == json_getType(plugins)) {
-                    json_t const* plugin;
-                    mod_global_info->plugin_count = 0;
-                    for (plugin = json_getChild(plugins); plugin != 0; plugin = json_getSibling(plugin)) {
-                        if (mod_global_info->plugin_count < MAX_PLUGIN_COUNT) {
-                            if (JSON_TEXT == json_getType(plugin)) {
-                                int plugin_str_length = strlen(plugin->u.value);
-                                if (plugin_str_length < MAX_PLUGIN_NAME_LEN-1) {
-                                    memcpy(mod_global_info->plugins[mod_global_info->plugin_count], plugin->u.value, plugin_str_length);
-                                } else {
-                                    printf("Invalid plugin name. Too long\n");
+                    const json_t* plugins = json_getProperty(global, "plugins");
+                    if (plugins && JSON_ARRAY == json_getType(plugins)) {
+                        json_t const* plugin;
+                        mod_global_info->plugin_count = 0;
+                        for (plugin = json_getChild(plugins); plugin != 0; plugin = json_getSibling(plugin)) {
+                            if (mod_global_info->plugin_count < MAX_PLUGIN_COUNT) {
+                                if (JSON_TEXT == json_getType(plugin)) {
+                                    int plugin_str_length = strlen(plugin->u.value);
+                                    if (plugin_str_length < MAX_PLUGIN_NAME_LEN - 1) {
+                                        memcpy(mod_global_info->plugins[mod_global_info->plugin_count], plugin->u.value, plugin_str_length);
+                                    } else {
+                                        printf("Invalid plugin name. Too long\n");
+                                    }
                                 }
+                            } else {
+                                break;
                             }
-                        } else {
-                            break;
+                            mod_global_info->plugin_count++;
                         }
-                        mod_global_info->plugin_count++;
                     }
                 }
-            }
 
-            level = json_getProperty(root_json, "global_level_info");
+                level = json_getProperty(root_json, "global_level_info");
+            } else {
+                Log(1, "Not enough memory allocated for JSON buffer!");
+            }
+        } else {
+            Log(1, "Failed to allocate memory for JSON buffer!");
         }
     }
 
     MOD_LEVEL_INFO global_level_info;
 
+    SetupDefaultFontInfoForLevel(&global_level_info);
     SetupDefaultSlotInfoForLevel(&global_level_info);
     SetupDefaultObjectInfoForLevel(&global_level_info);
 
@@ -285,6 +352,9 @@ void LoadGameModConfigFirstPass() {
 
     if (json_buf)
         free(json_buf);
+
+    if (mem)
+        free(mem);
 }
 
 void LoadGameModConfigSecondPass() {
