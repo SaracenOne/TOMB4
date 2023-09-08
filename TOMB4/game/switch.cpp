@@ -243,7 +243,7 @@ void SwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 				if (global_info.trng_switch_extended_ocb && item->trigger_flags & 0x1000)
 					inverted_state = true;
 				
-				if (item->current_anim_state == inverted_state ? 0 : 1)
+				if (item->current_anim_state == (inverted_state ? 0 : 1))
 				{
 					if (item->trigger_flags)
 					{
