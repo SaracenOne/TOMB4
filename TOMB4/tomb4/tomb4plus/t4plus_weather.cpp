@@ -18,8 +18,8 @@
 
 // T4Plus - weather effects
 
-WeatherType rain_type;
-WeatherType snow_type;
+WeatherType rain_type = WEATHER_DISABLED;
+WeatherType snow_type = WEATHER_DISABLED;
 
 long rain_outside = 0;
 long snow_outside = 0;
@@ -36,6 +36,9 @@ static short max_snow = 0;
 
 void InitWeatherFX()
 {
+	rain_type = WEATHER_DISABLED;
+	snow_type = WEATHER_DISABLED;
+
 	rain_outside = 0;
 	snow_outside = 0;
 
@@ -47,6 +50,9 @@ void InitWeatherFX()
 
 void ClearWeatherFX()
 {
+	rain_type = WEATHER_DISABLED;
+	snow_type = WEATHER_DISABLED;
+
 	for (int i = 0; i < 1024; i++)
 	{
 		Rain[i].x = 0;

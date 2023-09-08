@@ -177,8 +177,7 @@ unsigned int __stdcall LoadLevel(void* name)
 		reset_cutseq_vars();
 		FileClose(level_fp);
 
-		ClearWeatherFX();
-		NGSetup();
+		T4LevelSetup(gfCurrentLevel);
 	}
 
 	LevelLoadingThread.active = 0;

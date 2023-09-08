@@ -4,6 +4,8 @@
 
 #include "libs/tiny-json/tiny-json.h"
 #include "../specific/function_stubs.h"
+#include "../game/trng/trng.h"
+#include "../specific/audio.h"
 
 #define READ_JSON_INTEGER_CAST(value_name, json, my_struct, my_type) { const json_t* value_name = json_getProperty(json, #value_name); \
     if (value_name && JSON_INTEGER == json_getType(value_name)) { \
@@ -121,6 +123,15 @@ MOD_LEVEL_MISC_INFO& get_game_mod_level_misc_info(int level) {
     return game_mod_config.level_info[level].misc_info;
 }
 
+void LoadGameModLevelAudioInfo(const json_t* audio, MOD_LEVEL_AUDIO_INFO* audio_info) {
+    READ_JSON_BOOL(new_audio_system, audio, audio_info);
+    READ_JSON_BOOL(old_cd_trigger_system, audio, audio_info);
+
+    READ_JSON_SINT16(inside_jeep_track, audio, audio_info);
+    READ_JSON_SINT16(outside_jeep_track, audio, audio_info);
+    READ_JSON_SINT16(secret_track, audio, audio_info);
+}
+
 void LoadGameModLevelFontInfo(const json_t* font, MOD_LEVEL_FONT_INFO* font_info) {
     READ_JSON_SINT32(custom_glyph_scale_width, font, font_info);
     READ_JSON_SINT32(custom_glyph_scale_height, font, font_info);
@@ -211,6 +222,11 @@ void LoadGameModLevelMiscInfo(const json_t *misc, MOD_LEVEL_MISC_INFO *misc_info
 
 
 void LoadGameModLevel(const json_t *level, MOD_LEVEL_INFO *level_info) {
+    const json_t* audio_info = json_getProperty(level, "audio_info");
+    if (audio_info && JSON_OBJ == json_getType(audio_info)) {
+        LoadGameModLevelAudioInfo(audio_info, &level_info->audio_info);
+    }
+
     const json_t* font_info = json_getProperty(level, "font_info");
     if (font_info && JSON_OBJ == json_getType(font_info)) {
         LoadGameModLevelFontInfo(font_info, &level_info->font_info);
@@ -415,4 +431,17 @@ void LoadGameModConfigSecondPass() {
 
     free(json_buf);
     return;
+}
+
+void T4LevelSetup(int current_level) {
+    ClearWeatherFX();
+
+    S_Reset(); // Reset audio channels.
+
+    MOD_LEVEL_AUDIO_INFO audio_info = get_game_mod_level_audio_info(current_level);
+
+    SetUsingNewAudioSystem(audio_info.new_audio_system);
+    SetUsingOldTriggerMode(audio_info.old_cd_trigger_system);
+
+    NGSetup();
 }

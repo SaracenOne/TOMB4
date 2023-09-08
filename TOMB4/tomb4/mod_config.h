@@ -83,6 +83,9 @@ struct MOD_LEVEL_CREATURE_INFO {
 };
 
 struct MOD_LEVEL_AUDIO_INFO {
+	bool new_audio_system = false;
+	bool old_cd_trigger_system = true;
+
 	short inside_jeep_track = 98;
 	short outside_jeep_track = 110;
 	short secret_track = 5;
@@ -218,3 +221,5 @@ extern MOD_LEVEL_MISC_INFO& get_game_mod_level_misc_info(int level);
 
 extern void LoadGameModConfigFirstPass();
 extern void LoadGameModConfigSecondPass();
+
+extern void T4LevelSetup(int current_level);
