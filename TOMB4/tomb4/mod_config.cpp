@@ -304,7 +304,9 @@ void LoadGameModConfigFirstPass() {
     SetupGlobalDefaults();
 
     char* json_buf = NULL;
-    LoadFile("game_mod_config.json", &json_buf);
+    if (LoadFile("game_mod_config.json", &json_buf) <= 0) {
+        Log(1, "LoadGameModConfigFirstPass: Failed to load game_mod_config.json!");
+    }
 
     const json_t* level = nullptr;
    
@@ -347,10 +349,10 @@ void LoadGameModConfigFirstPass() {
 
                 level = json_getProperty(root_json, "global_level_info");
             } else {
-                Log(1, "Not enough memory allocated for JSON buffer!");
+                Log(1, "LoadGameModConfigFirstPass: Not enough memory allocated for JSON buffer!");
             }
         } else {
-            Log(1, "Failed to allocate memory for JSON buffer!");
+            Log(1, "LoadGameModConfigFirstPass: Failed to allocate memory for JSON buffer!");
         }
     }
 
@@ -379,61 +381,71 @@ void LoadGameModConfigFirstPass() {
 void LoadGameModConfigSecondPass() {
     char* json_buf = NULL;
     if (LoadFile("game_mod_config.json", &json_buf) <= 0) {
+        Log(1, "LoadGameModConfigSecondPass: Failed to load game_mod_config.json!");
         return;
     }
 
-    json_t mem[32];
-    const json_t* root_json = json_create(json_buf, mem, sizeof mem / sizeof * mem);
-    if (!root_json) {
-        // Could not create JSON!
-        free(json_buf);
-        return;
-    }
+    json_t *mem = NULL;
 
-    const json_t* global = json_getProperty(root_json, "global_info");
-    if (global && JSON_OBJ == json_getType(global)) {
-        MOD_GLOBAL_INFO* mod_global_info = &game_mod_config.global_info;
+    if (json_buf) {
+        mem = (json_t*)malloc(MAXIMUM_JSON_ALLOCATION_BLOCKS * sizeof(json_t));
+        if (mem) {
+            const json_t* root_json = json_create(json_buf, mem, MAXIMUM_JSON_ALLOCATION_BLOCKS);
+            if (root_json) {
+                const json_t* global = json_getProperty(root_json, "global_info");
+                if (global && JSON_OBJ == json_getType(global)) {
+                    MOD_GLOBAL_INFO* mod_global_info = &game_mod_config.global_info;
 
-        // TRNG
-        READ_JSON_UINT8(trng_version_major, global, mod_global_info);
-        READ_JSON_UINT8(trng_version_minor, global, mod_global_info);
-        READ_JSON_UINT8(trng_version_maintainence, global, mod_global_info);
-        READ_JSON_UINT8(trng_version_build, global, mod_global_info);
+                    // TRNG
+                    READ_JSON_UINT8(trng_version_major, global, mod_global_info);
+                    READ_JSON_UINT8(trng_version_minor, global, mod_global_info);
+                    READ_JSON_UINT8(trng_version_maintainence, global, mod_global_info);
+                    READ_JSON_UINT8(trng_version_build, global, mod_global_info);
 
-        READ_JSON_BOOL(trng_flipeffects_enabled, global, mod_global_info);
-        READ_JSON_BOOL(trng_actions_enabled, global, mod_global_info);
-        READ_JSON_BOOL(trng_rollingball_extended_ocb, global, mod_global_info);
-        READ_JSON_BOOL(trng_statics_extended_ocb, global, mod_global_info);
-        READ_JSON_BOOL(trng_pushable_extended_ocb, global, mod_global_info);
-        READ_JSON_BOOL(trng_switch_extended_ocb, global, mod_global_info);
-        READ_JSON_BOOL(trng_hack_allow_meshes_with_exactly_256_vertices, global, mod_global_info);
+                    READ_JSON_BOOL(trng_flipeffects_enabled, global, mod_global_info);
+                    READ_JSON_BOOL(trng_actions_enabled, global, mod_global_info);
+                    READ_JSON_BOOL(trng_rollingball_extended_ocb, global, mod_global_info);
+                    READ_JSON_BOOL(trng_statics_extended_ocb, global, mod_global_info);
+                    READ_JSON_BOOL(trng_pushable_extended_ocb, global, mod_global_info);
+                    READ_JSON_BOOL(trng_switch_extended_ocb, global, mod_global_info);
+                    READ_JSON_BOOL(trng_hack_allow_meshes_with_exactly_256_vertices, global, mod_global_info);
 
-        // TREP
-        READ_JSON_BOOL(trep_pushable_extended_ocb, global, mod_global_info);
+                    // TREP
+                    READ_JSON_BOOL(trep_pushable_extended_ocb, global, mod_global_info);
 
-        // TOMO
-        READ_JSON_BOOL(tomo_enable_weather_flipeffect, global, mod_global_info);
-        READ_JSON_BOOL(tomo_swap_whitelight_for_teleporter, global, mod_global_info);
+                    // TOMO
+                    READ_JSON_BOOL(tomo_enable_weather_flipeffect, global, mod_global_info);
+                    READ_JSON_BOOL(tomo_swap_whitelight_for_teleporter, global, mod_global_info);
 
-        // Misc
-        READ_JSON_BOOL(show_lara_in_title, global, mod_global_info);
-        READ_JSON_UINT16(max_particles, global, mod_global_info);
-    }
+                    // Misc
+                    READ_JSON_BOOL(show_lara_in_title, global, mod_global_info);
+                    READ_JSON_UINT16(max_particles, global, mod_global_info);
+                }
 
-    const json_t* levels = json_getProperty(root_json, "levels");
-    if (levels && JSON_ARRAY == json_getType(levels)) {
-        json_t const* level;
-        int level_index = 0;
-        for (level = json_getChild(levels); level != 0; level = json_getSibling(level)) {
-            if (JSON_OBJ == json_getType(level)) {
-                LoadGameModLevel(level, &game_mod_config.level_info[level_index]);
+                const json_t* levels = json_getProperty(root_json, "levels");
+                if (levels && JSON_ARRAY == json_getType(levels)) {
+                    json_t const* level;
+                    int level_index = 0;
+                    for (level = json_getChild(levels); level != 0; level = json_getSibling(level)) {
+                        if (JSON_OBJ == json_getType(level)) {
+                            LoadGameModLevel(level, &game_mod_config.level_info[level_index]);
+                        }
+                        level_index++;
+                    }
+                }
+            } else {
+                Log(1, "LoadGameModConfigSecondPass: Not enough memory allocated for JSON buffer!");
             }
-            level_index++;
+        } else {
+            Log(1, "LoadGameModConfigSecondPass: Failed to allocate memory for JSON buffer!");
         }
     }
 
-    free(json_buf);
-    return;
+    if (json_buf)
+        free(json_buf);
+
+    if (mem)
+        free(mem);
 }
 
 void T4LevelSetup(int current_level) {
