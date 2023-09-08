@@ -2181,11 +2181,11 @@ void RefreshCamera(short type, short* data)
 		camera.timer = -1;
 }
 
-long TriggerActive(ITEM_INFO* item)
+bool TriggerActive(ITEM_INFO* item)
 {
-	long reverse;
+	bool reverse;
 
-	reverse = (item->flags & IFL_REVERSE) ? 1 : 0;
+	reverse = (item->flags & IFL_REVERSE) ? true : false;
 
 	if ((item->flags & IFL_CODEBITS) != IFL_CODEBITS)
 		return reverse;
