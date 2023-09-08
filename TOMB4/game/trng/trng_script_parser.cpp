@@ -3,6 +3,7 @@
 #include "../gameflow.h"
 
 #include "trng.h"
+#include "trng_condition.h"
 #include "trng_script_parser.h"
 
 #include "../../tomb4/mod_config.h"
@@ -172,10 +173,10 @@ void NGScriptCleanup() {
 }
 
 void NGLoadTablesForLevel(unsigned int level) {
-	memset(&current_global_triggers, 0x00, sizeof(NG_GLOBAL_TRIGGER) * MAX_NG_GLOBAL_TRIGGERS);
-	memset(&current_trigger_groups, 0x00, sizeof(NG_TRIGGER_GROUP) * MAX_NG_TRIGGER_GROUPS);
-	memset(&current_organizers, 0x00, sizeof(NG_ORGANIZER) * MAX_NG_ORGANIZERS);
-	memset(&current_item_groups, 0x00, sizeof(NG_ITEM_GROUP) * MAX_NG_ITEM_GROUPS);
+	memset(&current_global_triggers, 0x00, sizeof(NG_GLOBAL_TRIGGER)* MAX_NG_GLOBAL_TRIGGERS);
+	memset(&current_trigger_groups, 0x00, sizeof(NG_TRIGGER_GROUP)* MAX_NG_TRIGGER_GROUPS);
+	memset(&current_organizers, 0x00, sizeof(NG_ORGANIZER)* MAX_NG_ORGANIZERS);
+	memset(&current_item_groups, 0x00, sizeof(NG_ITEM_GROUP)* MAX_NG_ITEM_GROUPS);
 
 	if (ng_levels[level].records) {
 		for (int i = 0; i < ng_levels[level].records->global_trigger_count; i++) {
@@ -272,6 +273,11 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 	//offset += 3;
 
 	if (ng_header_found) {
+		if (get_game_mod_global_info().trng_version_major == 0) {
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGHeader found in Script.dat in invalid TRNG version!");
+			return;
+		}
+
 		// TRNG Stuff
 		get_game_mod_global_info().trng_flipeffects_enabled = true;
 		get_game_mod_global_info().trng_conditionals_enabled = true;
@@ -392,8 +398,8 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 			}
 
 			// Defaults for TRNG levels
-			ng_levels[current_level].old_cd_trigger_system = false;
-			ng_levels[current_level].new_audio_system = true;
+			get_game_mod_level_audio_info(current_level).old_cd_trigger_system = false;
+			get_game_mod_level_audio_info(current_level).new_audio_system = true;
 
 			unsigned int level_block_end_pos = level_block_start_position + level_block_size * sizeof(short);
 
@@ -885,7 +891,7 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 									break;
 								}
 								case CUST_SET_OLD_CD_TRIGGER: {
-									ng_levels[current_level].old_cd_trigger_system = NG_READ_8(gfScriptFile, offset);
+									get_game_mod_level_audio_info(current_level).old_cd_trigger_system = NG_READ_8(gfScriptFile, offset);
 									break;
 								}
 								case CUST_ESCAPE_FLY_CAMERA: {

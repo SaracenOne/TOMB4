@@ -195,12 +195,7 @@ void NGRotateItemY(unsigned short item_id, short rotation) {
 	items[item_id].pos.y_rot += rotation;
 }
 
-void NGSetup() {
-	S_Reset(); // Reset audio channels.
-
-	SetUsingNewAudioSystem(ng_levels[gfCurrentLevel].new_audio_system);
-	SetUsingOldTriggerMode(ng_levels[gfCurrentLevel].old_cd_trigger_system);
-	
+void NGSetup() {	
 	NGLoadTablesForLevel(gfCurrentLevel);
 	NGSetupExtraState();
 }

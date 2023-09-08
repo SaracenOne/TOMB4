@@ -87,6 +87,12 @@ enum TGROUP_FLAGS {
 	TGROUP_USE_ITEM_USED_BY_LARA_INDEX = 0x800,
 };
 
+struct NG_MULTI_ENV_TRIPLET {
+	unsigned short env_condition;
+	unsigned short distance_for_env;
+	unsigned short extra;
+};
+
 struct NG_GLOBAL_TRIGGER {
 	unsigned short flags = 0x0;
 	unsigned short type = 0x00;
@@ -188,8 +194,6 @@ struct NG_LEVEL_PARAMS {
 };
 
 struct NG_LEVEL {
-	bool new_audio_system = false;
-	bool old_cd_trigger_system = true;
 	NG_LEVEL_RECORD_DATA *records = NULL;
 	NG_LEVEL_PARAMS* params = NULL;
 };
