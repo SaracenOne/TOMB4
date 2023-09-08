@@ -85,6 +85,8 @@ struct MOD_LEVEL_CREATURE_INFO {
 struct MOD_LEVEL_AUDIO_INFO {
 	bool new_audio_system = false;
 	bool old_cd_trigger_system = true;
+	short first_looped_audio_track = 105;
+	short last_looped_audio_track = 127;
 
 	short inside_jeep_track = 98;
 	short outside_jeep_track = 110;

@@ -2218,7 +2218,9 @@ void TriggerNormalCDTrack(short value, short flags, short type)
 {
 	long code;
 
-	if (value >= 105 && value <= 111 || value == 102 || value == 97)
+	MOD_LEVEL_AUDIO_INFO audio_info = get_game_mod_level_audio_info(gfCurrentLevel);
+
+	if (value >= audio_info.first_looped_audio_track && value <= audio_info.last_looped_audio_track || value == 102 || value == 97)
 	{
 		if (CurrentAtmosphere != value)
 		{
