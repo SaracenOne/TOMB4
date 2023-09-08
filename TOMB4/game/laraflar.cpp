@@ -138,7 +138,7 @@ long DoFlareLight(PHD_VECTOR* pos, long flare_age)
 	if (flare_info.has_sparks) {
 		if (flare_age < flare_info.flare_lifetime_in_ticks - 24) {
 			unsigned long flare_spark_rnd = GetRandomControl();
-			TriggerFlareSparks(pos->x, pos->y, pos->z, 0, long((float(flare_spark_rnd) * -0.025f), 0, flare_info.sparks_include_smoke));
+			TriggerFlareSparks(pos->x, pos->y, pos->z, 0, long((float(flare_spark_rnd) * -0.025f)), 0, flare_info.sparks_include_smoke);
 		}
 	}
 
