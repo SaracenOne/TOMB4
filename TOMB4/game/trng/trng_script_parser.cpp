@@ -723,10 +723,9 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 						// MultiEnvCondition (WIP)
 						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: MultiEnvCondition Unimplemented! (level %u)", current_level);
 
-
 						unsigned short id = NG_READ_16(gfScriptFile, offset);
 
-						if (id > MAX_NG_MULTI_ENV_CONDITIONS) {
+						if (id >= MAX_NG_MULTI_ENV_CONDITIONS) {
 							NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: Multi Env Condition id is not valid! (level %u)", current_level);
 							return;
 							// Broken
@@ -734,7 +733,7 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 
 						level_multi_env_condition_table[level_multi_env_condition_count].record_id = id;
 
-						while ((offset < command_block_end_position)) {
+						while (offset < command_block_end_position) {
 							if (level_multi_env_condition_table[level_multi_env_condition_count].record.env_condition_triplet_count >= NG_MULTI_ENV_CONDITION_MAX_TRIPLETS) {
 								NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: MultiEnvCondition triplet overflow! (level %u)", current_level);
 								return;
