@@ -14,6 +14,7 @@
 
 #include "trng.h"
 #include "trng_extra_state.h"
+#include "trng_animation.h"
 #include "trng_condition.h"
 #include "trng_flipeffect.h"
 #include "trng_script_parser.h"
@@ -644,31 +645,11 @@ bool NGProcessGlobalTriggers(int inventory_object_id) {
 	return management_replaced;
 }
 
-void NGProcessTriggerGroups() {
-	for (int i = 0; i < MAX_NG_TRIGGER_GROUPS; i++) {
-		if (NGIsTriggerGroupContinuous(i)) {
-			NGTriggerGroupFunction(i, 0);
-		}
-	}
-}
-
-void NGProcessOrganizers() {
-	if (ng_levels[gfCurrentLevel].records) {
-		int organizer_count = ng_levels[gfCurrentLevel].records->organizer_count;
-		for (int i = 0; i < organizer_count; i++) {
-			int record_id = ng_levels[gfCurrentLevel].records->organizer_table[i].record_id;
-
-			if (ng_organizer_states[record_id].is_enabled) {
-				NGExecuteOrganizer(i);
-			}
-		}
-	}
-}
-
 void NGFrameStartUpdate() {
 	NGProcessGlobalTriggers(NO_ITEM);
 	NGProcessTriggerGroups();
 	NGProcessOrganizers();
+	NGProcessAnimations();
 
 	// If a timer has reached zero, reset its incrementation value
 	if (ng_local_timer <= 0)
@@ -1076,8 +1057,8 @@ void NGSetupExtraState() {
 		if (current_record_data) {
 			int global_trigger_count = current_record_data->global_trigger_count;
 			for (int i = 0; i < global_trigger_count; i++) {
-				NG_GLOBAL_TRIGGER* global_trigger = &current_record_data->global_triggers_table[i].global_trigger;
-				int record_id = current_record_data->global_triggers_table[i].record_id;
+				NG_GLOBAL_TRIGGER* global_trigger = &current_record_data->global_trigger_table[i].record;
+				int record_id = current_record_data->global_trigger_table[i].record_id;
 				if (global_trigger->flags != 0xffff) {
 					// FGT_DISABLED
 					if (global_trigger->flags & 0x0008) {
@@ -1106,7 +1087,7 @@ void NGSetupExtraState() {
 		if (current_record_data) {
 			int organizer_count = current_record_data->organizer_count;
 			for (int i = 0; i < organizer_count; i++) {
-				NG_ORGANIZER* organizer = &current_record_data->organizer_table[i].organizer;
+				NG_ORGANIZER* organizer = &current_record_data->organizer_table[i].record;
 				int record_id = current_record_data->organizer_table[i].record_id;
 				if (organizer->flags != 0xffff) {
 					// FO_ENABLED

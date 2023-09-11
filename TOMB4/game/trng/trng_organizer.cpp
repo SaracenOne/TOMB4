@@ -12,7 +12,7 @@
 #include "trng_triggergroup.h"
 
 void NGExecuteOrganizer(int organizer_id) {
-	NG_ORGANIZER* organizer = &ng_levels[gfCurrentLevel].records->organizer_table[organizer_id].organizer;
+	NG_ORGANIZER* organizer = &ng_levels[gfCurrentLevel].records->organizer_table[organizer_id].record;
 	int record_id = ng_levels[gfCurrentLevel].records->organizer_table[organizer_id].record_id;
 
 	bool global_trigger_condition_passed = false;
@@ -33,4 +33,17 @@ void NGExecuteOrganizer(int organizer_id) {
 	}
 
 	ng_organizer_states[record_id].current_tick += 1;
+}
+
+void NGProcessOrganizers() {
+	if (ng_levels[gfCurrentLevel].records) {
+		int organizer_count = ng_levels[gfCurrentLevel].records->organizer_count;
+		for (int i = 0; i < organizer_count; i++) {
+			int record_id = ng_levels[gfCurrentLevel].records->organizer_table[i].record_id;
+
+			if (ng_organizer_states[record_id].is_enabled) {
+				NGExecuteOrganizer(i);
+			}
+		}
+	}
 }

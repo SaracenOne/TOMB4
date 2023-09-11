@@ -320,10 +320,10 @@ void LoadGameModConfigFirstPass() {
                 if (global && JSON_OBJ == json_getType(global)) {
                     MOD_GLOBAL_INFO* mod_global_info = &game_mod_config.global_info;
 
-                    READ_JSON_UINT8(trng_version_major, global, mod_global_info);
-                    READ_JSON_UINT8(trng_version_minor, global, mod_global_info);
-                    READ_JSON_UINT8(trng_version_maintainence, global, mod_global_info);
-                    READ_JSON_UINT8(trng_version_build, global, mod_global_info);
+                    READ_JSON_UINT8(trng_version_major, global, &mod_global_info->trng_engine_version);
+                    READ_JSON_UINT8(trng_version_minor, global, &mod_global_info->trng_engine_version);
+                    READ_JSON_UINT8(trng_version_maintainence, global, &mod_global_info->trng_engine_version);
+                    READ_JSON_UINT8(trng_version_build, global, &mod_global_info->trng_engine_version);
 
                     const json_t* plugins = json_getProperty(global, "plugins");
                     if (plugins && JSON_ARRAY == json_getType(plugins)) {
@@ -397,10 +397,10 @@ void LoadGameModConfigSecondPass() {
                     MOD_GLOBAL_INFO* mod_global_info = &game_mod_config.global_info;
 
                     // TRNG
-                    READ_JSON_UINT8(trng_version_major, global, mod_global_info);
-                    READ_JSON_UINT8(trng_version_minor, global, mod_global_info);
-                    READ_JSON_UINT8(trng_version_maintainence, global, mod_global_info);
-                    READ_JSON_UINT8(trng_version_build, global, mod_global_info);
+                    READ_JSON_UINT8(trng_version_major, global, &mod_global_info->trng_engine_version);
+                    READ_JSON_UINT8(trng_version_minor, global, &mod_global_info->trng_engine_version);
+                    READ_JSON_UINT8(trng_version_maintainence, global, &mod_global_info->trng_engine_version);
+                    READ_JSON_UINT8(trng_version_build, global, &mod_global_info->trng_engine_version);
 
                     READ_JSON_BOOL(trng_flipeffects_enabled, global, mod_global_info);
                     READ_JSON_BOOL(trng_actions_enabled, global, mod_global_info);
@@ -459,4 +459,35 @@ void T4LevelSetup(int current_level) {
     SetUsingOldTriggerMode(audio_info.old_cd_trigger_system);
 
     NGSetup();
+}
+
+bool is_source_trng_version_equal_or_greater_than_target(TRNG_ENGINE_VERSION source_version, TRNG_ENGINE_VERSION target_version) {
+    if (source_version.trng_version_major < target_version.trng_version_major)
+        return false;
+
+    if (source_version.trng_version_minor < target_version.trng_version_minor)
+        return false;
+
+    if (source_version.trng_version_maintainence < target_version.trng_version_maintainence)
+        return false;
+
+    if (source_version.trng_version_build < target_version.trng_version_build)
+        return false;
+
+    return true;
+}
+
+bool is_mod_trng_version_equal_or_greater_than_target(
+    unsigned char target_major_version,
+    unsigned char target_minor_version,
+    unsigned char target_maintainence_version,
+    unsigned char target_build_version) {
+
+    TRNG_ENGINE_VERSION target_version;
+    target_version.trng_version_major = target_major_version;
+    target_version.trng_version_minor = target_minor_version;
+    target_version.trng_version_maintainence = target_maintainence_version;
+    target_version.trng_version_build = target_build_version;
+
+    return is_source_trng_version_equal_or_greater_than_target(get_game_mod_global_info().trng_engine_version, target_version);
 }

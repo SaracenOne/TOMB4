@@ -50,9 +50,6 @@ void InitWeatherFX()
 
 void ClearWeatherFX()
 {
-	rain_type = WEATHER_DISABLED;
-	snow_type = WEATHER_DISABLED;
-
 	for (int i = 0; i < 1024; i++)
 	{
 		Rain[i].x = 0;

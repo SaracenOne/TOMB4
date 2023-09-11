@@ -182,3 +182,11 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 
 	return operation_result;
 }
+
+void NGProcessTriggerGroups() {
+	for (int i = 0; i < MAX_NG_TRIGGER_GROUPS; i++) {
+		if (NGIsTriggerGroupContinuous(i)) {
+			NGTriggerGroupFunction(i, 0);
+		}
+	}
+}

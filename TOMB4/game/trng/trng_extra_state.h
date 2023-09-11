@@ -23,6 +23,9 @@ enum NGTimerTrackerType {
 #define MAX_NG_TRIGGER_GROUPS 9999
 #define MAX_NG_ORGANIZERS 4999
 #define MAX_NG_ITEM_GROUPS 999
+#define MAX_NG_ANIMATIONS 999
+#define MAX_NG_MULTI_ENV_CONDITIONS 999
+#define MAX_NG_TEST_POSITIONS 999
 
 struct NG_GLOBAL_TRIGGER_STATE {
 	bool is_disabled = false;

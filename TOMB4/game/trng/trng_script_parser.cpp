@@ -7,6 +7,7 @@
 #include "trng_script_parser.h"
 
 #include "../../tomb4/mod_config.h"
+#include "trng_globaltrigger.h"
 
 char *ng_strings[MAX_NG_STRINGS];
 NG_LEVEL ng_levels[MAX_NG_LEVELS];
@@ -41,85 +42,56 @@ void NGScriptInit() {
 	}
 }
 
+#define NG_FREE_RECORD(record_name_lowercase) level.records->record_name_lowercase##_count = 0; \
+if (level.records->record_name_lowercase##_table) { \
+	free(level.records->record_name_lowercase##_table); \
+	level.records->record_name_lowercase##_table = NULL; \
+}
+
+#define NG_ALLOCATE_RECORD(record_name_lowercase, record_name_uppercase) level.records->record_name_lowercase##_count = record_name_lowercase##_table_count; \
+level.records->record_name_lowercase##_table = NULL; \
+if (record_name_lowercase##_table_count) { \
+	level.records->record_name_lowercase##_table = (NG_##record_name_uppercase##_RECORD*)malloc(sizeof(NG_##record_name_uppercase##_RECORD) * record_name_lowercase##_table_count); \
+	if (!level.records->record_name_lowercase##_table) { \
+		NGLog(NG_LOG_TYPE_ERROR, "NGReallocateLevel: Memory allocation failed!"); \
+		return false; \
+	} \
+	memset(level.records->record_name_lowercase##_table, 0x00, sizeof(NG_##record_name_uppercase##_RECORD) * record_name_lowercase##_table_count); \
+} \
+
 void NGFreeLevel(NG_LEVEL& level) {
 	if (level.records) {
-		level.records->global_trigger_count = 0;
-		if (level.records->global_triggers_table) {
-			free(level.records->global_triggers_table);
-			level.records->global_triggers_table = NULL;
-		}
-
-		level.records->trigger_group_count = 0;
-		if (level.records->trigger_group_table) {
-			free(level.records->trigger_group_table);
-			level.records->trigger_group_table = NULL;
-		}
-
-		level.records->organizer_count = 0;
-		if (level.records->organizer_table) {
-			free(level.records->organizer_table);
-			level.records->organizer_table = NULL;
-		}
-
-		level.records->item_group_count = 0;
-		if (level.records->item_group_table) {
-			free(level.records->item_group_table);
-			level.records->item_group_table = NULL;
-		}
+		NG_FREE_RECORD(global_trigger);
+		NG_FREE_RECORD(trigger_group);
+		NG_FREE_RECORD(organizer);
+		NG_FREE_RECORD(item_group);
+		NG_FREE_RECORD(animation);
+		NG_FREE_RECORD(multi_env_condition);
+		NG_FREE_RECORD(test_position);
 	}
 }
 
-bool NGReallocateLevel(NG_LEVEL& level, unsigned int global_triggers_table_count, unsigned int trigger_group_table_count, unsigned int organizer_table_count, unsigned int item_group_table_count) {
+bool NGReallocateLevel(
+	NG_LEVEL& level,
+	unsigned int global_trigger_table_count,
+	unsigned int trigger_group_table_count,
+	unsigned int organizer_table_count,
+	unsigned int item_group_table_count,
+	unsigned int animation_table_count, 
+	unsigned int multi_env_condition_table_count,
+	unsigned int test_position_table_count) {
 	NGFreeLevel(level);
 
 	level.records = (NG_LEVEL_RECORD_DATA*)malloc(sizeof(NG_LEVEL_RECORD_DATA));
 
 	if (level.records) {
-		level.records->global_triggers_table = NULL;
-		level.records->trigger_group_table = NULL;
-		level.records->organizer_table = NULL;
-		level.records->item_group_table = NULL;
-		
-		level.records->global_trigger_count = global_triggers_table_count;
-		if (global_triggers_table_count) {
-			level.records->global_triggers_table = (NG_GLOBAL_TRIGGER_RECORD*)malloc(sizeof(NG_GLOBAL_TRIGGER_RECORD) * global_triggers_table_count);
-			if (!level.records->global_triggers_table) {
-				NGLog(NG_LOG_TYPE_ERROR, "NGReallocateLevel: Memory allocation failed!");
-				return false;
-			}
-			memset(level.records->global_triggers_table, 0x00, sizeof(NG_GLOBAL_TRIGGER_RECORD) * global_triggers_table_count);
-		}
-
-		level.records->trigger_group_count = trigger_group_table_count;
-		if (trigger_group_table_count) {
-			level.records->trigger_group_table = (NG_TRIGGER_GROUP_RECORD*)malloc(sizeof(NG_TRIGGER_GROUP_RECORD) * trigger_group_table_count);
-			if (!level.records->trigger_group_table) {
-				NGLog(NG_LOG_TYPE_ERROR, "NGReallocateLevel: Memory allocation failed!");
-				return false;
-			}
-			memset(level.records->trigger_group_table, 0x00, sizeof(NG_TRIGGER_GROUP_RECORD) * trigger_group_table_count);
-		}
-
-
-		level.records->organizer_count = organizer_table_count;
-		if (organizer_table_count) {
-			level.records->organizer_table = (NG_ORGANIZER_RECORD*)malloc(sizeof(NG_ORGANIZER_RECORD) * organizer_table_count);
-			if (!level.records->organizer_table) {
-				NGLog(NG_LOG_TYPE_ERROR, "NGReallocateLevel: Memory allocation failed!");
-				return false;
-			}
-			memset(level.records->organizer_table, 0x00, sizeof(NG_ORGANIZER_RECORD) * organizer_table_count);
-		}
-
-		level.records->item_group_count = item_group_table_count;
-		if (item_group_table_count) {
-			level.records->item_group_table = (NG_ITEM_GROUP_RECORD*)malloc(sizeof(NG_ITEM_GROUP_RECORD) * item_group_table_count);
-			if (!level.records->item_group_table) {
-				NGLog(NG_LOG_TYPE_ERROR, "NGReallocateLevel: Memory allocation failed!");
-				return false;
-			}
-			memset(level.records->item_group_table, 0x00, sizeof(NG_ITEM_GROUP) * item_group_table_count);
-		}
+		NG_ALLOCATE_RECORD(global_trigger, GLOBAL_TRIGGER);
+		NG_ALLOCATE_RECORD(trigger_group, TRIGGER_GROUP);
+		NG_ALLOCATE_RECORD(organizer, ORGANIZER);
+		NG_ALLOCATE_RECORD(item_group, ITEM_GROUP);
+		NG_ALLOCATE_RECORD(animation, ANIMATION);
+		NG_ALLOCATE_RECORD(multi_env_condition, MULTI_ENV_CONDITION);
+		NG_ALLOCATE_RECORD(test_position, TEST_POSITION);
 
 		return true;
 	} else {
@@ -180,25 +152,25 @@ void NGLoadTablesForLevel(unsigned int level) {
 
 	if (ng_levels[level].records) {
 		for (int i = 0; i < ng_levels[level].records->global_trigger_count; i++) {
-			unsigned int id = ng_levels[level].records->global_triggers_table[i].record_id;
+			unsigned int id = ng_levels[level].records->global_trigger_table[i].record_id;
 
-			memcpy(&current_global_triggers[id], &ng_levels[level].records->global_triggers_table[i].global_trigger, sizeof(NG_GLOBAL_TRIGGER));
+			memcpy(&current_global_triggers[id], &ng_levels[level].records->global_trigger_table[i].record, sizeof(NG_GLOBAL_TRIGGER));
 		}
 		for (int i = 0; i < ng_levels[level].records->trigger_group_count; i++) {
 			unsigned int id = ng_levels[level].records->trigger_group_table[i].record_id;
 
-			memcpy(&current_trigger_groups[id], &ng_levels[level].records->trigger_group_table[i].trigger_group, sizeof(NG_TRIGGER_GROUP));
+			memcpy(&current_trigger_groups[id], &ng_levels[level].records->trigger_group_table[i].record, sizeof(NG_TRIGGER_GROUP));
 			current_trigger_groups[id].oneshot_triggered = false;
 		}
 		for (int i = 0; i < ng_levels[level].records->organizer_count; i++) {
 			unsigned int id = ng_levels[level].records->organizer_table[i].record_id;
 
-			memcpy(&current_organizers[id], &ng_levels[level].records->organizer_table[i].organizer, sizeof(NG_ORGANIZER));
+			memcpy(&current_organizers[id], &ng_levels[level].records->organizer_table[i].record, sizeof(NG_ORGANIZER));
 		}
 		for (int i = 0; i < ng_levels[level].records->item_group_count; i++) {
 			unsigned int id = ng_levels[level].records->item_group_table[i].record_id;
 
-			memcpy(&current_item_groups[id], &ng_levels[level].records->item_group_table[i].item_group, sizeof(NG_ITEM_GROUP));
+			memcpy(&current_item_groups[id], &ng_levels[level].records->item_group_table[i].record, sizeof(NG_ITEM_GROUP));
 		}
 	}
 }
@@ -273,7 +245,7 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 	//offset += 3;
 
 	if (ng_header_found) {
-		if (get_game_mod_global_info().trng_version_major == 0) {
+		if (!is_mod_trng_version_equal_or_greater_than_target(0, 0, 0, 0)) {
 			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGHeader found in Script.dat in invalid TRNG version!");
 			return;
 		}
@@ -375,7 +347,10 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 		NG_GLOBAL_TRIGGER_RECORD *level_global_triggers_table = (NG_GLOBAL_TRIGGER_RECORD *)malloc(sizeof(NG_GLOBAL_TRIGGER_RECORD) * MAX_NG_GLOBAL_TRIGGERS);
 		NG_TRIGGER_GROUP_RECORD *level_trigger_group_table = (NG_TRIGGER_GROUP_RECORD *)malloc(sizeof(NG_TRIGGER_GROUP_RECORD) * MAX_NG_TRIGGER_GROUPS);
 		NG_ORGANIZER_RECORD *level_organizer_table = (NG_ORGANIZER_RECORD *)malloc(sizeof(NG_ORGANIZER_RECORD) * MAX_NG_ORGANIZERS);
-		NG_ITEM_GROUP_RECORD *level_item_group_table = (NG_ITEM_GROUP_RECORD*)malloc(sizeof(NG_ITEM_GROUP_RECORD) * MAX_NG_ITEM_GROUPS);
+		NG_ITEM_GROUP_RECORD *level_item_group_table = (NG_ITEM_GROUP_RECORD *)malloc(sizeof(NG_ITEM_GROUP_RECORD) * MAX_NG_ITEM_GROUPS);
+		NG_ANIMATION_RECORD *level_animation_table = (NG_ANIMATION_RECORD *)malloc(sizeof(NG_ANIMATION_RECORD) * MAX_NG_ANIMATIONS);
+		NG_MULTI_ENV_CONDITION_RECORD *level_multi_env_condition_table = (NG_MULTI_ENV_CONDITION_RECORD *)malloc(sizeof(NG_MULTI_ENV_CONDITION_RECORD) * MAX_NG_MULTI_ENV_CONDITIONS);
+		NG_TEST_POSITION_RECORD *level_test_position_table = (NG_TEST_POSITION_RECORD *)malloc(sizeof(NG_TEST_POSITION_RECORD) * MAX_NG_TEST_POSITIONS);
 
 		// Do the levels
 		while (1) {
@@ -383,11 +358,17 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 			memset(level_trigger_group_table, 0x00, sizeof(NG_TRIGGER_GROUP_RECORD) * MAX_NG_TRIGGER_GROUPS);
 			memset(level_organizer_table, 0x00, sizeof(NG_ORGANIZER_RECORD) * MAX_NG_ORGANIZERS);
 			memset(level_item_group_table, 0x00, sizeof(NG_ITEM_GROUP_RECORD) * MAX_NG_ITEM_GROUPS);
+			memset(level_animation_table, 0x00, sizeof(NG_ANIMATION_RECORD) * MAX_NG_ANIMATIONS);
+			memset(level_multi_env_condition_table, 0x00, sizeof(NG_MULTI_ENV_CONDITION_RECORD) * MAX_NG_MULTI_ENV_CONDITIONS);
+			memset(level_test_position_table, 0x00, sizeof(NG_TEST_POSITION_RECORD) * MAX_NG_TEST_POSITIONS);
 
 			unsigned int level_global_trigger_count = 0;
 			unsigned int level_trigger_group_count = 0;
 			unsigned int level_organizer_count = 0;
 			unsigned int level_item_group_count = 0;
+			unsigned int level_animation_count = 0;
+			unsigned int level_multi_env_condition_count = 0;
+			unsigned int level_test_position_count = 0;
 
 			unsigned int level_block_start_position = offset;
 			unsigned short level_block_size = NG_READ_16(gfScriptFile, offset);
@@ -433,7 +414,7 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 						unsigned int plugin_id = 0;
 						unsigned short slot_a = NG_READ_16(gfScriptFile, offset);
 						unsigned short slot_b = 0;
-						if (get_game_mod_global_info().trng_version_major == 1 && get_game_mod_global_info().trng_version_minor < 3) {
+						if (!is_mod_trng_version_equal_or_greater_than_target(1, 3, 0, 0)) {
 							slot_b = NG_READ_16(gfScriptFile, offset);
 						} else {
 							slot_b = NG_READ_16(gfScriptFile, offset);
@@ -578,19 +559,40 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 						break;
 					}
 					case 0x0a: {
+						// Animation (WIP)
+
 						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Animation unimplemented! (level %u)", current_level);
 
-						// Animation (WIP)
-						unsigned short anim_index = NG_READ_16(gfScriptFile, offset);
-						unsigned short key_1 = NG_READ_16(gfScriptFile, offset);
-						unsigned short key_2 = NG_READ_16(gfScriptFile, offset);
-						unsigned short fan_flags = NG_READ_16(gfScriptFile, offset);
-						unsigned short env_environment = NG_READ_16(gfScriptFile, offset);
-						unsigned short distance_for_env = NG_READ_16(gfScriptFile, offset);
-						unsigned short extra = NG_READ_16(gfScriptFile, offset);
+						if (level_animation_count >= MAX_NG_ANIMATIONS) {
+							NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: Animation overflow! (level %u)", current_level);
+							return;
+							// Broken
+						}
 
-						// TODO: Figure out the array format
-						offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+						level_animation_table[level_animation_count].record_id = level_animation_count;
+
+						level_animation_table[level_animation_count].record.animation_index = NG_READ_16(gfScriptFile, offset);
+						level_animation_table[level_animation_count].record.key_1 = NG_READ_16(gfScriptFile, offset);
+						level_animation_table[level_animation_count].record.key_2 = NG_READ_16(gfScriptFile, offset);
+						level_animation_table[level_animation_count].record.fan_flags = NG_READ_16(gfScriptFile, offset);
+						level_animation_table[level_animation_count].record.environment.env_condition = NG_READ_16(gfScriptFile, offset);
+						level_animation_table[level_animation_count].record.environment.distance_for_env = NG_READ_16(gfScriptFile, offset);
+						level_animation_table[level_animation_count].record.environment.extra = NG_READ_16(gfScriptFile, offset);
+
+						while ((offset != command_block_end_position)) {
+							if (level_animation_table[level_animation_count].record.state_or_animation_condition_count >= NG_ANIMATION_CONDTION_MAX_SIZE) {
+								NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: Animation state/condition overflow! (level %u)", current_level);
+								return;
+								// Broken
+							}
+
+							level_animation_table[level_animation_count].record.state_or_animation_condition_array[
+								level_animation_table[level_animation_count].record.state_or_animation_condition_count] = NG_READ_16(gfScriptFile, offset);
+
+							level_animation_table[level_animation_count].record.state_or_animation_condition_count++;
+						}
+
+						level_animation_count++;
 
 						break;
 					}
@@ -721,15 +723,42 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 						// MultiEnvCondition (WIP)
 						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: MultiEnvCondition Unimplemented! (level %u)", current_level);
 
-						// Skip to the end
-						offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+
+						unsigned short id = NG_READ_16(gfScriptFile, offset);
+
+						if (id > MAX_NG_MULTI_ENV_CONDITIONS) {
+							NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: Multi Env Condition id is not valid! (level %u)", current_level);
+							return;
+							// Broken
+						}
+
+						level_multi_env_condition_table[level_multi_env_condition_count].record_id = id;
+
+						while ((offset < command_block_end_position)) {
+							if (level_multi_env_condition_table[level_multi_env_condition_count].record.env_condition_triplet_count >= NG_MULTI_ENV_CONDITION_MAX_TRIPLETS) {
+								NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: MultiEnvCondition triplet overflow! (level %u)", current_level);
+								return;
+								// Broken
+							}
+
+							int index = level_multi_env_condition_table[level_multi_env_condition_count].record.env_condition_triplet_count;
+
+							level_multi_env_condition_table[level_multi_env_condition_count].record.env_condition_triplet_array[index].env_condition = NG_READ_16(gfScriptFile, offset);
+							level_multi_env_condition_table[level_multi_env_condition_count].record.env_condition_triplet_array[index].distance_for_env = NG_READ_16(gfScriptFile, offset);
+							level_multi_env_condition_table[level_multi_env_condition_count].record.env_condition_triplet_array[index].extra = NG_READ_16(gfScriptFile, offset);
+
+							level_multi_env_condition_table[level_multi_env_condition_count].record.env_condition_triplet_count++;
+						}
+
+						level_multi_env_condition_count++;
+
 						break;
 					}
 					case 0x14: {
 						// Customize (WIP)
 						unsigned int customization_category = 0;
 						unsigned int plugin_id = 0;
-						if (get_game_mod_global_info().trng_version_major == 1 && get_game_mod_global_info().trng_version_minor < 3) {
+						if (!is_mod_trng_version_equal_or_greater_than_target(1, 3, 0, 0)) {
 							customization_category = NG_READ_16(gfScriptFile, offset);
 						} else {
 							customization_category = NG_READ_16(gfScriptFile, offset);
@@ -1167,11 +1196,11 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 					case 0x15:
 						// TriggerGroup (legacy/plugin)
 						// Older builds of TRNG seem to use this opcode for TriggerGroups. Newer ones seem to use it for triggers exported from plugins
-						if (get_game_mod_global_info().trng_version_major == 1 && get_game_mod_global_info().trng_version_minor < 3) {
+						if (!is_mod_trng_version_equal_or_greater_than_target(1, 3, 0, 0)) {
 							// TriggerGroup (WIP)
 							unsigned short id = NG_READ_16(gfScriptFile, offset);
 
-							if (id > MAX_NG_TRIGGER_GROUPS) {
+							if (id >= MAX_NG_TRIGGER_GROUPS) {
 								NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: TriggerGroup id is not valid!  (level %u)", current_level);
 								return;
 								// Broken
@@ -1189,15 +1218,15 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 								unsigned short second_field = NG_READ_16(gfScriptFile, offset);
 								unsigned short third_field = NG_READ_16(gfScriptFile, offset);
 
-								level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].plugin_id = 0;
-								level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].first_field = first_field;
-								level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].second_field_lower = second_field;
-								level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].second_field_upper = 0;
-								level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].third_field_lower = third_field;
-								level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].third_field_upper = 0;;
+								level_trigger_group_table[level_trigger_group_count].record.data[data_index].plugin_id = 0;
+								level_trigger_group_table[level_trigger_group_count].record.data[data_index].first_field = first_field;
+								level_trigger_group_table[level_trigger_group_count].record.data[data_index].second_field_lower = second_field;
+								level_trigger_group_table[level_trigger_group_count].record.data[data_index].second_field_upper = 0;
+								level_trigger_group_table[level_trigger_group_count].record.data[data_index].third_field_lower = third_field;
+								level_trigger_group_table[level_trigger_group_count].record.data[data_index].third_field_upper = 0;;
 
 								data_index++;
-								if (data_index > NG_TRIGGER_GROUP_DATA_SIZE) {
+								if (data_index >= NG_TRIGGER_GROUP_DATA_SIZE) {
 									NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: TriggerGroup size overflow! (level %u)", current_level);
 									return;
 								}
@@ -1249,15 +1278,15 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 									}
 								}
 
-								level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].plugin_id = plugin_id;
-								level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].first_field = first_field;
-								level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].second_field_lower = second_field_lower;
-								level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].second_field_upper = second_field_upper;
-								level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].third_field_lower = third_field_lower;
-								level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].third_field_upper = third_field_upper;
+								level_trigger_group_table[level_trigger_group_count].record.data[data_index].plugin_id = plugin_id;
+								level_trigger_group_table[level_trigger_group_count].record.data[data_index].first_field = first_field;
+								level_trigger_group_table[level_trigger_group_count].record.data[data_index].second_field_lower = second_field_lower;
+								level_trigger_group_table[level_trigger_group_count].record.data[data_index].second_field_upper = second_field_upper;
+								level_trigger_group_table[level_trigger_group_count].record.data[data_index].third_field_lower = third_field_lower;
+								level_trigger_group_table[level_trigger_group_count].record.data[data_index].third_field_upper = third_field_upper;
 
 								data_index++;
-								if (data_index > NG_TRIGGER_GROUP_DATA_SIZE) {
+								if (data_index >= NG_TRIGGER_GROUP_DATA_SIZE) {
 									NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: TriggerGroup size overflow! (level %u)", current_level);
 									return;
 								}
@@ -1281,34 +1310,34 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 						if (flags == 0xffff)
 							flags = 0;
 
-						level_global_triggers_table[level_global_trigger_count].global_trigger.flags = flags;
+						level_global_triggers_table[level_global_trigger_count].record.flags = flags;
 
 						unsigned short global_trigger_type = NG_READ_16(gfScriptFile, offset);
-						if (global_trigger_type != 0x0003 &&
-							global_trigger_type != 0x0004 &&
-							global_trigger_type != 0x0005 &&
-							global_trigger_type != 0x000a &&
-							global_trigger_type != 0x000b &&
-							global_trigger_type != 0x000d &&
-							global_trigger_type != 0x000e &&
-							global_trigger_type != 0x000f &&
-							global_trigger_type != 0x0012 &&
-							global_trigger_type != 0x0020 &&
-							global_trigger_type != 0x0021 &&
-							global_trigger_type != 0x0022 &&
-							global_trigger_type != 0x0027) {
+						if (global_trigger_type != GT_ENEMY_KILLED &&
+							global_trigger_type != GT_LARA_HP_LESS_THAN &&
+							global_trigger_type != GT_LARA_HP_HIGHER_THAN &&
+							global_trigger_type != GT_LARA_POISONED &&
+							global_trigger_type != GT_CONDITION_GROUP &&
+							global_trigger_type != GT_COLLIDE_ITEM &&
+							global_trigger_type != GT_COLLIDE_SLOT &&
+							global_trigger_type != GT_COLLIDE_CREATURE &&
+							global_trigger_type != GT_COLLIDE_STATIC_SLOT &&
+							global_trigger_type != GT_ALWAYS &&
+							global_trigger_type != GT_TRNG_G_TIMER_EQUALS &&
+							global_trigger_type != GT_TRNG_L_TIMER_EQUALS &&
+							global_trigger_type != GT_SELECTED_INVENTORY_ITEM) {
 							NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: Unimplemented GlobalTrigger type %u (level %u)", global_trigger_type, current_level);
 						}
-						level_global_triggers_table[level_global_trigger_count].global_trigger.type = global_trigger_type;
+						level_global_triggers_table[level_global_trigger_count].record.type = global_trigger_type;
 
-						level_global_triggers_table[level_global_trigger_count].global_trigger.parameter = NG_READ_32(gfScriptFile, offset);
-						level_global_triggers_table[level_global_trigger_count].global_trigger.condition_trigger_group = NG_READ_16(gfScriptFile, offset);
-						level_global_triggers_table[level_global_trigger_count].global_trigger.perform_trigger_group = NG_READ_16(gfScriptFile, offset);
+						level_global_triggers_table[level_global_trigger_count].record.parameter = NG_READ_32(gfScriptFile, offset);
+						level_global_triggers_table[level_global_trigger_count].record.condition_trigger_group = NG_READ_16(gfScriptFile, offset);
+						level_global_triggers_table[level_global_trigger_count].record.perform_trigger_group = NG_READ_16(gfScriptFile, offset);
 						// The block may end here on older version of TRNG
 						if (offset < command_block_end_position) {
-							level_global_triggers_table[level_global_trigger_count].global_trigger.on_false_trigger_group = NG_READ_16(gfScriptFile, offset);
+							level_global_triggers_table[level_global_trigger_count].record.on_false_trigger_group = NG_READ_16(gfScriptFile, offset);
 						} else {
-							level_global_triggers_table[level_global_trigger_count].global_trigger.on_false_trigger_group = 0xffff;
+							level_global_triggers_table[level_global_trigger_count].record.on_false_trigger_group = 0xffff;
 						}
 
 						level_global_trigger_count++;
@@ -1344,14 +1373,14 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 							break;
 						}
 
-						level_organizer_table[level_organizer_count].organizer.flags = flags;
-						level_organizer_table[level_organizer_count].organizer.parameters = NG_READ_16(gfScriptFile, offset);
-						if (!(level_organizer_table[level_organizer_count].organizer.parameters == 0 || level_organizer_table[level_organizer_count].organizer.parameters == -1)) {
+						level_organizer_table[level_organizer_count].record.flags = flags;
+						level_organizer_table[level_organizer_count].record.parameters = NG_READ_16(gfScriptFile, offset);
+						if (!(level_organizer_table[level_organizer_count].record.parameters == 0 || level_organizer_table[level_organizer_count].record.parameters == -1)) {
 							NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Organizer parameters are not supported! (level %u)", current_level);
 
 						}
 
-						level_organizer_table[level_organizer_count].organizer.appointment_count = 0;
+						level_organizer_table[level_organizer_count].record.appointment_count = 0;
 
 						unsigned int index = 0;
 						unsigned int current_time = 0;
@@ -1369,14 +1398,14 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 							}
 
 							current_time += relative_time;
-							level_organizer_table[level_organizer_count].organizer.appointments[index].time = current_time;
-							level_organizer_table[level_organizer_count].organizer.appointments[index].trigger_group = NG_READ_16(gfScriptFile, offset);
+							level_organizer_table[level_organizer_count].record.appointments[index].time = current_time;
+							level_organizer_table[level_organizer_count].record.appointments[index].trigger_group = NG_READ_16(gfScriptFile, offset);
 
 							index++;
 
-							level_organizer_table[level_organizer_count].organizer.appointment_count = index;
+							level_organizer_table[level_organizer_count].record.appointment_count = index;
 
-							if (index > NG_ORGANIZER_MAX_APPOINTMENTS) {
+							if (index >= NG_ORGANIZER_MAX_APPOINTMENTS) {
 								NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: Organizer appointment size overflow! (level %u)", current_level);
 								return;
 							}
@@ -1399,10 +1428,10 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 
 						unsigned char index = 0;
 						while (offset < data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short))) {
-							level_item_group_table[level_item_group_count].item_group.item_list[index] = NG_READ_16(gfScriptFile, offset);
+							level_item_group_table[level_item_group_count].record.item_list[index] = NG_READ_16(gfScriptFile, offset);
 
 							index++;
-							if (index > NG_ITEM_GROUP_MAX_LIST) {
+							if (index >= NG_ITEM_GROUP_MAX_LIST) {
 								NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: ItemGroup record size overflow! (level %u)", current_level);
 								return;
 							}
@@ -1423,7 +1452,7 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 						// Parameters (WIP)
 						unsigned int param_category = 0;
 						unsigned int plugin_id = 0;
-						if (get_game_mod_global_info().trng_version_major == 1 && get_game_mod_global_info().trng_version_minor < 3) {
+						if (!is_mod_trng_version_equal_or_greater_than_target(1, 3, 0, 0)) {
 							param_category = NG_READ_16(gfScriptFile, offset);
 						} else {
 							param_category = NG_READ_16(gfScriptFile, offset);
@@ -1625,20 +1654,32 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: TestPosition is not implemented! (level %u)", current_level);
 
 						unsigned short id = NG_READ_16(gfScriptFile, offset);
-						unsigned short flags = NG_READ_16(gfScriptFile, offset);
-						unsigned short moveable_slot = NG_READ_16(gfScriptFile, offset);
-						unsigned short x_distance_min = NG_READ_16(gfScriptFile, offset);
-						unsigned short x_distance_max = NG_READ_16(gfScriptFile, offset);
-						unsigned short y_distance_min = NG_READ_16(gfScriptFile, offset);
-						unsigned short y_distance_max = NG_READ_16(gfScriptFile, offset);
-						unsigned short z_distance_min = NG_READ_16(gfScriptFile, offset);
-						unsigned short z_distance_max = NG_READ_16(gfScriptFile, offset);
-						unsigned short h_orient_diff_min = NG_READ_16(gfScriptFile, offset);
-						unsigned short h_orient_diff_max = NG_READ_16(gfScriptFile, offset);
-						unsigned short v_orient_diff_min = NG_READ_16(gfScriptFile, offset);
-						unsigned short v_orient_diff_max = NG_READ_16(gfScriptFile, offset);
-						unsigned short r_orient_diff_min = NG_READ_16(gfScriptFile, offset);
-						unsigned short r_orient_diff_max = NG_READ_16(gfScriptFile, offset);
+
+						if (id > MAX_NG_TEST_POSITIONS) {
+							NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: Test position id is not valid! (level %u)", current_level);
+							return;
+							// Broken
+						}
+
+						level_test_position_table[level_test_position_count].record_id = id;
+
+						level_test_position_table[level_test_position_count].record.flags = NG_READ_16(gfScriptFile, offset);
+						level_test_position_table[level_test_position_count].record.moveable_slot = NG_READ_16(gfScriptFile, offset);
+						level_test_position_table[level_test_position_count].record.x_distance_min = NG_READ_16(gfScriptFile, offset);
+						level_test_position_table[level_test_position_count].record.x_distance_max = NG_READ_16(gfScriptFile, offset);
+						level_test_position_table[level_test_position_count].record.y_distance_min = NG_READ_16(gfScriptFile, offset);
+						level_test_position_table[level_test_position_count].record.y_distance_max = NG_READ_16(gfScriptFile, offset);
+						level_test_position_table[level_test_position_count].record.z_distance_min = NG_READ_16(gfScriptFile, offset);
+						level_test_position_table[level_test_position_count].record.z_distance_max = NG_READ_16(gfScriptFile, offset);
+
+						level_test_position_table[level_test_position_count].record.h_orient_diff_min = NG_READ_16(gfScriptFile, offset);
+						level_test_position_table[level_test_position_count].record.h_orient_diff_max = NG_READ_16(gfScriptFile, offset);
+						level_test_position_table[level_test_position_count].record.v_orient_diff_min = NG_READ_16(gfScriptFile, offset);
+						level_test_position_table[level_test_position_count].record.v_orient_diff_max = NG_READ_16(gfScriptFile, offset);
+						level_test_position_table[level_test_position_count].record.r_orient_diff_min = NG_READ_16(gfScriptFile, offset);
+						level_test_position_table[level_test_position_count].record.r_orient_diff_max = NG_READ_16(gfScriptFile, offset);
+
+						level_test_position_count++;
 						break;
 					}
 					case 0x20: {
@@ -1766,12 +1807,12 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 
 							NGLog(NG_LOG_TYPE_PRINT, "0x%04x, 0x%04x, 0x%04x", first_field, second_field, third_field);
 
-							level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].plugin_id = 0;
-							level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].first_field = first_field;
-							level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].second_field_lower = second_field;
-							level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].second_field_upper = 0;
-							level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].third_field_lower = third_field;
-							level_trigger_group_table[level_trigger_group_count].trigger_group.data[data_index].second_field_upper = 0;
+							level_trigger_group_table[level_trigger_group_count].record.data[data_index].plugin_id = 0;
+							level_trigger_group_table[level_trigger_group_count].record.data[data_index].first_field = first_field;
+							level_trigger_group_table[level_trigger_group_count].record.data[data_index].second_field_lower = second_field;
+							level_trigger_group_table[level_trigger_group_count].record.data[data_index].second_field_upper = 0;
+							level_trigger_group_table[level_trigger_group_count].record.data[data_index].third_field_lower = third_field;
+							level_trigger_group_table[level_trigger_group_count].record.data[data_index].third_field_upper = 0;
 
 							data_index++;
 							if (data_index > NG_TRIGGER_GROUP_DATA_SIZE) {
@@ -1802,11 +1843,15 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 				offset = command_block_end_position;
 			}
 			// Now save the tables
-			NGReallocateLevel(ng_levels[current_level], level_global_trigger_count, level_trigger_group_count, level_organizer_count, level_item_group_count);
-			memcpy(ng_levels[current_level].records->global_triggers_table, level_global_triggers_table, sizeof(NG_GLOBAL_TRIGGER_RECORD) * level_global_trigger_count);
+			NGReallocateLevel(ng_levels[current_level], level_global_trigger_count, level_trigger_group_count, level_organizer_count, level_item_group_count, level_animation_count, level_multi_env_condition_count, level_test_position_count);
+			
+			memcpy(ng_levels[current_level].records->global_trigger_table, level_global_triggers_table, sizeof(NG_GLOBAL_TRIGGER_RECORD) * level_global_trigger_count);
 			memcpy(ng_levels[current_level].records->trigger_group_table, level_trigger_group_table, sizeof(NG_TRIGGER_GROUP_RECORD) * level_trigger_group_count);
 			memcpy(ng_levels[current_level].records->organizer_table, level_organizer_table, sizeof(NG_ORGANIZER_RECORD) * level_organizer_count);
 			memcpy(ng_levels[current_level].records->item_group_table, level_item_group_table, sizeof(NG_ITEM_GROUP_RECORD) * level_item_group_count);
+			memcpy(ng_levels[current_level].records->animation_table, level_animation_table, sizeof(NG_ANIMATION_RECORD) * level_animation_count);
+			memcpy(ng_levels[current_level].records->multi_env_condition_table, level_multi_env_condition_table, sizeof(NG_MULTI_ENV_CONDITION_RECORD)* level_multi_env_condition_count);
+			memcpy(ng_levels[current_level].records->test_position_table, level_test_position_table, sizeof(NG_TEST_POSITION_RECORD) * level_test_position_count);
 
 			current_level++;
 		}
@@ -1816,6 +1861,9 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 		free(level_trigger_group_table);
 		free(level_organizer_table);
 		free(level_item_group_table);
+		free(level_animation_table);
+		free(level_multi_env_condition_table);
+		free(level_test_position_table);
 	}
 }
 

@@ -118,12 +118,16 @@ struct MOD_LEVEL_LARA_INFO {
 #define MAX_PLUGIN_COUNT 64
 #define MAX_PLUGIN_NAME_LEN 256
 
-struct MOD_GLOBAL_INFO {
-	// Default to latest known version.
+struct TRNG_ENGINE_VERSION {
 	unsigned char trng_version_major = 1;
 	unsigned char trng_version_minor = 3;
 	unsigned char trng_version_maintainence = 0;
 	unsigned char trng_version_build = 7;
+};
+
+struct MOD_GLOBAL_INFO {
+	// Default to latest known version.
+	TRNG_ENGINE_VERSION trng_engine_version;
 
 	// TRNG Stuff
 	bool trng_flipeffects_enabled = false; // TRNG (special TRNG flipeffects. Disable if conflicting with FURR)
@@ -225,3 +229,9 @@ extern void LoadGameModConfigFirstPass();
 extern void LoadGameModConfigSecondPass();
 
 extern void T4LevelSetup(int current_level);
+
+extern bool is_mod_trng_version_equal_or_greater_than_target(
+	unsigned char target_major_version,
+	unsigned char target_minor_version,
+	unsigned char target_maintainence_version,
+	unsigned char target_build_version);

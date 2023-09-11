@@ -6,6 +6,14 @@
 #define MAX_NG_LEVELS 64
 #define MAX_NG_PLUGINS 256
 
+#define NG_DEFINE_RECORD(CLASS_NAME) struct CLASS_NAME##_RECORD { \
+	unsigned short record_id = 0; \
+	CLASS_NAME record; \
+};
+
+#define NG_DEFINE_RECORD_DATA_ENTRY(CLASS_NAME, VAR_NAME) int VAR_NAME##_count = 0; \
+	CLASS_NAME##_RECORD* VAR_NAME##_table = NULL; \
+
 struct NG_PLUGIN {
 	int plugin_string_id = 0;
 	bool is_enabled = false;
@@ -102,11 +110,6 @@ struct NG_GLOBAL_TRIGGER {
 	unsigned short on_false_trigger_group = 0x00;
 };
 
-struct NG_GLOBAL_TRIGGER_RECORD {
-	unsigned short record_id = 0;
-	NG_GLOBAL_TRIGGER global_trigger;
-};
-
 struct NG_TRIGGER_GROUP_DATA {
 	unsigned short first_field = 0x00;
 	unsigned short plugin_id = 0;
@@ -124,11 +127,6 @@ struct NG_TRIGGER_GROUP {
 	bool oneshot_triggered = false;
 };
 
-struct NG_TRIGGER_GROUP_RECORD {
-	unsigned short record_id = 0;
-	NG_TRIGGER_GROUP trigger_group;
-};
-
 struct NG_ORGANIZER_APPOINTMENT {
 	unsigned int time = 0;
 	unsigned short trigger_group = 0;
@@ -142,30 +140,61 @@ struct NG_ORGANIZER {
 	NG_ORGANIZER_APPOINTMENT appointments[NG_ORGANIZER_MAX_APPOINTMENTS];
 };
 
-struct NG_ORGANIZER_RECORD {
-	unsigned short record_id = 0;
-	NG_ORGANIZER organizer;
-};
-
 #define NG_ITEM_GROUP_MAX_LIST 4096
 struct NG_ITEM_GROUP {
 	short item_list[NG_ITEM_GROUP_MAX_LIST];
 };
 
-struct NG_ITEM_GROUP_RECORD {
-	unsigned short record_id = 0;
-	NG_ITEM_GROUP item_group;
+#define NG_ANIMATION_CONDTION_MAX_SIZE 4096
+struct NG_ANIMATION {
+	unsigned short animation_index;
+	unsigned short key_1;
+	unsigned short key_2;
+	unsigned short fan_flags;
+	NG_MULTI_ENV_TRIPLET environment;
+	unsigned short state_or_animation_condition_count = 0;
+	short state_or_animation_condition_array[NG_ANIMATION_CONDTION_MAX_SIZE];
 };
 
+#define NG_MULTI_ENV_CONDITION_MAX_TRIPLETS 128
+struct NG_MULTI_ENV_CONDITION {
+	int env_condition_triplet_count = 0;
+	NG_MULTI_ENV_TRIPLET env_condition_triplet_array[NG_MULTI_ENV_CONDITION_MAX_TRIPLETS];
+};
+
+struct NG_TEST_POSITION {
+	unsigned short flags = 0;
+	unsigned short moveable_slot = 0;
+	unsigned short x_distance_min = 0;
+	unsigned short x_distance_max = 0;
+	unsigned short y_distance_min = 0;
+	unsigned short y_distance_max = 0;
+	unsigned short z_distance_min = 0;
+	unsigned short z_distance_max = 0;
+	unsigned short h_orient_diff_min = 0;
+	unsigned short h_orient_diff_max = 0;
+	unsigned short v_orient_diff_min = 0;
+	unsigned short v_orient_diff_max = 0;
+	unsigned short r_orient_diff_min = 0;
+	unsigned short r_orient_diff_max = 0;
+};
+
+NG_DEFINE_RECORD(NG_GLOBAL_TRIGGER);
+NG_DEFINE_RECORD(NG_TRIGGER_GROUP);
+NG_DEFINE_RECORD(NG_ORGANIZER);
+NG_DEFINE_RECORD(NG_ITEM_GROUP);
+NG_DEFINE_RECORD(NG_ANIMATION);
+NG_DEFINE_RECORD(NG_MULTI_ENV_CONDITION);
+NG_DEFINE_RECORD(NG_TEST_POSITION);
+
 struct NG_LEVEL_RECORD_DATA {
-	int global_trigger_count = 0;
-	NG_GLOBAL_TRIGGER_RECORD* global_triggers_table = NULL;
-	int trigger_group_count = 0;
-	NG_TRIGGER_GROUP_RECORD* trigger_group_table = NULL;
-	int organizer_count = 0;
-	NG_ORGANIZER_RECORD* organizer_table = NULL;
-	int item_group_count = 0;
-	NG_ITEM_GROUP_RECORD* item_group_table = NULL;
+	NG_DEFINE_RECORD_DATA_ENTRY(NG_GLOBAL_TRIGGER, global_trigger);
+	NG_DEFINE_RECORD_DATA_ENTRY(NG_TRIGGER_GROUP, trigger_group);
+	NG_DEFINE_RECORD_DATA_ENTRY(NG_ORGANIZER, organizer);
+	NG_DEFINE_RECORD_DATA_ENTRY(NG_ITEM_GROUP, item_group);
+	NG_DEFINE_RECORD_DATA_ENTRY(NG_ANIMATION, animation);
+	NG_DEFINE_RECORD_DATA_ENTRY(NG_MULTI_ENV_CONDITION, multi_env_condition);
+	NG_DEFINE_RECORD_DATA_ENTRY(NG_TEST_POSITION, test_position);
 };
 
 struct NG_MOVE_ITEM {
@@ -216,6 +245,9 @@ extern NG_GLOBAL_TRIGGER current_global_triggers[MAX_NG_GLOBAL_TRIGGERS];
 extern NG_TRIGGER_GROUP current_trigger_groups[MAX_NG_TRIGGER_GROUPS];
 extern NG_ORGANIZER current_organizers[MAX_NG_ORGANIZERS];
 extern NG_ITEM_GROUP current_item_groups[MAX_NG_ITEM_GROUPS];
+extern NG_ANIMATION current_animations[MAX_NG_ANIMATIONS];
+extern NG_MULTI_ENV_CONDITION current_multi_env_condition[MAX_NG_MULTI_ENV_CONDITIONS];
+extern NG_TEST_POSITION current_test_positions[MAX_NG_TEST_POSITIONS];
 
 #define MAX_NG_MOVE_ITEM_PARAMS 9999
 #define MAX_NG_BIG_NUMBER_PARAMS 9999

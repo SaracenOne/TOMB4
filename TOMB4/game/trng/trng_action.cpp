@@ -86,7 +86,7 @@ int NGActionTrigger(unsigned short param, unsigned short extra, short timer, boo
 	NGStoreBackupTriggerRoomAndIndex();
 
 	bool oneshot_triggered = false;
-	if (get_game_mod_global_info().trng_version_major == 1 && get_game_mod_global_info().trng_version_minor < 3) {
+	if (!is_mod_trng_version_equal_or_greater_than_target(1, 3, 0, 0)) {
 		oneshot_triggered = NGIsOneShotTriggeredForTile();
 	}
 

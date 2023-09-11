@@ -50,6 +50,9 @@
     <Filter Include="TOMB4\tomb4\tomb4plus">
       <UniqueIdentifier>{36728013-d7f2-4ae1-be78-51915b0f1405}</UniqueIdentifier>
     </Filter>
+    <Filter Include="TOMB4\game\trng\plugins\AkyVMix01">
+      <UniqueIdentifier>{560324ff-bf81-4722-b5d6-91952ebca544}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TOMB4\tomb4\pch.h">
@@ -451,6 +454,21 @@
     </ClInclude>
     <ClInclude Include="TOMB4\tomb4\tomb4plus\t4plus_weather.h">
       <Filter>TOMB4\tomb4\tomb4plus</Filter>
+    </ClInclude>
+    <ClInclude Include="TOMB4\game\trng\trng_plugin_interface.h">
+      <Filter>TOMB4\game\trng</Filter>
+    </ClInclude>
+    <ClInclude Include="TOMB4\game\trng\trng_animation.h">
+      <Filter>TOMB4\game\trng</Filter>
+    </ClInclude>
+    <ClInclude Include="TOMB4\game\trep\furr.h">
+      <Filter>TOMB4\game\trep</Filter>
+    </ClInclude>
+    <ClInclude Include="TOMB4\game\trng\trng_test_position.h">
+      <Filter>TOMB4\game\trng</Filter>
+    </ClInclude>
+    <ClInclude Include="TOMB4\game\trng\trng_env_condition.h">
+      <Filter>TOMB4\game\trng</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -855,6 +873,21 @@
     </ClCompile>
     <ClCompile Include="TOMB4\tomb4\tomb4plus\t4plus_weather.cpp">
       <Filter>TOMB4\tomb4\tomb4plus</Filter>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\trng\trng_plugin_interface.cpp">
+      <Filter>TOMB4\game\trng</Filter>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\trng\trng_animation.cpp">
+      <Filter>TOMB4\game\trng</Filter>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\trep\furr.cpp">
+      <Filter>TOMB4\game\trep</Filter>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\trng\trng_test_position.cpp">
+      <Filter>TOMB4\game\trng</Filter>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\trng\trng_env_condition.cpp">
+      <Filter>TOMB4\game\trng</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
