@@ -74,35 +74,43 @@ void NGTestAnimation(NG_ANIMATION *animation) {
 		}
 
 		if (is_valid) {
-			int result = TestEnvConditionTriplet(&animation->environment);
+			TestEnvConditionTripletResult result = TestEnvConditionTriplet(&animation->environment, animation->fan_flags & FAN_ALIGN_TO_ENV_POS);
 
-			if (result >= 0) {
+			if (result.is_valid) {
 				if (animation->fan_flags & FAN_SET_BUSY_HANDS) {
 					lara.gun_status = LG_HANDS_BUSY;
 				}
 
 				if (animation->fan_flags & FAN_ALIGN_TO_ENV_POS) {
-					ng_animation_target_item = result;
-					ng_animation_target_test_position = animation->environment.distance_for_env;
+					ng_animation_target_item = result.seek_item;
+					ng_animation_target_test_position = result.test_position_id;
 
-					NG_TEST_POSITION* test_position = &current_test_positions[ng_animation_target_test_position];
-					PHD_VECTOR target_position = NGCalculatePositionForTestPosition(test_position);
+					if (ng_animation_target_item >= 0 && ng_animation_target_test_position >= 0) {
+						NG_TEST_POSITION* test_position = &current_test_positions[ng_animation_target_test_position];
+						PHD_VECTOR target_position = NGCalculatePositionForTestPosition(test_position);
 
-					lara.GeneralPtr = 0;
+						lara.GeneralPtr = 0;
 
-					{
-						ITEM_INFO* item = &items[ng_animation_target_item];
-						if (!NGTestLaraDistance(&target_position, item, lara_item)) {
-							if (!NGMoveLara(false)) {
-								result = -1;
+						{
+							ITEM_INFO* item = &items[ng_animation_target_item];
+							if (!NGTestLaraDistance(&target_position, item, lara_item)) {
+								if (!NGMoveLara(false)) {
+									result.is_valid = false;
+								}
 							}
-						} else {
-							AlignLaraPosition(&target_position, item, lara_item);
+							else {
+								AlignLaraPosition(&target_position, item, lara_item);
+							}
 						}
+					} else {
+						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGTestAnimation: Not valid item or test position found to align to!");
 					}
 				}
 
-				if (result >= 0) {
+				if (result.is_valid) {
+					ng_animation_target_item = -1;
+					ng_animation_target_test_position = -1;
+
 					if (animation->fan_flags & FAN_PERFORM_TRIGGER_GROUP) {
 						NGTriggerGroupFunction(animation->animation_index, 0);
 					} else {

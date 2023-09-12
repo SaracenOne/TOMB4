@@ -557,9 +557,6 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 					}
 					case 0x0a: {
 						// Animation (WIP)
-
-						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Animation unimplemented! (level %u)", current_level);
-
 						if (level_animation_count >= MAX_NG_ANIMATIONS) {
 							NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: Animation overflow! (level %u)", current_level);
 							return;
@@ -718,8 +715,6 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 					}
 					case 0x13: {
 						// MultiEnvCondition (WIP)
-						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: MultiEnvCondition Unimplemented! (level %u)", current_level);
-
 						unsigned short id = NG_READ_16(gfScriptFile, offset);
 
 						if (id >= MAX_NG_MULTI_ENV_CONDITIONS) {
@@ -1647,8 +1642,6 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 					}
 					case 0x1e: {
 						// TestPosition (WIP)
-						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: TestPosition is not implemented! (level %u)", current_level);
-
 						unsigned short id = NG_READ_16(gfScriptFile, offset);
 
 						if (id > MAX_NG_TEST_POSITIONS) {

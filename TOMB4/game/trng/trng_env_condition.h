@@ -87,4 +87,10 @@ enum NGEnvironmentType {
 	ENV_POS_STRIP_1 = 0x8000,
 };
 
-int TestEnvConditionTriplet(NG_MULTI_ENV_TRIPLET* triplet);
+struct TestEnvConditionTripletResult {
+	bool is_valid = false;
+	int seek_item = -1;
+	int test_position_id = -1;
+};
+
+TestEnvConditionTripletResult TestEnvConditionTriplet(NG_MULTI_ENV_TRIPLET* triplet, bool set_alignment_variables);

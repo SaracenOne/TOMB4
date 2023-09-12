@@ -6,13 +6,25 @@
 #include "../control.h"
 #include "trng_test_position.h"
 
-int TestEnvConditionTriplet(NG_MULTI_ENV_TRIPLET* triplet) {
-	if (triplet->env_condition == 0xffff)
-		return 0;
+TestEnvConditionTripletResult TestEnvConditionTriplet(NG_MULTI_ENV_TRIPLET* triplet, bool set_alignment_variables) {
+	TestEnvConditionTripletResult result;
+
+	if (triplet->env_condition == 0xffff) {
+		result.is_valid = true;
+		result.seek_item = -1;
+		result.test_position_id = -1;
+
+		return result;
+	}
 
 	if (triplet->env_condition & ~(0xe07f + ENV_NON_TRUE + ENV_POS_HORTOGONAL)) {
 		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TestEnvConditionTriplet: unsupported mask features!", triplet->env_condition);
-		return -1;
+
+		result.is_valid = false;
+		result.seek_item = -1;
+		result.test_position_id = -1;
+
+		return result;
 	}
 
 	bool check_forward_strip = triplet->env_condition & ENV_POS_STRIP_1;
@@ -28,35 +40,71 @@ int TestEnvConditionTriplet(NG_MULTI_ENV_TRIPLET* triplet) {
 		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TestEnvConditionTriplet: hortogonal detection not yet supported!", triplet->env_condition);
 	}
 
-	int ret_val = 0;
-
 	unsigned int env_condition_switch_value = triplet->env_condition & 0x7f;
 	switch (env_condition_switch_value) {
 		case 0: {
-			ret_val = 0;
+			result.is_valid = true;
 			break;
 		}
 		case ENV_MULT_CONDITION: {
+			result.is_valid = true;
+
 			NG_MULTI_ENV_CONDITION* multi_env_cond = &current_multi_env_conditions[triplet->distance_for_env];
 			for (int i = 0; i < multi_env_cond->env_condition_triplet_count; i++) {
-				if (TestEnvConditionTriplet(&multi_env_cond->env_condition_triplet_array[i]) < 0) {
-					ret_val = -1;
+				TestEnvConditionTripletResult sub_result = TestEnvConditionTriplet(&multi_env_cond->env_condition_triplet_array[i], true);
+
+				if (!sub_result.is_valid) {
+					result.is_valid = false;
+					break;
+				} else {
+					if (set_alignment_variables) {
+						// This is probably incorrect. Investigate behaviour...
+						if (result.seek_item == -1) {
+							result.seek_item = sub_result.seek_item;
+						}
+						if (result.test_position_id == -1) {
+							result.test_position_id = sub_result.test_position_id;
+						}
+					}
+				}
+			}
+			break;
+		}
+		case ENV_MULT_OR_CONDITION: {
+			result.is_valid = false;
+
+			NG_MULTI_ENV_CONDITION* multi_env_cond = &current_multi_env_conditions[triplet->distance_for_env];
+			for (int i = 0; i < multi_env_cond->env_condition_triplet_count; i++) {
+				TestEnvConditionTripletResult sub_result = TestEnvConditionTriplet(&multi_env_cond->env_condition_triplet_array[i], true);
+
+				if (sub_result.is_valid) {
+					result.is_valid = true;
+				} else {
+					if (set_alignment_variables) {
+						// This is probably incorrect. Investigate behaviour...
+						if (result.seek_item == -1) {
+							result.seek_item = sub_result.seek_item;
+						}
+						if (result.test_position_id == -1) {
+							result.test_position_id = sub_result.test_position_id;
+						}
+					}
 				}
 			}
 			break;
 		}
 		case ENV_FREE_HANDS: {
 			if ((lara.gun_status == LG_NO_ARMS || lara.gun_status == LG_FLARE))
-				ret_val = 0;
+				result.is_valid = true;
 			else
-				ret_val = -1;
+				result.is_valid = false;
 
 			break;
 		}
 		case ENV_WALL_HOLE_IN_FRONT: {
 			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TestEnvConditionTriplet: ENV_WALL_HOLE_IN_FRONT is unimplemented!");
 
-			ret_val = 0;
+			result.is_valid = false;
 
 			break;
 		}
@@ -64,38 +112,38 @@ int TestEnvConditionTriplet(NG_MULTI_ENV_TRIPLET* triplet) {
 			ITEM_INFO *item = NULL;
 			short item_number;
 
-			ret_val = -1;
+			result.is_valid = false;
 			for (item_number = room[lara_item->room_number].item_number; item_number != NO_ITEM; item_number = item->next_item) {
 				item = &items[item_number];
+				int test_position_id = triplet->distance_for_env;
 
-				NG_TEST_POSITION &test_position = current_test_positions[triplet->distance_for_env];
+				NG_TEST_POSITION &test_position = current_test_positions[test_position_id];
 
 				if (NGTestLaraPosition(&test_position, item, lara_item) == true) {
-					ret_val = item_number;
+					result.is_valid = true;
+					result.seek_item = item_number;
+					result.test_position_id = test_position_id;
 				}
 			}
 			break;
 		}
 		case ENV_LARA_IN_MICRO_STRIP: {
 			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TestEnvConditionTriplet: ENV_LARA_IN_MICRO_STRIP is unimplemented!");
-			ret_val = 0;
+			result.is_valid = false;
 
 			break;
 		}
 		default: {
 			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TestEnvConditionTriplet: Unimplemented environment condition: %u!", env_condition_switch_value);
-			ret_val = -1;
+			result.is_valid = false;
 
 			break;
 		}
 	}
 
 	if (triplet->env_condition & ENV_NON_TRUE) {
-		if (ret_val < 0)
-			ret_val = 0;
-		else
-			ret_val = -1;
+		result.is_valid = !result.is_valid;
 	}
 
-	return ret_val;
+	return result;
 }

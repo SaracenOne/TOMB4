@@ -1018,7 +1018,7 @@ void NGSetupExtraState() {
 
 	// Animation
 	ng_animation_target_item = -1;
-	PHD_VECTOR ng_animation_target_position = { 0, 0, 0 };
+	ng_animation_target_test_position = -1;
 
 	// Timers
 	ng_global_timer = 0;
