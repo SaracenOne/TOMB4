@@ -102,7 +102,16 @@ void LaraUnderWater(ITEM_INFO* item, COLL_INFO* coll)
 	coll->slopes_are_pits = 0;
 	coll->lava_is_pit = 0;
 	coll->enable_spaz = 0;
+#ifdef FLYCHEAT_NOCLIP
+	// T4Plus: noclip
+	if (lara.water_status != LW_FLYCHEAT) {
+		coll->enable_baddie_push = 1;
+	} else {
+		coll->enable_baddie_push = 0;
+	}
+#else
 	coll->enable_baddie_push = 1;
+#endif
 
 	if (input & IN_LOOK && lara.look)
 		LookLeftRight();
