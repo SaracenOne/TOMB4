@@ -410,6 +410,13 @@ bool lara_toggle_infinite_air(unsigned char enabled, unsigned char _unused) {
 	return true;
 }
 
+// NGLE - 109
+bool global_trigger_enable_disable(unsigned char enable, unsigned char global_trigger_id) {
+	ng_global_trigger_states[global_trigger_id].is_disabled = enable > 0 ? false : true;
+
+	return true;
+}
+
 // NGLE - 115
 bool set_room_type(unsigned char room_number, unsigned char room_type) {
 	ROOM_INFO* r = &room[room_number];
@@ -1353,8 +1360,7 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 		}
 		case GLOBAL_TRIGGER_ENABLE_DISABLE: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "GLOBAL_TRIGGER_ENABLE_DISABLE unimplemented!");
-				return true;
+				return global_trigger_enable_disable(action_data_1, action_data_2);
 			}
 			break;
 		}
