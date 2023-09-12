@@ -1,5 +1,7 @@
 #pragma once
 
+#include "trng_script_parser.h"
+
 enum NGEnvironmentType {
 	ENV_NO_BLOCK_IN_FRONT = 0x0001,
 	ENV_HANG_WITH_FEET = 0x0002,
@@ -84,3 +86,5 @@ enum NGEnvironmentType {
 	ENV_POS_STRIP_2 = 0x4000,
 	ENV_POS_STRIP_1 = 0x8000,
 };
+
+int TestEnvConditionTriplet(NG_MULTI_ENV_TRIPLET* triplet);

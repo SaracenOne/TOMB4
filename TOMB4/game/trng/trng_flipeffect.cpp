@@ -257,8 +257,10 @@ bool stop_all_sound_samples(unsigned char unused_1, unsigned char unused_2) {
 bool force_lara_animation_0_255_of_slot_animation(unsigned char animation_index, unsigned char object_id) {
 	int animation_index_offset = objects[object_id].anim_index + animation_index;
 
-	lara_item->anim_number = animation_index_offset;
-	lara_item->frame_number = anims[animation_index_offset].frame_base;
+	if (lara_item->anim_number != animation_index_offset) {
+		lara_item->anim_number = animation_index_offset;
+		lara_item->frame_number = anims[animation_index_offset].frame_base;
+	}
 
 	return true;
 }
@@ -305,8 +307,10 @@ bool move_lara_to_lara_start_pos_in_x_way(unsigned char ocb, unsigned char telep
 bool force_lara_animation_256_512_of_slot_animation(unsigned char animation_index, unsigned char object_id) {
 	int animation_index_offset = objects[object_id].anim_index + animation_index + 256;
 
-	lara_item->anim_number = animation_index_offset;
-	lara_item->frame_number = anims[animation_index_offset].frame_base;
+	if (lara_item->anim_number != animation_index_offset) {
+		lara_item->anim_number = animation_index_offset;
+		lara_item->frame_number = anims[animation_index_offset].frame_base;
+	}
 
 	return true;
 }
@@ -321,21 +325,24 @@ bool remove_weapons_or_flares_from_laras_hands(unsigned char unused1, unsigned c
 // NGLE - 89
 bool damage_lara_life_by_percentage(unsigned char action_data_1, unsigned char unused2) {
 	const int MAX_LARA_HEALTH = 1000; // May need this to be customizable.
+	int new_hit_points = lara_item->hit_points;
 	if (action_data_1 <= 9) {
 		int health_multiple = (MAX_LARA_HEALTH / 1000);
-		lara_item->hit_points -= (int)(health_multiple * (action_data_1 + 1));
+		new_hit_points -= (int)(health_multiple * (action_data_1 + 1));
 	}
 	else if (action_data_1 <= 18) {
 		int health_multiple = (MAX_LARA_HEALTH / 100);
-		lara_item->hit_points -= (int)(health_multiple * (action_data_1 - 8));
+		new_hit_points -= (int)(health_multiple * (action_data_1 - 8));
 	}
 	else {
 		int health_multiple = (MAX_LARA_HEALTH / 10);
-		lara_item->hit_points -= (int)(health_multiple * (action_data_1 - 17));
+		new_hit_points -= (int)(health_multiple * (action_data_1 - 17));
 	}
 
-	if (lara_item->hit_points < 0)
-		lara_item->hit_points = 0;
+	if (new_hit_points < 0)
+		new_hit_points = 0;
+
+	lara_item->hit_points = new_hit_points;
 
 	return true;
 }
@@ -344,19 +351,22 @@ bool damage_lara_life_by_percentage(unsigned char action_data_1, unsigned char u
 bool recharge_lara_life_by_percentage(unsigned char action_data_1, unsigned char unused2) {
 	const int MAX_LARA_HEALTH = 1000; // May need this to be customizable.
 
+	int new_hit_points = lara_item->hit_points;
 	if (action_data_1 <= 9) {
 		int health_multiple = (MAX_LARA_HEALTH / 1000);
-		lara_item->hit_points += (int)(health_multiple * (action_data_1 + 1));
+		new_hit_points += (int)(health_multiple * (action_data_1 + 1));
 	} else if (action_data_1 <= 18) {
 		int health_multiple = (MAX_LARA_HEALTH / 100);
-		lara_item->hit_points += (int)(health_multiple * (action_data_1 - 8));
+		new_hit_points += (int)(health_multiple * (action_data_1 - 8));
 	} else {
 		int health_multiple = (MAX_LARA_HEALTH / 10);
-		lara_item->hit_points += (int)(health_multiple * (action_data_1 - 17));
+		new_hit_points += (int)(health_multiple * (action_data_1 - 17));
 	}
 
-	if (lara_item->hit_points > MAX_LARA_HEALTH)
-		lara_item->hit_points = MAX_LARA_HEALTH;
+	if (new_hit_points > MAX_LARA_HEALTH)
+		new_hit_points = MAX_LARA_HEALTH;
+
+	lara_item->hit_points = new_hit_points;
 
 	return true;
 }

@@ -68,6 +68,9 @@ enum NGTimerPosition {
 	NG_TIMER_POSITION_DOWN_RIGHT_BARS,
 };
 
+extern int ng_animation_target_item;
+extern int ng_animation_target_test_position;
+
 extern int ng_global_timer;
 extern char ng_global_timer_frame_increment;
 extern NGTimerPosition ng_global_timer_position;

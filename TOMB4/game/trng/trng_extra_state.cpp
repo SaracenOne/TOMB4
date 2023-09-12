@@ -66,6 +66,9 @@ void NGResetItemExtraData(int item_number) {
 	}
 }
 
+int ng_animation_target_item = -1;
+int ng_animation_target_test_position = -1;
+
 NG_GLOBAL_TRIGGER_STATE ng_global_trigger_states[MAX_NG_GLOBAL_TRIGGERS];
 NG_TRIGGER_GROUP_STATE ng_trigger_group_states[MAX_NG_TRIGGER_GROUPS];
 NG_ORGANIZER_STATE ng_organizer_states[MAX_NG_ORGANIZERS];
@@ -646,10 +649,11 @@ bool NGProcessGlobalTriggers(int inventory_object_id) {
 }
 
 void NGFrameStartUpdate() {
+	NGProcessAnimations();
+
 	NGProcessGlobalTriggers(NO_ITEM);
 	NGProcessTriggerGroups();
 	NGProcessOrganizers();
-	NGProcessAnimations();
 
 	// If a timer has reached zero, reset its incrementation value
 	if (ng_local_timer <= 0)
@@ -1011,6 +1015,10 @@ void NGSetupExtraState() {
 
 	ng_draw_item_number = NO_ITEM;
 	ng_lara_infinite_air = false;
+
+	// Animation
+	ng_animation_target_item = -1;
+	PHD_VECTOR ng_animation_target_position = { 0, 0, 0 };
 
 	// Timers
 	ng_global_timer = 0;

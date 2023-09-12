@@ -17,6 +17,9 @@ NG_GLOBAL_TRIGGER current_global_triggers[MAX_NG_GLOBAL_TRIGGERS];
 NG_TRIGGER_GROUP current_trigger_groups[MAX_NG_TRIGGER_GROUPS];
 NG_ORGANIZER current_organizers[MAX_NG_ORGANIZERS];
 NG_ITEM_GROUP current_item_groups[MAX_NG_ITEM_GROUPS];
+NG_ANIMATION current_animations[MAX_NG_ANIMATIONS];
+NG_MULTI_ENV_CONDITION current_multi_env_conditions[MAX_NG_MULTI_ENV_CONDITIONS];
+NG_TEST_POSITION current_test_positions[MAX_NG_TEST_POSITIONS];
 
 #define NG_READ_8(scr_buffer, scr_offset) scr_buffer[scr_offset]; \
 offset += sizeof(char)
@@ -144,34 +147,28 @@ void NGScriptCleanup() {
 	}
 }
 
+#define NG_LOAD_RECORD_TABLE(record_name_lowercase, record_name_uppercase) for (int i = 0; i < ng_levels[level].records->record_name_lowercase##_count; i++) { \
+unsigned int id = ng_levels[level].records->record_name_lowercase##_table[i].record_id; \
+memcpy(&current_##record_name_lowercase##s[id], &ng_levels[level].records->record_name_lowercase##_table[i].record, sizeof(NG_##record_name_uppercase)); \
+}
+
 void NGLoadTablesForLevel(unsigned int level) {
 	memset(&current_global_triggers, 0x00, sizeof(NG_GLOBAL_TRIGGER)* MAX_NG_GLOBAL_TRIGGERS);
 	memset(&current_trigger_groups, 0x00, sizeof(NG_TRIGGER_GROUP)* MAX_NG_TRIGGER_GROUPS);
 	memset(&current_organizers, 0x00, sizeof(NG_ORGANIZER)* MAX_NG_ORGANIZERS);
 	memset(&current_item_groups, 0x00, sizeof(NG_ITEM_GROUP)* MAX_NG_ITEM_GROUPS);
+	memset(&current_animations, 0x00, sizeof(NG_ANIMATION) * MAX_NG_ANIMATIONS);
+	memset(&current_multi_env_conditions, 0x00, sizeof(NG_MULTI_ENV_CONDITION) * MAX_NG_MULTI_ENV_CONDITIONS);
+	memset(&current_test_positions, 0x00, sizeof(NG_TEST_POSITION) * MAX_NG_TEST_POSITIONS);
 
 	if (ng_levels[level].records) {
-		for (int i = 0; i < ng_levels[level].records->global_trigger_count; i++) {
-			unsigned int id = ng_levels[level].records->global_trigger_table[i].record_id;
-
-			memcpy(&current_global_triggers[id], &ng_levels[level].records->global_trigger_table[i].record, sizeof(NG_GLOBAL_TRIGGER));
-		}
-		for (int i = 0; i < ng_levels[level].records->trigger_group_count; i++) {
-			unsigned int id = ng_levels[level].records->trigger_group_table[i].record_id;
-
-			memcpy(&current_trigger_groups[id], &ng_levels[level].records->trigger_group_table[i].record, sizeof(NG_TRIGGER_GROUP));
-			current_trigger_groups[id].oneshot_triggered = false;
-		}
-		for (int i = 0; i < ng_levels[level].records->organizer_count; i++) {
-			unsigned int id = ng_levels[level].records->organizer_table[i].record_id;
-
-			memcpy(&current_organizers[id], &ng_levels[level].records->organizer_table[i].record, sizeof(NG_ORGANIZER));
-		}
-		for (int i = 0; i < ng_levels[level].records->item_group_count; i++) {
-			unsigned int id = ng_levels[level].records->item_group_table[i].record_id;
-
-			memcpy(&current_item_groups[id], &ng_levels[level].records->item_group_table[i].record, sizeof(NG_ITEM_GROUP));
-		}
+		NG_LOAD_RECORD_TABLE(global_trigger, GLOBAL_TRIGGER)
+		NG_LOAD_RECORD_TABLE(trigger_group, TRIGGER_GROUP);
+		NG_LOAD_RECORD_TABLE(organizer, ORGANIZER);
+		NG_LOAD_RECORD_TABLE(item_group, ITEM_GROUP);
+		NG_LOAD_RECORD_TABLE(animation, ANIMATION);
+		NG_LOAD_RECORD_TABLE(multi_env_condition, MULTI_ENV_CONDITION);
+		NG_LOAD_RECORD_TABLE(test_position, TEST_POSITION);
 	}
 }
 

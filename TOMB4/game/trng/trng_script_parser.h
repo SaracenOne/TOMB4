@@ -165,18 +165,18 @@ struct NG_MULTI_ENV_CONDITION {
 struct NG_TEST_POSITION {
 	unsigned short flags = 0;
 	unsigned short moveable_slot = 0;
-	unsigned short x_distance_min = 0;
-	unsigned short x_distance_max = 0;
-	unsigned short y_distance_min = 0;
-	unsigned short y_distance_max = 0;
-	unsigned short z_distance_min = 0;
-	unsigned short z_distance_max = 0;
-	unsigned short h_orient_diff_min = 0;
-	unsigned short h_orient_diff_max = 0;
-	unsigned short v_orient_diff_min = 0;
-	unsigned short v_orient_diff_max = 0;
-	unsigned short r_orient_diff_min = 0;
-	unsigned short r_orient_diff_max = 0;
+	short x_distance_min = 0;
+	short x_distance_max = 0;
+	short y_distance_min = 0;
+	short y_distance_max = 0;
+	short z_distance_min = 0;
+	short z_distance_max = 0;
+	short h_orient_diff_min = 0;
+	short h_orient_diff_max = 0;
+	short v_orient_diff_min = 0;
+	short v_orient_diff_max = 0;
+	short r_orient_diff_min = 0;
+	short r_orient_diff_max = 0;
 };
 
 NG_DEFINE_RECORD(NG_GLOBAL_TRIGGER);
@@ -246,7 +246,7 @@ extern NG_TRIGGER_GROUP current_trigger_groups[MAX_NG_TRIGGER_GROUPS];
 extern NG_ORGANIZER current_organizers[MAX_NG_ORGANIZERS];
 extern NG_ITEM_GROUP current_item_groups[MAX_NG_ITEM_GROUPS];
 extern NG_ANIMATION current_animations[MAX_NG_ANIMATIONS];
-extern NG_MULTI_ENV_CONDITION current_multi_env_condition[MAX_NG_MULTI_ENV_CONDITIONS];
+extern NG_MULTI_ENV_CONDITION current_multi_env_conditions[MAX_NG_MULTI_ENV_CONDITIONS];
 extern NG_TEST_POSITION current_test_positions[MAX_NG_TEST_POSITIONS];
 
 #define MAX_NG_MOVE_ITEM_PARAMS 9999
