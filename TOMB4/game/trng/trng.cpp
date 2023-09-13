@@ -13,6 +13,7 @@
 
 #include "../../tomb4/mod_config.h"
 #include "../../specific/file.h"
+#include "../../specific/3dmath.h"
 
 bool ngle_footer_found = false;
 bool is_ngle_level = false;
@@ -191,6 +192,20 @@ void NGMoveItemByUnits(unsigned short item_id, NG_DIRECTIONS direction, unsigned
 	}
 }
 
+// Move the item in an angle by the number of units
+void NGMoveItemHorizontalByUnits(unsigned short item_id, short angle, unsigned int units) {
+	int c = (int)units * phd_cos(angle) >> W2V_SHIFT;
+	int s = (int)units * phd_sin(angle) >> W2V_SHIFT;
+
+	items[item_id].pos.x_pos += s;
+	items[item_id].pos.z_pos += c;
+}
+
+// Move the item up or down by the number of units
+void NGMoveItemVerticalByUnits(unsigned short item_id, unsigned int units) {
+	items[item_id].pos.y_pos += units;
+}
+
 void NGRotateItemY(unsigned short item_id, short rotation) {
 	items[item_id].pos.y_rot += rotation;
 }
@@ -205,27 +220,27 @@ void NGFrameFinish() {
 }
 
 bool NGUseNGConditionals() {
-	MOD_GLOBAL_INFO global_info = get_game_mod_global_info();
+	MOD_GLOBAL_INFO *global_info = get_game_mod_global_info();
 
-	return global_info.trng_conditionals_enabled && ngle_footer_found;
+	return global_info->trng_conditionals_enabled && ngle_footer_found;
 }
 
 bool NGUseNGFlipEffects() {
-	MOD_GLOBAL_INFO global_info = get_game_mod_global_info();
+	MOD_GLOBAL_INFO *global_info = get_game_mod_global_info();
 
-	return global_info.trng_flipeffects_enabled && ngle_footer_found;
+	return global_info->trng_flipeffects_enabled && ngle_footer_found;
 }
 
 bool NGUseNGActions() {
-	MOD_GLOBAL_INFO global_info = get_game_mod_global_info();
+	MOD_GLOBAL_INFO *global_info = get_game_mod_global_info();
 
-	return global_info.trng_actions_enabled && ngle_footer_found;
+	return global_info->trng_actions_enabled && ngle_footer_found;
 }
 
 bool NGUseNGAnimCommands() {
-	MOD_GLOBAL_INFO global_info = get_game_mod_global_info();
+	MOD_GLOBAL_INFO *global_info = get_game_mod_global_info();
 
-	return global_info.trng_ng_anim_commands_enabled && ngle_footer_found;
+	return global_info->trng_ng_anim_commands_enabled && ngle_footer_found;
 }
 
 int NGFindIndexForLaraStartPosWithMatchingOCB(unsigned int ocb) {

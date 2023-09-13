@@ -50,18 +50,14 @@ void TemplarControl(short item_number)
 
 	if ((!anim || anim == 1 || anim == 11 || anim == 12) && (GetRandomControl() & 1) != 0)
 	{
-		MOD_LEVEL_CREATURE_INFO creature_info = get_game_mod_level_creature_info(gfCurrentLevel);
+		MOD_LEVEL_CREATURE_INFO *creature_info = get_game_mod_level_creature_info(gfCurrentLevel);
 
-		if (!creature_info.remove_knights_templar_sparks) {
+		if (!creature_info->remove_knights_templar_sparks) {
 			pos.x = 0;
 			pos.y = 48;
 			pos.z = 448;
 			GetJointAbsPosition(item, &pos, 10);
 			TriggerFlareSparks(pos.x, pos.y, pos.z, (GetRandomControl() & 0x1FF) - 256, -128 - (GetRandomControl() & 0x7F), (GetRandomControl() & 0x1FF) - 256, 0);
-		} else {
-			GetRandomControl();
-			GetRandomControl();
-			GetRandomControl();
 		}
 	}
 

@@ -1934,7 +1934,7 @@ void ControlRollingBall(short item_number)
 	short room_number, velnotadjusted;
 	long h, fx, fz, fh, fhf, bz, bh, bhf, rx, rh, rhf, lx, lh, lhf;
 
-	MOD_GLOBAL_INFO global_info = get_game_mod_global_info();
+	MOD_GLOBAL_INFO *global_info = get_game_mod_global_info();
 
 	item = &items[item_number];
 
@@ -1955,7 +1955,7 @@ void ControlRollingBall(short item_number)
 			fz = phd_sqrt(SQUARE(camera.pos.x - item->pos.x_pos) + SQUARE(camera.pos.y - item->pos.y_pos) + SQUARE(camera.pos.z - item->pos.z_pos));
 
 			// NGLE: This flag silences the RollingBall.
-			if (!(item->trigger_flags & 0x01) || !global_info.trng_rollingball_extended_ocb) {
+			if (!(item->trigger_flags & 0x01) || !global_info->trng_rollingball_extended_ocb) {
 				if (fz < 0x4000)
 					camera.bounce = -(((0x4000 - fz) * abs(item->fallspeed)) >> W2V_SHIFT);
 
@@ -2143,7 +2143,7 @@ void ControlRollingBall(short item_number)
 	TestTriggers(trigger_data, 1, 0, trigger_index_room, trigger_index_floor);
 
 	// NGLE: can activate regular triggers with this OCB code.
-	if (global_info.trng_rollingball_extended_ocb) {
+	if (global_info->trng_rollingball_extended_ocb) {
 		if (item->trigger_flags & 0x02 || item->trigger_flags & 0x10) {
 			short valid_rooms[MAX_ROLLING_BALL_VALID_ROOMS];
 			int valid_room_count = GetRollingBallRooms(item, valid_rooms);
@@ -2178,8 +2178,8 @@ void RollingBallPush(short item_number, ITEM_INFO* l) {
 	ITEM_INFO* item;
 	item = &items[item_number];
 
-	MOD_GLOBAL_INFO global_info = get_game_mod_global_info();
-	if (global_info.trng_rollingball_extended_ocb) {
+	MOD_GLOBAL_INFO *global_info = get_game_mod_global_info();
+	if (global_info->trng_rollingball_extended_ocb) {
 		if (lara.GeneralPtr == item_number) {
 			if (l->anim_number == ANIM_BLOCKSWITCH) {
 				short quadrant = ushort(l->pos.y_rot + 0x2000) / 0x4000;
@@ -2326,7 +2326,7 @@ void DartsControl(short item_number)
 	{
 		lara_item->hit_points -= 25;
 		lara_item->hit_status = 1;
-		if (get_game_mod_level_misc_info(gfCurrentLevel).darts_poison_fix) {
+		if (get_game_mod_level_misc_info(gfCurrentLevel)->darts_poison_fix) {
 			lara.dpoisoned += 160;
 		} else {
 			lara.poisoned += 160;

@@ -266,13 +266,13 @@ void AhmetControl(short item_number)
 	angle = 0;
 	head = 0;
 
-	MOD_LEVEL_CREATURE_INFO creature_info = get_game_mod_level_creature_info(gfCurrentLevel);
+	MOD_LEVEL_CREATURE_INFO *creature_info = get_game_mod_level_creature_info(gfCurrentLevel);
 
 	if (item->hit_points <= 0)
 	{
 		if (item->current_anim_state == 7)
 		{
-			if (!creature_info.remove_ahmet_death_loop) {
+			if (!creature_info->remove_ahmet_death_loop) {
 				if (item->frame_number == anims[item->anim_number].frame_end)
 				{
 					item->frame_number = anims[item->anim_number].frame_end - 1;
@@ -288,7 +288,7 @@ void AhmetControl(short item_number)
 			lara.spaz_effect_count = item_number;
 		}
 
-		if (!creature_info.remove_ahmet_death_flames) {
+		if (!creature_info->remove_ahmet_death_flames) {
 			ExplodeAhmet(item);
 		}
 	}
@@ -475,7 +475,7 @@ void AhmetControl(short item_number)
 	room_number = item->room_number;
 	floor = GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
 	GetHeight(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
-	if (!creature_info.disable_ahmet_heavy_trigger)
+	if (!creature_info->disable_ahmet_heavy_trigger)
 		TestTriggers(trigger_data, 1, 0, trigger_index_room, trigger_index_floor);
 	CreatureAnimation(item_number, angle, 0);
 }

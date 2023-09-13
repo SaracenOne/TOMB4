@@ -652,7 +652,7 @@ void ProcessMeshData(long num_meshes)
 	last_mesh_ptr = 0;
 	mesh = (MESH_DATA*)num_meshes;
 
-	bool hack_allow_meshes_with_exactly_256_vertices = get_game_mod_global_info().trng_hack_allow_meshes_with_exactly_256_vertices;
+	bool hack_allow_meshes_with_exactly_256_vertices = get_game_mod_global_info()->trng_hack_allow_meshes_with_exactly_256_vertices;
 
 	for (int i = 0; i < num_meshes; i++)
 	{

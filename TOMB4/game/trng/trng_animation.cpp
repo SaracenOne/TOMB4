@@ -12,6 +12,7 @@
 #include "../collide.h"
 #include "../lara_states.h"
 #include "../../specific/3dmath.h"
+#include "../../tomb4/mod_config.h"
 
 #define NG_ANIM_TEST_INPUT(animation_flag, input_flag, return_variable) \
 if (animation->key_1 & animation_flag) { \
@@ -82,6 +83,10 @@ void NGTestAnimation(NG_ANIMATION *animation) {
 				}
 
 				if (animation->fan_flags & FAN_ALIGN_TO_ENV_POS) {
+					if (!is_mod_trng_version_equal_or_greater_than_target(1, 1, 9, 8)) {
+						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGTestAnimation: unknown behaviour for FAN_ALIGN_TO_ENV_POS in current engine version!");
+					}
+
 					ng_animation_target_item = result.seek_item;
 					ng_animation_target_test_position = result.test_position_id;
 

@@ -220,7 +220,7 @@ static long JeepCheckGetOut()
 {
 	if (lara_item->current_anim_state == 10 && lara_item->frame_number == anims[lara_item->anim_number].frame_end)
 	{
-		MOD_LEVEL_AUDIO_INFO mod_audio_info = get_game_mod_level_audio_info(gfCurrentLevel);
+		MOD_LEVEL_AUDIO_INFO *mod_audio_info = get_game_mod_level_audio_info(gfCurrentLevel);
 
 		lara_item->pos.y_rot += 0x4000;
 		lara_item->anim_number = ANIM_STOP;
@@ -233,8 +233,8 @@ static long JeepCheckGetOut()
 		lara_item->pos.z_rot = 0;
 		lara.vehicle = NO_ITEM;
 		lara.gun_status = LG_NO_ARMS;
-		if (mod_audio_info.outside_jeep_track >= 0) {
-			CurrentAtmosphere = (uchar)mod_audio_info.outside_jeep_track;
+		if (mod_audio_info->outside_jeep_track >= 0) {
+			CurrentAtmosphere = (uchar)mod_audio_info->outside_jeep_track;
 			IsAtmospherePlaying = 1;
 			S_CDPlay(CurrentAtmosphere, 1);
 		}
@@ -366,7 +366,7 @@ void JeepCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 		else
 			l->anim_number = objects[VEHICLE_EXTRA].anim_index + 18;
 
-		MOD_LEVEL_AUDIO_INFO mod_audio_info = get_game_mod_level_audio_info(gfCurrentLevel);
+		MOD_LEVEL_AUDIO_INFO *mod_audio_info = get_game_mod_level_audio_info(gfCurrentLevel);
 
 		l->current_anim_state = 9;
 		l->goal_anim_state = 9;
@@ -386,8 +386,8 @@ void JeepCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 		jeep->unused1 = 0;
 		jeep->gear = 0;
 		item->flags |= IFL_TRIGGERED;
-		if (mod_audio_info.inside_jeep_track >= 0) {
-			CurrentAtmosphere = (uchar)mod_audio_info.inside_jeep_track;
+		if (mod_audio_info->inside_jeep_track >= 0) {
+			CurrentAtmosphere = (uchar)mod_audio_info->inside_jeep_track;
 			IsAtmospherePlaying = 1;
 			S_CDPlay(CurrentAtmosphere, 1);
 		}

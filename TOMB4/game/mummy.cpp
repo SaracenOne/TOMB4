@@ -65,9 +65,9 @@ void MummyControl(short item_number)
 
 	if (item->hit_status && info.distance < 0x900000)
 	{
-		MOD_LEVEL_CREATURE_INFO creature_info = get_game_mod_level_creature_info(gfCurrentLevel);
+		MOD_LEVEL_CREATURE_INFO *creature_info = get_game_mod_level_creature_info(gfCurrentLevel);
 
-		if (!creature_info.remove_mummy_stun_animations) {
+		if (!creature_info->remove_mummy_stun_animations) {
 			if (item->current_anim_state != 7 && item->current_anim_state != 5 && item->current_anim_state != 8)
 			{
 				if (!(GetRandomControl() & 3) && (lara.gun_type == WEAPON_SHOTGUN || lara.gun_type == WEAPON_GRENADE || lara.gun_type == WEAPON_REVOLVER))

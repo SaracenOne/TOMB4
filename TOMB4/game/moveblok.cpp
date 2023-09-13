@@ -78,13 +78,13 @@ void InitialiseMovingBlock(short item_number)
 	item = &items[item_number];
 	ClearMovableBlockSplitters(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number);
 
-	MOD_GLOBAL_INFO global_info = get_game_mod_global_info();
+	MOD_GLOBAL_INFO *global_info = get_game_mod_global_info();
 	// TRNG
 	int climbable_block_height = 0;
-	if (global_info.trng_pushable_extended_ocb && item->trigger_flags & 0x40) {
+	if (global_info->trng_pushable_extended_ocb && item->trigger_flags & 0x40) {
 		climbable_block_height = item->trigger_flags & 0xf;
 	// TREP
-	} else if (global_info.trep_pushable_extended_ocb) {
+	} else if (global_info->trep_pushable_extended_ocb) {
 		climbable_block_height = (item->trigger_flags & 0xf00) >> 8;
 	}
 
@@ -105,9 +105,9 @@ static long TestBlockPush(ITEM_INFO* item, long height, ushort quadrant, bool ca
 	short room_number;
 
 	// TRNG
-	MOD_GLOBAL_INFO global_info = get_game_mod_global_info();
+	MOD_GLOBAL_INFO *global_info = get_game_mod_global_info();
 
-	if (global_info.trng_pushable_extended_ocb && item->trigger_flags & 0x40) {
+	if (global_info->trng_pushable_extended_ocb && item->trigger_flags & 0x40) {
 		if (item->trigger_flags & 0x100) { // TRNG: Pushing disabled
 			return 0;
 		}
@@ -209,9 +209,9 @@ static long TestBlockPull(ITEM_INFO* item, long height, ushort quadrant)
 	short room_number;
 
 	// TRNG
-	MOD_GLOBAL_INFO global_info = get_game_mod_global_info();
+	MOD_GLOBAL_INFO *global_info = get_game_mod_global_info();
 
-	if (global_info.trng_pushable_extended_ocb && item->trigger_flags & 0x40) {
+	if (global_info->trng_pushable_extended_ocb && item->trigger_flags & 0x40) {
 		if (item->trigger_flags & 0x80) { // TRNG: Pulling disabled
 			return 0;
 		}
@@ -357,13 +357,13 @@ void MovableBlock(short item_number)
 
 	item = &items[item_number];
 
-	MOD_GLOBAL_INFO global_info = get_game_mod_global_info();
+	MOD_GLOBAL_INFO *global_info = get_game_mod_global_info();
 	// TRNG
 	int climbable_block_height = 0;
-	if (global_info.trng_pushable_extended_ocb && item->trigger_flags & 0x40) {
+	if (global_info->trng_pushable_extended_ocb && item->trigger_flags & 0x40) {
 		climbable_block_height = item->trigger_flags & 0xf;
 	// TREP
-	} else if (global_info.trep_pushable_extended_ocb) {
+	} else if (global_info->trep_pushable_extended_ocb) {
 		climbable_block_height = (item->trigger_flags & 0xf00) >> 8;
 	}
 
@@ -435,9 +435,9 @@ void MovableBlock(short item_number)
 			if (input & IN_ACTION)
 			{
 				// TRNG
-				MOD_GLOBAL_INFO global_info = get_game_mod_global_info();
+				MOD_GLOBAL_INFO *global_info = get_game_mod_global_info();
 				bool can_push_over_ledges = false;
-				if (global_info.trng_pushable_extended_ocb && item->trigger_flags & 0x40) {
+				if (global_info->trng_pushable_extended_ocb && item->trigger_flags & 0x40) {
 					if (!(item->trigger_flags & 0x100)) { // TRNG: Pushing disabled
 						can_push_over_ledges = item->trigger_flags & 0x20;
 					}
@@ -560,14 +560,14 @@ void MovableBlockCollision(short item_number, ITEM_INFO* laraitem, COLL_INFO* co
 
 	item = &items[item_number];
 
-	MOD_GLOBAL_INFO global_info = get_game_mod_global_info();
+	MOD_GLOBAL_INFO *global_info = get_game_mod_global_info();
 
 	// TRNG
 	int climbable_block_height = 0;
-	if (global_info.trng_pushable_extended_ocb && item->trigger_flags & 0x40) {
+	if (global_info->trng_pushable_extended_ocb && item->trigger_flags & 0x40) {
 		climbable_block_height = item->trigger_flags & 0xf;
 	// TREP
-	} else if (global_info.trep_pushable_extended_ocb) {
+	} else if (global_info->trep_pushable_extended_ocb) {
 		climbable_block_height = (item->trigger_flags & 0xf00) >> 8;
 	}
 
@@ -592,7 +592,7 @@ void MovableBlockCollision(short item_number, ITEM_INFO* laraitem, COLL_INFO* co
 		if (room_number == item->room_number)
 		{
 			// TRNG - disable movement in certain directions
-			if (global_info.trng_pushable_extended_ocb && item->trigger_flags & 0x40) {
+			if (global_info->trng_pushable_extended_ocb && item->trigger_flags & 0x40) {
 				quadrant = (ushort)(laraitem->pos.y_rot + 8192) >> 14;
 				if (quadrant == EAST || quadrant == WEST) {
 					if (item->trigger_flags & 0x400) { // TRNG: East and West direction disabled
@@ -674,9 +674,9 @@ void MovableBlockCollision(short item_number, ITEM_INFO* laraitem, COLL_INFO* co
 		if (input & IN_FORWARD)
 		{
 			// TRNG
-			MOD_GLOBAL_INFO global_info = get_game_mod_global_info();
+			MOD_GLOBAL_INFO *global_info = get_game_mod_global_info();
 			bool can_push_over_ledges = false;
-			if (global_info.trng_pushable_extended_ocb && item->trigger_flags & 0x40) {
+			if (global_info->trng_pushable_extended_ocb && item->trigger_flags & 0x40) {
 				if (!(item->trigger_flags & 0x100)) { // TRNG: Pushing disabled
 					can_push_over_ledges = item->trigger_flags & 0x20;
 				}

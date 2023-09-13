@@ -179,23 +179,26 @@ void NGSetupFlareCustomization(int current_level,
 	unsigned char flare_light_g,
 	unsigned char flare_light_b,
 	unsigned char flare_light_intensity) {
+
+	MOD_LEVEL_FLARE_INFO* flare_info = get_game_mod_level_flare_info(current_level);
+
 	if (flare_light_r != 0xff && flare_light_g != 0xff && flare_light_b != 0xff) {
-		get_game_mod_level_flare_info(current_level).light_color_r = flare_light_r;
-		get_game_mod_level_flare_info(current_level).light_color_g = flare_light_g;
-		get_game_mod_level_flare_info(current_level).light_color_b = flare_light_b;
+		flare_info->light_color_r = flare_light_r;
+		flare_info->light_color_g = flare_light_g;
+		flare_info->light_color_b = flare_light_b;
 	}
 	if (flare_light_intensity != 0xff)
-		get_game_mod_level_flare_info(current_level).light_intensity = flare_light_intensity;
+		flare_info->light_intensity = flare_light_intensity;
 	if (flare_lifetime_in_seconds != 0xffff)
-		get_game_mod_level_flare_info(current_level).flare_lifetime_in_ticks = flare_lifetime_in_seconds * 30;
+		flare_info->flare_lifetime_in_ticks = flare_lifetime_in_seconds * 30;
 	if (flare_flags != 0xffff) {
-		get_game_mod_level_flare_info(current_level).has_sparks = flare_flags & 0x0001;
-		get_game_mod_level_flare_info(current_level).has_fire = flare_flags & 0x0002; // Unsupported
-		if (get_game_mod_level_flare_info(current_level).has_fire)
+		flare_info->has_sparks = flare_flags & 0x0001;
+		flare_info->has_fire = flare_flags & 0x0002; // Unsupported
+		if (flare_info->has_fire)
 			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Flare fire effect unimplemented!");
-		get_game_mod_level_flare_info(current_level).sparks_include_smoke = flare_flags & 0x0004;
-		get_game_mod_level_flare_info(current_level).has_glow = flare_flags & 0x0008;
-		get_game_mod_level_flare_info(current_level).flat_light = flare_flags & 0x0010;
+		flare_info->sparks_include_smoke = flare_flags & 0x0004;
+		flare_info->has_glow = flare_flags & 0x0008;
+		flare_info->flat_light = flare_flags & 0x0010;
 	}
 }
 
@@ -209,15 +212,15 @@ void NGSetupBugfixCustomization(int current_level, unsigned short bug_fix_flags)
 	}
 
 	if (bug_fix_flags & BUGF_DART_NO_POISON_LARA) {
-		get_game_mod_level_misc_info(current_level).darts_poison_fix = true;
+		get_game_mod_level_misc_info(current_level)->darts_poison_fix = true;
 	} else {
-		get_game_mod_level_misc_info(current_level).darts_poison_fix = false;
+		get_game_mod_level_misc_info(current_level)->darts_poison_fix = false;
 	}
 
 	if (bug_fix_flags & BUGF_LAND_WATER_SFX_ENEMIES) {
-		get_game_mod_level_misc_info(current_level).enemy_gun_hit_underwater_sfx_fix = true;
+		get_game_mod_level_misc_info(current_level)->enemy_gun_hit_underwater_sfx_fix = true;
 	} else {
-		get_game_mod_level_misc_info(current_level).enemy_gun_hit_underwater_sfx_fix = false;
+		get_game_mod_level_misc_info(current_level)->enemy_gun_hit_underwater_sfx_fix = false;
 	}
 }
 
@@ -248,16 +251,17 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 		}
 
 		// TRNG Stuff
-		get_game_mod_global_info().trng_flipeffects_enabled = true;
-		get_game_mod_global_info().trng_conditionals_enabled = true;
-		get_game_mod_global_info().trng_actions_enabled = true;
-		get_game_mod_global_info().trng_ng_anim_commands_enabled = true;
-		get_game_mod_global_info().trng_rollingball_extended_ocb = true;
-		get_game_mod_global_info().trng_statics_extended_ocb = true;
-		get_game_mod_global_info().trng_pushable_extended_ocb = true;
-		// TODO: check for version 1.2.2.3
-		get_game_mod_global_info().trng_switch_extended_ocb = true;
-		get_game_mod_global_info().trng_hack_allow_meshes_with_exactly_256_vertices = true;
+		get_game_mod_global_info()->trng_flipeffects_enabled = true;
+		get_game_mod_global_info()->trng_conditionals_enabled = true;
+		get_game_mod_global_info()->trng_actions_enabled = true;
+		get_game_mod_global_info()->trng_ng_anim_commands_enabled = true;
+		get_game_mod_global_info()->trng_rollingball_extended_ocb = true;
+		get_game_mod_global_info()->trng_statics_extended_ocb = true;
+		get_game_mod_global_info()->trng_pushable_extended_ocb = true;
+		if (!is_mod_trng_version_equal_or_greater_than_target(1, 2, 2, 3)) {
+			get_game_mod_global_info()->trng_switch_extended_ocb = true;
+		}
+		get_game_mod_global_info()->trng_hack_allow_meshes_with_exactly_256_vertices = true;
 
 		unsigned int options_header_block_start_position = offset;
 
@@ -285,7 +289,7 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 				case 0x05: {
 					world_far_view = NG_READ_16(gfScriptFile, offset);
 					for (int i = 0; i < MOD_LEVEL_COUNT; i++) {
-						get_game_mod_level_misc_info(i).far_view = (unsigned int)world_far_view * 1024;
+						get_game_mod_level_misc_info(i)->far_view = (unsigned int)world_far_view * 1024;
 					}
 					break;
 				}
@@ -315,7 +319,7 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 				// SHOW_LARA_IN_TITLE
 				case 0xc8: {
 					unsigned short flags = NG_READ_16(gfScriptFile, offset);
-					get_game_mod_global_info().show_lara_in_title = flags & 0x40;
+					get_game_mod_global_info()->show_lara_in_title = flags & 0x40;
 					break;
 				}
 				default: {
@@ -376,8 +380,8 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 			}
 
 			// Defaults for TRNG levels
-			get_game_mod_level_audio_info(current_level).old_cd_trigger_system = false;
-			get_game_mod_level_audio_info(current_level).new_audio_system = true;
+			get_game_mod_level_audio_info(current_level)->old_cd_trigger_system = false;
+			get_game_mod_level_audio_info(current_level)->new_audio_system = true;
 
 			unsigned int level_block_end_pos = level_block_start_position + level_block_size * sizeof(short);
 
@@ -437,13 +441,13 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 						unsigned short snow_type = NG_READ_16(gfScriptFile, offset);
 						switch (snow_type) {
 							case 0:
-								get_game_mod_level_misc_info(current_level).snow_type = WEATHER_DISABLED;
+								get_game_mod_level_misc_info(current_level)->snow_type = WEATHER_DISABLED;
 								break;
 							case 1:
-								get_game_mod_level_misc_info(current_level).snow_type = WEATHER_ENABLED_IN_SPECIFIC_ROOMS;
+								get_game_mod_level_misc_info(current_level)->snow_type = WEATHER_ENABLED_IN_SPECIFIC_ROOMS;
 								break;
 							case 2:
-								get_game_mod_level_misc_info(current_level).snow_type = WEATHER_ENABLED_ALL_OUTSIDE;
+								get_game_mod_level_misc_info(current_level)->snow_type = WEATHER_ENABLED_ALL_OUTSIDE;
 								break;
 							default:
 								NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: unknown snow type! (level %u)", current_level);
@@ -458,7 +462,7 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 						if (far_view > world_far_view)
 							far_view = world_far_view;
 
-						get_game_mod_level_misc_info(current_level).far_view = (unsigned int)far_view * 1024;
+						get_game_mod_level_misc_info(current_level)->far_view = (unsigned int)far_view * 1024;
 						break;
 					}
 					case 0x04: {
@@ -468,14 +472,14 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 						if (fog_start < 0) {
 							NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "FogRange: negative fog range values currently unsupported!");
 						} else {
-							get_game_mod_level_misc_info(current_level).fog_start_range = (unsigned int)fog_start * 1024;
+							get_game_mod_level_misc_info(current_level)->fog_start_range = (unsigned int)fog_start * 1024;
 						}
 
 						short fog_end = NG_READ_16(gfScriptFile, offset);
 						if (fog_end < 0) {
 							NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "FogRange: negative fog range values currently unsupported!");
 						} else {
-							get_game_mod_level_misc_info(current_level).fog_end_range = (unsigned int)fog_end * 1024;
+							get_game_mod_level_misc_info(current_level)->fog_end_range = (unsigned int)fog_end * 1024;
 						}
 						break;
 					}
@@ -507,13 +511,13 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 						unsigned short rain_type = NG_READ_16(gfScriptFile, offset);
 						switch (rain_type) {
 							case 0:
-								get_game_mod_level_misc_info(current_level).rain_type = WEATHER_DISABLED;
+								get_game_mod_level_misc_info(current_level)->rain_type = WEATHER_DISABLED;
 								break;
 							case 1:
-								get_game_mod_level_misc_info(current_level).rain_type = WEATHER_ENABLED_IN_SPECIFIC_ROOMS;
+								get_game_mod_level_misc_info(current_level)->rain_type = WEATHER_ENABLED_IN_SPECIFIC_ROOMS;
 								break;
 							case 2:
-								get_game_mod_level_misc_info(current_level).rain_type = WEATHER_ENABLED_ALL_OUTSIDE;
+								get_game_mod_level_misc_info(current_level)->rain_type = WEATHER_ENABLED_ALL_OUTSIDE;
 								break;
 							default:
 								NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: unknown rain type! (level %u)", current_level);
@@ -767,10 +771,10 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 									unsigned short secret_count = NG_READ_16(gfScriptFile, offset);
 									if (current_level == 0) {
 										for (int i = 0; i < MOD_LEVEL_COUNT; i++) {
-											get_game_mod_level_stat_info(i).secret_count = secret_count;
+											get_game_mod_level_stat_info(i)->secret_count = secret_count;
 										}
 									} else {
-										get_game_mod_level_stat_info(current_level).secret_count = secret_count;
+										get_game_mod_level_stat_info(current_level)->secret_count = secret_count;
 									}
 									break;
 								}
@@ -911,7 +915,7 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 									break;
 								}
 								case CUST_SET_OLD_CD_TRIGGER: {
-									get_game_mod_level_audio_info(current_level).old_cd_trigger_system = NG_READ_8(gfScriptFile, offset);
+									get_game_mod_level_audio_info(current_level)->old_cd_trigger_system = NG_READ_8(gfScriptFile, offset);
 									break;
 								}
 								case CUST_ESCAPE_FLY_CAMERA: {
@@ -1026,10 +1030,10 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 								case CUST_TR5_UNDERWATER_COLLISIONS: {
 									if (current_level == 0) {
 										for (int i = 0; i < MOD_LEVEL_COUNT; i++) {
-											get_game_mod_level_lara_info(i).use_tr5_swimming_collision = true;
+											get_game_mod_level_lara_info(i)->use_tr5_swimming_collision = true;
 										}
 									} else {
-										get_game_mod_level_lara_info(current_level).use_tr5_swimming_collision = true;
+										get_game_mod_level_lara_info(current_level)->use_tr5_swimming_collision = true;
 									}
 									break;
 								}

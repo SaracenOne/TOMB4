@@ -1019,16 +1019,16 @@ void lara_as_all4s(ITEM_INFO* item, COLL_INFO* coll)
 	// Tomb4Plus - crawlspace jumping
 	if (input & IN_JUMP)
 	{
-		MOD_LEVEL_LARA_INFO mod_lara_info = get_game_mod_level_lara_info(gfCurrentLevel);
+		MOD_LEVEL_LARA_INFO *mod_lara_info = get_game_mod_level_lara_info(gfCurrentLevel);
 
-		if (mod_lara_info.crawlspace_jump_animation >= 0) {
+		if (mod_lara_info->crawlspace_jump_animation >= 0) {
 
 			MESH_INFO* StaticMesh;
 			GAME_VECTOR s;
 			GAME_VECTOR d;
 			PHD_VECTOR v;
 
-			if (LaraFloorFront(item, item->pos.y_rot, 768) >= mod_lara_info.crawlspace_jump_pit_deepness_threshold && LaraCeilingFront(item, item->pos.y_rot, 768, 512) != NO_HEIGHT &&
+			if (LaraFloorFront(item, item->pos.y_rot, 768) >= mod_lara_info->crawlspace_jump_pit_deepness_threshold && LaraCeilingFront(item, item->pos.y_rot, 768, 512) != NO_HEIGHT &&
 				LaraCeilingFront(item, item->pos.y_rot, 768, 512) <= 0)
 			{
 				s.x = lara_item->pos.x_pos;
@@ -1043,8 +1043,8 @@ void lara_as_all4s(ITEM_INFO* item, COLL_INFO* coll)
 				{
 					if (ObjectOnLOS2(&s, &d, &v, &StaticMesh) == 999)
 					{
-						item->anim_number = mod_lara_info.crawlspace_jump_animation;
-						item->frame_number = anims[mod_lara_info.crawlspace_jump_animation].frame_base;
+						item->anim_number = mod_lara_info->crawlspace_jump_animation;
+						item->frame_number = anims[mod_lara_info->crawlspace_jump_animation].frame_base;
 						item->goal_anim_state = AS_CONTROLLED;
 						item->current_anim_state = AS_CONTROLLED;
 					}

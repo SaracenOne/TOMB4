@@ -740,7 +740,7 @@ void BikeCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 			CreateFlare(FLARE_ITEM, 0);
 			undraw_flare_meshes();
 			lara.flare_control_left = 0;
-			lara.gun_type = LG_NO_ARMS;
+			lara.gun_type = WEAPON_NONE;
 			lara.request_gun_type = WEAPON_NONE;
 			lara.flare_age = 0;
 		}

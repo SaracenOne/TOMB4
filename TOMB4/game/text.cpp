@@ -94,12 +94,12 @@ static CHARDEF CharDef[CHAR_TABLE_COUNT];
 
 void InitFont()
 {
-	MOD_LEVEL_FONT_INFO fontInfo = get_game_mod_level_font_info(gfCurrentLevel);
+	MOD_LEVEL_FONT_INFO *fontInfo = get_game_mod_level_font_info(gfCurrentLevel);
 
-	custom_glyph_scale_width = fontInfo.custom_glyph_scale_width;
-	custom_glyph_scale_height = fontInfo.custom_glyph_scale_height;
+	custom_glyph_scale_width = fontInfo->custom_glyph_scale_width;
+	custom_glyph_scale_height = fontInfo->custom_glyph_scale_height;
 
-	memcpy(CharDef, fontInfo.custom_font_table, sizeof(CHARDEF) * CHAR_TABLE_COUNT);
+	memcpy(CharDef, fontInfo->custom_font_table, sizeof(CHARDEF) * CHAR_TABLE_COUNT);
 
 	D3DTLVERTEX v;
 	static CHARDEF copy[106];

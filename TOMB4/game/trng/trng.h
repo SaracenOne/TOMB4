@@ -53,6 +53,8 @@ extern int NGGetPluginIDForFloorData(short* floor_data_ptr);
 
 // Move the item in a direction by the number of units
 extern void NGMoveItemByUnits(unsigned short item_id, NG_DIRECTIONS direction, unsigned int units);
+extern void NGMoveItemHorizontalByUnits(unsigned short item_id, short angle, unsigned int units);
+extern void NGMoveItemVerticalByUnits(unsigned short item_id, unsigned int units);
 
 extern void NGRotateItemY(unsigned short item_id, short rotation);
 

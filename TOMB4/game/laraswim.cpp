@@ -660,7 +660,7 @@ void LaraSwimCollisionTR5(ITEM_INFO* item, COLL_INFO* coll)
 }
 
 void LaraSwimCollision(ITEM_INFO* item, COLL_INFO* coll) {
-	if (get_game_mod_level_lara_info(gfCurrentLevel).use_tr5_swimming_collision) {
+	if (get_game_mod_level_lara_info(gfCurrentLevel)->use_tr5_swimming_collision) {
 		LaraSwimCollisionTR5(item, coll);
 	}
 	else {

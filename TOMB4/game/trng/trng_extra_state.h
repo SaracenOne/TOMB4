@@ -114,12 +114,13 @@ extern void NGSetItemFreezeTimer(unsigned int item_num, int ticks);
 extern short NGGetAutoRotationPerFrame(unsigned int item_num);
 extern void NGSetAutoRotationPerFrame(unsigned int item_num, short degress_per_frame);
 
-extern short NGGetItemNorthSouthUnits(unsigned int item_num);
-extern void NGSetItemNorthSouthUnits(unsigned int item_num, short units);
-extern short NGGetItemEastWestUnits(unsigned int item_num);
-extern void NGSetItemEastWestUnits(unsigned int item_num, short units);
-extern short NGGetItemUpDownUnits(unsigned int item_num);
-extern void NGSetItemUpDownUnits(unsigned int item_num, short units);
+//
+extern void NGSetItemHorizontalMovementAngle(unsigned int item_num, short angle);
+extern short NGGetItemHorizontalMovementAngle(unsigned int item_num);
+extern int NGGetItemHorizontalMovementRemainingUnits(unsigned int item_num);
+extern void NGSetItemHorizontalMovementRemainingUnits(unsigned int item_num, int units);
+extern int NGGetItemVerticalMovementRemainingUnits(unsigned int item_num);
+extern void NGSetItemVerticalMovementRemainingUnits(unsigned int item_num, int units);
 
 extern void NGSetItemMovementSpeed(unsigned int item_num, unsigned int movement_speed);
 extern void NGSetItemMovementInProgressSound(unsigned int item_num, int sound_effect_id);

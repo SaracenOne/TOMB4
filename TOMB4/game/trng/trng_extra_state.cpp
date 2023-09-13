@@ -37,9 +37,9 @@ struct NG_ITEM_EXTRADATA {
 	unsigned short movement_speed = 0;
 	short movement_in_progress_sound = -1;
 	short movement_finished_sound = -1;
-	short move_north_south_units = 0;
-	short move_east_west_units = 0;
-	short move_up_down_units = 0;
+	short move_horizontal_angle = 0;
+	int move_horizontal_remaining_units = 0;
+	int move_vertical_remaining_units = 0;
 	unsigned int mesh_visibility_mask = 0xffffffff;
 	short after_death_override = 0;
 };
@@ -56,9 +56,9 @@ void NGResetItemExtraData(int item_number) {
 		current_extradata->movement_speed = 0;
 		current_extradata->movement_in_progress_sound = -1;
 		current_extradata->movement_finished_sound = -1;
-		current_extradata->move_north_south_units = 0;
-		current_extradata->move_east_west_units = 0;
-		current_extradata->move_up_down_units = 0;
+		current_extradata->move_horizontal_angle = 0;
+		current_extradata->move_horizontal_remaining_units = 0;
+		current_extradata->move_vertical_remaining_units = 0;
 		current_extradata->mesh_visibility_mask = 0xffffffff;
 		current_extradata->after_death_override = 0;
 	} else {
@@ -369,105 +369,23 @@ void NGUpdateAllItems() {
 			ng_items_extradata[i].frozen_ticks--;
 		}
 
-		NGRotateItemY(i, NGGetAutoRotationPerFrame(i));
+		if (NGGetAutoRotationPerFrame(i)) {
+			NGRotateItemY(i, NGGetAutoRotationPerFrame(i));
+		} else {
+			if (ng_items_extradata[i].move_horizontal_remaining_units) {
+				int move_by_amount = ng_items_extradata[i].movement_speed;
 
-		if (ng_items_extradata[i].move_north_south_units > 0) {
-			int move_by_amount = ng_items_extradata[i].movement_speed;
-			if (move_by_amount > ng_items_extradata[i].move_north_south_units)
-				move_by_amount = ng_items_extradata[i].move_north_south_units;
+				NGMoveItemHorizontalByUnits(i, ng_items_extradata[i].move_horizontal_angle, ng_items_extradata[i].movement_speed);
+				ng_items_extradata[i].move_horizontal_remaining_units -= move_by_amount;
 
-			NGMoveItemByUnits(i, NG_NORTH, move_by_amount);
-			ng_items_extradata[i].move_north_south_units -= move_by_amount;
-
-			if (move_by_amount == 0) {
-				if (ng_items_extradata[i].movement_finished_sound != -1)
-					SoundEffect(ng_items_extradata[i].movement_finished_sound, &items[i].pos, 0);
-			} else {
-				if (ng_items_extradata[i].movement_in_progress_sound != -1)
-					SoundEffect(ng_items_extradata[i].movement_in_progress_sound, &items[i].pos, 0);
-			}
-		}
-		else if (ng_items_extradata[i].move_north_south_units < 0) {
-			int move_by_amount = -ng_items_extradata[i].movement_speed;
-			if (move_by_amount < ng_items_extradata[i].move_north_south_units)
-				move_by_amount = ng_items_extradata[i].move_north_south_units;
-
-			NGMoveItemByUnits(i, NG_NORTH, move_by_amount);
-			ng_items_extradata[i].move_north_south_units -= move_by_amount;
-
-			if (move_by_amount == 0) {
-				if (ng_items_extradata[i].movement_finished_sound != -1)
-					SoundEffect(ng_items_extradata[i].movement_finished_sound, &items[i].pos, 0);
-			} else {
-				if (ng_items_extradata[i].movement_in_progress_sound != -1)
-					SoundEffect(ng_items_extradata[i].movement_in_progress_sound, &items[i].pos, 0);
-			}
-		}
-
-		if (ng_items_extradata[i].move_east_west_units > 0) {
-			int move_by_amount = ng_items_extradata[i].movement_speed;
-			if (move_by_amount > ng_items_extradata[i].move_east_west_units)
-				move_by_amount = ng_items_extradata[i].move_east_west_units;
-
-			NGMoveItemByUnits(i, NG_EAST, move_by_amount);
-			ng_items_extradata[i].move_east_west_units -= move_by_amount;
-
-			if (move_by_amount == 0) {
-				if (ng_items_extradata[i].movement_finished_sound != -1)
-					SoundEffect(ng_items_extradata[i].movement_finished_sound, &items[i].pos, 0);
-			} else {
-				if (ng_items_extradata[i].movement_in_progress_sound != -1)
-					SoundEffect(ng_items_extradata[i].movement_in_progress_sound, &items[i].pos, 0);
-			}
-		}
-		else if (ng_items_extradata[i].move_east_west_units < 0) {
-			int move_by_amount = -ng_items_extradata[i].movement_speed;
-			if (move_by_amount < ng_items_extradata[i].move_east_west_units)
-				move_by_amount = ng_items_extradata[i].move_east_west_units;
-
-			NGMoveItemByUnits(i, NG_EAST, move_by_amount);
-			ng_items_extradata[i].move_east_west_units -= move_by_amount;
-
-			if (move_by_amount == 0) {
-				if (ng_items_extradata[i].movement_finished_sound != -1)
-					SoundEffect(ng_items_extradata[i].movement_finished_sound, &items[i].pos, 0);
-			} else {
-				if (ng_items_extradata[i].movement_in_progress_sound != -1)
-					SoundEffect(ng_items_extradata[i].movement_in_progress_sound, &items[i].pos, 0);
-			}
-		}
-
-		if (ng_items_extradata[i].move_up_down_units > 0) {
-			int move_by_amount = ng_items_extradata[i].movement_speed;
-			if (move_by_amount > ng_items_extradata[i].move_up_down_units)
-				move_by_amount = ng_items_extradata[i].move_up_down_units;
-
-
-			NGMoveItemByUnits(i, NG_UP, move_by_amount);
-			ng_items_extradata[i].move_up_down_units -= move_by_amount;
-
-			if (move_by_amount == 0) {
-				if (ng_items_extradata[i].movement_finished_sound != -1)
-					SoundEffect(ng_items_extradata[i].movement_finished_sound, &items[i].pos, 0);
-			} else {
-				if (ng_items_extradata[i].movement_in_progress_sound != -1)
-					SoundEffect(ng_items_extradata[i].movement_in_progress_sound, &items[i].pos, 0);
-			}
-		}
-		else if (ng_items_extradata[i].move_up_down_units < 0) {
-			int move_by_amount = -ng_items_extradata[i].movement_speed;
-			if (move_by_amount < ng_items_extradata[i].move_up_down_units)
-				move_by_amount = ng_items_extradata[i].move_up_down_units;
-
-			NGMoveItemByUnits(i, NG_UP, move_by_amount);
-			ng_items_extradata[i].move_up_down_units -= move_by_amount;
-
-			if (move_by_amount == 0) {
-				if (ng_items_extradata[i].movement_finished_sound != -1)
-					SoundEffect(ng_items_extradata[i].movement_finished_sound, &items[i].pos, 0);
-			} else {
-				if (ng_items_extradata[i].movement_in_progress_sound != -1)
-					SoundEffect(ng_items_extradata[i].movement_in_progress_sound, &items[i].pos, 0);
+				if (move_by_amount == 0) {
+					if (ng_items_extradata[i].movement_finished_sound != -1)
+						SoundEffect(ng_items_extradata[i].movement_finished_sound, &items[i].pos, 0);
+				}
+				else {
+					if (ng_items_extradata[i].movement_in_progress_sound != -1)
+						SoundEffect(ng_items_extradata[i].movement_in_progress_sound, &items[i].pos, 0);
+				}
 			}
 		}
 	}
@@ -861,28 +779,28 @@ void NGSetAutoRotationPerFrame(unsigned int item_num, short degress_per_frame) {
 }
 
 //
-short NGGetItemNorthSouthUnits(unsigned int item_num) {
-	return ng_items_extradata[item_num].move_north_south_units;
+void NGSetItemHorizontalMovementAngle(unsigned int item_num, short angle) {
+	ng_items_extradata[item_num].move_horizontal_angle = angle;
 }
 
-void NGSetItemNorthSouthUnits(unsigned int item_num, short units) {
-	ng_items_extradata[item_num].move_north_south_units = units;
+short NGGetItemHorizontalMovementAngle(unsigned int item_num) {
+	return ng_items_extradata[item_num].move_horizontal_angle;
 }
 
-short NGGetItemEastWestUnits(unsigned int item_num) {
-	return ng_items_extradata[item_num].move_east_west_units;
+int NGGetItemHorizontalMovementRemainingUnits(unsigned int item_num) {
+	return ng_items_extradata[item_num].move_horizontal_remaining_units;
 }
 
-void NGSetItemEastWestUnits(unsigned int item_num, short units) {
-	ng_items_extradata[item_num].move_east_west_units = units;
+void NGSetItemHorizontalMovementRemainingUnits(unsigned int item_num, int units) {
+	ng_items_extradata[item_num].move_horizontal_remaining_units = units;
 }
 
-short NGGetItemUpDownUnits(unsigned int item_num) {
-	return ng_items_extradata[item_num].move_up_down_units;
+int NGGetItemVerticalMovementRemainingUnits(unsigned int item_num) {
+	return ng_items_extradata[item_num].move_vertical_remaining_units;
 }
 
-void NGSetItemUpDownUnits(unsigned int item_num, short units) {
-	ng_items_extradata[item_num].move_up_down_units = units;
+void NGSetItemVerticalMovementRemainingUnits(unsigned int item_num, int units) {
+	ng_items_extradata[item_num].move_vertical_remaining_units = units;
 }
 
 extern void NGSetItemMovementSpeed(unsigned int item_num, unsigned int movement_speed) {

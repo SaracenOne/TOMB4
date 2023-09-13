@@ -475,8 +475,8 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame, bool 
 		}
 		case MOVE_ITEM_UP_FOR_CLICKS:
 			if (first_frame) {
-				if (NGGetItemUpDownUnits(item_id) == 0) {
-					NGSetItemUpDownUnits(item_id, (action_data+1) * 256);
+				if (NGGetItemVerticalMovementRemainingUnits(item_id) == 0 && NGGetItemVerticalMovementRemainingUnits(item_id) == 0) {
+					NGSetItemVerticalMovementRemainingUnits(item_id, (action_data+1) * -256);
 					NGSetItemMovementSpeed(item_id, 32);
 					NGSetItemMovementInProgressSound(item_id, -1);
 					NGSetItemMovementFinishedSound(item_id, -1);
@@ -485,8 +485,8 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame, bool 
 			break;
 		case MOVE_ITEM_DOWN_FOR_CLICKS:
 			if (first_frame) {
-				if (NGGetItemUpDownUnits(item_id) == 0) {
-					NGSetItemUpDownUnits(item_id, (action_data+1) * -256);
+				if (NGGetItemVerticalMovementRemainingUnits(item_id) == 0 && NGGetItemVerticalMovementRemainingUnits(item_id) == 0) {
+					NGSetItemVerticalMovementRemainingUnits(item_id, (action_data+1) * 256);
 					NGSetItemMovementSpeed(item_id, 32);
 					NGSetItemMovementInProgressSound(item_id, -1);
 					NGSetItemMovementFinishedSound(item_id, -1);
@@ -495,8 +495,9 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame, bool 
 			break;
 		case MOVE_ITEM_WEST_FOR_CLICKS:
 			if (first_frame) {
-				if (NGGetItemEastWestUnits(item_id) == 0) {
-					NGSetItemEastWestUnits(item_id, (action_data+1) * -256);
+				if (NGGetItemVerticalMovementRemainingUnits(item_id) == 0 && NGGetItemVerticalMovementRemainingUnits(item_id) == 0) {
+					NGSetItemHorizontalMovementAngle(item_id, (short)0xC000);
+					NGSetItemHorizontalMovementRemainingUnits(item_id, (action_data+1) * 256);
 					NGSetItemMovementSpeed(item_id, 32);
 					NGSetItemMovementInProgressSound(item_id, -1);
 					NGSetItemMovementFinishedSound(item_id, -1);
@@ -505,8 +506,9 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame, bool 
 			break;
 		case MOVE_ITEM_NORTH_FOR_CLICKS:
 			if (first_frame) {
-				if (NGGetItemNorthSouthUnits(item_id) == 0) {
-					NGSetItemNorthSouthUnits(item_id, (action_data+1) * 256);
+				if (NGGetItemVerticalMovementRemainingUnits(item_id) == 0 && NGGetItemVerticalMovementRemainingUnits(item_id) == 0) {
+					NGSetItemHorizontalMovementAngle(item_id, (short)0x0000);
+					NGSetItemHorizontalMovementRemainingUnits(item_id, (action_data + 1) * 256);
 					NGSetItemMovementSpeed(item_id, 32);
 					NGSetItemMovementInProgressSound(item_id, -1);
 					NGSetItemMovementFinishedSound(item_id, -1);
@@ -515,8 +517,9 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame, bool 
 			break;
 		case MOVE_ITEM_EAST_FOR_CLICKS:
 			if (first_frame) {
-				if (NGGetItemEastWestUnits(item_id) == 0) {
-					NGSetItemEastWestUnits(item_id, (action_data + 1) * 256);
+				if (NGGetItemVerticalMovementRemainingUnits(item_id) == 0 && NGGetItemVerticalMovementRemainingUnits(item_id) == 0) {
+					NGSetItemHorizontalMovementAngle(item_id, (short)0x4000);
+					NGSetItemHorizontalMovementRemainingUnits(item_id, (action_data + 1) * 256);
 					NGSetItemMovementSpeed(item_id, 32);
 					NGSetItemMovementInProgressSound(item_id, -1);
 					NGSetItemMovementFinishedSound(item_id, -1);
@@ -525,8 +528,9 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame, bool 
 			break;
 		case MOVE_ITEM_SOUTH_FOR_CLICKS:
 			if (first_frame) {
-				if (NGGetItemNorthSouthUnits(item_id) == 0) {
-					NGSetItemNorthSouthUnits(item_id, (action_data + 1) * -256);
+				if (NGGetItemVerticalMovementRemainingUnits(item_id) == 0 && NGGetItemVerticalMovementRemainingUnits(item_id) == 0) {
+					NGSetItemHorizontalMovementAngle(item_id, (short)0x8000);
+					NGSetItemHorizontalMovementRemainingUnits(item_id, (action_data + 1) * 256);
 					NGSetItemMovementSpeed(item_id, 32);
 					NGSetItemMovementInProgressSound(item_id, -1);
 					NGSetItemMovementFinishedSound(item_id, -1);

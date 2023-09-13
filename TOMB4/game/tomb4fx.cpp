@@ -2084,7 +2084,7 @@ void S_DrawSparks()
 	Z = (long*)&tsv_buffer[512];
 	offsets = (long*)&tsv_buffer[1024];
 
-	int max_sparks = get_game_mod_global_info().max_particles;
+	int max_sparks = get_game_mod_global_info()->max_particles;
 
 	for (int i = 0; i < max_sparks; i++)
 	{

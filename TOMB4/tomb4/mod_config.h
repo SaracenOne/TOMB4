@@ -214,16 +214,16 @@ extern GAME_MOD_CONFIG game_mod_config;
 extern void setup_custom_slots_for_level(int level, OBJECT_INFO* current_object_info_array);
 extern void assign_slot_for_level(int level, int dest_slot, int src_slot);
 
-extern MOD_GLOBAL_INFO &get_game_mod_global_info();
+extern MOD_GLOBAL_INFO *get_game_mod_global_info();
 
-extern MOD_LEVEL_FONT_INFO &get_game_mod_level_font_info(int level);
-extern MOD_LEVEL_CAMERA_INFO &get_game_mod_level_camera_info(int level);
-extern MOD_LEVEL_CREATURE_INFO &get_game_mod_level_creature_info(int level);
-extern MOD_LEVEL_AUDIO_INFO &get_game_mod_level_audio_info(int level);
-extern MOD_LEVEL_LARA_INFO &get_game_mod_level_lara_info(int level);
-extern MOD_LEVEL_STAT_INFO &get_game_mod_level_stat_info(int level);
-extern MOD_LEVEL_FLARE_INFO &get_game_mod_level_flare_info(int level);
-extern MOD_LEVEL_MISC_INFO& get_game_mod_level_misc_info(int level);
+extern MOD_LEVEL_FONT_INFO *get_game_mod_level_font_info(int level);
+extern MOD_LEVEL_CAMERA_INFO *get_game_mod_level_camera_info(int level);
+extern MOD_LEVEL_CREATURE_INFO *get_game_mod_level_creature_info(int level);
+extern MOD_LEVEL_AUDIO_INFO *get_game_mod_level_audio_info(int level);
+extern MOD_LEVEL_LARA_INFO *get_game_mod_level_lara_info(int level);
+extern MOD_LEVEL_STAT_INFO *get_game_mod_level_stat_info(int level);
+extern MOD_LEVEL_FLARE_INFO *get_game_mod_level_flare_info(int level);
+extern MOD_LEVEL_MISC_INFO *get_game_mod_level_misc_info(int level);
 
 extern void LoadGameModConfigFirstPass();
 extern void LoadGameModConfigSecondPass();

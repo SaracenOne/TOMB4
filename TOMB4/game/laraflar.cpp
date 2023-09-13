@@ -58,9 +58,9 @@ long DoFlareLight(PHD_VECTOR* pos, long flare_age)
 {
 	long x, y, z, r, g, b, rnd, falloff, ret;
 
-	MOD_LEVEL_FLARE_INFO flare_info = get_game_mod_level_flare_info(gfCurrentLevel);
+	MOD_LEVEL_FLARE_INFO *flare_info = get_game_mod_level_flare_info(gfCurrentLevel);
 
-	if (flare_age >= flare_info.flare_lifetime_in_ticks || !flare_age)
+	if (flare_age >= flare_info->flare_lifetime_in_ticks || !flare_age)
 		return 0;
 
 	rnd = GetRandomControl();
@@ -87,18 +87,18 @@ long DoFlareLight(PHD_VECTOR* pos, long flare_age)
 		g = (rnd & 0x3F) + 4 * flare_age + 128;
 		b = ((rnd >> 8) & 0x1F) + 4 * flare_age + 16;
 	}
-	else if (flare_age < (flare_info.flare_lifetime_in_ticks - 90))
+	else if (flare_age < (flare_info->flare_lifetime_in_ticks - 90))
 	{
-		falloff = flare_info.light_intensity;
-		r = (rnd >> 4 & 0x1F) + flare_info.light_color_r;
-		g = (rnd & 0x3F) + flare_info.light_color_g;
-		b = ((rnd >> 8) & 0x3F) + (((rnd >> 6) & 0x7F) >> 2) + flare_info.light_color_b;
+		falloff = flare_info->light_intensity;
+		r = (rnd >> 4 & 0x1F) + flare_info->light_color_r;
+		g = (rnd & 0x3F) + flare_info->light_color_g;
+		b = ((rnd >> 8) & 0x3F) + (((rnd >> 6) & 0x7F) >> 2) + flare_info->light_color_b;
 	}
-	else if (flare_age < (flare_info.flare_lifetime_in_ticks - 24))
+	else if (flare_age < (flare_info->flare_lifetime_in_ticks - 24))
 	{
 		if (rnd > 0x2000)
 		{
-			falloff = flare_info.light_intensity;
+			falloff = flare_info->light_intensity;
 			r = (rnd & 0x1F) + 128;
 			g = (rnd & 0x3F) + 192;
 			b = ((rnd >> 8) & 0x3F) + (((rnd >> 6) & 0x7F) >> 2);
@@ -108,13 +108,13 @@ long DoFlareLight(PHD_VECTOR* pos, long flare_age)
 			r = (GetRandomControl() & 0x3F) + 64;
 			g = (GetRandomControl() & 0x3F) + 192;
 			b = GetRandomControl() & 0x7F;
-			falloff = (GetRandomControl() & 6) + (flare_info.light_intensity / 2);
+			falloff = (GetRandomControl() & 6) + (flare_info->light_intensity / 2);
 			ret = 0;
 		}
 	}
 	else
 	{
-		falloff = flare_info.light_intensity - long(float(((flare_age - (flare_info.flare_lifetime_in_ticks - 24)) >> 1)) * ((float)flare_info.light_intensity / 16.0f));
+		falloff = flare_info->light_intensity - long(float(((flare_age - (flare_info->flare_lifetime_in_ticks - 24)) >> 1)) * ((float)flare_info->light_intensity / 16.0f));
 		r = (GetRandomControl() & 0x3F) + 64;
 		g = (GetRandomControl() & 0x3F) + 192;
 		b = GetRandomControl() & 0x1F;
@@ -129,25 +129,25 @@ long DoFlareLight(PHD_VECTOR* pos, long flare_age)
 	if (b >= 0xff)
 		b = 0xff;
 
-	if (flare_info.flat_light) {
-		TriggerDynamic(x, y, z, falloff, flare_info.light_color_r, flare_info.light_color_g, flare_info.light_color_b);
+	if (flare_info->flat_light) {
+		TriggerDynamic(x, y, z, falloff, flare_info->light_color_r, flare_info->light_color_g, flare_info->light_color_b);
 	} else {
 		TriggerDynamic(x, y, z, falloff, r, g, b);
 	}
 	
-	if (flare_info.has_sparks) {
-		if (flare_age < flare_info.flare_lifetime_in_ticks - 24) {
+	if (flare_info->has_sparks) {
+		if (flare_age < flare_info->flare_lifetime_in_ticks - 24) {
 			unsigned long flare_spark_rnd = GetRandomControl();
-			TriggerFlareSparks(pos->x, pos->y, pos->z, 0, long((float(flare_spark_rnd) * -0.025f)), 0, flare_info.sparks_include_smoke);
+			TriggerFlareSparks(pos->x, pos->y, pos->z, 0, long((float(flare_spark_rnd) * -0.025f)), 0, flare_info->sparks_include_smoke);
 		}
 	}
 
-	if (flare_info.has_glow) {
+	if (flare_info->has_glow) {
 		SPARKS *sptr = &spark[GetFreeSpark()];
 		sptr->On = 1;
-		sptr->sR = flare_info.light_color_r;
-		sptr->sG = flare_info.light_color_g;
-		sptr->sB = flare_info.light_color_b;
+		sptr->sR = flare_info->light_color_r;
+		sptr->sG = flare_info->light_color_g;
+		sptr->sB = flare_info->light_color_b;
 		sptr->dR = sptr->sR;
 		sptr->dG = sptr->sG;
 		sptr->dB = sptr->sB;
@@ -192,9 +192,9 @@ void DoFlareInHand(long flare_age)
 	}
 	
 	// TRLE
-	MOD_LEVEL_FLARE_INFO flare_info = get_game_mod_level_flare_info(gfCurrentLevel);
+	MOD_LEVEL_FLARE_INFO *flare_info = get_game_mod_level_flare_info(gfCurrentLevel);
 
-	if (lara.flare_age < flare_info.flare_lifetime_in_ticks)
+	if (lara.flare_age < flare_info->flare_lifetime_in_ticks)
 		lara.flare_age++;
 	else if (lara.gun_status == LG_NO_ARMS)
 		lara.gun_status = LG_UNDRAW_GUNS;

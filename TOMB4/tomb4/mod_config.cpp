@@ -87,40 +87,40 @@ void assign_slot_for_level(int level, int dest_slot, int src_slot) {
     }
 }
 
-extern MOD_GLOBAL_INFO& get_game_mod_global_info() {
-    return game_mod_config.global_info;
+extern MOD_GLOBAL_INFO *get_game_mod_global_info() {
+    return &game_mod_config.global_info;
 }
 
-extern MOD_LEVEL_FONT_INFO& get_game_mod_level_font_info(int level) {
-    return game_mod_config.level_info[level].font_info;
+extern MOD_LEVEL_FONT_INFO *get_game_mod_level_font_info(int level) {
+    return &game_mod_config.level_info[level].font_info;
 }
 
-extern MOD_LEVEL_CAMERA_INFO& get_game_mod_level_camera_info(int level) {
-    return game_mod_config.level_info[level].camera_info;
+extern MOD_LEVEL_CAMERA_INFO *get_game_mod_level_camera_info(int level) {
+    return &game_mod_config.level_info[level].camera_info;
 }
 
-MOD_LEVEL_CREATURE_INFO & get_game_mod_level_creature_info(int level) {
-    return game_mod_config.level_info[level].creature_info;
+MOD_LEVEL_CREATURE_INFO *get_game_mod_level_creature_info(int level) {
+    return &game_mod_config.level_info[level].creature_info;
 }
 
-MOD_LEVEL_AUDIO_INFO &get_game_mod_level_audio_info(int level) {
-	return game_mod_config.level_info[level].audio_info;
+MOD_LEVEL_AUDIO_INFO *get_game_mod_level_audio_info(int level) {
+	return &game_mod_config.level_info[level].audio_info;
 }
 
-MOD_LEVEL_LARA_INFO &get_game_mod_level_lara_info(int level) {
-	return game_mod_config.level_info[level].lara_info;
+MOD_LEVEL_LARA_INFO *get_game_mod_level_lara_info(int level) {
+	return &game_mod_config.level_info[level].lara_info;
 }
 
-MOD_LEVEL_STAT_INFO &get_game_mod_level_stat_info(int level) {
-    return game_mod_config.level_info[level].stat_info;
+MOD_LEVEL_STAT_INFO *get_game_mod_level_stat_info(int level) {
+    return &game_mod_config.level_info[level].stat_info;
 }
 
-MOD_LEVEL_FLARE_INFO& get_game_mod_level_flare_info(int level) {
-    return game_mod_config.level_info[level].flare_info;
+MOD_LEVEL_FLARE_INFO *get_game_mod_level_flare_info(int level) {
+    return &game_mod_config.level_info[level].flare_info;
 }
 
-MOD_LEVEL_MISC_INFO& get_game_mod_level_misc_info(int level) {
-    return game_mod_config.level_info[level].misc_info;
+MOD_LEVEL_MISC_INFO *get_game_mod_level_misc_info(int level) {
+    return &game_mod_config.level_info[level].misc_info;
 }
 
 void LoadGameModLevelAudioInfo(const json_t* audio, MOD_LEVEL_AUDIO_INFO* audio_info) {
@@ -453,10 +453,10 @@ void T4LevelSetup(int current_level) {
 
     S_Reset(); // Reset audio channels.
 
-    MOD_LEVEL_AUDIO_INFO audio_info = get_game_mod_level_audio_info(current_level);
+    MOD_LEVEL_AUDIO_INFO *audio_info = get_game_mod_level_audio_info(current_level);
 
-    SetUsingNewAudioSystem(audio_info.new_audio_system);
-    SetUsingOldTriggerMode(audio_info.old_cd_trigger_system);
+    SetUsingNewAudioSystem(audio_info->new_audio_system);
+    SetUsingOldTriggerMode(audio_info->old_cd_trigger_system);
 
     NGSetup();
 }
@@ -489,5 +489,5 @@ bool is_mod_trng_version_equal_or_greater_than_target(
     target_version.trng_version_maintainence = target_maintainence_version;
     target_version.trng_version_build = target_build_version;
 
-    return is_source_trng_version_equal_or_greater_than_target(get_game_mod_global_info().trng_engine_version, target_version);
+    return is_source_trng_version_equal_or_greater_than_target(get_game_mod_global_info()->trng_engine_version, target_version);
 }

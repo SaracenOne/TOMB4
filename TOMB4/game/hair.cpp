@@ -69,7 +69,7 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 
 	obj = &objects[LARA];
 
-	MOD_LEVEL_LARA_INFO mod_lara_info = get_game_mod_level_lara_info(gfCurrentLevel);
+	MOD_LEVEL_LARA_INFO *mod_lara_info = get_game_mod_level_lara_info(gfCurrentLevel);
 
 	if (!cutscenething)
 	{
@@ -194,13 +194,13 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 		sphere[5].r = gfLevelFlags & GF_YOUNGLARA ? 0 : 5 * sphere[2].r / 4;
 
 		if (pigtail)
-			phd_TranslateRel_I(mod_lara_info.pigtail_right_x, mod_lara_info.pigtail_right_y, mod_lara_info.pigtail_right_z);
+			phd_TranslateRel_I(mod_lara_info->pigtail_right_x, mod_lara_info->pigtail_right_y, mod_lara_info->pigtail_right_z);
 		else
 		{
 			if (gfLevelFlags & GF_YOUNGLARA)
-				phd_TranslateRel_I(mod_lara_info.pigtail_left_x, mod_lara_info.pigtail_left_y, mod_lara_info.pigtail_left_z);
+				phd_TranslateRel_I(mod_lara_info->pigtail_left_x, mod_lara_info->pigtail_left_y, mod_lara_info->pigtail_left_z);
 			else
-				phd_TranslateRel_I(mod_lara_info.braid_x, mod_lara_info.braid_y, mod_lara_info.braid_z);
+				phd_TranslateRel_I(mod_lara_info->braid_x, mod_lara_info->braid_y, mod_lara_info->braid_z);
 		}
 
 		mInterpolateMatrix();
@@ -395,7 +395,7 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 
 			if (water == NO_HEIGHT || hair->pos.y_pos < water)
 			{
-				hair->pos.y_pos += mod_lara_info.hair_gravity;
+				hair->pos.y_pos += mod_lara_info->hair_gravity;
 
 				if (water != NO_HEIGHT && hair->pos.y_pos > water)
 					hair->pos.y_pos = water;

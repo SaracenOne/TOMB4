@@ -224,7 +224,7 @@ long ControlPhase(long nframes, long demo_mode)
 	MESH_INFO* mesh;
 	short item_num, nex, fx_num;
 	
-	MOD_GLOBAL_INFO global_info = get_game_mod_global_info();
+	MOD_GLOBAL_INFO *global_info = get_game_mod_global_info();
 
 	RegeneratePickups();
 
@@ -465,7 +465,7 @@ long ControlPhase(long nframes, long demo_mode)
 
 		if (!GLOBAL_playing_cutseq && !gfGameMode)
 			LaraControl(0);
-		else if (gfGameMode == 1 && global_info.show_lara_in_title)
+		else if (gfGameMode == 1 && global_info->show_lara_in_title)
 			// TRLE: Activate Lara if we have 'show_lara_in_title' flag set.
 			AnimateLara(lara_item);
 
@@ -2218,9 +2218,9 @@ void TriggerNormalCDTrack(short value, short flags, short type)
 {
 	long code;
 
-	MOD_LEVEL_AUDIO_INFO audio_info = get_game_mod_level_audio_info(gfCurrentLevel);
+	MOD_LEVEL_AUDIO_INFO *audio_info = get_game_mod_level_audio_info(gfCurrentLevel);
 
-	if (value >= audio_info.first_looped_audio_track && value <= audio_info.last_looped_audio_track || value == 102 || value == 97)
+	if (value >= audio_info->first_looped_audio_track && value <= audio_info->last_looped_audio_track || value == 102 || value == 97)
 	{
 		if (CurrentAtmosphere != value)
 		{
@@ -2807,7 +2807,7 @@ long GetTargetOnLOS(GAME_VECTOR* src, GAME_VECTOR* dest, long DrawTarget, long f
 					}
 
 					// TRLE - added gun ricochet sound effect
-					if (get_game_mod_level_misc_info(gfCurrentLevel).enable_ricochet_sound_effect)
+					if (get_game_mod_level_misc_info(gfCurrentLevel)->enable_ricochet_sound_effect)
 						SoundEffect(SFX_LARA_RICOCHET, (PHD_3DPOS*)&target, SFX_DEFAULT);
 
 					TriggerRicochetSpark(&target, lara_item->pos.y_rot, 3, 0);
@@ -2893,7 +2893,7 @@ long GetTargetOnLOS(GAME_VECTOR* src, GAME_VECTOR* dest, long DrawTarget, long f
 
 		if (firing && !ricochet) {
 			// TRLE - added gun ricochet sound effect
-			if (get_game_mod_level_misc_info(gfCurrentLevel).enable_ricochet_sound_effect)
+			if (get_game_mod_level_misc_info(gfCurrentLevel)->enable_ricochet_sound_effect)
 				SoundEffect(SFX_LARA_RICOCHET, (PHD_3DPOS*)&target, SFX_DEFAULT);
 			TriggerRicochetSpark(&target, lara_item->pos.y_rot, 8, 0);
 		}
