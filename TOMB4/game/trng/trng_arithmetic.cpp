@@ -173,7 +173,7 @@ void NGNumericOperation(NGNumericOperationType number_operation, unsigned int va
 		case 0x0a: {
 			unsigned char ng_global_delta_3 = (ng_global_delta >> 16) & 0xff;
 			ng_global_delta_3 = NGNumericOperationByte(number_operation, ng_global_delta_3, value);
-			ng_global_delta = (ng_global_beta & ~0xff0000) | (((int)ng_global_delta_3) << 16) & 0xff0000;
+			ng_global_delta = (ng_global_delta & ~0xff0000) | (((int)ng_global_delta_3) << 16) & 0xff0000;
 			break;
 		}
 		case 0x0b: {
@@ -304,7 +304,7 @@ void NGNumericOperation(NGNumericOperationType number_operation, unsigned int va
 		case 0x48: {
 			unsigned char ng_local_delta_1 = (ng_local_delta & 0xff);
 			ng_local_delta_1 = NGNumericOperationByte(number_operation, ng_local_delta_1, value);
-			ng_local_delta |= (((int)ng_local_delta_1)) & 0xff;
+			ng_local_delta = (ng_local_delta & ~0xff) | (((int)ng_local_delta_1)) & 0xff;
 			break;
 		}
 		case 0x49: {
