@@ -111,20 +111,37 @@ extern void NGEnableInput(unsigned char input);
 
 extern bool NGIsItemFrozen(unsigned int item_num);
 extern void NGSetItemFreezeTimer(unsigned int item_num, int ticks);
-extern short NGGetAutoRotationPerFrame(unsigned int item_num);
-extern void NGSetAutoRotationPerFrame(unsigned int item_num, short degress_per_frame);
 
-//
+extern bool NGIsItemPerformingContinousAction(unsigned int item_num);
+extern bool NGIsItemPerformingRotation(unsigned int item_num);
+extern bool NGIsItemPerformingMovement(unsigned int item_num);
+
+extern short NGGetHorizontalRotationSpeed(unsigned int item_num);
+extern void NGSetHorizontalRotationSpeed(unsigned int item_num, short speed);
+extern short NGGetVerticalRotationSpeed(unsigned int item_num);
+extern void NGSetVerticalRotationSpeed(unsigned int item_num, short speed);
+
+extern int NGGetHorizontalRotationRemaining(unsigned int item_num);
+extern void NGSetHorizontalRotationRemaining(unsigned int item_num, int remaining);
+extern int NGGetVerticalRotationRemaining(unsigned int item_num);
+extern void NGSetVerticalRotationRemaining(unsigned int item_num, int remaining);
+
 extern void NGSetItemHorizontalMovementAngle(unsigned int item_num, short angle);
 extern short NGGetItemHorizontalMovementAngle(unsigned int item_num);
+
+
 extern int NGGetItemHorizontalMovementRemainingUnits(unsigned int item_num);
 extern void NGSetItemHorizontalMovementRemainingUnits(unsigned int item_num, int units);
+
 extern int NGGetItemVerticalMovementRemainingUnits(unsigned int item_num);
 extern void NGSetItemVerticalMovementRemainingUnits(unsigned int item_num, int units);
 
+extern int NGGetItemMovementSpeed(unsigned int item_num);
 extern void NGSetItemMovementSpeed(unsigned int item_num, unsigned int movement_speed);
+extern int NGGetItemMovementInProgressSound(unsigned int item_num);
 extern void NGSetItemMovementInProgressSound(unsigned int item_num, int sound_effect_id);
 extern void NGSetItemMovementFinishedSound(unsigned int item_num, int sound_effect_id);
+extern int NGGetItemMovementFinishedSound(unsigned int item_num);
 
 extern void NGAddLaraMoveableCollision(int item_number);
 extern void NGAddLaraStaticCollision(int room_number, int mesh_number);

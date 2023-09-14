@@ -109,6 +109,126 @@ int NGActionTrigger(unsigned short param, unsigned short extra, short timer, boo
 	return result;
 }
 
+void NGTurnItemBy45DegreeHorizontalIncrements(int item_id,  int increments, int speed) {
+	NGSetHorizontalRotationSpeed(item_id, NG_DEGREE(speed));
+
+	switch (increments) {
+		// Clockwise slowly (one degree per frame)
+	case 0x00:
+		if (speed > 0)
+			NGSetHorizontalRotationRemaining(item_id, NG_DEGREE(45));
+		else
+			NGSetHorizontalRotationRemaining(item_id, NG_DEGREE(-45));
+		break;
+	case 0x01:
+		if (speed > 0)
+			NGSetHorizontalRotationRemaining(item_id, NG_DEGREE(90));
+		else
+			NGSetHorizontalRotationRemaining(item_id, NG_DEGREE(-90));
+		break;
+	case 0x02:
+		if (speed > 0)
+			NGSetHorizontalRotationRemaining(item_id, NG_DEGREE(135));
+		else
+			NGSetHorizontalRotationRemaining(item_id, NG_DEGREE(-135));
+		break;
+	case 0x03:
+		if (speed > 0)
+			NGSetHorizontalRotationRemaining(item_id, NG_DEGREE(180));
+		else
+			NGSetHorizontalRotationRemaining(item_id, NG_DEGREE(-180));
+		break;
+	case 0x04:
+		if (speed > 0)
+			NGSetHorizontalRotationRemaining(item_id, NG_DEGREE(225));
+		else
+			NGSetHorizontalRotationRemaining(item_id, NG_DEGREE(-225));
+		break;
+	case 0x05:
+		if (speed > 0)
+			NGSetHorizontalRotationRemaining(item_id, NG_DEGREE(270));
+		else
+			NGSetHorizontalRotationRemaining(item_id, NG_DEGREE(-270));
+		break;
+	case 0x06:
+		if (speed > 0)
+			NGSetHorizontalRotationRemaining(item_id, NG_DEGREE(315));
+		else
+			NGSetHorizontalRotationRemaining(item_id, NG_DEGREE(-315));
+		break;
+	case 0x07:
+		if (speed > 0)
+			NGSetHorizontalRotationRemaining(item_id, NG_DEGREE(360));
+		else
+			NGSetHorizontalRotationRemaining(item_id, NG_DEGREE(-360));
+		break;
+		break;
+	default:
+		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGTurnItemBy45DegreeHorizontalIncrements: increment count %u unimplemented!", increments);
+		break;
+	}
+}
+
+void NGTurnItemBy45DegreeVerticalIncrements(int item_id, int increments, int speed) {
+	NGSetVerticalRotationSpeed(item_id, NG_DEGREE(speed));
+
+	switch (increments) {
+		// Clockwise slowly (one degree per frame)
+	case 0x00:
+		if (speed > 0)
+			NGSetVerticalRotationRemaining(item_id, NG_DEGREE(45));
+		else
+			NGSetVerticalRotationRemaining(item_id, NG_DEGREE(-45));
+		break;
+	case 0x01:
+		if (speed > 0)
+			NGSetVerticalRotationRemaining(item_id, NG_DEGREE(90));
+		else
+			NGSetVerticalRotationRemaining(item_id, NG_DEGREE(-90));
+		break;
+	case 0x02:
+		if (speed > 0)
+			NGSetVerticalRotationRemaining(item_id, NG_DEGREE(135));
+		else
+			NGSetVerticalRotationRemaining(item_id, NG_DEGREE(-135));
+		break;
+	case 0x03:
+		if (speed > 0)
+			NGSetVerticalRotationRemaining(item_id, NG_DEGREE(180));
+		else
+			NGSetVerticalRotationRemaining(item_id, NG_DEGREE(-180));
+		break;
+	case 0x04:
+		if (speed > 0)
+			NGSetVerticalRotationRemaining(item_id, NG_DEGREE(225));
+		else
+			NGSetVerticalRotationRemaining(item_id, NG_DEGREE(-225));
+		break;
+	case 0x05:
+		if (speed > 0)
+			NGSetVerticalRotationRemaining(item_id, NG_DEGREE(270));
+		else
+			NGSetVerticalRotationRemaining(item_id, NG_DEGREE(-270));
+		break;
+	case 0x06:
+		if (speed > 0)
+			NGSetVerticalRotationRemaining(item_id, NG_DEGREE(315));
+		else
+			NGSetVerticalRotationRemaining(item_id, NG_DEGREE(-315));
+		break;
+	case 0x07:
+		if (speed > 0)
+			NGSetVerticalRotationRemaining(item_id, NG_DEGREE(360));
+		else
+			NGSetVerticalRotationRemaining(item_id, NG_DEGREE(-360));
+		break;
+		break;
+	default:
+		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGTurnItemBy45DegreeVerticalIncrements: increment count %u unimplemented!", increments);
+		break;
+	}
+}
+
 int NGAction(unsigned short param, unsigned short extra, bool first_frame, bool is_heavy_triggered) {
 	unsigned char action_type = (unsigned char)extra & 0xff;
 	unsigned char action_data = (unsigned char)(extra >> 8) & 0xff;
@@ -128,33 +248,130 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame, bool 
 	}
 
 	switch (action_type) {
-		case TURN_ANIMATING_MOVING_ENDLESSLY_IN_WAY: {
-			// TODO: values are estimated and may not be accurate
-			switch (action_data) {
-				// Clockwise slowly (one degree per frame)
-				case 0x00:
-					NGSetAutoRotationPerFrame(item_id, 182);
-					break;
-				// Clockwise fastly (two degrees per frame)
-				case 0x01:
-					NGSetAutoRotationPerFrame(item_id, 182 * 2);
-					break;
-				// Inverse Clockwise slowly (one degree per frame)
-				case 0x02:
-					NGSetAutoRotationPerFrame(item_id, -182);
-					break;
-				// Inverse Clockwise fastly (two degrees per frame)
-				case 0x03:
-					NGSetAutoRotationPerFrame(item_id, -182 * 2);
-					break;
-				default:
-					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TURN_ANIMATING_MOVING_ENDLESSLY_IN_WAY: action data %u unimplemented!", action_data);
-					break;
+		// TODO: values are estimated and may not be accurate.
+		// Also need to check the behaviour when an action is already 
+		case TURN_X_ANIMATING_MOVING_SLOWLY_IN_CLOCKWISE_OF_DEGREES: {
+			if (first_frame) {
+				if (!NGGetHorizontalRotationRemaining(item_id)) {
+					NGTurnItemBy45DegreeHorizontalIncrements(item_id, action_data, 1);
+				}
 			}
 			break;
 		}
-		case TURN_VERTICAL_ANIMATION_MOVING_ENDLESS_IN_WAY: {
-			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TURN_VERTICAL_ANIMATION_MOVING_ENDLESS_IN_WAY: unimplemented!");
+		case TURN_X_ANIMATING_MOVING_SLOWLY_IN_INVERSE_CLOCKWISE_OF_DEGREES: {
+			if (first_frame) {
+				if (!NGGetHorizontalRotationRemaining(item_id)) {
+					NGTurnItemBy45DegreeHorizontalIncrements(item_id, action_data, -1);
+				}
+			}
+			break;
+		}
+		case TURN_X_ANIMATING_MOVING_FASTLY_IN_CLOCKWISE_OF_DEGREES: {
+			if (first_frame) {
+				if (!NGGetHorizontalRotationRemaining(item_id)) {
+					NGTurnItemBy45DegreeHorizontalIncrements(item_id, action_data, 2);
+				}
+			}
+			break;
+		}
+		case TURN_X_ANIMATING_MOVING_FASTLY_IN_INVERSE_CLOCKWISE_OF_DEGREES: {
+			if (first_frame) {
+				if (!NGGetHorizontalRotationRemaining(item_id)) {
+					NGTurnItemBy45DegreeHorizontalIncrements(item_id, action_data, -2);
+				}
+			}
+			break;
+		}
+		case TURN_X_ANIMATING_MOVING_ENDLESSLY_IN_WAY: {
+			if (first_frame) {
+				switch (action_data) {
+					// Clockwise slowly (one degree per frame)
+				case 0x00:
+					NGSetHorizontalRotationSpeed(item_id, NG_DEGREE(1));
+					NGSetHorizontalRotationRemaining(item_id, 0);
+					break;
+					// Clockwise fastly (two degrees per frame)
+				case 0x01:
+					NGSetHorizontalRotationSpeed(item_id, NG_DEGREE(2));
+					NGSetHorizontalRotationRemaining(item_id, 0);
+					break;
+					// Inverse Clockwise slowly (one degree per frame)
+				case 0x02:
+					NGSetHorizontalRotationSpeed(item_id, NG_DEGREE(-1));
+					NGSetHorizontalRotationRemaining(item_id, 0);
+					break;
+					// Inverse Clockwise fastly (two degrees per frame)
+				case 0x03:
+					NGSetHorizontalRotationSpeed(item_id, NG_DEGREE(-2));
+					NGSetHorizontalRotationRemaining(item_id, 0);
+					break;
+				default:
+					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TURN_X_ANIMATING_MOVING_ENDLESSLY_IN_WAY: action data %u unimplemented!", action_data);
+					break;
+				}
+			}
+			break;
+		}
+		case TURN_VERTICALLY_X_ANIMATING_MOVING_SLOWLY_IN_CLOCKWISE_OF_DEGREES: {
+			if (first_frame) {
+				if (!NGGetVerticalRotationRemaining(item_id)) {
+					NGTurnItemBy45DegreeVerticalIncrements(item_id, action_data, 1);
+				}
+			}
+			break;
+		}
+		case TURN_VERTICALLY_X_ANIMATING_MOVING_SLOWLY_IN_INVERSE_CLOCKWISE_OF_DEGREES: {
+			if (first_frame) {
+				if (!NGGetVerticalRotationRemaining(item_id)) {
+					NGTurnItemBy45DegreeVerticalIncrements(item_id, action_data, -1);
+				}
+			}
+			break;
+		}
+		case TURN_VERTICALLY_X_ANIMATING_MOVING_FASTLY_IN_CLOCKWISE_OF_DEGREES: {
+			if (first_frame) {
+				if (!NGGetVerticalRotationRemaining(item_id)) {
+					NGTurnItemBy45DegreeVerticalIncrements(item_id, action_data, 2);
+				}
+			}
+			break;
+		}
+		case TURN_VERTICALLY_X_ANIMATING_MOVING_FASTLY_IN_INVERSE_CLOCKWISE_OF_DEGREES: {
+			if (first_frame) {
+				if (!NGGetVerticalRotationRemaining(item_id)) {
+					NGTurnItemBy45DegreeVerticalIncrements(item_id, action_data, -2);
+				}
+			}
+			break;
+		}
+		case TURN_VERTICALLY_X_ANIMATIONG_MOVING_ENDLESS_IN_WAY: {
+			if (first_frame) {
+				switch (action_data) {
+					// Clockwise slowly (one degree per frame)
+				case 0x00:
+					NGSetVerticalRotationSpeed(item_id, NG_DEGREE(1));
+					NGSetVerticalRotationRemaining(item_id, 0);
+					break;
+					// Clockwise fastly (two degrees per frame)
+				case 0x01:
+					NGSetVerticalRotationSpeed(item_id, NG_DEGREE(2));
+					NGSetVerticalRotationRemaining(item_id, 0);
+					break;
+					// Inverse Clockwise slowly (one degree per frame)
+				case 0x02:
+					NGSetVerticalRotationSpeed(item_id, NG_DEGREE(-1));
+					NGSetVerticalRotationRemaining(item_id, 0);
+					break;
+					// Inverse Clockwise fastly (two degrees per frame)
+				case 0x03:
+					NGSetVerticalRotationSpeed(item_id, NG_DEGREE(-2));
+					NGSetVerticalRotationRemaining(item_id, 0);
+					break;
+				default:
+					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TURN_VERTICALLY_X_ANIMATING_MOVING_ENDLESS_IN_WAY: action data %u unimplemented!", action_data);
+					break;
+				}
+			}
 			break;
 		}
 		case PERFORM_FLIPEFFECT_ON_ITEM: {
@@ -475,7 +692,7 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame, bool 
 		}
 		case MOVE_ITEM_UP_FOR_CLICKS:
 			if (first_frame) {
-				if (NGGetItemVerticalMovementRemainingUnits(item_id) == 0 && NGGetItemVerticalMovementRemainingUnits(item_id) == 0) {
+				if (!NGGetItemVerticalMovementRemainingUnits(item_id)) {
 					NGSetItemVerticalMovementRemainingUnits(item_id, (action_data+1) * -256);
 					NGSetItemMovementSpeed(item_id, 32);
 					NGSetItemMovementInProgressSound(item_id, -1);
@@ -485,7 +702,7 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame, bool 
 			break;
 		case MOVE_ITEM_DOWN_FOR_CLICKS:
 			if (first_frame) {
-				if (NGGetItemVerticalMovementRemainingUnits(item_id) == 0 && NGGetItemVerticalMovementRemainingUnits(item_id) == 0) {
+				if (!NGGetItemVerticalMovementRemainingUnits(item_id)) {
 					NGSetItemVerticalMovementRemainingUnits(item_id, (action_data+1) * 256);
 					NGSetItemMovementSpeed(item_id, 32);
 					NGSetItemMovementInProgressSound(item_id, -1);
@@ -495,7 +712,7 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame, bool 
 			break;
 		case MOVE_ITEM_WEST_FOR_CLICKS:
 			if (first_frame) {
-				if (NGGetItemVerticalMovementRemainingUnits(item_id) == 0 && NGGetItemVerticalMovementRemainingUnits(item_id) == 0) {
+				if (!NGGetItemHorizontalMovementRemainingUnits(item_id)) {
 					NGSetItemHorizontalMovementAngle(item_id, (short)0xC000);
 					NGSetItemHorizontalMovementRemainingUnits(item_id, (action_data+1) * 256);
 					NGSetItemMovementSpeed(item_id, 32);
@@ -506,7 +723,7 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame, bool 
 			break;
 		case MOVE_ITEM_NORTH_FOR_CLICKS:
 			if (first_frame) {
-				if (NGGetItemVerticalMovementRemainingUnits(item_id) == 0 && NGGetItemVerticalMovementRemainingUnits(item_id) == 0) {
+				if (!NGGetItemHorizontalMovementRemainingUnits(item_id)) {
 					NGSetItemHorizontalMovementAngle(item_id, (short)0x0000);
 					NGSetItemHorizontalMovementRemainingUnits(item_id, (action_data + 1) * 256);
 					NGSetItemMovementSpeed(item_id, 32);
@@ -517,7 +734,7 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame, bool 
 			break;
 		case MOVE_ITEM_EAST_FOR_CLICKS:
 			if (first_frame) {
-				if (NGGetItemVerticalMovementRemainingUnits(item_id) == 0 && NGGetItemVerticalMovementRemainingUnits(item_id) == 0) {
+				if (!NGGetItemHorizontalMovementRemainingUnits(item_id)) {
 					NGSetItemHorizontalMovementAngle(item_id, (short)0x4000);
 					NGSetItemHorizontalMovementRemainingUnits(item_id, (action_data + 1) * 256);
 					NGSetItemMovementSpeed(item_id, 32);
@@ -528,7 +745,7 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame, bool 
 			break;
 		case MOVE_ITEM_SOUTH_FOR_CLICKS:
 			if (first_frame) {
-				if (NGGetItemVerticalMovementRemainingUnits(item_id) == 0 && NGGetItemVerticalMovementRemainingUnits(item_id) == 0) {
+				if (!NGGetItemHorizontalMovementRemainingUnits(item_id)) {
 					NGSetItemHorizontalMovementAngle(item_id, (short)0x8000);
 					NGSetItemHorizontalMovementRemainingUnits(item_id, (action_data + 1) * 256);
 					NGSetItemMovementSpeed(item_id, 32);
@@ -578,6 +795,10 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame, bool 
 		case MOVE_ITEM_SOUTH_BY_UNITS_X8: {
 			if (first_frame)
 				NGMoveItemByUnits(item_id, NG_SOUTH, 8 * ((action_data)+1));
+			break;
+		}
+		case TURN_STOP_CIRCULAR_TURNING_FOR_X_ANIMATION_ITEM_IN_WAY: {
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TURN_STOP_CIRCULAR_TURNING_FOR_X_ANIMATION_ITEM_IN_WAY unimplemented!");
 			break;
 		}
 		case CREATURE_FORCE_FRAME_OF_CURRENT_ANIMATION: {

@@ -206,6 +206,10 @@ void NGMoveItemVerticalByUnits(unsigned short item_id, unsigned int units) {
 	items[item_id].pos.y_pos += units;
 }
 
+void NGRotateItemX(unsigned short item_id, short rotation) {
+	items[item_id].pos.x_rot += rotation;
+}
+
 void NGRotateItemY(unsigned short item_id, short rotation) {
 	items[item_id].pos.y_rot += rotation;
 }
