@@ -51,7 +51,7 @@ TestEnvConditionTripletResult TestEnvConditionTriplet(NG_MULTI_ENV_TRIPLET* trip
 
 			NG_MULTI_ENV_CONDITION* multi_env_cond = &current_multi_env_conditions[triplet->distance_for_env];
 			for (int i = 0; i < multi_env_cond->env_condition_triplet_count; i++) {
-				TestEnvConditionTripletResult sub_result = TestEnvConditionTriplet(&multi_env_cond->env_condition_triplet_array[i], true);
+				TestEnvConditionTripletResult sub_result = TestEnvConditionTriplet(&multi_env_cond->env_condition_triplet_array[i], set_alignment_variables);
 
 				if (!sub_result.is_valid) {
 					result.is_valid = false;
@@ -75,7 +75,7 @@ TestEnvConditionTripletResult TestEnvConditionTriplet(NG_MULTI_ENV_TRIPLET* trip
 
 			NG_MULTI_ENV_CONDITION* multi_env_cond = &current_multi_env_conditions[triplet->distance_for_env];
 			for (int i = 0; i < multi_env_cond->env_condition_triplet_count; i++) {
-				TestEnvConditionTripletResult sub_result = TestEnvConditionTriplet(&multi_env_cond->env_condition_triplet_array[i], true);
+				TestEnvConditionTripletResult sub_result = TestEnvConditionTriplet(&multi_env_cond->env_condition_triplet_array[i], set_alignment_variables);
 
 				if (sub_result.is_valid) {
 					result.is_valid = true;
@@ -98,6 +98,15 @@ TestEnvConditionTripletResult TestEnvConditionTriplet(NG_MULTI_ENV_TRIPLET* trip
 				result.is_valid = true;
 			else
 				result.is_valid = false;
+
+			break;
+		}
+		case ENV_ROOM_IS: {
+			if (lara_item->room_number == triplet->distance_for_env) {
+				result.is_valid = true;
+			} else {
+				result.is_valid = false;
+			}
 
 			break;
 		}
@@ -146,4 +155,30 @@ TestEnvConditionTripletResult TestEnvConditionTriplet(NG_MULTI_ENV_TRIPLET* trip
 	}
 
 	return result;
+}
+
+bool TestMultiEnvCondition(int multi_env_condition_id, bool evaluate_as_or) {
+	bool is_valid;
+	if (evaluate_as_or)
+		is_valid = false;
+	else
+		is_valid = true;
+
+	NG_MULTI_ENV_CONDITION* multi_env_cond = &current_multi_env_conditions[multi_env_condition_id];
+	for (int i = 0; i < multi_env_cond->env_condition_triplet_count; i++) {
+		TestEnvConditionTripletResult sub_result = TestEnvConditionTriplet(&multi_env_cond->env_condition_triplet_array[i], false);
+
+		if (evaluate_as_or) {
+			if (sub_result.is_valid) {
+				is_valid = true;
+				break;
+			}
+		} else {
+			if (!sub_result.is_valid) {
+				is_valid = false;
+				break;
+			}
+		}
+	}
+	return is_valid;
 }

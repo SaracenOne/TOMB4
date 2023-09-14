@@ -94,3 +94,4 @@ struct TestEnvConditionTripletResult {
 };
 
 TestEnvConditionTripletResult TestEnvConditionTriplet(NG_MULTI_ENV_TRIPLET* triplet, bool set_alignment_variables);
+bool TestMultiEnvCondition(int multi_env_condition_id, bool evaluate_as_or);

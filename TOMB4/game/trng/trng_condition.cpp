@@ -1,8 +1,10 @@
 #include "../../tomb4/pch.h"
 
+#include "../../specific/3dmath.h"
 #include "../../specific/function_stubs.h"
 #include "../../specific/dxshell.h"
 #include "../../specific/file.h"
+
 #include "../control.h"
 #include "../effects.h"
 #include "../objects.h"
@@ -11,16 +13,18 @@
 #include "../items.h"
 #include "../lot.h"
 #include "../lara.h"
+#include "../lara_states.h"
 #include "../newinv.h"
+#include "../savegame.h"
+
 #include "trng.h"
 #include "trng_arithmetic.h"
 #include "trng_condition.h"
+#include "trng_env_condition.h"
 #include "trng_extra_state.h"
-#include "../savegame.h"
-#include "../lara_states.h"
 #include "trng_triggergroup.h"
+
 #include "../../tomb4/tomb4plus/t4plus_inventory.h"
-#include "../../specific/3dmath.h"
 
 #define SECTOR_SIZE 1024
 
@@ -193,10 +197,7 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 		return NGTriggerGroupFunction(param, 0);
 	}
 	case MULTIPLE_CONDITION_OF_X_MULTIENVCONDITION_SCRIPT_COMMAND: {
-#ifndef SILENCE_EXCESSIVE_LOGS
-		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "MULTIPLE_CONDITION_OF_X_MULTIENVCONDITION_SCRIPT_COMMAND is not currently implemented!");
-#endif
-		return false;
+		return TestMultiEnvCondition(param, extra);
 	}
 	case CREATURE_IS_CURRENTLY: {
 		switch (extra) {
