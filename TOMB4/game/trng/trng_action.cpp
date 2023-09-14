@@ -344,7 +344,7 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame, bool 
 			}
 			break;
 		}
-		case TURN_VERTICALLY_X_ANIMATIONG_MOVING_ENDLESS_IN_WAY: {
+		case TURN_VERTICALLY_X_ANIMATING_MOVING_ENDLESS_IN_WAY: {
 			if (first_frame) {
 				switch (action_data) {
 					// Clockwise slowly (one degree per frame)
