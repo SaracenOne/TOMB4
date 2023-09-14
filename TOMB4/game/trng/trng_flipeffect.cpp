@@ -824,6 +824,12 @@ bool variables_multiply_x_variable_by_value(unsigned char variable, unsigned cha
 	return true;
 }
 
+// NGLE - 252
+bool variables_set_in_x_numeric_variable_the_negative_value(unsigned char variable, unsigned char value) {
+	NGNumericOperation(NG_SET, variable, -128 + value);
+	return true;
+}
+
 // NGLE - 253
 bool variables_divide_x_variable_by_value(unsigned char variable, unsigned char value) {
 	NGNumericOperation(NG_DIVIDE, variable, value);
@@ -2314,10 +2320,9 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 				return variables_multiply_x_variable_by_value(action_data_1, action_data_2);
 			break;
 		}
-		case VARIABLE_SET_IN_X_NUMBERIC_VARIABLE_THE_NEGATIVE_VALUE: {
+		case VARIABLES_SET_IN_X_NUMERIC_VARIABLE_THE_NEGATIVE_VALUE: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "VARIABLE_SET_IN_X_NUMBERIC_VARIABLE_THE_NEGATIVE_VALUE unimplemented!");
-				return true;
+				return variables_set_in_x_numeric_variable_the_negative_value(action_data_1, action_data_2);
 			}
 			break;
 		}
