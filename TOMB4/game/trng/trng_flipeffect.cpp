@@ -260,6 +260,7 @@ bool force_lara_animation_0_255_of_slot_animation(unsigned char animation_index,
 	if (lara_item->anim_number != animation_index_offset) {
 		lara_item->anim_number = animation_index_offset;
 		lara_item->frame_number = anims[animation_index_offset].frame_base;
+		lara_item->current_anim_state = anims[animation_index_offset].current_anim_state;
 	}
 
 	return true;
@@ -310,6 +311,7 @@ bool force_lara_animation_256_512_of_slot_animation(unsigned char animation_inde
 	if (lara_item->anim_number != animation_index_offset) {
 		lara_item->anim_number = animation_index_offset;
 		lara_item->frame_number = anims[animation_index_offset].frame_base;
+		lara_item->current_anim_state = anims[animation_index_offset].current_anim_state;
 	}
 
 	return true;

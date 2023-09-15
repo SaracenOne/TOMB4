@@ -71,6 +71,7 @@ void NGItemActivator(int item_id, bool anti) {
 void NGForceItemAnimation(unsigned short item_id, unsigned int animation) {
 	items[item_id].anim_number = objects[items[item_id].object_number].anim_index + animation;
 	items[item_id].frame_number = anims[items[item_id].anim_number].frame_base;
+	items[item_id].current_anim_state = anims[items[item_id].anim_number].current_anim_state;
 }
 
 void NGHurtEnemy(unsigned short item_id, unsigned short damage) {

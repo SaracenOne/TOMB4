@@ -293,10 +293,6 @@ void AnimateLara(ITEM_INFO* item)
 
 			// TRNG feature - make Lara respect the kill command
 			case ACMD_KILL:
-				if (NGUseNGAnimCommands()) {
-					lara_item->hit_points = 0;
-					lara_item->hit_status = 1;
-				}
 				break;
 
 			case ACMD_JUMPVEL:
