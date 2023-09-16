@@ -194,7 +194,7 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 		return false;
 	}
 	case MULTIPLE_CONDITION_OF_X_TRIGGERGROUP_SCRIPT_COMMAND: {
-		return NGTriggerGroupFunction(param, 0);
+		return NGTriggerGroupFunction(param, TRIGGER_GROUP_EXECUTION_MULTIPLE);
 	}
 	case MULTIPLE_CONDITION_OF_X_MULTIENVCONDITION_SCRIPT_COMMAND: {
 		return TestMultiEnvCondition(param, extra);
@@ -446,6 +446,10 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 		}
 
 		return false;
+		break;
+	}
+	case CREATURE_THE_X_CREATURE_HAS_THE_TRANSPARENCY_LEVEL: {
+		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: CREATURE_THE_X_CREATURE_HAS_THE_TRANSPARENCY_LEVEL unimplemented type: 0x%02x!", extra);
 		break;
 	}
 	case VARIABLES_THE_X_NUMERIC_VARIABLE_IS_EQUAL_OR_GREATER_TO: {

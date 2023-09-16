@@ -6,24 +6,20 @@
 #include "trng_flipeffect.h"
 #include "trng_extra_state.h"
 #include "trng_script_parser.h"
+#include "trng_triggergroup.h"
+
+#include "../../tomb4/mod_config.h"
+
+// There is some ambiguity if the implementation of SINGLE_SHOT_RESUMED is implemented correctly for secondary data blocks
+bool NGISTriggerGroupDataResumed(NG_TRIGGER_GROUP_DATA* data) {
+	return ((data->first_field & TGROUP_SINGLE_SHOT_RESUMED) &&
+		is_mod_trng_version_equal_or_greater_than_target(1, 2, 2, 7));
+}
 
 bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char execution_type) {
-	// Multiple performing
-	// Execution Type 0
-	if (execution_type == 0) {
-
-	}
-	// Single performing
-	// Execution Type 1
-	else if (execution_type == 1) {
-
-	}
-	// Continous Performing
-	// Execution Type 2
-	else if (execution_type == 2) {
+	if (execution_type == TRIGGER_GROUP_EXECUTION_CONTINUOUS) {
 		NGSetTriggerGroupContinuous(trigger_group_id, true);
-	}
-	else {
+	} else if (execution_type != TRIGGER_GROUP_EXECUTION_MULTIPLE && execution_type != TRIGGER_GROUP_EXECUTION_SINGLE) {
 		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Unknown TriggerGroup execution type not implemented yet!");
 		return false;
 	}
@@ -38,10 +34,9 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 		NGLog(NG_LOG_TYPE_ERROR, "Attempted to execute NULL TriggerGroup (%u)!", trigger_group_id);
 	}
 
-	while (index < NG_TRIGGER_GROUP_DATA_SIZE) {
+	while (index < trigger_group.data_size) {
 		// Check of unsupported TGROUP flags
-		if (trigger_group.data[index].first_field & TGROUP_SINGLE_SHOT_RESUMED ||
-			trigger_group.data[index].first_field & TGROUP_USE_EXECUTOR_ITEM_INDEX ||
+		if (trigger_group.data[index].first_field & TGROUP_USE_EXECUTOR_ITEM_INDEX ||
 			trigger_group.data[index].first_field & TGROUP_USE_ITEM_USED_BY_LARA_INDEX ||
 			trigger_group.data[index].first_field & TGROUP_USE_OWNER_ANIM_ITEM_INDEX ||
 			trigger_group.data[index].first_field & TGROUP_USE_TRIGGER_ITEM_INDEX) {
@@ -49,7 +44,8 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 			return false;
 		}
 
-		if (trigger_group.data[index].first_field & TGROUP_SINGLE_SHOT) {
+		if ((trigger_group.data[index].first_field & TGROUP_SINGLE_SHOT) ||
+			NGISTriggerGroupDataResumed(&trigger_group.data[index])) {
 			if (trigger_group.oneshot_triggered) {
 				return false;
 			} else {
@@ -83,6 +79,7 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 					current_result = true;
 				}
 
+#ifndef SILENCE_EXCESSIVE_LOGS
 				if (plugin_string) {
 					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Plugin triggers are not yet supported (trigger_id: %u, plugin:%s, first_field:0x%x, second_field:%u, third_field:0x%x)",
 						trigger_group_id,
@@ -98,6 +95,7 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 						((int)trigger_group.data[index].second_field_upper << 16 | (int)trigger_group.data[index].second_field_lower),
 						((int)trigger_group.data[index].third_field_upper << 16 | (int)trigger_group.data[index].third_field_lower));
 				}
+#endif
 			} else {
 				// ActionNG (statics)
 				if ((trigger_group.data[index].first_field & 0xF000) == 0x4000) {
@@ -180,13 +178,27 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 		index++;
 	}
 
+	if (operation_result == true) {
+		trigger_group.was_executed = true;
+	}
+
 	return operation_result;
 }
 
 void NGProcessTriggerGroups() {
 	for (int i = 0; i < MAX_NG_TRIGGER_GROUPS; i++) {
+		for (int j = 0; j < current_trigger_groups[i].data_size; j++) {
+			if (NGISTriggerGroupDataResumed(&current_trigger_groups[i].data[j])) {
+				if (!current_trigger_groups[i].was_executed) {
+					current_trigger_groups[i].oneshot_triggered = false;
+				}
+			}
+		}
+
+		current_trigger_groups[i].was_executed = false;
+
 		if (NGIsTriggerGroupContinuous(i)) {
-			NGTriggerGroupFunction(i, 0);
+			NGTriggerGroupFunction(i, TRIGGER_GROUP_EXECUTION_MULTIPLE);
 		}
 	}
 }

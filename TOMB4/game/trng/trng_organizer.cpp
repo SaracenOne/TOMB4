@@ -19,7 +19,7 @@ void NGExecuteOrganizer(int organizer_id) {
 
 	for (unsigned int i = 0; i < organizer->appointment_count; i++) {
 		if (ng_organizer_states[record_id].current_tick == organizer->appointments[i].time) {
-			NGTriggerGroupFunction(organizer->appointments[i].trigger_group, 0);
+			NGTriggerGroupFunction(organizer->appointments[i].trigger_group, TRIGGER_GROUP_EXECUTION_MULTIPLE);
 			if (i == organizer->appointment_count - 1) {
 				// FO_LOOP
 				if (organizer->flags & 0x02) {

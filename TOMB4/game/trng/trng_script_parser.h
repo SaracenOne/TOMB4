@@ -86,7 +86,8 @@ enum TGROUP_FLAGS {
 	TGROUP_USE_TRIGGER_ITEM_INDEX = 0x02,
 	TGROUP_COMMAND = 0x03,
 	TGROUP_USE_OWNER_ANIM_ITEM_INDEX = 0x04,
-	TGROUP_SINGLE_SHOT_RESUMED = 0x08, // Might also be TGROUP_AND in early versions
+	TGROUP_SINGLE_SHOT_RESUMED = 0x08, // Post 1.2.2.7
+	TGROUP_AND = 0x08, // Pre 1.2.2.7
 	TGROUP_OR = 0x10,
 	TGROUP_NOT = 0x20,
 	TGROUP_ELSE = 0x40,
@@ -123,8 +124,11 @@ struct NG_TRIGGER_GROUP_DATA {
 
 #define NG_TRIGGER_GROUP_DATA_SIZE 0xff
 struct NG_TRIGGER_GROUP {
+	int data_size = 0;
 	NG_TRIGGER_GROUP_DATA data[NG_TRIGGER_GROUP_DATA_SIZE];
+
 	bool oneshot_triggered = false;
+	bool was_executed = false;
 };
 
 struct NG_ORGANIZER_APPOINTMENT {

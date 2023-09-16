@@ -138,7 +138,7 @@ TestEnvConditionTripletResult TestEnvConditionTriplet(NG_MULTI_ENV_TRIPLET* trip
 			break;
 		}
 		case ENV_CONDITION_TRIGGER_GROUP: {
-			result.is_valid = NGTriggerGroupFunction(triplet->distance_for_env, 0);
+			result.is_valid = NGTriggerGroupFunction(triplet->distance_for_env, TRIGGER_GROUP_EXECUTION_MULTIPLE);
 
 			break;	
 		}

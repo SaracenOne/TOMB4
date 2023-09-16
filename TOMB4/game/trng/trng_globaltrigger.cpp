@@ -149,12 +149,12 @@ bool NGExecuteSingleGlobalTrigger(int global_trigger_id, int inventory_object_id
 	bool global_trigger_should_on_false_triggergroup = false;
 
 	if (global_trigger_condition_passed) {
-		if ((condition_trigger_group_id == 0xffff || NGTriggerGroupFunction(condition_trigger_group_id, 0))) {
+		if ((condition_trigger_group_id == 0xffff || NGTriggerGroupFunction(condition_trigger_group_id, TRIGGER_GROUP_EXECUTION_MULTIPLE))) {
 			if (!ng_global_trigger_states[record_id].is_halted) {
 				unsigned int perform_trigger_group_id = global_trigger->perform_trigger_group;
 
 				if (perform_trigger_group_id != 0xffff) {
-					NGTriggerGroupFunction(perform_trigger_group_id, 0);
+					NGTriggerGroupFunction(perform_trigger_group_id, TRIGGER_GROUP_EXECUTION_MULTIPLE);
 				} else {
 					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Unimplemented 'default' perform parameter in GlobalTrigger");
 				}
@@ -178,7 +178,7 @@ bool NGExecuteSingleGlobalTrigger(int global_trigger_id, int inventory_object_id
 	if (global_trigger_should_on_false_triggergroup) {
 		unsigned int on_false_trigger_group_id = global_trigger->on_false_trigger_group;
 		if (on_false_trigger_group_id != 0xffff) {
-			NGTriggerGroupFunction(on_false_trigger_group_id, 0);
+			NGTriggerGroupFunction(on_false_trigger_group_id, TRIGGER_GROUP_EXECUTION_MULTIPLE);
 		}
 	}
 

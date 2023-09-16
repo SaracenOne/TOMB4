@@ -948,13 +948,13 @@ bool camera_set_cinema_effect_type_for_seconds(unsigned char action_data_1, unsi
 // NGLE - 371
 bool perform_triggergroup_from_script_in_single_execution_mode(unsigned char trigger_group_id_lower, unsigned char trigger_group_id_upper) {
 	unsigned short trigger_group_id = (trigger_group_id_upper << 8) | trigger_group_id_lower;
-	return NGTriggerGroupFunction(trigger_group_id, 1);
+	return NGTriggerGroupFunction(trigger_group_id, TRIGGER_GROUP_EXECUTION_SINGLE);
 }
 
 // NGLE - 372
 bool perform_triggergroup_from_script_in_multi_execution_mode(unsigned char trigger_group_id_lower, unsigned char trigger_group_id_upper) {
 	unsigned short trigger_group_id = (trigger_group_id_upper << 8) | trigger_group_id_lower;
-	return NGTriggerGroupFunction(trigger_group_id, 0);
+	return NGTriggerGroupFunction(trigger_group_id, TRIGGER_GROUP_EXECUTION_MULTIPLE);
 }
 
 // NGLE - 374

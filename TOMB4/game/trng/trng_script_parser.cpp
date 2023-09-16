@@ -1218,13 +1218,15 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 								level_trigger_group_table[level_trigger_group_count].record.data[data_index].second_field_lower = second_field;
 								level_trigger_group_table[level_trigger_group_count].record.data[data_index].second_field_upper = 0;
 								level_trigger_group_table[level_trigger_group_count].record.data[data_index].third_field_lower = third_field;
-								level_trigger_group_table[level_trigger_group_count].record.data[data_index].third_field_upper = 0;;
+								level_trigger_group_table[level_trigger_group_count].record.data[data_index].third_field_upper = 0;
 
 								data_index++;
 								if (data_index >= NG_TRIGGER_GROUP_DATA_SIZE) {
 									NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: TriggerGroup size overflow! (level %u)", current_level);
 									return;
 								}
+
+								level_trigger_group_table[level_trigger_group_count].record.data_size = data_index;
 							}
 							level_trigger_group_count++;
 						} else {
@@ -1285,6 +1287,8 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 									NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: TriggerGroup size overflow! (level %u)", current_level);
 									return;
 								}
+
+								level_trigger_group_table[level_trigger_group_count].record.data_size = data_index;
 							}
 							level_trigger_group_count++;
 						}
@@ -1812,6 +1816,8 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 								NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: TriggerGroup size overflow! (level %u)", current_level);
 								return;
 							}
+
+							level_trigger_group_table[level_trigger_group_count].record.data_size = data_index;
 						}
 						level_trigger_group_count++;
 						break;
