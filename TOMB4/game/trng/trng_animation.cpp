@@ -33,8 +33,17 @@ void NGTestAnimation(NG_ANIMATION *animation) {
 
 		// Add newly support flags here...
 		if (animation->fan_flags != 0xffff) {
-			if (animation->fan_flags & ~(FAN_PERFORM_TRIGGER_GROUP | FAN_ALIGN_TO_ENV_POS | FAN_SET_BUSY_HANDS | FAN_SET_FREE_HANDS | FAN_SET_NEUTRAL_STATE_ID | FAN_START_FROM_EXTRA_FRAME)) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGTestAnimation: Unsupported FAN_ flags detected!");
+			if (animation->fan_flags & ~(
+				FAN_PERFORM_TRIGGER_GROUP |
+				FAN_ALIGN_TO_ENV_POS |
+				FAN_SET_BUSY_HANDS |
+				FAN_SET_FREE_HANDS |
+				FAN_SET_NEUTRAL_STATE_ID |
+				FAN_START_FROM_EXTRA_FRAME |
+				FAN_ENABLE_GRAVITY |
+				FAN_DISABLE_GRAVITY)
+				) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGTestAnimation: Unsupported FAN_ flags detected: %u!", animation->fan_flags);
 				return;
 			}
 		}
@@ -133,6 +142,16 @@ void NGTestAnimation(NG_ANIMATION *animation) {
 					// This is likely not correct behaviour, needs further investigation.
 					if (animation->fan_flags & FAN_SET_NEUTRAL_STATE_ID) {
 						lara_item->current_anim_state = 69;
+					}
+
+					if ((animation->fan_flags & FAN_DISABLE_GRAVITY) && (animation->fan_flags & FAN_ENABLE_GRAVITY)) {
+						NGLog(NG_LOG_TYPE_ERROR, "NGTestAnimation: contradictory gravity flags!");
+					} else {
+						if (animation->fan_flags & FAN_DISABLE_GRAVITY) {
+							lara_item->gravity_status = 0;
+						} else if (animation->fan_flags & FAN_ENABLE_GRAVITY) {
+							lara_item->gravity_status = 1;
+						}
 					}
 
 					if (animation->fan_flags & FAN_SET_FREE_HANDS) {
