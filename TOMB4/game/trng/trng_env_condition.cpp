@@ -5,6 +5,7 @@
 #include "../lara.h"
 #include "../control.h"
 #include "trng_test_position.h"
+#include "trng_triggergroup.h"
 
 TestEnvConditionTripletResult TestEnvConditionTriplet(NG_MULTI_ENV_TRIPLET* triplet, bool set_alignment_variables) {
 	TestEnvConditionTripletResult result;
@@ -135,6 +136,11 @@ TestEnvConditionTripletResult TestEnvConditionTriplet(NG_MULTI_ENV_TRIPLET* trip
 				}
 			}
 			break;
+		}
+		case ENV_CONDITION_TRIGGER_GROUP: {
+			result.is_valid = NGTriggerGroupFunction(triplet->distance_for_env, 0);
+
+			break;	
 		}
 		case ENV_LARA_IN_MICRO_STRIP: {
 			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TestEnvConditionTriplet: ENV_LARA_IN_MICRO_STRIP is unimplemented!");

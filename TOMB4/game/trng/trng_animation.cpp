@@ -32,9 +32,11 @@ void NGTestAnimation(NG_ANIMATION *animation) {
 		bool is_valid = false;
 
 		// Add newly support flags here...
-		if (animation->fan_flags & ~(FAN_PERFORM_TRIGGER_GROUP | FAN_ALIGN_TO_ENV_POS | FAN_SET_BUSY_HANDS | FAN_SET_FREE_HANDS | FAN_SET_NEUTRAL_STATE_ID | FAN_START_FROM_EXTRA_FRAME)) {
-			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGTestAnimation: Unsupported FAN_ flags detected!");
-			return;
+		if (animation->fan_flags != 0xffff) {
+			if (animation->fan_flags & ~(FAN_PERFORM_TRIGGER_GROUP | FAN_ALIGN_TO_ENV_POS | FAN_SET_BUSY_HANDS | FAN_SET_FREE_HANDS | FAN_SET_NEUTRAL_STATE_ID | FAN_START_FROM_EXTRA_FRAME)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGTestAnimation: Unsupported FAN_ flags detected!");
+				return;
+			}
 		}
 
 		if (animation->key_2 != 0 && animation->key_2 != 0xffff) {
