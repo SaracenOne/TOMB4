@@ -957,6 +957,13 @@ bool perform_triggergroup_from_script_in_multi_execution_mode(unsigned char trig
 	return NGTriggerGroupFunction(trigger_group_id, TRIGGER_GROUP_EXECUTION_MULTIPLE);
 }
 
+// NGLE - 373
+bool perform_triggergroup_from_script_in_continuous_mode(unsigned char trigger_group_id_lower, unsigned char trigger_group_id_upper) {
+	unsigned short trigger_group_id = (trigger_group_id_upper << 8) | trigger_group_id_lower;
+	return NGTriggerGroupFunction(trigger_group_id, TRIGGER_GROUP_EXECUTION_CONTINUOUS);
+}
+
+
 // NGLE - 374
 bool enable_global_trigger_with_id(unsigned char global_trigger_id_lower, unsigned char global_trigger_id_upper) {
 	unsigned short global_trigger_id = (global_trigger_id_upper << 8) | global_trigger_id_lower;
@@ -2700,6 +2707,13 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 			}
 			break;
 		}
+		case TRIGGERGROUP_ENABLE_NEWLY_THE_ONESHOT_X_TRIGGERGROUP_ALREADY_PERFORMED: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TRIGGERGROUP_ENABLE_NEWLY_THE_ONESHOT_X_TRIGGERGROUP_ALREADY_PERFORMED unimplemented!");
+				return true;
+			}
+			break;
+		}
 		case SCREEN_FLASH_SCREEN_WITH_LIGHT_COLOR_FOR_DURATION: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
 				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "SCREEN_FLASH_SCREEN_WITH_LIGHT_COLOR_FOR_DURATION unimplemented!");
@@ -2731,14 +2745,19 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 				return camera_set_cinema_effect_type_for_seconds(action_data_1, action_data_2);
 			break;
 		}
-		case PERFORM_TRIGGERGROUP_FROM_SCRIPT_IN_SINGLE_EXECUTION: {
+		case PERFORM_X_TRIGGERGROUP_FROM_SCRIPT_IN_SINGLE_EXECUTION: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return perform_triggergroup_from_script_in_single_execution_mode(action_data_1, action_data_2);
 			break;
 		}
-		case PERFORM_TRIGGERGROUP_FROM_SCRIPT_IN_MULTI_EXECUTION: {
+		case PERFORM_X_TRIGGERGROUP_FROM_SCRIPT_IN_MULTI_EXECUTION: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return perform_triggergroup_from_script_in_multi_execution_mode(action_data_1, action_data_2);
+			break;
+		}
+		case PERFORM_X_TRIGGERGROUP_FROM_SCRIPT_IN_CONTINUOUS_EXECUTION: {
+			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
+				return perform_triggergroup_from_script_in_continuous_mode(action_data_1, action_data_2);
 			break;
 		}
 		case GLOBAL_TRIGGER_ENABLE_WITH_ID: {
