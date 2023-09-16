@@ -531,6 +531,12 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame, bool 
 			}
 			break;
 		}
+		case ENEMY_SAVE_THE_COORDINATES_AND_FACING_OF_X_MOVEABLE_IN_SAVEGAME: {
+			if (!first_frame) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ENEMY_SAVE_THE_COORDINATES_AND_FACING_OF_X_MOVEABLE_IN_SAVEGAME unimplemented!");
+			}
+			break;
+		}
 		case HURT_ENEMY: {
 			if (first_frame) {
 				NGHurtEnemy(item_id, action_data & 0x7f);
@@ -859,6 +865,12 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame, bool 
 				if (item) {
 					item->current_anim_state = action_data; // Do we need to change the goal state too or not?
 				}
+			}
+			break;
+		}
+		case TRIGGER_SET_X_MOVEABLE_AS_ACTIVE_ITEM: {
+			if (!first_frame) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TRIGGER_SET_X_MOVEABLE_AS_ACTIVE_ITEM unimplemented!");
 			}
 			break;
 		}
