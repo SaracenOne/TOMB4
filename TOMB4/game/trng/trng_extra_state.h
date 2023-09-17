@@ -81,6 +81,10 @@ extern char ng_local_timer_frame_increment;
 extern NGTimerPosition ng_local_timer_position;
 extern int ng_local_timer_time_until_hide;
 
+// Level
+extern int pending_level_load_timer;
+extern int pending_level_load_id;
+
 // Variables
 extern int ng_current_value;
 extern int ng_global_alfa;

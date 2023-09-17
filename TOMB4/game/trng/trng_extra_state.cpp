@@ -134,6 +134,10 @@ char ng_local_timer_frame_increment = 0;
 NGTimerPosition ng_local_timer_position = NG_TIMER_POSITION_INVISIBLE;
 int ng_local_timer_time_until_hide = 0;
 
+// Level
+int pending_level_load_timer = -1;
+int pending_level_load_id = 0;
+
 // Variables
 int ng_current_value = 0;
 int ng_global_alfa = 0;
@@ -639,6 +643,14 @@ void NGFrameStartUpdate() {
 	NGProcessTriggerGroups();
 	NGProcessOrganizers();
 
+	if (pending_level_load_timer >= 0) {
+		if (pending_level_load_timer == 0) {
+			gfLevelComplete = pending_level_load_id;
+			gfRequiredStartPos = 0;
+		}
+		pending_level_load_timer--;
+	}
+
 	// If a timer has reached zero, reset its incrementation value
 	if (ng_local_timer <= 0)
 		ng_local_timer_frame_increment = 0;
@@ -1067,6 +1079,10 @@ void NGSetupExtraState() {
 	ng_local_timer_frame_increment = 0;
 	ng_local_timer_position = NG_TIMER_POSITION_INVISIBLE;
 	ng_local_timer_time_until_hide = 0;
+
+	// Level
+	pending_level_load_timer = -1;
+	pending_level_load_id = 0;
 
 	// Variables
 	ng_current_value = 0;

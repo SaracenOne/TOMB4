@@ -317,6 +317,20 @@ bool force_lara_animation_256_512_of_slot_animation(unsigned char animation_inde
 	return true;
 }
 
+// NGLE - 82
+bool delay_load_x_level_in_seconds(unsigned char level_id, unsigned char level_timer) {
+	if (level_timer < 0x1f) {
+		pending_level_load_timer = level_timer * 30;
+	} else {
+		// Not sure how this works. Editor calls it 'perform one single time', but it doesn't seem to do anything.
+		pending_level_load_timer = -1;
+	}
+	pending_level_load_id = level_id;
+
+	return true;
+}
+
+
 // NGLE - 83
 bool remove_weapons_or_flares_from_laras_hands(unsigned char unused1, unsigned char unused2) {
 	lara.request_gun_type = WEAPON_NONE;
@@ -1204,9 +1218,9 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TEXT_SET_SIZE_CHARACTERS_FOR_NEXT_PRINT_STRING_COMMAND unimplemented!");
 			break;
 		}
-		case DELAY_LOAD_LEVEL_IN_X_SECONDS: {
+		case DELAY_LOAD_X_LEVEL_IN_SECONDS: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "DELAY_LOAD_LEVEL_IN_X_SECONDS unimplemented!");
+				return delay_load_x_level_in_seconds(action_data_1, action_data_2);
 			break;
 		}
 		case REMOVE_WEAPONS_OR_FLARES_FROM_LARAS_HANDS: {
