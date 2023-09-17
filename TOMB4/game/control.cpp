@@ -1025,6 +1025,7 @@ void TestTriggers(short* data, long heavy, long HeavyFlags, int room_number, int
 		case TO_FLIPEFFECT:
 			if (NGUseNGFlipEffects()) {
 				trigger = *data++;
+				timer = 0; // Does the flipeffect reset this?
 				int plugin_id = NGGetPluginIDForFloorData(data);
 				if (plugin_id == 0) {
 					NGFlipEffectTrigger(value, (trigger & 0x7fff), heavy);
