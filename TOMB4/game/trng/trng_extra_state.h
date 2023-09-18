@@ -120,15 +120,15 @@ extern bool NGIsItemPerformingContinousAction(unsigned int item_num);
 extern bool NGIsItemPerformingRotation(unsigned int item_num);
 extern bool NGIsItemPerformingMovement(unsigned int item_num);
 
-extern short NGGetHorizontalRotationSpeed(unsigned int item_num);
-extern void NGSetHorizontalRotationSpeed(unsigned int item_num, short speed);
-extern short NGGetVerticalRotationSpeed(unsigned int item_num);
-extern void NGSetVerticalRotationSpeed(unsigned int item_num, short speed);
+extern short NGGetItemHorizontalRotationSpeed(unsigned int item_num);
+extern void NGSetItemHorizontalRotationSpeed(unsigned int item_num, short speed);
+extern short NGGetItemVerticalRotationSpeed(unsigned int item_num);
+extern void NGSetItemVerticalRotationSpeed(unsigned int item_num, short speed);
 
-extern int NGGetHorizontalRotationRemaining(unsigned int item_num);
-extern void NGSetHorizontalRotationRemaining(unsigned int item_num, int remaining);
-extern int NGGetVerticalRotationRemaining(unsigned int item_num);
-extern void NGSetVerticalRotationRemaining(unsigned int item_num, int remaining);
+extern int NGGetItemHorizontalRotationRemaining(unsigned int item_num);
+extern void NGSetItemHorizontalRotationRemaining(unsigned int item_num, int remaining);
+extern int NGGetItemVerticalRotationRemaining(unsigned int item_num);
+extern void NGSetItemVerticalRotationRemaining(unsigned int item_num, int remaining);
 
 extern void NGSetItemHorizontalMovementAngle(unsigned int item_num, short angle);
 extern short NGGetItemHorizontalMovementAngle(unsigned int item_num);

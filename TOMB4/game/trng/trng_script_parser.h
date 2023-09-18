@@ -201,6 +201,24 @@ struct NG_LEVEL_RECORD_DATA {
 	NG_DEFINE_RECORD_DATA_ENTRY(NG_TEST_POSITION, test_position);
 };
 
+struct NG_LEVEL_RECORD_TABLES {
+	unsigned int level_global_trigger_count = 0;
+	unsigned int level_trigger_group_count = 0;
+	unsigned int level_organizer_count = 0;
+	unsigned int level_item_group_count = 0;
+	unsigned int level_animation_count = 0;
+	unsigned int level_multi_env_condition_count = 0;
+	unsigned int level_test_position_count = 0;
+
+	NG_GLOBAL_TRIGGER_RECORD* level_global_triggers_table = NULL;
+	NG_TRIGGER_GROUP_RECORD* level_trigger_group_table = NULL;
+	NG_ORGANIZER_RECORD* level_organizer_table = NULL;
+	NG_ITEM_GROUP_RECORD* level_item_group_table = NULL;
+	NG_ANIMATION_RECORD* level_animation_table = NULL;
+	NG_MULTI_ENV_CONDITION_RECORD* level_multi_env_condition_table = NULL;
+	NG_TEST_POSITION_RECORD* level_test_position_table = NULL;
+};
+
 struct NG_MOVE_ITEM {
 	unsigned short flags;
 	unsigned short index_item;

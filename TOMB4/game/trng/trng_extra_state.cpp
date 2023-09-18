@@ -28,47 +28,58 @@ NG_LARA_EXTRASTATE ng_lara_extrastate;
 
 unsigned int ng_room_offset_table[0xff];
 
-// NG_ITEM_EXTRADATA is persistent supllementary data used by TRNG triggers.
-// The state here can subseqeuently be serialized as additional data for savegames.
-struct NG_ITEM_EXTRADATA {
-	short frozen_ticks = 0;
+struct NG_MOVEMENT_INFO {
 	short horizontal_rotation_speed = 0;
 	short vertical_rotation_speed = 0;
 	int horizontal_rotation_remaining = 0;
 	int vertical_rotation_remaining = 0;
-	bool collison_disabled = false; // Will only disable the ObjectCollision routine. Doors and enemies stll have collision.
 	unsigned short movement_speed = 0;
 	short movement_in_progress_sound = -1;
 	short movement_finished_sound = -1;
 	short move_horizontal_angle = 0;
 	int move_horizontal_remaining_units = 0;
 	int move_vertical_remaining_units = 0;
+};
+
+// NG_ITEM_EXTRADATA is persistent supllementary data used by TRNG triggers.
+// The state here can subseqeuently be serialized as additional data for savegames.
+struct NG_ITEM_EXTRADATA {
+	short frozen_ticks = 0;
+	bool collison_disabled = false; // Will only disable the ObjectCollision routine. Doors and enemies stll have collision.
 	unsigned int mesh_visibility_mask = 0xffffffff;
 	short after_death_override = 0;
+
+	NG_MOVEMENT_INFO movement_info;
 };
 
 NG_ITEM_EXTRADATA *ng_items_extradata = NULL;
+NG_MOVEMENT_INFO *ng_statics_movement_info = NULL;
+
+void NGResetMovementInfo(NG_MOVEMENT_INFO* movement_info) {
+	movement_info->horizontal_rotation_speed = 0;
+	movement_info->vertical_rotation_speed = 0;
+	movement_info->horizontal_rotation_remaining = 0;
+	movement_info->vertical_rotation_remaining = 0;
+
+	movement_info->movement_speed = 0;
+	movement_info->movement_in_progress_sound = -1;
+	movement_info->movement_finished_sound = -1;
+	movement_info->move_horizontal_angle = 0;
+	movement_info->move_horizontal_remaining_units = 0;
+	movement_info->move_vertical_remaining_units = 0;
+}
 
 void NGResetItemExtraData(int item_number) {
 	NG_ITEM_EXTRADATA *current_extradata = &ng_items_extradata[item_number];
 
 	if (current_extradata) {
 		current_extradata->frozen_ticks = 0;
-
-		current_extradata->horizontal_rotation_speed = 0;
-		current_extradata->vertical_rotation_speed = 0;
-		current_extradata->horizontal_rotation_remaining = 0;
-		current_extradata->vertical_rotation_remaining = 0;
-
 		current_extradata->collison_disabled = false; // Will only disable the ObjectCollision routine. Doors and enemies stll have collision.
-		current_extradata->movement_speed = 0;
-		current_extradata->movement_in_progress_sound = -1;
-		current_extradata->movement_finished_sound = -1;
-		current_extradata->move_horizontal_angle = 0;
-		current_extradata->move_horizontal_remaining_units = 0;
-		current_extradata->move_vertical_remaining_units = 0;
+
 		current_extradata->mesh_visibility_mask = 0xffffffff;
 		current_extradata->after_death_override = 0;
+
+		NGResetMovementInfo(&current_extradata->movement_info);
 	} else {
 		NGLog(NG_LOG_TYPE_ERROR, "NGResetItemExtraData: invalid item_number!");
 	}
@@ -376,44 +387,44 @@ void NGEnableInput(unsigned char input) {
 }
 
 void NGHandleItemRotation(unsigned int item_num) {
-	if (NGGetHorizontalRotationRemaining(item_num)) {
-		int rotate_by_amount = NGGetHorizontalRotationSpeed(item_num);
-		int remaining_rotation_units = NGGetHorizontalRotationRemaining(item_num);
+	if (NGGetItemHorizontalRotationRemaining(item_num)) {
+		int rotate_by_amount = NGGetItemHorizontalRotationSpeed(item_num);
+		int remaining_rotation_units = NGGetItemHorizontalRotationRemaining(item_num);
 		if (
 			(remaining_rotation_units >= 0 && rotate_by_amount > remaining_rotation_units) || 
 			(remaining_rotation_units < 0 && rotate_by_amount < remaining_rotation_units)) {
 			rotate_by_amount = remaining_rotation_units;
 		}
 
-		NGRotateItemY(item_num, NGGetHorizontalRotationSpeed(item_num));
-		NGSetHorizontalRotationRemaining(item_num, remaining_rotation_units - rotate_by_amount);
+		NGRotateItemY(item_num, NGGetItemHorizontalRotationSpeed(item_num));
+		NGSetItemHorizontalRotationRemaining(item_num, remaining_rotation_units - rotate_by_amount);
 
-		if (NGGetHorizontalRotationRemaining(item_num) == 0) {
+		if (NGGetItemHorizontalRotationRemaining(item_num) == 0) {
 			// Reset everything
-			NGSetHorizontalRotationSpeed(item_num, 0);
+			NGSetItemHorizontalRotationSpeed(item_num, 0);
 		}
 	} else {
-		NGRotateItemY(item_num, NGGetHorizontalRotationSpeed(item_num));
+		NGRotateItemY(item_num, NGGetItemHorizontalRotationSpeed(item_num));
 	}
 
-	if (NGGetVerticalRotationRemaining(item_num)) {
-		int rotate_by_amount = NGGetVerticalRotationSpeed(item_num);
-		int remaining_rotation_units = NGGetVerticalRotationRemaining(item_num);
+	if (NGGetItemVerticalRotationRemaining(item_num)) {
+		int rotate_by_amount = NGGetItemVerticalRotationSpeed(item_num);
+		int remaining_rotation_units = NGGetItemVerticalRotationRemaining(item_num);
 		if (
 			(remaining_rotation_units >= 0 && rotate_by_amount > remaining_rotation_units) ||
 			(remaining_rotation_units < 0 && rotate_by_amount < remaining_rotation_units)) {
 			rotate_by_amount = remaining_rotation_units;
 		}
 
-		NGRotateItemX(item_num, NGGetVerticalRotationSpeed(item_num));
-		NGSetVerticalRotationRemaining(item_num, remaining_rotation_units - rotate_by_amount);
+		NGRotateItemX(item_num, NGGetItemVerticalRotationSpeed(item_num));
+		NGSetItemVerticalRotationRemaining(item_num, remaining_rotation_units - rotate_by_amount);
 
-		if (NGGetVerticalRotationRemaining(item_num) == 0) {
+		if (NGGetItemVerticalRotationRemaining(item_num) == 0) {
 			// Reset everything
-			NGSetVerticalRotationSpeed(item_num, 0);
+			NGSetItemVerticalRotationSpeed(item_num, 0);
 		}
 	} else {
-		NGRotateItemX(item_num, NGGetVerticalRotationSpeed(item_num));
+		NGRotateItemX(item_num, NGGetItemVerticalRotationSpeed(item_num));
 	}
 }
 
@@ -427,7 +438,7 @@ void NGHandleItemMovement(unsigned int item_num) {
 			move_by_amount = remaining_movement_units;
 		}
 
-		NGMoveItemHorizontalByUnits(item_num, ng_items_extradata[item_num].move_horizontal_angle, move_by_amount);
+		NGMoveItemHorizontalByUnits(item_num, ng_items_extradata[item_num].movement_info.move_horizontal_angle, move_by_amount);
 		NGSetItemHorizontalMovementRemainingUnits(item_num, remaining_movement_units - move_by_amount);
 
 		if (NGGetItemHorizontalMovementRemainingUnits(item_num) == 0) {
@@ -451,7 +462,7 @@ void NGUpdateAllItems() {
 			ng_items_extradata[i].frozen_ticks--;
 		}
 
-		if (NGGetHorizontalRotationSpeed(i) || NGGetVerticalRotationSpeed(i)) {
+		if (NGGetItemHorizontalRotationSpeed(i) || NGGetItemVerticalRotationSpeed(i)) {
 			NGHandleItemRotation(i);
 		}
 
@@ -849,15 +860,15 @@ void NGSetItemFreezeTimer(unsigned int item_num, int ticks) {
 }
 
 bool NGIsItemPerformingContinousAction(unsigned int item_num) {
-	return NGGetHorizontalRotationRemaining(item_num) ||
-		NGGetVerticalRotationRemaining(item_num) ||
+	return NGGetItemHorizontalRotationRemaining(item_num) ||
+		NGGetItemVerticalRotationRemaining(item_num) ||
 		NGGetItemHorizontalMovementRemainingUnits(item_num) ||
 		NGGetItemVerticalMovementRemainingUnits(item_num);
 }
 
 bool NGIsItemPerformingRotation(unsigned int item_num) {
-	return NGGetHorizontalRotationRemaining(item_num) ||
-		NGGetVerticalRotationRemaining(item_num);
+	return NGGetItemHorizontalRotationRemaining(item_num) ||
+		NGGetItemVerticalRotationRemaining(item_num);
 }
 
 bool NGIsItemPerformingMovement(unsigned int item_num) {
@@ -865,85 +876,85 @@ bool NGIsItemPerformingMovement(unsigned int item_num) {
 		NGGetItemVerticalMovementRemainingUnits(item_num);
 }
 
-short NGGetHorizontalRotationSpeed(unsigned int item_num) {
-	return ng_items_extradata[item_num].horizontal_rotation_speed;
+short NGGetItemHorizontalRotationSpeed(unsigned int item_num) {
+	return ng_items_extradata[item_num].movement_info.horizontal_rotation_speed;
 }
 
-void NGSetHorizontalRotationSpeed(unsigned int item_num, short speed) {
-	ng_items_extradata[item_num].horizontal_rotation_speed = speed;
+void NGSetItemHorizontalRotationSpeed(unsigned int item_num, short speed) {
+	ng_items_extradata[item_num].movement_info.horizontal_rotation_speed = speed;
 }
 
-short NGGetVerticalRotationSpeed(unsigned int item_num) {
-	return ng_items_extradata[item_num].vertical_rotation_speed;
+short NGGetItemVerticalRotationSpeed(unsigned int item_num) {
+	return ng_items_extradata[item_num].movement_info.vertical_rotation_speed;
 }
 
-void NGSetVerticalRotationSpeed(unsigned int item_num, short speed) {
-	ng_items_extradata[item_num].vertical_rotation_speed = speed;
+void NGSetItemVerticalRotationSpeed(unsigned int item_num, short speed) {
+	ng_items_extradata[item_num].movement_info.vertical_rotation_speed = speed;
 }
 
-int NGGetHorizontalRotationRemaining(unsigned int item_num) {
-	return ng_items_extradata[item_num].horizontal_rotation_remaining;
+int NGGetItemHorizontalRotationRemaining(unsigned int item_num) {
+	return ng_items_extradata[item_num].movement_info.horizontal_rotation_remaining;
 }
 
-extern void NGSetHorizontalRotationRemaining(unsigned int item_num, int remaining) {
-	ng_items_extradata[item_num].horizontal_rotation_remaining = remaining;
+extern void NGSetItemHorizontalRotationRemaining(unsigned int item_num, int remaining) {
+	ng_items_extradata[item_num].movement_info.horizontal_rotation_remaining = remaining;
 }
 
-extern int NGGetVerticalRotationRemaining(unsigned int item_num) {
-	return ng_items_extradata[item_num].vertical_rotation_remaining;
+extern int NGGetItemVerticalRotationRemaining(unsigned int item_num) {
+	return ng_items_extradata[item_num].movement_info.vertical_rotation_remaining;
 }
 
-extern void NGSetVerticalRotationRemaining(unsigned int item_num, int remaining) {
-	ng_items_extradata[item_num].vertical_rotation_remaining = remaining;
+extern void NGSetItemVerticalRotationRemaining(unsigned int item_num, int remaining) {
+	ng_items_extradata[item_num].movement_info.vertical_rotation_remaining = remaining;
 }
 
 //
 void NGSetItemHorizontalMovementAngle(unsigned int item_num, short angle) {
-	ng_items_extradata[item_num].move_horizontal_angle = angle;
+	ng_items_extradata[item_num].movement_info.move_horizontal_angle = angle;
 }
 
 short NGGetItemHorizontalMovementAngle(unsigned int item_num) {
-	return ng_items_extradata[item_num].move_horizontal_angle;
+	return ng_items_extradata[item_num].movement_info.move_horizontal_angle;
 }
 
 int NGGetItemHorizontalMovementRemainingUnits(unsigned int item_num) {
-	return ng_items_extradata[item_num].move_horizontal_remaining_units;
+	return ng_items_extradata[item_num].movement_info.move_horizontal_remaining_units;
 }
 
 void NGSetItemHorizontalMovementRemainingUnits(unsigned int item_num, int units) {
-	ng_items_extradata[item_num].move_horizontal_remaining_units = units;
+	ng_items_extradata[item_num].movement_info.move_horizontal_remaining_units = units;
 }
 
 int NGGetItemVerticalMovementRemainingUnits(unsigned int item_num) {
-	return ng_items_extradata[item_num].move_vertical_remaining_units;
+	return ng_items_extradata[item_num].movement_info.move_vertical_remaining_units;
 }
 
 void NGSetItemVerticalMovementRemainingUnits(unsigned int item_num, int units) {
-	ng_items_extradata[item_num].move_vertical_remaining_units = units;
+	ng_items_extradata[item_num].movement_info.move_vertical_remaining_units = units;
 }
 
 int NGGetItemMovementSpeed(unsigned int item_num) {
-	return ng_items_extradata[item_num].movement_speed;
+	return ng_items_extradata[item_num].movement_info.movement_speed;
 }
 
 void NGSetItemMovementSpeed(unsigned int item_num, unsigned int movement_speed) {
-	ng_items_extradata[item_num].movement_speed = movement_speed;
+	ng_items_extradata[item_num].movement_info.movement_speed = movement_speed;
 }
 
 int NGGetItemMovementInProgressSound(unsigned int item_num) {
-	return ng_items_extradata[item_num].movement_in_progress_sound;
+	return ng_items_extradata[item_num].movement_info.movement_in_progress_sound;
 }
 
 void NGSetItemMovementInProgressSound(unsigned int item_num, int sound_effect_id) {
-	ng_items_extradata[item_num].movement_in_progress_sound = sound_effect_id;
+	ng_items_extradata[item_num].movement_info.movement_in_progress_sound = sound_effect_id;
 }
 
 int NGGetItemMovementFinishedSound(unsigned int item_num) {
-	return ng_items_extradata[item_num].movement_finished_sound;
+	return ng_items_extradata[item_num].movement_info.movement_finished_sound;
 }
 
 void NGSetItemMovementFinishedSound(unsigned int item_num, int sound_effect_id) {
-	ng_items_extradata[item_num].movement_finished_sound = sound_effect_id;
+	ng_items_extradata[item_num].movement_info.movement_finished_sound = sound_effect_id;
 }
 
 bool NGIsItemCollisionDisabled(unsigned int item_num) {
@@ -1103,6 +1114,12 @@ void NGSetupExtraState() {
 	ng_items_extradata = (NG_ITEM_EXTRADATA*)game_malloc(ITEM_COUNT * sizeof(NG_ITEM_EXTRADATA));
 	for (int i = 0; i < ITEM_COUNT; i++) {
 		NGResetItemExtraData(i);
+	}
+
+	// Statics
+	ng_statics_movement_info = (NG_MOVEMENT_INFO*)game_malloc(NG_STATIC_ID_TABLE_SIZE * sizeof(NG_MOVEMENT_INFO));
+	for (int i = 0; i < NG_STATIC_ID_TABLE_SIZE; i++) {
+		NGResetMovementInfo(&ng_statics_movement_info[i]);
 	}
 
 	// Records
