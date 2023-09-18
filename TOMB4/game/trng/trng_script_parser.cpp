@@ -1345,8 +1345,7 @@ int NGReadLevelBlock(char* gfScriptFile, unsigned int offset, NG_LEVEL_RECORD_TA
 
 			if (plugin_id == 0) {
 				switch (param_category) {
-					// PARAM_MOVE_ITEM
-				case 0x02: {
+				case PARAM_MOVE_ITEM: {
 					unsigned short id = NG_READ_16(gfScriptFile, offset);
 					unsigned short flags = NG_READ_16(gfScriptFile, offset);
 					if (flags == 0xffff || flags == 0) {
@@ -1367,128 +1366,112 @@ int NGReadLevelBlock(char* gfScriptFile, unsigned int offset, NG_LEVEL_RECORD_TA
 					}
 					break;
 				}
-						 // PARAM_ROTATE_ITEM
-				case 0x03: {
+				case PARAM_ROTATE_ITEM: {
 					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Parameter category PARAM_ROTATE_ITEM not implemented! (level %u)", current_level);
 
 					// Skip to the end
 					offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 					break;
 				}
-						 // PARAM_COLOR_ITEM
-				case 0x04: {
+				case PARAM_COLOR_ITEM: {
 					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Parameter category PARAM_COLOR_ITEM not implemented! (level %u)", current_level);
 
 					// Skip to the end
 					offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 					break;
 				}
-						 // PARAM_PRINT_TEXT
-				case 0x05: {
+				case PARAM_PRINT_TEXT: {
 					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Parameter category PARAM_PRINT_TEXT not implemented! (level %u)", current_level);
 
 					// Skip to the end
 					offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 					break;
 				}
-						 // PARAM_SET_CAMERA
-				case 0x06: {
+				case PARAM_SET_CAMERA: {
 					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Parameter category PARAM_SET_CAMERA not implemented! (level %u)", current_level);
 
 					// Skip to the end
 					offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 					break;
 				}
-						 // PARAM_BIG_NUMBERS
-				case 0x07: {
+				case PARAM_BIG_NUMBERS: {
 					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Parameter category PARAM_BIG_NUMBERS not implemented! (level %u)", current_level);
 
 					// Skip to the end
 					offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 					break;
 				}
-						 // PARAM_SCALE_ITEM
-				case 0x08: {
+				case PARAM_SCALE_ITEM: {
 					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Parameter category PARAM_SCALE_ITEM not implemented! (level %u)", current_level);
 
 					// Skip to the end
 					offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 					break;
 				}
-						 // PARAM_SHOW_SPRITE
-				case 0x09: {
+				case PARAM_SHOW_SPRITE: {
 					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Parameter category PARAM_SHOW_SPRITE not implemented! (level %u)", current_level);
 
 					// Skip to the end
 					offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 					break;
 				}
-						 // PARAM_TRIANGLE
-				case 0x0a: {
+				case PARAM_TRIANGLE: {
 					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Parameter category PARAM_TRIANGLE not implemented! (level %u)", current_level);
 
 					// Skip to the end
 					offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 					break;
 				}
-						 // PARAM_QUADRILATERAL
-				case 0x0b: {
+				case PARAM_QUADRILATERAL: {
 					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Parameter category PARAM_QUADRILATERAL not implemented! (level %u)", current_level);
 
 					// Skip to the end
 					offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 					break;
 				}
-						 // PARAM_CIRCLE
-				case 0x0c: {
+				case PARAM_CIRCLE: {
 					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Parameter category PARAM_CIRCLE not implemented! (level %u)", current_level);
 
 					// Skip to the end
 					offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 					break;
 				}
-						 // PARAM_LIGHTNING
-				case 0x0d: {
+				case PARAM_LIGHTNING: {
 					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Parameter category PARAM_LIGHTNING not implemented! (level %u)", current_level);
 
 					// Skip to the end
 					offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 					break;
 				}
-						 // PARAM_WTEXT
-				case 0x0e: {
+				case PARAM_WTEXT: {
 					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Parameter category PARAM_WTEXT not implemented! (level %u)", current_level);
 
 					// Skip to the end
 					offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 					break;
 				}
-						 // PARAM_RECT
-				case 0x0f: {
+				case PARAM_RECT: {
 					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Parameter category PARAM_RECT not implemented! (level %u)", current_level);
 
 					// Skip to the end
 					offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 					break;
 				}
-						 // PARAM_SWAP_ANIMATIONS
-				case 0x10: {
+				case PARAM_SWAP_ANIMATIONS: {
 					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Parameter category PARAM_SWAP_ANIMATIONS not implemented! (level %u)", current_level);
 
 					// Skip to the end
 					offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 					break;
 				}
-						 // PARAM_ACTOR_SPEECH
-				case 0x11: {
+				case PARAM_ACTOR_SPEECH: {
 					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Parameter category PARAM_ACTOR_SPEECH not implemented! (level %u)", current_level);
 
 					// Skip to the end
 					offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 					break;
 				}
-						 // PARAM_INPUT_BOX
-				case 0x12: {
+				case PARAM_INPUT_BOX: {
 					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Parameter category PARAM_INPUT_BOX not implemented! (level %u)", current_level);
 
 					// Skip to the end
