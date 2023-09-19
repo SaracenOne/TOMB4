@@ -116,6 +116,8 @@ extern void NGEnableInput(unsigned char input);
 extern bool NGIsItemFrozen(unsigned int item_num);
 extern void NGSetItemFreezeTimer(unsigned int item_num, int ticks);
 
+// Moveables
+
 extern bool NGIsItemPerformingContinousAction(unsigned int item_num);
 extern bool NGIsItemPerformingRotation(unsigned int item_num);
 extern bool NGIsItemPerformingMovement(unsigned int item_num);
@@ -133,7 +135,6 @@ extern void NGSetItemVerticalRotationRemaining(unsigned int item_num, int remain
 extern void NGSetItemHorizontalMovementAngle(unsigned int item_num, short angle);
 extern short NGGetItemHorizontalMovementAngle(unsigned int item_num);
 
-
 extern int NGGetItemHorizontalMovementRemainingUnits(unsigned int item_num);
 extern void NGSetItemHorizontalMovementRemainingUnits(unsigned int item_num, int units);
 
@@ -146,6 +147,40 @@ extern int NGGetItemMovementInProgressSound(unsigned int item_num);
 extern void NGSetItemMovementInProgressSound(unsigned int item_num, int sound_effect_id);
 extern void NGSetItemMovementFinishedSound(unsigned int item_num, int sound_effect_id);
 extern int NGGetItemMovementFinishedSound(unsigned int item_num);
+
+// Statics
+
+extern bool NGIsStaticPerformingContinousAction(unsigned int static_num);
+extern bool NGIsStaticPerformingRotation(unsigned int static_num);
+extern bool NGIsStaticPerformingMovement(unsigned int static_num);
+
+extern short NGGetStaticHorizontalRotationSpeed(unsigned int static_num);
+extern void NGSetStaticHorizontalRotationSpeed(unsigned int static_num, short speed);
+extern short NGGetStaticVerticalRotationSpeed(unsigned int static_num);
+extern void NGSetStaticVerticalRotationSpeed(unsigned int static_num, short speed);
+
+extern int NGGetStaticHorizontalRotationRemaining(unsigned int static_num);
+extern void NGSetStaticHorizontalRotationRemaining(unsigned int static_num, int remaining);
+extern int NGGetStaticVerticalRotationRemaining(unsigned int static_num);
+extern void NGSetStaticVerticalRotationRemaining(unsigned int static_num, int remaining);
+
+extern void NGSetStaticHorizontalMovementAngle(unsigned int static_num, short angle);
+extern short NGGetStaticHorizontalMovementAngle(unsigned int static_num);
+
+extern int NGGetStaticHorizontalMovementRemainingUnits(unsigned int static_num);
+extern void NGSetStaticHorizontalMovementRemainingUnits(unsigned int static_num, int units);
+
+extern int NGGetStaticVerticalMovementRemainingUnits(unsigned int static_num);
+extern void NGSetStaticVerticalMovementRemainingUnits(unsigned int static_num, int units);
+
+extern int NGGetStaticMovementSpeed(unsigned int static_num);
+extern void NGSetStaticMovementSpeed(unsigned int static_num, unsigned int movement_speed);
+extern int NGGetStaticMovementInProgressSound(unsigned int static_num);
+extern void NGSetStaticMovementInProgressSound(unsigned int static_num, int sound_effect_id);
+extern void NGSetStaticMovementFinishedSound(unsigned int static_num, int sound_effect_id);
+extern int NGGetStaticMovementFinishedSound(unsigned int static_num);
+
+//
 
 extern void NGAddLaraMoveableCollision(int item_number);
 extern void NGAddLaraStaticCollision(int room_number, int mesh_number);

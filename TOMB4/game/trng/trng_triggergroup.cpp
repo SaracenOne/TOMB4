@@ -109,7 +109,7 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 					if (trigger_group.data[index].first_field & TGROUP_USE_FOUND_ITEM_INDEX) {
 						current_result = NGAction(ng_found_item_index, trigger_group.data[index].third_field_lower & 0x7fff, true, true) != -1;
 					} else {
-						current_result = NGAction(ng_script_id_table[trigger_group.data[index].second_field_lower], trigger_group.data[index].third_field_lower & 0x7fff, true, true) != -1;
+						current_result = NGAction(ng_script_id_table[trigger_group.data[index].second_field_lower].script_index, trigger_group.data[index].third_field_lower & 0x7fff, true, true) != -1;
 					}
 
 					if (!current_result) {
@@ -130,7 +130,7 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 					if (trigger_group.data[index].first_field & TGROUP_USE_FOUND_ITEM_INDEX) {
 						current_result = NGCondition(ng_found_item_index, (trigger_group.data[index].third_field_lower >> 8) & 0xff, trigger_group.data[index].third_field_lower & 0xff);
 					} else {
-						current_result = NGCondition(ng_script_id_table[trigger_group.data[index].second_field_lower], (trigger_group.data[index].third_field_lower >> 8) & 0xff, trigger_group.data[index].third_field_lower & 0xff);
+						current_result = NGCondition(ng_script_id_table[trigger_group.data[index].second_field_lower].script_index, (trigger_group.data[index].third_field_lower >> 8) & 0xff, trigger_group.data[index].third_field_lower & 0xff);
 
 					}
 				}

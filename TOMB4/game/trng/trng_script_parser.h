@@ -19,7 +19,7 @@ struct NG_PLUGIN {
 	bool is_enabled = false;
 };
 
-enum PARAM_ENUMS {
+enum NG_PARAM_ENUMS {
 	PARAM_MOVE_ITEM = 0x02,
 	PARAM_ROTATE_ITEM = 0x03,
 	PARAM_COLOR_ITEM = 0x04,
@@ -39,7 +39,52 @@ enum PARAM_ENUMS {
 	PARAM_INPUT_BOX = 0x12,
 };
 
-enum CUST_ENUMS {
+enum NG_FMOV_ENUMS {
+	FMOV_INFINITE_LOOP = 0x1,
+	FMOV_HEAVY_AT_END = 0x2,
+	FMOV_TRIGGERS_ALL = 0x4,
+	FMOV_HEAVY_ALL = 0x8,
+	FMOV_USE_LEADING_ACTOR_INDEX = 0x10,
+	FMOV_USE_EXTRA_ACTOR_INDEX = 0x20,
+	FMOV_IGNORE_FLOOR_COLLISION = 0x40,
+	FMOV_WAIT_STAND_ON_FLOOR = 0x80,
+	FMOV_FROG_JUMP_GRAVITY = 0x100,
+	FMOV_LEAF_GRAVITY = 0x200,
+	FMOV_EXPLOSION_GRAVITY = 0x300,
+	FMOV_APPLE_GRAVITY = 0x400,
+	FMOV_APOLLO_GRAVITY = 0x500,
+	FMOV_MAN_GRAVITY = 0x600,
+	FMOV_ANVIL_GRAVITY = 0x700,
+	FMOV_EXPLOSION_SPEED = 0x1000,
+	FMOV_MAGNET_SPEED = 0x2000,
+	FMOV_CAR_SPEED = 0x3000
+};
+
+enum NG_DIR_ENUMS {
+	DIR_NORTH = 0x0,
+	DIR_EAST = 0x1,
+	DIR_SOUTH = 0x2,
+	DIR_WEST = 0x3,
+	DIR_UP = 0x10,
+	DIR_DOWN = 0x11,
+	DIR_FORWARD = 0x12,
+	DIR_TURNING_LEFT_90 = 0x13,
+	DIR_TURNING_LEFT_45 = 0x14,
+	DIR_LU_TURNING_180 = 0x15,
+	DIR_TURNING_RIGHT_45 = 0x16,
+	DIR_TURNING_RIGHT_90 = 0x17,
+	DIR_RU_TURNING_180 = 0x18,
+	DIR_LARA_FACING = 0x19,
+	DIR_LEADING_ACTOR_FACING = 0x1a,
+	DIR_DIRECTION_LARA_LEADING_ACTOR = 0x1b,
+	DIR_HEAD_FOR_LARA = 0x1c,
+	DIR_HEAD_FOR_LEADING_ACTOR = 0x1d,
+	DIR_HEAD_FOR_EXTRA_ACTOR = 0x1e,
+
+	DIR_INVERT_DIRECTION = 0x100,
+};
+
+enum NG_CUST_ENUMS {
 	CUST_DISABLE_SCREAMING_HEAD = 0x01,
 	CUST_SET_SECRET_NUMBER = 0x02,
 	CUST_SET_CREDITS_LEVEL = 0x03,
@@ -95,13 +140,13 @@ enum CUST_ENUMS {
 	CUST_SHATTER_SPECIFIC = 0x36
 };
 
-enum BUGF_ENUMS {
+enum NG_BUGF_ENUMS {
 	BUGF_TRANSPARENT_WHITE_ON_FOG = 0x01,
 	BUGF_DART_NO_POISON_LARA = 0x02,
 	BUGF_LAND_WATER_SFX_ENEMIES = 0x04
 };
 
-enum TGROUP_FLAGS {
+enum NG_TGROUP_FLAGS {
 	TGROUP_USE_FOUND_ITEM_INDEX = 0x01,
 	TGROUP_USE_TRIGGER_ITEM_INDEX = 0x02,
 	TGROUP_COMMAND = 0x03,
@@ -171,10 +216,10 @@ struct NG_ITEM_GROUP {
 
 #define NG_ANIMATION_CONDTION_MAX_SIZE 4096
 struct NG_ANIMATION {
-	unsigned short animation_index;
-	unsigned short key_1;
-	unsigned short key_2;
-	unsigned short fan_flags;
+	unsigned short animation_index = 0;
+	unsigned short key_1 = 0;
+	unsigned short key_2 = 0;
+	unsigned short fan_flags = 0;
 	NG_MULTI_ENV_TRIPLET environment;
 	unsigned short state_or_animation_condition_count = 0;
 	short state_or_animation_condition_array[NG_ANIMATION_CONDTION_MAX_SIZE];
@@ -203,6 +248,22 @@ struct NG_TEST_POSITION {
 	short r_orient_diff_max = 0;
 };
 
+// Params
+struct NG_MOVE_ITEM {
+	unsigned short flags = 0;
+	unsigned short index_item = 0;
+	unsigned short direction = 0;
+	unsigned short distance = 0;
+	unsigned short speed = 0;
+	short moving_sound = 0;
+	short final_sound = 0;
+	short extra = 0;
+};
+
+struct NG_BIG_NUMBER {
+	unsigned short big_number = 0;
+};
+
 NG_DEFINE_RECORD(NG_GLOBAL_TRIGGER);
 NG_DEFINE_RECORD(NG_TRIGGER_GROUP);
 NG_DEFINE_RECORD(NG_ORGANIZER);
@@ -210,6 +271,10 @@ NG_DEFINE_RECORD(NG_ITEM_GROUP);
 NG_DEFINE_RECORD(NG_ANIMATION);
 NG_DEFINE_RECORD(NG_MULTI_ENV_CONDITION);
 NG_DEFINE_RECORD(NG_TEST_POSITION);
+
+// Params
+NG_DEFINE_RECORD(NG_MOVE_ITEM);
+NG_DEFINE_RECORD(NG_BIG_NUMBER);
 
 struct NG_LEVEL_RECORD_DATA {
 	NG_DEFINE_RECORD_DATA_ENTRY(NG_GLOBAL_TRIGGER, global_trigger);
@@ -219,6 +284,10 @@ struct NG_LEVEL_RECORD_DATA {
 	NG_DEFINE_RECORD_DATA_ENTRY(NG_ANIMATION, animation);
 	NG_DEFINE_RECORD_DATA_ENTRY(NG_MULTI_ENV_CONDITION, multi_env_condition);
 	NG_DEFINE_RECORD_DATA_ENTRY(NG_TEST_POSITION, test_position);
+
+	// Params
+	NG_DEFINE_RECORD_DATA_ENTRY(NG_MOVE_ITEM, move_item);
+	NG_DEFINE_RECORD_DATA_ENTRY(NG_BIG_NUMBER, big_number);
 };
 
 struct NG_LEVEL_RECORD_TABLES {
@@ -230,6 +299,10 @@ struct NG_LEVEL_RECORD_TABLES {
 	unsigned int level_multi_env_condition_count = 0;
 	unsigned int level_test_position_count = 0;
 
+	// Params
+	unsigned int level_move_item_count = 0;
+	unsigned int level_big_number_count = 0;
+
 	NG_GLOBAL_TRIGGER_RECORD* level_global_triggers_table = NULL;
 	NG_TRIGGER_GROUP_RECORD* level_trigger_group_table = NULL;
 	NG_ORGANIZER_RECORD* level_organizer_table = NULL;
@@ -237,36 +310,14 @@ struct NG_LEVEL_RECORD_TABLES {
 	NG_ANIMATION_RECORD* level_animation_table = NULL;
 	NG_MULTI_ENV_CONDITION_RECORD* level_multi_env_condition_table = NULL;
 	NG_TEST_POSITION_RECORD* level_test_position_table = NULL;
-};
 
-struct NG_MOVE_ITEM {
-	unsigned short flags;
-	unsigned short index_item;
-	unsigned short direction;
-	unsigned short distance;
-	unsigned short speed;
-	short moving_sound;
-	short final_sound;
-};
-
-struct NG_MOVE_ITEM_RECORD {
-	unsigned short record_id = 0;
-	NG_MOVE_ITEM move_item;
-};
-
-struct NG_BIG_NUMBER_RECORD {
-	unsigned short record_id = 0;
-	unsigned short big_number;
-};
-
-struct NG_LEVEL_PARAMS {
-	int big_number_count = 0;
-	NG_GLOBAL_TRIGGER_RECORD *big_number_table = NULL;
+	// Params
+	NG_MOVE_ITEM_RECORD* level_move_item_table = NULL;
+	NG_BIG_NUMBER_RECORD* level_big_number_table = NULL;
 };
 
 struct NG_LEVEL {
 	NG_LEVEL_RECORD_DATA *records = NULL;
-	NG_LEVEL_PARAMS* params = NULL;
 };
 
 extern NG_LEVEL ng_levels[MAX_NG_LEVELS];
@@ -291,12 +342,12 @@ extern NG_ANIMATION current_animations[MAX_NG_ANIMATIONS];
 extern NG_MULTI_ENV_CONDITION current_multi_env_conditions[MAX_NG_MULTI_ENV_CONDITIONS];
 extern NG_TEST_POSITION current_test_positions[MAX_NG_TEST_POSITIONS];
 
-#define MAX_NG_MOVE_ITEM_PARAMS 9999
-#define MAX_NG_BIG_NUMBER_PARAMS 9999
+#define MAX_NG_MOVE_ITEMS 9999
+#define MAX_NG_BIG_NUMBERS 9999
 
 // Params
-extern NG_MOVE_ITEM current_move_item_params[MAX_NG_MOVE_ITEM_PARAMS];
-extern unsigned short current_big_numbers_params[MAX_NG_BIG_NUMBER_PARAMS];
+extern NG_MOVE_ITEM current_move_items[MAX_NG_MOVE_ITEMS];
+extern NG_BIG_NUMBER current_big_numbers[MAX_NG_BIG_NUMBERS];
 
 extern char *NGGetString(short string_id);
 extern char *NGGetPluginString(short plugin_id);

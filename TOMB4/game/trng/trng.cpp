@@ -21,8 +21,13 @@ bool is_ngle_level = false;
 int ng_floor_id_size = 0;
 char *ng_floor_id_table = NULL;
 
-short ng_script_id_table[NG_SCRIPT_ID_TABLE_SIZE];
-short ng_room_remap_table[NG_ROOM_REMAP_TABLE_SIZE];
+int ng_script_id_count = 0;
+NGScriptIDTableEntry ng_script_id_table[NG_SCRIPT_ID_TABLE_SIZE];
+
+int ng_room_remap_count = 0;
+NGRoomRemapTableEntry ng_room_remap_table[NG_ROOM_REMAP_TABLE_SIZE];
+
+int ng_static_id_count = 0;
 NGStaticTableEntry ng_static_id_table[NG_STATIC_ID_TABLE_SIZE];
 
 #define NGLE_START_SIGNATURE 0x474e
@@ -35,6 +40,10 @@ void NGLoadInfo(FILE* level_fp) {
 	memset(&ng_script_id_table, 0x00, NG_SCRIPT_ID_TABLE_SIZE * sizeof(short));
 	memset(&ng_room_remap_table, -1, NG_ROOM_REMAP_TABLE_SIZE * sizeof(short));
 	memset(&ng_static_id_table, 0x00, NG_STATIC_ID_TABLE_SIZE * sizeof(short));
+
+	ng_script_id_count = 0;
+	ng_room_remap_count = 0;
+	ng_static_id_count = 0;
 
 	long level_version = 0;
 	long ngle_ident = 0;
@@ -75,6 +84,7 @@ void NGLoadInfo(FILE* level_fp) {
 				case 0x8005: {
 					int start_position = ftell(level_fp);
 					int target_offset = (chunk_size * sizeof(short)) - (sizeof(short) * 2);
+					ng_script_id_count = target_offset / sizeof(NGScriptIDTableEntry);
 					fread(&ng_script_id_table, 1, target_offset, level_fp);
 					break;
 				}
@@ -107,6 +117,7 @@ void NGLoadInfo(FILE* level_fp) {
 				// Statics Table
 				case 0x8021: {
 					int target_offset = (chunk_size * sizeof(short)) - (sizeof(short) * 2);
+					ng_static_id_count = target_offset / sizeof(NGStaticTableEntry);
 					fread(&ng_static_id_table, 1, target_offset, level_fp);
 					break;
 				}
@@ -129,6 +140,7 @@ void NGLoadInfo(FILE* level_fp) {
 				// Room remap table
 				case 0x8037: {
 					int target_offset = (chunk_size * sizeof(short)) - (sizeof(short) * 2);
+					ng_room_remap_count = target_offset / sizeof(NGRoomRemapTableEntry);
 					fread(&ng_room_remap_table, 1, target_offset, level_fp);
 					break;
 				}
@@ -212,6 +224,81 @@ void NGRotateItemX(unsigned short item_id, short rotation) {
 
 void NGRotateItemY(unsigned short item_id, short rotation) {
 	items[item_id].pos.y_rot += rotation;
+}
+
+// Move the item in a direction by the number of units
+void NGStaticItemByUnits(unsigned short static_id, NG_DIRECTIONS direction, unsigned int units) {
+	NGStaticTableEntry* entry = &ng_static_id_table[static_id];
+	int room_number = ng_room_remap_table[entry->remapped_room_index].room_index;
+	if (room_number >= 0 && room_number < number_rooms) {
+		MESH_INFO* mesh = &room[room_number].mesh[entry->mesh_id];
+
+		switch (direction) {
+			case NG_NORTH: {
+				mesh->z += units;
+				return;
+			}
+			case NG_EAST: {
+				mesh->x += units;
+				return;
+			}
+			case NG_SOUTH: {
+				mesh->z -= units;
+				return;
+			}
+			case NG_WEST: {
+				mesh->x -= units;
+				return;
+			}
+			case NG_UP: {
+				mesh->y -= units;
+				return;
+			}
+			case NG_DOWN: {
+				mesh->y += units;
+				return;
+			}
+		}
+	}
+}
+
+void NGMoveStaticHorizontalByUnits(unsigned short static_id, short angle, unsigned int units) {
+	int c = (int)units * phd_cos(angle) >> W2V_SHIFT;
+	int s = (int)units * phd_sin(angle) >> W2V_SHIFT;
+
+	NGStaticTableEntry* entry = &ng_static_id_table[static_id];
+	int room_number = ng_room_remap_table[entry->remapped_room_index].room_index;
+	if (room_number >= 0 && room_number < number_rooms) {
+		MESH_INFO* mesh = &room[room_number].mesh[entry->mesh_id];
+		mesh->x += s;
+		mesh->z += c;
+	}
+}
+
+void NGMoveStaticVerticalByUnits(unsigned short static_id, unsigned int units) {
+	NGStaticTableEntry* entry = &ng_static_id_table[static_id];
+	int room_number = ng_room_remap_table[entry->remapped_room_index].room_index;
+	if (room_number >= 0 && room_number < number_rooms) {
+		MESH_INFO* mesh = &room[room_number].mesh[entry->mesh_id];
+		mesh->y += units;
+	}
+}
+
+void NGRotateStaticX(unsigned short static_id, short rotation) {
+	NGStaticTableEntry* entry = &ng_static_id_table[static_id];
+	int room_number = ng_room_remap_table[entry->remapped_room_index].room_index;
+	if (room_number >= 0 && room_number < number_rooms) {
+		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGRotateStaticX unimplemented!");
+	}
+}
+
+void NGRotateStaticY(unsigned short static_id, short rotation) {
+	NGStaticTableEntry* entry = &ng_static_id_table[static_id];
+	int room_number = ng_room_remap_table[entry->remapped_room_index].room_index;
+	if (room_number >= 0 && room_number < number_rooms) {
+		MESH_INFO* mesh = &room[room_number].mesh[entry->mesh_id];
+		mesh->y_rot;
+	}
 }
 
 void NGSetup() {	

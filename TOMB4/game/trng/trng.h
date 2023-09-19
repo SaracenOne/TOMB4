@@ -29,11 +29,21 @@ extern bool is_ngle_level;
 extern int ng_floor_id_size;
 extern char *ng_floor_id_table;
 
+extern int ng_script_id_count;
+extern int ng_room_remap_count;
+extern int ng_static_id_count;
+
 #define NG_SCRIPT_ID_TABLE_SIZE 8192
-extern short ng_script_id_table[NG_SCRIPT_ID_TABLE_SIZE];
+struct NGScriptIDTableEntry {
+	short script_index;
+};
+extern NGScriptIDTableEntry ng_script_id_table[NG_SCRIPT_ID_TABLE_SIZE];
 
 #define NG_ROOM_REMAP_TABLE_SIZE 2048
-extern short ng_room_remap_table[NG_ROOM_REMAP_TABLE_SIZE];
+struct NGRoomRemapTableEntry {
+	short room_index;
+};
+extern NGRoomRemapTableEntry ng_room_remap_table[NG_ROOM_REMAP_TABLE_SIZE];
 
 #define NG_STATIC_ID_TABLE_SIZE 8192
 struct NGStaticTableEntry {
@@ -61,9 +71,20 @@ extern void NGMoveItemVerticalByUnits(unsigned short item_id, unsigned int units
 extern void NGRotateItemX(unsigned short item_id, short rotation);
 extern void NGRotateItemY(unsigned short item_id, short rotation);
 
+// Statics
+
+// Move the item in an angle by the number of units
+extern void NGStaticItemByUnits(unsigned short static_id, NG_DIRECTIONS direction, unsigned int units);
+extern void NGMoveStaticHorizontalByUnits(unsigned short static_id, short angle, unsigned int units);
+extern void NGMoveStaticVerticalByUnits(unsigned short static_id, unsigned int units);
+
+extern void NGRotateStaticX(unsigned short static_id, short rotation);
+extern void NGRotateStaticY(unsigned short static_id, short rotation);
+
 extern void NGSetup();
 
 extern void NGUpdateAllItems();
+extern void NGUpdateAllStatics();
 extern void NGFrameStartUpdate();
 extern void NGDrawPhase();
 

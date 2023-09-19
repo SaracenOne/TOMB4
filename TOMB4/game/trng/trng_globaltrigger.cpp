@@ -31,7 +31,7 @@ bool NGExecuteSingleGlobalTrigger(int global_trigger_id, int inventory_object_id
 			break;
 		}
 		case GT_ENEMY_KILLED: {
-			int enemy_id = ng_script_id_table[global_trigger->parameter];
+			int enemy_id = ng_script_id_table[global_trigger->parameter].script_index;
 			if (items[enemy_id].after_death > 0)
 				global_trigger_condition_passed = true;
 			break;
@@ -56,7 +56,7 @@ bool NGExecuteSingleGlobalTrigger(int global_trigger_id, int inventory_object_id
 			break;
 		}
 		case GT_COLLIDE_ITEM: {
-			int result = NGIsLaraCollidingWithMoveableID(ng_script_id_table[global_trigger->parameter]);
+			int result = NGIsLaraCollidingWithMoveableID(ng_script_id_table[global_trigger->parameter].script_index);
 			if (result >= 0) {
 				global_trigger_condition_passed = true;
 				ng_found_item_index = result;

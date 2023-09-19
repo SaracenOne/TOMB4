@@ -378,7 +378,9 @@ long ControlPhase(long nframes, long demo_mode)
 		InItemControlLoop = 1;
 		item_num = next_item_active;
 
-		NGUpdateAllItems(); // TRNG (should this go before or after the control update?)
+		// TRNG (should these go before or after the control update?)
+		NGUpdateAllItems();
+		NGUpdateAllStatics();
 
 		while (item_num != -1)
 		{

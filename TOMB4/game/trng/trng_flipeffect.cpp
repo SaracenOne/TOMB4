@@ -82,7 +82,7 @@ bool NGTriggerItemGroupWithTimer(unsigned char item_group, unsigned char timer, 
 			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Negative item group IDs (statics) not yet supported!");
 			break;
 		}
-		int current_item = ng_script_id_table[current_script_item];
+		int current_item = ng_script_id_table[current_script_item].script_index;
 
 		items[current_item].timer = ((short)timer) * 30;
 		NGItemActivator(current_item, anti);
@@ -635,7 +635,7 @@ bool static_shatter(unsigned char static_id_lower, unsigned char static_id_upper
 	unsigned short static_id = ((short)static_id_upper << 8) | (short)static_id_lower;
 
 	NGStaticTableEntry* entry = &ng_static_id_table[static_id];
-	int room_number = ng_room_remap_table[entry->remapped_room_index];
+	int room_number = ng_room_remap_table[entry->remapped_room_index].room_index;
 	if (room_number >= 0 && room_number < number_rooms) {
 		MESH_INFO* mesh = &room[room_number].mesh[entry->mesh_id];
 
@@ -662,7 +662,7 @@ bool static_remove_collision_for_x_static(unsigned char static_id_lower, unsigne
 	unsigned short static_id = ((short)static_id_upper << 8) | (short)static_id_lower;
 
 	NGStaticTableEntry* entry = &ng_static_id_table[static_id];
-	int room_number = ng_room_remap_table[entry->remapped_room_index];
+	int room_number = ng_room_remap_table[entry->remapped_room_index].room_index;
 	if (room_number >= 0 && room_number < number_rooms) {
 		MESH_INFO* mesh = &room[room_number].mesh[entry->mesh_id];
 
@@ -677,11 +677,175 @@ bool static_restore_collision_for_x_static(unsigned char static_id_lower, unsign
 	unsigned short static_id = ((short)static_id_upper << 8) | (short)static_id_lower;
 
 	NGStaticTableEntry *entry = &ng_static_id_table[static_id];
-	int room_number = ng_room_remap_table[entry->remapped_room_index];
+	int room_number = ng_room_remap_table[entry->remapped_room_index].room_index;
 	if (room_number >= 0 && room_number < number_rooms) {
 		MESH_INFO* mesh = &room[room_number].mesh[entry->mesh_id];
 
 		mesh->Flags &= ~4; // Removes no-collision flag
+	}
+
+	return true;
+}
+
+// NGLE - 166
+bool static_move_static_with_data_in_x_parameter_list(unsigned char move_param_id_lower, unsigned char move_param_id_upper) {
+	unsigned short move_param_id = ((short)move_param_id_upper << 8) | (short)move_param_id_lower;
+
+	if (move_param_id >= MAX_NG_MOVE_ITEMS)
+		return false;
+
+	bool is_valid = false;
+
+	NG_MOVE_ITEM *move_item = &current_move_items[move_param_id];
+	int direction = move_item->direction & 0xff;
+	int script_static = move_item->index_item;
+
+	if (move_item->flags) {
+		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "static_move_static_with_data_in_x_parameter_list: unimplemented flags 0x%04x", move_item->flags);
+		return false;
+	}
+
+	switch (direction) {
+		case DIR_NORTH: {
+			if (!NGGetStaticHorizontalMovementRemainingUnits(script_static)) {
+				short current_angle = 0xC000;
+				if (move_item->direction & DIR_INVERT_DIRECTION) {
+					current_angle += 0x8000;
+				}
+				NGSetStaticHorizontalMovementAngle(script_static, (short)current_angle);
+				NGSetStaticHorizontalMovementRemainingUnits(script_static, move_item->distance);
+				is_valid = true;
+			}
+			break;
+		}
+		case DIR_EAST: {
+			if (!NGGetStaticHorizontalMovementRemainingUnits(script_static)) {
+				short current_angle = 0x0000;
+				if (move_item->direction & DIR_INVERT_DIRECTION) {
+					current_angle += 0x8000;
+				}
+				NGSetStaticHorizontalMovementAngle(script_static, (short)current_angle);
+				NGSetStaticHorizontalMovementRemainingUnits(script_static, move_item->distance);
+				is_valid = true;
+			}
+			break;
+		}
+		case DIR_SOUTH: {
+			if (!NGGetStaticHorizontalMovementRemainingUnits(script_static)) {
+				short current_angle = 0x4000;
+				if (move_item->direction & DIR_INVERT_DIRECTION) {
+					current_angle += 0x8000;
+				}
+				NGSetStaticHorizontalMovementAngle(script_static, (short)current_angle);
+				NGSetStaticHorizontalMovementRemainingUnits(script_static, move_item->distance);
+				is_valid = true;
+			}
+			break;
+		}
+		case DIR_WEST: {
+			if (!NGGetStaticHorizontalMovementRemainingUnits(script_static)) {
+				short current_angle = 0x8000;
+				if (move_item->direction & DIR_INVERT_DIRECTION) {
+					current_angle += 0x8000;
+				}
+				NGSetStaticHorizontalMovementAngle(script_static, (short)current_angle);
+				NGSetStaticHorizontalMovementRemainingUnits(script_static, move_item->distance);
+				is_valid = true;
+			}
+			break;
+		}
+		default: {
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "moveable_move_moveable_with_data_in_x_parameter_list: unimplemented direction 0x%04x", move_item->direction);
+			break;
+		}
+	}
+
+	if (is_valid) {
+		NGSetStaticMovementSpeed(script_static, move_item->speed);
+		NGSetStaticMovementInProgressSound(script_static, move_item->moving_sound);
+		NGSetStaticMovementFinishedSound(script_static, move_item->final_sound);
+	}
+
+	return true;
+}
+
+// NGLE - 167
+bool moveable_move_moveable_with_data_in_x_parameter_list(unsigned char move_param_id_lower, unsigned char move_param_id_upper) {
+	unsigned short move_param_id = ((short)move_param_id_upper << 8) | (short)move_param_id_lower;
+
+	if (move_param_id >= MAX_NG_MOVE_ITEMS)
+		return false;
+
+	bool is_valid = false;
+
+	NG_MOVE_ITEM *move_item = &current_move_items[move_param_id];
+	int direction = move_item->direction & 0xff;
+	int script_item = ng_script_id_table[move_item->index_item].script_index;
+
+	if (move_item->flags) {
+		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "moveable_move_moveable_with_data_in_x_parameter_list: unimplemented flags 0x%04x", move_item->flags);
+		return false;
+	}
+
+	switch (direction) {
+		case DIR_NORTH: {
+			if (!NGGetItemHorizontalMovementRemainingUnits(script_item)) {
+				short current_angle = 0xC000;
+				if (move_item->direction & DIR_INVERT_DIRECTION) {
+					current_angle += 0x8000;
+				}
+				NGSetItemHorizontalMovementAngle(script_item, (short)current_angle);
+				NGSetItemHorizontalMovementRemainingUnits(script_item, move_item->distance);
+				is_valid = true;
+			}
+			break;
+		}
+		case DIR_EAST: {
+			if (!NGGetItemHorizontalMovementRemainingUnits(script_item)) {
+				short current_angle = 0x0000;
+				if (move_item->direction & DIR_INVERT_DIRECTION) {
+					current_angle += 0x8000;
+				}
+				NGSetItemHorizontalMovementAngle(script_item, (short)current_angle);
+				NGSetItemHorizontalMovementRemainingUnits(script_item, move_item->distance);
+				is_valid = true;
+			}
+			break;
+		}
+		case DIR_SOUTH: {
+			if (!NGGetItemHorizontalMovementRemainingUnits(script_item)) {
+				short current_angle = 0x4000;
+				if (move_item->direction & DIR_INVERT_DIRECTION) {
+					current_angle += 0x8000;
+				}
+				NGSetItemHorizontalMovementAngle(script_item, (short)current_angle);
+				NGSetItemHorizontalMovementRemainingUnits(script_item, move_item->distance);
+				is_valid = true;
+			}
+			break;
+		}
+		case DIR_WEST: {
+			if (!NGGetItemHorizontalMovementRemainingUnits(script_item)) {
+				short current_angle = 0x8000;
+				if (move_item->direction & DIR_INVERT_DIRECTION) {
+					current_angle += 0x8000;
+				}
+				NGSetItemHorizontalMovementAngle(script_item, (short)current_angle);
+				NGSetItemHorizontalMovementRemainingUnits(script_item, move_item->distance);
+				is_valid = true;
+			}
+			break;
+		}
+		default: {
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "moveable_move_moveable_with_data_in_x_parameter_list: unimplemented direction 0x%04x", move_item->direction);
+			break;
+		}
+	}
+
+	if (is_valid) {
+		NGSetItemMovementSpeed(script_item, move_item->speed);
+		NGSetItemMovementInProgressSound(script_item, move_item->moving_sound);
+		NGSetItemMovementFinishedSound(script_item, move_item->final_sound);
 	}
 
 	return true;
@@ -700,7 +864,7 @@ bool static_explode(unsigned char static_id_lower, unsigned char static_id_upper
 	unsigned short static_id = ((short)static_id_upper << 8) | (short)static_id_lower;
 
 	NGStaticTableEntry* entry = &ng_static_id_table[static_id];
-	int room_number = ng_room_remap_table[entry->remapped_room_index];
+	int room_number = ng_room_remap_table[entry->remapped_room_index].room_index;
 	if (room_number >= 0 && room_number < number_rooms) {
 		MESH_INFO* mesh = &room[room_number].mesh[entry->mesh_id];
 
@@ -735,7 +899,7 @@ bool static_visibility_set_as_invisible(unsigned char static_id_lower, unsigned 
 	unsigned short static_id = ((short)static_id_upper << 8) | (short)static_id_lower;
 
 	NGStaticTableEntry* entry = &ng_static_id_table[static_id];
-	int room_number = ng_room_remap_table[entry->remapped_room_index];
+	int room_number = ng_room_remap_table[entry->remapped_room_index].room_index;
 	if (room_number >= 0 && room_number < number_rooms) {
 		MESH_INFO* mesh = &room[room_number].mesh[entry->mesh_id];
 		if (mesh)
@@ -752,7 +916,7 @@ bool static_visibility_render_newly_visible(unsigned char static_id_lower, unsig
 	unsigned short static_id = ((short)static_id_upper << 8) | (short)static_id_lower;
 
 	NGStaticTableEntry* entry = &ng_static_id_table[static_id];
-	int room_number = ng_room_remap_table[entry->remapped_room_index];
+	int room_number = ng_room_remap_table[entry->remapped_room_index].room_index;
 	if (room_number >= 0 && room_number < number_rooms) {
 		MESH_INFO* mesh = &room[room_number].mesh[entry->mesh_id];
 		if (mesh)
@@ -1765,14 +1929,14 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 		}
 		case STATIC_MOVE_STATIC_WITH_DATA_IN_X_PARAMETERS_LIST: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "STATIC_MOVE_STATIC_WITH_DATA_IN_X_PARAMETERS_LIST unimplemented!");
+				static_move_static_with_data_in_x_parameter_list(action_data_1, action_data_2);
 				return true;
 			}
 			break;
 		}
 		case MOVEABLE_MOVE_MOVEABLE_WITH_DATA_IN_X_PARAMETERS_LIST: {
 			if (skip_checks || !NGIsOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "MOVEABLE_MOVE_MOVEABLE_WITH_DATA_IN_X_PARAMETERS_LIST unimplemented!");
+				moveable_move_moveable_with_data_in_x_parameter_list(action_data_1, action_data_2);
 				return true;
 			}
 			break;
