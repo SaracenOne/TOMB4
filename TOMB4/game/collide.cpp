@@ -11,6 +11,7 @@
 #include "sound.h"
 #include "lara_states.h"
 #include "lara.h"
+#include "switch.h"
 #include "../specific/file.h"
 
 #include "trng/trng.h"
@@ -610,33 +611,37 @@ void LaraBaddieCollision(ITEM_INFO* l, COLL_INFO* coll)
 
 	for (i = 0; i < num_nearby_rooms; i++)
 	{
-		r = &room[nearby_rooms[i]];
-		item_number = r->item_number;
-
-		while (item_number != NO_ITEM)
 		{
-			item = &items[item_number];
-			nex = item->next_item;
+			short current_room_id = nearby_rooms[i];
+			r = &room[current_room_id];
+			item_number = r->item_number;
 
-			if (item->collidable && item->status != ITEM_INVISIBLE)
+			while (item_number != NO_ITEM)
 			{
-				if (objects[item->object_number].collision)
+				item = &items[item_number];
+				nex = item->next_item;
+
+				if (item->collidable && item->status != ITEM_INVISIBLE)
 				{
-					dx = l->pos.x_pos - item->pos.x_pos;
-					dy = l->pos.y_pos - item->pos.y_pos;
-					dz = l->pos.z_pos - item->pos.z_pos;
+					if (objects[item->object_number].collision)
+					{
+						dx = l->pos.x_pos - item->pos.x_pos;
+						dy = l->pos.y_pos - item->pos.y_pos;
+						dz = l->pos.z_pos - item->pos.z_pos;
 
-					if (dx > -3072 && dx < 3072 && dy > -3072 && dy < 3072 && dz > -3072 && dz < 3072)
-						objects[item->object_number].collision(item_number, l, coll);
+						if (dx > -3072 && dx < 3072 && dy > -3072 && dy < 3072 && dz > -3072 && dz < 3072)
+							objects[item->object_number].collision(item_number, l, coll);
+					}
 				}
-			}
 
-			item_number = nex;
+				item_number = nex;
+			}
 		}
 
 		if (coll->enable_baddie_push)
 		{
-			r = &room[nearby_rooms[i]];
+			short current_room_id = nearby_rooms[i];
+			r = &room[current_room_id];
 
 			for (j = 0; j < r->num_meshes; j++) {
 				mesh = &r->mesh[j];
@@ -667,7 +672,35 @@ void LaraBaddieCollision(ITEM_INFO* l, COLL_INFO* coll)
 
 					if (TestBoundsCollideStatic(bounds, &pos, coll->radius)) {
 						ItemPushLaraStatic(l, bounds, &pos, coll);
-						NGAddLaraStaticCollision(i, j);
+						NGAddLaraStaticCollision(current_room_id, j); // TRNG
+
+						// TRNG
+						if (mod_config_global->trng_statics_extended_ocb) {
+							// Damage Lara on collision
+							if ((mesh->Flags & 32)) {
+								NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LaraBaddieCollision: Damage Lara on collision is unimplemented!");
+							}
+
+							// Burn Lara on collision
+							if ((mesh->Flags & 64)) {
+								NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LaraBaddieCollision: Burn Lara on collision is unimplemented!");
+							}
+
+							// Explode killing on collision
+							if ((mesh->Flags & 128)) {
+								NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LaraBaddieCollision: Explode killing on collision is unimplemented!");
+							}
+
+							// Poison Lara on collision
+							if ((mesh->Flags & 256)) {
+								NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LaraBaddieCollision: Poison Lara on collision is unimplemented!");
+							}
+
+							// Activate heavy trigger on collision
+							if ((mesh->Flags & 2048)) {
+								TestTriggersAtXYZ(pos.x_pos, pos.y_pos, pos.z_pos, current_room_id, true, 0);
+							}
+						}
 					}
 				}
 			}
