@@ -899,8 +899,12 @@ void NGDrawPhase() {
 
 		if (items[timer_tracker].timer > 0 || timer_tracker_remaining_until_timeout > 0) {
 			char format_buffer[64];
-			int remainder = items[timer_tracker].timer % 30;
-			int seconds = items[timer_tracker].timer / 30;
+			int current_timer = items[timer_tracker].timer;
+			if (current_timer < 0)
+				current_timer = 0;
+
+			int remainder = (current_timer % 30) * (100 / 30);
+			int seconds = current_timer / 30;
 
 			switch (timer_tracker_type) {
 				case TTT_ONLY_SHOW_SECONDS:
@@ -1205,11 +1209,13 @@ extern void NGSetTriggerGroupContinuous(int trigger_group_id, bool is_continuous
 void NGSetDisplayTimerForMoveableWithType(int item_id, NGTimerTrackerType new_timer_tracker_type) {
 	timer_tracker = item_id;
 	timer_tracker_type = new_timer_tracker_type;
+#if 0
 	if (items[timer_tracker].timer > 0) {
 		timer_tracker_remaining_until_timeout = 0;
 	} else {
 		timer_tracker_remaining_until_timeout = TIMER_TRACKER_TIMEOUT;
 	}
+#endif
 }
 
 extern void NGSetAfterDeathOverride(int item_id, short after_death) {
