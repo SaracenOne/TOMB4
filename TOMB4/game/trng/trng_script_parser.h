@@ -260,6 +260,22 @@ struct NG_MOVE_ITEM {
 	short extra = 0;
 };
 
+struct NG_ROTATE_ITEM {
+	unsigned short flags = 0;
+	unsigned short index_item = 0;
+
+	unsigned short dir_h_rotation = 0;
+	unsigned short h_rotation_angle = 0;
+	unsigned short speed_h_rotation = 0;
+
+	unsigned short dir_v_rotation = 0;
+	unsigned short v_rotation_angle = 0;
+	unsigned short speed_v_rotation = 0;
+
+	short moving_sound = 0;
+	short final_sound = 0;
+};
+
 struct NG_BIG_NUMBER {
 	unsigned short big_number = 0;
 };
@@ -274,6 +290,7 @@ NG_DEFINE_RECORD(NG_TEST_POSITION);
 
 // Params
 NG_DEFINE_RECORD(NG_MOVE_ITEM);
+NG_DEFINE_RECORD(NG_ROTATE_ITEM);
 NG_DEFINE_RECORD(NG_BIG_NUMBER);
 
 struct NG_LEVEL_RECORD_DATA {
@@ -287,6 +304,7 @@ struct NG_LEVEL_RECORD_DATA {
 
 	// Params
 	NG_DEFINE_RECORD_DATA_ENTRY(NG_MOVE_ITEM, move_item);
+	NG_DEFINE_RECORD_DATA_ENTRY(NG_ROTATE_ITEM, rotate_item);
 	NG_DEFINE_RECORD_DATA_ENTRY(NG_BIG_NUMBER, big_number);
 };
 
@@ -301,6 +319,7 @@ struct NG_LEVEL_RECORD_TABLES {
 
 	// Params
 	unsigned int level_move_item_count = 0;
+	unsigned int level_rotate_item_count = 0;
 	unsigned int level_big_number_count = 0;
 
 	NG_GLOBAL_TRIGGER_RECORD* level_global_triggers_table = NULL;
@@ -313,6 +332,7 @@ struct NG_LEVEL_RECORD_TABLES {
 
 	// Params
 	NG_MOVE_ITEM_RECORD* level_move_item_table = NULL;
+	NG_ROTATE_ITEM_RECORD* level_rotate_item_table = NULL;
 	NG_BIG_NUMBER_RECORD* level_big_number_table = NULL;
 };
 
@@ -343,10 +363,12 @@ extern NG_MULTI_ENV_CONDITION current_multi_env_conditions[MAX_NG_MULTI_ENV_COND
 extern NG_TEST_POSITION current_test_positions[MAX_NG_TEST_POSITIONS];
 
 #define MAX_NG_MOVE_ITEMS 9999
+#define MAX_NG_ROTATE_ITEMS 9999
 #define MAX_NG_BIG_NUMBERS 9999
 
 // Params
 extern NG_MOVE_ITEM current_move_items[MAX_NG_MOVE_ITEMS];
+extern NG_ROTATE_ITEM current_rotate_items[MAX_NG_ROTATE_ITEMS];
 extern NG_BIG_NUMBER current_big_numbers[MAX_NG_BIG_NUMBERS];
 
 extern char *NGGetString(short string_id);

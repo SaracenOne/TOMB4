@@ -23,6 +23,7 @@ NG_TEST_POSITION current_test_positions[MAX_NG_TEST_POSITIONS];
 
 // Params
 NG_MOVE_ITEM current_move_items[MAX_NG_MOVE_ITEMS];
+NG_ROTATE_ITEM current_rotate_items[MAX_NG_ROTATE_ITEMS];
 NG_BIG_NUMBER current_big_numbers[MAX_NG_BIG_NUMBERS];
 
 #define NG_READ_8(scr_buffer, scr_offset) scr_buffer[scr_offset]; \
@@ -77,6 +78,7 @@ struct NG_TABLE_ALLOCATION_COUNT {
 
 	// Param
 	unsigned int move_item_table_count = 0;
+	unsigned int rotate_item_table_count = 0;
 	unsigned int big_number_table_count = 0;
 };
 
@@ -92,6 +94,7 @@ void NGFreeLevel(NG_LEVEL& level) {
 
 		// Param
 		NG_FREE_RECORD(move_item);
+		NG_FREE_RECORD(rotate_item);
 		NG_FREE_RECORD(big_number);
 	}
 }
@@ -113,6 +116,7 @@ bool NGReallocateLevel(
 		NG_ALLOCATE_RECORD(test_position, TEST_POSITION, allocation_struct);
 
 		NG_ALLOCATE_RECORD(move_item, MOVE_ITEM, allocation_struct);
+		NG_ALLOCATE_RECORD(rotate_item, ROTATE_ITEM, allocation_struct);
 		NG_ALLOCATE_RECORD(big_number, BIG_NUMBER, allocation_struct);
 
 		return true;
@@ -182,6 +186,7 @@ void NGLoadTablesForLevel(unsigned int level) {
 
 	// Params
 	memset(&current_move_items, 0x00, sizeof(NG_MOVE_ITEM) * MAX_NG_MOVE_ITEMS);
+	memset(&current_rotate_items, 0x00, sizeof(NG_MOVE_ITEM) * MAX_NG_ROTATE_ITEMS);
 	memset(&current_big_numbers, 0x00, sizeof(NG_BIG_NUMBER) * MAX_NG_BIG_NUMBERS);
 
 	if (ng_levels[level].records) {
@@ -194,6 +199,7 @@ void NGLoadTablesForLevel(unsigned int level) {
 		NG_LOAD_RECORD_TABLE(test_position, TEST_POSITION);
 
 		NG_LOAD_RECORD_TABLE(move_item, MOVE_ITEM);
+		NG_LOAD_RECORD_TABLE(rotate_item, ROTATE_ITEM);
 		NG_LOAD_RECORD_TABLE(big_number, BIG_NUMBER);
 	}
 }
@@ -261,6 +267,7 @@ int NGReadLevelBlock(char* gfScriptFile, unsigned int offset, NG_LEVEL_RECORD_TA
 
 	// Params
 	memset(tables->level_move_item_table, 0x00, sizeof(NG_MOVE_ITEM_RECORD) * MAX_NG_MOVE_ITEMS);
+	memset(tables->level_rotate_item_table , 0x00, sizeof(NG_ROTATE_ITEM_RECORD) * MAX_NG_ROTATE_ITEMS);
 	memset(tables->level_big_number_table, 0x00, sizeof(NG_BIG_NUMBER_RECORD) * MAX_NG_BIG_NUMBERS);
 
 	tables->level_global_trigger_count = 0;
@@ -273,6 +280,7 @@ int NGReadLevelBlock(char* gfScriptFile, unsigned int offset, NG_LEVEL_RECORD_TA
 
 	// Params
 	tables->level_move_item_count = 0;
+	tables->level_rotate_item_count = 0;
 	tables->level_big_number_count = 0;
 
 	unsigned int level_block_start_position = offset;
@@ -1406,10 +1414,49 @@ int NGReadLevelBlock(char* gfScriptFile, unsigned int offset, NG_LEVEL_RECORD_TA
 					break;
 				}
 				case PARAM_ROTATE_ITEM: {
-					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Parameter category PARAM_ROTATE_ITEM not implemented! (level %u)", current_level);
+					unsigned short id = NG_READ_16(gfScriptFile, offset);
 
-					// Skip to the end
-					offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+					if (id >= MAX_NG_ROTATE_ITEMS) {
+						NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: Rotate item id (%u) is not valid! (level %u)", id, current_level);
+						return 0;
+						// Broken
+					}
+
+					unsigned short flags = NG_READ_16(gfScriptFile, offset);
+					if (flags == 0xffff || flags == 0) {
+						flags = 0;
+					}
+
+					unsigned short index_item = NG_READ_16(gfScriptFile, offset);
+
+					unsigned short dir_h_rotation = NG_READ_16(gfScriptFile, offset);
+					unsigned short h_rotation_angle = NG_READ_16(gfScriptFile, offset);
+					unsigned short speed_h_rotation = NG_READ_16(gfScriptFile, offset);
+
+					unsigned short dir_v_rotation = NG_READ_16(gfScriptFile, offset);
+					unsigned short v_rotation_angle = NG_READ_16(gfScriptFile, offset);
+					unsigned short speed_v_rotation = NG_READ_16(gfScriptFile, offset);
+
+					short moving_sound = NG_READ_16(gfScriptFile, offset);
+					short final_sound = NG_READ_16(gfScriptFile, offset);
+
+					tables->level_rotate_item_table[tables->level_rotate_item_count].record_id = id;
+					tables->level_rotate_item_table[tables->level_rotate_item_count].record.flags = flags;
+					tables->level_rotate_item_table[tables->level_rotate_item_count].record.index_item = index_item;
+
+					tables->level_rotate_item_table[tables->level_rotate_item_count].record.dir_h_rotation = dir_h_rotation;
+					tables->level_rotate_item_table[tables->level_rotate_item_count].record.h_rotation_angle = h_rotation_angle;
+					tables->level_rotate_item_table[tables->level_rotate_item_count].record.speed_h_rotation = speed_h_rotation;
+
+					tables->level_rotate_item_table[tables->level_rotate_item_count].record.dir_v_rotation = dir_v_rotation;
+					tables->level_rotate_item_table[tables->level_rotate_item_count].record.v_rotation_angle = v_rotation_angle;
+					tables->level_rotate_item_table[tables->level_rotate_item_count].record.speed_v_rotation = speed_v_rotation;
+
+					tables->level_rotate_item_table[tables->level_rotate_item_count].record.moving_sound = moving_sound;
+					tables->level_rotate_item_table[tables->level_rotate_item_count].record.final_sound = final_sound;
+
+					tables->level_move_item_count++;
+
 					break;
 				}
 				case PARAM_COLOR_ITEM: {
@@ -1772,6 +1819,7 @@ void NGAllocateLevelRecordTablesContent(NG_LEVEL_RECORD_TABLES *tables) {
 
 	// Params
 	tables->level_move_item_count = 0;
+	tables->level_rotate_item_count = 0;
 	tables->level_big_number_count = 0;
 
 	tables->level_global_triggers_table = (NG_GLOBAL_TRIGGER_RECORD*)malloc(sizeof(NG_GLOBAL_TRIGGER_RECORD) * MAX_NG_GLOBAL_TRIGGERS);
@@ -1784,6 +1832,7 @@ void NGAllocateLevelRecordTablesContent(NG_LEVEL_RECORD_TABLES *tables) {
 
 	// Params
 	tables->level_move_item_table = (NG_MOVE_ITEM_RECORD*)malloc(sizeof(NG_MOVE_ITEM_RECORD) * MAX_NG_MOVE_ITEMS);
+	tables->level_rotate_item_table = (NG_ROTATE_ITEM_RECORD*)malloc(sizeof(NG_ROTATE_ITEM_RECORD) * MAX_NG_ROTATE_ITEMS);
 	tables->level_big_number_table = (NG_BIG_NUMBER_RECORD*)malloc(sizeof(NG_BIG_NUMBER_RECORD) * MAX_NG_BIG_NUMBERS);
 }
 
@@ -1798,6 +1847,7 @@ void NGFreeLevelRecordTablesContent(NG_LEVEL_RECORD_TABLES *tables) {
 
 	// Params
 	free(tables->level_move_item_table);
+	free(tables->level_rotate_item_table);
 	free(tables->level_big_number_table);
 }
 
@@ -1946,6 +1996,7 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 
 			// Params
 			table_allocation_count.move_item_table_count = record_tables.level_move_item_count;
+			table_allocation_count.rotate_item_table_count = record_tables.level_rotate_item_count;
 			table_allocation_count.big_number_table_count = record_tables.level_big_number_count;
 
 			// Now save the tables
@@ -1961,6 +2012,7 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 
 			// Params
 			memcpy(ng_levels[current_level].records->move_item_table, record_tables.level_move_item_table, sizeof(NG_MOVE_ITEM_RECORD) * record_tables.level_move_item_count);
+			memcpy(ng_levels[current_level].records->rotate_item_table, record_tables.level_rotate_item_table, sizeof(NG_ROTATE_ITEM_RECORD)* record_tables.level_rotate_item_count);
 			memcpy(ng_levels[current_level].records->big_number_table, record_tables.level_big_number_table, sizeof(NG_BIG_NUMBER_RECORD) * record_tables.level_big_number_count);
 
 			current_level++;
