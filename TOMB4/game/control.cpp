@@ -637,6 +637,7 @@ void TestTriggers(short* data, long heavy, long HeavyFlags, int room_number, int
 	// NGLE
 	bool should_update_flipeffect_floorstate = false;
 	bool should_update_action_floorstate = false;
+	bool should_update_ng_oneshot = false;
 
 	switch_off = 0;
 	flip = -1;
@@ -1035,6 +1036,9 @@ void TestTriggers(short* data, long heavy, long HeavyFlags, int room_number, int
 				} else {
 					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Plugin Trigger FlipEffects are currently not supported!");
 				}
+				if (flags & IFL_INVISIBLE) {
+					should_update_ng_oneshot = true;
+				}
 			} else {
 				TriggerTimer = timer;
 				neweffect = value;
@@ -1055,6 +1059,9 @@ void TestTriggers(short* data, long heavy, long HeavyFlags, int room_number, int
 					if (trigger_items_count > MAX_TRIGGERED_ITEMS)
 						trigger_items_count = MAX_TRIGGERED_ITEMS;
 					should_update_action_floorstate = true;
+					if (!is_mod_trng_version_equal_or_greater_than_target(1, 3, 0, 0)) {
+						should_update_ng_oneshot = true;
+					}
 				} else {
 					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Plugin Trigger NGActions are currently not supported!");
 				}
@@ -1166,7 +1173,7 @@ void TestTriggers(short* data, long heavy, long HeavyFlags, int room_number, int
 	if (should_update_action_floorstate)
 		NGUpdateActionFloorstateData(heavy);
 
-	if (flags & IFL_INVISIBLE)
+	if (should_update_ng_oneshot)
 		NGUpdateOneshot();
 }
 
