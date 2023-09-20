@@ -28,6 +28,7 @@
 #include "../../tomb4/tomb4plus/t4plus_inventory.h"
 #include "../../tomb4/tomb4plus/t4plus_savegame.h"
 #include "../flmtorch.h"
+#include "../items.h"
 
 void NGAttractLaraInDirection(unsigned char direction, unsigned char speed) {
 	switch (direction) {
@@ -283,7 +284,8 @@ bool move_lara_to_lara_start_pos_in_x_way(unsigned char ocb, unsigned char telep
 
 				camera.fixed_camera = 1;
 
-				lara_item->room_number = ai->room_number;
+				if (lara_item->room_number != ai->room_number)
+					ItemNewRoom(lara.item_number, ai->room_number);
 
 				return true;
 			} else {
@@ -292,7 +294,9 @@ bool move_lara_to_lara_start_pos_in_x_way(unsigned char ocb, unsigned char telep
 				lara_item->pos.y_pos = ai->y;
 				lara_item->pos.z_pos = ai->z;
 				lara_item->pos.y_rot = ai->y_rot;
-				lara_item->room_number = ai->room_number;
+
+				if (lara_item->room_number != ai->room_number)
+					ItemNewRoom(lara.item_number, ai->room_number);
 
 				camera.fixed_camera = 1;
 
