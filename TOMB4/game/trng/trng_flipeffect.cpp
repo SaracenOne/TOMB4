@@ -94,9 +94,18 @@ bool NGTriggerItemGroupWithTimer(unsigned char item_group, unsigned char timer, 
 	return true;
 }
 
+short NGGetInventoryObjectIDForByte(unsigned char inventory_id) {
+	if (inventory_id >= 0x5C) {
+		return (inventory_id - 0x5C) + PISTOLS_ITEM;
+	}
+	else {
+		return inventory_id + PUZZLE_ITEM1;
+	}
+}
+
 // NGLE - 47
 bool inventory_remove_inventory_item(unsigned char inventory_id, unsigned char _unused) {
-	short object_number = inventory_id + PUZZLE_ITEM1;
+	short object_number = NGGetInventoryObjectIDForByte(inventory_id);
 
 	T4PlusSetInventoryCount(object_number, 0);
 
@@ -105,8 +114,8 @@ bool inventory_remove_inventory_item(unsigned char inventory_id, unsigned char _
 
 // NGLE - 48
 bool inventory_increase_inventory_items_by_one_in_x_way(unsigned char inventory_id, unsigned char show_popup) {
-	short object_number = inventory_id + PUZZLE_ITEM1;
-	
+	short object_number = NGGetInventoryObjectIDForByte(inventory_id);
+
 	if (show_popup)
 		T4ShowObjectPickup(object_number);
 
@@ -119,7 +128,7 @@ bool inventory_increase_inventory_items_by_one_in_x_way(unsigned char inventory_
 
 // NGLE - 49
 bool inventory_decrease_inventory_items_by_one_in_x_way(unsigned char inventory_id, unsigned char _unused) {
-	short object_number = inventory_id + PUZZLE_ITEM1;
+	short object_number = NGGetInventoryObjectIDForByte(inventory_id);
 
 	int current_inventory_count = T4PlusGetInventoryCount(object_number);
 	current_inventory_count--;
@@ -133,7 +142,7 @@ bool inventory_decrease_inventory_items_by_one_in_x_way(unsigned char inventory_
 
 // NGLE - 50
 bool inventory_set_inventory_items(unsigned char inventory_id, unsigned char count) {
-	short object_number = inventory_id + PUZZLE_ITEM1;
+	short object_number = NGGetInventoryObjectIDForByte(inventory_id);
 
 	T4PlusSetInventoryCount(object_number, count);
 
