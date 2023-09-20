@@ -86,10 +86,7 @@ int NGActionTrigger(unsigned short param, unsigned short extra, short timer, boo
 	
 	NGStoreBackupTriggerRoomAndIndex();
 
-	bool oneshot_triggered = false;
-	if (!is_mod_trng_version_equal_or_greater_than_target(1, 3, 0, 0)) {
-		oneshot_triggered = NGIsOneShotTriggeredForTile();
-	}
+	bool oneshot_triggered = NGIsActionOneShotTriggeredForTile();
 
 	int result = NGAction(param, extra, !oneshot_triggered && (is_heavy_triggered || !NGCheckActionFloorStatePressedThisFrameOrLastFrame(is_heavy_triggered)), is_heavy_triggered);
 

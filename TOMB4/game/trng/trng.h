@@ -102,7 +102,9 @@ extern int NGGetCurrentDrawItemNumber();
 
 extern void NGUpdateFlipeffectFloorstateData(bool heavy);
 extern void NGUpdateActionFloorstateData(bool heavy);
-extern void NGUpdateOneshot();
+
+extern void NGUpdateFlipeffectOneshot();
+extern void NGUpdateActionOneshot();
 
 extern int NGFindIndexForLaraStartPosWithMatchingOCB(unsigned int ocb);
 

@@ -632,12 +632,13 @@ void TestTriggers(short* data, long heavy, long HeavyFlags, int room_number, int
 	ITEM_INFO* camera_item;
 	long switch_off, flip, flip_available, neweffect, key, quad;
 	short camera_flags, camera_timer, type, trigger, value, flags, state;
-	char timer;
+	short timer;
 
 	// NGLE
 	bool should_update_flipeffect_floorstate = false;
 	bool should_update_action_floorstate = false;
-	bool should_update_ng_oneshot = false;
+	bool should_update_ng_flipeffect_oneshot = false;
+	bool should_update_ng_action_oneshot = false;
 
 	switch_off = 0;
 	flip = -1;
@@ -1037,10 +1038,10 @@ void TestTriggers(short* data, long heavy, long HeavyFlags, int room_number, int
 					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Plugin Trigger FlipEffects are currently not supported!");
 				}
 				if (flags & IFL_INVISIBLE) {
-					should_update_ng_oneshot = true;
+					should_update_ng_flipeffect_oneshot = true;
 				}
 			} else {
-				TriggerTimer = timer;
+				TriggerTimer = timer & 0xff;
 				neweffect = value;
 			}
 			break;
@@ -1059,8 +1060,10 @@ void TestTriggers(short* data, long heavy, long HeavyFlags, int room_number, int
 					if (trigger_items_count > MAX_TRIGGERED_ITEMS)
 						trigger_items_count = MAX_TRIGGERED_ITEMS;
 					should_update_action_floorstate = true;
-					if (!is_mod_trng_version_equal_or_greater_than_target(1, 3, 0, 0)) {
-						should_update_ng_oneshot = true;
+					if (!should_update_ng_action_oneshot) {
+						if (!is_mod_trng_version_equal_or_greater_than_target(1, 3, 0, 0)) {
+							should_update_ng_action_oneshot = true;
+						}
 					}
 				} else {
 					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Plugin Trigger NGActions are currently not supported!");
@@ -1173,8 +1176,11 @@ void TestTriggers(short* data, long heavy, long HeavyFlags, int room_number, int
 	if (should_update_action_floorstate)
 		NGUpdateActionFloorstateData(heavy);
 
-	if (should_update_ng_oneshot)
-		NGUpdateOneshot();
+	if (should_update_ng_flipeffect_oneshot)
+		NGUpdateFlipeffectOneshot();
+
+	if (should_update_ng_action_oneshot)
+		NGUpdateActionOneshot();
 }
 
 short GetDoor(FLOOR_INFO* floor)

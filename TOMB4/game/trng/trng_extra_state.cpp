@@ -116,7 +116,8 @@ TriggerState ng_current_trigger_state;
 int pending_ng_room = -1;
 
 int ng_floorstate_data_size = 0;
-char *ng_oneshot_floorstate = NULL;
+char *ng_flipeffect_oneshot_floorstate = NULL;
+char *ng_action_oneshot_floorstate = NULL;
 
 int ng_last_flipeffect_floor_trigger = -1;
 int ng_current_flipeffect_floor_trigger = -1;
@@ -242,10 +243,18 @@ void NGRestoreBackupTriggerRoomAndIndex() {
 	}
 }
 
-bool NGIsOneShotTriggeredForTile() {
+bool NGIsFlipeffectOneShotTriggeredForTile() {
 	int index = ng_room_offset_table[ng_current_trigger_state.room] + ng_current_trigger_state.index;
 
-	bool result = ng_oneshot_floorstate[index];
+	bool result = ng_flipeffect_oneshot_floorstate[index];
+
+	return result;
+}
+
+bool NGIsActionOneShotTriggeredForTile() {
+	int index = ng_room_offset_table[ng_current_trigger_state.room] + ng_current_trigger_state.index;
+
+	bool result = ng_action_oneshot_floorstate[index];
 
 	return result;
 }
@@ -1260,9 +1269,14 @@ void NGUpdateActionFloorstateData(bool heavy) {
 	}
 }
 
-extern void NGUpdateOneshot() {
+void NGUpdateFlipeffectOneshot() {
 	int index = ng_room_offset_table[ng_current_trigger_state.room] + ng_current_trigger_state.index;
-	ng_oneshot_floorstate[index] = true;
+	ng_flipeffect_oneshot_floorstate[index] = true;
+}
+
+void NGUpdateActionOneshot() {
+	int index = ng_room_offset_table[ng_current_trigger_state.room] + ng_current_trigger_state.index;
+	ng_action_oneshot_floorstate[index] = true;
 }
 
 void NGSetupExtraState() {
@@ -1393,8 +1407,11 @@ void NGSetupExtraState() {
 		ng_room_offset_table[i] = ng_floorstate_data_size;
 		ng_floorstate_data_size += room[i].x_size * room[i].y_size;
 	}
-	ng_oneshot_floorstate = (char*)game_malloc(ng_floorstate_data_size);
-	memset(ng_oneshot_floorstate, 0x00, ng_floorstate_data_size);
+	ng_flipeffect_oneshot_floorstate = (char*)game_malloc(ng_floorstate_data_size);
+	memset(ng_flipeffect_oneshot_floorstate, 0x00, ng_floorstate_data_size);
+
+	ng_action_oneshot_floorstate = (char*)game_malloc(ng_floorstate_data_size);
+	memset(ng_action_oneshot_floorstate, 0x00, ng_floorstate_data_size);
 
 	// Input lock
 	memset(ng_input_lock_timers, 0x00, sizeof(ng_input_lock_timers));
