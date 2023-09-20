@@ -7,11 +7,14 @@
 #include "../debris.h"
 #include "../effects.h"
 #include "../effect2.h"
+#include "../flmtorch.h"
 #include "../gameflow.h"
+#include "../items.h"
 #include "../lara.h"
 #include "../objects.h"
 #include "../savegame.h"
 #include "../sound.h"
+#include "../tomb4fx.h"
 #include "../traps.h"
 #include "../../specific/file.h"
 #include "../../specific/dxsound.h"
@@ -27,8 +30,6 @@
 #include "../../tomb4/mod_config.h"
 #include "../../tomb4/tomb4plus/t4plus_inventory.h"
 #include "../../tomb4/tomb4plus/t4plus_savegame.h"
-#include "../flmtorch.h"
-#include "../items.h"
 
 void NGAttractLaraInDirection(unsigned char direction, unsigned char speed) {
 	switch (direction) {
@@ -338,6 +339,20 @@ bool delay_load_x_level_in_seconds(unsigned char level_id, unsigned char level_t
 // NGLE - 83
 bool remove_weapons_or_flares_from_laras_hands(unsigned char unused1, unsigned char unused2) {
 	lara.request_gun_type = WEAPON_NONE;
+
+	return true;
+}
+
+// NGLE - 84
+bool cutscene_set_fade_in_for_x_time(unsigned char fade_time, unsigned char unused2) {
+	SetScreenFadeIn(fade_time);
+
+	return true;
+}
+
+// NGLE - 85
+bool cutscene_set_fade_out_for_x_time_in_way(unsigned char fade_time, unsigned char fade_type) {
+	SetScreenFadeOut(fade_time, fade_type);
 
 	return true;
 }
@@ -1398,14 +1413,14 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 		}
 		case CUTSCENE_SET_FADEIN_FOR_X_TIME: {
 			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "CUTSCENE_SET_FADEIN_FOR_X_TIME unimplemented!");
+				cutscene_set_fade_in_for_x_time(action_data_1, action_data_2);
 				return true;
 			}
 			break;
 		}
-		case CUTSCENE_SET_FADEOUT_FOR_X_TIME: {
+		case CUTSCENE_SET_FADEOUT_FOR_X_TIME_IN_WAY: {
 			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "CUTSCENE_SET_FADEOUT_FOR_X_TIME unimplemented!");
+				cutscene_set_fade_out_for_x_time_in_way(action_data_1, action_data_2);
 				return true;
 			}
 			break;
