@@ -95,10 +95,13 @@ bool NGTriggerItemGroupWithTimer(unsigned char item_group, unsigned char timer, 
 }
 
 short NGGetInventoryObjectIDForByte(unsigned char inventory_id) {
-	if (inventory_id >= 0x5C) {
-		return (inventory_id - 0x5C) + PISTOLS_ITEM;
-	}
-	else {
+	if (inventory_id >= 0x6B) {
+		return ((inventory_id - 0x6B) + SIXSHOOTER_ITEM);
+	} else if (inventory_id >= 0x67) {
+		return ((inventory_id - 0x67) + GRENADE_GUN_ITEM);
+	} else if (inventory_id >= 0x5C) {
+		return ((inventory_id - 0x5C) + PISTOLS_ITEM);
+	} else {
 		return inventory_id + PUZZLE_ITEM1;
 	}
 }
