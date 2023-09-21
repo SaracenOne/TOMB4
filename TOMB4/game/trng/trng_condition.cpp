@@ -452,6 +452,24 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: CREATURE_THE_X_CREATURE_HAS_THE_TRANSPARENCY_LEVEL unimplemented type: 0x%02x!", extra);
 		break;
 	}
+	case VARIABLES_THE_X_NUMERIC_VERIABLE_IS_EQUAL_OR_GREATER_TO_BIG_NUMBER_VALUE: {
+		if (NGNumericGetVariable(param) >= current_big_numbers[extra].big_number)
+			return true;
+		else
+			return false;
+	}
+	case VARIABLES_THE_X_NUMERIC_VERIABLE_IS_LESS_THAN_BIG_NUMBER_VALUE: {
+		if (NGNumericGetVariable(param) < current_big_numbers[extra].big_number)
+			return true;
+		else
+			return false;
+	}
+	case VARIABLES_THE_X_NUMERIC_VERIABLE_IS_EQUAL_TO_BIG_NUMBER_VALUE: {
+		if (NGNumericGetVariable(param) == current_big_numbers[extra].big_number)
+			return true;
+		else
+			return false;
+	}
 	case VARIABLES_THE_X_NUMERIC_VARIABLE_IS_EQUAL_OR_GREATER_TO: {
 		if (NGNumericGetVariable(param) >= extra)
 			return true;
