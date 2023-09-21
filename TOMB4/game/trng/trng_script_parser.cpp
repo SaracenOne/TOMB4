@@ -1108,6 +1108,8 @@ int NGReadLevelBlock(char* gfScriptFile, unsigned int offset, NG_LEVEL_RECORD_TA
 				// TriggerGroup (WIP)
 				unsigned short id = NG_READ_16(gfScriptFile, offset);
 
+				NGLog(NG_LOG_TYPE_PRINT, "Triggergroup %u: (level %u)", id, current_level);
+
 				if (id >= MAX_NG_TRIGGER_GROUPS) {
 					NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: TriggerGroup id (%u) is not valid! (level %u)", id, current_level);
 					return 0;
@@ -1125,6 +1127,8 @@ int NGReadLevelBlock(char* gfScriptFile, unsigned int offset, NG_LEVEL_RECORD_TA
 					}
 					unsigned short second_field = NG_READ_16(gfScriptFile, offset);
 					unsigned short third_field = NG_READ_16(gfScriptFile, offset);
+
+					NGLog(NG_LOG_TYPE_PRINT, "0x%04x, 0x%04x, 0x%04x", first_field, second_field, third_field);
 
 					tables->level_trigger_group_table[tables->level_trigger_group_count].record.data[data_index].plugin_id = 0;
 					tables->level_trigger_group_table[tables->level_trigger_group_count].record.data[data_index].first_field = first_field;
