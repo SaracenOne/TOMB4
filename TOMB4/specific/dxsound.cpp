@@ -19,12 +19,11 @@ static char source_pcm_format[50] =
 #pragma warning(pop)
 
 char* samples_buffer;
-
 static LPDIRECTSOUNDBUFFER DSPrimary;
 static IXAudio2MasteringVoice* XAMaster;
 static IUnknown* XAEffect;
 static IXAudio2SourceVoice* XA_Voices[32];
-static XAUDIO2_BUFFER XA_Buffers[256];
+static XAUDIO2_BUFFER XA_Buffers[MAX_SAMPLE_BUFFERS];
 static MMRESULT mmresult;
 static WAVEFORMATEX pcm_format;
 static HACMSTREAM hACMStream;
@@ -229,14 +228,14 @@ bool FreeSampleDecompress()
 	return 1;
 }
 
-bool DXCreateSample(char* data, long size, LPWAVEFORMATEX format, long num)
+bool DXCreateSample(char* data, long size, int samples_per_second, long num)
 {
 	Log(8, "DXCreateSample");
 
 	if (!App.dx.lpDS)
 		return 0;
 
-	if (format->nSamplesPerSec != 22050)
+	if (samples_per_second != 22050)
 		Log(1, "Incorrect SamplesPerSec");
 
 	XA_Buffers[num].pAudioData = (BYTE*)malloc(size);

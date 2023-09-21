@@ -1220,6 +1220,21 @@ bool LoadAIInfo()
 	return 1;
 }
 
+struct  T4PLUS_RIFF_HEADER {
+	char			riff_ident[4];
+	unsigned int	chunk_size;
+	char			wave_ident[4];
+};
+
+struct  T4PLUS_WAV_FORMAT {
+	unsigned short	audio_format;
+	unsigned short	channels;
+	unsigned int	samples_per_second;
+	unsigned int	bytes_per_second;
+	unsigned short	block_align;
+	unsigned short	bits_per_sample;
+};
+
 bool LoadSamples()
 {
 	long num_samples, uncomp_size, comp_size;
@@ -1268,27 +1283,75 @@ bool LoadSamples()
 		return 1;
 	}
 
+	if (num_samples > MAX_SAMPLE_BUFFERS) {
+		num_samples = MAX_SAMPLE_BUFFERS;
+		Log(1, "Maximum sample buffers overrun!");
+	}
+
 	for (int i = 0; i < num_samples; i++)
 	{
 		fread(&uncomp_size, 1, 4, level_fp);
 		fread(&comp_size, 1, 4, level_fp);
-		fread(samples_buffer, comp_size, 1, level_fp);
 
 #ifndef LEVEL_EDITOR
+		fread(samples_buffer, comp_size, 1, level_fp);
+
 		if (!DXCreateSampleADPCM(samples_buffer, comp_size, uncomp_size, i))
 		{
 			FreeSampleDecompress();
 			return 0;
 		}
 #else 
-		LPWAVEFORMATEX format = (LPWAVEFORMATEX)(samples_buffer + 20);
+		T4PLUS_RIFF_HEADER header;
+		char chunk_1_format[4];
+		int chunk_1_size;
 
-		const int data_len = *((int*)(samples_buffer + 40));
-		const int data_off = 44;
+		int read_bytes = 0;
 
-		if (!DXCreateSample(samples_buffer + data_off, data_len, format, i)) {
-			FreeSampleDecompress();
-			return 0;
+		fread(&header, sizeof(T4PLUS_RIFF_HEADER), 1, level_fp);
+		read_bytes += sizeof(T4PLUS_RIFF_HEADER);
+
+		fread(&chunk_1_format, sizeof(chunk_1_format), 1, level_fp);
+		read_bytes += sizeof(chunk_1_format);
+		fread(&chunk_1_size, sizeof(chunk_1_size), 1, level_fp);
+		read_bytes += sizeof(chunk_1_size);
+
+		T4PLUS_WAV_FORMAT wav_format;
+		int chunk_1_remaining_size = chunk_1_size - sizeof(T4PLUS_WAV_FORMAT);
+		fread(&wav_format, sizeof(T4PLUS_WAV_FORMAT), 1, level_fp);
+		read_bytes += sizeof(T4PLUS_WAV_FORMAT);
+
+		if (chunk_1_remaining_size > 0) {
+			fseek(level_fp, chunk_1_remaining_size, SEEK_CUR);
+			read_bytes += chunk_1_remaining_size;
+		}
+
+		char chunk_2_format[4];
+		int chunk_2_size;
+		fread(&chunk_2_format, sizeof(chunk_2_format), 1, level_fp);
+		read_bytes += sizeof(chunk_2_format);
+		fread(&chunk_2_size, sizeof(chunk_2_size), 1, level_fp);
+		read_bytes += sizeof(chunk_2_size);
+
+		if (chunk_2_size > 0 && chunk_2_size < DECOMPRESS_BUFFER_LEN) {
+			memset(samples_buffer, 0x00, DECOMPRESS_BUFFER_LEN);
+			
+			int remainder = comp_size - (read_bytes + chunk_2_size);
+
+			if (remainder < 0) {
+				fread(samples_buffer, chunk_2_size + remainder, 1, level_fp);
+			} else {
+				fread(samples_buffer, chunk_2_size, 1, level_fp);
+				fseek(level_fp, remainder, SEEK_CUR);
+			}
+			read_bytes += chunk_2_size;
+
+			if (!DXCreateSample(samples_buffer, chunk_2_size, wav_format.samples_per_second, i)) {
+				FreeSampleDecompress();
+				return 0;
+			}
+		} else {
+			Log(1, "Sample buffer overrun!");
 		}
 #endif
 	}
