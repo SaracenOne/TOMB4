@@ -1019,7 +1019,7 @@ void TestTriggers(short* data, long heavy, long HeavyFlags, int room_number, int
 
 		case TO_FINISH:
 			gfLevelComplete = (char)value;
-			gfRequiredStartPos = timer;
+			gfRequiredStartPos = timer & 0xff;
 			break;
 
 		case TO_CD:
