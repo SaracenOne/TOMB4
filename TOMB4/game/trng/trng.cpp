@@ -376,7 +376,7 @@ void NGCleanup() {
 
 void NGLog(NGLogType type, const char* s, ...) {
 	va_list list;
-	char buf[4096];
+	char buf[4096 * 8];
 
 	va_start(list, s);
 	vsprintf(buf, s, list);

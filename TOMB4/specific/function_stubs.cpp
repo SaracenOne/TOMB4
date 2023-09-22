@@ -75,7 +75,7 @@ void Log(ulong type, const char* s, ...)
 {
 #ifdef DO_LOG
 	va_list list;
-	char buf[4096];
+	char buf[4096 * 8];
 
 	if (!logF)
 		logF = fopen("log.txt", "w+");
