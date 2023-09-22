@@ -1242,7 +1242,7 @@ int NGReadLevelBlock(char* gfScriptFile, unsigned int offset, NG_LEVEL_RECORD_TA
 				global_trigger_type != GT_TRNG_G_TIMER_EQUALS &&
 				global_trigger_type != GT_TRNG_L_TIMER_EQUALS &&
 				global_trigger_type != GT_SELECTED_INVENTORY_ITEM) {
-				NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: Unimplemented GlobalTrigger type %u (level %u)", global_trigger_type, current_level);
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Unimplemented GlobalTrigger type %u (level %u)", global_trigger_type, current_level);
 			}
 			tables->level_global_triggers_table[tables->level_global_trigger_count].record.type = global_trigger_type;
 

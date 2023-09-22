@@ -2912,6 +2912,20 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 			}
 			break;
 		}
+		case CUSTOM_BAR_SHOW_THE_X_CUSTOM_BAR_ON_SCREEN_FOR_SECONDS: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "CUSTOM_BAR_SHOW_THE_X_CUSTOM_BAR_ON_SCREEN_FOR_SECONDS unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case CUSTOM_BAR_HIDE_THE_X_CUSTOM_BAR: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "CUSTOM_BAR_HIDE_THE_X_CUSTOM_BAR unimplemented!");
+				return true;
+			}
+			break;
+		}
 		case TRIGGERGROUP_ENABLE_NEWLY_THE_ONESHOT_X_TRIGGERGROUP_ALREADY_PERFORMED: {
 			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
 				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TRIGGERGROUP_ENABLE_NEWLY_THE_ONESHOT_X_TRIGGERGROUP_ALREADY_PERFORMED unimplemented!");
