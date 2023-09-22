@@ -45,7 +45,12 @@ void ShutThatDoor(DOORPOS_DATA* d)
 			for (short slot = 0; slot < MAXIMUM_BADDIES; slot++)
 			{
 				cinfo = &baddie_slots[slot];
-				cinfo->LOT.target_box = 2047;
+				// T4Plus: additional check for NULL slots
+				if (cinfo) {
+					cinfo->LOT.target_box = 2047;
+				} else {
+					break;
+				}
 			}
 		}
 	}
@@ -66,7 +71,12 @@ void OpenThatDoor(DOORPOS_DATA* d)
 			for (short slot = 0; slot < MAXIMUM_BADDIES; slot++)
 			{
 				cinfo = &baddie_slots[slot];
-				cinfo->LOT.target_box = 2047;
+				// T4Plus: additional check for NULL slots
+				if (cinfo) {
+					cinfo->LOT.target_box = 2047;
+				} else {
+					break;
+				}
 			}
 		}
 	}
