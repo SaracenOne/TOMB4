@@ -215,8 +215,9 @@ void SkeletonControl(short item_number)
 		larainfo.angle = short(phd_atan(dz, dx) - item->pos.y_rot);
 		larainfo.distance = SQUARE(dx) + SQUARE(dz);
 	}
-
-//	larainfo.ahead = larainfo.angle > -0x4000 && larainfo.angle < 0x4000;	//Keep uninitialized
+	
+	// T4Plus: initialize this
+	larainfo.ahead = larainfo.angle > -0x4000 && larainfo.angle < 0x4000;
 	GetCreatureMood(item, &info, 1);
 
 	if (!(item->mesh_bits & 0x200))
