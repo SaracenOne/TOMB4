@@ -301,6 +301,20 @@ void NGRotateStaticY(unsigned short static_id, short rotation) {
 	}
 }
 
+void NGForceItemAnimation(unsigned short item_id, unsigned int animation) {
+	items[item_id].anim_number = objects[items[item_id].object_number].anim_index + animation;
+	items[item_id].frame_number = anims[items[item_id].anim_number].frame_base;
+
+	if (items[item_id].current_anim_state != anims[items[item_id].anim_number].current_anim_state)
+	{
+		items[item_id].current_anim_state = anims[items[item_id].anim_number].current_anim_state;
+		items[item_id].goal_anim_state = anims[items[item_id].anim_number].current_anim_state;
+	}
+
+	if (items[item_id].required_anim_state == anims[items[item_id].anim_number].current_anim_state)
+		items[item_id].required_anim_state = 0;
+}
+
 void NGSetup() {	
 	NGLoadTablesForLevel(gfCurrentLevel);
 	NGSetupExtraState();

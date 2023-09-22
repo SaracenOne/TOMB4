@@ -272,9 +272,7 @@ bool force_lara_animation_0_255_of_slot_animation(unsigned char animation_index,
 	int animation_index_offset = objects[object_id].anim_index + animation_index;
 
 	if (lara_item->anim_number != animation_index_offset) {
-		lara_item->anim_number = animation_index_offset;
-		lara_item->frame_number = anims[animation_index_offset].frame_base;
-		lara_item->current_anim_state = anims[animation_index_offset].current_anim_state;
+		NGForceItemAnimation(lara.item_number, animation_index_offset);
 	}
 
 	return true;
@@ -326,9 +324,7 @@ bool force_lara_animation_256_512_of_slot_animation(unsigned char animation_inde
 	int animation_index_offset = objects[object_id].anim_index + animation_index + 256;
 
 	if (lara_item->anim_number != animation_index_offset) {
-		lara_item->anim_number = animation_index_offset;
-		lara_item->frame_number = anims[animation_index_offset].frame_base;
-		lara_item->current_anim_state = anims[animation_index_offset].current_anim_state;
+		NGForceItemAnimation(lara.item_number, animation_index_offset);
 	}
 
 	return true;

@@ -81,6 +81,8 @@ extern void NGMoveStaticVerticalByUnits(unsigned short static_id, unsigned int u
 extern void NGRotateStaticX(unsigned short static_id, short rotation);
 extern void NGRotateStaticY(unsigned short static_id, short rotation);
 
+extern void NGForceItemAnimation(unsigned short item_id, unsigned int animation);
+
 extern void NGSetup();
 
 extern void NGUpdateAllItems();

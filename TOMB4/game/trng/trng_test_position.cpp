@@ -26,10 +26,7 @@ long NGTestLaraDistance(PHD_VECTOR* target, ITEM_INFO* item, ITEM_INFO* l) {
 void NGStopLaraMovement(bool set_stop_animation_when_goal_reached) {
 	if (set_stop_animation_when_goal_reached) {
 		lara.IsMoving = 0;
-
-		lara_item->anim_number = ANIM_STOP;
-		lara_item->frame_number = anims[ANIM_STOP].frame_base;
-		lara_item->current_anim_state = anims[ANIM_STOP].current_anim_state;
+		NGForceItemAnimation(lara.item_number, ANIM_STOP);
 	}
 
 	ng_animation_target_item = -1;

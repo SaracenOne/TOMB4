@@ -68,12 +68,6 @@ void NGItemActivator(int item_id, bool anti) {
 	}
 }
 
-void NGForceItemAnimation(unsigned short item_id, unsigned int animation) {
-	items[item_id].anim_number = objects[items[item_id].object_number].anim_index + animation;
-	items[item_id].frame_number = anims[items[item_id].anim_number].frame_base;
-	items[item_id].current_anim_state = anims[items[item_id].anim_number].current_anim_state;
-}
-
 void NGHurtEnemy(unsigned short item_id, unsigned short damage) {
 	if (items[item_id].hit_points > 0) {
 		items[item_id].hit_points -= damage;
@@ -860,7 +854,8 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame, bool 
 			if (first_frame) {
 				ITEM_INFO* item = &items[item_id];
 				if (item) {
-					item->current_anim_state = action_data; // Do we need to change the goal state too or not?
+					item->current_anim_state = action_data;
+					item->goal_anim_state = action_data; // Do we need to change the goal state too or not?
 				}
 			}
 			break;

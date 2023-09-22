@@ -35,10 +35,22 @@ TestEnvConditionTripletResult TestEnvConditionTriplet(NG_MULTI_ENV_TRIPLET* trip
 
 	if (check_forward_strip || check_middle_strip || check_back_strip) {
 		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TestEnvConditionTriplet: sector strip detection not yet supported!", triplet->env_condition);
+
+		result.is_valid = false;
+		result.seek_item = -1;
+		result.test_position_id = -1;
+
+		return result;
 	}
 
 	if (check_hortogonal) {
 		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TestEnvConditionTriplet: hortogonal detection not yet supported!", triplet->env_condition);
+
+		result.is_valid = false;
+		result.seek_item = -1;
+		result.test_position_id = -1;
+
+		return result;
 	}
 
 	unsigned int env_condition_switch_value = triplet->env_condition & 0x7f;
@@ -71,6 +83,20 @@ TestEnvConditionTripletResult TestEnvConditionTriplet(NG_MULTI_ENV_TRIPLET* trip
 			}
 			break;
 		}
+		case ENV_DISTANCE_CEILING: {
+			FLOOR_INFO *floor = GetFloor(lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos, &lara_item->room_number);
+			long ceiling = GetCeiling(floor, lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos);
+
+			long distance_to_ceiling = -(ceiling - lara_item->pos.y_pos);
+
+			if (distance_to_ceiling >= triplet->distance_for_env) {
+				result.is_valid = true;
+			} else {
+				result.is_valid = false;
+			}
+
+			break;
+		}
 		case ENV_MULT_OR_CONDITION: {
 			result.is_valid = false;
 
@@ -91,6 +117,14 @@ TestEnvConditionTripletResult TestEnvConditionTriplet(NG_MULTI_ENV_TRIPLET* trip
 						}
 					}
 				}
+			}
+			break;
+		}
+		case ENV_FRAME_NUMBER: {
+			if ((lara_item->frame_number - anims[lara_item->anim_number].frame_base) == triplet->distance_for_env) {
+				result.is_valid = true;
+			} else {
+				result.is_valid = false;
 			}
 			break;
 		}
