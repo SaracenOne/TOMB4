@@ -727,9 +727,11 @@ bool static_move_static_with_data_in_x_parameter_list(unsigned char move_param_i
 	int direction = move_item->direction & 0xff;
 	int script_static = move_item->index_item;
 
-	if (move_item->flags) {
-		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "static_move_static_with_data_in_x_parameter_list: unimplemented flags 0x%04x", move_item->flags);
-		return false;
+	if (move_item->flags != 0xffff) {
+		if (move_item->flags & ~(FMOV_INFINITE_LOOP)) {
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "static_move_static_with_data_in_x_parameter_list: unimplemented flags 0x%04x", move_item->flags);
+			return false;
+		}
 	}
 
 	switch (direction) {
@@ -741,6 +743,12 @@ bool static_move_static_with_data_in_x_parameter_list(unsigned char move_param_i
 				}
 				NGSetStaticHorizontalMovementAngle(script_static, (short)current_angle);
 				NGSetStaticHorizontalMovementRemainingUnits(script_static, move_item->distance);
+				NGSetStaticHorizontalMovementSpeed(script_static, move_item->speed);
+				if (move_item->flags & FMOV_INFINITE_LOOP) {
+					NGSetStaticHorizontalMovementRepeatUnits(script_static, move_item->distance);
+				} else {
+					NGSetStaticHorizontalMovementRepeatUnits(script_static, 0);
+				}
 				is_valid = true;
 			}
 			break;
@@ -753,6 +761,12 @@ bool static_move_static_with_data_in_x_parameter_list(unsigned char move_param_i
 				}
 				NGSetStaticHorizontalMovementAngle(script_static, (short)current_angle);
 				NGSetStaticHorizontalMovementRemainingUnits(script_static, move_item->distance);
+				NGSetStaticHorizontalMovementSpeed(script_static, move_item->speed);
+				if (move_item->flags & FMOV_INFINITE_LOOP) {
+					NGSetStaticHorizontalMovementRepeatUnits(script_static, move_item->distance);
+				} else {
+					NGSetStaticHorizontalMovementRepeatUnits(script_static, 0);
+				}
 				is_valid = true;
 			}
 			break;
@@ -765,6 +779,12 @@ bool static_move_static_with_data_in_x_parameter_list(unsigned char move_param_i
 				}
 				NGSetStaticHorizontalMovementAngle(script_static, (short)current_angle);
 				NGSetStaticHorizontalMovementRemainingUnits(script_static, move_item->distance);
+				NGSetStaticHorizontalMovementSpeed(script_static, move_item->speed);
+				if (move_item->flags & FMOV_INFINITE_LOOP) {
+					NGSetStaticHorizontalMovementRepeatUnits(script_static, move_item->distance);
+				} else {
+					NGSetStaticHorizontalMovementRepeatUnits(script_static, 0);
+				}
 				is_valid = true;
 			}
 			break;
@@ -777,6 +797,12 @@ bool static_move_static_with_data_in_x_parameter_list(unsigned char move_param_i
 				}
 				NGSetStaticHorizontalMovementAngle(script_static, (short)current_angle);
 				NGSetStaticHorizontalMovementRemainingUnits(script_static, move_item->distance);
+				NGSetStaticHorizontalMovementSpeed(script_static, move_item->speed);
+				if (move_item->flags & FMOV_INFINITE_LOOP) {
+					NGSetStaticHorizontalMovementRepeatUnits(script_static, move_item->distance);
+				} else {
+					NGSetStaticHorizontalMovementRepeatUnits(script_static, 0);
+				}
 				is_valid = true;
 			}
 			break;
@@ -788,7 +814,6 @@ bool static_move_static_with_data_in_x_parameter_list(unsigned char move_param_i
 	}
 
 	if (is_valid) {
-		NGSetStaticMovementSpeed(script_static, move_item->speed);
 		NGSetStaticMovementInProgressSound(script_static, move_item->moving_sound);
 		NGSetStaticMovementFinishedSound(script_static, move_item->final_sound);
 	}
@@ -809,9 +834,11 @@ bool moveable_move_moveable_with_data_in_x_parameter_list(unsigned char move_par
 	int direction = move_item->direction & 0xff;
 	int script_item = ng_script_id_table[move_item->index_item].script_index;
 
-	if (move_item->flags) {
-		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "moveable_move_moveable_with_data_in_x_parameter_list: unimplemented flags 0x%04x", move_item->flags);
-		return false;
+	if (move_item->flags != 0xffff) {
+		if (move_item->flags & ~(FMOV_INFINITE_LOOP)) {
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "moveable_move_moveable_with_data_in_x_parameter_list: unimplemented flags 0x%04x", move_item->flags);
+			return false;
+		}
 	}
 
 	switch (direction) {
@@ -823,6 +850,12 @@ bool moveable_move_moveable_with_data_in_x_parameter_list(unsigned char move_par
 				}
 				NGSetItemHorizontalMovementAngle(script_item, (short)current_angle);
 				NGSetItemHorizontalMovementRemainingUnits(script_item, move_item->distance);
+				NGSetItemHorizontalMovementSpeed(script_item, move_item->speed);
+				if (move_item->flags & FMOV_INFINITE_LOOP) {
+					NGSetItemHorizontalMovementRepeatUnits(script_item, move_item->distance);
+				} else {
+					NGSetItemHorizontalMovementRepeatUnits(script_item, 0);
+				}
 				is_valid = true;
 			}
 			break;
@@ -835,6 +868,12 @@ bool moveable_move_moveable_with_data_in_x_parameter_list(unsigned char move_par
 				}
 				NGSetItemHorizontalMovementAngle(script_item, (short)current_angle);
 				NGSetItemHorizontalMovementRemainingUnits(script_item, move_item->distance);
+				NGSetItemHorizontalMovementSpeed(script_item, move_item->speed);
+				if (move_item->flags & FMOV_INFINITE_LOOP) {
+					NGSetItemHorizontalMovementRepeatUnits(script_item, move_item->distance);
+				} else {
+					NGSetItemHorizontalMovementRepeatUnits(script_item, 0);
+				}
 				is_valid = true;
 			}
 			break;
@@ -847,6 +886,12 @@ bool moveable_move_moveable_with_data_in_x_parameter_list(unsigned char move_par
 				}
 				NGSetItemHorizontalMovementAngle(script_item, (short)current_angle);
 				NGSetItemHorizontalMovementRemainingUnits(script_item, move_item->distance);
+				NGSetItemHorizontalMovementSpeed(script_item, move_item->speed);
+				if (move_item->flags & FMOV_INFINITE_LOOP) {
+					NGSetItemHorizontalMovementRepeatUnits(script_item, move_item->distance);
+				} else {
+					NGSetItemHorizontalMovementRepeatUnits(script_item, 0);
+				}
 				is_valid = true;
 			}
 			break;
@@ -859,6 +904,12 @@ bool moveable_move_moveable_with_data_in_x_parameter_list(unsigned char move_par
 				}
 				NGSetItemHorizontalMovementAngle(script_item, (short)current_angle);
 				NGSetItemHorizontalMovementRemainingUnits(script_item, move_item->distance);
+				NGSetItemHorizontalMovementSpeed(script_item, move_item->speed);
+				if (move_item->flags & FMOV_INFINITE_LOOP) {
+					NGSetItemHorizontalMovementRepeatUnits(script_item, move_item->distance);
+				} else {
+					NGSetItemHorizontalMovementRepeatUnits(script_item, 0);
+				}
 				is_valid = true;
 			}
 			break;
@@ -870,7 +921,6 @@ bool moveable_move_moveable_with_data_in_x_parameter_list(unsigned char move_par
 	}
 
 	if (is_valid) {
-		NGSetItemMovementSpeed(script_item, move_item->speed);
 		NGSetItemMovementInProgressSound(script_item, move_item->moving_sound);
 		NGSetItemMovementFinishedSound(script_item, move_item->final_sound);
 	}

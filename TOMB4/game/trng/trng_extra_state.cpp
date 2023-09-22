@@ -33,12 +33,15 @@ struct NG_MOVEMENT_INFO {
 	short vertical_rotation_speed = 0;
 	int horizontal_rotation_remaining = 0;
 	int vertical_rotation_remaining = 0;
-	unsigned short movement_speed = 0;
+	short horizontal_movement_speed = 0;
+	short vertical_movement_speed = 0;
 	short movement_in_progress_sound = -1;
 	short movement_finished_sound = -1;
 	short move_horizontal_angle = 0;
 	int move_horizontal_remaining_units = 0;
 	int move_vertical_remaining_units = 0;
+	int move_horizontal_repeat_units = 0;
+	int move_vertical_repeat_units = 0;
 };
 
 // NG_ITEM_EXTRADATA is persistent supllementary data used by TRNG triggers.
@@ -60,13 +63,15 @@ void NGResetMovementInfo(NG_MOVEMENT_INFO* movement_info) {
 	movement_info->vertical_rotation_speed = 0;
 	movement_info->horizontal_rotation_remaining = 0;
 	movement_info->vertical_rotation_remaining = 0;
-
-	movement_info->movement_speed = 0;
+	movement_info->horizontal_movement_speed = 0;
+	movement_info->vertical_movement_speed = 0;
 	movement_info->movement_in_progress_sound = -1;
 	movement_info->movement_finished_sound = -1;
 	movement_info->move_horizontal_angle = 0;
 	movement_info->move_horizontal_remaining_units = 0;
 	movement_info->move_vertical_remaining_units = 0;
+	movement_info->move_horizontal_repeat_units = 0;
+	movement_info->move_vertical_repeat_units = 0;
 }
 
 void NGResetItemExtraData(int item_number) {
@@ -439,7 +444,7 @@ void NGHandleItemRotation(unsigned int item_num) {
 
 void NGHandleItemMovement(unsigned int item_num) {
 	if (NGGetItemHorizontalMovementRemainingUnits(item_num)) {
-		int move_by_amount = NGGetItemMovementSpeed(item_num);
+		int move_by_amount = NGGetItemHorizontalMovementSpeed(item_num);
 		int remaining_movement_units = NGGetItemHorizontalMovementRemainingUnits(item_num);
 		if (
 			(remaining_movement_units >= 0 && move_by_amount > remaining_movement_units) ||
@@ -454,10 +459,44 @@ void NGHandleItemMovement(unsigned int item_num) {
 			if (NGGetItemMovementFinishedSound(item_num) != -1)
 				SoundEffect(NGGetItemMovementFinishedSound(item_num), &items[item_num].pos, 0);
 
-			// Reset everything
-			NGSetItemMovementInProgressSound(item_num, -1);
-			NGSetItemMovementFinishedSound(item_num, -1);
-			NGSetItemMovementSpeed(item_num, 0);
+			// Reset everything or loop
+			if (NGGetItemHorizontalMovementRepeatUnits(item_num) != 0) {
+				NGSetItemHorizontalMovementRemainingUnits(item_num, NGGetItemHorizontalMovementRepeatUnits(item_num));
+				NGSetItemHorizontalMovementAngle(item_num, NGGetItemHorizontalMovementAngle(item_num) + NG_DEGREE(180));
+			} else {
+				NGSetItemHorizontalMovementSpeed(item_num, 0);
+			}
+		} else {
+			if (NGGetItemMovementInProgressSound(item_num) != -1)
+				SoundEffect(NGGetItemMovementInProgressSound(item_num), &items[item_num].pos, 0);
+		}
+	}
+
+	if (NGGetItemVerticalMovementRemainingUnits(item_num)) {
+		int move_by_amount = NGGetItemVerticalMovementSpeed(item_num);
+		int remaining_movement_units = NGGetItemVerticalMovementRemainingUnits(item_num);
+		if (
+			(remaining_movement_units >= 0 && move_by_amount > remaining_movement_units) ||
+			(remaining_movement_units < 0 && move_by_amount < remaining_movement_units)) {
+			move_by_amount = remaining_movement_units;
+		}
+
+		NGMoveItemVerticalByUnits(item_num, move_by_amount);
+		NGSetItemVerticalMovementRemainingUnits(item_num, remaining_movement_units - move_by_amount);
+
+		if (NGGetItemVerticalMovementRemainingUnits(item_num) == 0) {
+			if (NGGetItemMovementFinishedSound(item_num) != -1)
+				SoundEffect(NGGetItemMovementFinishedSound(item_num), &items[item_num].pos, 0);
+
+			// Reset everything or loop
+			if (NGGetItemVerticalMovementRepeatUnits(item_num) != 0) {
+				NGSetItemVerticalMovementSpeed(item_num, -NGGetItemVerticalMovementSpeed(item_num));
+				NGSetItemVerticalMovementRemainingUnits(item_num, NGGetItemVerticalMovementRepeatUnits(item_num));
+				NGSetItemVerticalMovementRepeatUnits(item_num, -NGGetItemVerticalMovementRepeatUnits(item_num));
+			}
+			else {
+				NGSetItemVerticalMovementSpeed(item_num, 0);
+			}
 		} else {
 			if (NGGetItemMovementInProgressSound(item_num) != -1)
 				SoundEffect(NGGetItemMovementInProgressSound(item_num), &items[item_num].pos, 0);
@@ -513,7 +552,7 @@ void NGHandleStaticRotation(unsigned int static_num) {
 
 void NGHandleStaticMovement(unsigned int static_num) {
 	if (NGGetStaticHorizontalMovementRemainingUnits(static_num)) {
-		int move_by_amount = NGGetStaticMovementSpeed(static_num);
+		int move_by_amount = NGGetStaticHorizontalMovementSpeed(static_num);
 		int remaining_movement_units = NGGetStaticHorizontalMovementRemainingUnits(static_num);
 		if (
 			(remaining_movement_units >= 0 && move_by_amount > remaining_movement_units) ||
@@ -528,10 +567,44 @@ void NGHandleStaticMovement(unsigned int static_num) {
 			if (NGGetStaticMovementFinishedSound(static_num) != -1)
 				SoundEffect(NGGetStaticMovementFinishedSound(static_num), &items[static_num].pos, 0);
 
-			// Reset everything
-			NGSetStaticMovementInProgressSound(static_num, -1);
-			NGSetStaticMovementFinishedSound(static_num, -1);
-			NGSetStaticMovementSpeed(static_num, 0);
+			// Reset everything or loop
+			if (NGGetStaticHorizontalMovementRepeatUnits(static_num) > 0) {
+				NGSetStaticHorizontalMovementRemainingUnits(static_num, NGGetStaticHorizontalMovementRepeatUnits(static_num));
+				NGSetStaticHorizontalMovementAngle(static_num, NGGetStaticHorizontalMovementAngle(static_num) + NG_DEGREE(180));
+			} else {
+				NGSetStaticHorizontalMovementSpeed(static_num, 0);
+			}
+		}
+		else {
+			if (NGGetStaticMovementInProgressSound(static_num) != -1)
+				SoundEffect(NGGetStaticMovementInProgressSound(static_num), &items[static_num].pos, 0);
+		}
+	}
+
+	if (NGGetStaticVerticalMovementRemainingUnits(static_num)) {
+		int move_by_amount = NGGetStaticVerticalMovementSpeed(static_num);
+		int remaining_movement_units = NGGetStaticVerticalMovementRemainingUnits(static_num);
+		if (
+			(remaining_movement_units >= 0 && move_by_amount > remaining_movement_units) ||
+			(remaining_movement_units < 0 && move_by_amount < remaining_movement_units)) {
+			move_by_amount = remaining_movement_units;
+		}
+
+		NGMoveStaticVerticalByUnits(static_num, move_by_amount);
+		NGSetStaticVerticalMovementRemainingUnits(static_num, remaining_movement_units - move_by_amount);
+
+		if (NGGetStaticVerticalMovementRemainingUnits(static_num) == 0) {
+			if (NGGetStaticMovementFinishedSound(static_num) != -1)
+				SoundEffect(NGGetStaticMovementFinishedSound(static_num), &items[static_num].pos, 0);
+
+			// Reset everything or loop
+			if (NGGetStaticVerticalMovementRepeatUnits(static_num) > 0) {
+				NGSetStaticVerticalMovementSpeed(static_num, -NGGetStaticVerticalMovementSpeed(static_num));
+				NGSetStaticVerticalMovementRemainingUnits(static_num, NGGetStaticVerticalMovementRepeatUnits(static_num));
+				NGSetStaticVerticalMovementRepeatUnits(static_num, -NGGetStaticVerticalMovementRepeatUnits(static_num));
+			} else {
+				NGSetStaticVerticalMovementSpeed(static_num, 0);
+			}
 		}
 		else {
 			if (NGGetStaticMovementInProgressSound(static_num) != -1)
@@ -1035,12 +1108,36 @@ void NGSetItemVerticalMovementRemainingUnits(unsigned int item_num, int units) {
 	ng_items_extradata[item_num].movement_info.move_vertical_remaining_units = units;
 }
 
-int NGGetItemMovementSpeed(unsigned int item_num) {
-	return ng_items_extradata[item_num].movement_info.movement_speed;
+int NGGetItemHorizontalMovementRepeatUnits(unsigned int item_num) {
+	return ng_items_extradata[item_num].movement_info.move_horizontal_repeat_units;
 }
 
-void NGSetItemMovementSpeed(unsigned int item_num, unsigned int movement_speed) {
-	ng_items_extradata[item_num].movement_info.movement_speed = movement_speed;
+void NGSetItemHorizontalMovementRepeatUnits(unsigned int item_num, int units) {
+	ng_items_extradata[item_num].movement_info.move_horizontal_repeat_units = units;
+}
+
+int NGGetItemVerticalMovementRepeatUnits(unsigned int item_num) {
+	return ng_items_extradata[item_num].movement_info.move_vertical_repeat_units;
+}
+
+void NGSetItemVerticalMovementRepeatUnits(unsigned int item_num, int units) {
+	ng_items_extradata[item_num].movement_info.move_vertical_repeat_units = units;
+}
+
+int NGGetItemHorizontalMovementSpeed(unsigned int item_num) {
+	return ng_items_extradata[item_num].movement_info.horizontal_movement_speed;
+}
+
+void NGSetItemHorizontalMovementSpeed(unsigned int item_num, unsigned int movement_speed) {
+	ng_items_extradata[item_num].movement_info.horizontal_movement_speed = movement_speed;
+}
+
+int NGGetItemVerticalMovementSpeed(unsigned int item_num) {
+	return ng_items_extradata[item_num].movement_info.vertical_movement_speed;
+}
+
+void NGSetItemVerticalMovementSpeed(unsigned int item_num, unsigned int movement_speed) {
+	ng_items_extradata[item_num].movement_info.vertical_movement_speed = movement_speed;
 }
 
 int NGGetItemMovementInProgressSound(unsigned int item_num) {
@@ -1135,12 +1232,36 @@ void NGSetStaticVerticalMovementRemainingUnits(unsigned int static_num, int unit
 	ng_statics_movement_info[static_num].move_vertical_remaining_units = units;
 }
 
-int NGGetStaticMovementSpeed(unsigned int static_num) {
-	return ng_statics_movement_info[static_num].movement_speed;
+int NGGetStaticHorizontalMovementRepeatUnits(unsigned int static_num) {
+	return ng_statics_movement_info[static_num].move_horizontal_repeat_units;
 }
 
-void NGSetStaticMovementSpeed(unsigned int static_num, unsigned int movement_speed) {
-	ng_statics_movement_info[static_num].movement_speed = movement_speed;
+void NGSetStaticHorizontalMovementRepeatUnits(unsigned int static_num, int units) {
+	ng_statics_movement_info[static_num].move_horizontal_repeat_units = units;
+}
+
+int NGGetStaticVerticalMovementRepeatUnits(unsigned int static_num) {
+	return ng_statics_movement_info[static_num].move_vertical_repeat_units;
+}
+
+void NGSetStaticVerticalMovementRepeatUnits(unsigned int static_num, int units) {
+	ng_statics_movement_info[static_num].move_vertical_repeat_units = units;
+}
+
+int NGGetStaticHorizontalMovementSpeed(unsigned int static_num) {
+	return ng_statics_movement_info[static_num].horizontal_movement_speed;
+}
+
+void NGSetStaticHorizontalMovementSpeed(unsigned int static_num, unsigned int movement_speed) {
+	ng_statics_movement_info[static_num].horizontal_movement_speed = movement_speed;
+}
+
+int NGGetStaticVerticalMovementSpeed(unsigned int static_num) {
+	return ng_statics_movement_info[static_num].vertical_movement_speed;
+}
+
+void NGSetStaticVerticalMovementSpeed(unsigned int static_num, unsigned int movement_speed) {
+	ng_statics_movement_info[static_num].vertical_movement_speed = movement_speed;
 }
 
 int NGGetStaticMovementInProgressSound(unsigned int static_num) {

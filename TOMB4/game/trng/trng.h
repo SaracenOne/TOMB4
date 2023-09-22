@@ -4,15 +4,15 @@
 
 #define NG_DEGREE(i) (i * 182)
 
-enum NG_DEGREES {
-	DEGREES_45 = 0,
-	DEGREES_90,
-	DEGREES_135,
-	DEGREES_180,
-	DEGREES_225,
-	DEGREES_270,
-	DEGREES_315,
-	DEGREES_360
+enum NG_DEGREES_CODE {
+	DEGREES_CODE_45 = 0,
+	DEGREES_CODE_90,
+	DEGREES_CODE_135,
+	DEGREES_CODE_180,
+	DEGREES_CODE_225,
+	DEGREES_CODE_270,
+	DEGREES_CODE_315,
+	DEGREES_CODE_360
 };
 
 enum NG_DIRECTIONS {
@@ -64,9 +64,9 @@ extern void NGRestoreBackupTriggerRoomAndIndex();
 extern int NGGetPluginIDForFloorData(short* floor_data_ptr);
 
 // Move the item in a direction by the number of units
-extern void NGMoveItemByUnits(unsigned short item_id, NG_DIRECTIONS direction, unsigned int units);
-extern void NGMoveItemHorizontalByUnits(unsigned short item_id, short angle, unsigned int units);
-extern void NGMoveItemVerticalByUnits(unsigned short item_id, unsigned int units);
+extern void NGMoveItemByUnits(unsigned short item_id, NG_DIRECTIONS direction, int units);
+extern void NGMoveItemHorizontalByUnits(unsigned short item_id, short angle, int units);
+extern void NGMoveItemVerticalByUnits(unsigned short item_id, int units);
 
 extern void NGRotateItemX(unsigned short item_id, short rotation);
 extern void NGRotateItemY(unsigned short item_id, short rotation);
@@ -74,9 +74,9 @@ extern void NGRotateItemY(unsigned short item_id, short rotation);
 // Statics
 
 // Move the item in an angle by the number of units
-extern void NGStaticItemByUnits(unsigned short static_id, NG_DIRECTIONS direction, unsigned int units);
-extern void NGMoveStaticHorizontalByUnits(unsigned short static_id, short angle, unsigned int units);
-extern void NGMoveStaticVerticalByUnits(unsigned short static_id, unsigned int units);
+extern void NGStaticItemByUnits(unsigned short static_id, NG_DIRECTIONS direction, int units);
+extern void NGMoveStaticHorizontalByUnits(unsigned short static_id, short angle, int units);
+extern void NGMoveStaticVerticalByUnits(unsigned short static_id, int units);
 
 extern void NGRotateStaticX(unsigned short static_id, short rotation);
 extern void NGRotateStaticY(unsigned short static_id, short rotation);

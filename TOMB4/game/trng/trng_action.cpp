@@ -730,11 +730,25 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame, bool 
 			}
 			break;
 		}
+		case MOVE_CONTINUOUSLY_FORWARD_BACKWARD_X_ANIMATING_FOR_CLICKS:
+			// Not accurate
+			if (first_frame) {
+				if (!NGGetItemHorizontalMovementRemainingUnits(item_id)) {
+					NGSetItemHorizontalMovementAngle(item_id, items[item_id].pos.y_rot);
+					NGSetItemHorizontalMovementRemainingUnits(item_id, (action_data + 1) * 256);
+					NGSetItemHorizontalMovementRepeatUnits(item_id, (action_data + 1) * 256);
+					NGSetItemHorizontalMovementSpeed(item_id, 32);
+					NGSetItemMovementInProgressSound(item_id, -1);
+					NGSetItemMovementFinishedSound(item_id, -1);
+				}
+			}
+			break;
 		case MOVE_ITEM_UP_FOR_CLICKS:
 			if (first_frame) {
 				if (!NGGetItemVerticalMovementRemainingUnits(item_id)) {
 					NGSetItemVerticalMovementRemainingUnits(item_id, (action_data+1) * -256);
-					NGSetItemMovementSpeed(item_id, 32);
+					NGSetItemVerticalMovementRepeatUnits(item_id, 0);
+					NGSetItemVerticalMovementSpeed(item_id, -32);
 					NGSetItemMovementInProgressSound(item_id, -1);
 					NGSetItemMovementFinishedSound(item_id, -1);
 				}
@@ -744,7 +758,8 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame, bool 
 			if (first_frame) {
 				if (!NGGetItemVerticalMovementRemainingUnits(item_id)) {
 					NGSetItemVerticalMovementRemainingUnits(item_id, (action_data+1) * 256);
-					NGSetItemMovementSpeed(item_id, 32);
+					NGSetItemVerticalMovementRepeatUnits(item_id, 0);
+					NGSetItemVerticalMovementSpeed(item_id, 32);
 					NGSetItemMovementInProgressSound(item_id, -1);
 					NGSetItemMovementFinishedSound(item_id, -1);
 				}
@@ -755,7 +770,8 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame, bool 
 				if (!NGGetItemHorizontalMovementRemainingUnits(item_id)) {
 					NGSetItemHorizontalMovementAngle(item_id, (short)0xC000);
 					NGSetItemHorizontalMovementRemainingUnits(item_id, (action_data+1) * 256);
-					NGSetItemMovementSpeed(item_id, 32);
+					NGSetItemHorizontalMovementRepeatUnits(item_id, 0);
+					NGSetItemHorizontalMovementSpeed(item_id, 32);
 					NGSetItemMovementInProgressSound(item_id, -1);
 					NGSetItemMovementFinishedSound(item_id, -1);
 				}
@@ -766,7 +782,8 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame, bool 
 				if (!NGGetItemHorizontalMovementRemainingUnits(item_id)) {
 					NGSetItemHorizontalMovementAngle(item_id, (short)0x0000);
 					NGSetItemHorizontalMovementRemainingUnits(item_id, (action_data + 1) * 256);
-					NGSetItemMovementSpeed(item_id, 32);
+					NGSetItemHorizontalMovementRepeatUnits(item_id, 0);
+					NGSetItemHorizontalMovementSpeed(item_id, 32);
 					NGSetItemMovementInProgressSound(item_id, -1);
 					NGSetItemMovementFinishedSound(item_id, -1);
 				}
@@ -777,7 +794,8 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame, bool 
 				if (!NGGetItemHorizontalMovementRemainingUnits(item_id)) {
 					NGSetItemHorizontalMovementAngle(item_id, (short)0x4000);
 					NGSetItemHorizontalMovementRemainingUnits(item_id, (action_data + 1) * 256);
-					NGSetItemMovementSpeed(item_id, 32);
+					NGSetItemHorizontalMovementRepeatUnits(item_id, 0);
+					NGSetItemHorizontalMovementSpeed(item_id, 32);
 					NGSetItemMovementInProgressSound(item_id, -1);
 					NGSetItemMovementFinishedSound(item_id, -1);
 				}
@@ -788,15 +806,24 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame, bool 
 				if (!NGGetItemHorizontalMovementRemainingUnits(item_id)) {
 					NGSetItemHorizontalMovementAngle(item_id, (short)0x8000);
 					NGSetItemHorizontalMovementRemainingUnits(item_id, (action_data + 1) * 256);
-					NGSetItemMovementSpeed(item_id, 32);
+					NGSetItemHorizontalMovementRepeatUnits(item_id, 0);
+					NGSetItemHorizontalMovementSpeed(item_id, 32);
 					NGSetItemMovementInProgressSound(item_id, -1);
 					NGSetItemMovementFinishedSound(item_id, -1);
 				}
 			}
 			break;
-		case MOVE_CONTINUOUSLY_UPSTAIRS_DOWNSTAIRS_FOR_X_CLICKS:
+		case MOVE_CONTINUOUSLY_UPSTAIRS_DOWNSTAIRS_X_ANIMATING_FOR_CLICKS:
 			if (first_frame) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "MOVE_CONTINUOUSLY_UPSTAIRS_DOWNSTAIRS_FOR_X_CLICKS unimplemented!");
+				if (first_frame) {
+					if (!NGGetItemVerticalMovementRemainingUnits(item_id)) {
+						NGSetItemVerticalMovementRemainingUnits(item_id, (action_data + 1) * -256);
+						NGSetItemVerticalMovementRepeatUnits(item_id, -((action_data + 1) * -256));
+						NGSetItemVerticalMovementSpeed(item_id, -32);
+						NGSetItemMovementInProgressSound(item_id, -1);
+						NGSetItemMovementFinishedSound(item_id, -1);
+					}
+				}
 			}
 			break;
 		case DISABLE_ITEM_COLLISION:

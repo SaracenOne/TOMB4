@@ -141,8 +141,17 @@ extern void NGSetItemHorizontalMovementRemainingUnits(unsigned int item_num, int
 extern int NGGetItemVerticalMovementRemainingUnits(unsigned int item_num);
 extern void NGSetItemVerticalMovementRemainingUnits(unsigned int item_num, int units);
 
-extern int NGGetItemMovementSpeed(unsigned int item_num);
-extern void NGSetItemMovementSpeed(unsigned int item_num, unsigned int movement_speed);
+extern int NGGetItemHorizontalMovementRepeatUnits(unsigned int item_num);
+extern void NGSetItemHorizontalMovementRepeatUnits(unsigned int item_num, int units);
+
+extern int NGGetItemVerticalMovementRepeatUnits(unsigned int item_num);
+extern void NGSetItemVerticalMovementRepeatUnits(unsigned int item_num, int units);
+
+extern int NGGetItemHorizontalMovementSpeed(unsigned int item_num);
+extern void NGSetItemHorizontalMovementSpeed(unsigned int item_num, unsigned int movement_speed);
+extern int NGGetItemVerticalMovementSpeed(unsigned int item_num);
+extern void NGSetItemVerticalMovementSpeed(unsigned int item_num, unsigned int movement_speed);
+
 extern int NGGetItemMovementInProgressSound(unsigned int item_num);
 extern void NGSetItemMovementInProgressSound(unsigned int item_num, int sound_effect_id);
 extern void NGSetItemMovementFinishedSound(unsigned int item_num, int sound_effect_id);
@@ -173,8 +182,17 @@ extern void NGSetStaticHorizontalMovementRemainingUnits(unsigned int static_num,
 extern int NGGetStaticVerticalMovementRemainingUnits(unsigned int static_num);
 extern void NGSetStaticVerticalMovementRemainingUnits(unsigned int static_num, int units);
 
-extern int NGGetStaticMovementSpeed(unsigned int static_num);
-extern void NGSetStaticMovementSpeed(unsigned int static_num, unsigned int movement_speed);
+extern int NGGetStaticHorizontalMovementRepeatUnits(unsigned int static_num);
+extern void NGSetStaticHorizontalMovementRepeatUnits(unsigned int static_num, int units);
+
+extern int NGGetStaticVerticalMovementRepeatUnits(unsigned int static_num);
+extern void NGSetStaticVerticalMovementRepeatUnits(unsigned int static_num, int units);
+
+extern int NGGetStaticHorizontalMovementSpeed(unsigned int static_num);
+extern void NGSetStaticHorizontalMovementSpeed(unsigned int static_num, unsigned int movement_speed);
+extern int NGGetStaticVerticalMovementSpeed(unsigned int static_num);
+extern void NGSetStaticVerticalMovementSpeed(unsigned int static_num, unsigned int movement_speed);
+
 extern int NGGetStaticMovementInProgressSound(unsigned int static_num);
 extern void NGSetStaticMovementInProgressSound(unsigned int static_num, int sound_effect_id);
 extern void NGSetStaticMovementFinishedSound(unsigned int static_num, int sound_effect_id);

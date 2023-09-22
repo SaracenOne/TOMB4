@@ -1390,7 +1390,9 @@ int NGReadLevelBlock(char* gfScriptFile, unsigned int offset, NG_LEVEL_RECORD_TA
 					if (flags == 0xffff || flags == 0) {
 						flags = 0;
 					} else {
-						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: PARAM_MOVE_ITEM flags unsupported! (level %u)", current_level);
+						if (flags & ~(FMOV_INFINITE_LOOP)) {
+							NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: PARAM_MOVE_ITEM flags unsupported! (level %u)", current_level);
+						}
 					}
 					unsigned short index_item = NG_READ_16(gfScriptFile, offset);
 					unsigned short direction = NG_READ_16(gfScriptFile, offset);

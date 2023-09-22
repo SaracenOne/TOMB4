@@ -175,7 +175,7 @@ void NGLoadInfo(FILE* level_fp) {
 }
 
 // Move the item in a direction by the number of units
-void NGMoveItemByUnits(unsigned short item_id, NG_DIRECTIONS direction, unsigned int units) {
+void NGMoveItemByUnits(unsigned short item_id, NG_DIRECTIONS direction, int units) {
 	switch (direction) {
 		case NG_NORTH: {
 			items[item_id].pos.z_pos += units;
@@ -205,7 +205,7 @@ void NGMoveItemByUnits(unsigned short item_id, NG_DIRECTIONS direction, unsigned
 }
 
 // Move the item in an angle by the number of units
-void NGMoveItemHorizontalByUnits(unsigned short item_id, short angle, unsigned int units) {
+void NGMoveItemHorizontalByUnits(unsigned short item_id, short angle, int units) {
 	int c = (int)units * phd_cos(angle) >> W2V_SHIFT;
 	int s = (int)units * phd_sin(angle) >> W2V_SHIFT;
 
@@ -214,7 +214,7 @@ void NGMoveItemHorizontalByUnits(unsigned short item_id, short angle, unsigned i
 }
 
 // Move the item up or down by the number of units
-void NGMoveItemVerticalByUnits(unsigned short item_id, unsigned int units) {
+void NGMoveItemVerticalByUnits(unsigned short item_id, int units) {
 	items[item_id].pos.y_pos += units;
 }
 
@@ -227,7 +227,7 @@ void NGRotateItemY(unsigned short item_id, short rotation) {
 }
 
 // Move the item in a direction by the number of units
-void NGStaticItemByUnits(unsigned short static_id, NG_DIRECTIONS direction, unsigned int units) {
+void NGStaticItemByUnits(unsigned short static_id, NG_DIRECTIONS direction, int units) {
 	NGStaticTableEntry* entry = &ng_static_id_table[static_id];
 	int room_number = ng_room_remap_table[entry->remapped_room_index].room_index;
 	if (room_number >= 0 && room_number < number_rooms) {
@@ -262,7 +262,7 @@ void NGStaticItemByUnits(unsigned short static_id, NG_DIRECTIONS direction, unsi
 	}
 }
 
-void NGMoveStaticHorizontalByUnits(unsigned short static_id, short angle, unsigned int units) {
+void NGMoveStaticHorizontalByUnits(unsigned short static_id, short angle, int units) {
 	int c = (int)units * phd_cos(angle) >> W2V_SHIFT;
 	int s = (int)units * phd_sin(angle) >> W2V_SHIFT;
 
@@ -275,7 +275,7 @@ void NGMoveStaticHorizontalByUnits(unsigned short static_id, short angle, unsign
 	}
 }
 
-void NGMoveStaticVerticalByUnits(unsigned short static_id, unsigned int units) {
+void NGMoveStaticVerticalByUnits(unsigned short static_id, int units) {
 	NGStaticTableEntry* entry = &ng_static_id_table[static_id];
 	int room_number = ng_room_remap_table[entry->remapped_room_index].room_index;
 	if (room_number >= 0 && room_number < number_rooms) {
