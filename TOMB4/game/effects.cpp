@@ -927,6 +927,8 @@ void MeshSwapFromPour(ITEM_INFO* item)
 void void_effect(ITEM_INFO* item)
 {
 	Log(0, "Hit void flipeffect: %u", flipeffect);
+
+	flipeffect = -1;
 }
 
 void WaterFall(short item_number)
