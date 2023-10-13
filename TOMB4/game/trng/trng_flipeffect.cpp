@@ -1075,6 +1075,12 @@ bool variables_clear_in_x_variable_the_bit(unsigned char variable, unsigned char
 	return true;
 }
 
+// NGLE - 244
+bool variables_copy_to_x_numeric_variable_the_savegame_memory_value(unsigned char variable, unsigned char savegame_value) {
+	NGNumericOperation(NG_SET, variable, NGNumericGetSavegameValue(savegame_value));
+	return true;
+}
+
 // NGLE - 251
 bool variables_multiply_x_variable_by_value(unsigned char variable, unsigned char value) {
 	NGNumericOperation(NG_MULTIPLY, variable, value);
@@ -2532,8 +2538,7 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 		}
 		case VARIABLES_COPY_TO_X_NUMERIC_VARIABLE_THE_SAVEGAME_MEMORY_VALUE: {
 			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "VARIABLES_COPY_TO_X_NUMERIC_VARIABLE_THE_SAVEGAME_MEMORY_VALUE unimplemented!");
-				return true;
+				return variables_copy_to_x_numeric_variable_the_savegame_memory_value(action_data_1, action_data_2);
 			}
 			break;
 		}

@@ -388,7 +388,7 @@ void NGNumericOperation(NGNumericOperationType number_operation, unsigned int va
 	}
 }
 
-unsigned int NGNumericGetVariable(unsigned int variable) {
+int NGNumericGetVariable(unsigned int variable) {
 	switch (variable) {
 		case 0xffff: {
 			return ng_current_value;
@@ -598,4 +598,15 @@ unsigned int NGNumericGetVariable(unsigned int variable) {
 			return 0;
 		}
 	}
+}
+
+int NGNumericGetSavegameValue(unsigned int variable) {
+	switch (variable) {
+		default: {
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGNumericGetSavegameValue: Unimplemented savegame value: %u", variable);
+			break;
+		}
+	}
+
+	return -1;
 }
