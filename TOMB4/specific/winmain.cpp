@@ -288,7 +288,6 @@ void WinClose()
 	SaveSettings();
 	CloseHandle(App.mutex);
 	DXFreeInfo(&App.DXInfo);
-	DestroyAcceleratorTable(App.hAccel);
 	DXClose();
 	FreeBinkStuff();
 
@@ -303,8 +302,6 @@ void WinClose()
 
 int main(int argc, char* argv[]) {
 	DXDISPLAYMODE* dm;
-	HWND desktop;
-	HDC hdc;
 	char* buf;
 	long size;
 
@@ -352,10 +349,6 @@ int main(int argc, char* argv[]) {
 	fmvs_disabled = 1; // Disable all FMVs for now.
 
 	SetWindowPos(App.hWnd, 0, App.dx.rScreen.left, App.dx.rScreen.top, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
-	desktop = GetDesktopWindow();
-	hdc = GetDC(desktop);
-	App.Desktopbpp = GetDeviceCaps(hdc, BITSPIXEL);
-	ReleaseDC(desktop, hdc);
 	App.dx.WaitAtBeginScene = 0;
 	App.dx.InScene = 0;
 	App.fmv = 0;
@@ -370,8 +363,6 @@ int main(int argc, char* argv[]) {
 	}
 
 	SDL_ShowWindow(sdl_window);
-
-	App.hAccel = LoadAccelerators(App.hInstance, MAKEINTRESOURCE(IDR_ACCELERATOR));
 
 	if (!App.SoundDisabled)
 	{
