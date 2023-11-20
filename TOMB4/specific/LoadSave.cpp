@@ -120,11 +120,7 @@ void DoOptions()
 
 		for (lp = 0; lp < 16; lp++)
 		{
-#ifdef USE_SDL
-			int dik = convert_sdl_scancode_to_tomb_keycode(layout[1][lp]);
-#else 
 			int dik = layout[1][lp];
-#endif
 
 			txt = (waiting_for_key && sel2 & (1 << i)) ? SCRIPT_TEXT(TXT_Waiting) : keyboard_buttons[dik];
 			if (txt)
@@ -167,15 +163,13 @@ void DoOptions()
 				return;
 			}
 
-			for (lp = 0; lp < 255; lp++)
-			{
-				if (keymap[lp] && keyboard_buttons[lp])
-				{
 #ifdef USE_SDL
-					if (lp != SDL_SCANCODE_RETURN && lp != SDL_SCANCODE_LEFT && lp != SDL_SCANCODE_RIGHT && lp != SDL_SCANCODE_UP && lp != SDL_SCANCODE_DOWN)
-#else
-					if (lp != DIK_RETURN && lp != DIK_LEFT && lp != DIK_RIGHT && lp != DIK_UP && lp != DIK_DOWN)
-#endif
+			for (lp = 0; lp < keymap_count; lp++)
+			{
+				short tomb4_scancode = (short)convert_sdl_scancode_to_tomb_keycode(lp);
+				if (keymap[lp] && keyboard_buttons[tomb4_scancode])
+				{
+					if (tomb4_scancode != DIK_RETURN && tomb4_scancode != DIK_LEFT && tomb4_scancode != DIK_RIGHT && tomb4_scancode != DIK_UP && tomb4_scancode != DIK_DOWN)
 					{
 						waiting_for_key = 0;
 
@@ -188,11 +182,34 @@ void DoOptions()
 						}
 
 						sel2 = 0;
-						layout[1][i] = (short)lp;
+
+						layout[1][i] = tomb4_scancode;
 					}
 				}
 			}
+#else
+			for (lp = 0; lp < 255; lp++)
+			{
+				if (keymap[lp] && keyboard_buttons[lp])
+				{
+					if (lp != DIK_RETURN && lp != DIK_LEFT && lp != DIK_RIGHT && lp != DIK_UP && lp != DIK_DOWN)
+					{
+						waiting_for_key = 0;
 
+						sel2 >>= 2;
+
+						while (sel2)
+						{
+							i++;
+							sel2 >>= 1;
+						}
+
+						sel2 = 0;
+						layout[1][i] = (short)convert_sdl_scancode_to_tomb_keycode(lp);
+					}
+				}
+			}
+#endif
 			if (ControlMethod == 1)
 			{
 				jread = ReadJoystick(jx, jy);

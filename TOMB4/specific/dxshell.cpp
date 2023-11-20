@@ -41,8 +41,10 @@ LPDIRECTDRAWX G_ddraw;
 LPDIRECT3DX G_d3d;
 HWND G_hwnd;
 #ifdef USE_SDL
+int keymap_count = 0;
 const Uint8 *keymap;
 #else 
+int keymap_count = 256;
 char keymap[256];
 #endif
 
@@ -70,7 +72,7 @@ const Uint8 *DXReadKeyboard(const Uint8* KeyMap)
 {
 	SDL_PumpEvents();
 
-	const Uint8* sdl_keymap = SDL_GetKeyboardState(NULL);
+	const Uint8* sdl_keymap = SDL_GetKeyboardState(&keymap_count);
 
 	KeyMap = sdl_keymap;
 

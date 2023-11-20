@@ -40,6 +40,8 @@ extern DXINFO* G_dxinfo;
 extern LPDIRECTDRAWX G_ddraw;
 extern LPDIRECT3DX G_d3d;
 extern HWND G_hwnd;
+
+extern int keymap_count;
 #ifdef USE_SDL
 extern const Uint8 *keymap;
 #else

@@ -20,11 +20,11 @@ int convert_sdl_scancode_to_tomb_keycode(int scancode) {
 	case SDL_SCANCODE_UNKNOWN:
 		return 0x00; // 
 	case SDL_SCANCODE_A:
-		return 0x1E; // DIK_A
+		return 0x1e; // DIK_A
 	case SDL_SCANCODE_B:
 		return 0x30; // DIK_B
 	case SDL_SCANCODE_C:
-		return 0x2E; // DIK_C
+		return 0x2e; // DIK_C
 	case SDL_SCANCODE_D:
 		return 0x20; // DIK_D
 	case SDL_SCANCODE_E:
@@ -56,21 +56,21 @@ int convert_sdl_scancode_to_tomb_keycode(int scancode) {
 	case SDL_SCANCODE_R:
 		return 0x13; // DIK_R
 	case SDL_SCANCODE_S:
-		return 0x1F; // DIK_S
+		return 0x1f; // DIK_S
 	case SDL_SCANCODE_T:
 		return 0x14; // DIK_T
 	case SDL_SCANCODE_U:
 		return 0x16; // DIK_U
 	case SDL_SCANCODE_V:
-		return 0x2F; // DIK_V
+		return 0x2f; // DIK_V
 	case SDL_SCANCODE_W:
 		return 0x11; // DIK_W
 	case SDL_SCANCODE_X:
-		return 0x2D; // DIK_X
+		return 0x2d; // DIK_X
 	case SDL_SCANCODE_Y:
 		return 0x15; // DIK_Y
 	case SDL_SCANCODE_Z:
-		return 0x2C; // DIK_Z
+		return 0x2c; // DIK_Z
 
 	case SDL_SCANCODE_1:
 		return 0x02; // DIK_1
@@ -89,57 +89,124 @@ int convert_sdl_scancode_to_tomb_keycode(int scancode) {
 	case SDL_SCANCODE_8:
 		return 0x09; // DIK_8
 	case SDL_SCANCODE_9:
-		return 0x0A; // DIK_9
+		return 0x0a; // DIK_9
 	case SDL_SCANCODE_0:
-		return 0x0B; // DIK_0
+		return 0x0b; // DIK_0
 
 	case SDL_SCANCODE_RETURN:
-		return 0x1C; // DIK_RETURN
+		return 0x1c; // DIK_RETURN
 	case SDL_SCANCODE_ESCAPE:
 		return 0x01; // DIK_ESCAPE
 	case SDL_SCANCODE_BACKSPACE:
-		return 0x0E; // DIK_BACK
+		return 0x0e; // DIK_BACK
 	case SDL_SCANCODE_TAB:
-		return 0x0F; // DIK_TAB
+		return 0x0f; // DIK_TAB
 	case SDL_SCANCODE_SPACE:
 		return 0x39; // DIK_SPACE
 
 	case SDL_SCANCODE_RIGHT:
-		return 0xCD; // DIK_RIGHT
+		return 0xcd; // DIK_RIGHT
 	case SDL_SCANCODE_LEFT:
-		return 0xCB; // DIK_LEFT
+		return 0xcb; // DIK_LEFT
 	case SDL_SCANCODE_DOWN:
-		return 0xD0; // DIK_DOWN
+		return 0xd0; // DIK_DOWN
 	case SDL_SCANCODE_UP:
-		return 0xC8; // DIK_UP
+		return 0xc8; // DIK_UP
 
 	case SDL_SCANCODE_MINUS:
-		return DIK_MINUS; // DIK_MINUS
+		return 0x0c; // DIK_MINUS
 	case SDL_SCANCODE_EQUALS:
-		return DIK_EQUALS; // DIK_EQUALS
+		return 0x0d; // DIK_EQUALS
 	case SDL_SCANCODE_LEFTBRACKET:
-		return DIK_LBRACKET; // DIK_LBRACKET
+		return 0x1a; // DIK_LBRACKET
 	case SDL_SCANCODE_RIGHTBRACKET:
-		return DIK_RBRACKET; // DIK_RBRACKET
+		return 0x1b; // DIK_RBRACKET
 	case SDL_SCANCODE_BACKSLASH:
-		return DIK_BACKSLASH; // DIK_BACKSLASH
+		return 0x2b; // DIK_BACKSLASH
 
 	case SDL_SCANCODE_LCTRL:
-		return 0x1D; // DIK_LCONTROL
+		return 0x1d; // DIK_LCONTROL
 	case SDL_SCANCODE_LSHIFT:
-		return 0x2A; // DIK_LSHIFT
+		return 0x2a; // DIK_LSHIFT
 	case SDL_SCANCODE_LALT:
 		return 0x38; // DIK_LALT
 	case SDL_SCANCODE_LGUI:
-		return 0xDB; // DIK_LWIN
+		return 0xdb; // DIK_LWIN
 	case SDL_SCANCODE_RCTRL:
-		return 0x9D; // DIK_RCONTROL
+		return 0x9d; // DIK_RCONTROL
 	case SDL_SCANCODE_RSHIFT:
 		return 0x36; // DIK_RSHIFT
 	case SDL_SCANCODE_RALT:
-		return 0xB8; // DIK_RALT
+		return 0xb8; // DIK_RALT
 	case SDL_SCANCODE_RGUI:
-		return 0xDC; // DIK_RWIN
+		return 0xdc; // DIK_RWIN
+
+	case SDL_SCANCODE_COMMA:
+		return 0x33; // DIK_COMMA
+	case SDL_SCANCODE_PERIOD:
+		return 0x34; // DIK_PERIOD
+
+
+	case SDL_SCANCODE_KP_1:
+		return 0x4f; // DIK_NUMPAD1
+	case SDL_SCANCODE_KP_2:
+		return 0x50; // DIK_NUMPAD2
+	case SDL_SCANCODE_KP_3:
+		return 0x51; // DIK_NUMPAD3
+	case SDL_SCANCODE_KP_4:
+		return 0x4b; // DIK_NUMPAD4
+	case SDL_SCANCODE_KP_5:
+		return 0x4c; // DIK_NUMPAD5
+	case SDL_SCANCODE_KP_6:
+		return 0x4d; // DIK_NUMPAD6
+	case SDL_SCANCODE_KP_7:
+		return 0x47; // DIK_NUMPAD7
+	case SDL_SCANCODE_KP_8:
+		return 0x48; // DIK_NUMPAD8
+	case SDL_SCANCODE_KP_9:
+		return 0x49; // DIK_NUMPAD9
+	case SDL_SCANCODE_KP_0:
+		return 0x52; // DIK_NUMPAD0
+	case SDL_SCANCODE_KP_PERIOD:
+		return 0x53; // DIK_NUMPADPERIOD
+	case SDL_SCANCODE_KP_PLUS:
+		return 0x4e; // DIK_NUMPADPLUS
+	case SDL_SCANCODE_KP_MINUS:
+		return 0x4a; // DIK_NUMPADMINUS
+	case SDL_SCANCODE_KP_DIVIDE:
+		return 0xB5; // DIK_NUMPADSLASH
+	case SDL_SCANCODE_KP_MULTIPLY:
+		return 0x37; // DIK_NUMPADSTAR
+	case SDL_SCANCODE_KP_ENTER:
+		return 0x9C; // DIK_NUMPADENTER
+
+	case SDL_SCANCODE_CAPSLOCK:
+		return 0x3a; // DIK_CAPSLOCK
+
+	case SDL_SCANCODE_INSERT:
+		return 0xd2; // DIK_INSERT
+	case SDL_SCANCODE_HOME:
+		return 0xc7; // DIK_HOME
+	case SDL_SCANCODE_PAGEUP:
+		return 0xc9; // DIK_PGUP
+	case SDL_SCANCODE_DELETE:
+		return 0xd3; // DIK_DELETE
+	case SDL_SCANCODE_END:
+		return 0xcf; // DIK_END
+	case SDL_SCANCODE_PAGEDOWN:
+		return 0xd1; // DIK_PGDN
+
+	case SDL_SCANCODE_SEMICOLON:
+		return 0x27; // DIK_SEMICOLON
+	case SDL_SCANCODE_SLASH:
+		return 0x35; // DIK_SLASH
+	case SDL_SCANCODE_APOSTROPHE:
+		return 0x28; // DIK_APOSTROPHE
+	case SDL_SCANCODE_GRAVE:
+		return 0x29; // DIK_GRAVE
+
+	case SDL_SCANCODE_NONUSBACKSLASH:
+		return 0x56; // DIK_OEM_102 - This might have issues with different keyboard layouts.
 
 	default:
 		return 0x00;
@@ -148,11 +215,11 @@ int convert_sdl_scancode_to_tomb_keycode(int scancode) {
 
 int convert_tomb_keycode_to_sdl_scancode(int tomb_keycode) {
 	switch (tomb_keycode) {
-	case 0x1E: // DIK_A
+	case 0x1e: // DIK_A
 		return SDL_SCANCODE_A;
 	case 0x30: // DIK_B
 		return SDL_SCANCODE_B;
-	case 0x2E: // DIK_C
+	case 0x2e: // DIK_C
 		return SDL_SCANCODE_C;
 	case 0x20: // DIK_D
 		return SDL_SCANCODE_D;
@@ -184,21 +251,21 @@ int convert_tomb_keycode_to_sdl_scancode(int tomb_keycode) {
 		return SDL_SCANCODE_Q;
 	case 0x13: // DIK_R
 		return SDL_SCANCODE_R;
-	case 0x1F: // DIK_S
+	case 0x1f: // DIK_S
 		return SDL_SCANCODE_S;
 	case 0x14: // DIK_T
 		return SDL_SCANCODE_T;
 	case 0x16: // DIK_U
 		return SDL_SCANCODE_U;
-	case 0x2F: // DIK_V
+	case 0x2f: // DIK_V
 		return SDL_SCANCODE_V;
 	case 0x11: // DIK_W
 		return SDL_SCANCODE_W;
-	case 0x2D: // DIK_X
+	case 0x2d: // DIK_X
 		return SDL_SCANCODE_X;
 	case 0x15: // DIK_Y
 		return SDL_SCANCODE_Y;
-	case 0x2C: // DIK_Z
+	case 0x2c: // DIK_Z
 		return SDL_SCANCODE_Z;
 
 	case 0x02: // DIK_1
@@ -217,58 +284,124 @@ int convert_tomb_keycode_to_sdl_scancode(int tomb_keycode) {
 		return SDL_SCANCODE_7;
 	case 0x09: // DIK_8
 		return SDL_SCANCODE_8;
-	case 0x0A: // DIK_9
+	case 0x0a: // DIK_9
 		return SDL_SCANCODE_9;
-	case 0x0B: // DIK_0
+	case 0x0b: // DIK_0
 		return SDL_SCANCODE_0;
 
-	case 0x1C: // DIK_RETURN
+	case 0x1c: // DIK_RETURN
 		return SDL_SCANCODE_RETURN;
 	case 0x01: // DIK_ESCAPE
 		return SDL_SCANCODE_ESCAPE;
-	case 0x0E: // DIK_BACK
+	case 0x0e: // DIK_BACK
 		return SDL_SCANCODE_BACKSPACE;
-	case 0x0F: // DIK_TAB
+	case 0x0f: // DIK_TAB
 		return SDL_SCANCODE_TAB;
 	case 0x39: // DIK_SPACE
 		return SDL_SCANCODE_SPACE;
 
-	case 0xCD: // DIK_RIGHT
+	case 0xcd: // DIK_RIGHT
 		return SDL_SCANCODE_RIGHT;
-	case 0xCB: // DIK_LEFT
+	case 0xcb: // DIK_LEFT
 		return SDL_SCANCODE_LEFT;
-	case 0xD0: // DIK_DOWN
+	case 0xd0: // DIK_DOWN
 		return SDL_SCANCODE_DOWN;
-	case 0xC8: // DIK_UP
+	case 0xc8: // DIK_UP
 		return SDL_SCANCODE_UP;
 
-	case DIK_MINUS: // DIK_MINUS
+	case 0x0c: // DIK_MINUS
 		return SDL_SCANCODE_MINUS;
-	case DIK_EQUALS: // DIK_EQUALS
+	case 0x0d: // DIK_EQUALS
 		return SDL_SCANCODE_EQUALS;
-	case DIK_LBRACKET: // DIK_LBRACKET
+	case 0x1a: // DIK_LBRACKET
 		return SDL_SCANCODE_LEFTBRACKET;
-	case DIK_RBRACKET: // DIK_RBRACKET
+	case 0x1b: // DIK_RBRACKET
 		return SDL_SCANCODE_RIGHTBRACKET;
-	case DIK_BACKSLASH: // DIK_BACKSLASH
+	case 0x2b: // DIK_BACKSLASH
 		return SDL_SCANCODE_BACKSLASH;
 
-	case 0x1D: // DIK_LCONTROL
+	case 0x1d: // DIK_LCONTROL
 		return SDL_SCANCODE_LCTRL;
-	case 0x2A: // DIK_LSHIFT
+	case 0x2a: // DIK_LSHIFT
 		return SDL_SCANCODE_LSHIFT;
 	case 0x38: // DIK_LALT
 		return SDL_SCANCODE_LALT;
-	case 0xDB: // DIK_LWIN
+	case 0xdb: // DIK_LWIN
 		return SDL_SCANCODE_LGUI;
-	case 0x9D: // DIK_RCONTROL
+	case 0x9d: // DIK_RCONTROL
 		return SDL_SCANCODE_RCTRL;
 	case 0x36: // DIK_RSHIFT
 		return SDL_SCANCODE_RSHIFT;
-	case 0xB8: // DIK_RALT
+	case 0xb8: // DIK_RALT
 		return SDL_SCANCODE_RALT;
-	case 0xDC: // DIK_RWIN
+	case 0xdc: // DIK_RWIN
 		return SDL_SCANCODE_RGUI;
+
+	case 0x33: // DIK_COMMA
+		return SDL_SCANCODE_COMMA;
+	case 0x34: // DIK_PERIOD
+		return SDL_SCANCODE_PERIOD;
+
+	case 0x4f: // DIK_NUMPAD1
+		return SDL_SCANCODE_KP_1;
+	case 0x50: // DIK_NUMPAD2
+		return SDL_SCANCODE_KP_2;
+	case 0x51: // DIK_NUMPAD3
+		return SDL_SCANCODE_KP_3;
+	case 0x4b: // DIK_NUMPAD4
+		return SDL_SCANCODE_KP_4;
+	case 0x4c: // DIK_NUMPAD5
+		return SDL_SCANCODE_KP_5;
+	case 0x4d: // DIK_NUMPAD6
+		return SDL_SCANCODE_KP_6;
+	case 0x47: // DIK_NUMPAD7
+		return SDL_SCANCODE_KP_7;
+	case 0x48: // DIK_NUMPAD8
+		return SDL_SCANCODE_KP_8;
+	case 0x49: // DIK_NUMPAD9
+		return SDL_SCANCODE_KP_9;
+	case 0x52: // DIK_NUMPAD0
+		return SDL_SCANCODE_KP_0;
+	case 0x53: // DIK_NUMPADPERIOD
+		return SDL_SCANCODE_KP_PERIOD;
+	case 0x4e: // DIK_NUMPADPLUS
+		return SDL_SCANCODE_KP_PLUS;
+	case 0x4a: // DIK_NUMPADMINUS
+		return SDL_SCANCODE_KP_MINUS;
+	case 0xb5: // DIK_NUMPADSLASH
+		return SDL_SCANCODE_KP_DIVIDE;
+	case 0x37: // DIK_NUMPADSTAR
+		return SDL_SCANCODE_KP_MULTIPLY;
+	case 0x9C: // DIK_NUMPADENTER
+		return SDL_SCANCODE_KP_ENTER;
+
+	case 0x3a:
+		return SDL_SCANCODE_CAPSLOCK; // DIK_CAPSLOCK
+
+	case 0xd2: // DIK_INSERT
+		return SDL_SCANCODE_INSERT;
+	case 0xc7: // DIK_HOME
+		return SDL_SCANCODE_HOME;
+	case 0xc9: // DIK_PGUP
+		return SDL_SCANCODE_PAGEUP;
+	case 0xd3: // DIK_DELETE
+		return SDL_SCANCODE_DELETE;
+	case 0xcf: // DIK_END
+		return SDL_SCANCODE_END;
+	case 0xd1: // DIK_PGDN
+		return SDL_SCANCODE_PAGEDOWN;
+
+	case 0x27: // DIK_SEMICOLON
+		return SDL_SCANCODE_SEMICOLON;
+	case 0x35: // DIK_SLASH
+		return SDL_SCANCODE_SLASH;
+	case 0x28: // DIK_APOSTROPHE
+		return SDL_SCANCODE_APOSTROPHE;
+	case 0x29: // DIK_GRAVE
+		return SDL_SCANCODE_GRAVE;
+
+	case 0x56: // DIK_OEM_102 - This might have issues with different keyboard layouts.
+		return SDL_SCANCODE_NONUSBACKSLASH;
 
 	default:
 		return SDL_SCANCODE_UNKNOWN;
@@ -338,19 +471,11 @@ const char* GermanKeyboard[272] =
 
 short layout[2][18] =
 {
-#ifdef USE_SDL
-	{ SDL_SCANCODE_UP, SDL_SCANCODE_DOWN, SDL_SCANCODE_LEFT, SDL_SCANCODE_RIGHT, SDL_SCANCODE_PERIOD, SDL_SCANCODE_SLASH, SDL_SCANCODE_RSHIFT, SDL_SCANCODE_RALT, SDL_SCANCODE_RCTRL,
-	SDL_SCANCODE_SPACE, SDL_SCANCODE_COMMA, SDL_SCANCODE_KP_0, SDL_SCANCODE_END, SDL_SCANCODE_ESCAPE, SDL_SCANCODE_DELETE, SDL_SCANCODE_PAGEDOWN, SDL_SCANCODE_P, SDL_SCANCODE_RETURN },
-
-	{ SDL_SCANCODE_UP, SDL_SCANCODE_DOWN, SDL_SCANCODE_LEFT, SDL_SCANCODE_RIGHT, SDL_SCANCODE_PERIOD, SDL_SCANCODE_SLASH, SDL_SCANCODE_RSHIFT, SDL_SCANCODE_RALT, SDL_SCANCODE_RCTRL,
-	SDL_SCANCODE_SPACE, SDL_SCANCODE_COMMA, SDL_SCANCODE_KP_0, SDL_SCANCODE_END, SDL_SCANCODE_ESCAPE, SDL_SCANCODE_DELETE, SDL_SCANCODE_PAGEDOWN, SDL_SCANCODE_P, SDL_SCANCODE_RETURN }
-#else
 	{ DIK_UP, DIK_DOWN, DIK_LEFT, DIK_RIGHT, DIK_PERIOD, DIK_SLASH, DIK_RSHIFT, DIK_RALT, DIK_RCONTROL,
 	DIK_SPACE, DIK_COMMA, DIK_NUMPAD0, DIK_END, DIK_ESCAPE, DIK_DELETE, DIK_PGDN, DIK_P, DIK_RETURN },
 
 	{ DIK_UP, DIK_DOWN, DIK_LEFT, DIK_RIGHT, DIK_PERIOD, DIK_SLASH, DIK_RSHIFT, DIK_RALT, DIK_RCONTROL,
 	DIK_SPACE, DIK_COMMA, DIK_NUMPAD0, DIK_END, DIK_ESCAPE, DIK_DELETE, DIK_PGDN, DIK_P, DIK_RETURN }
-#endif
 };
 
 long conflict[18];
@@ -562,9 +687,9 @@ long Key(long number)
 {
 	short key;
 
-	key = layout[1][number];
+	key = convert_tomb_keycode_to_sdl_scancode(layout[1][number]);
 
-	if (key < 256)
+	if (key < keymap_count)
 	{
 		if (keymap[key])
 			return 1;
