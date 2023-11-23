@@ -5,53 +5,128 @@
 #include "input.h"
 #include "winmain.h"
 
+
+#ifdef USE_INI
+#ifndef USE_SDL
+#error "INI config support requires SDL!"
+#endif
+
+#include <SDL_filesystem.h>
+
+#include <filesystem>
+#include <algorithm>
+#include <string>
+
+#include "simpleIni.h"
+
+CSimpleIniA ini;
+const char *config_file_path = "";
+const char *current_section = "";
+bool section_just_created = false;
+
+char *CFG_GetTomb4PlusPrefPath() {
+	return SDL_GetPrefPath("", "Tomb4Plus");
+
+}
+#else
 static HKEY phkResult;
 static DWORD dwDisposition;
+#endif
+
 static bool REG_Setup;
 
-bool REG_OpenKey(LPCSTR lpSubKey)
+#ifndef USE_INI
+bool REG_OpenKey(const char *lpSubKey)
 {
 	return RegCreateKeyEx(HKEY_CURRENT_USER, lpSubKey, 0, (CHAR*)"", REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, 0, &phkResult, &dwDisposition) == ERROR_SUCCESS;
 }
+#endif
 
-bool OpenRegistry(LPCSTR SubKeyName)
+bool OpenRegistry(const char *section_key)
 {
+#ifdef USE_INI
+	std::string data_path = CFG_GetTomb4PlusPrefPath();
+	std::string config_file_path = data_path + "config.ini";
+
+	ini.SetUnicode();
+
+	SI_Error rc = ini.LoadFile(config_file_path.c_str());
+	if (rc >= 0) {
+		section_just_created = false;
+		if (!ini.SectionExists(section_key)) {
+			section_just_created = true;
+		}
+	}
+
+	current_section = section_key;
+
+	return true;
+#else
 	char buffer[256];
 
-	if (!SubKeyName)
+	if (!section_key)
 		return REG_OpenKey("Software\\Core Design\\Tomb Raider IV");
 
-	sprintf(buffer, "%s\\%s", "Software\\Core Design\\Tomb Raider IV", SubKeyName);
+	sprintf(buffer, "%s\\%s", "Software\\Core Design\\Tomb Raider IV", section_key);
 	return REG_OpenKey(buffer);
+#endif
 }
 
+#ifndef USE_INI
 void REG_CloseKey()
 {
 	RegCloseKey(phkResult);
 }
+#endif
 
 void CloseRegistry()
 {
+#ifdef USE_INI
+	std::string data_path = CFG_GetTomb4PlusPrefPath();
+
+	ini.SetUnicode();
+
+	ini.SaveFile((data_path + std::string("config.ini")).c_str());
+#else
 	REG_CloseKey();
+#endif
 }
 
 void REG_WriteLong(char* SubKeyName, ulong value)
 {
+#ifdef USE_INI
+	ini.SetLongValue(current_section, SubKeyName, value);
+#else
 	RegSetValueEx(phkResult, SubKeyName, 0, REG_DWORD, (CONST BYTE*) & value, sizeof(ulong));
+#endif
 }
 
 void REG_WriteBool(char* SubKeyName, bool value)
 {
+#ifdef USE_INI
+	ini.SetBoolValue(current_section, SubKeyName, value);
+#else
 	ulong Lvalue;
 
 	Lvalue = (ulong)value;
 	RegSetValueEx(phkResult, SubKeyName, 0, REG_DWORD, (CONST BYTE*) & Lvalue, sizeof(ulong));
+#endif
 }
 
 void REG_WriteString(char* SubKeyName, char* string, long length)
 {
 	long checkLength;
 
+#ifdef USE_INI
+	if (string)
+	{
+		ini.SetValue(current_section, SubKeyName, string);
+	}
+	else
+	{
+		ini.Delete(current_section, SubKeyName);
+	}
+#else
 	if (string)
 	{
 		if (length < 0)
@@ -63,19 +138,28 @@ void REG_WriteString(char* SubKeyName, char* string, long length)
 	}
 	else
 		RegDeleteValue(phkResult, SubKeyName);
+#endif
 }
 
 void REG_WriteFloat(char* SubKeyName, float value)
 {
+#ifdef USE_INI
+	ini.SetDoubleValue(current_section, SubKeyName, value);
+#else
 	long length;
 	char buf[64];
 
 	length = sprintf(buf, "%.5f", value);
 	REG_WriteString(SubKeyName, buf, length);
+#endif
 }
 
 bool REG_ReadLong(char* SubKeyName, ulong& value, ulong defaultValue)
 {
+#ifdef USE_INI
+	value = ini.GetLongValue(current_section, SubKeyName, defaultValue);
+	return true;
+#else
 	ulong type;
 	ulong cbData;
 
@@ -87,10 +171,15 @@ bool REG_ReadLong(char* SubKeyName, ulong& value, ulong defaultValue)
 	REG_WriteLong(SubKeyName, defaultValue);
 	value = defaultValue;
 	return 0;
+#endif
 }
 
 bool REG_ReadBool(char* SubKeyName, bool& value, bool defaultValue)
 {
+#ifdef USE_INI
+	value = ini.GetBoolValue(current_section, SubKeyName, defaultValue);
+	return true;
+#else
 	ulong type;
 	ulong cbData;
 	ulong data;
@@ -106,10 +195,22 @@ bool REG_ReadBool(char* SubKeyName, bool& value, bool defaultValue)
 	REG_WriteBool(SubKeyName, defaultValue);
 	value = defaultValue;
 	return 0;
+#endif
 }
 
 bool REG_ReadString(char* SubKeyName, char* value, long length, char* defaultValue)
 {
+#ifdef USE_INI
+	const char* loaded_string = ini.GetValue(current_section, SubKeyName, defaultValue);
+	if (loaded_string) {
+		long loaded_str_length = strlen(loaded_string);
+		if (loaded_str_length <= length) {
+			memcpy(value, loaded_string, loaded_str_length);
+		}
+	}
+
+	return false;
+#else
 	ulong type;
 	ulong cbData;
 	long len;
@@ -136,10 +237,15 @@ bool REG_ReadString(char* SubKeyName, char* value, long length, char* defaultVal
 		RegDeleteValue(phkResult, SubKeyName);
 
 	return 0;
+#endif
 }
 
 bool REG_ReadFloat(char* SubKeyName, float& value, float defaultValue)
 {
+#ifdef USE_INI
+	value = ini.GetDoubleValue(current_section, SubKeyName, defaultValue);
+	return true;
+#else
 	char buf[64];
 
 	if (REG_ReadString(SubKeyName, buf, sizeof(buf), 0))
@@ -151,6 +257,7 @@ bool REG_ReadFloat(char* SubKeyName, float& value, float defaultValue)
 	REG_WriteFloat(SubKeyName, defaultValue);
 	value = defaultValue;
 	return 0;
+#endif
 }
 
 bool LoadSettings()
@@ -337,5 +444,10 @@ bool SaveSetup(HWND hDlg)
 
 bool REG_KeyWasCreated()
 {
+#ifdef USE_INI
+	return section_just_created;
+#else
 	return dwDisposition == REG_CREATED_NEW_KEY;
+#endif
 }
+
