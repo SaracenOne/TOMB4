@@ -1,4 +1,5 @@
 #include "../tomb4/pch.h"
+#include "gameflow.h"
 #include "moveblok.h"
 #include "control.h"
 #include "collide.h"
@@ -79,12 +80,13 @@ void InitialiseMovingBlock(short item_number)
 	ClearMovableBlockSplitters(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number);
 
 	MOD_GLOBAL_INFO *global_info = get_game_mod_global_info();
+	MOD_LEVEL_MISC_INFO *misc_info = get_game_mod_level_misc_info(gfCurrentLevel);
 	// TRNG
 	int climbable_block_height = 0;
 	if (global_info->trng_pushable_extended_ocb && item->trigger_flags & 0x40) {
 		climbable_block_height = item->trigger_flags & 0xf;
 	// TREP
-	} else if (global_info->trep_pushable_extended_ocb) {
+	} else if (misc_info->enable_standing_pushables) {
 		climbable_block_height = (item->trigger_flags & 0xf00) >> 8;
 	}
 
@@ -358,12 +360,13 @@ void MovableBlock(short item_number)
 	item = &items[item_number];
 
 	MOD_GLOBAL_INFO *global_info = get_game_mod_global_info();
+	MOD_LEVEL_MISC_INFO *misc_info = get_game_mod_level_misc_info(gfCurrentLevel);
 	// TRNG
 	int climbable_block_height = 0;
 	if (global_info->trng_pushable_extended_ocb && item->trigger_flags & 0x40) {
 		climbable_block_height = item->trigger_flags & 0xf;
 	// TREP
-	} else if (global_info->trep_pushable_extended_ocb) {
+	} else if (misc_info->enable_standing_pushables) {
 		climbable_block_height = (item->trigger_flags & 0xf00) >> 8;
 	}
 
@@ -561,13 +564,14 @@ void MovableBlockCollision(short item_number, ITEM_INFO* laraitem, COLL_INFO* co
 	item = &items[item_number];
 
 	MOD_GLOBAL_INFO *global_info = get_game_mod_global_info();
+	MOD_LEVEL_MISC_INFO* misc_info = get_game_mod_level_misc_info(gfCurrentLevel);
 
 	// TRNG
 	int climbable_block_height = 0;
 	if (global_info->trng_pushable_extended_ocb && item->trigger_flags & 0x40) {
 		climbable_block_height = item->trigger_flags & 0xf;
 	// TREP
-	} else if (global_info->trep_pushable_extended_ocb) {
+	} else if (misc_info->enable_standing_pushables) {
 		climbable_block_height = (item->trigger_flags & 0xf00) >> 8;
 	}
 

@@ -275,6 +275,7 @@ void LoadGameModLevelMiscInfo(const json_t *misc, MOD_LEVEL_MISC_INFO *misc_info
     READ_JSON_INTEGER_CAST(snow_type, misc, misc_info, WeatherType);
 
     READ_JSON_BOOL(enable_ricochet_sound_effect, misc, misc_info);
+    READ_JSON_BOOL(enable_standing_pushables, misc, misc_info);
     READ_JSON_BOOL(enemy_gun_hit_underwater_sfx_fix, misc, misc_info);
     READ_JSON_BOOL(darts_poison_fix, misc, misc_info);
 }
@@ -483,9 +484,6 @@ void LoadGameModConfigSecondPass() {
                     READ_JSON_BOOL(trng_pushable_extended_ocb, global, mod_global_info);
                     READ_JSON_BOOL(trng_switch_extended_ocb, global, mod_global_info);
                     READ_JSON_BOOL(trng_hack_allow_meshes_with_exactly_256_vertices, global, mod_global_info);
-
-                    // TREP
-                    READ_JSON_BOOL(trep_pushable_extended_ocb, global, mod_global_info);
 
                     // TOMO
                     READ_JSON_BOOL(tomo_enable_weather_flipeffect, global, mod_global_info);

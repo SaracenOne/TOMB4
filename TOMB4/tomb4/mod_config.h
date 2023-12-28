@@ -162,9 +162,6 @@ struct MOD_GLOBAL_INFO {
 	bool trng_switch_extended_ocb = false; // TRNG (custom switch animations)
 	bool trng_hack_allow_meshes_with_exactly_256_vertices = false; // TRNG seems to have a special hack which allows meshes of 256 verticies
 
-	// TREP stuff
-	bool trep_pushable_extended_ocb = false; // TREP (climable pushables)
-
 	// Tomo stuff
 	bool tomo_enable_weather_flipeffect = false;
 	bool tomo_swap_whitelight_for_teleporter = false;
@@ -198,6 +195,7 @@ struct MOD_LEVEL_MISC_INFO {
 	WeatherType snow_type = WEATHER_DISABLED;
 
 	bool enable_ricochet_sound_effect = false;
+	bool enable_standing_pushables = false;
 	bool enemy_gun_hit_underwater_sfx_fix = false;
 	bool darts_poison_fix = false;
 };
