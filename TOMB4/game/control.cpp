@@ -816,6 +816,12 @@ void TestTriggers(short* data, long heavy, long HeavyFlags, int room_number, int
 				} else {
 					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Plugin Trigger Conditionals are currently not supported!");
 				}
+
+				// I don't know if this is the correct way of handling this, but it seems to fix some
+				// bugs in some pre 1.3 levels at least.
+				flags |= 0x2000;
+				// This seems to fix some other bugs.
+				timer = 0;
 			} else {
 				state = lara_item->current_anim_state;
 
