@@ -243,6 +243,7 @@
     <ClInclude Include="TOMB4\game\train.h" />
     <ClInclude Include="TOMB4\game\traps.h" />
     <ClInclude Include="TOMB4\game\trep\furr.h" />
+    <ClInclude Include="TOMB4\game\trep\trepsave.h" />
     <ClInclude Include="TOMB4\game\trng\objects\trng_parallel_bars.h" />
     <ClInclude Include="TOMB4\game\trng\objects\trng_tightrope.h" />
     <ClInclude Include="TOMB4\game\trng\trng.h" />
@@ -388,6 +389,12 @@
     <ClCompile Include="TOMB4\game\traps.cpp" />
     <ClCompile Include="TOMB4\game\trep\furr.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\trep\trepsave.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../tomb4/pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="TOMB4\game\trng\objects\trng_parallel_bars.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
