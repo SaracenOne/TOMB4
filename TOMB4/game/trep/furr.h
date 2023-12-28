@@ -1,6 +1,10 @@
 #pragma once
 #include "../../global/types.h"
 
+#define ONESHOT_BUFFER_SIZE 512
+
+extern char furr_oneshot_buffer[ONESHOT_BUFFER_SIZE];
+
 enum FURROpcode {
 	FURR_EQUIP = 0,
 	FURR_HOLSTER_WEAPONS,

@@ -412,7 +412,7 @@ void S_SetReverbType(long reverb)
 	if (App.SoundDisabled)
 		return;
 
-	if (tomb4.reverb == 1)
+	if (tomb4.reverb == REVERB_OFF)
 		reverb = 0;
 
 	if (current_reverb != reverb)

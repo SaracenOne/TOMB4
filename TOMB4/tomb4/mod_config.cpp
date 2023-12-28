@@ -57,6 +57,36 @@
     if (value_name && JSON_REAL == json_getType(value_name)) { \
         (my_struct)->value_name = (float)json_getReal(value_name); } \
     }
+
+#define READ_JSON_ARGB(value_name, json, my_struct) { \
+    const json_t* value_name = json_getProperty(json, #value_name); \
+    if (value_name && JSON_OBJ == json_getType(value_name)) {\
+    const json_t* r = json_getProperty(value_name, "r"); \
+    if (r && JSON_INTEGER == json_getType(r)) { \
+        unsigned char r8 = (unsigned char)json_getInteger(r); \
+        (my_struct)->value_name &= ~(0x00ff0000); \
+        (my_struct)->value_name |= (((unsigned int)r8) << 16) & 0x00ff0000; \
+    } \
+    const json_t* g = json_getProperty(value_name, "g"); \
+    if (g && JSON_INTEGER == json_getType(g)) { \
+        unsigned char g8 = (unsigned char)json_getInteger(g); \
+        (my_struct)->value_name &= ~(0x0000ff00); \
+        (my_struct)->value_name |= (((unsigned int)g8) << 8) & 0x0000ff00; \
+    } \
+    const json_t* b = json_getProperty(value_name, "b"); \
+    if (b && JSON_INTEGER == json_getType(b)) { \
+        unsigned char b8 = (unsigned char)json_getInteger(b); \
+        (my_struct)->value_name &= ~(0x000000ff); \
+        (my_struct)->value_name |= (((unsigned int)b8)) & 0x000000ff; \
+    } \
+    const json_t* a = json_getProperty(value_name, "a"); \
+    if (a && JSON_INTEGER == json_getType(a)) { \
+        unsigned char a8 = (unsigned char)json_getInteger(a); \
+        (my_struct)->value_name &= ~(0xff000000); \
+        (my_struct)->value_name |= (((unsigned int)a8) << 24) & 0xff000000; \
+    } \
+    } \
+    }
     
 
 // Full overrides
@@ -91,6 +121,18 @@ extern MOD_GLOBAL_INFO *get_game_mod_global_info() {
     return &game_mod_config.global_info;
 }
 
+MOD_LEVEL_AUDIO_INFO *get_game_mod_level_audio_info(int level) {
+    return &game_mod_config.level_info[level].audio_info;
+}
+
+MOD_LEVEL_BAR_INFO *get_game_mod_level_bar_info(int level) {
+    return &game_mod_config.level_info[level].bar_info;
+}
+
+MOD_LEVEL_ENVIRONMENT_INFO *get_game_mod_level_environment_info(int level) {
+    return &game_mod_config.level_info[level].environment_info;
+}
+
 extern MOD_LEVEL_FONT_INFO *get_game_mod_level_font_info(int level) {
     return &game_mod_config.level_info[level].font_info;
 }
@@ -101,10 +143,6 @@ extern MOD_LEVEL_CAMERA_INFO *get_game_mod_level_camera_info(int level) {
 
 MOD_LEVEL_CREATURE_INFO *get_game_mod_level_creature_info(int level) {
     return &game_mod_config.level_info[level].creature_info;
-}
-
-MOD_LEVEL_AUDIO_INFO *get_game_mod_level_audio_info(int level) {
-	return &game_mod_config.level_info[level].audio_info;
 }
 
 MOD_LEVEL_LARA_INFO *get_game_mod_level_lara_info(int level) {
@@ -133,6 +171,27 @@ void LoadGameModLevelAudioInfo(const json_t* audio, MOD_LEVEL_AUDIO_INFO* audio_
     READ_JSON_SINT16(inside_jeep_track, audio, audio_info);
     READ_JSON_SINT16(outside_jeep_track, audio, audio_info);
     READ_JSON_SINT16(secret_track, audio, audio_info);
+}
+
+void LoadGameModLevelBarInfo(const json_t* bar, MOD_LEVEL_BAR_INFO* bar_info) {
+    READ_JSON_ARGB(health_bar_main_color, bar, bar_info);
+    READ_JSON_ARGB(health_bar_fade_color, bar, bar_info);
+    READ_JSON_ARGB(health_bar_poison_color, bar, bar_info);
+
+    READ_JSON_ARGB(air_bar_main_color, bar, bar_info);
+    READ_JSON_ARGB(air_bar_fade_color, bar, bar_info);
+
+    READ_JSON_ARGB(sprint_bar_main_color, bar, bar_info);
+    READ_JSON_ARGB(sprint_bar_fade_color, bar, bar_info);
+
+    READ_JSON_ARGB(loading_bar_main_color, bar, bar_info);
+    READ_JSON_ARGB(loading_bar_fade_color, bar, bar_info);
+}
+
+void LoadGameModLevelEnvironmentInfo(const json_t* environment, MOD_LEVEL_ENVIRONMENT_INFO* environment_info) {
+    READ_JSON_UINT32(fog_start_range, environment, environment_info);
+    READ_JSON_UINT32(fog_end_range, environment, environment_info);
+    READ_JSON_UINT32(far_view, environment, environment_info);
 }
 
 void LoadGameModLevelFontInfo(const json_t* font, MOD_LEVEL_FONT_INFO* font_info) {
@@ -218,16 +277,26 @@ void LoadGameModLevelMiscInfo(const json_t *misc, MOD_LEVEL_MISC_INFO *misc_info
     READ_JSON_BOOL(enable_ricochet_sound_effect, misc, misc_info);
     READ_JSON_BOOL(enemy_gun_hit_underwater_sfx_fix, misc, misc_info);
     READ_JSON_BOOL(darts_poison_fix, misc, misc_info);
-    READ_JSON_UINT32(fog_start_range, misc, misc_info);
-    READ_JSON_UINT32(fog_end_range, misc, misc_info);
-    READ_JSON_UINT32(far_view, misc, misc_info);
 }
 
+void LoadGameModLevelStatInfo(const json_t* stats, MOD_LEVEL_STAT_INFO* stat_info) {
+    READ_JSON_UINT32(secret_count, stats, stat_info);
+}
 
 void LoadGameModLevel(const json_t *level, MOD_LEVEL_INFO *level_info) {
     const json_t* audio_info = json_getProperty(level, "audio_info");
     if (audio_info && JSON_OBJ == json_getType(audio_info)) {
         LoadGameModLevelAudioInfo(audio_info, &level_info->audio_info);
+    }
+
+    const json_t* bar_info = json_getProperty(level, "bar_info");
+    if (bar_info && JSON_OBJ == json_getType(bar_info)) {
+        LoadGameModLevelBarInfo(bar_info, &level_info->bar_info);
+    }
+
+    const json_t* environment_info = json_getProperty(level, "environment_info");
+    if (environment_info && JSON_OBJ == json_getType(environment_info)) {
+        LoadGameModLevelEnvironmentInfo(environment_info, &level_info->environment_info);
     }
 
     const json_t* font_info = json_getProperty(level, "font_info");
@@ -243,6 +312,11 @@ void LoadGameModLevel(const json_t *level, MOD_LEVEL_INFO *level_info) {
     const json_t* creature_info = json_getProperty(level, "creature_info");
     if (creature_info && JSON_OBJ == json_getType(creature_info)) {
         LoadGameModLevelCreatureInfo(creature_info, &level_info->creature_info);
+    }
+
+    const json_t* stat_info = json_getProperty(level, "stat_info");
+    if (stat_info && JSON_OBJ == json_getType(stat_info)) {
+        LoadGameModLevelStatInfo(stat_info, &level_info->stat_info);
     }
 
     const json_t* misc_info = json_getProperty(level, "misc_info");

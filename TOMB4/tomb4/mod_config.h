@@ -12,6 +12,12 @@
 // This may need increasing...
 #define MAXIMUM_JSON_ALLOCATION_BLOCKS 32768 
 
+struct MOD_LEVEL_ENVIRONMENT_INFO {
+	unsigned int fog_start_range = DEFAULT_FOG_START_VALUE;
+	unsigned int fog_end_range = DEFAULT_FOG_END_VALUE;
+	unsigned int far_view = DEFAULT_FAR_VIEW_VALUE;
+};
+
 struct MOD_LEVEL_FONT_INFO {
 	int custom_glyph_scale_width = DEFAULT_GLYPH_SCALE_WIDTH;
 	int custom_glyph_scale_height = DEFAULT_GLYPH_SCALE_HEIGHT;
@@ -93,6 +99,21 @@ struct MOD_LEVEL_AUDIO_INFO {
 	short secret_track = 5;
 };
 
+struct MOD_LEVEL_BAR_INFO {
+	int health_bar_main_color = 0xffff0000; // ARGB
+	int health_bar_fade_color = 0xff000000; // ARGB
+	int health_bar_poison_color = 0xffffff00; // ARGB
+
+	int air_bar_main_color = 0xff0000ff; // ARGB
+	int air_bar_fade_color = 0xff000000; // ARGB
+
+	int sprint_bar_main_color = 0xff00ff00; // ARGB
+	int sprint_bar_fade_color = 0xff000000; // ARGB
+
+	int loading_bar_main_color = 0xff9f1f80; // ARGB
+	int loading_bar_fade_color = 0xff000000; // ARGB
+};
+
 struct MOD_LEVEL_LARA_INFO {
 	long hair_gravity = 10;
 
@@ -155,10 +176,6 @@ struct MOD_GLOBAL_INFO {
 	char plugins[MAX_PLUGIN_COUNT][MAX_PLUGIN_NAME_LEN];
 };
 
-struct MOD_LEVEL_BAR_INFO {
-
-};
-
 struct MOD_LEVEL_STAT_INFO {
 	unsigned int secret_count = 70;
 };
@@ -183,12 +200,11 @@ struct MOD_LEVEL_MISC_INFO {
 	bool enable_ricochet_sound_effect = false;
 	bool enemy_gun_hit_underwater_sfx_fix = false;
 	bool darts_poison_fix = false;
-	unsigned int fog_start_range = DEFAULT_FOG_START_VALUE;
-	unsigned int fog_end_range = DEFAULT_FOG_END_VALUE;
-	unsigned int far_view = DEFAULT_FAR_VIEW_VALUE;
 };
 
 struct MOD_LEVEL_INFO {
+	MOD_LEVEL_BAR_INFO bar_info;
+	MOD_LEVEL_ENVIRONMENT_INFO environment_info;
 	MOD_LEVEL_FONT_INFO font_info;
 	MOD_LEVEL_CAMERA_INFO camera_info;
 	MOD_LEVEL_CREATURE_INFO creature_info;
@@ -216,10 +232,13 @@ extern void assign_slot_for_level(int level, int dest_slot, int src_slot);
 
 extern MOD_GLOBAL_INFO *get_game_mod_global_info();
 
+extern MOD_LEVEL_AUDIO_INFO *get_game_mod_level_audio_info(int level);
+extern MOD_LEVEL_BAR_INFO *get_game_mod_level_bar_info(int level);
+extern MOD_LEVEL_ENVIRONMENT_INFO *get_game_mod_level_environment_info(int level);
 extern MOD_LEVEL_FONT_INFO *get_game_mod_level_font_info(int level);
 extern MOD_LEVEL_CAMERA_INFO *get_game_mod_level_camera_info(int level);
 extern MOD_LEVEL_CREATURE_INFO *get_game_mod_level_creature_info(int level);
-extern MOD_LEVEL_AUDIO_INFO *get_game_mod_level_audio_info(int level);
+
 extern MOD_LEVEL_LARA_INFO *get_game_mod_level_lara_info(int level);
 extern MOD_LEVEL_STAT_INFO *get_game_mod_level_stat_info(int level);
 extern MOD_LEVEL_FLARE_INFO *get_game_mod_level_flare_info(int level);

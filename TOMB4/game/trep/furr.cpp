@@ -2,6 +2,8 @@
 
 #include "furr.h"
 
+char furr_oneshot_buffer[ONESHOT_BUFFER_SIZE];
+
 bool furr_cmd_inc_hp(int amount, int limit) {
 	return true;
 }

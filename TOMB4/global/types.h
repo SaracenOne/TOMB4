@@ -2340,21 +2340,65 @@ struct COLOR_BIT_MASKS
 	ulong dwRGBAlphaBitOffset;
 };
 
+enum shadow_mode_enum {
+	SHADOW_MODE_NULL = 0,
+	SHADOW_MODE_ORIGINAL,
+	SHADOW_MODE_CIRCLE,
+	SHADOW_MODE_PSX_CIRCLE,
+	SHADOW_MODE_PSX_SPRITE,
+	SHADOW_MODE_ENUM_SIZE
+};
+
+
+enum bar_mode_enum {
+	BAR_MODE_NULL,
+	BAR_MODE_ORIGINAL,
+	BAR_MODE_IMPROVED,
+	BAR_MODE_PSX,
+	BAR_MODE_CUSTOM,
+	BAR_MODE_ENUM_SIZE
+};
+
+enum bars_pos_enum {
+	BARS_POS_NULL,
+	BARS_POS_ORIGINAL,
+	BARS_POS_IMPROVED,
+	BARS_POS_PSX,
+	BARS_POS_CUSTOM,
+	BARS_POS_ENUM_SIZE
+};
+
+enum inv_bg_mode_enum {
+	INV_BG_MODE_NULL,
+	INV_BG_MODE_ORIGINAL,
+	INV_BG_MODE_TR5,
+	INV_BG_MODE_CLEAR,
+	INV_BG_MODE_ENUM_SIZE
+};
+
+enum reverb_enum {
+	REVERB_NULL,
+	REVERB_OFF,
+	REVERB_LARA_ROOM,
+	REVERB_CAMERA_ROOM,
+	REVERB_ENUM_SIZE
+};
+
 struct tomb4_options	//keep this at the bottom of the file, please
 {
 	bool footprints;
-	ulong shadow_mode;			//1-> original, 2-> circle, 3-> PSX like circle, 4-> PSX sprite, 5-> dynamic
+	shadow_mode_enum shadow_mode;			//1-> original, 2-> circle, 3-> PSX like circle, 4-> PSX sprite, 5-> dynamic
 	bool crawltilt;
 	bool flexible_crawling;
 	bool fix_climb_up_delay;
 	bool gameover;
-	ulong bar_mode;				//1-> original, 2-> TR5, 3-> PSX
-	ulong bars_pos;				//1-> original, 2-> improved, 3-> PSX
+	bar_mode_enum bar_mode;				//1-> original, 2-> TR5, 3-> PSX, 4-> Custom
+	bars_pos_enum bars_pos;				//1-> original, 2-> improved, 3-> PSX, 4-> Custom
 	bool enemy_bars;
 	bool cutseq_skipper;
 	bool cheats;
 	bool loadingtxt;
-	ulong inv_bg_mode;			//1-> original, 2->TR5, 3-> clear
+	inv_bg_mode_enum inv_bg_mode;			//1-> original, 2->TR5, 3-> clear
 	bool tr5_loadbar;
 	bool look_transparency;
 	bool ammo_counter;
@@ -2362,7 +2406,7 @@ struct tomb4_options	//keep this at the bottom of the file, please
 	bool combat_cam_tilt;
 	bool hpbar_inv;
 	bool static_lighting;
-	ulong reverb;				//1-> off, 2-> Lara room, 3->camera room
+	reverb_enum reverb;				//1-> off, 2-> Lara room, 3->camera room
 	ulong distance_fog;			//value in blocks
 	float GUI_Scale;
 };

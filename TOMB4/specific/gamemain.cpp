@@ -18,6 +18,7 @@
 
 #include "../game/trng/trng.h"
 #include "../tomb4/tomb4plus/t4plus_weather.h"
+#include "../game/trep/trepsave.h"
 
 LPDIRECT3DVERTEXBUFFER DestVB;
 WATERTAB WaterTable[22][64];
@@ -221,6 +222,9 @@ long S_SaveGame(long slot_num)
 		CloseHandle(file);
 		wsprintf(counter, "%d", SaveCounter);
 		SaveCounter++;
+
+		S_TREPSavegame(slot_num);
+
 		return 1;
 	}
 
@@ -245,6 +249,9 @@ long S_LoadGame(long slot_num)
 		ReadFile(file, &value, sizeof(long), &bytes, 0);
 		ReadFile(file, &savegame, sizeof(SAVEGAME_INFO), &bytes, 0);
 		CloseHandle(file);
+
+		S_TREPLoadgame(slot_num);
+
 		return 1;
 	}
 

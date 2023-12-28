@@ -769,7 +769,7 @@ void S_DisplayMonoScreen()
 {
 	ulong col;
 
-	if (tomb4.inv_bg_mode == 1 || tomb4.inv_bg_mode == 3)
+	if (tomb4.inv_bg_mode == INV_BG_MODE_ORIGINAL || tomb4.inv_bg_mode == INV_BG_MODE_CLEAR)
 		col = 0xFFFFFFFF;
 	else
 		col = 0xFFFFFF80;
@@ -812,7 +812,7 @@ void RGBM_Mono(uchar * r, uchar * g, uchar * b)
 {
 	uchar c;
 
-	if (tomb4.inv_bg_mode != 3)
+	if (tomb4.inv_bg_mode != INV_BG_MODE_CLEAR)
 	{
 		c = (*r + *b) >> 1;
 		*r = c;

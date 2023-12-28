@@ -13,6 +13,7 @@
 #include "polyinsert.h"
 #include "../tomb4/tomb4.h"
 #include "texture.h"
+#include "../tomb4/mod_config.h"
 
 static float loadbar_pos;
 static long loadbar_maxpos;
@@ -294,9 +295,14 @@ static void S_DrawHealthBar2(long pos)
 	x = phd_centerx - GetFixedScale(75);
 	y = GetFixedScale(100);
 
-	if (tomb4.bar_mode == 3)
+	if (tomb4.bar_mode == BAR_MODE_CUSTOM)
+	{
+		MOD_LEVEL_BAR_INFO* barInfo = get_game_mod_level_bar_info(gfCurrentLevel);
+		DoBar(x, y, w, h, pos, barInfo->health_bar_fade_color, lara.poisoned ? barInfo->health_bar_poison_color : barInfo->health_bar_main_color, 1);
+	}
+	else if (tomb4.bar_mode == BAR_MODE_PSX)
 		S_DrawGouraudBar(x, y, w, h, pos, lara.poisoned ? &poisonBarColourSet : &healthBarColourSet, 0);
-	else if (tomb4.bar_mode == 2)
+	else if (tomb4.bar_mode == BAR_MODE_IMPROVED)
 		S_DoTR5Bar(x, y, w, h, pos, 0xA00000, lara.poisoned ? 0xA0A000 : 0x00A000, 0);
 	else
 		DoBar(x, y, w, h, pos, 0xFF000000, lara.poisoned ? 0xFFFFFF00 : 0xFFFF0000, 0);
@@ -311,9 +317,11 @@ static void S_DrawEnemyBar2(long pos)
 	x = phd_centerx - GetFixedScale(75);
 	y = GetFixedScale(117);
 
-	if (tomb4.bar_mode == 3)
+	if (tomb4.bar_mode == BAR_MODE_CUSTOM)
+		DoBar(x, y, w, h, pos, 0xFF000000, 0xFFFFA000, 0);
+	else if (tomb4.bar_mode == BAR_MODE_PSX)
 		S_DrawGouraudBar(x, y, w, h, pos, &enemyBarColourSet, 0);
-	else if (tomb4.bar_mode == 2)
+	else if (tomb4.bar_mode == BAR_MODE_IMPROVED)
 		S_DoTR5Bar(x, y, w, h, pos, 0xA00000, 0xA0A000, 0);
 	else
 		DoBar(x, y, w, h, pos, 0xFF000000, 0xFFFFA000, 0);
@@ -335,22 +343,32 @@ void S_DrawHealthBar(long pos)
 	w = GetRenderScale(150);
 	h = GetRenderScale(6);
 
-	if (tomb4.bars_pos == 1 || tomb4.bars_pos == 2)//original or improved
+	if (tomb4.bars_pos == BARS_POS_ORIGINAL || tomb4.bars_pos == BARS_POS_IMPROVED)//original or improved
 	{
 		x = GetRenderScale(8);
 		y = GetRenderScale(8);
 	}
-	else
+	else if (tomb4.bars_pos == BARS_POS_PSX) // psx
 	{
 		x = GetRenderScale(36);
 		x = phd_winwidth - w - x;
 		y = GetRenderScale(18);
 	}
+	else if (tomb4.bars_pos == BARS_POS_CUSTOM) // custom
+	{
+		x = GetRenderScale(8);
+		y = GetRenderScale(8);
+	}
 
-	if (tomb4.bar_mode == 2)
+	if (tomb4.bar_mode == BAR_MODE_IMPROVED)
 		S_DoTR5Bar(x, y, w, h, pos, 0xA00000, lara.poisoned ? 0xA0A000 : 0x00A000, 1);
-	else if (tomb4.bar_mode == 3)
+	else if (tomb4.bar_mode == BAR_MODE_PSX)
 		S_DrawGouraudBar(x, y, w, h, pos, lara.poisoned ? &poisonBarColourSet : &healthBarColourSet, 1);
+	else if (tomb4.bar_mode == BAR_MODE_CUSTOM)
+	{
+		MOD_LEVEL_BAR_INFO* barInfo = get_game_mod_level_bar_info(gfCurrentLevel);
+		DoBar(x, y, w, h, pos, barInfo->health_bar_fade_color, lara.poisoned ? barInfo->health_bar_poison_color : barInfo->health_bar_main_color, 1);
+	}
 	else
 		DoBar(x, y, w, h, pos, 0xFF000000, lara.poisoned ? 0xFFFFFF00 : 0xFFFF0000, 1);
 }
@@ -365,27 +383,36 @@ void S_DrawAirBar(long pos)
 	w = GetRenderScale(150);
 	h = GetRenderScale(6);
 
-	if (tomb4.bars_pos == 1)//original
+	if (tomb4.bars_pos == BARS_POS_ORIGINAL)//original
 	{
 		x = phd_winwidth - w - GetRenderScale(8);
 		y = GetRenderScale(25);
 	}
-	else if (tomb4.bars_pos == 2)//improved
+	else if (tomb4.bars_pos == BARS_POS_IMPROVED)//improved
 	{
 		x = phd_winwidth - w - GetRenderScale(8);
 		y = GetRenderScale(8);
 	}
-	else
+	else if (tomb4.bars_pos == BARS_POS_PSX)// PSX
 	{
 		x = GetRenderScale(36);
 		x = phd_winwidth - w - x;
 		y = GetRenderScale(43);
+	} else if (tomb4.bars_pos == BARS_POS_CUSTOM)//custom
+	{
+		x = phd_winwidth - w - GetRenderScale(8);
+		y = GetRenderScale(25);
 	}
 
-	if (tomb4.bar_mode == 2)
+	if (tomb4.bar_mode == BAR_MODE_IMPROVED)
 		S_DoTR5Bar(x, y, w, h, pos, 0x0000A0, 0x0050A0, 1);
-	else if (tomb4.bar_mode == 3)
+	else if (tomb4.bar_mode == BAR_MODE_PSX)
 		S_DrawGouraudBar(x, y, w, h, pos, &airBarColourSet, 1);
+	else if (tomb4.bar_mode == BAR_MODE_CUSTOM)
+	{
+		MOD_LEVEL_BAR_INFO* barInfo = get_game_mod_level_bar_info(gfCurrentLevel);
+		DoBar(x, y, w, h, pos, barInfo->air_bar_fade_color, barInfo->air_bar_main_color, 1);
+	}
 	else
 		DoBar(x, y, w, h, pos, 0xFF000000, 0xFF0000FF, 1);
 }
@@ -400,27 +427,37 @@ void S_DrawDashBar(long pos)
 	w = GetRenderScale(150);
 	h = GetRenderScale(6);
 
-	if (tomb4.bars_pos == 1)//original
+	if (tomb4.bars_pos == BARS_POS_ORIGINAL)//original
 	{
 		x = phd_winwidth - w - GetRenderScale(8);
 		y = GetRenderScale(8);
 	}
-	else if (tomb4.bars_pos == 2)//improved
+	else if (tomb4.bars_pos == BARS_POS_IMPROVED)//improved
 	{
 		x = phd_winwidth - w - GetRenderScale(8);
 		y = GetRenderScale(25);
 	}
-	else
+	else if (tomb4.bars_pos == BARS_POS_PSX)//psx
 	{
 		x = GetRenderScale(36);
 		x = phd_winwidth - w - x;
 		y = GetRenderScale(68);
 	}
+	else if (tomb4.bars_pos == BARS_POS_CUSTOM)//custom
+	{
+		x = phd_winwidth - w - GetRenderScale(8);
+		y = GetRenderScale(8);
+	}
 
-	if (tomb4.bar_mode == 2)
+	if (tomb4.bar_mode == BAR_MODE_IMPROVED)
 		S_DoTR5Bar(x, y, w, h, pos, 0xA0A000, 0x00A000, 1);
-	else if (tomb4.bar_mode == 3)
+	else if (tomb4.bar_mode == BAR_MODE_PSX)
 		S_DrawGouraudBar(x, y, w, h, pos, &dashBarColourSet, 1);
+	else if (tomb4.bar_mode == BAR_MODE_CUSTOM)
+	{
+		MOD_LEVEL_BAR_INFO* barInfo = get_game_mod_level_bar_info(gfCurrentLevel);
+		DoBar(x, y, w, h, pos, barInfo->sprint_bar_fade_color, barInfo->sprint_bar_main_color, 1);
+	}
 	else
 		DoBar(x, y, w, h, pos, 0xFF000000, 0xFF00FF00, 1);
 }
@@ -438,21 +475,26 @@ void S_DrawEnemyBar(long pos)
 	w = GetRenderScale(150);
 	h = GetRenderScale(6);
 
-	if (tomb4.bars_pos == 1 || tomb4.bars_pos == 2)//original or improved
+	if (tomb4.bars_pos == BARS_POS_ORIGINAL || tomb4.bars_pos == BARS_POS_IMPROVED)//original or improved
 	{
 		x = GetRenderScale(8);
 		y = GetRenderScale(25);
 	}
-	else
+	else if (tomb4.bars_pos == BARS_POS_PSX)//psx
 	{
 		x = GetRenderScale(36);
 		x = phd_winwidth - w - x;
 		y = GetRenderScale(93);
 	}
+	else if (tomb4.bars_pos == BARS_POS_CUSTOM)//custom
+	{
+		x = GetRenderScale(8);
+		y = GetRenderScale(25);
+	}
 
-	if (tomb4.bar_mode == 3)
+	if (tomb4.bar_mode == BAR_MODE_PSX)
 		S_DrawGouraudBar(x, y, w, h, pos, &enemyBarColourSet, 1);
-	else if (tomb4.bar_mode == 2)
+	else if (tomb4.bar_mode == BAR_MODE_IMPROVED)
 		S_DoTR5Bar(x, y, w, h, pos, 0xA00000, 0xA0A000, 1);
 	else
 		DoBar(x, y, w, h, pos, 0xFF000000, 0xFFFFA000, 1);
@@ -529,9 +571,14 @@ void S_LoadBar()
 			h = GetFixedScale(5);
 			y = phd_winheight - h - GetFixedScale(20);
 
-			if (tomb4.bar_mode == 3)
+			if (tomb4.bar_mode == BAR_MODE_CUSTOM)
+			{
+				MOD_LEVEL_BAR_INFO *barInfo = get_game_mod_level_bar_info(gfCurrentLevel);
+				DoBar(x, y, w, h, (long)loadbar_pos, barInfo->loading_bar_fade_color, barInfo->loading_bar_main_color, 0);
+			}
+			else if (tomb4.bar_mode == BAR_MODE_PSX)
 				S_DrawGouraudBar(x, y, w, h, (long)loadbar_pos, &loadBarColourSet, 0);
-			else if (tomb4.bar_mode == 2)
+			else if (tomb4.bar_mode == BAR_MODE_IMPROVED)
 				S_DoTR5Bar(x, y, w, h, (long)loadbar_pos, 0x0000A0, 0x0000F0, 0);
 			else
 				DoBar(x, y, w, h, (long)loadbar_pos, 0xFF000000, 0xFF9F1F80, 0);
@@ -543,9 +590,14 @@ void S_LoadBar()
 			h = GetFixedScale(7);
 			y = phd_winheight - h - GetFixedScale(20);
 
-			if (tomb4.bar_mode == 3)
+			if (tomb4.bar_mode == BAR_MODE_CUSTOM)
+			{
+				MOD_LEVEL_BAR_INFO* barInfo = get_game_mod_level_bar_info(gfCurrentLevel);
+				DoBar(x, y, w, h, (long)loadbar_pos, barInfo->loading_bar_fade_color, barInfo->loading_bar_main_color, 0);
+			}
+			else if (tomb4.bar_mode == BAR_MODE_PSX)
 				S_DrawGouraudBar(x, y, w, h, (long)loadbar_pos, &loadBarColourSet, 0);
-			else if (tomb4.bar_mode == 2)
+			else if (tomb4.bar_mode == BAR_MODE_IMPROVED)
 				S_DoTR5Bar(x, y, w, h, (long)loadbar_pos, 0xFF7F007F, 0xFF007F7F, 0);
 			else
 				DoBar(x, y, w, h, (long)loadbar_pos, 0xFF000000, 0xFF9F1F80, 0);

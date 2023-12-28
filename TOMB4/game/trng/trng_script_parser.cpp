@@ -373,7 +373,7 @@ int NGReadLevelBlock(char* gfScriptFile, unsigned int offset, NG_LEVEL_RECORD_TA
 			if (far_view > world_far_view)
 				far_view = world_far_view;
 
-			get_game_mod_level_misc_info(current_level)->far_view = (unsigned int)far_view * 1024;
+			get_game_mod_level_environment_info(current_level)->far_view = (unsigned int)far_view * 1024;
 			break;
 		}
 		case 0x04: {
@@ -383,14 +383,14 @@ int NGReadLevelBlock(char* gfScriptFile, unsigned int offset, NG_LEVEL_RECORD_TA
 			if (fog_start < 0) {
 				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "FogRange: negative fog range values currently unsupported!");
 			} else {
-				get_game_mod_level_misc_info(current_level)->fog_start_range = (unsigned int)fog_start * 1024;
+				get_game_mod_level_environment_info(current_level)->fog_start_range = (unsigned int)fog_start * 1024;
 			}
 
 			short fog_end = NG_READ_16(gfScriptFile, offset);
 			if (fog_end < 0) {
 				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "FogRange: negative fog range values currently unsupported!");
 			} else {
-				get_game_mod_level_misc_info(current_level)->fog_end_range = (unsigned int)fog_end * 1024;
+				get_game_mod_level_environment_info(current_level)->fog_end_range = (unsigned int)fog_end * 1024;
 			}
 			break;
 		}
@@ -1922,7 +1922,7 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 				case 0x05: {
 					world_far_view = NG_READ_16(gfScriptFile, offset);
 					for (int i = 0; i < MOD_LEVEL_COUNT; i++) {
-						get_game_mod_level_misc_info(i)->far_view = (unsigned int)world_far_view * 1024;
+						get_game_mod_level_environment_info(i)->far_view = (unsigned int)world_far_view * 1024;
 					}
 					break;
 				}

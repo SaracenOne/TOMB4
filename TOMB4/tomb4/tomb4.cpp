@@ -22,7 +22,7 @@ void init_tomb4_stuff()
 		REG_WriteBool(buf, tomb4.footprints);
 
 		sprintf(buf, "shadow");
-		tomb4.shadow_mode = 3;							//PSX like shadow
+		tomb4.shadow_mode = SHADOW_MODE_PSX_CIRCLE;		//PSX like shadow
 		REG_WriteLong(buf, tomb4.shadow_mode);
 
 		sprintf(buf, "crawltilt");
@@ -42,11 +42,11 @@ void init_tomb4_stuff()
 		REG_WriteBool(buf, tomb4.gameover);
 
 		sprintf(buf, "barMode");
-		tomb4.bar_mode = 3;								//PSX
+		tomb4.bar_mode = BAR_MODE_CUSTOM;				//custom
 		REG_WriteLong(buf, tomb4.bar_mode);
 
 		sprintf(buf, "bar_pos");
-		tomb4.bars_pos = 1;								//improved
+		tomb4.bars_pos = BARS_POS_CUSTOM;				//custom
 		REG_WriteLong(buf, tomb4.bars_pos);
 
 		sprintf(buf, "enemy_bar");
@@ -66,7 +66,7 @@ void init_tomb4_stuff()
 		REG_WriteBool(buf, tomb4.loadingtxt);
 
 		sprintf(buf, "inv_bgM");
-		tomb4.inv_bg_mode = 1;							//original
+		tomb4.inv_bg_mode = INV_BG_MODE_ORIGINAL;		//original
 		REG_WriteLong(buf, tomb4.inv_bg_mode);
 
 		sprintf(buf, "tr5LB");
@@ -98,11 +98,11 @@ void init_tomb4_stuff()
 		REG_WriteBool(buf, tomb4.static_lighting);
 
 		sprintf(buf, "reverb");
-		tomb4.reverb = 2;								//Lara room
+		tomb4.reverb = REVERB_LARA_ROOM;				//Lara room
 		REG_WriteLong(buf, tomb4.reverb);
 
 		sprintf(buf, "distance_fog");
-		tomb4.distance_fog = 0;						//default is 0
+		tomb4.distance_fog = 0;							//default is 0
 		REG_WriteLong(buf, tomb4.distance_fog);
 
 		sprintf(buf, "UIScale");
@@ -115,7 +115,9 @@ void init_tomb4_stuff()
 		REG_ReadBool(buf, tomb4.footprints, 1);
 
 		sprintf(buf, "shadow");
-		REG_ReadLong(buf, tomb4.shadow_mode, 3);
+		ulong shadow_mode;
+		REG_ReadLong(buf, shadow_mode, SHADOW_MODE_PSX_CIRCLE);
+		tomb4.shadow_mode = (shadow_mode_enum)shadow_mode;
 
 		sprintf(buf, "crawltilt");
 		REG_ReadBool(buf, tomb4.crawltilt, 1);
@@ -130,10 +132,14 @@ void init_tomb4_stuff()
 		REG_ReadBool(buf, tomb4.gameover, 1);
 
 		sprintf(buf, "barMode");
-		REG_ReadLong(buf, tomb4.bar_mode, 3);
+		ulong bar_mode;
+		REG_ReadLong(buf, bar_mode, BAR_MODE_CUSTOM);
+		tomb4.bar_mode = (bar_mode_enum)bar_mode;
 
 		sprintf(buf, "bar_pos");
-		REG_ReadLong(buf, tomb4.bars_pos, 1);
+		ulong bars_pos;
+		REG_ReadLong(buf, bars_pos, BARS_POS_CUSTOM);
+		tomb4.bars_pos = (bars_pos_enum)bars_pos;
 
 		sprintf(buf, "enemy_bar");
 		REG_ReadBool(buf, tomb4.enemy_bars, 0);
@@ -148,7 +154,9 @@ void init_tomb4_stuff()
 		REG_ReadBool(buf, tomb4.loadingtxt, 1);
 
 		sprintf(buf, "inv_bgM");
-		REG_ReadLong(buf, tomb4.inv_bg_mode, 1);
+		ulong inv_bg_mode;
+		REG_ReadLong(buf, inv_bg_mode, 1);
+		tomb4.inv_bg_mode = (inv_bg_mode_enum)inv_bg_mode;
 
 		sprintf(buf, "tr5LB");
 		REG_ReadBool(buf, tomb4.tr5_loadbar, 0);
@@ -172,7 +180,9 @@ void init_tomb4_stuff()
 		REG_ReadBool(buf, tomb4.static_lighting, 1);
 
 		sprintf(buf, "reverb");
-		REG_ReadLong(buf, tomb4.reverb, 1);
+		ulong reverb;
+		REG_ReadLong(buf, reverb, REVERB_LARA_ROOM);
+		tomb4.reverb = (reverb_enum)reverb;
 
 		sprintf(buf, "distance_fog");
 		REG_ReadLong(buf, tomb4.distance_fog, 0);

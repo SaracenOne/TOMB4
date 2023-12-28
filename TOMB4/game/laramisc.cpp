@@ -602,7 +602,7 @@ void LaraControl(short item_number)
 		}
 	}
 
-	if (tomb4.reverb == 2)
+	if (tomb4.reverb == REVERB_LARA_ROOM)
 		S_SetReverbType(room[l->room_number].ReverbType);
 	else
 		S_SetReverbType(room[camera.pos.room_number].ReverbType);

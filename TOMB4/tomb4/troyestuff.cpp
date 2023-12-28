@@ -123,7 +123,10 @@ bool Page0(long& num, long textY, ulong selection)
 	strcpy(buffer, tomb4.footprints ? "on" : "off");
 	PrintString(phd_centerx + (phd_centerx >> 1), YPOS, CHECK_SEL(6), buffer, 0);
 
-	strcpy(buffer, tomb4.shadow_mode == 1 ? "original" : tomb4.shadow_mode == 2 ? "circle" : tomb4.shadow_mode == 3 ? "faded circle" : "PSX");
+	strcpy(buffer, tomb4.shadow_mode == SHADOW_MODE_ORIGINAL ?
+		"original" : tomb4.shadow_mode == SHADOW_MODE_CIRCLE ?
+		"circle" : tomb4.shadow_mode == SHADOW_MODE_PSX_CIRCLE ?
+		"faded circle" : "PSX");
 	PrintString(phd_centerx + (phd_centerx >> 1), YPOS, CHECK_SEL(6), buffer, 0);
 
 	strcpy(buffer, tomb4.crawltilt ? "on" : "off");
@@ -138,10 +141,14 @@ bool Page0(long& num, long textY, ulong selection)
 	strcpy(buffer, tomb4.gameover ? "on" : "off");
 	PrintString(phd_centerx + (phd_centerx >> 1), YPOS, CHECK_SEL(6), buffer, 0);
 
-	strcpy(buffer, tomb4.bar_mode == 1 ? "original" : tomb4.bar_mode == 2 ? "TR5" : "PSX");
+	strcpy(buffer, tomb4.bar_mode == BAR_MODE_ORIGINAL ?
+		"original" : tomb4.bar_mode == BAR_MODE_IMPROVED ?
+		"TR5" : tomb4.bar_mode == BAR_MODE_PSX ? "PSX" : "Custom");
 	PrintString(phd_centerx + (phd_centerx >> 1), YPOS, CHECK_SEL(6), buffer, 0);
 
-	strcpy(buffer, tomb4.bars_pos == 1 ? "original" : tomb4.bars_pos == 2 ? "improved" : "PSX");
+	strcpy(buffer, tomb4.bars_pos == BARS_POS_ORIGINAL ?
+		"original" : tomb4.bars_pos == BARS_POS_IMPROVED ?
+		"improved" : tomb4.bars_pos == BARS_POS_PSX ? "PSX" : "Custom");
 	PrintString(phd_centerx + (phd_centerx >> 1), YPOS, CHECK_SEL(6), buffer, 0);
 
 	strcpy(buffer, tomb4.enemy_bars ? "on" : "off");
@@ -156,7 +163,8 @@ bool Page0(long& num, long textY, ulong selection)
 	strcpy(buffer, tomb4.loadingtxt ? "on" : "off");
 	PrintString(phd_centerx + (phd_centerx >> 1), YPOS, CHECK_SEL(6), buffer, 0);
 
-	strcpy(buffer, tomb4.inv_bg_mode == 1 ? "original" : tomb4.inv_bg_mode == 2 ? "TR5" : "clear");
+	strcpy(buffer, tomb4.inv_bg_mode == INV_BG_MODE_ORIGINAL ?
+		"original" : tomb4.inv_bg_mode == INV_BG_MODE_TR5 ? "TR5" : "clear");
 	PrintString(phd_centerx + (phd_centerx >> 1), YPOS, CHECK_SEL(6), buffer, 0);
 
 	strcpy(buffer, tomb4.tr5_loadbar ? "TR5" : "TR4");
@@ -180,10 +188,10 @@ bool Page0(long& num, long textY, ulong selection)
 		if (dbinput & IN_RIGHT)
 		{
 			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
-			tomb4.shadow_mode++;
+			tomb4.shadow_mode = (shadow_mode_enum)((int)tomb4.shadow_mode + 1);
 
-			if (tomb4.shadow_mode > 4)
-				tomb4.shadow_mode = 1;
+			if (tomb4.shadow_mode >= SHADOW_MODE_ENUM_SIZE)
+				tomb4.shadow_mode = (shadow_mode_enum)((int)SHADOW_MODE_NULL + 1);
 
 			changed = 1;
 		}
@@ -191,10 +199,11 @@ bool Page0(long& num, long textY, ulong selection)
 		if (dbinput & IN_LEFT)
 		{
 			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
-			tomb4.shadow_mode--;
+			tomb4.shadow_mode = (shadow_mode_enum)((int)tomb4.shadow_mode - 1);
+;
+			if (tomb4.shadow_mode == SHADOW_MODE_NULL)
+				tomb4.shadow_mode = (shadow_mode_enum)((int)SHADOW_MODE_ENUM_SIZE - 1);
 
-			if (tomb4.shadow_mode < 1)
-				tomb4.shadow_mode = 4;
 
 			changed = 1;
 		}
@@ -250,10 +259,10 @@ bool Page0(long& num, long textY, ulong selection)
 		if (dbinput & IN_RIGHT)
 		{
 			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
-			tomb4.bar_mode++;
+			tomb4.bar_mode = (bar_mode_enum)((int)tomb4.bar_mode + 1);
 
-			if (tomb4.bar_mode > 3)
-				tomb4.bar_mode = 1;
+			if (tomb4.bar_mode >= BAR_MODE_ENUM_SIZE)
+				tomb4.bar_mode = (bar_mode_enum)((int)BAR_MODE_NULL + 1);
 
 			changed = 1;
 		}
@@ -261,10 +270,10 @@ bool Page0(long& num, long textY, ulong selection)
 		if (dbinput & IN_LEFT)
 		{
 			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
-			tomb4.bar_mode--;
-
-			if (tomb4.bar_mode < 1)
-				tomb4.bar_mode = 3;
+			tomb4.bar_mode = (bar_mode_enum)((int)tomb4.bar_mode - 1);
+;
+			if (tomb4.bar_mode == BAR_MODE_NULL)
+				tomb4.bar_mode = (bar_mode_enum)((int)BAR_MODE_ENUM_SIZE - 1);
 
 			changed = 1;
 		}
@@ -276,10 +285,10 @@ bool Page0(long& num, long textY, ulong selection)
 		if (dbinput & IN_RIGHT)
 		{
 			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
-			tomb4.bars_pos++;
+			tomb4.bars_pos = (bars_pos_enum)((int)tomb4.bars_pos + 1);
 
-			if (tomb4.bars_pos > 3)
-				tomb4.bars_pos = 1;
+			if (tomb4.bars_pos >= BARS_POS_ENUM_SIZE)
+				tomb4.bars_pos = (bars_pos_enum)((int)BARS_POS_NULL + 1);
 
 			changed = 1;
 		}
@@ -287,10 +296,10 @@ bool Page0(long& num, long textY, ulong selection)
 		if (dbinput & IN_LEFT)
 		{
 			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
-			tomb4.bars_pos--;
-
-			if (tomb4.bars_pos < 1)
-				tomb4.bars_pos = 3;
+			tomb4.bars_pos = (bars_pos_enum)((int)tomb4.bars_pos - 1);
+			;
+			if (tomb4.bars_pos == BARS_POS_NULL)
+				tomb4.bars_pos = (bars_pos_enum)((int)BARS_POS_ENUM_SIZE - 1);
 
 			changed = 1;
 		}
@@ -346,10 +355,10 @@ bool Page0(long& num, long textY, ulong selection)
 		if (dbinput & IN_RIGHT)
 		{
 			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
-			tomb4.inv_bg_mode++;
+			tomb4.inv_bg_mode = (inv_bg_mode_enum)((int)tomb4.inv_bg_mode + 1);
 
-			if (tomb4.inv_bg_mode > 3)
-				tomb4.inv_bg_mode = 1;
+			if (tomb4.inv_bg_mode >= INV_BG_MODE_ENUM_SIZE)
+				tomb4.inv_bg_mode = (inv_bg_mode_enum)((int)INV_BG_MODE_NULL + 1);
 
 			changed = 1;
 		}
@@ -357,10 +366,10 @@ bool Page0(long& num, long textY, ulong selection)
 		if (dbinput & IN_LEFT)
 		{
 			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
-			tomb4.inv_bg_mode--;
-
-			if (tomb4.inv_bg_mode < 1)
-				tomb4.inv_bg_mode = 3;
+			tomb4.inv_bg_mode = (inv_bg_mode_enum)((int)tomb4.inv_bg_mode - 1);
+			;
+			if (tomb4.inv_bg_mode == INV_BG_MODE_NULL)
+				tomb4.inv_bg_mode = (inv_bg_mode_enum)((int)INV_BG_MODE_ENUM_SIZE - 1);
 
 			changed = 1;
 		}
@@ -425,7 +434,8 @@ bool Page1(long& num, long textY, ulong selection)
 	strcpy(buffer, tomb4.static_lighting ? "on" : "off");
 	PrintString(phd_centerx + (phd_centerx >> 1), YPOS, CHECK_SEL(6), buffer, 0);
 
-	strcpy(buffer, tomb4.reverb == 1 ? "off" : tomb4.reverb == 2 ? "Lara room" : "Camera room");
+	strcpy(buffer, tomb4.reverb == REVERB_OFF ?
+		"off" : tomb4.reverb == REVERB_LARA_ROOM ? "Lara room" : "Camera room");
 	PrintString(phd_centerx + (phd_centerx >> 1), YPOS, CHECK_SEL(6), buffer, 0);
 
 	if (tomb4.distance_fog == 0)
@@ -508,24 +518,24 @@ bool Page1(long& num, long textY, ulong selection)
 
 	case 1 << 6:
 
-		if (dbinput & IN_LEFT)
+		if (dbinput & IN_RIGHT)
 		{
 			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
-			tomb4.reverb--;
+			tomb4.reverb = (reverb_enum)((int)tomb4.reverb + 1);
 
-			if (tomb4.reverb < 1)
-				tomb4.reverb = 3;
+			if (tomb4.reverb >= REVERB_ENUM_SIZE)
+				tomb4.reverb = (reverb_enum)((int)REVERB_NULL + 1);
 
 			changed = 1;
 		}
 
-		if (dbinput & IN_RIGHT)
+		if (dbinput & IN_LEFT)
 		{
 			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
-			tomb4.reverb++;
-
-			if (tomb4.reverb > 3)
-				tomb4.reverb = 1;
+			tomb4.reverb = (reverb_enum)((int)tomb4.reverb - 1);
+			;
+			if (tomb4.reverb == REVERB_NULL)
+				tomb4.reverb = (reverb_enum)((int)REVERB_ENUM_SIZE - 1);
 
 			changed = 1;
 		}
