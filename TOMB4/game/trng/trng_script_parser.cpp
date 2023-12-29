@@ -1367,26 +1367,26 @@ int NGReadLevelBlock(char* gfScriptFile, unsigned int offset, NG_LEVEL_RECORD_TA
 			// Item Groups
 			unsigned short id = NG_READ_16(gfScriptFile, offset);
 
-			if (id >= MAX_NG_ITEM_GROUPS) {
+			if (id < MAX_NG_ITEM_GROUPS) {
 				NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: ItemGroup id (%u) is not valid! (level %u)", id, current_level);
 
-				return 0;
-				// Broken
-			}
+				tables->level_item_group_table[tables->level_item_group_count].record_id = id;
 
-			tables->level_item_group_table[tables->level_item_group_count].record_id = id;
+				unsigned char index = 0;
+				while (offset < data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short))) {
+					tables->level_item_group_table[tables->level_item_group_count].record.item_list[index] = NG_READ_16(gfScriptFile, offset);
 
-			unsigned char index = 0;
-			while (offset < data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short))) {
-				tables->level_item_group_table[tables->level_item_group_count].record.item_list[index] = NG_READ_16(gfScriptFile, offset);
-
-				index++;
-				if (index >= NG_ITEM_GROUP_MAX_LIST) {
-					NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: ItemGroup record size overflow! (level %u)", current_level);
-					return 0;
+					index++;
+					if (index >= NG_ITEM_GROUP_MAX_LIST) {
+						NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: ItemGroup record size overflow! (level %u)", current_level);
+						return 0;
+					}
 				}
+				tables->level_item_group_count++;
+				// Broken
+			} else {
+				NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: ItemGroup id (%u) is not valid! (level %u)", id, current_level);
 			}
-			tables->level_item_group_count++;
 			break;
 		}
 		case 0x1a: {
@@ -2018,7 +2018,7 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 
 		// Do the levels
 		while (1) {
-			// Call level blcok load function here!
+			// Call level block load function here!
 			offset = NGReadLevelBlock(gfScriptFile, offset, &record_tables, current_level, world_far_view);
 			if (offset == 0) {
 				return;
