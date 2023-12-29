@@ -461,7 +461,7 @@ bool WinRegisterWindow(HINSTANCE hinstance)
 
 bool WinCreateWindow()
 {
-	App.hWnd = CreateWindowEx(WS_EX_APPWINDOW, "MainGameWindow", "Tomb Raider - The Last Revelation", WS_OVERLAPPEDWINDOW,
+	App.hWnd = CreateWindowEx(WS_EX_APPWINDOW, "MainGameWindow", "Tomb4Plus", WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
 		0, 0, App.hInstance, 0);
 
@@ -503,10 +503,10 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
 	App.SetupComplete = 0;
 	App.AutoTarget = 0;
 
-	if (WinRunCheck((char*)"Tomb Raider - The Last Revelation", (char*)"MainGameWindow", &App.mutex))
-		return 0;
-
 	LoadGameModConfigFirstPass();
+
+	if (WinRunCheck((char*)"Tomb4Plus", (char*)"MainGameWindow", &App.mutex))
+		return 0;
 
 	LoadGameflow();
 
