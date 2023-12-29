@@ -493,6 +493,9 @@ void DoLevel(uchar Name, uchar Audio)
 			gfInitialiseGame = 0;
 			CutSceneTriggered = 0;
 			FmvSceneTriggered = 0;
+
+			// T4Plus
+			T4PlusEnterLevel(gfCurrentLevel, true);
 		}
 		else
 			sgRestoreLevel();

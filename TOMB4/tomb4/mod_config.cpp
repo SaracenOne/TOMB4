@@ -6,6 +6,7 @@
 #include "../specific/function_stubs.h"
 #include "../game/trng/trng.h"
 #include "../specific/audio.h"
+#include "tomb4plus/t4plus_inventory.h"
 
 #define READ_JSON_INTEGER_CAST(value_name, json, my_struct, my_type) { const json_t* value_name = json_getProperty(json, #value_name); \
     if (value_name && JSON_INTEGER == json_getType(value_name)) { \
@@ -520,7 +521,7 @@ void LoadGameModConfigSecondPass() {
         free(mem);
 }
 
-void T4LevelSetup(int current_level) {
+void T4PlusLevelSetup(int current_level) {
     ClearWeatherFX();
 
     S_Reset(); // Reset audio channels.
@@ -532,6 +533,22 @@ void T4LevelSetup(int current_level) {
 
     NGSetup();
 }
+
+// TODO: check if the equipment commands are valid on hub re-entry.
+void T4PlusEnterLevel(int current_level, bool initial_entry) {
+    if (initial_entry) {
+        MOD_EQUIPMENT_MODIFIER* equipment_modifiers = get_game_mod_level_stat_info(current_level)->equipment_modifiers;
+        for (int i = 0; i < MAX_EQUIPMENT_MODIFIERS; i++) {
+            if (equipment_modifiers[i].object_id != -1) {
+                T4PlusSetInventoryCount(equipment_modifiers[i].object_id, equipment_modifiers[i].amount);
+            }
+            else {
+                break;
+            }
+        }
+    }
+}
+
 
 bool is_source_trng_version_equal_or_greater_than_target(TRNG_ENGINE_VERSION source_version, TRNG_ENGINE_VERSION target_version) {
     if (source_version.trng_version_major < target_version.trng_version_major)

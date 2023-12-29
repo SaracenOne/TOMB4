@@ -177,7 +177,7 @@ unsigned int __stdcall LoadLevel(void* name)
 		reset_cutseq_vars();
 		FileClose(level_fp);
 
-		T4LevelSetup(gfCurrentLevel);
+		T4PlusLevelSetup(gfCurrentLevel);
 	}
 
 	LevelLoadingThread.active = 0;

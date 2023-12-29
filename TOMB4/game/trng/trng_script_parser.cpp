@@ -620,11 +620,45 @@ int NGReadLevelBlock(char* gfScriptFile, unsigned int offset, NG_LEVEL_RECORD_TA
 			break;
 		}
 		case 0x12: {
-			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Equipment unimplemented (level %u)", current_level);
-
-			// Equipment (WIP)
-			unsigned short slot_item = NG_READ_16(gfScriptFile, offset);
+			// Equipment
+			unsigned short object_id = NG_READ_16(gfScriptFile, offset);
 			unsigned short amount = NG_READ_16(gfScriptFile, offset);
+
+			if (current_level == 0) {
+				for (int i = 0; i < MOD_LEVEL_COUNT; i++) {
+					MOD_EQUIPMENT_MODIFIER *equipment_modifiers = get_game_mod_level_stat_info(i)->equipment_modifiers;
+
+					int current_modifier_idx = 0;
+					for (current_modifier_idx = 0; current_modifier_idx < MAX_EQUIPMENT_MODIFIERS; current_modifier_idx++) {
+						if (equipment_modifiers[current_modifier_idx].object_id == -1) {
+							equipment_modifiers[current_modifier_idx].object_id = object_id;
+							equipment_modifiers[current_modifier_idx].amount = amount;
+
+							break;
+						}
+					}
+
+					if (current_modifier_idx >= MAX_EQUIPMENT_MODIFIERS) {
+						NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: Max equipment modifiers exceeded (level %u)", i);
+					}
+				}
+			} else {
+				MOD_EQUIPMENT_MODIFIER *equipment_modifiers = get_game_mod_level_stat_info(current_level)->equipment_modifiers;
+
+				int current_modifier_idx = 0;
+				for (current_modifier_idx = 0; current_modifier_idx < MAX_EQUIPMENT_MODIFIERS; current_modifier_idx++) {
+					if (equipment_modifiers[current_modifier_idx].object_id == -1) {
+						equipment_modifiers[current_modifier_idx].object_id = object_id;
+						equipment_modifiers[current_modifier_idx].amount = amount;
+
+						break;
+					}
+				}
+
+				if (current_modifier_idx >= MAX_EQUIPMENT_MODIFIERS) {
+					NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: Max equipment modifiers exceeded (level %u)", current_level);
+				}
+			}
 
 			break;
 		}

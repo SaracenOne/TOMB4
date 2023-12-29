@@ -12,6 +12,8 @@
 // This may need increasing...
 #define MAXIMUM_JSON_ALLOCATION_BLOCKS 32768 
 
+#define MAX_EQUIPMENT_MODIFIERS 32
+
 struct MOD_LEVEL_ENVIRONMENT_INFO {
 	unsigned int fog_start_range = DEFAULT_FOG_START_VALUE;
 	unsigned int fog_end_range = DEFAULT_FOG_END_VALUE;
@@ -173,8 +175,15 @@ struct MOD_GLOBAL_INFO {
 	char plugins[MAX_PLUGIN_COUNT][MAX_PLUGIN_NAME_LEN];
 };
 
+struct MOD_EQUIPMENT_MODIFIER {
+	int object_id = -1;
+	int amount = -1;
+};
+
 struct MOD_LEVEL_STAT_INFO {
 	unsigned int secret_count = 70;
+
+	MOD_EQUIPMENT_MODIFIER equipment_modifiers[MAX_EQUIPMENT_MODIFIERS];
 };
 
 struct MOD_LEVEL_FLARE_INFO {
@@ -245,7 +254,8 @@ extern MOD_LEVEL_MISC_INFO *get_game_mod_level_misc_info(int level);
 extern void LoadGameModConfigFirstPass();
 extern void LoadGameModConfigSecondPass();
 
-extern void T4LevelSetup(int current_level);
+extern void T4PlusLevelSetup(int current_level);
+extern void T4PlusEnterLevel(int current_level, bool initial_entry);
 
 extern bool is_mod_trng_version_equal_or_greater_than_target(
 	unsigned char target_major_version,

@@ -22,6 +22,7 @@
 #include "rope.h"
 #include "gameflow.h"
 #include "../specific/file.h"
+#include "../tomb4/mod_config.h"
 
 SAVEGAME_INFO savegame;
 
@@ -197,8 +198,15 @@ void sgRestoreLevel()
 	ITEM_INFO* item;
 	FLOOR_INFO* floor;
 
-	if (OpenSaveGame(gfCurrentLevel, 0) >= 0)
+	if (OpenSaveGame(gfCurrentLevel, 0) >= 0) {
 		RestoreLevelData(0);
+
+		// T4Plus
+		T4PlusEnterLevel(gfCurrentLevel, false);
+	} else {
+		// T4Plus
+		T4PlusEnterLevel(gfCurrentLevel, true);
+	}
 
 	RestoreLaraData(0);
 

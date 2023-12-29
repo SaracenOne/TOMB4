@@ -5,6 +5,95 @@
 #include "../../specific/function_stubs.h"
 #include "../../game/health.h"
 #include "t4plus_inventory.h"
+#include "../../game/control.h"
+
+void T4PlusSetValidLaraGunType() {
+	bool clear_current_weapon = false;
+
+	switch (lara.gun_type)
+	{
+	case WEAPON_PISTOLS:
+		if (!lara.pistols_type_carried) {
+			lara.last_gun_type = lara.request_gun_type = lara.gun_type = WEAPON_NONE;
+			if (lara.holster == LARA_HOLSTERS_PISTOLS) {
+				lara.holster = LARA;
+			}
+
+			clear_current_weapon = true;
+		}
+		break;
+	case WEAPON_REVOLVER:
+		if (!lara.sixshooter_type_carried) {
+			lara.last_gun_type = lara.request_gun_type = lara.gun_type = WEAPON_NONE;
+			lara.weapon_item = NO_ITEM;
+			if (lara.holster == LARA_HOLSTERS_SIXSHOOTER) {
+				lara.holster = LARA;
+			}
+
+			clear_current_weapon = true;
+		}
+		break;
+	case WEAPON_UZI:
+		if (!lara.uzis_type_carried) {
+			lara.last_gun_type = lara.request_gun_type = lara.gun_type = WEAPON_NONE;
+			if (lara.holster == LARA_HOLSTERS_UZIS) {
+				lara.holster = LARA;
+			}
+
+			clear_current_weapon = true;
+		}
+		break;
+	case WEAPON_SHOTGUN:
+		if (!lara.shotgun_type_carried) {
+			lara.last_gun_type = lara.request_gun_type = lara.gun_type = WEAPON_NONE;
+			if (lara.back_gun == SHOTGUN_ANIM) {
+				lara.back_gun = 0;
+			}
+
+			clear_current_weapon = true;
+		}
+		break;
+	case WEAPON_GRENADE:
+		if (!lara.grenade_type_carried) {
+			lara.last_gun_type = lara.request_gun_type = lara.gun_type = WEAPON_NONE;
+			if (lara.back_gun == GRENADE_GUN_ANIM) {
+				lara.back_gun = 0;
+			}
+
+			clear_current_weapon = true;
+		}
+		break;
+	case WEAPON_CROSSBOW:
+		if (!lara.crossbow_type_carried) {
+			lara.last_gun_type = lara.request_gun_type = lara.gun_type = WEAPON_NONE;
+			if (lara.back_gun == CROSSBOW_ANIM) {
+				lara.back_gun = 0;
+			}
+
+			clear_current_weapon = true;
+		}
+		break;
+	default:
+		break;
+	}
+
+	if (clear_current_weapon) {
+		if (lara.gun_status == LG_READY || lara.gun_status == LG_DRAW_GUNS || lara.gun_status == LG_UNDRAW_GUNS) {
+			lara.gun_status = LG_NO_ARMS;
+		}
+
+		lara.weapon_item = NO_ITEM;
+
+		lara.mesh_ptrs[LM_RHAND] = meshes[objects[LARA].mesh_index + LM_RHAND * 2];
+		lara.mesh_ptrs[LM_LHAND] = meshes[objects[LARA].mesh_index + LM_LHAND * 2];
+
+		lara.left_arm.frame_number = 0;
+		lara.right_arm.frame_number = 0;
+		lara.target = 0;
+		lara.right_arm.lock = 0;
+		lara.left_arm.lock = 0;
+	}
+}
 
 // TODO: there may be some missing types still needing support
 
@@ -207,6 +296,8 @@ void T4PlusSetInventoryCount(short object_number, int count)
 		lara.examine3 = count;
 	else
 		Log(0, "T4PlusSetInventoryCount: unimplemented inventory item type!");
+
+	T4PlusSetValidLaraGunType();
 }
 
 void T4ShowObjectPickup(int object_number) {
