@@ -676,29 +676,32 @@ void LaraBaddieCollision(ITEM_INFO* l, COLL_INFO* coll)
 
 						// TRNG
 						if (mod_config_global->trng_statics_extended_ocb) {
-							// Damage Lara on collision
-							if ((mesh->Flags & 32)) {
-								NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LaraBaddieCollision: Damage Lara on collision is unimplemented!");
-							}
+							// Only use collision OCB flags if scaling flag is not set
+							if (!(mesh->Flags & 4096)) {
+								// Damage Lara on collision
+								if ((mesh->Flags & 32)) {
+									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LaraBaddieCollision: Damage Lara on collision is unimplemented!");
+								}
 
-							// Burn Lara on collision
-							if ((mesh->Flags & 64)) {
-								NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LaraBaddieCollision: Burn Lara on collision is unimplemented!");
-							}
+								// Burn Lara on collision
+								if ((mesh->Flags & 64)) {
+									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LaraBaddieCollision: Burn Lara on collision is unimplemented!");
+								}
 
-							// Explode killing on collision
-							if ((mesh->Flags & 128)) {
-								NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LaraBaddieCollision: Explode killing on collision is unimplemented!");
-							}
+								// Explode killing on collision
+								if ((mesh->Flags & 128)) {
+									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LaraBaddieCollision: Explode killing on collision is unimplemented!");
+								}
 
-							// Poison Lara on collision
-							if ((mesh->Flags & 256)) {
-								NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LaraBaddieCollision: Poison Lara on collision is unimplemented!");
-							}
+								// Poison Lara on collision
+								if ((mesh->Flags & 256)) {
+									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LaraBaddieCollision: Poison Lara on collision is unimplemented!");
+								}
 
-							// Activate heavy trigger on collision
-							if ((mesh->Flags & 2048)) {
-								TestTriggersAtXYZ(pos.x_pos, pos.y_pos, pos.z_pos, current_room_id, true, 0);
+								// Activate heavy trigger on collision
+								if ((mesh->Flags & 2048)) {
+									TestTriggersAtXYZ(pos.x_pos, pos.y_pos, pos.z_pos, current_room_id, true, 0);
+								}
 							}
 						}
 					}
