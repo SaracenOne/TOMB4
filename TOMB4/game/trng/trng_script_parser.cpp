@@ -620,7 +620,7 @@ int NGReadLevelBlock(char* gfScriptFile, unsigned int offset, NG_LEVEL_RECORD_TA
 			break;
 		}
 		case 0x12: {
-			// Equipment
+			// Equipment (TODO: add support for LOAD_AMMO types)
 			unsigned short object_id = NG_READ_16(gfScriptFile, offset);
 			unsigned short amount = NG_READ_16(gfScriptFile, offset);
 
@@ -793,15 +793,121 @@ int NGReadLevelBlock(char* gfScriptFile, unsigned int offset, NG_LEVEL_RECORD_TA
 					unsigned short shots_for_box = NG_READ_16(gfScriptFile, offset);
 					unsigned short shots_with_weapon = NG_READ_16(gfScriptFile, offset);
 					unsigned short extra = NG_READ_16(gfScriptFile, offset);
-					unsigned short trigger_group_when_hit_enemy = NG_READ_16(gfScriptFile, offset);
+					unsigned short id_trigger_group_when_hit_enemy = NG_READ_16(gfScriptFile, offset);
 					unsigned short damage_for_explosion = NG_READ_16(gfScriptFile, offset);
-					unsigned short speed = NG_READ_16(gfScriptFile, offset);
-					unsigned short gravity = NG_READ_16(gfScriptFile, offset);
-					unsigned short id_add_effect_to_ammo = NG_READ_16(gfScriptFile, offset);
+					unsigned short speed = 0xffff;
+					if (offset < command_block_end_position) {
+						speed = NG_READ_16(gfScriptFile, offset);
+					}
+					unsigned short gravity = 0xffff;
+					if (offset < command_block_end_position) {
+						gravity = NG_READ_16(gfScriptFile, offset);
+					}
+					unsigned short id_add_effect_to_ammo = 0xffff;
+					if (offset < command_block_end_position) {
+						id_add_effect_to_ammo = NG_READ_16(gfScriptFile, offset);
+					}
 					unsigned short id_trigger_group_at_end = 0xffff;
 					if (offset < command_block_end_position) {
 						id_trigger_group_at_end = NG_READ_16(gfScriptFile, offset);
 					}
+
+					MOD_LEVEL_WEAPON_INFO *weapon_info = get_game_mod_level_weapon_info(gfCurrentLevel);
+					MOD_LEVEL_AMMO_INFO *ammo_info = nullptr;
+
+					switch (ammo_slot) {
+					case PISTOLS_AMMO_ITEM:
+						ammo_info = &weapon_info->pistol_ammo_info;
+						break;
+					case UZI_AMMO_ITEM:
+						ammo_info = &weapon_info->uzi_ammo_info;
+						break;
+					case SHOTGUN_AMMO1_ITEM:
+						ammo_info = &weapon_info->shotgun_1_ammo_info;
+						break;
+					case SHOTGUN_AMMO2_ITEM:
+						ammo_info = &weapon_info->shotgun_2_ammo_info;
+						break;
+					case CROSSBOW_AMMO1_ITEM:
+						ammo_info = &weapon_info->crossbow_1_ammo_info;
+						break;
+					case CROSSBOW_AMMO2_ITEM:
+						ammo_info = &weapon_info->crossbow_2_ammo_info;
+						break;
+					case CROSSBOW_AMMO3_ITEM:
+						ammo_info = &weapon_info->crossbow_3_ammo_info;
+						break;
+					case GRENADE_GUN_AMMO1_ITEM:
+						ammo_info = &weapon_info->grenade_1_ammo_info;
+						break;
+					case GRENADE_GUN_AMMO2_ITEM:
+						ammo_info = &weapon_info->grenade_2_ammo_info;
+						break;
+					case GRENADE_GUN_AMMO3_ITEM:
+						ammo_info = &weapon_info->grenade_3_ammo_info;
+						break;
+					case SIXSHOOTER_AMMO_ITEM:
+						ammo_info = &weapon_info->six_shooter_ammo_info;
+						break;
+					default:
+						NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: CUST_AMMO unknown ammo type! (level %u)", current_level);
+						break;
+					}
+
+					if (ammo_info) {
+						if (ammo_flags != 0xffff) {
+							if (ammo_flags & AMMO_PUSH_TARGET)
+								NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: AMMO_FLAG_PUSH_TARGET unsupported! (level %u)", current_level);
+							if (ammo_flags & AMMO_PUSH_TARGET)
+								NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: AMMO_FLAG_PUSH_LARA unsupported! (level %u)", current_level);
+							if (ammo_flags & AMMO_SET_GRENADE_TIMER)
+								NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: AMMO_SET_GRENADE_TIMER unsupported! (level %u)", current_level);
+							if (ammo_flags & AMMO_ADD_GUN_SHELL)
+								ammo_info->add_pistol_shell = true;
+							if (ammo_flags & AMMO_ADD_SHOTGUN_SHELL)
+								ammo_info->add_shotgun_shell = true;
+							if (ammo_flags & AMMO_REMOVE_SHOTGUN_SHELL)
+								ammo_info->add_shotgun_shell = false;
+						}
+
+						if (damage != 0xffff) {
+							ammo_info->damage = damage;
+						}
+
+						if (damage_for_explosion != 0xffff) {
+							ammo_info->explosion_damage = damage_for_explosion;
+						}
+
+						if (shots_for_box != 0xffff) {
+							ammo_info->ammo_pickup_amount = shots_for_box;
+						}
+
+						if (shots_with_weapon != 0xffff) {
+							ammo_info->weapon_pickup_amount = shots_with_weapon;
+						}
+
+						if (speed != 0xffff) {
+							ammo_info->speed = speed;
+						}
+
+						if (gravity != 0xffff) {
+							ammo_info->gravity = gravity;
+						}
+
+						if (id_trigger_group_when_hit_enemy != 0xffff) {
+							ammo_info->trng_trigger_id_when_enemy_hit = id_trigger_group_when_hit_enemy;
+						}
+
+						if (id_trigger_group_at_end != 0xffff) {
+							ammo_info->trng_trigger_id_at_end = id_trigger_group_at_end;
+						}
+
+						if (id_add_effect_to_ammo != 0xffff) {
+							NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: TRNG AddEffect unsupported! (level %u)", current_level);
+							ammo_info->trng_effect = id_add_effect_to_ammo;
+						}
+					}
+
 					break;
 				}
 				case CUST_SHOW_AMMO_COUNTER: {
@@ -1368,8 +1474,6 @@ int NGReadLevelBlock(char* gfScriptFile, unsigned int offset, NG_LEVEL_RECORD_TA
 			unsigned short id = NG_READ_16(gfScriptFile, offset);
 
 			if (id < MAX_NG_ITEM_GROUPS) {
-				NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: ItemGroup id (%u) is not valid! (level %u)", id, current_level);
-
 				tables->level_item_group_table[tables->level_item_group_count].record_id = id;
 
 				unsigned char index = 0;

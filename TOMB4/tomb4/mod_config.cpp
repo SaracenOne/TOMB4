@@ -7,6 +7,9 @@
 #include "../game/trng/trng.h"
 #include "../specific/audio.h"
 #include "tomb4plus/t4plus_inventory.h"
+#include "../game/lara.h"
+
+#include "../game/trep/furr.h"
 
 #define READ_JSON_INTEGER_CAST(value_name, json, my_struct, my_type) { const json_t* value_name = json_getProperty(json, #value_name); \
     if (value_name && JSON_INTEGER == json_getType(value_name)) { \
@@ -158,6 +161,43 @@ MOD_LEVEL_FLARE_INFO *get_game_mod_level_flare_info(int level) {
     return &game_mod_config.level_info[level].flare_info;
 }
 
+MOD_LEVEL_WEAPON_INFO *get_game_mod_level_weapon_info(int level) {
+    return &game_mod_config.level_info[level].weapon_info;
+}
+
+MOD_LEVEL_AMMO_INFO *get_game_mod_current_lara_ammo_info(MOD_LEVEL_WEAPON_INFO *weapon_info) {
+    switch (lara.weapon_item)
+    {
+    case WEAPON_REVOLVER:
+        return &weapon_info->six_shooter_ammo_info;
+    case WEAPON_UZI:
+        return &weapon_info->uzi_ammo_info;
+    case WEAPON_SHOTGUN:
+        if (lara.shotgun_type_carried & W_AMMO1)
+            return &weapon_info->shotgun_1_ammo_info;
+        else
+            return &weapon_info->shotgun_2_ammo_info;
+    case WEAPON_GRENADE:
+        if (lara.grenade_type_carried & W_AMMO1)
+            return &weapon_info->grenade_1_ammo_info;
+        else if (lara.grenade_type_carried & W_AMMO2)
+            return &weapon_info->grenade_2_ammo_info;
+        else
+            return &weapon_info->grenade_3_ammo_info;
+
+        break;
+    case WEAPON_CROSSBOW:
+        if (lara.crossbow_type_carried & W_AMMO1)
+            return &weapon_info->crossbow_1_ammo_info;
+        else if (lara.crossbow_type_carried & W_AMMO2)
+            return &weapon_info->crossbow_2_ammo_info;
+        else
+            return &weapon_info->crossbow_3_ammo_info;
+    default:
+        return &weapon_info->pistol_ammo_info;
+    }
+}
+
 MOD_LEVEL_MISC_INFO *get_game_mod_level_misc_info(int level) {
     return &game_mod_config.level_info[level].misc_info;
 }
@@ -279,10 +319,15 @@ void LoadGameModLevelMiscInfo(const json_t *misc, MOD_LEVEL_MISC_INFO *misc_info
     READ_JSON_BOOL(enable_standing_pushables, misc, misc_info);
     READ_JSON_BOOL(enemy_gun_hit_underwater_sfx_fix, misc, misc_info);
     READ_JSON_BOOL(darts_poison_fix, misc, misc_info);
+    READ_JSON_BOOL(disable_motorbike_headlights, misc, misc_info);
 }
 
 void LoadGameModLevelStatInfo(const json_t* stats, MOD_LEVEL_STAT_INFO* stat_info) {
     READ_JSON_UINT32(secret_count, stats, stat_info);
+}
+
+void LoadGameModLevelWeaponInfo(const json_t* stats, MOD_LEVEL_WEAPON_INFO* weapon_info) {
+
 }
 
 void LoadGameModLevel(const json_t *level, MOD_LEVEL_INFO *level_info) {
@@ -321,6 +366,11 @@ void LoadGameModLevel(const json_t *level, MOD_LEVEL_INFO *level_info) {
         LoadGameModLevelStatInfo(stat_info, &level_info->stat_info);
     }
 
+    const json_t* weapon_info = json_getProperty(level, "weapon_info");
+    if (weapon_info && JSON_OBJ == json_getType(weapon_info)) {
+        LoadGameModLevelWeaponInfo(weapon_info, &level_info->weapon_info);
+    }
+
     const json_t* misc_info = json_getProperty(level, "misc_info");
     if (misc_info && JSON_OBJ == json_getType(misc_info)) {
         LoadGameModLevelMiscInfo(misc_info, &level_info->misc_info);
@@ -338,6 +388,103 @@ void SetupDefaultSlotInfoForLevel(MOD_LEVEL_INFO* level_info) {
     for (int i = 0; i < NUMBER_OBJECTS; i++) {
         level_info->slot_info[i] = i;
     }
+}
+
+void SetupDefaultWeaponInfoForLevel(MOD_LEVEL_INFO* level_info) {
+    // Pistols
+    level_info->weapon_info.pistol_ammo_info.damage = 1;
+    level_info->weapon_info.pistol_ammo_info.fire_rate = 9;
+    level_info->weapon_info.pistol_ammo_info.dispertion = 1456;
+    level_info->weapon_info.pistol_ammo_info.flash_duration = 3;
+
+    level_info->weapon_info.pistol_ammo_info.weapon_pickup_amount = 40;
+    level_info->weapon_info.pistol_ammo_info.ammo_pickup_amount = 40;
+
+    level_info->weapon_info.pistol_ammo_info.add_pistol_shell = true;
+
+    // Uzis
+    level_info->weapon_info.uzi_ammo_info.damage = 1;
+    level_info->weapon_info.uzi_ammo_info.fire_rate = 3;
+    level_info->weapon_info.uzi_ammo_info.dispertion = 1456;
+    level_info->weapon_info.uzi_ammo_info.flash_duration = 3;
+
+    level_info->weapon_info.uzi_ammo_info.weapon_pickup_amount = 30;
+    level_info->weapon_info.uzi_ammo_info.ammo_pickup_amount = 30;
+
+    level_info->weapon_info.uzi_ammo_info.add_pistol_shell = true;
+
+    // Six-Shooter
+    level_info->weapon_info.six_shooter_ammo_info.damage = 21;
+    level_info->weapon_info.six_shooter_ammo_info.fire_rate = 16;
+    level_info->weapon_info.six_shooter_ammo_info.dispertion = 728;
+    level_info->weapon_info.six_shooter_ammo_info.flash_duration = 3;
+
+    level_info->weapon_info.six_shooter_ammo_info.weapon_pickup_amount = 6;
+    level_info->weapon_info.six_shooter_ammo_info.ammo_pickup_amount = 6;
+
+    // Shotgun (Normal ammo)
+    level_info->weapon_info.shotgun_1_ammo_info.shots = 6;
+    level_info->weapon_info.shotgun_1_ammo_info.damage = 3;
+    level_info->weapon_info.shotgun_1_ammo_info.fire_rate = 32;
+    level_info->weapon_info.shotgun_1_ammo_info.dispertion = 0; // TODO: softcode wideshot vs normal support
+    level_info->weapon_info.shotgun_1_ammo_info.flash_duration = 3;
+
+    level_info->weapon_info.shotgun_1_ammo_info.weapon_pickup_amount = 6;
+    level_info->weapon_info.shotgun_1_ammo_info.ammo_pickup_amount = 6;
+
+    level_info->weapon_info.shotgun_1_ammo_info.add_shotgun_shell = true;
+
+    // Shotgun (Wideshot ammo)
+    level_info->weapon_info.shotgun_2_ammo_info.shots = 6;
+    level_info->weapon_info.shotgun_2_ammo_info.damage = 3;
+    level_info->weapon_info.shotgun_2_ammo_info.fire_rate = 32;
+    level_info->weapon_info.shotgun_2_ammo_info.dispertion = 0; // TODO: softcode wideshot vs normal support
+    level_info->weapon_info.shotgun_2_ammo_info.flash_duration = 3;
+
+    level_info->weapon_info.shotgun_2_ammo_info.weapon_pickup_amount = 6;
+    level_info->weapon_info.shotgun_2_ammo_info.ammo_pickup_amount = 6;
+
+    level_info->weapon_info.shotgun_2_ammo_info.add_shotgun_shell = true;
+
+    // Grenade gun
+    // Normal
+    level_info->weapon_info.grenade_1_ammo_info.shots = 1;
+    level_info->weapon_info.grenade_1_ammo_info.damage = 20;
+
+    level_info->weapon_info.grenade_1_ammo_info.dispertion = 1456;
+
+    // Super
+    level_info->weapon_info.grenade_2_ammo_info.shots = 1;
+    level_info->weapon_info.grenade_2_ammo_info.damage = 20;
+
+    level_info->weapon_info.grenade_2_ammo_info.dispertion = 1456;
+
+    // Flash
+    level_info->weapon_info.grenade_3_ammo_info.shots = 1;
+    level_info->weapon_info.grenade_3_ammo_info.damage = 20;
+
+    level_info->weapon_info.grenade_3_ammo_info.dispertion = 1456;
+
+    // Crossbow
+    // Normal
+    level_info->weapon_info.crossbow_1_ammo_info.shots = 1;
+    level_info->weapon_info.crossbow_1_ammo_info.damage = 5;
+
+    level_info->weapon_info.crossbow_1_ammo_info.dispertion = 1456;
+
+    // Poison
+    level_info->weapon_info.crossbow_2_ammo_info.shots = 1;
+    level_info->weapon_info.crossbow_2_ammo_info.damage = 5;
+
+    level_info->weapon_info.crossbow_2_ammo_info.dispertion = 1456;
+
+    // Explosive
+    level_info->weapon_info.crossbow_3_ammo_info.shots = 1;
+    level_info->weapon_info.crossbow_3_ammo_info.damage = 5;
+
+    level_info->weapon_info.crossbow_3_ammo_info.dispertion = 1456;
+
+
 }
 
 void SetupDefaultObjectInfoForLevel(MOD_LEVEL_INFO* level_info) {
@@ -385,6 +532,8 @@ void LoadGameModConfigFirstPass() {
     }
 
     const json_t* level = nullptr;
+
+    FURROpcode *furr_command_list = (FURROpcode * )malloc(MAX_FURR_COMMANDS * sizeof(FURROpcode));
    
     json_t* mem = NULL;
     if (json_buf) {
@@ -400,6 +549,110 @@ void LoadGameModConfigFirstPass() {
                     READ_JSON_UINT8(trng_version_minor, global, &mod_global_info->trng_engine_version);
                     READ_JSON_UINT8(trng_version_maintainence, global, &mod_global_info->trng_engine_version);
                     READ_JSON_UINT8(trng_version_build, global, &mod_global_info->trng_engine_version);
+
+                    const json_t* furr_data = json_getProperty(global, "furr_data");
+                    if (furr_data && JSON_OBJ == json_getType(furr_data)) {
+                        const json_t* furr_flipeffects = json_getProperty(furr_data, "furr_flipeffects");
+                        if (furr_flipeffects && JSON_ARRAY == json_getType(furr_flipeffects)) {
+                            json_t const* furr_flipeffect;
+                            int furr_flipeffect_index = 47;
+                            for (furr_flipeffect = json_getChild(furr_flipeffects); furr_flipeffect != nullptr; furr_flipeffect = json_getSibling(furr_flipeffect)) {
+                                if (furr_flipeffect_index > LAST_FURR_FLIPEFFECT) {
+                                    Log(1, "LoadGameModConfigFirstPass: FURR flipeffect overflow!");
+                                    break;
+                                }
+                                if (furr_flipeffect && JSON_ARRAY == json_getType(furr_flipeffect)) {
+                                    json_t const* furr_flipeffect_block;
+                                    int furr_flipeffect_block_index = 0;
+
+                                    //
+                                    int furr_command_count = 0;
+                                    int furr_command_buffer_size = 0;
+
+                                    // First pass to determine the required size of the bytecode buffer
+                                    for (furr_flipeffect_block = json_getChild(furr_flipeffect); furr_flipeffect_block != nullptr; furr_flipeffect_block = json_getSibling(furr_flipeffect_block)) {
+                                        if (furr_flipeffect_block && JSON_ARRAY == json_getType(furr_flipeffect_block)) {
+                                            json_t const* furr_flipeffect_data;
+                                            int furr_flipeffect_data_index = 0;
+                                            // Count the data
+                                            for (furr_flipeffect_data = json_getChild(furr_flipeffect_block); furr_flipeffect_data != nullptr; furr_flipeffect_data = json_getSibling(furr_flipeffect_data)) {
+                                                if (furr_flipeffect_data_index == 0) {
+                                                    if (furr_flipeffect_data && JSON_TEXT == json_getType(furr_flipeffect_data)) {
+                                                        const char* name = furr_flipeffect_data->u.value;
+                                                        int opcode_id = furr_get_opcode_for_command_string(name);
+                                                        if (opcode_id >= 0) {
+                                                            int furr_command_arg_count = furr_get_arg_count_for_opcode((FURROpcode)opcode_id);
+
+                                                            furr_command_list[furr_command_count] = (FURROpcode)opcode_id;
+
+                                                            furr_command_count++;
+                                                            if (furr_command_count >= MAX_FURR_COMMANDS) {
+                                                                Log(1, "LoadGameModConfigFirstPass: Exceed maximum allowed FURR commands in flipeffect!");
+                                                                free(furr_command_list);
+                                                                return;
+                                                            }
+                                                            furr_command_buffer_size += (1 + furr_command_arg_count);
+                                                        } else {
+                                                            Log(1, "LoadGameModConfigFirstPass: unknown FURR opcode detected!");
+                                                            free(furr_command_list);
+                                                            return;
+                                                        }
+                                                    }
+                                                } else {
+                                                    break;
+                                                }
+                                                furr_flipeffect_data_index++;
+                                            }
+
+                                        }
+                                        furr_flipeffect_block_index++;
+                                    }
+
+                                    furr_flipeffect_block_index = 0;
+                                    furr_allocate_flipeffect_buffer(furr_flipeffect_index, furr_command_buffer_size);
+
+
+                                    //
+                                    // Second pass to populate the bytecode buffer
+                                    for (furr_flipeffect_block = json_getChild(furr_flipeffect); furr_flipeffect_block != nullptr; furr_flipeffect_block = json_getSibling(furr_flipeffect_block)) {
+                                        if (furr_flipeffect_block && JSON_ARRAY == json_getType(furr_flipeffect_block)) {
+                                            json_t const* furr_flipeffect_data;
+                                            int furr_flipeffect_data_index = 0;
+                                            int furr_command_arg_count = 0;
+
+                                            // Count the data
+                                            for (furr_flipeffect_data = json_getChild(furr_flipeffect_block); furr_flipeffect_data != nullptr; furr_flipeffect_data = json_getSibling(furr_flipeffect_data)) {
+                                                if (furr_flipeffect_data_index != 0) {
+                                                    if (furr_flipeffect_data_index <= furr_command_arg_count) {
+                                                        if (furr_flipeffect_data && JSON_INTEGER == json_getType(furr_flipeffect_data)) {
+                                                            int argument_value = json_getInteger(furr_flipeffect_data);
+                                                            furr_add_flipeffect_token(furr_flipeffect_index, argument_value);
+                                                        }
+                                                        else {
+                                                            furr_add_flipeffect_token(furr_flipeffect_index, 0);
+                                                        }
+                                                    }
+                                                } else {
+                                                    furr_command_arg_count = furr_get_arg_count_for_opcode(furr_command_list[furr_flipeffect_block_index]);
+                                                    furr_add_flipeffect_token(furr_flipeffect_index, furr_command_list[furr_flipeffect_block_index]);
+                                                }
+                                                furr_flipeffect_data_index++;
+                                            }
+                                            
+                                            // In case we're missing args
+                                            if (furr_flipeffect_data_index < furr_command_arg_count) {
+                                                furr_add_flipeffect_token(furr_flipeffect_index, 0);
+                                                furr_flipeffect_data_index++;
+                                            }
+
+                                        }
+                                        furr_flipeffect_block_index++;
+                                    }
+                                }
+                                furr_flipeffect_index++;
+                            }
+                        }
+                    }
 
                     const json_t* plugins = json_getProperty(global, "plugins");
                     if (plugins && JSON_ARRAY == json_getType(plugins)) {
@@ -431,6 +684,8 @@ void LoadGameModConfigFirstPass() {
             Log(1, "LoadGameModConfigFirstPass: Failed to allocate memory for JSON buffer!");
         }
     }
+
+    free(furr_command_list);
 
     MOD_LEVEL_INFO global_level_info;
 
@@ -499,7 +754,7 @@ void LoadGameModConfigSecondPass() {
                 if (levels && JSON_ARRAY == json_getType(levels)) {
                     json_t const* level;
                     int level_index = 0;
-                    for (level = json_getChild(levels); level != 0; level = json_getSibling(level)) {
+                    for (level = json_getChild(levels); level != nullptr; level = json_getSibling(level)) {
                         if (JSON_OBJ == json_getType(level)) {
                             LoadGameModLevel(level, &game_mod_config.level_info[level_index]);
                         }
@@ -549,6 +804,11 @@ void T4PlusEnterLevel(int current_level, bool initial_entry) {
     }
 }
 
+void T4PlusCleanup() {
+    NGCleanup();
+
+    furr_free_all_flipeffect_buffers();
+}
 
 bool is_source_trng_version_equal_or_greater_than_target(TRNG_ENGINE_VERSION source_version, TRNG_ENGINE_VERSION target_version) {
     if (source_version.trng_version_major < target_version.trng_version_major)

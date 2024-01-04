@@ -1,12 +1,16 @@
 #pragma once
 #include "../../global/types.h"
 
-#define ONESHOT_BUFFER_SIZE 512
+#define LAST_FURR_FLIPEFFECT 512
+#define FIRST_FURR_FLIPEFFECT 47
 
-extern char furr_oneshot_buffer[ONESHOT_BUFFER_SIZE];
+#define MAX_FURR_COMMANDS 4096
+
+extern char furr_oneshot_buffer[LAST_FURR_FLIPEFFECT];
 
 enum FURROpcode {
-	FURR_EQUIP = 0,
+	FURR_ONESHOT = 0,
+	FURR_EQUIP,
 	FURR_HOLSTER_WEAPONS,
 	FURR_INC_HP,
 	FURR_DEC_HP,
@@ -132,6 +136,7 @@ enum FURROpcode {
 	FURR_ONLY_IN_WATER,
 	FURR_ONLY_ON_LAND,
 	FURR_ENVIRONMENT,
+	FURR_NO_FADEOUT,
 
 	FURR_BYTE_IF_EQL, // ==
 	FURR_BYTE_IF_NOT, // !=
@@ -153,8 +158,33 @@ enum FURROpcode {
 	FURR_DWORD_IF_LT, // <
 	FURR_DWORD_IF_ELT, // >=
 	FURR_DWORD_IF_EGT, // <=
+
+	FURR_OPCODE_COUNT
 };
 
-struct FURRCommand {
-
+struct FURRNameTableEntry {
+	const char *opcode_name;
+	const FURROpcode opcode_token;
 };
+
+extern FURRNameTableEntry furr_name_table[];
+
+struct FURRDataTable {
+	const int arg_count;
+	bool (*func_ptr)(int, int);
+};
+
+extern FURRDataTable furr_data_table[];
+
+struct FURRFlipeffectTable {
+	int size = 0;
+	int *tokens = nullptr;
+};
+
+extern int furr_get_arg_count_for_opcode(const FURROpcode opcode);
+extern int furr_get_opcode_for_command_string(const char* command_name);
+
+extern void furr_execute_furr_flipeffect(int id);
+extern void furr_allocate_flipeffect_buffer(int flipeffect_id, int size);
+extern void furr_free_all_flipeffect_buffers();
+extern void furr_add_flipeffect_token(int flipeffect_id, int token);

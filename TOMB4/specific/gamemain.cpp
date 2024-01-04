@@ -16,9 +16,10 @@
 
 #include "specificfx.h"
 
-#include "../game/trng/trng.h"
-#include "../tomb4/tomb4plus/t4plus_weather.h"
 #include "../game/trep/trepsave.h"
+
+#include "../tomb4/tomb4plus/t4plus_weather.h"
+#include "../tomb4/mod_config.h"
 
 LPDIRECT3DVERTEXBUFFER DestVB;
 WATERTAB WaterTable[22][64];
@@ -37,6 +38,8 @@ void GameClose()
 	Log(2, "GameClose");
 	ACMClose();
 	FreeLevel();
+
+	T4PlusCleanup();
 
 	if (DestVB)
 	{
@@ -61,7 +64,6 @@ void GameClose()
 	free(gfScriptFile);
 	free(gfLanguageFile);
 
-	NGCleanup();
 }
 
 unsigned int __stdcall GameMain(void* ptr)

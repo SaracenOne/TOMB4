@@ -27,6 +27,7 @@
 #include "delstuff.h"
 #include "../tomb4/mod_config.h"
 #include "../tomb4/tomb4plus/t4plus_weather.h"
+#include "trep/furr.h"
 
 FX_INFO* effects;
 OBJECT_VECTOR* sound_effects;
@@ -926,9 +927,9 @@ void MeshSwapFromPour(ITEM_INFO* item)
 
 void void_effect(ITEM_INFO* item)
 {
-	Log(0, "Hit void flipeffect: %u", flipeffect);
-
-	flipeffect = -1;
+	if (flipeffect >= FIRST_FURR_FLIPEFFECT) {
+		furr_execute_furr_flipeffect(flipeffect);
+	}
 }
 
 void WaterFall(short item_number)

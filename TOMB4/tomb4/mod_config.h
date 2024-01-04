@@ -199,6 +199,57 @@ struct MOD_LEVEL_FLARE_INFO {
 	bool flat_light = false;
 };
 
+struct MOD_LEVEL_AMMO_INFO {
+	short damage = 0;
+	short poison_damage = 0;
+	short explosion_damage = 0;
+	
+	short speed = 0;
+	short gravity = 0;
+
+	short shots = 1;
+	short fire_rate = 0;
+	short dispertion = 0;
+	short flash_duration = 0;
+
+	short weapon_pickup_amount = 0;
+	short ammo_pickup_amount = 0;
+	
+	short grenade_timer = 0;
+
+	bool add_pistol_shell = false;
+	bool add_shotgun_shell = false;
+
+	bool creates_explosion = false;
+	bool creates_super_explosion = false;
+
+	short push_lara_amount = 0;
+	short push_target_amount = 0;
+
+	// TRNG-specific
+	short trng_trigger_id_when_enemy_hit = -1;
+	short trng_trigger_id_at_end = -1;
+	short trng_effect = -1;
+};
+
+struct MOD_LEVEL_WEAPON_INFO {
+	MOD_LEVEL_AMMO_INFO pistol_ammo_info;
+	MOD_LEVEL_AMMO_INFO uzi_ammo_info;
+
+	MOD_LEVEL_AMMO_INFO shotgun_1_ammo_info;
+	MOD_LEVEL_AMMO_INFO shotgun_2_ammo_info;
+
+	MOD_LEVEL_AMMO_INFO crossbow_1_ammo_info;
+	MOD_LEVEL_AMMO_INFO crossbow_2_ammo_info;
+	MOD_LEVEL_AMMO_INFO crossbow_3_ammo_info;
+
+	MOD_LEVEL_AMMO_INFO grenade_1_ammo_info;
+	MOD_LEVEL_AMMO_INFO grenade_2_ammo_info;
+	MOD_LEVEL_AMMO_INFO grenade_3_ammo_info;
+
+	MOD_LEVEL_AMMO_INFO six_shooter_ammo_info;
+};
+
 struct MOD_LEVEL_MISC_INFO {
 	WeatherType rain_type = WEATHER_DISABLED;
 	WeatherType snow_type = WEATHER_DISABLED;
@@ -207,6 +258,7 @@ struct MOD_LEVEL_MISC_INFO {
 	bool enable_standing_pushables = false;
 	bool enemy_gun_hit_underwater_sfx_fix = false;
 	bool darts_poison_fix = false;
+	bool disable_motorbike_headlights = false;
 };
 
 struct MOD_LEVEL_INFO {
@@ -219,6 +271,7 @@ struct MOD_LEVEL_INFO {
 	MOD_LEVEL_LARA_INFO lara_info;
 	MOD_LEVEL_AUDIO_INFO audio_info;
 	MOD_LEVEL_FLARE_INFO flare_info;
+	MOD_LEVEL_WEAPON_INFO weapon_info;
 	MOD_LEVEL_MISC_INFO misc_info;
 	MOD_LEVEL_OBJECT_INFO object_info[NUMBER_OBJECTS];
 	short slot_info[NUMBER_OBJECTS];
@@ -249,13 +302,17 @@ extern MOD_LEVEL_CREATURE_INFO *get_game_mod_level_creature_info(int level);
 extern MOD_LEVEL_LARA_INFO *get_game_mod_level_lara_info(int level);
 extern MOD_LEVEL_STAT_INFO *get_game_mod_level_stat_info(int level);
 extern MOD_LEVEL_FLARE_INFO *get_game_mod_level_flare_info(int level);
+extern MOD_LEVEL_WEAPON_INFO *get_game_mod_level_weapon_info(int level);
 extern MOD_LEVEL_MISC_INFO *get_game_mod_level_misc_info(int level);
+
+extern MOD_LEVEL_AMMO_INFO *get_game_mod_current_lara_ammo_info(MOD_LEVEL_WEAPON_INFO *weapon_info);
 
 extern void LoadGameModConfigFirstPass();
 extern void LoadGameModConfigSecondPass();
 
 extern void T4PlusLevelSetup(int current_level);
 extern void T4PlusEnterLevel(int current_level, bool initial_entry);
+extern void T4PlusCleanup();
 
 extern bool is_mod_trng_version_equal_or_greater_than_target(
 	unsigned char target_major_version,

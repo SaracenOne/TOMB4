@@ -1,14 +1,42 @@
 #include "../../tomb4/pch.h"
 
 #include "furr.h"
+#include "../../tomb4/tomb4plus/t4plus_weather.h"
+#include "../../tomb4/tomb4plus/t4plus_inventory.h"
+#include "../control.h"
+#include "../../specific/function_stubs.h"
 
-char furr_oneshot_buffer[ONESHOT_BUFFER_SIZE];
+char furr_oneshot_buffer[LAST_FURR_FLIPEFFECT];
+FURRFlipeffectTable furr_flipeffect_table[LAST_FURR_FLIPEFFECT - FIRST_FURR_FLIPEFFECT];
+
+bool furr_cmd_oneshot(int id, int id2) {
+	if (id == id2) {
+		if (furr_oneshot_buffer[id] == true) {
+			return false;
+		} else {
+			furr_oneshot_buffer[id] = true;
+		}
+	} else {
+		Log(1, "Unknown ONESHOT FURR command behaviour!");
+		return false;
+	}
+
+	return true;
+}
+
+bool furr_cmd_equip(int to_equip, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_holster_weapons(int _unused1, int _unused2) {
+	return true;
+}
 
 bool furr_cmd_inc_hp(int amount, int limit) {
 	return true;
 }
 
-bool furr_cmd_dec_hp(int amount) {
+bool furr_cmd_dec_hp(int amount, int _unused2) {
 	return true;
 }
 
@@ -16,78 +44,904 @@ bool furr_cmd_inc_air(int amount, int limit) {
 	return true;
 }
 
-bool furr_cmd_dec_air(int amount) {
+bool furr_cmd_dec_air(int amount, int _unused2) {
 	return true;
 }
 
-bool furr_cmd_inc_sprint(int amount) {
+bool furr_cmd_inc_sprint(int amount, int limit) {
 	return true;
 }
 
-bool furr_cmd_dec_sprint(int amount) {
+bool furr_cmd_dec_sprint(int amount, int _unused2) {
 	return true;
 }
 
-bool furr_cmd_set_poison(int amount) {
+bool furr_cmd_set_poison(int amount, int _unused2) {
 	return true;
 }
 
-bool furr_cmd_kill_lara() {
+bool furr_cmd_kill_lara(int _unused1, int _unused2) {
 	return true;
 }
 
-bool furr_cmd_lara_on_fire() {
+bool furr_cmd_remove_pistols(int _unused1, int _unused2) {
 	return true;
 }
 
-bool furr_cmd_start_timer() {
+bool furr_cmd_set_binoculars(int onoff, int _unused2) {
 	return true;
 }
 
-bool furr_cmd_start_timer_from(int timer) {
+bool furr_cmd_set_crowbar(int onoff, int _unused2) {
 	return true;
 }
 
-bool furr_cmd_set_timer(int timer) {
+bool furr_cmd_set_lasersight(int onoff, int _unused2) {
 	return true;
 }
 
-bool furr_cmd_freeze_timer() {
+bool furr_cmd_deactive_weapons(int _unused1, int _unused2) {
 	return true;
 }
 
-bool furr_cmd_freeze_inverted_timer() {
+bool furr_cmd_activate_pistols(int _unused1, int _unused2) {
 	return true;
 }
 
-bool furr_cmd_stop_timer() {
+bool furr_cmd_activate_uzis(int _unused1, int _unused2) {
 	return true;
 }
 
-bool furr_cmd_set_legend_time(int time) {
+bool furr_cmd_activate_revolver(int _unused1, int _unused2) {
 	return true;
 }
 
-bool furr_cmd_set_legend_string(int string_id) {
+bool furr_cmd_activate_shotgun(int _unused1, int _unused2) {
 	return true;
 }
 
-bool furr_cmd_equip(int to_equip) {
+bool furr_cmd_activate_grenadegun(int _unused1, int _unused2) {
 	return true;
 }
 
-bool furr_cmd_holster_weapons() {
+bool furr_cmd_activate_crossbow(int _unused1, int _unused2) {
 	return true;
 }
 
-bool furr_cmd_empty_backdraw() {
+bool furr_cmd_empty_holsters(int _unused1, int _unused2) {
 	return true;
 }
 
-bool furr_cmd_fill_holsters(int mesh_type) {
+bool furr_cmd_fill_holsters(int _unused1, int _unused2) {
 	return true;
 }
 
-bool furr_cmd_fill_backdraw(int mesh_type) {
+bool furr_cmd_empty_backdraw(int _unused1, int _unused2) {
 	return true;
+}
+
+bool furr_cmd_fill_backdraw(int _unused1, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_remove_all_guns(int _unused1, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_call_flip(int _unused1, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_move_byte(int value, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_move_word(int value, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_move_dword(int value, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_add_key(int keytype, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_remove_key(int keytype, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_add_questitem(int itemid, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_remove_questitem(int itemid, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_add_examine1(int examineid, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_remove_examine1(int examineid, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_add_examine2(int examineid, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_remove_examine2(int examineid, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_add_examine3(int examineid, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_remove_examine3(int examineid, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_waterskin1(int waterskinid, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_waterskin2(int waterskinid, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_set_puzzleitem(int puzzleitemid, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_add_puzzleitem(int puzzleitemid, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_add_puzzlecombo(int combo, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_set_supply(int supplyid, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_add_supply(int supplyid, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_add_weapon(int weaponid, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_remove_weapon(int weaponid, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_start_timer(int seconds, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_start_timer_from_time(int time, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_set_timer(int seconds, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_stop_timer(int _unused1, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_freeze_normal_timer(int _unused1, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_freeze_inverted_timer(int _unused1, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_load_level(int levelnum, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_flash_red(int _unused1, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_flash_orange(int _unused1, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_flash_yellow(int _unused1, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_flash_green(int _unused1, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_flash_lightgreen(int _unused1, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_flash_blue(int _unused1, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_shake_camera(int amount, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_shake_camera_soft(int _unused1, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_shake_camera_medium(int _unused1, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_shake_camera_heavy(int _unused1, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_lara_drips(int _unused1, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_legend_time(int legendtime, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_legend_string(int legendstring, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_play_anim(int animindex, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_orientate(int orientation, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_rotate(int rotation, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_change_position(int arg1, int arg2) {
+	return true;
+}
+
+bool furr_cmd_change_position_x(int xcoordinate, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_change_position_y(int ycoordinate, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_change_position_z(int zcoordinate, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_change_accel(int accel, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_vert_accel(int vert_accel, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_change_room(int roomnumber, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_add_position(int xamount, int zamount) {
+	return true;
+}
+
+bool furr_cmd_uvrotate(int uvrotate, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_move_item_x(int item, int itemposx) {
+	items[item].pos.x_pos = itemposx;
+
+	return true;
+}
+
+bool furr_cmd_move_item_y(int item, int itemposy) {
+	items[item].pos.y_pos = itemposy;
+
+	return true;
+}
+
+bool furr_cmd_move_item_z(int item, int itemposz) {
+	items[item].pos.z_pos = itemposz;
+
+	return true;
+}
+
+bool furr_cmd_kill_item(int itemid, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_set_hp(int hp, int limit) {
+	return true;
+}
+
+bool furr_cmd_speeddn(int _unused1, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_speedup(int _unused1, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_camera_follow(int _unused1, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_lock_controls(int _unused1, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_unlock_controls(int _unused1, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_move_mirror(int mirror_room, int mirror_border_world_coordinate) {
+	return true;
+}
+
+bool furr_cmd_oneshot_state(int one_shot_state, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_swap_inventory(int _unused1, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_change_weather(int weather, int _unused2) {
+	if (weather == 0) {
+		rain_type = WEATHER_DISABLED;
+		snow_type = WEATHER_DISABLED;
+	} else if (weather == 1) {
+		rain_type = WEATHER_ENABLED_ALL_OUTSIDE;
+		snow_type = WEATHER_DISABLED;
+	} else if (weather == 2) {
+		rain_type = WEATHER_DISABLED;
+		snow_type = WEATHER_ENABLED_ALL_OUTSIDE;
+	}
+
+	return true;
+}
+
+bool furr_cmd_swap_lara_mesh(int lara_mesh, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_return_true(int _unused1, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_stop(int _unused1, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_reset(int _unused1, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_ret(int _unused1, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_retn(int _unused1, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_nop(int _unused1, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_use_binoculars(int _unused1, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_add_diary(int diaryid, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_activate_bar(int _unused1, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_deactivate_bar(int _unused1, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_call(int _unused1, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_shatter_item(int shattereditem, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_lara_on_fire(int _unused1, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_bleed(int _unused1, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_show_stats(int _unused1, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_draw_bmp(int bmpid, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_play_sample(int sampleid, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_play_soundtrack(int soundtrackid, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_save_game(int _unused1, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_load_game(int _unused1, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_pickup_item(int object_id, int _unused2) {
+	T4PlusSetInventoryCount(object_id, T4PlusGetInventoryCount(object_id) + 1);
+	T4ShowObjectPickup(object_id);
+	return true;
+}
+
+bool furr_cmd_draw_item(int itemid, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_fadeout(int _unused1, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_show_inventory(int _unused1, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_play_fmv(int fmvid, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_activate_item(int itemid, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_show_damp_looped(int damp_looped, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_only_in_water(int _unused1, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_only_on_land(int _unused1, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_environment(int environment, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_no_fadeout(int _unused1, int _unused2) {
+	return true;
+}
+//
+
+FURRNameTableEntry furr_name_table[] = {
+	{"ONESHOT", FURR_ONESHOT},
+	{"EQUIP", FURR_EQUIP},
+	{"HOLSTER_WEAPONS", FURR_HOLSTER_WEAPONS},
+	{"INC_HP", FURR_INC_HP},
+	{"DEC_HP", FURR_DEC_HP},
+	{"INC_AIR", FURR_INC_AIR},
+	{"DEC_AIR", FURR_DEC_AIR},
+	{"INC_SPRINT", FURR_INC_SPRINT},
+	{"DEC_SPRINT", FURR_DEC_SPRINT},
+	{"SET_POISON", FURR_SET_POISON},
+	{"KILL_LARA", FURR_KILL_LARA},
+	{"REMOVE_PISTOLS", FURR_REMOVE_PISTOLS},
+	{"SET_BINOCULARS", FURR_SET_BINOCULARS},
+	{"SET_CROWBAR", FURR_SET_CROWBAR},
+	{"SET_LASERSIGHT", FURR_SET_LASERSIGHT},
+	{"DEACTIVATE_WEAPONS", FURR_DEACTIVATE_WEAPONS},
+	{"ACTIVATE_PISTOLS", FURR_ACTIVATE_PISTOLS},
+	{"ACTIVATE_UZIS", FURR_ACTIVATE_UZIS},
+	{"ACTIVATE_REVOLVER", FURR_ACTIVATE_REVOLVER},
+	{"ACTIVATE_SHOTGUN", FURR_ACTIVATE_SHOTGUN},
+	{"ACTIVATE_GRENADEGUN", FURR_ACTIVATE_GRENADEGUN},
+	{"ACTIVATE_CROSSBOW", FURR_ACTIVATE_CROSSBOW},
+	{"EMPTY_HOLSTERS", FURR_EMPTY_HOLSTERS},
+	{"FILL_HOLSTERS", FURR_FILL_HOLSTERS},
+	{"EMPTY_BACKDRAW", FURR_EMPTY_BACKDRAW},
+	{"FILL_BACKDRAW", FURR_FILL_BACKDRAW},
+	{"REMOVE_ALL_GUNS", FURR_REMOVE_ALL_GUNS},
+	{"CALL_FLIP", FURR_CALL_FLIP},
+	{"MOV_BYTE", FURR_MOV_BYTE},
+	{"MOV_WORD", FURR_MOV_WORD},
+	{"MOV_DWORD", FURR_MOV_DWORD},
+	{"ADD_KEY", FURR_ADD_KEY},
+	{"REMOVE_KEY", FURR_REMOVE_KEY},
+	{"ADD_QUESTITEM", FURR_ADD_QUESTITEM},
+	{"REMOVE_QUESTITEM", FURR_REMOVE_QUESTITEM},
+	{"ADD_EXAMINE1", FURR_ADD_EXAMINE1},
+	{"REMOVE_EXAMINE1", FURR_REMOVE_EXAMINE1},
+	{"ADD_EXAMINE2", FURR_ADD_EXAMINE2},
+	{"REMOVE_EXAMINE2", FURR_REMOVE_EXAMINE2},
+	{"ADD_EXAMINE3", FURR_ADD_EXAMINE3},
+	{"REMOVE_EXAMINE3", FURR_REMOVE_EXAMINE3},
+	{"SET_WATERSKIN1", FURR_SET_WATERSKIN1},
+	{"SET_WATERSKIN2", FURR_SET_WATERSKIN2},
+	{"SET_PUZZLEITEM", FURR_SET_PUZZLEITEM},
+	{"ADD_PUZZLEITEM", FURR_ADD_PUZZLEITEM},
+	{"ADD_PUZZLECOMBO", FURR_ADD_PUZZLECOMBO},
+	{"SET_SUPPLY", FURR_SET_SUPPLY},
+	{"ADD_SUPPLY", FURR_ADD_SUPPLY},
+	{"ADD_WEAPON", FURR_ADD_WEAPON},
+	{"REMOVE_WEAPON", FURR_REMOVE_WEAPON},
+	{"START_TIMER", FURR_START_TIMER},
+	{"START_TIMER_FROM", FURR_START_TIMER_FROM},
+	{"SET_TIMER", FURR_SET_TIMER},
+	{"STOP_TIMER", FURR_STOP_TIMER},
+	{"FREEZE_NORMAL_TIMER", FURR_FREEZE_NORMAL_TIMER},
+	{"FREEZE_INVERTED_TIMER", FURR_FREEZE_INVERTED_TIMER},
+	{"LOAD_LEVEL", FURR_LOAD_LEVEL},
+	{"FLASH_RED", FURR_FLASH_RED},
+	{"FLASH_ORANGE", FURR_FLASH_ORANGE},
+	{"FLASH_YELLOW", FURR_FLASH_YELLOW},
+	{"FLASH_GREEN", FURR_FLASH_GREEN},
+	{"FLASH_LIGHTGREEN", FURR_FLASH_LIGHTGREEN},
+	{"FLASH_BLUE", FURR_FLASH_BLUE},
+	{"SHAKE_CAMERA", FURR_SHAKE_CAMERA},
+	{"SHAKE_CAMERA_SOFT", FURR_SHAKE_CAMERA_SOFT},
+	{"SHAKE_CAMERA_MEDIUM", FURR_SHAKE_CAMERA_MEDIUM},
+	{"SHAKE_CAMERA_HEAVY", FURR_SHAKE_CAMERA_HEAVY},
+	{"LARA_DRIPS", FURR_LARA_DRIPS},
+	{"SET_LEGEND_TIME", FURR_SET_LEGEND_TIME},
+	{"SET_LEGEND_STRING", FURR_SET_LEGEND_STRING},
+	{"PLAY_ANIM", FURR_PLAY_ANIM},
+	{"ORIENTATE", FURR_ORIENTATE},
+	{"ROTATE", FURR_ROTATE},
+	{"CHANGE_POSITION", FURR_CHANGE_POSITION},
+	{"CHANGE_POSITION_X", FURR_CHANGE_POSITION_X},
+	{"CHANGE_POSITION_Y", FURR_CHANGE_POSITION_Y},
+	{"CHANGE_POSITION_Z", FURR_CHANGE_POSITION_Z},
+	{"CHANGE_ACCEL", FURR_CHANGE_ACCEL},
+	{"CHANGE_VERT_ACCEL", FURR_CHANGE_VERT_ACCEL},
+	{"CHANGE_ROOM", FURR_CHANGE_ROOM},
+	{"ADD_POSITION", FURR_ADD_POSITION},
+	{"UVROTATE", FURR_UVROTATE},
+	{"MOVE_ITEM_X", FURR_MOVE_ITEM_X},
+	{"MOVE_ITEM_Y", FURR_MOVE_ITEM_Y},
+	{"MOVE_ITEM_Z", FURR_MOVE_ITEM_Z},
+	{"KILL_ITEM", FURR_KILL_ITEM},
+	{"SET_HP", FURR_SET_HP},
+	{"SPEEDDN", FURR_SPEEDDN},
+	{"SPEEDUP", FURR_SPEEDUP},
+	{"CAMERA_FOLLOW", FURR_CAMERA_FOLLOW},
+	{"LOCK_CONTROLS", FURR_LOCK_CONTROLS},
+	{"UNLOCK_CONTROLS", FURR_UNLOCK_CONTROLS},
+	{"MOVE_MIRROR", FURR_MOVE_MIRROR},
+	{"ONESHOT_STATE", FURR_ONESHOT_STATE},
+	{"SWAP_INVENTORY", FURR_SWAP_INVENTORY},
+	{"CHANGE_WEATHER", FURR_CHANGE_WEATHER},
+	{"SWAP_LARA_MESH", FURR_SWAP_LARA_MESH},
+	{"RETURN_TRUE", FURR_RETURN_TRUE},
+	{"STOP", FURR_STOP},
+	{"RESET", FURR_RESET},
+	{"RET", FURR_RET},
+	{"RETN", FURR_RETN},
+	{"NOP", FURR_NOP},
+	{"USE_BINOCULARS", FURR_USE_BINOCULARS},
+	{"ADD_DIARY", FURR_ADD_DIARY},
+	{"ACTIVATE_BAR", FURR_ACTIVATE_BAR},
+	{"DEACTIVATE_BAR", FURR_DEACTIVATE_BAR},
+	{"CALL", FURR_CALL},
+	{"SHATTER_ITEM", FURR_SHATTER_ITEM},
+	{"LARA_ON_FIRE", FURR_LARA_ON_FIRE},
+	{"BLEED", FURR_BLEED},
+	{"SHOW_STATS", FURR_SHOW_STATS},
+	{"DRAW_BMP", FURR_DRAW_BMP},
+	{"PLAY_SAMPLE", FURR_PLAY_SAMPLE},
+	{"PLAY_SOUNDTRACK", FURR_PLAY_SOUNDTRACK},
+	{"SAVE_GAME", FURR_SAVE_GAME},
+	{"LOAD_GAME", FURR_LOAD_GAME},
+	{"PICKUP_ITEM", FURR_PICKUP_ITEM},
+	{"DRAW_ITEM", FURR_DRAW_ITEM},
+	{"FADEOUT", FURR_FADEOUT},
+	{"SHOW_INVENTORY", FURR_SHOW_INVENTORY},
+	{"PLAY_FMV", FURR_PLAY_FMV},
+	{"ACTIVATE_ITEM", FURR_ACTIVATE_ITEM},
+	{"DAMP_LOOPED", FURR_DAMP_LOOPED},
+	{"ONLY_IN_WATER", FURR_ONLY_IN_WATER},
+	{"ONLY_ON_LAND", FURR_ONLY_ON_LAND},
+	{"ENVIRONMENT", FURR_ENVIRONMENT},
+	{"NO_FADEOUT", FURR_NO_FADEOUT},
+	{"BYTE_IF_EQL", FURR_BYTE_IF_EQL},
+	{"BYTE_IF_NOT", FURR_BYTE_IF_NOT},
+	{"BYTE_IF_GT", FURR_BYTE_IF_GT},
+	{"BYTE_IF_LT", FURR_BYTE_IF_LT},
+	{"BYTE_IF_ELT", FURR_BYTE_IF_ELT},
+	{"BYTE_IF_EGT", FURR_BYTE_IF_EGT},
+	{"WORD_IF_EQL", FURR_WORD_IF_EQL},
+	{"WORD_IF_NOT", FURR_WORD_IF_NOT},
+	{"WORD_IF_GT", FURR_WORD_IF_GT},
+	{"WORD_IF_LT", FURR_WORD_IF_LT},
+	{"WORD_IF_ELT", FURR_WORD_IF_ELT},
+	{"WORD_IF_EGT", FURR_WORD_IF_EGT},
+	{"DWORD_IF_EQL", FURR_DWORD_IF_EQL},
+	{"DWORD_IF_NOT", FURR_DWORD_IF_NOT},
+	{"DWORD_IF_GT", FURR_DWORD_IF_GT},
+	{"DWORD_IF_LT", FURR_DWORD_IF_LT},
+	{"DWORD_IF_ELT", FURR_DWORD_IF_ELT},
+	{"DWORD_IF_EGT", FURR_DWORD_IF_EGT}
+};
+
+
+FURRDataTable furr_data_table[] = {
+	{2, furr_cmd_oneshot}, // ONESHOT
+	{1, furr_cmd_equip}, // EQUIP
+	{0, furr_cmd_holster_weapons}, // HOLSTER_WEAPONS
+	{2, furr_cmd_inc_hp}, // INC_HP
+	{1, furr_cmd_dec_hp}, // DEC_HP
+	{2, furr_cmd_inc_air}, // INC_AIR
+	{1, furr_cmd_dec_air}, // DEC_AIR
+	{2, furr_cmd_inc_sprint}, // INC_SPRINT
+	{1, furr_cmd_dec_sprint}, // DEC_SPRINT
+	{1, furr_cmd_set_poison}, // SET_POISON
+	{0, furr_cmd_kill_lara}, // KILL_LARA
+	{0, furr_cmd_remove_pistols}, // REMOVE_PISTOLS
+	{1, furr_cmd_set_binoculars}, // SET_BINOCULARS
+	{1, furr_cmd_set_crowbar}, // SET_CROWBAR
+	{1, furr_cmd_set_lasersight}, // SET_LASERSIGHT
+	{0, furr_cmd_deactive_weapons}, // DEACTIVATE_WEAPONS
+	{0, furr_cmd_activate_pistols}, // ACTIVATE_PISTOLS
+	{0, furr_cmd_activate_uzis}, // ACTIVATE_UZIS
+	{0, furr_cmd_activate_revolver}, // ACTIVATE_REVOLVER
+	{0, furr_cmd_activate_shotgun}, // ACTIVATE_SHOTGUN
+	{0, furr_cmd_activate_grenadegun}, // ACTIVATE_GRENADEGUN
+	{0, furr_cmd_activate_crossbow}, // ACTIVATE_CROSSBOW
+	{0, furr_cmd_empty_holsters}, // FURR_EMPTY_HOLSTERS,
+	{1, furr_cmd_fill_holsters}, // FURR_FILL_HOLSTERS,
+	{0, furr_cmd_empty_backdraw}, // FURR_EMPTY_BACKDRAW,
+	{1, furr_cmd_fill_backdraw}, // FURR_FILL_BACKDRAW,
+	{0, furr_cmd_remove_all_guns}, // FURR_REMOVE_ALL_GUNS,
+	{1, furr_cmd_call_flip}, // FURR_CALL_FLIP,
+	{2, furr_cmd_move_byte}, // FURR_MOV_BYTE,
+	{2, furr_cmd_move_word}, // FURR_MOV_WORD,
+	{2, furr_cmd_move_dword}, // FURR_MOV_DWORD,
+	{1, furr_cmd_add_key}, // FURR_ADD_KEY,
+	{1, furr_cmd_remove_key}, // FURR_REMOVE_KEY,
+	{1, furr_cmd_add_questitem}, // FURR_ADD_QUESTITEM,
+	{1, furr_cmd_remove_questitem}, // FURR_REMOVE_QUESTITEM,
+	{0, furr_cmd_add_examine1}, // FURR_ADD_EXAMINE1,
+	{0, furr_cmd_remove_examine1}, // FURR_REMOVE_EXAMINE1,
+	{0, furr_cmd_add_examine2}, // FURR_ADD_EXAMINE2,
+	{0, furr_cmd_remove_examine2}, // FURR_REMOVE_EXAMINE2,
+	{0, furr_cmd_add_examine3}, // FURR_ADD_EXAMINE3,
+	{0, furr_cmd_remove_examine3}, // FURR_REMOVE_EXAMINE3,
+	{1, furr_cmd_waterskin1}, // FURR_SET_WATERSKIN1,
+	{1, furr_cmd_waterskin2}, // FURR_SET_WATERSKIN2,
+	{2, furr_cmd_set_puzzleitem}, // FURR_SET_PUZZLEITEM,
+	{2, furr_cmd_add_puzzleitem}, // FURR_ADD_PUZZLEITEM,
+	{1, furr_cmd_add_puzzlecombo}, // FURR_ADD_PUZZLECOMBO,
+	{2, furr_cmd_set_supply},  // FURR_SET_SUPPLY,
+	{2, furr_cmd_add_supply}, // FURR_ADD_SUPPLY,
+	{1, furr_cmd_add_weapon}, // FURR_ADD_WEAPON,
+	{1, furr_cmd_remove_weapon}, // FURR_REMOVE_WEAPON,
+	{0, furr_cmd_start_timer}, // FURR_START_TIMER,
+	{1, furr_cmd_start_timer_from_time}, // FURR_START_TIMER_FROM,
+	{1, furr_cmd_set_timer}, // FURR_SET_TIMER,
+	{0, furr_cmd_stop_timer}, // FURR_STOP_TIMER,
+	{0, furr_cmd_freeze_normal_timer}, // FURR_FREEZE_NORMAL_TIMER,
+	{0, furr_cmd_freeze_inverted_timer}, // FURR_FREEZE_INVERTED_TIMER,
+	{1, furr_cmd_load_level}, // FURR_LOAD_LEVEL,
+	{0, furr_cmd_flash_red}, // FURR_FLASH_RED,
+	{0, furr_cmd_flash_orange}, // FURR_FLASH_ORANGE,
+	{0, furr_cmd_flash_yellow}, // FURR_FLASH_YELLOW,
+	{0, furr_cmd_flash_green}, // FURR_FLASH_GREEN,
+	{0, furr_cmd_flash_lightgreen}, // FURR_FLASH_LIGHTGREEN,
+	{0, furr_cmd_flash_blue}, // FURR_FLASH_BLUE,
+	{1, furr_cmd_shake_camera}, // FURR_SHAKE_CAMERA,
+	{0, furr_cmd_shake_camera_soft}, // FURR_SHAKE_CAMERA_SOFT,
+	{0, furr_cmd_shake_camera_medium}, // FURR_SHAKE_CAMERA_MEDIUM,
+	{0, furr_cmd_shake_camera_heavy}, // FURR_SHAKE_CAMERA_HEAVY,
+	{1, furr_cmd_lara_drips}, // FURR_LARA_DRIPS,
+	{1, furr_cmd_legend_time}, // FURR_SET_LEGEND_TIME,
+	{1, furr_cmd_legend_string}, // FURR_SET_LEGEND_STRING,
+	{1, furr_cmd_play_anim}, // FURR_PLAY_ANIM,
+	{1, furr_cmd_orientate}, // FURR_ORIENTATE,
+	{1, furr_cmd_rotate}, // FURR_ROTATE,
+	{2, furr_cmd_change_position}, // FURR_CHANGE_POSITION,
+	{1, furr_cmd_change_position_x}, // FURR_CHANGE_POSITION_X,
+	{1, furr_cmd_change_position_y}, // FURR_CHANGE_POSITION_Y,
+	{1, furr_cmd_change_position_z}, // FURR_CHANGE_POSITION_Z,
+	{1, furr_cmd_change_accel}, // FURR_CHANGE_ACCEL,
+	{1, furr_cmd_vert_accel}, // FURR_CHANGE_VERT_ACCEL,
+	{1, furr_cmd_change_room}, // FURR_CHANGE_ROOM,
+	{2, furr_cmd_add_position}, // FURR_ADD_POSITION,
+	{1, furr_cmd_uvrotate}, // FURR_UVROTATE,
+	{2, furr_cmd_move_item_x},// FURR_MOVE_ITEM_X,
+	{2, furr_cmd_move_item_y},// FURR_MOVE_ITEM_Y,
+	{2, furr_cmd_move_item_z},// FURR_MOVE_ITEM_Z,
+	{1, furr_cmd_kill_item}, // FURR_KILL_ITEM,
+	{2, furr_cmd_set_hp}, // FURR_SET_HP,
+	{0, furr_cmd_speeddn}, // FURR_SPEEDDN,
+	{0, furr_cmd_speedup}, // FURR_SPEEDUP,
+	{0, furr_cmd_camera_follow}, // FURR_CAMERA_FOLLOW,
+	{0, furr_cmd_lock_controls}, // FURR_LOCK_CONTROLS,
+	{0, furr_cmd_unlock_controls},// FURR_UNLOCK_CONTROLS,
+	{2, furr_cmd_move_mirror}, // FURR_MOVE_MIRROR,
+	{2, furr_cmd_oneshot_state}, // FURR_ONESHOT_STATE,
+	{0, furr_cmd_swap_inventory}, // FURR_SWAP_INVENTORY,
+	{1, furr_cmd_change_weather}, // FURR_CHANGE_WEATHER,
+	{2, furr_cmd_swap_lara_mesh}, // FURR_SWAP_LARA_MESH,
+	{0, furr_cmd_return_true}, // FURR_RETURN_TRUE,
+	{0, furr_cmd_stop}, // FURR_STOP,
+	{0, furr_cmd_reset}, // FURR_RESET,
+	{0, furr_cmd_ret}, // FURR_RET,
+	{0, furr_cmd_retn}, // FURR_RETN,
+	{0, furr_cmd_nop}, // FURR_NOP,
+	{0, furr_cmd_use_binoculars}, // FURR_USE_BINOCULARS,
+	{1, furr_cmd_add_diary}, // FURR_ADD_DIARY,
+	{0, furr_cmd_activate_bar}, // FURR_ACTIVATE_BAR,
+	{0, furr_cmd_deactivate_bar}, // FURR_DEACTIVATE_BAR,
+	{1, furr_cmd_call}, // FURR_CALL,
+	{1, furr_cmd_shatter_item}, // FURR_SHATTER_ITEM,
+	{0, furr_cmd_lara_on_fire}, // FURR_LARA_ON_FIRE,
+	{0, furr_cmd_bleed}, // FURR_BLEED,
+	{0, furr_cmd_show_stats}, // FURR_SHOW_STATS,
+	{1, furr_cmd_draw_bmp}, // FURR_DRAW_BMP,
+	{1, furr_cmd_play_sample}, // FURR_PLAY_SAMPLE,
+	{1, furr_cmd_play_soundtrack}, // FURR_PLAY_SOUNDTRACK,
+	{0, furr_cmd_save_game}, // FURR_SAVE_GAME,
+	{0, furr_cmd_load_game}, // FURR_LOAD_GAME,
+	{1, furr_cmd_pickup_item}, // FURR_PICKUP_ITEM,
+	{2, furr_cmd_draw_item}, // FURR_DRAW_ITEM,
+	{0, furr_cmd_fadeout}, // FURR_FADEOUT,
+	{0, furr_cmd_show_inventory}, // FURR_SHOW_INVENTORY,
+	{1, furr_cmd_play_fmv}, // FURR_PLAY_FMV,
+	{1, furr_cmd_activate_item}, // FURR_ACTIVATE_ITEM,
+	{2, furr_cmd_show_damp_looped}, // FURR_DAMP_LOOPED,
+	{0, furr_cmd_only_in_water}, // FURR_ONLY_IN_WATER,
+	{0, furr_cmd_only_on_land}, // FURR_ONLY_ON_LAND,
+	{1, furr_cmd_environment}, // FURR_ENVIRONMENT,
+	{1, furr_cmd_no_fadeout}, // FURR_NO_FADEOUT,
+
+	// FURR_BYTE_IF_EQL, // ==
+	// FURR_BYTE_IF_NOT, // !=
+	// FURR_BYTE_IF_GT, // >
+	// FURR_BYTE_IF_LT, // <
+	// FURR_BYTE_IF_ELT, // >=
+	// FURR_BYTE_IF_EGT, // <=
+
+	// FURR_WORD_IF_EQL, // ==
+	// FURR_WORD_IF_NOT, // !=
+	// FURR_WORD_IF_GT, // >
+	// FURR_WORD_IF_LT, // <
+	// FURR_WORD_IF_ELT, // >=
+	// FURR_WORD_IF_EGT, // <=
+
+	// FURR_DWORD_IF_EQL, // ==
+	// FURR_DWORD_IF_NOT, // !=
+	// FURR_DWORD_IF_GT, // >
+	// FURR_DWORD_IF_LT, // <
+	// FURR_DWORD_IF_ELT, // >=
+	// FURR_DWORD_IF_EGT, // <=
+};
+
+//
+
+int furr_get_opcode_for_command_string(const char* command_name) {
+	for (int i = 0; i < (sizeof(furr_name_table) / sizeof(FURRNameTableEntry)); i++) {
+		if (strcmp(command_name, furr_name_table[i].opcode_name) == 0) {
+			return furr_name_table[i].opcode_token;
+		}
+	}
+
+	return -1;
+}
+
+int furr_get_arg_count_for_opcode(const FURROpcode opcode) {
+	if (opcode < FURR_OPCODE_COUNT) {
+		if (opcode < (sizeof(furr_data_table) / sizeof(FURRDataTable))) {
+			FURRDataTable* data_table = &furr_data_table[opcode];
+			return data_table->arg_count;
+		} else {
+			return -1;
+		}
+	} else {
+		return -1;
+	}
+}
+
+void furr_execute_furr_flipeffect(int id) {
+	if (id < FIRST_FURR_FLIPEFFECT) {
+		return;
+	}
+	if (id >= LAST_FURR_FLIPEFFECT) {
+		return;
+	}
+
+	id -= FIRST_FURR_FLIPEFFECT;
+
+	FURRFlipeffectTable* curr_flipeffect_table = &furr_flipeffect_table[id];
+
+	int idx = 0;
+	while (idx < curr_flipeffect_table->size) {
+		FURROpcode opcode = static_cast<FURROpcode>(curr_flipeffect_table->tokens[idx++]);
+		FURRDataTable* data_table = &furr_data_table[opcode];
+
+		int argument_1 = data_table->arg_count >= 1 ? curr_flipeffect_table->tokens[idx++] : 0;
+		int argument_2 = data_table->arg_count >= 2 ? curr_flipeffect_table->tokens[idx++] : 0;
+
+		if (!data_table->func_ptr(argument_1, argument_2)) {
+			break;
+		};
+	}
+}
+
+void furr_allocate_flipeffect_buffer(int flipeffect_id, int size) {
+	if (flipeffect_id < FIRST_FURR_FLIPEFFECT)
+		return;
+	if (flipeffect_id >= LAST_FURR_FLIPEFFECT)
+		return;
+
+	int table_index = flipeffect_id - FIRST_FURR_FLIPEFFECT;
+
+	if (furr_flipeffect_table[table_index].tokens == nullptr) {
+		furr_flipeffect_table[table_index].tokens = (int*)malloc(size * sizeof(int));
+		if (furr_flipeffect_table[table_index].tokens) {
+			memset(furr_flipeffect_table[table_index].tokens, 0, size * sizeof(int));
+		}
+	}
+}
+
+void furr_free_all_flipeffect_buffers() {
+	for (int i = 0; i < LAST_FURR_FLIPEFFECT - FIRST_FURR_FLIPEFFECT; i++) {
+		if (furr_flipeffect_table[i].tokens != nullptr) {
+			free(furr_flipeffect_table[i].tokens);
+			furr_flipeffect_table[i].tokens = nullptr;
+			furr_flipeffect_table[i].size = 0;
+		}
+	}
+}
+
+void furr_add_flipeffect_token(int flipeffect_id, int token) {
+	if (flipeffect_id < FIRST_FURR_FLIPEFFECT)
+		return;
+	if (flipeffect_id >= LAST_FURR_FLIPEFFECT)
+		return;
+
+	int table_index = flipeffect_id - FIRST_FURR_FLIPEFFECT;
+
+	if (furr_flipeffect_table[table_index].tokens) {
+		furr_flipeffect_table[table_index].tokens[furr_flipeffect_table[table_index].size] = token;
+
+		furr_flipeffect_table[table_index].size++;
+	}
 }

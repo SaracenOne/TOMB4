@@ -25,6 +25,8 @@
 #include "../specific/input.h"
 #include "newinv.h"
 #include "savegame.h"
+#include "gameflow.h"
+#include "../tomb4/mod_config.h"
 
 static ITEM_INFO* GlobalBikeItem;
 static long bikefspeed = 0;
@@ -59,7 +61,9 @@ void DrawBikeExtras(ITEM_INFO* item)
 	if (lara.vehicle != NO_ITEM)
 		DrawBikeSpeedo(phd_winwidth - 64, phd_winheight - 16, ((BIKEINFO*)item->data)->velocity, 0x8000, 0xC000, 32, 0);
 
-	DrawBikeBeam(GlobalBikeItem);
+	MOD_LEVEL_MISC_INFO* misc_info = get_game_mod_level_misc_info(gfCurrentLevel);
+	if (!misc_info->disable_motorbike_headlights)
+		DrawBikeBeam(GlobalBikeItem);
 }
 
 void TriggerBikeBeam(ITEM_INFO* item)
@@ -728,7 +732,10 @@ void BikeCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 	if (bike->light_intensity)
 	{
 		bike->light_intensity = bike->light_intensity - (bike->light_intensity >> 3) - 1;
-		TriggerBikeBeam(item);
+
+		MOD_LEVEL_MISC_INFO* misc_info = get_game_mod_level_misc_info(gfCurrentLevel);
+		if (!misc_info->disable_motorbike_headlights)
+			TriggerBikeBeam(item);
 	}
 
 	if (GetOnBike(item_number, coll))
@@ -1421,7 +1428,9 @@ void BikeControl(short item_number)
 		hitWall = 0;
 	else
 	{
-		TriggerBikeBeam(item);
+		MOD_LEVEL_MISC_INFO *misc_info = get_game_mod_level_misc_info(gfCurrentLevel);
+		if (!misc_info->disable_motorbike_headlights)
+			TriggerBikeBeam(item);
 
 		if (lara_item->current_anim_state < 9 || lara_item->current_anim_state > 10)
 			driving = UserControl(item, h, &pitch);
