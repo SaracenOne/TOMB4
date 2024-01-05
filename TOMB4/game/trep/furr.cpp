@@ -11,6 +11,8 @@
 #include "../gameflow.h"
 #include "../../specific/LoadSave.h"
 #include "../tomb4fx.h"
+#include "../items.h"
+#include "../traps.h"
 
 char furr_oneshot_buffer[LAST_FURR_FLIPEFFECT];
 FURRFlipeffectTable furr_flipeffect_table[LAST_FURR_FLIPEFFECT - FIRST_FURR_FLIPEFFECT];
@@ -69,6 +71,12 @@ bool furr_cmd_set_poison(int amount, int _unused2) {
 }
 
 bool furr_cmd_kill_lara(int _unused1, int _unused2) {
+	if (items[lara.item_number].hit_points >= 0 && lara.water_status != LW_FLYCHEAT)
+	{
+		items[lara.item_number].hit_status = 1;
+		items[lara.item_number].hit_points = -1;
+	}
+
 	return true;
 }
 
@@ -89,38 +97,54 @@ bool furr_cmd_set_lasersight(int onoff, int _unused2) {
 }
 
 bool furr_cmd_deactive_weapons(int _unused1, int _unused2) {
+	lara.last_gun_type = WEAPON_NONE;
+
 	return true;
 }
 
 bool furr_cmd_activate_pistols(int _unused1, int _unused2) {
+	lara.last_gun_type = WEAPON_PISTOLS;
+
 	return true;
 }
 
 bool furr_cmd_activate_uzis(int _unused1, int _unused2) {
+	lara.last_gun_type = WEAPON_UZI;
+
 	return true;
 }
 
 bool furr_cmd_activate_revolver(int _unused1, int _unused2) {
+	lara.last_gun_type = WEAPON_REVOLVER;
+
 	return true;
 }
 
 bool furr_cmd_activate_shotgun(int _unused1, int _unused2) {
+	lara.last_gun_type = WEAPON_SHOTGUN;
+
 	return true;
 }
 
 bool furr_cmd_activate_grenadegun(int _unused1, int _unused2) {
+	lara.last_gun_type = WEAPON_GRENADE;
+
 	return true;
 }
 
 bool furr_cmd_activate_crossbow(int _unused1, int _unused2) {
+	lara.last_gun_type = WEAPON_CROSSBOW;
+
 	return true;
 }
 
 bool furr_cmd_empty_holsters(int _unused1, int _unused2) {
+	lara.holster = LARA;
+
 	return true;
 }
 
-bool furr_cmd_fill_holsters(int _unused1, int _unused2) {
+bool furr_cmd_fill_holsters(int weapon, int _unused2) {
 	return true;
 }
 
@@ -128,11 +152,20 @@ bool furr_cmd_empty_backdraw(int _unused1, int _unused2) {
 	return true;
 }
 
-bool furr_cmd_fill_backdraw(int _unused1, int _unused2) {
+bool furr_cmd_fill_backdraw(int weapon, int _unused2) {
 	return true;
 }
 
 bool furr_cmd_remove_all_guns(int _unused1, int _unused2) {
+	T4PlusSetInventoryCount(PISTOLS_ITEM, 0, false);
+	T4PlusSetInventoryCount(SHOTGUN_ITEM, 0, false);
+	T4PlusSetInventoryCount(UZI_ITEM, 0, false);
+	T4PlusSetInventoryCount(SIXSHOOTER_ITEM, 0, false);
+	T4PlusSetInventoryCount(CROSSBOW_ITEM, 0, false);
+	T4PlusSetInventoryCount(GRENADE_GUN_ITEM, 0, false);
+
+	T4PlusSetValidLaraGunType();
+
 	return true;
 }
 
@@ -170,27 +203,39 @@ bool furr_cmd_remove_questitem(int itemid, int _unused2) {
 	return true;
 }
 
-bool furr_cmd_add_examine1(int examineid, int _unused2) {
+bool furr_cmd_add_examine1(int _unused1, int _unused2) {
+	T4PlusSetInventoryCount(EXAMINE1, 1, false);
+
 	return true;
 }
 
-bool furr_cmd_remove_examine1(int examineid, int _unused2) {
+bool furr_cmd_remove_examine1(int _unused1, int _unused2) {
+	T4PlusSetInventoryCount(EXAMINE1, 0, false);
+
 	return true;
 }
 
-bool furr_cmd_add_examine2(int examineid, int _unused2) {
+bool furr_cmd_add_examine2(int _unused1, int _unused2) {
+	T4PlusSetInventoryCount(EXAMINE2, 1, false);
+
 	return true;
 }
 
-bool furr_cmd_remove_examine2(int examineid, int _unused2) {
+bool furr_cmd_remove_examine2(int _unused1, int _unused2) {
+	T4PlusSetInventoryCount(EXAMINE2, 0, false);
+
 	return true;
 }
 
-bool furr_cmd_add_examine3(int examineid, int _unused2) {
+bool furr_cmd_add_examine3(int _unused1, int _unused2) {
+	T4PlusSetInventoryCount(EXAMINE3, 1, false);
+
 	return true;
 }
 
-bool furr_cmd_remove_examine3(int examineid, int _unused2) {
+bool furr_cmd_remove_examine3(int _unused1, int _unused2) {
+	T4PlusSetInventoryCount(EXAMINE3, 0, false);
+
 	return true;
 }
 
@@ -431,6 +476,8 @@ bool furr_cmd_move_item_z(int item, int itemposz) {
 }
 
 bool furr_cmd_kill_item(int itemid, int _unused2) {
+	KillItem(itemid);
+
 	return true;
 }
 
@@ -462,7 +509,9 @@ bool furr_cmd_move_mirror(int mirror_room, int mirror_border_world_coordinate) {
 	return true;
 }
 
-bool furr_cmd_oneshot_state(int one_shot_state, int _unused2) {
+bool furr_cmd_oneshot_state(int id, int state) {
+	furr_oneshot_buffer[id] = state ? true : false;
+
 	return true;
 }
 
@@ -540,6 +589,8 @@ bool furr_cmd_shatter_item(int shattereditem, int _unused2) {
 }
 
 bool furr_cmd_lara_on_fire(int _unused1, int _unused2) {
+	LaraBurn();
+
 	return true;
 }
 
@@ -572,7 +623,7 @@ bool furr_cmd_load_game(int _unused1, int _unused2) {
 }
 
 bool furr_cmd_pickup_item(int object_id, int _unused2) {
-	T4PlusSetInventoryCount(object_id, T4PlusGetInventoryCount(object_id) + 1);
+	T4PlusSetInventoryCount(object_id, T4PlusGetInventoryCount(object_id) + 1, false);
 	T4ShowObjectPickup(object_id);
 	return true;
 }

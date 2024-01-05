@@ -110,7 +110,7 @@ short NGGetInventoryObjectIDForByte(unsigned char inventory_id) {
 bool inventory_remove_inventory_item(unsigned char inventory_id, unsigned char _unused) {
 	short object_number = NGGetInventoryObjectIDForByte(inventory_id);
 
-	T4PlusSetInventoryCount(object_number, 0);
+	T4PlusSetInventoryCount(object_number, 0, true);
 
 	return true;
 }
@@ -124,7 +124,7 @@ bool inventory_increase_inventory_items_by_one_in_x_way(unsigned char inventory_
 
 	int current_inventory_count = T4PlusGetInventoryCount(object_number);
 	current_inventory_count++;
-	T4PlusSetInventoryCount(object_number, current_inventory_count);
+	T4PlusSetInventoryCount(object_number, current_inventory_count, true);
 
 	return true;
 }
@@ -138,7 +138,7 @@ bool inventory_decrease_inventory_items_by_one_in_x_way(unsigned char inventory_
 	if (current_inventory_count < 0)
 		current_inventory_count = 0;
 
-	T4PlusSetInventoryCount(object_number, current_inventory_count);
+	T4PlusSetInventoryCount(object_number, current_inventory_count, true);
 
 	return true;
 }
@@ -147,7 +147,7 @@ bool inventory_decrease_inventory_items_by_one_in_x_way(unsigned char inventory_
 bool inventory_set_inventory_items(unsigned char inventory_id, unsigned char count) {
 	short object_number = NGGetInventoryObjectIDForByte(inventory_id);
 
-	T4PlusSetInventoryCount(object_number, count);
+	T4PlusSetInventoryCount(object_number, count, true);
 
 	return true;
 }

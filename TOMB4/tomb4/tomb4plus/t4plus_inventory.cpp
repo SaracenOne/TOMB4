@@ -154,6 +154,8 @@ int T4PlusGetInventoryCount(short object_number) {
 		return lara.num_large_medipack;
 	else if (object_number == FLARE_ITEM)
 		return lara.num_flares;
+	else if (object_number == FLARE_INV_ITEM)
+		return lara.num_flares;
 	else if (object_number == BINOCULARS_ITEM)
 		return lara.binoculars;
 	else if (object_number == WATERSKIN1_EMPTY)
@@ -188,7 +190,7 @@ int T4PlusGetInventoryCount(short object_number) {
 	return 0;
 }
 
-void T4PlusSetInventoryCount(short object_number, int count)
+void T4PlusSetInventoryCount(short object_number, int count, bool update_weapon_state)
 {
 	if (object_number >= PUZZLE_ITEM1_COMBO1 && object_number <= PUZZLE_ITEM8_COMBO2) {
 		if (count)
@@ -265,6 +267,8 @@ void T4PlusSetInventoryCount(short object_number, int count)
 		lara.num_large_medipack = count;
 	else if (object_number == FLARE_ITEM)
 		lara.num_flares = count;
+	else if (object_number == FLARE_INV_ITEM)
+		lara.num_flares = count;
 	else if (object_number == BINOCULARS_ITEM)
 		lara.binoculars = count;
 	// TODO: check waterskin behaviour
@@ -297,7 +301,8 @@ void T4PlusSetInventoryCount(short object_number, int count)
 	else
 		Log(0, "T4PlusSetInventoryCount: unimplemented inventory item type!");
 
-	T4PlusSetValidLaraGunType();
+	if (update_weapon_state)
+		T4PlusSetValidLaraGunType();
 }
 
 void T4ShowObjectPickup(int object_number) {

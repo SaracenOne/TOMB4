@@ -802,7 +802,7 @@ void T4PlusEnterLevel(int current_level, bool initial_entry) {
         MOD_EQUIPMENT_MODIFIER* equipment_modifiers = get_game_mod_level_stat_info(current_level)->equipment_modifiers;
         for (int i = 0; i < MAX_EQUIPMENT_MODIFIERS; i++) {
             if (equipment_modifiers[i].object_id != -1) {
-                T4PlusSetInventoryCount(equipment_modifiers[i].object_id, equipment_modifiers[i].amount);
+                T4PlusSetInventoryCount(equipment_modifiers[i].object_id, equipment_modifiers[i].amount, true);
             }
             else {
                 break;
