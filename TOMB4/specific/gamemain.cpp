@@ -243,6 +243,8 @@ long S_LoadGame(long slot_num)
 	wsprintf(buffer, "savegame.%d", slot_num);
 	file = CreateFile(buffer, GENERIC_READ, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 
+	T4PlusReset();
+
 	if (file != INVALID_HANDLE_VALUE)
 	{
 		ReadFile(file, buffer, 75, &bytes, 0);

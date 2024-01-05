@@ -5,17 +5,18 @@
 #include "../../tomb4/tomb4plus/t4plus_inventory.h"
 #include "../control.h"
 #include "../../specific/function_stubs.h"
+#include "../lara.h"
+#include "../objects.h"
+#include "../effects.h"
+#include "../gameflow.h"
+#include "../../specific/LoadSave.h"
 
 char furr_oneshot_buffer[LAST_FURR_FLIPEFFECT];
 FURRFlipeffectTable furr_flipeffect_table[LAST_FURR_FLIPEFFECT - FIRST_FURR_FLIPEFFECT];
 
 bool furr_cmd_oneshot(int id, int id2) {
 	if (id == id2) {
-		if (furr_oneshot_buffer[id] == true) {
-			return false;
-		} else {
-			furr_oneshot_buffer[id] = true;
-		}
+		furr_oneshot_buffer[id] = true;
 	} else {
 		Log(1, "Unknown ONESHOT FURR command behaviour!");
 		return false;
@@ -128,7 +129,9 @@ bool furr_cmd_remove_all_guns(int _unused1, int _unused2) {
 	return true;
 }
 
-bool furr_cmd_call_flip(int _unused1, int _unused2) {
+bool furr_cmd_call_flip(int flip_number, int _unused2) {
+	effect_routines[flip_number](0);
+
 	return true;
 }
 
@@ -288,27 +291,38 @@ bool furr_cmd_shake_camera_heavy(int _unused1, int _unused2) {
 	return true;
 }
 
-bool furr_cmd_lara_drips(int _unused1, int _unused2) {
+bool furr_cmd_lara_drips(int dripamount, int _unused2) {
 	return true;
 }
 
 bool furr_cmd_legend_time(int legendtime, int _unused2) {
+	gfLegendTime = legendtime;
+
 	return true;
 }
 
 bool furr_cmd_legend_string(int legendstring, int _unused2) {
+	gfLegend = legendstring;
+
 	return true;
 }
 
 bool furr_cmd_play_anim(int animindex, int _unused2) {
+	items[lara.item_number].anim_number = animindex;
+	items[lara.item_number].frame_number = anims[items[lara.item_number].anim_number].frame_base;
+
 	return true;
 }
 
 bool furr_cmd_orientate(int orientation, int _unused2) {
+	items[lara.item_number].pos.y_rot = (short)orientation;
+
 	return true;
 }
 
 bool furr_cmd_rotate(int rotation, int _unused2) {
+	items[lara.item_number].pos.y_rot = (short)rotation;
+
 	return true;
 }
 
@@ -317,14 +331,20 @@ bool furr_cmd_change_position(int arg1, int arg2) {
 }
 
 bool furr_cmd_change_position_x(int xcoordinate, int _unused2) {
+	items[lara.item_number].pos.x_pos = xcoordinate;
+
 	return true;
 }
 
 bool furr_cmd_change_position_y(int ycoordinate, int _unused2) {
+	items[lara.item_number].pos.y_pos = ycoordinate;
+
 	return true;
 }
 
 bool furr_cmd_change_position_z(int zcoordinate, int _unused2) {
+	items[lara.item_number].pos.z_pos = zcoordinate;
+
 	return true;
 }
 
@@ -337,10 +357,15 @@ bool furr_cmd_vert_accel(int vert_accel, int _unused2) {
 }
 
 bool furr_cmd_change_room(int roomnumber, int _unused2) {
+	items[lara.item_number].room_number = roomnumber;
+
 	return true;
 }
 
 bool furr_cmd_add_position(int xamount, int zamount) {
+	items[lara.item_number].pos.x_pos = xamount;
+	items[lara.item_number].pos.z_pos = zamount;
+
 	return true;
 }
 
@@ -430,6 +455,8 @@ bool furr_cmd_return_true(int _unused1, int _unused2) {
 }
 
 bool furr_cmd_stop(int _unused1, int _unused2) {
+	flipeffect = -1;
+
 	return true;
 }
 
@@ -548,6 +575,10 @@ bool furr_cmd_environment(int environment, int _unused2) {
 }
 
 bool furr_cmd_no_fadeout(int _unused1, int _unused2) {
+	return true;
+}
+
+bool furr_cmd_if_pressed(int button, int _unused2) {
 	return true;
 }
 //
@@ -681,6 +712,7 @@ FURRNameTableEntry furr_name_table[] = {
 	{"ONLY_ON_LAND", FURR_ONLY_ON_LAND},
 	{"ENVIRONMENT", FURR_ENVIRONMENT},
 	{"NO_FADEOUT", FURR_NO_FADEOUT},
+	{"IF_PRESSED", FURR_IF_PRESSED},
 	{"BYTE_IF_EQL", FURR_BYTE_IF_EQL},
 	{"BYTE_IF_NOT", FURR_BYTE_IF_NOT},
 	{"BYTE_IF_GT", FURR_BYTE_IF_GT},
@@ -832,6 +864,8 @@ FURRDataTable furr_data_table[] = {
 	{1, furr_cmd_environment}, // FURR_ENVIRONMENT,
 	{1, furr_cmd_no_fadeout}, // FURR_NO_FADEOUT,
 
+	{1, furr_cmd_if_pressed }, // FURR_IF_PRESSED,
+
 	// FURR_BYTE_IF_EQL, // ==
 	// FURR_BYTE_IF_NOT, // !=
 	// FURR_BYTE_IF_GT, // >
@@ -879,11 +913,19 @@ int furr_get_arg_count_for_opcode(const FURROpcode opcode) {
 	}
 }
 
-void furr_execute_furr_flipeffect(int id) {
+void furr_clear_oneshot_buffer() {
+	memset(furr_oneshot_buffer, 0, LAST_FURR_FLIPEFFECT);
+}
+
+void furr_execute_furr_flipeffect(int id) {	
 	if (id < FIRST_FURR_FLIPEFFECT) {
 		return;
 	}
 	if (id >= LAST_FURR_FLIPEFFECT) {
+		return;
+	}
+
+	if (furr_oneshot_buffer[id]) {
 		return;
 	}
 

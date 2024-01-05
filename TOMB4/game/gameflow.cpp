@@ -144,12 +144,13 @@ char skipped_level = 0;
 char Chris_Menu = 0;
 char title_controls_locked_out;
 
+uchar gfLegend;
+uchar gfLegendTime = 0;
+
 static ushort* gfScriptOffset;
 static uchar* gfScriptWad = 0;
 static char* gfExtensions = 0;
 static long nFrames = 1;
-static uchar gfLegend;
-static uchar gfLegendTime = 0;
 static uchar gfInitialiseGame = 1;
 static uchar gfResetHubDest;
 static uchar gfCutNumber = 0;
@@ -486,6 +487,8 @@ void DoLevel(uchar Name, uchar Audio)
 	}
 	else
 	{
+		T4PlusReset();
+
 		if (gfInitialiseGame)
 		{
 			GameTimer = 0;

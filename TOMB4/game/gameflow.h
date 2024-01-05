@@ -44,6 +44,9 @@ extern char skipped_level;
 extern char Chris_Menu;
 extern char title_controls_locked_out;
 
+extern uchar gfLegend;
+extern uchar gfLegendTime;
+
 enum gf_commands
 {
 	CMD_FMV = 0x80,

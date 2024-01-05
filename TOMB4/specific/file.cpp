@@ -107,9 +107,6 @@ unsigned int __stdcall LoadLevel(void* name)
 		Decompress(FileData, CompressedData, compressedSize, size);
 		free(CompressedData);
 
-		rain_type = get_game_mod_level_misc_info(gfCurrentLevel)->rain_type;
-		snow_type = get_game_mod_level_misc_info(gfCurrentLevel)->snow_type;
-
 		pData = FileData;
 		S_LoadBar();
 

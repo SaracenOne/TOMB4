@@ -310,6 +310,7 @@ extern MOD_LEVEL_AMMO_INFO *get_game_mod_current_lara_ammo_info(MOD_LEVEL_WEAPON
 extern void LoadGameModConfigFirstPass();
 extern void LoadGameModConfigSecondPass();
 
+extern void T4PlusReset();
 extern void T4PlusLevelSetup(int current_level);
 extern void T4PlusEnterLevel(int current_level, bool initial_entry);
 extern void T4PlusCleanup();

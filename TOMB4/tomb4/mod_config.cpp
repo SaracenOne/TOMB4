@@ -578,7 +578,7 @@ void LoadGameModConfigFirstPass() {
                                             for (furr_flipeffect_data = json_getChild(furr_flipeffect_block); furr_flipeffect_data != nullptr; furr_flipeffect_data = json_getSibling(furr_flipeffect_data)) {
                                                 if (furr_flipeffect_data_index == 0) {
                                                     if (furr_flipeffect_data && JSON_TEXT == json_getType(furr_flipeffect_data)) {
-                                                        const char* name = furr_flipeffect_data->u.value;
+                                                        const char *name = furr_flipeffect_data->u.value;
                                                         int opcode_id = furr_get_opcode_for_command_string(name);
                                                         if (opcode_id >= 0) {
                                                             int furr_command_arg_count = furr_get_arg_count_for_opcode((FURROpcode)opcode_id);
@@ -776,9 +776,13 @@ void LoadGameModConfigSecondPass() {
         free(mem);
 }
 
-void T4PlusLevelSetup(int current_level) {
+void T4PlusReset() {
+    furr_clear_oneshot_buffer();
     ClearWeatherFX();
+    InitWeatherFX();
+}
 
+void T4PlusLevelSetup(int current_level) {
     S_Reset(); // Reset audio channels.
 
     MOD_LEVEL_AUDIO_INFO *audio_info = get_game_mod_level_audio_info(current_level);
@@ -792,6 +796,9 @@ void T4PlusLevelSetup(int current_level) {
 // TODO: check if the equipment commands are valid on hub re-entry.
 void T4PlusEnterLevel(int current_level, bool initial_entry) {
     if (initial_entry) {
+        rain_type = get_game_mod_level_misc_info(current_level)->rain_type;
+        snow_type = get_game_mod_level_misc_info(current_level)->snow_type;
+
         MOD_EQUIPMENT_MODIFIER* equipment_modifiers = get_game_mod_level_stat_info(current_level)->equipment_modifiers;
         for (int i = 0; i < MAX_EQUIPMENT_MODIFIERS; i++) {
             if (equipment_modifiers[i].object_id != -1) {

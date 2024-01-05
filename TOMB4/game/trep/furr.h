@@ -138,6 +138,8 @@ enum FURROpcode {
 	FURR_ENVIRONMENT,
 	FURR_NO_FADEOUT,
 
+	FURR_IF_PRESSED,
+
 	FURR_BYTE_IF_EQL, // ==
 	FURR_BYTE_IF_NOT, // !=
 	FURR_BYTE_IF_GT, // >
@@ -184,6 +186,7 @@ struct FURRFlipeffectTable {
 extern int furr_get_arg_count_for_opcode(const FURROpcode opcode);
 extern int furr_get_opcode_for_command_string(const char* command_name);
 
+extern void furr_clear_oneshot_buffer();
 extern void furr_execute_furr_flipeffect(int id);
 extern void furr_allocate_flipeffect_buffer(int flipeffect_id, int size);
 extern void furr_free_all_flipeffect_buffers();
