@@ -10,6 +10,7 @@
 #include "../effects.h"
 #include "../gameflow.h"
 #include "../../specific/LoadSave.h"
+#include "../tomb4fx.h"
 
 char furr_oneshot_buffer[LAST_FURR_FLIPEFFECT];
 FURRFlipeffectTable furr_flipeffect_table[LAST_FURR_FLIPEFFECT - FIRST_FURR_FLIPEFFECT];
@@ -38,6 +39,8 @@ bool furr_cmd_inc_hp(int amount, int limit) {
 }
 
 bool furr_cmd_dec_hp(int amount, int _unused2) {
+	items[lara.item_number].hit_points -= amount;
+
 	return true;
 }
 
@@ -46,6 +49,8 @@ bool furr_cmd_inc_air(int amount, int limit) {
 }
 
 bool furr_cmd_dec_air(int amount, int _unused2) {
+	lara.air -= amount;
+
 	return true;
 }
 
@@ -54,6 +59,8 @@ bool furr_cmd_inc_sprint(int amount, int limit) {
 }
 
 bool furr_cmd_dec_sprint(int amount, int _unused2) {
+	DashTimer -= amount;
+
 	return true;
 }
 
@@ -251,27 +258,59 @@ bool furr_cmd_load_level(int levelnum, int _unused2) {
 	return true;
 }
 
+// The flash colours are likely not accurate. Should investigate.
+
 bool furr_cmd_flash_red(int _unused1, int _unused2) {
+	FlashFadeR = 0xff;
+	FlashFadeG = 0x00;
+	FlashFadeB = 0x00;
+	FlashFader = 32;
+
 	return true;
 }
 
 bool furr_cmd_flash_orange(int _unused1, int _unused2) {
+	FlashFadeR = 0xff;
+	FlashFadeG = 0xa5;
+	FlashFadeB = 0x00;
+	FlashFader = 32;
+
 	return true;
 }
 
 bool furr_cmd_flash_yellow(int _unused1, int _unused2) {
+	FlashFadeR = 0xff;
+	FlashFadeG = 0xff;
+	FlashFadeB = 0x00;
+	FlashFader = 32;
+
 	return true;
 }
 
 bool furr_cmd_flash_green(int _unused1, int _unused2) {
+	FlashFadeR = 0x00;
+	FlashFadeG = 0xff;
+	FlashFadeB = 0x00;
+	FlashFader = 32;
+
 	return true;
 }
 
 bool furr_cmd_flash_lightgreen(int _unused1, int _unused2) {
+	FlashFadeR = 0x00;
+	FlashFadeG = 0xff;
+	FlashFadeB = 0xa5;
+	FlashFader = 32;
+
 	return true;
 }
 
 bool furr_cmd_flash_blue(int _unused1, int _unused2) {
+	FlashFadeR = 0x00;
+	FlashFadeG = 0x00;
+	FlashFadeB = 0xff;
+	FlashFader = 32;
+
 	return true;
 }
 
@@ -563,10 +602,18 @@ bool furr_cmd_show_damp_looped(int damp_looped, int _unused2) {
 }
 
 bool furr_cmd_only_in_water(int _unused1, int _unused2) {
-	return true;
+	if (lara.water_status == LW_UNDERWATER || lara.water_status == LW_WADE || lara.water_status == LW_SURFACE) {
+		return true;
+	}
+
+	return false;
 }
 
 bool furr_cmd_only_on_land(int _unused1, int _unused2) {
+	if (lara.water_status == LW_UNDERWATER || lara.water_status == LW_WADE || lara.water_status == LW_SURFACE) {
+		return false;
+	}
+
 	return true;
 }
 
