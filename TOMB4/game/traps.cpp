@@ -1423,7 +1423,9 @@ void ControlScaledSpike(short item_number)
 				dy = GetHeight(GetFloor(lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos, &room_number),
 					lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos);
 
-				if (item->pos.y_pos >= lara_item->pos.y_pos && dy - lara_item->pos.y_pos < 50)
+				MOD_LEVEL_MISC_INFO *misc_info = get_game_mod_level_misc_info(gfCurrentLevel);
+
+				if (item->pos.y_pos >= lara_item->pos.y_pos && (dy - lara_item->pos.y_pos < 50 || misc_info->lara_impales_on_spikes))
 				{
 					lara_item->anim_number = ANIM_SPIKED;
 					lara_item->frame_number = anims[ANIM_SPIKED].frame_base;

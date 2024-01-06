@@ -254,6 +254,7 @@ struct MOD_LEVEL_MISC_INFO {
 	WeatherType rain_type = WEATHER_DISABLED;
 	WeatherType snow_type = WEATHER_DISABLED;
 
+	bool lara_impales_on_spikes = false;
 	bool enable_ricochet_sound_effect = false;
 	bool enable_standing_pushables = false;
 	bool enemy_gun_hit_underwater_sfx_fix = false;
