@@ -374,7 +374,7 @@ void DXFreeSounds()
 {
 	S_SoundStopAllSamples();
 
-	for (int i = 0; i < 256; i++)
+	for (int i = 0; i < MAX_SAMPLE_BUFFERS; i++)
 	{
 		if (XA_Buffers[i].pAudioData)
 		{
