@@ -306,41 +306,18 @@ bool FreeSampleDecompress()
 	return 1;
 }
 
-bool DXCreateSample(char* data, long size, int samples_per_second, int bits_per_sample, int channels, long num)
+bool DXCreateSample(char* data, long size, long num)
 {
 	Log(8, "DXCreateSample");
 
 #if defined(MA_AUDIO_SAMPLES) && defined(MA_AUDIO_ENGINE)
-	ma_format format = ma_format_unknown;
-	int frame_size;
-	switch (bits_per_sample) {
-	case 8:
-		format = ma_format_u8;
-		frame_size = size;
-		break;
-	case 16:
-		format = ma_format_s16;
-		frame_size = size / 2;
-		break;
-	case 24:
-		format = ma_format_s24;
-		frame_size = size / 3;
-		break;
-	case 32:
-		format = ma_format_s32;
-		frame_size = size / 4;
-		break;
-	default:
-		return false;
-	}
-
 	ma_audio_buffer_config bufferConfig = ma_audio_buffer_config_init(
 		ma_format_s16,
-		channels,
-		size * channels,
+		1,
+		size / 2,
 		data,
 		NULL);
-	bufferConfig.sampleRate = samples_per_second;
+	bufferConfig.sampleRate = 22050;
 
 	ma_result result = ma_audio_buffer_alloc_and_init(&bufferConfig, &ma_sample_buffers[num]);
 	if (result != MA_SUCCESS) {
