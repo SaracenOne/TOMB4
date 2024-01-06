@@ -285,6 +285,7 @@
     <ClInclude Include="TOMB4\specific\lighting.h" />
     <ClInclude Include="TOMB4\specific\LoadSave.h" />
     <ClInclude Include="TOMB4\specific\output.h" />
+    <ClInclude Include="TOMB4\specific\platform.h" />
     <ClInclude Include="TOMB4\specific\polyinsert.h" />
     <ClInclude Include="TOMB4\specific\registry.h" />
     <ClInclude Include="TOMB4\specific\specificfx.h" />
@@ -299,6 +300,7 @@
     <ClInclude Include="TOMB4\tomb4\pch.h" />
     <ClInclude Include="TOMB4\tomb4\tomb4.h" />
     <ClInclude Include="TOMB4\tomb4\tomb4plus\t4plus_inventory.h" />
+    <ClInclude Include="TOMB4\tomb4\tomb4plus\t4plus_mirror.h" />
     <ClInclude Include="TOMB4\tomb4\tomb4plus\t4plus_savegame.h" />
     <ClInclude Include="TOMB4\tomb4\tomb4plus\t4plus_teleporter.h" />
     <ClInclude Include="TOMB4\tomb4\tomb4plus\t4plus_weather.h" />
@@ -494,6 +496,10 @@
     <ClCompile Include="TOMB4\specific\lighting.cpp" />
     <ClCompile Include="TOMB4\specific\LoadSave.cpp" />
     <ClCompile Include="TOMB4\specific\output.cpp" />
+    <ClCompile Include="TOMB4\specific\platform.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
     <ClCompile Include="TOMB4\specific\polyinsert.cpp" />
     <ClCompile Include="TOMB4\specific\registry.cpp" />
     <ClCompile Include="TOMB4\specific\specificfx.cpp" />
@@ -539,6 +545,9 @@
     </ClCompile>
     <ClCompile Include="TOMB4\tomb4\tomb4.cpp" />
     <ClCompile Include="TOMB4\tomb4\tomb4plus\t4plus_inventory.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TOMB4\tomb4\tomb4plus\t4plus_mirror.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../tomb4/pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="TOMB4\tomb4\tomb4plus\t4plus_savegame.cpp">

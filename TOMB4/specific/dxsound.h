@@ -1,6 +1,9 @@
 #pragma once
 #include "../global/types.h"
 
+#define MA_AUDIO_ENGINE
+#define MA_AUDIO_SAMPLES
+
 // TRLE - bumped from 0x40000 to 0x100000 (4x)
 #define DECOMPRESS_BUFFER_LEN (0x100000)
 // TRLE - bumped from 256 to 1024
@@ -14,7 +17,7 @@ bool DXSetOutputFormat();
 bool DXDSCreate();
 bool InitSampleDecompress();
 bool FreeSampleDecompress();
-bool DXCreateSample(char* data, long size, int samples_per_second, long num);
+bool DXCreateSample(char* data, long size, int samples_per_second, int bits_per_sample, int channels, long num);
 bool DXCreateSampleADPCM(char* data, long comp_size, long uncomp_size, long num);
 void DXStopSample(long num);
 bool DSIsChannelPlaying(long num);

@@ -1,13 +1,16 @@
+#include <stdio.h>
+#include <string.h>
+
 #include "../tomb4/pch.h"
 #include "audio.h"
+#include "dxsound.h"
 #include "file.h"
 #include "function_stubs.h"
 #include "dxshell.h"
 #include "../game/control.h"
 #include "LoadSave.h"
 #include "winmain.h"
-
-#define MA_AUDIO_ENGINE
+#include "platform.h"
 
 // TRLE: track count increased
 const char* TrackFileNames[] =
@@ -769,7 +772,7 @@ void ACMEmulateCDPlay(long track, long mode)
 	else
 		Log(8, "Playing %s %s %d", name, "", track);
 
-	XATrack = track;
+	LegacyTrack = track;
 	LegacyTrackFlag = 6;
 	auido_play_mode = mode;
 	OpenStreamFile(name);
@@ -868,7 +871,7 @@ void FillADPCMBuffer(char* p, long track)
 		return;
 	}
 
-	if (track != XATrack || track == -1)
+	if (track != LegacyTrack || track == -1)
 	{
 		Log(0, "Not Current Track %d", track);
 		reading_audio_file = 0;
@@ -936,10 +939,10 @@ long ACMHandleNotifications()
 		{
 			memcpy(ADPCMBuffer, audio_fp_write_ptr, 0x5800);
 
-			if (XATrack == -1)
+			if (LegacyTrack == -1)
 				memset(ADPCMBuffer, 0, 0x5800);
 			else
-				FillADPCMBuffer((char*)audio_fp_write_ptr, XATrack);
+				FillADPCMBuffer((char*)audio_fp_write_ptr, LegacyTrack);
 
 			if (continue_reading_audio_file)
 			{
@@ -1124,7 +1127,7 @@ void S_CDStop()
 		audio_stream_fp = 0;
 		audio_counter = 0;
 		LegacyTrackFlag = 7;
-		XATrack = -1;
+		LegacyTrack = -1;
 	}
 }
 
@@ -1173,15 +1176,9 @@ bool IsUsingOldTriggerMode() {
 }
 
 #else
-
-#include <stdio.h>
-#include <string.h>
-#include <windows.h>
-
 #define STB_VORBIS_HEADER_ONLY // <-- Exclude stb_vorbis' implementation
 #include "../tomb4/libs/miniaudio/extras/stb_vorbis.c"
 
-#define MINIAUDIO_IMPLEMENTATION
 #include "../tomb4/libs/miniaudio/miniaudio.h"
 
 bool new_audio_system = false;
@@ -1220,55 +1217,6 @@ struct ma_callback_userdata {
 
 ma_audio_stream_channel channels[MA_AUDIO_STREAM_COUNT];
 ma_callback_userdata callback_userdata[MA_AUDIO_STREAM_COUNT];
-
-int count_matching_characters(const char* s1, const char* s2) {
-	int count = 0;
-	while (*s1 && *s2 && *s1 == *s2) {
-		count++;
-		s1++;
-		s2++;
-	}
-	return count;
-}
-
-void find_file_with_substring(const char* dir_path, const char* substring, char* found_filename)
-{
-	char win32_path[256];
-	wsprintf(win32_path, "%s\\*", dir_path);
-
-	WIN32_FIND_DATA find_file_data;
-	HANDLE hFind = FindFirstFile(win32_path, &find_file_data);
-
-	if (hFind == INVALID_HANDLE_VALUE) {
-		perror("Error finding file");
-		return;
-	}
-
-	do {
-		if (find_file_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-			continue; // Skip directories
-		}
-
-		int cmp_count = count_matching_characters(substring, find_file_data.cFileName);
-		int str_len = strlen(substring);
-
-		if (cmp_count >= str_len) {
-			strncpy(found_filename, find_file_data.cFileName, 256 - 1);
-			found_filename[256 - 1] = '\0';
-			break;
-		}
-	} while (FindNextFile(hFind, &find_file_data));
-
-	FindClose(hFind);
-}
-
-int strcicmp(char const* a, char const* b) {
-	for (;; a++, b++) {
-		int d = tolower((unsigned char)*a) - tolower((unsigned char)*b);
-		if (d != 0 || !*a)
-			return d;
-	}
-}
 
 void data_callback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount) {
 	ma_callback_userdata *userdata = (ma_callback_userdata *)pDevice->pUserData;
