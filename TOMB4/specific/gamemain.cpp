@@ -181,7 +181,11 @@ bool GameInitialise()
 	desc.dwSize = sizeof(desc);
 	desc.dwFVF = D3DFVF_TLVERTEX;
 	desc.dwNumVertices = 0x2000;
+#ifdef USE_BGFX
+
+#else
 	DXAttempt(App.dx.lpD3D->CreateVertexBuffer(&desc, &DestVB, D3DDP_DONOTCLIP, 0));
+#endif
 	init_game_malloc();
 	clipflags = (short*)malloc(0x4000);
 	init_water_table();

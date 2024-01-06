@@ -309,7 +309,9 @@ void ProcessRoomData(ROOM_INFO* r)
 	r->gt3cnt = *data_ptr;
 	r->verts = (D3DVECTOR*)game_malloc(sizeof(D3DVECTOR) * r->nVerts);
 	faces = (short*)malloc(2 * r->nVerts);
+#ifndef USE_BGFX
 	prelight = (short*)malloc(2 * r->nVerts);
+#endif
 	data_ptr = r->data + 1;	//go to vert data
 	nWaterVerts = 0;
 
@@ -317,10 +319,12 @@ void ProcessRoomData(ROOM_INFO* r)
 	{
 		if (data_ptr[4] & 0x2000)
 		{
+#ifndef USE_BGFX
 			r->verts[nWaterVerts].x = (float)data_ptr[0];
 			r->verts[nWaterVerts].y = (float)data_ptr[1];
 			r->verts[nWaterVerts].z = (float)data_ptr[2];
 			prelight[nWaterVerts] = data_ptr[5];
+#endif
 			faces[i] = short(nWaterVerts | 0x8000);
 			nWaterVerts++;
 		}
@@ -335,10 +339,12 @@ void ProcessRoomData(ROOM_INFO* r)
 	{
 		if (data_ptr[4] & 0x4000 && !(data_ptr[4] & 0x2000))
 		{
+#ifndef USE_BGFX
 			r->verts[nShoreVerts + nWaterVerts].x = (float)data_ptr[0];
 			r->verts[nShoreVerts + nWaterVerts].y = (float)data_ptr[1];
 			r->verts[nShoreVerts + nWaterVerts].z = (float)data_ptr[2];
 			prelight[nShoreVerts + nWaterVerts] = data_ptr[5];
+#endif
 			faces[i] = short(nShoreVerts + nWaterVerts);
 			nShoreVerts++;
 		}
@@ -353,10 +359,12 @@ void ProcessRoomData(ROOM_INFO* r)
 	{
 		if (!(data_ptr[4] & 0x4000) && !(data_ptr[4] & 0x2000))
 		{
+#ifndef USE_BGFX
 			r->verts[nRestOfVerts + nShoreVerts + nWaterVerts].x = (float)data_ptr[0];
 			r->verts[nRestOfVerts + nShoreVerts + nWaterVerts].y = (float)data_ptr[1];
 			r->verts[nRestOfVerts + nShoreVerts + nWaterVerts].z = (float)data_ptr[2];
 			prelight[nRestOfVerts + nShoreVerts + nWaterVerts] = data_ptr[5];
+#endif
 			faces[i] = short(nRestOfVerts + nShoreVerts + nWaterVerts);
 			nRestOfVerts++;
 		}
@@ -399,8 +407,10 @@ void ProcessRoomData(ROOM_INFO* r)
 	vb.dwSize = sizeof(D3DVERTEXBUFFERDESC);
 	vb.dwCaps = 0;
 	vb.dwFVF = D3DFVF_VERTEX;
+#ifndef USE_BGFX
 	DXAttempt(App.dx.lpD3D->CreateVertexBuffer(&vb, &r->SourceVB, D3DDP_DONOTCLIP, 0));
 	r->SourceVB->Lock(DDLOCK_WRITEONLY, (void**)&vptr, 0);
+#endif
 	r->posx = (float)r->x;
 	r->posy = (float)r->y;
 	r->posz = (float)r->z;
@@ -408,6 +418,7 @@ void ProcessRoomData(ROOM_INFO* r)
 
 	for (int i = 0; i < r->nVerts; i++)
 	{
+#ifndef USE_BGFX
 		vptr->x = r->verts[i].x + (float)r->x;
 		vptr->y = r->verts[i].y + (float)r->y;
 		vptr->z = r->verts[i].z + (float)r->z;
@@ -423,11 +434,14 @@ void ProcessRoomData(ROOM_INFO* r)
 		cB = ushort((cB * water_color_B) >> 8);
 		r->prelightwater[i] = RGBA(cR, cG, cB, 0xFF);
 		vptr++;
+#endif
 		data_ptr += 6;
 	}
 
+#ifndef USE_BGFX
 	r->SourceVB->Unlock();
 	free(prelight);
+#endif
 	r->pclight = 0;
 
 	if (r->num_lights)
@@ -511,8 +525,9 @@ void ProcessRoomData(ROOM_INFO* r)
 			}
 		}
 	}
-
+#ifndef USE_BGFX
 	r->SourceVB->Optimize(App.dx._lpD3DDevice, 0);
+#endif
 }
 
 void InsertRoom(ROOM_INFO* r)
@@ -628,14 +643,17 @@ void ProcessMeshData(long num_meshes)
 				buf.dwSize = sizeof(D3DVERTEXBUFFERDESC);
 				buf.dwCaps = 0;
 				buf.dwFVF = D3DFVF_TEX1 | D3DFVF_NORMAL | D3DFVF_XYZ;
+#ifndef USE_BGFX
 				DXAttempt(App.dx.lpD3D->CreateVertexBuffer(&buf, &mesh->SourceVB, 0, 0));
 				mesh->SourceVB->Lock(DDLOCK_WRITEONLY, (LPVOID*)&vtx, 0);
-
+#endif
 				for (int j = 0; j < mesh->nVerts; j++)
 				{
+#ifndef USE_BGFX
 					vtx[j].x = mesh_ptr[0];
 					vtx[j].y = mesh_ptr[1];
 					vtx[j].z = mesh_ptr[2];
+#endif
 					mesh_ptr += 3;
 				}
 
@@ -651,14 +669,18 @@ void ProcessMeshData(long num_meshes)
 
 					for (int j = 0; j < mesh->nVerts; j++)
 					{
+#ifndef USE_BGFX
 						vtx[j].nx = mesh_ptr[0];
 						vtx[j].ny = mesh_ptr[1];
 						vtx[j].nz = mesh_ptr[2];
+#endif
 						mesh_ptr += 3;
+#ifndef USE_BGFX
 						D3DNormalise((D3DVECTOR*)&vtx[j].nx);
 						mesh->Normals[j].x = vtx[j].nx;
 						mesh->Normals[j].y = vtx[j].ny;
 						mesh->Normals[j].z = vtx[j].nz;
+#endif
 					}
 
 					mesh->prelight = 0;
@@ -675,8 +697,9 @@ void ProcessMeshData(long num_meshes)
 						mesh_ptr++;
 					}
 				}
-
+#ifndef USE_BGFX
 				mesh->SourceVB->Unlock();
+#endif
 			}
 			else
 				mesh_ptr += 6 * lp + 1;

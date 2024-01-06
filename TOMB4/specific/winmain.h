@@ -2,10 +2,10 @@
 #include "../global/types.h"
 
 #ifdef USE_SDL
-float WinFrameRate();
-void WinDisplayString(long x, long y, char* string, ...);
+float SDLFrameRate();
+void SDLDisplayString(long x, long y, char* string, ...);
 void ClearSurfaces();
-void WinSetStyle(bool fullscreen, ulong& set);
+void SDLSetStyle(bool fullscreen, ulong& set);
 #else
 bool WinRunCheck(LPSTR WindowName, LPSTR ClassName, HANDLE* mutex);
 void WinProcessCommandLine(LPSTR cmd);

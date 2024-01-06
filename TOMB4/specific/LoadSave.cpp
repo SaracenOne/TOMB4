@@ -791,6 +791,7 @@ static void S_DrawTile(long x, long y, long w, long h, LPDIRECT3DTEXTUREX t, lon
 	v[3].color = c2;
 	v[3].specular = 0xFF000000;
 
+#ifndef USE_BGFX
 	App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTFG_POINT);
 	App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_MINFILTER, D3DTFG_POINT);
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREPERSPECTIVE, 0);
@@ -803,6 +804,7 @@ static void S_DrawTile(long x, long y, long w, long h, LPDIRECT3DTEXTUREX t, lon
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTFG_LINEAR);
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_MINFILTER, D3DTFG_LINEAR);
 	}
+#endif
 }
 
 void S_DisplayMonoScreen()
@@ -973,6 +975,9 @@ static void CustomBlt(LPDDSURFACEDESCX dst, ulong dstX, ulong dstY, LPDDSURFACED
 
 void ConvertSurfaceToTextures(LPDIRECTDRAWSURFACEX surface)
 {
+#ifdef USE_BGFX
+	return;
+#else
 	DDSURFACEDESCX tSurf;
 	DDSURFACEDESCX uSurf;
 	RECT r;
@@ -999,6 +1004,7 @@ void ConvertSurfaceToTextures(LPDIRECTDRAWSURFACEX surface)
 	MonoScreen.surface->Unlock(0);
 	DXAttempt(MonoScreen.surface->QueryInterface(TEXGUID, (void**)&MonoScreen.tex));
 	surface->Unlock(0);
+#endif
 }
 
 void CheckKeyConflicts()

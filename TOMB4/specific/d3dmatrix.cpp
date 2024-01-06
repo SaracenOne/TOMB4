@@ -55,7 +55,9 @@ void SetD3DMatrix(D3DMATRIX* mx, float* imx)
 void SetD3DViewMatrix()
 {
 	SetD3DMatrix(&D3DMView, mMXPtr);
+#ifndef USE_BGFX
 	DXAttempt(App.dx.lpD3DDevice->SetTransform(D3DTRANSFORMSTATE_VIEW, &D3DMView));
+#endif
 }
 
 void D3DTransform(D3DVECTOR* vec, D3DMATRIX* mx)
@@ -90,8 +92,10 @@ void S_InitD3DMatrix()
 	D3DIdentityMatrix(&D3DMWorld);
 	D3DIdentityMatrix(&D3DMProjection);
 	D3DMProjection._22 = -1;
+#ifndef USE_BGFX
 	DXAttempt(App.dx.lpD3DDevice->SetTransform(D3DTRANSFORMSTATE_WORLD, &D3DMWorld));
 	DXAttempt(App.dx.lpD3DDevice->SetTransform(D3DTRANSFORMSTATE_PROJECTION, &D3DMProjection));
+#endif
 }
 
 LPD3DMATRIX D3DMultMatrix(LPD3DMATRIX d, LPD3DMATRIX a, LPD3DMATRIX b)

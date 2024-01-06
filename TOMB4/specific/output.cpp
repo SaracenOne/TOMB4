@@ -41,6 +41,9 @@ static short AnimatingTexturesVOffset;
 
 void ProcessObjectMeshVertices(MESH_DATA* mesh)
 {
+#ifdef USE_BGFX
+	return;
+#else
 	POINTLIGHT_STRUCT* point;
 	SUNLIGHT_STRUCT* sun;
 	FVECTOR vPos;
@@ -258,10 +261,14 @@ void ProcessObjectMeshVertices(MESH_DATA* mesh)
 	}
 
 	mesh->SourceVB->Unlock();
+#endif
 }
 
 void ProcessStaticMeshVertices(MESH_DATA* mesh)
 {
+#ifdef USE_BGFX
+	return;
+#else
 	DYNAMIC* l;
 	FVECTOR d;
 	FVECTOR lPos;
@@ -445,10 +452,14 @@ void ProcessStaticMeshVertices(MESH_DATA* mesh)
 	}
 
 	mesh->SourceVB->Unlock();
+#endif
 }
 
 void ProcessTrainMeshVertices(MESH_DATA* mesh)
 {
+#ifdef USE_BGFX
+	return;
+#else
 	FVECTOR vPos;
 	FVECTOR vtx;
 	float* v;
@@ -574,10 +585,14 @@ void ProcessTrainMeshVertices(MESH_DATA* mesh)
 	}
 
 	mesh->SourceVB->Unlock();
+#endif
 }
 
 void ProcessPickupMeshVertices(MESH_DATA* mesh)
 {
+#ifdef USE_BGFX
+	return;
+#else
 	FVECTOR vPos;
 	FVECTOR vtx;
 	float* v;
@@ -672,6 +687,7 @@ void ProcessPickupMeshVertices(MESH_DATA* mesh)
 	}
 
 	mesh->SourceVB->Unlock();
+#endif
 }
 
 static void RGB_M(ulong& c, long m)	//Original was a macro.
@@ -1693,17 +1709,27 @@ void S_OutputPolyList()
 	D3DRECT r;
 	long h;
 
+#ifdef USE_SDL
+	SDLFrameRate();
+#else
 	WinFrameRate();
+#endif
 	nPolys = 0;
 	nClippedPolys = 0;
 	DrawPrimitiveCnt = 0;
+#ifndef USE_BGFX
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA);
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA);
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
+#endif
 
 	if (resChangeCounter)
 	{
+#ifdef USE_SDL
+		SDLDisplayString(8, App.dx.dwRenderHeight - 8, (char*)"%dx%d", App.dx.dwRenderWidth, App.dx.dwRenderHeight);
+#else
 		WinDisplayString(8, App.dx.dwRenderHeight - 8, (char*)"%dx%d", App.dx.dwRenderWidth, App.dx.dwRenderHeight);
+#endif
 		resChangeCounter -= long(30 / App.fps);
 
 		if (resChangeCounter < 0)

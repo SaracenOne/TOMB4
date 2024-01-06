@@ -121,24 +121,24 @@ void SDLProcessCommandLine(int argc, char* argv[])
 	}
 }
 
-float WinFrameRate()
+float SDLFrameRate()
 {
 	double t, time_now;
 	static float fps;
-	static long time, counter;
-	static char first_time;
+	static Uint64 time, counter;
+	static Uint8 first_time;
 
 	if (!(first_time & 1))
 	{
 		first_time |= 1;
-		time = clock();
+		time = SDL_GetTicks64();
 	}
 
 	counter++;
 
 	if (counter == 10)
 	{
-		time_now = clock();
+		time_now = SDL_GetTicks64();
 		t = (time_now - time) / (double)CLOCKS_PER_SEC;
 		time = (long)time_now;
 		fps = float(counter / t);
@@ -170,7 +170,7 @@ LRESULT CALLBACK WinMainWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 #endif
 
 
-void WinDisplayString(long x, long y, char* string, ...)
+void SDLDisplayString(long x, long y, char* string, ...)
 {
 	va_list list;
 	char buf[4096];
@@ -202,7 +202,7 @@ void ClearSurfaces()
 
 bool SDLCreateWindow()
 {
-	sdl_window = SDL_CreateWindow("Tomb Raider - The Last Revelation", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_HIDDEN);
+	sdl_window = SDL_CreateWindow("Tomb4Plus", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_HIDDEN);
 	if (!sdl_window)
 	{
 		return false;
@@ -239,7 +239,7 @@ bool SDLCreateWindow()
 	return true;
 }
 
-void WinSetStyle(bool fullscreen, ulong& set)
+void SDLSetStyle(bool fullscreen, ulong& set)
 {
 	ulong style;
 
@@ -251,7 +251,11 @@ void WinSetStyle(bool fullscreen, ulong& set)
 		style = (style & ~WS_POPUP) | WS_OVERLAPPEDWINDOW;
 
 	style &= ~(WS_THICKFRAME | WS_MAXIMIZEBOX | WS_SYSMENU);
-	SetWindowLong(App.hWnd, GWL_STYLE, style);
+
+	if (fullscreen)
+		SDL_SetWindowFullscreen(sdl_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+	else
+		SDL_SetWindowFullscreen(sdl_window, 0);
 
 	if (set)
 		set = style;
@@ -282,9 +286,9 @@ void SDLProcessEvents()
 	}
 }
 
-void WinClose()
+void SDLClose()
 {
-	Log(2, "WinClose");
+	Log(2, "SDLClose");
 	SaveSettings();
 	CloseHandle(App.mutex);
 	DXFreeInfo(&App.DXInfo);
@@ -338,7 +342,7 @@ int main(int argc, char* argv[]) {
 			free(gfScriptFile);
 			free(gfLanguageFile);
 
-			WinClose();
+			SDLClose();
 
 			return 0;
 		}
@@ -352,15 +356,23 @@ int main(int argc, char* argv[]) {
 	App.dx.WaitAtBeginScene = 0;
 	App.dx.InScene = 0;
 	App.fmv = 0;
+#ifndef USE_BGFX
 	dm = &G_dxinfo->DDInfo[G_dxinfo->nDD].D3DDevices[G_dxinfo->nD3D].DisplayModes[G_dxinfo->nDisplayMode];
 
 	SDL_SetWindowSize(sdl_window, dm->w, dm->h);
+#endif
 
+#ifdef USE_BGFX
+
+#else
 	if (!DXCreate(dm->w, dm->h, dm->bpp, App.StartFlags, &App.dx, App.hWnd, WS_OVERLAPPEDWINDOW))
 	{
-		MessageBox(0, SCRIPT_TEXT(TXT_Failed_To_Setup_DirectX), "Tomb Raider IV", 0);
+		MessageBox(0, SCRIPT_TEXT(TXT_Failed_To_Setup_DirectX), "Tomb4Plus", 0);
 		return 0;
 	}
+#endif
+
+	// TODO: add fullscreen support here.
 
 	SDL_ShowWindow(sdl_window);
 
@@ -401,7 +413,7 @@ int main(int argc, char* argv[]) {
 	SetWindowLongPtr(App.hWnd, GWLP_WNDPROC, (LONG_PTR)originalWndProc);
 #endif
 
-	WinClose();
+	SDLClose();
 
 	return 0;
 }

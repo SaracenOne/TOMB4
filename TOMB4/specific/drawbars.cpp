@@ -517,9 +517,11 @@ void S_LoadBar()
 		_BeginScene();
 		InitBuckets();
 		InitialiseSortList();
+#ifndef USE_BGFX
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
+#endif
 		loadbar_pos += 100 / loadbar_maxpos;
 
 		if (tomb4.tr5_loadbar)
