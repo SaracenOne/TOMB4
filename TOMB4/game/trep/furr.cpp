@@ -553,11 +553,11 @@ bool furr_cmd_reset(int _unused1, int _unused2) {
 }
 
 bool furr_cmd_ret(int _unused1, int _unused2) {
-	return true;
+	return false;
 }
 
 bool furr_cmd_retn(int _unused1, int _unused2) {
-	return true;
+	return false;
 }
 
 bool furr_cmd_nop(int _unused1, int _unused2) {
