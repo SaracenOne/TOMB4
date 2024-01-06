@@ -293,7 +293,9 @@ long DXGetInfo(DXINFO* dxinfo, HWND hwnd)
 	Log(2, "DXInitialise");
 	G_hwnd = hwnd;
 	Log(5, "Enumerating DirectDraw Devices");
+#ifndef USE_BGFX
 	DXAttempt(DirectDrawEnumerate(DXEnumDirectDraw, dxinfo));
+#endif
 	DXAttempt(DirectSoundEnumerate(DXEnumDirectSound, dxinfo));
 	G_dxinfo = dxinfo;
 	return 1;
@@ -486,8 +488,12 @@ long DXSetVideoMode(LPDIRECTDRAWX dd, long dwWidth, long dwHeight, long dwBPP)
 	Log(2, "DXSetVideoMode");
 	Log(5, "SetDisplayMode - %dx%dx%d", dwWidth, dwHeight, dwBPP);
 
+#ifdef USE_BGFX
+	return 1;
+#else
 	if (DXAttempt(dd->SetDisplayMode(dwWidth, dwHeight, dwBPP, 0, 0)) != DD_OK)
 		return 0;
+#endif
 
 	return 1;
 }
@@ -582,6 +588,7 @@ void DXMove(long x, long y)
 
 void DXInitKeyboard(HWND hwnd, HINSTANCE hinstance)
 {
+#ifndef USE_SDL
 	IDirectInput* dinput;
 	IDirectInputDevice* Keyboard;
 
@@ -610,7 +617,7 @@ void DXInitKeyboard(HWND hwnd, HINSTANCE hinstance)
 	DXAttempt(G_dxptr->Keyboard->SetCooperativeLevel(hwnd, DISCL_NONEXCLUSIVE | DISCL_BACKGROUND));
 	DXAttempt(G_dxptr->Keyboard->SetDataFormat(&c_dfDIKeyboard));
 	DXAttempt(G_dxptr->Keyboard->Acquire());
-#ifndef USE_SDL
+
 	memset(keymap, 0, sizeof(keymap));
 #endif
 }
