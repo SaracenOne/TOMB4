@@ -427,10 +427,12 @@ long DXStartSample(long num, long volume, long pitch, long pan, ulong flags)
 
 	ma_sound_uninit(&ma_voices[channel]);
 
+	bool is_looping = flags & XAUDIO2_LOOP_INFINITE ? MA_TRUE : MA_FALSE;
+
 	ma_audio_buffer_config bufferConfig = ma_audio_buffer_config_init(
 		ma_sample_buffers[num]->ref.format,
 		ma_sample_buffers[num]->ref.channels,
-		ma_sample_buffers[num]->ref.sizeInFrames,
+		is_looping ? ma_sample_buffers[num]->ref.sizeInFrames / 2 : ma_sample_buffers[num]->ref.sizeInFrames,
 		ma_sample_buffers[num]->ref.pData,
 		NULL);
 	bufferConfig.sampleRate = ma_sample_buffers[num]->ref.sampleRate;
@@ -449,7 +451,7 @@ long DXStartSample(long num, long volume, long pitch, long pan, ulong flags)
 	DSAdjustPitch(channel, pitch);
 	DSAdjustPan(channel, pan);
 
-	ma_sound_set_looping(&ma_voices[channel], flags & XAUDIO2_LOOP_INFINITE ? MA_TRUE : MA_FALSE);
+	ma_sound_set_looping(&ma_voices[channel], is_looping ? MA_TRUE : MA_FALSE);
 	ma_audio_buffer_seek_to_pcm_frame(ma_sample_buffers[num], 0);
 	ma_sound_set_start_time_in_pcm_frames(&ma_voices[channel], 0);
 	ma_sound_start(&ma_voices[channel]);
