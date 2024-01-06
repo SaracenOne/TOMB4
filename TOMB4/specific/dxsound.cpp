@@ -306,7 +306,7 @@ bool FreeSampleDecompress()
 	return 1;
 }
 
-bool DXCreateSample(char* data, long size, long num)
+bool DXCreateSample(char* data, long size, int samples_per_second, long num)
 {
 	Log(8, "DXCreateSample");
 

@@ -1343,7 +1343,7 @@ bool LoadSamples()
 			}
 			read_bytes += chunk_2_size;
 
-			if (!DXCreateSample(samples_buffer, chunk_2_size, i)) {
+			if (!DXCreateSample(samples_buffer, chunk_2_size, wav_format.samples_per_second, i)) {
 				FreeSampleDecompress();
 				return 0;
 			}
