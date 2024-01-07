@@ -497,7 +497,7 @@ long DXStartSample(long num, long volume, long pitch, long pan, ulong flags)
 	ma_audio_buffer_config bufferConfig = ma_audio_buffer_config_init(
 		ma_sample_buffers[num]->ref.format,
 		ma_sample_buffers[num]->ref.channels,
-		is_looping ? ma_sample_buffers[num]->ref.sizeInFrames / 2 : ma_sample_buffers[num]->ref.sizeInFrames,
+		ma_sample_buffers[num]->ref.sizeInFrames,
 		ma_sample_buffers[num]->ref.pData,
 		NULL);
 	bufferConfig.sampleRate = ma_sample_buffers[num]->ref.sampleRate;
