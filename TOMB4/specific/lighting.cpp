@@ -42,6 +42,9 @@ void InitItemDynamicLighting(ITEM_INFO* item)
 {
 	DYNAMIC* dptr;
 
+	if (!item)
+		return;
+
 	for (int i = 0; i < MAX_DYNAMICS; i++)
 	{
 		dptr = &dynamics[i];
@@ -448,6 +451,9 @@ void InitObjectLighting(ITEM_INFO* item)
 	PCLIGHT* light;
 	long node_ambient, r, g, b;
 
+	if (!item)
+		return;
+
 	node_ambient = item->il.ambient;
 	SetupLight_thing = item->object_number >= GAME_PIECE1;
 	light = (PCLIGHT*)item->il.pCurrentLights;
@@ -497,6 +503,9 @@ void CalcAmbientLight(ITEM_INFO* item)
 {
 	ROOM_INFO* r;
 	short room_number;
+
+	if (!item)
+		return;
 
 	room_number = item->room_number;
 	GetFloor(item->il.item_pos.x, item->il.item_pos.y, item->il.item_pos.z, &room_number);
