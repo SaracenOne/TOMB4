@@ -62,6 +62,21 @@ static long current_reverb = -1;
 bool DXChangeOutputFormat(long nSamplesPerSec, bool force)
 {
 #if defined(MA_AUDIO_SAMPLES) && defined(MA_AUDIO_ENGINE)
+	if (!force && ma_samples_engine.sampleRate == nSamplesPerSec)
+		return true;
+
+	S_SoundStopAllSamples();
+
+	ma_engine_config engineConfig = ma_engine_config_init();
+	engineConfig.channels = 2;
+	engineConfig.sampleRate = nSamplesPerSec;
+
+	ma_engine_uninit(&ma_samples_engine);
+	ma_result result = ma_engine_init(&engineConfig, &ma_samples_engine);
+	if (result != MA_SUCCESS) {
+		return false;
+	}
+
 	return true;
 #else
 	WAVEFORMATEX pcfxFormat;
@@ -93,7 +108,10 @@ bool DXChangeOutputFormat(long nSamplesPerSec, bool force)
 void DSChangeVolume(long num, long volume)
 {
 #if defined(MA_AUDIO_SAMPLES) && defined(MA_AUDIO_ENGINE)
-	ma_sound_set_volume(&ma_voices[num], powf(10.0f, ((float)volume / 100.0f) / 20.0f));
+	double miniaudio_volume = (ma_volume_db_to_linear((float)volume / 100.0));
+	miniaudio_volume = ((miniaudio_volume * (10 * (miniaudio_volume * 10))) / 10) * 0.1;
+
+	ma_sound_set_volume(&ma_voices[num], miniaudio_volume);
 #else
 	float fvolume;
 
@@ -136,8 +154,6 @@ void DSAdjustPitch(long num, long pitch)
 void DSAdjustPan(long num, long pan)
 {
 #if defined(MA_AUDIO_SAMPLES) && defined(MA_AUDIO_ENGINE)
-	float amptitude;
-
 	if (pan < 0) {
 		if (pan < -0x4000)
 			pan = -0x4000 - pan;
@@ -147,21 +163,8 @@ void DSAdjustPan(long num, long pan)
 
 	pan >>= 4;
 
-	if (!pan)
-	{
-		amptitude = 0.0f;
-	}
-	else if (pan < 0)
-	{
-		amptitude = powf(10.0f, ((float)pan / 100.0f) / 20.0f);
-	}
-	else
-	{
-		amptitude = powf(10.0f, ((float)-pan / 100.0f) / 20.0f);
-	}
-
 	ma_sound_set_pan_mode(&ma_voices[num], ma_pan_mode_pan);
-	ma_sound_set_pan(&ma_voices[num], amptitude);
+	ma_sound_set_pan(&ma_voices[num], (float)pan / 10000.0);
 #else
 	float matrix[2];
 
@@ -227,9 +230,19 @@ bool DXDSCreate()
 #if defined(MA_AUDIO_SAMPLES) && defined(MA_AUDIO_ENGINE)
 	Log(2, "DXDSCreate");
 
-	ma_result result = ma_engine_init(NULL, &ma_samples_engine);
+	ma_engine_config engineConfig = ma_engine_config_init();
+	engineConfig.channels = 2;
+	engineConfig.sampleRate = 44100;
+
+	ma_result result = ma_engine_init(&engineConfig, &ma_samples_engine);
 	if (result != MA_SUCCESS) {
 		return false;
+	}
+
+	for (int i = 0; i < MAX_SAMPLE_BUFFERS; i++) {
+		if (ma_sample_buffers[i]) {
+			ma_sample_buffers[i] = nullptr;
+		}
 	}
 #else
 	XAUDIO2_EFFECT_DESCRIPTOR chaind;
@@ -528,9 +541,10 @@ void DXFreeSounds()
 
 #ifdef MA_AUDIO_SAMPLES
 	for (int i = 0; i < MAX_SAMPLE_BUFFERS; i++) {
-		//if (ma_buffers[i].audio_buffer) {
-			// ???
-		//}
+		if (ma_sample_buffers[i]) {
+			ma_audio_buffer_uninit_and_free(ma_sample_buffers[i]);
+			ma_sample_buffers[i] = nullptr;
+		}
 	}
 #else
 	for (int i = 0; i < MAX_SAMPLE_BUFFERS; i++)

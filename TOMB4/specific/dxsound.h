@@ -2,7 +2,7 @@
 #include "../global/types.h"
 
 #define MA_AUDIO_ENGINE
-//#define MA_AUDIO_SAMPLES
+#define MA_AUDIO_SAMPLES
 
 // TRLE - bumped from 0x40000 to 0x100000 (4x)
 #define DECOMPRESS_BUFFER_LEN (0x100000)
