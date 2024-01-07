@@ -378,7 +378,7 @@ void VoncroyRaceControl(short item_number)
 	CREATURE_INFO* VonCroy;
 	FLOOR_INFO* floor;
 	AI_INFO info;
-	long Xoffset, Zoffset, x, y, z, nearheight, midheight, farheight, dx, dz, distance, ahead, iAngle, h, c;
+	long Xoffset, Zoffset, x, y, z, nearheight, midheight, farheight, dx, dz, distance, ahead = 0, iAngle, h, c;
 	short tilt, angle, torso_x, torso_y, head, room_number, jump_ahead, long_jump_ahead, ifl3;
 	static short* meshpp = meshes[objects[VON_CROY].mesh_index + 42];
 	static long talk = 0;
