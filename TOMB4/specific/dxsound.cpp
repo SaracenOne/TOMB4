@@ -32,6 +32,7 @@ char* samples_buffer;
 #if defined(MA_AUDIO_SAMPLES) && defined(MA_AUDIO_ENGINE)
 ma_engine ma_samples_engine;
 static ma_sound ma_voices[MAX_VOICES];
+static bool ma_voice_active[MAX_VOICES];
 static ma_audio_buffer ma_voice_buffers[MAX_VOICES];
 static ma_audio_buffer *ma_sample_buffers[MAX_SAMPLE_BUFFERS];
 #else
@@ -243,6 +244,10 @@ bool DXDSCreate()
 			ma_sample_buffers[i] = nullptr;
 		}
 	}
+
+	for (int i = 0; i < MAX_VOICES; i++) {
+		ma_voice_active[i] = false;
+	}
 #else
 	XAUDIO2_EFFECT_DESCRIPTOR chaind;
 	XAUDIO2_EFFECT_CHAIN chain;
@@ -440,6 +445,7 @@ void DXStopSample(long num)
 {
 #if defined(MA_AUDIO_SAMPLES) && defined(MA_AUDIO_ENGINE)
 	ma_sound_stop(& ma_voices[num]);
+	ma_voice_active[num] = false;
 #else
 	if (num >= 0 && XA_Voices[num])
 	{
@@ -452,7 +458,7 @@ void DXStopSample(long num)
 bool DSIsChannelPlaying(long num)
 {
 #if defined(MA_AUDIO_SAMPLES) && defined(MA_AUDIO_ENGINE)
-	return ma_sound_is_playing(&ma_voices[num]);
+	return ma_voice_active[num];
 #else
 	XAUDIO2_VOICE_STATE state;
 
@@ -478,6 +484,13 @@ long DSGetFreeChannel()
 
 	return -1;
 }
+
+#if defined(MA_AUDIO_SAMPLES) && defined(MA_AUDIO_ENGINE)
+// Resets the voice active flag upon ending so that the channel can be reused.
+void ma_sample_end_callback(void* pUserData, ma_sound* pSound) {
+	*(bool*)pUserData = false;
+}
+#endif
 
 long DXStartSample(long num, long volume, long pitch, long pan, ulong flags)
 {
@@ -507,7 +520,14 @@ long DXStartSample(long num, long volume, long pitch, long pan, ulong flags)
 		return 0;
 	}
 
-	ma_result sound_init_result = ma_sound_init_from_data_source(&ma_samples_engine, &ma_voice_buffers[channel], MA_SOUND_FLAG_DECODE | MA_SOUND_FLAG_NO_SPATIALIZATION, NULL, &ma_voices[channel]);
+	ma_sound_config config = ma_sound_config_init_2(&ma_samples_engine);
+	config.pDataSource = &ma_voice_buffers[channel];
+	config.flags = MA_SOUND_FLAG_DECODE | MA_SOUND_FLAG_NO_SPATIALIZATION;
+	config.pInitialAttachment = NULL;
+	config.endCallback = &ma_sample_end_callback;
+	config.pEndCallbackUserData = &ma_voice_active[channel];
+
+	ma_result sound_init_result = ma_sound_init_ex(&ma_samples_engine, &config, &ma_voices[channel]);
 	if (sound_init_result != MA_SUCCESS) {
 		return -1;
 	}
@@ -520,6 +540,7 @@ long DXStartSample(long num, long volume, long pitch, long pan, ulong flags)
 	ma_audio_buffer_seek_to_pcm_frame(ma_sample_buffers[num], 0);
 	ma_sound_set_start_time_in_pcm_frames(&ma_voices[channel], 0);
 	ma_sound_start(&ma_voices[channel]);
+	ma_voice_active[channel] = true;
 
 	return channel;
 #else
@@ -568,7 +589,7 @@ long CalcVolume(long volume)
 
 void S_SoundStopAllSamples()
 {
-	for (int i = 0; i < 32; i++)
+	for (int i = 0; i < MAX_VOICES; i++)
 		DXStopSample(i);
 }
 
@@ -663,6 +684,26 @@ void S_SetReverbType(long reverb)
 		}
 
 		current_reverb = reverb;
+	}
+#endif
+}
+
+void S_SoundPauseSamples() {
+#if defined(MA_AUDIO_SAMPLES) && defined(MA_AUDIO_ENGINE)
+	for (int i = 0; i < MAX_VOICES; i++) {
+		if (ma_voice_active[i]) {
+			ma_sound_stop(&ma_voices[i]);
+		}
+	}
+#endif
+}
+
+void S_SoundUnpauseSamples() {
+#if defined(MA_AUDIO_SAMPLES) && defined(MA_AUDIO_ENGINE)
+	for (int i = 0; i < MAX_VOICES; i++) {
+		if (ma_voice_active[i]) {
+			ma_sound_start(&ma_voices[i]);
+		}
 	}
 #endif
 }

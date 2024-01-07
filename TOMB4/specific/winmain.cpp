@@ -368,6 +368,7 @@ LRESULT CALLBACK WinMainWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 					Log(5, "Change Video Mode");
 					Log(5, "HangGameThread");
 					S_PauseAudio();
+					S_SoundPauseSamples();
 					while (App.dx.InScene) {};
 					App.dx.WaitAtBeginScene = 1;
 					while (!App.dx.InScene) {};
@@ -386,6 +387,7 @@ LRESULT CALLBACK WinMainWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 					ResumeThread((HANDLE)MainThread.handle);
 					App.dx.WaitAtBeginScene = 0;
 					Log(5, "Game Thread Resumed");
+					S_SoundUnpauseSamples();
 					S_UnpauseAudio();
 				}
 
