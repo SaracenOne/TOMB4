@@ -41,6 +41,7 @@ will receive the captured audio.
 If multiple backends are specified, the priority will be based on the order in which you specify them. If multiple waveform or noise types
 are specified the last one on the command line will have priority.
 */
+#define MA_FORCE_UWP
 #include "../test_common/ma_test_common.c"
 
 typedef enum
@@ -344,13 +345,15 @@ void on_data(ma_device* pDevice, void* pFramesOut, const void* pFramesIn, ma_uin
     {
         case ma_device_type_playback:
         {
-            /* In the playback case we just read from our input source. */
+            /*
+            In the playback case we just read from our input source. We're going to use ma_data_source_read_pcm_frames() for this
+            to ensure the data source abstraction is working properly for each type. */
             if (g_State.sourceType == source_type_decoder) {
-                ma_decoder_read_pcm_frames(&g_State.decoder, pFramesOut, frameCount, NULL);
+                ma_data_source_read_pcm_frames(&g_State.decoder, pFramesOut, frameCount, NULL);
             } else if (g_State.sourceType == source_type_waveform) {
-                ma_waveform_read_pcm_frames(&g_State.waveform, pFramesOut, frameCount, NULL);
+                ma_data_source_read_pcm_frames(&g_State.waveform, pFramesOut, frameCount, NULL);
             } else if (g_State.sourceType == source_type_noise) {
-                ma_noise_read_pcm_frames(&g_State.noise, pFramesOut, frameCount, NULL);
+                ma_data_source_read_pcm_frames(&g_State.noise, pFramesOut, frameCount, NULL);
             }
         } break;
 
@@ -596,9 +599,15 @@ int main(int argc, char** argv)
         }
         if (c == 'p' || c == 'P') {
             if (ma_device_is_started(&g_State.device)) {
-                ma_device_stop(&g_State.device);
+                result = ma_device_stop(&g_State.device);
+                if (result != MA_SUCCESS) {
+                    printf("ERROR: Error when stopping the device: %s\n", ma_result_description(result));
+                }
             } else {
-                ma_device_start(&g_State.device);
+                result = ma_device_start(&g_State.device);
+                if (result != MA_SUCCESS) {
+                    printf("ERROR: Error when starting the device: %s\n", ma_result_description(result));
+                }
             }
         }
     }
