@@ -20,6 +20,7 @@
 #include "audio.h"
 
 #include "../tomb4/mod_config.h"
+#include "../tomb4/tomb4.h"
 
 static COMMANDLINES commandlines[] =
 {
@@ -30,6 +31,7 @@ static COMMANDLINES commandlines[] =
 WINAPP App;
 char* cutseqpakPtr;
 long resChangeCounter;
+bool appIsUnfocused = false;
 
 bool WinRunCheck(LPSTR WindowName, LPSTR ClassName, HANDLE* mutex)
 {
@@ -365,15 +367,19 @@ LRESULT CALLBACK WinMainWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 
 				if (App.SetupComplete)
 				{
-					Log(5, "Change Video Mode");
-					Log(5, "HangGameThread");
-					S_PauseAudio();
-					S_SoundPauseSamples();
-					while (App.dx.InScene) {};
-					App.dx.WaitAtBeginScene = 1;
-					while (!App.dx.InScene) {};
-					SuspendThread((HANDLE)MainThread.handle);
-					Log(5, "Game Thread Suspended");
+					appIsUnfocused = true;
+					if (tomb4.hang_game_thread)
+					{
+						Log(5, "Change Video Mode");
+						Log(5, "HangGameThread");
+						S_PauseAudio();
+						S_SoundPauseSamples();
+						while (App.dx.InScene) {};
+						App.dx.WaitAtBeginScene = 1;
+						while (!App.dx.InScene) {};
+						SuspendThread((HANDLE)MainThread.handle);
+						Log(5, "Game Thread Suspended");
+					}
 				}
 
 				return 0;
@@ -384,11 +390,15 @@ LRESULT CALLBACK WinMainWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 
 				if (App.SetupComplete)
 				{
-					ResumeThread((HANDLE)MainThread.handle);
-					App.dx.WaitAtBeginScene = 0;
-					Log(5, "Game Thread Resumed");
-					S_SoundUnpauseSamples();
-					S_UnpauseAudio();
+					appIsUnfocused = false;
+					if (tomb4.hang_game_thread)
+					{
+						ResumeThread((HANDLE)MainThread.handle);
+						App.dx.WaitAtBeginScene = 0;
+						Log(5, "Game Thread Resumed");
+						S_SoundUnpauseSamples();
+						S_UnpauseAudio();
+					}
 				}
 
 				return 0;

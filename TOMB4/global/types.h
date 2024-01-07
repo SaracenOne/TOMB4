@@ -2409,6 +2409,7 @@ struct tomb4_options	//keep this at the bottom of the file, please
 	reverb_enum reverb;				//1-> off, 2-> Lara room, 3->camera room
 	ulong distance_fog;			//value in blocks
 	float GUI_Scale;
+	bool hang_game_thread;
 };
 
 #define NATIVE_ITEM_COUNT 256 // TRLE: For save compatibility

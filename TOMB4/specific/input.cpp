@@ -336,6 +336,10 @@ long S_UpdateInput()
 	debounce = SetDebounce;
 	DXReadKeyboard(keymap);
 
+	if (appIsUnfocused) {
+		memset(&keymap, 0, 256);
+	}
+
 	if (ControlMethod == 1)
 		joy_fire = ReadJoystick(joy_x, joy_y);
 

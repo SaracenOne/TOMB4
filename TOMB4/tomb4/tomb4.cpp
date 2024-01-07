@@ -108,6 +108,10 @@ void init_tomb4_stuff()
 		sprintf(buf, "UIScale");
 		tomb4.GUI_Scale = 1.0F;							//default is 1.0F
 		REG_WriteFloat(buf, tomb4.GUI_Scale);
+
+		sprintf(buf, "hang_game_thread");
+		tomb4.hang_game_thread = 1;						//on
+		REG_WriteBool(buf, tomb4.hang_game_thread);
 	}
 	else	//Key already exists, settings already written, read them. also falls back to default if any of them missing
 	{
@@ -189,6 +193,10 @@ void init_tomb4_stuff()
 
 		sprintf(buf, "UIScale");
 		REG_ReadFloat(buf, tomb4.GUI_Scale, 1.0F);
+
+		sprintf(buf, "hang_game_thread");
+		REG_ReadBool(buf, tomb4.hang_game_thread, 1);
+
 	}
 
 	CloseRegistry();
@@ -268,6 +276,9 @@ void save_new_tomb4_settings()
 
 	sprintf(buf, "UIScale");
 	REG_WriteFloat(buf, tomb4.GUI_Scale);
+
+	sprintf(buf, "hang_game_thread");
+	REG_WriteBool(buf, tomb4.hang_game_thread);
 
 	CloseRegistry();
 }

@@ -18,3 +18,4 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
 extern WINAPP App;
 extern char* cutseqpakPtr;
 extern long resChangeCounter;
+extern bool appIsUnfocused;

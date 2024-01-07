@@ -7,7 +7,7 @@
 #include "../specific/3dmath.h"
 
 #define PAGE0_NUM	14
-#define PAGE1_NUM	9
+#define PAGE1_NUM	10
 #define YPOS	textY + y++ * font_height
 #define CHECK_SEL(c)	selection & (1 << s++) ? 1 : c
 
@@ -412,6 +412,7 @@ bool Page1(long& num, long textY, ulong selection)
 	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Reverb", 0);
 	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "distance fog", 0);
 	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Bars scale", 0);
+	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Freeze when game unfocused", 0);
 
 	y = 2;
 	s = 0;
@@ -446,6 +447,9 @@ bool Page1(long& num, long textY, ulong selection)
 	PrintString(phd_centerx + (phd_centerx >> 1), YPOS, CHECK_SEL(6), buffer, 0);
 
 	sprintf(buffer, "%.1f", tomb4.GUI_Scale);
+	PrintString(phd_centerx + (phd_centerx >> 1), YPOS, CHECK_SEL(6), buffer, 0);
+
+	strcpy(buffer, tomb4.hang_game_thread ? "on" : "off");
 	PrintString(phd_centerx + (phd_centerx >> 1), YPOS, CHECK_SEL(6), buffer, 0);
 
 	switch (selection)
@@ -591,6 +595,17 @@ bool Page1(long& num, long textY, ulong selection)
 		}
 
 		break;
+	case 1 << 9:
+
+		if (dbinput & IN_LEFT || dbinput & IN_RIGHT)
+		{
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+			tomb4.hang_game_thread = !tomb4.hang_game_thread;
+			changed = 1;
+		}
+
+		break;
+
 	}
 
 	return changed;
