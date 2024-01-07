@@ -18,13 +18,6 @@ static char source_pcm_format[50] =
 };
 #pragma warning(pop)
 
-char* samples_buffer;
-static HACMSTREAM hACMStream;
-static ACMSTREAMHEADER ACMStreamHeader;
-static char* decompressed_samples_buffer;
-static MMRESULT mmresult;
-static WAVEFORMATEX pcm_format;
-
 #define MAX_VOICES 32
 
 #ifdef MA_AUDIO_ENGINE
@@ -35,6 +28,7 @@ static WAVEFORMATEX pcm_format;
 #include "../tomb4/libs/miniaudio/miniaudio.h"
 #endif
 
+char* samples_buffer;
 #if defined(MA_AUDIO_SAMPLES) && defined(MA_AUDIO_ENGINE)
 ma_engine ma_samples_engine;
 static ma_sound ma_voices[MAX_VOICES];
@@ -46,6 +40,11 @@ static IXAudio2MasteringVoice* XAMaster;
 static IUnknown* XAEffect;
 static IXAudio2SourceVoice* XA_Voices[MAX_VOICES];
 static XAUDIO2_BUFFER XA_Buffers[MAX_SAMPLE_BUFFERS];
+static MMRESULT mmresult;
+static WAVEFORMATEX pcm_format;
+static HACMSTREAM hACMStream;
+static ACMSTREAMHEADER ACMStreamHeader;
+static char* decompressed_samples_buffer;
 
 static XAUDIO2FX_REVERB_I3DL2_PARAMETERS reverb_preset[4] =
 {
@@ -280,6 +279,7 @@ bool DXDSCreate()
 
 bool InitSampleDecompress()
 {
+#if !defined(MA_AUDIO_SAMPLES) || !defined(MA_AUDIO_ENGINE)
 	mmresult = acmStreamOpen(&hACMStream, hACMDriver, (LPWAVEFORMATEX)source_pcm_format, &pcm_format, 0, 0, 0, 0);
 
 	if (mmresult != DS_OK)
@@ -297,12 +297,16 @@ bool InitSampleDecompress()
 
 	if (mmresult != DS_OK)
 		Log(1, "Prepare Stream %d", mmresult);
+#else
+	samples_buffer = (char*)malloc(DECOMPRESS_BUFFER_LEN + 0x5A);
+#endif
 
 	return 1;
 }
 
 bool FreeSampleDecompress()
 {
+#if !defined(MA_AUDIO_SAMPLES) || !defined(MA_AUDIO_ENGINE)
 	ACMStreamHeader.cbSrcLength = DECOMPRESS_BUFFER_LEN;
 	mmresult = acmStreamUnprepareHeader(hACMStream, &ACMStreamHeader, 0);
 
@@ -316,6 +320,10 @@ bool FreeSampleDecompress()
 
 	free(decompressed_samples_buffer);
 	free(samples_buffer);
+#else
+	free(samples_buffer);
+#endif
+
 	return 1;
 }
 
@@ -359,9 +367,53 @@ bool DXCreateSampleADPCM(char* data, long comp_size, long uncomp_size, long num)
 	Log(8, "DXCreateSampleADPCM");
 
 #ifdef MA_AUDIO_SAMPLES
-	Log(8, "Unsupported via MiniAudio");
+	bool result = false;
 
-	return 0;
+	// Load the ADPCM data into a buffer
+	ma_uint8* pPCMData = nullptr;
+	ma_uint8* pADPCMData = (ma_uint8*)malloc(comp_size);
+	ma_decoder decoder;
+
+	if (pADPCMData) {
+		memcpy(pADPCMData, data, comp_size);
+
+		// Create a decoder
+		ma_decoder_config config = ma_decoder_config_init(ma_format_s16, 1, 22050);
+		if (ma_decoder_init_memory(pADPCMData, comp_size, &config, &decoder) == MA_SUCCESS) {
+			// Decode the ADPCM data into PCM
+			ma_uint8* pPCMData = (ma_uint8*)malloc(uncomp_size);
+			ma_uint64 frameCount;
+			ma_result decoder_result = ma_decoder_read_pcm_frames(&decoder, pPCMData, uncomp_size / ma_get_bytes_per_frame(config.format, config.channels), &frameCount);
+
+			if (decoder_result == MA_SUCCESS) {
+				// Now you can use the PCM data with MiniAudio
+				ma_audio_buffer_config bufferConfig = ma_audio_buffer_config_init(
+					ma_format_s16,
+					1,
+					frameCount,
+					pPCMData,
+					NULL);
+				bufferConfig.sampleRate = 22050;
+
+				ma_result audio_buffer_alloc_result = ma_audio_buffer_alloc_and_init(&bufferConfig, &ma_sample_buffers[num]);
+				if (audio_buffer_alloc_result == MA_SUCCESS) {
+					result = true;
+				}
+			}
+		} else {
+			Log(1, "Failed to initialize decoder.");
+		}
+	}
+
+	// Clean up
+	if (pADPCMData)
+		free(pADPCMData);
+	if (pPCMData)
+		free(pPCMData);
+
+	ma_decoder_uninit(&decoder);
+
+	return result;
 #else
 	if (!App.dx.lpDS)
 		return 0;
