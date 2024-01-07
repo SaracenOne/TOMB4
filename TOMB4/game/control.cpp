@@ -632,7 +632,7 @@ void TestTriggers(short* data, long heavy, long HeavyFlags, int room_number, int
 	ITEM_INFO* camera_item;
 	long switch_off, flip, flip_available, neweffect, key, quad;
 	short camera_flags, camera_timer, type, trigger, value, flags, state;
-	short timer;
+	char timer;
 
 	// NGLE
 	bool should_update_flipeffect_floorstate = false;
@@ -808,10 +808,11 @@ void TestTriggers(short* data, long heavy, long HeavyFlags, int room_number, int
 			if (NGUseNGConditionals()) {
 				value = *data++ & 0x3FF;
 				char extra = (flags >> 9);
+				short ng_timer = flags & 0xff;
 
 				int plugin_id = NGGetPluginIDForFloorData(data + 1);
 				if (plugin_id == 0) {
-					if (!NGCondition(value, extra, timer))
+					if (!NGCondition(value, extra, ng_timer))
 						return;
 				} else {
 					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Plugin Trigger Conditionals are currently not supported!");
@@ -1047,7 +1048,7 @@ void TestTriggers(short* data, long heavy, long HeavyFlags, int room_number, int
 					should_update_ng_flipeffect_oneshot = true;
 				}
 			} else {
-				TriggerTimer = timer & 0xff;
+				TriggerTimer = timer;
 				neweffect = value;
 			}
 			break;
