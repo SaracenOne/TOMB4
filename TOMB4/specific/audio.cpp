@@ -1304,6 +1304,7 @@ bool play_track_on_stream_channel(int channel_id, long track, StreamMode mode) {
 	char name[256];
 	memset(name, 0x00, sizeof(name));
 
+#ifdef LEVEL_EDITOR
 	find_file_with_substring("audio", TrackFileNames[track], name);
 
 	// Not sure if we should detect vorbis by filename since ogg is container format.
@@ -1322,6 +1323,10 @@ bool play_track_on_stream_channel(int channel_id, long track, StreamMode mode) {
 	} else {
 		channels[channel_id].decoder_config.encodingFormat = ma_encoding_format_unknown;
 	}
+#else
+	memcpy(name, TrackFileNames[track], strlen(TrackFileNames[track]));
+	channels[channel_id].decoder_config.encodingFormat = ma_encoding_format_wav;
+#endif
 
 	char path[256];
 	wsprintf(path, "audio\\%s", name);
