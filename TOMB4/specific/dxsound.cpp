@@ -232,7 +232,7 @@ bool DXDSCreate()
 
 	ma_engine_config engineConfig = ma_engine_config_init();
 	engineConfig.channels = 2;
-	engineConfig.sampleRate = 44100;
+	engineConfig.sampleRate = sfx_frequencies[SoundQuality];
 
 	ma_result result = ma_engine_init(&engineConfig, &ma_samples_engine);
 	if (result != MA_SUCCESS) {
