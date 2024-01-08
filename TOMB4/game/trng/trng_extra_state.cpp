@@ -191,8 +191,9 @@ enum TRNG_INPUT {
 
 int ng_looped_sound_state[NumSamples];
 
-#define NG_INPUT_LOCK_TIMER_COUNT TRNG_INPUT_COUNT
-int ng_input_lock_timers[NG_INPUT_LOCK_TIMER_COUNT];
+#define NG_INPUT_TIMER_COUNT TRNG_INPUT_COUNT
+int ng_input_lock_timers[NG_INPUT_TIMER_COUNT];
+int ng_input_simulate_timers[NG_INPUT_TIMER_COUNT];
 
 void NGStorePendingRoomNumber(int room_number) {
 	pending_ng_room = room_number;
@@ -358,6 +359,71 @@ int NGValidateInputAgainstLockTimers(int input) {
 	return input;
 }
 
+int NGApplySimulatedInput(int input) {
+	for (int i = 0; i < TRNG_SAVE_GAME; i++) {
+		if (ng_input_simulate_timers[i] != 0) {
+			switch (i) {
+			case TRNG_INPUT_UP:
+				input |= IN_FORWARD;
+				break;
+			case TRNG_INPUT_DOWN:
+				input |= IN_BACK;
+				break;
+			case TRNG_INPUT_LEFT:
+				input |= IN_LEFT;
+				break;
+			case TRNG_INPUT_RIGHT:
+				input |= IN_RIGHT;
+				break;
+			case TRNG_INPUT_DUCK:
+				input |= IN_DUCK;
+				break;
+			case TRNG_INPUT_DASH:
+				input |= IN_SPRINT;
+				break;
+			case TRNG_INPUT_WALK:
+				input |= IN_WALK;
+				break;
+			case TRNG_INPUT_JUMP:
+				input |= IN_JUMP;
+				break;
+			case TRNG_INPUT_ACTION:
+				input |= IN_ACTION;
+				break;
+			case TRNG_INPUT_DRAW_WEAPON:
+				input |= IN_DRAW;
+				break;
+			case TRNG_INPUT_USE_FLARE:
+				input |= IN_FLARE;
+				break;
+			case TRNG_INPUT_LOOK:
+				input |= IN_LOOK;
+				break;
+			case TRNG_INPUT_ROLL:
+				input |= IN_ROLL;
+				break;
+			case TRNG_INVENTORY_AND_DESELECT:
+				input |= (IN_OPTION | IN_DESELECT);
+				break;
+			case TRNG_STEP_LEFT:
+				input |= IN_LSTEP;
+				break;
+			case TRNG_STEP_RIGHT:
+				input |= IN_LSTEP;
+				break;
+			case TRNG_PAUSE:
+				input |= IN_PAUSE;
+				break;
+			default:
+				NGLog(NG_LOG_TYPE_ERROR, "Invalid input type %u!", i);
+				break;
+			}
+		}
+	}
+
+	return input;
+}
+
 bool NGValidateInputSavegame() {
 	return ng_input_lock_timers[TRNG_SAVE_GAME] == 0;
 }
@@ -371,8 +437,8 @@ bool NGValidateInputWeaponHotkeys() {
 }
 
 void NGDisableInputForTime(unsigned char input, int ticks) {
-	if (input > NG_INPUT_LOCK_TIMER_COUNT) {
-		NGLog(NG_LOG_TYPE_ERROR, "Invalid input type %u!", input);
+	if (input > NG_INPUT_TIMER_COUNT) {
+		NGLog(NG_LOG_TYPE_ERROR, "NGDisableInputForTime: Invalid input type %u!", input);
 		return;
 	}
 
@@ -382,7 +448,7 @@ void NGDisableInputForTime(unsigned char input, int ticks) {
 	}
 
 	if (input == 0) {
-		for (int i = 0; i < NG_INPUT_LOCK_TIMER_COUNT; i++) {
+		for (int i = 0; i < NG_INPUT_TIMER_COUNT; i++) {
 			ng_input_lock_timers[i] = final_ticks;
 		}
 	} else {
@@ -390,9 +456,29 @@ void NGDisableInputForTime(unsigned char input, int ticks) {
 	}
 }
 
+void NGSimulateInputForTime(unsigned char input, int ticks) {
+	if (input > NG_INPUT_TIMER_COUNT) {
+		NGLog(NG_LOG_TYPE_ERROR, "NGSimulateInputForTime: Invalid input type %u!", input);
+		return;
+	}
+
+	int final_ticks = -1;
+	if (ticks > 0) {
+		final_ticks = ticks;
+	}
+
+	if (input == 0) {
+		for (int i = 0; i < NG_INPUT_TIMER_COUNT; i++) {
+			ng_input_simulate_timers[i] = final_ticks;
+		}
+	} else {
+		ng_input_simulate_timers[input - 1] = final_ticks;
+	}
+}
+
 void NGEnableInput(unsigned char input) {
 	if (input == 0) {
-		for (int i = 0; i < NG_INPUT_LOCK_TIMER_COUNT; i++) {
+		for (int i = 0; i < NG_INPUT_TIMER_COUNT; i++) {
 			ng_input_lock_timers[i] = 0;
 		}
 	} else {
@@ -870,10 +956,13 @@ void NGFrameStartUpdate() {
 		}
 	}
 
-	// Input locks
-	for (int i = 0; i < NG_INPUT_LOCK_TIMER_COUNT; i++) {
+	// Input Locks and Input Simulators
+	for (int i = 0; i < NG_INPUT_TIMER_COUNT; i++) {
 		if (ng_input_lock_timers[i] > 0) {
 			ng_input_lock_timers[i] -= 1;
+		}
+		if (ng_input_simulate_timers[i] > 0) {
+			ng_input_simulate_timers[i] -= 1;
 		}
 	}
 
@@ -1535,7 +1624,8 @@ void NGSetupExtraState() {
 	memset(ng_action_oneshot_floorstate, 0x00, ng_floorstate_data_size);
 
 	// Input lock
-	memset(ng_input_lock_timers, 0x00, sizeof(ng_input_lock_timers));
+	memset(ng_input_lock_timers, 0x00, sizeof(ng_input_lock_timers) * sizeof(int));
+	memset(ng_input_simulate_timers, 0x00, sizeof(ng_input_simulate_timers) * sizeof(int));
 
 	// Looped samples
 	memset(ng_looped_sound_state, 0x00, NumSamples * sizeof(int));

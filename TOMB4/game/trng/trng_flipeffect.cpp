@@ -166,6 +166,13 @@ bool keyboard_enable_input(unsigned char input, unsigned char unused) {
 	return true;
 }
 
+// NGLE - 53
+bool keyboard_simulate_receivement_of_keyboard_command(unsigned char input, unsigned char timer) {
+	NGSimulateInputForTime(input, (int)timer * 30);
+
+	return true;
+}
+
 // NGLE - 63
 bool kill_and_or_set_lara_on_fire(unsigned char death_type, unsigned char action_data_2) {
 	switch (death_type) {
@@ -1310,7 +1317,7 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 			}
 			break;
 		}
-		case DISABLE_INPUT_FOR_TIME: {
+		case KEYBOARD_DISABLE_INPUT_FOR_TIME: {
 			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return disable_input_for_time(action_data_1, action_data_2);
 			break;
@@ -1322,7 +1329,7 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 		}
 		case KEYBOARD_SIMULATE_RECEIVEMENT_OF_KEYBOARD_COMMAND: {
 			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "KEYBOARD_SIMULATE_RECEIVEMENT_OF_KEYBOARD_COMMAND unimplemented!");
+				return keyboard_simulate_receivement_of_keyboard_command(action_data_1, action_data_2);
 			break;
 		}
 		case SCREEN_HIDE_SCREEN_FOR_X_TIME_IN_WAY: {

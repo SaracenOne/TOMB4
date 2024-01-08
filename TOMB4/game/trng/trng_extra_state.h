@@ -106,11 +106,13 @@ extern void NGSetupExtraState();
 extern void NGFrameFinishExtraState();
 
 extern int NGValidateInputAgainstLockTimers(int input);
+extern int NGApplySimulatedInput(int input);
 extern bool NGValidateInputSavegame();
 extern bool NGValidateInputLoadgame();
 extern bool NGValidateInputWeaponHotkeys();
 
 extern void NGDisableInputForTime(unsigned char input, int ticks);
+extern void NGSimulateInputForTime(unsigned char input, int ticks);
 extern void NGEnableInput(unsigned char input);
 
 extern bool NGIsItemFrozen(unsigned int item_num);

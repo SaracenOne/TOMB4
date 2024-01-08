@@ -416,6 +416,7 @@ long S_UpdateInput()
 		linput |= IN_DESELECT | IN_OPTION;
 
 	linput = NGValidateInputAgainstLockTimers(linput);
+	linput = NGApplySimulatedInput(linput);
 
 	if (linput & IN_FLARE) {
 		linput &= ~IN_FLARE;
