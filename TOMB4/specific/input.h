@@ -1,6 +1,9 @@
 #pragma once
 #include "../global/types.h"
 
+extern int convert_sdl_scancode_to_tomb_keycode(int scancode);
+extern int convert_tomb_keycode_to_sdl_scancode(int tomb_keycode);
+
 long Key(long number);
 long S_UpdateInput();
 long ReadJoystick(long& x, long& y);

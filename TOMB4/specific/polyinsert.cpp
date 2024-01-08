@@ -46,6 +46,9 @@ static long zero = 0;
 
 void HWR_DrawSortList(D3DTLBUMPVERTEX* info, short num_verts, short texture, short type)
 {
+#ifdef USE_BGFX
+	return;
+#else
 	switch (type)
 	{
 	case 0:
@@ -163,12 +166,15 @@ void HWR_DrawSortList(D3DTLBUMPVERTEX* info, short num_verts, short texture, sho
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
 		break;
 	}
-
+#endif
 	DrawPrimitiveCnt++;
 }
 
 void DrawSortList()
 {
+#ifdef USE_BGFX
+	return;
+#else
 	SORTLIST* pSort;
 	D3DTLBUMPVERTEX* vtx;
 	D3DTLBUMPVERTEX* bVtx;
@@ -324,6 +330,7 @@ void DrawSortList()
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 1);
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHATESTENABLE, 0);
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
+#endif
 	InitBuckets();
 }
 
@@ -704,6 +711,9 @@ void OmniFog(D3DTLVERTEX* v)
 
 void AddTriClippedSorted(D3DTLVERTEX* v, short v0, short v1, short v2, TEXTURESTRUCT* tex, long double_sided)
 {
+#ifdef USE_BGFX
+	return;
+#else
 	D3DTLBUMPVERTEX* p;
 	D3DTLVERTEX* pV;
 	SORTLIST* sl;
@@ -942,10 +952,14 @@ void AddTriClippedSorted(D3DTLVERTEX* v, short v0, short v1, short v2, TEXTUREST
 	v[v0].specular = specBak[0];
 	v[v1].specular = specBak[1];
 	v[v2].specular = specBak[2];
+#endif
 }
 
 void AddQuadClippedSorted(D3DTLVERTEX* v, short v0, short v1, short v2, short v3, TEXTURESTRUCT* tex, long double_sided)
 {
+#ifdef USE_BGFX
+	return;
+#else
 	D3DTLBUMPVERTEX* p;
 	D3DTLVERTEX* pV;
 	SORTLIST* sl;
@@ -1144,10 +1158,14 @@ void AddQuadClippedSorted(D3DTLVERTEX* v, short v0, short v1, short v2, short v3
 	v[v1].specular = specBak[1];
 	v[v2].specular = specBak[2];
 	v[v3].specular = specBak[3];
+#endif
 }
 
 void AddLineClippedSorted(D3DTLVERTEX* v0, D3DTLVERTEX* v1, short drawtype)
 {
+#ifdef USE_BGFX
+	return;
+#else
 	D3DTLBUMPVERTEX* v;
 	SORTLIST* sl;
 
@@ -1173,6 +1191,7 @@ void AddLineClippedSorted(D3DTLVERTEX* v0, D3DTLVERTEX* v1, short drawtype)
 	v[1].rhw = v1->rhw;
 	v[1].color = v1->color;
 	v[1].specular = v1->specular;
+#endif
 }
 
 void InitialiseSortList()

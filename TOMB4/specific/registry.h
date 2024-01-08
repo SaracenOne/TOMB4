@@ -1,8 +1,10 @@
 #pragma once
 #include "../global/types.h"
 
-bool REG_OpenKey(LPCSTR lpSubKey);
-bool OpenRegistry(LPCSTR SubKeyName);
+#ifndef USE_INI
+bool REG_OpenKey(const char *lpSubKey);
+#endif
+bool OpenRegistry(const char *SubKeyName);
 void REG_CloseKey();
 void CloseRegistry();
 void REG_WriteLong(char* SubKeyName, ulong value);

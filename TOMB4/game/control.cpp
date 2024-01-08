@@ -258,7 +258,12 @@ long ControlPhase(long nframes, long demo_mode)
 
 		if (cutseq_trig)
 		{
-			if (keymap[DIK_ESCAPE] && !ScreenFading && !bDoCredits && tomb4.cutseq_skipper)
+#ifdef USE_SDL
+			if (keymap[SDL_SCANCODE_ESCAPE]
+#else
+			if (keymap[DIK_ESCAPE]
+#endif
+			&& !ScreenFading && !bDoCredits && tomb4.cutseq_skipper)
 				cutseq_trig = 3;
 
 			input = 0;

@@ -1,7 +1,9 @@
 #include "../tomb4/pch.h"
 #include "tomb4.h"
 #include "../specific/registry.h"
+#ifdef USE_DISCORD_RPC
 #include "libs/discordRPC/discord_rpc.h"
+#endif
 #include "../game/lara.h"
 #include "../game/gameflow.h"
 
@@ -285,10 +287,12 @@ void save_new_tomb4_settings()
 
 void RPC_Init()
 {
+#ifdef UNSTUBBED
 	DiscordEventHandlers handlers;
 
 	memset(&handlers, 0, sizeof(handlers));
 	Discord_Initialize("946240885866262598", &handlers, 1, 0);
+#endif
 }
 
 const char* RPC_GetLevelName()
@@ -460,6 +464,7 @@ const char* RPC_GetHealthPercentage()
 
 void RPC_Update()
 {
+#ifdef USE_DISCORD_RPC
 	DiscordRichPresence RPC;
 
 	memset(&RPC, 0, sizeof(RPC));
@@ -475,9 +480,12 @@ void RPC_Update()
 
 	RPC.instance = 1;
 	Discord_UpdatePresence(&RPC);
+#endif
 }
 
 void RPC_close()
 {
+#ifdef USE_DISCORD_RPC
 	Discord_Shutdown();
+#endif
 }

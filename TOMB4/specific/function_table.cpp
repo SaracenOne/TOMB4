@@ -24,12 +24,17 @@ void SetFogColor(long r, long g, long b)
 	g &= 0xFF;
 	b &= 0xFF;
 	CurrentFog = RGBA(r, g, b, 0xFF);
+#ifndef USE_BGFX
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_FOGCOLOR, CurrentFog);
+#endif
 }
 
 void HWInitialise()
 {
 	Log(2, "HWIntialise");	//nice typo
+#ifdef USE_BGFX
+
+#else
 	App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_DISABLE);
 	App.dx.lpD3DDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
 	App.dx.lpD3DDevice->SetTextureStageState(2, D3DTSS_COLOROP, D3DTOP_DISABLE);
@@ -85,6 +90,7 @@ void HWInitialise()
 	DXAttempt(App.dx.lpD3DDevice->SetLightState(D3DLIGHTSTATE_FOGEND, *(DWORD*)(&FogEnd)));
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_FOGCOLOR, 0xFF000000);
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_FOGENABLE, 1);
+#endif
 }
 
 bool _NVisible(D3DTLVERTEX* v0, D3DTLVERTEX* v1, D3DTLVERTEX* v2)
@@ -115,13 +121,21 @@ HRESULT HWBeginScene()
 	App.dx.InScene = 1;
 	App.dx.DoneBlit = 0;
 	while (App.dx.WaitAtBeginScene) {};
+#ifdef USE_BGFX
+	return 1;
+#else
 	return App.dx.lpD3DDevice->BeginScene();
+#endif
 }
 
 HRESULT HWEndScene()
 {
 	App.dx.InScene = 0;
+#ifdef USE_BGFX
+	return 0;
+#else
 	return App.dx.lpD3DDevice->EndScene();
+#endif
 }
 
 void InitialiseFunctionTable()

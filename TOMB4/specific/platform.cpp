@@ -9,6 +9,7 @@
 #error "Platform not supported"
 #endif
 #include "function_stubs.h"
+#include "winmain.h"
 
 int count_matching_characters(const char* s1, const char* s2) {
 	int count = 0;
@@ -95,8 +96,13 @@ void platform_fatal_error(const char* s, ...) {
 
 	Log(0, "Fatal Error: %s", buf);
 
-#ifdef _WIN32
-	MessageBox(0, buf, "Fatal Error", 0);
+#ifdef USE_SDL
+	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR,
+		"Tomb4Main.",
+		buf,
+		NULL);
+#elif _WIN32
+	MessageBox(0, buf, "Tomb4Main", 0);
 #endif
 
 	exit(-1);

@@ -109,6 +109,7 @@ LPDIRECTDRAWSURFACEX CreateTexturePage(long w, long h, long MipMapCount, long* p
 
 void FreeTextures()
 {
+#ifndef USE_BGFX
 	TEXTURE* tex;
 
 	DXAttempt(App.dx.lpD3DDevice->SetTexture(0, 0));
@@ -134,6 +135,7 @@ void FreeTextures()
 		else
 			Log(1, "%s Attempt To Release NULL Ptr", "Surface");
 	}
+#endif
 
 	free(Textures);
 	Textures = 0;

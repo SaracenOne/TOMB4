@@ -27,6 +27,7 @@
 #include "../tomb4/troyestuff.h"
 #include "drawbars.h"
 
+#include "../specific/input.h"
 #include "../tomb4/mod_config.h"
 
 long sfx_frequencies[3] = { 11025, 22050, 44100 };
@@ -120,8 +121,13 @@ void DoOptions()
 
 		for (lp = 0; lp < 16; lp++)
 		{
-			txt = (waiting_for_key && sel2 & (1 << i)) ? SCRIPT_TEXT(TXT_Waiting) : keyboard_buttons[layout[1][lp]];
-			PrintString(phd_centerx + (phd_centerx >> 2), f + y++ * font_height, sel2 & (1 << i++) ? 1 : 6, txt, 0);
+			int dik = layout[1][lp];
+
+			txt = (waiting_for_key && sel2 & (1 << i)) ? SCRIPT_TEXT(TXT_Waiting) : keyboard_buttons[dik];
+			if (txt)
+				PrintString(phd_centerx + (phd_centerx >> 2), f + y++ * font_height, sel2 & (1 << i++) ? 1 : 6, txt, 0);
+			else
+				PrintString(phd_centerx + (phd_centerx >> 2), f + y++ * font_height, sel2 & (1 << i++) ? 1 : 6, "???", 0);
 		}
 
 		small_font = 0;
@@ -145,7 +151,11 @@ void DoOptions()
 		{
 			i = 0;
 
+#ifdef USE_SDL
+			if (keymap[SDL_SCANCODE_ESCAPE])
+#else
 			if (keymap[DIK_ESCAPE])
+#endif
 			{
 				SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 				sel2 = 0;
@@ -154,6 +164,31 @@ void DoOptions()
 				return;
 			}
 
+#ifdef USE_SDL
+			for (lp = 0; lp < keymap_count; lp++)
+			{
+				short tomb4_scancode = (short)convert_sdl_scancode_to_tomb_keycode(lp);
+				if (keymap[lp] && keyboard_buttons[tomb4_scancode])
+				{
+					if (tomb4_scancode != DIK_RETURN && tomb4_scancode != DIK_LEFT && tomb4_scancode != DIK_RIGHT && tomb4_scancode != DIK_UP && tomb4_scancode != DIK_DOWN)
+					{
+						waiting_for_key = 0;
+
+						sel2 >>= 2;
+
+						while (sel2)
+						{
+							i++;
+							sel2 >>= 1;
+						}
+
+						sel2 = 0;
+
+						layout[1][i] = tomb4_scancode;
+					}
+				}
+			}
+#else
 			for (lp = 0; lp < 255; lp++)
 			{
 				if (keymap[lp] && keyboard_buttons[lp])
@@ -171,11 +206,11 @@ void DoOptions()
 						}
 
 						sel2 = 0;
-						layout[1][i] = (short)lp;
+						layout[1][i] = (short)convert_sdl_scancode_to_tomb_keycode(lp);
 					}
 				}
 			}
-
+#endif
 			if (ControlMethod == 1)
 			{
 				jread = ReadJoystick(jx, jy);
@@ -214,7 +249,9 @@ void DoOptions()
 			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 			sel2 = sel;
 			waiting_for_key = 1;
+#ifndef USE_SDL
 			memset(keymap, 0, sizeof(keymap));
+#endif
 		}
 
 		if (dbinput & IN_SELECT && ControlMethod == 2)
@@ -513,7 +550,11 @@ long S_DisplayPauseMenu(long reset)
 				return 1;
 			}
 
+#ifdef USE_SDL
+			if (dbinput & IN_SELECT && !keymap[SDL_SCANCODE_LALT])
+#else
 			if (dbinput & IN_SELECT && !keymap[DIK_LALT])
+#endif
 			{
 				SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 
@@ -751,6 +792,7 @@ static void S_DrawTile(long x, long y, long w, long h, LPDIRECT3DTEXTUREX t, lon
 	v[3].color = c2;
 	v[3].specular = 0xFF000000;
 
+#ifndef USE_BGFX
 	App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTFG_POINT);
 	App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_MINFILTER, D3DTFG_POINT);
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREPERSPECTIVE, 0);
@@ -763,6 +805,7 @@ static void S_DrawTile(long x, long y, long w, long h, LPDIRECT3DTEXTUREX t, lon
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTFG_LINEAR);
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_MINFILTER, D3DTFG_LINEAR);
 	}
+#endif
 }
 
 void S_DisplayMonoScreen()
@@ -933,6 +976,9 @@ static void CustomBlt(LPDDSURFACEDESCX dst, ulong dstX, ulong dstY, LPDDSURFACED
 
 void ConvertSurfaceToTextures(LPDIRECTDRAWSURFACEX surface)
 {
+#ifdef USE_BGFX
+	return;
+#else
 	DDSURFACEDESCX tSurf;
 	DDSURFACEDESCX uSurf;
 	RECT r;
@@ -959,6 +1005,7 @@ void ConvertSurfaceToTextures(LPDIRECTDRAWSURFACEX surface)
 	MonoScreen.surface->Unlock(0);
 	DXAttempt(MonoScreen.surface->QueryInterface(TEXGUID, (void**)&MonoScreen.tex));
 	surface->Unlock(0);
+#endif
 }
 
 void CheckKeyConflicts()

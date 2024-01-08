@@ -16,6 +16,409 @@
 
 #include "../game/trng/trng_extra_state.h"
 
+#ifdef USE_SDL
+int convert_sdl_scancode_to_tomb_keycode(int scancode) {
+	switch (scancode) {
+	case SDL_SCANCODE_UNKNOWN:
+		return 0x00; // 
+	case SDL_SCANCODE_A:
+		return 0x1e; // DIK_A
+	case SDL_SCANCODE_B:
+		return 0x30; // DIK_B
+	case SDL_SCANCODE_C:
+		return 0x2e; // DIK_C
+	case SDL_SCANCODE_D:
+		return 0x20; // DIK_D
+	case SDL_SCANCODE_E:
+		return 0x12; // DIK_E
+	case SDL_SCANCODE_F:
+		return 0x21; // DIK_F
+	case SDL_SCANCODE_G:
+		return 0x22; // DIK_G
+	case SDL_SCANCODE_H:
+		return 0x23; // DIK_H
+	case SDL_SCANCODE_I:
+		return 0x17; // DIK_I
+	case SDL_SCANCODE_J:
+		return 0x24; // DIK_J
+	case SDL_SCANCODE_K:
+		return 0x25; // DIK_K
+	case SDL_SCANCODE_L:
+		return 0x26; // DIK_L
+	case SDL_SCANCODE_M:
+		return 0x32; // DIK_M
+	case SDL_SCANCODE_N:
+		return 0x31; // DIK_N
+	case SDL_SCANCODE_O:
+		return 0x18; // DIK_O
+	case SDL_SCANCODE_P:
+		return 0x19; // DIK_P
+	case SDL_SCANCODE_Q:
+		return 0x10; // DIK_Q
+	case SDL_SCANCODE_R:
+		return 0x13; // DIK_R
+	case SDL_SCANCODE_S:
+		return 0x1f; // DIK_S
+	case SDL_SCANCODE_T:
+		return 0x14; // DIK_T
+	case SDL_SCANCODE_U:
+		return 0x16; // DIK_U
+	case SDL_SCANCODE_V:
+		return 0x2f; // DIK_V
+	case SDL_SCANCODE_W:
+		return 0x11; // DIK_W
+	case SDL_SCANCODE_X:
+		return 0x2d; // DIK_X
+	case SDL_SCANCODE_Y:
+		return 0x15; // DIK_Y
+	case SDL_SCANCODE_Z:
+		return 0x2c; // DIK_Z
+
+	case SDL_SCANCODE_1:
+		return 0x02; // DIK_1
+	case SDL_SCANCODE_2:
+		return 0x03; // DIK_2
+	case SDL_SCANCODE_3:
+		return 0x04; // DIK_3
+	case SDL_SCANCODE_4:
+		return 0x05; // DIK_4
+	case SDL_SCANCODE_5:
+		return 0x06; // DIK_5
+	case SDL_SCANCODE_6:
+		return 0x07; // DIK_6
+	case SDL_SCANCODE_7:
+		return 0x08; // DIK_7
+	case SDL_SCANCODE_8:
+		return 0x09; // DIK_8
+	case SDL_SCANCODE_9:
+		return 0x0a; // DIK_9
+	case SDL_SCANCODE_0:
+		return 0x0b; // DIK_0
+
+	case SDL_SCANCODE_RETURN:
+		return 0x1c; // DIK_RETURN
+	case SDL_SCANCODE_ESCAPE:
+		return 0x01; // DIK_ESCAPE
+	case SDL_SCANCODE_BACKSPACE:
+		return 0x0e; // DIK_BACK
+	case SDL_SCANCODE_TAB:
+		return 0x0f; // DIK_TAB
+	case SDL_SCANCODE_SPACE:
+		return 0x39; // DIK_SPACE
+
+	case SDL_SCANCODE_RIGHT:
+		return 0xcd; // DIK_RIGHT
+	case SDL_SCANCODE_LEFT:
+		return 0xcb; // DIK_LEFT
+	case SDL_SCANCODE_DOWN:
+		return 0xd0; // DIK_DOWN
+	case SDL_SCANCODE_UP:
+		return 0xc8; // DIK_UP
+
+	case SDL_SCANCODE_MINUS:
+		return 0x0c; // DIK_MINUS
+	case SDL_SCANCODE_EQUALS:
+		return 0x0d; // DIK_EQUALS
+	case SDL_SCANCODE_LEFTBRACKET:
+		return 0x1a; // DIK_LBRACKET
+	case SDL_SCANCODE_RIGHTBRACKET:
+		return 0x1b; // DIK_RBRACKET
+	case SDL_SCANCODE_BACKSLASH:
+		return 0x2b; // DIK_BACKSLASH
+
+	case SDL_SCANCODE_LCTRL:
+		return 0x1d; // DIK_LCONTROL
+	case SDL_SCANCODE_LSHIFT:
+		return 0x2a; // DIK_LSHIFT
+	case SDL_SCANCODE_LALT:
+		return 0x38; // DIK_LALT
+	case SDL_SCANCODE_LGUI:
+		return 0xdb; // DIK_LWIN
+	case SDL_SCANCODE_RCTRL:
+		return 0x9d; // DIK_RCONTROL
+	case SDL_SCANCODE_RSHIFT:
+		return 0x36; // DIK_RSHIFT
+	case SDL_SCANCODE_RALT:
+		return 0xb8; // DIK_RALT
+	case SDL_SCANCODE_RGUI:
+		return 0xdc; // DIK_RWIN
+
+	case SDL_SCANCODE_COMMA:
+		return 0x33; // DIK_COMMA
+	case SDL_SCANCODE_PERIOD:
+		return 0x34; // DIK_PERIOD
+
+
+	case SDL_SCANCODE_KP_1:
+		return 0x4f; // DIK_NUMPAD1
+	case SDL_SCANCODE_KP_2:
+		return 0x50; // DIK_NUMPAD2
+	case SDL_SCANCODE_KP_3:
+		return 0x51; // DIK_NUMPAD3
+	case SDL_SCANCODE_KP_4:
+		return 0x4b; // DIK_NUMPAD4
+	case SDL_SCANCODE_KP_5:
+		return 0x4c; // DIK_NUMPAD5
+	case SDL_SCANCODE_KP_6:
+		return 0x4d; // DIK_NUMPAD6
+	case SDL_SCANCODE_KP_7:
+		return 0x47; // DIK_NUMPAD7
+	case SDL_SCANCODE_KP_8:
+		return 0x48; // DIK_NUMPAD8
+	case SDL_SCANCODE_KP_9:
+		return 0x49; // DIK_NUMPAD9
+	case SDL_SCANCODE_KP_0:
+		return 0x52; // DIK_NUMPAD0
+	case SDL_SCANCODE_KP_PERIOD:
+		return 0x53; // DIK_NUMPADPERIOD
+	case SDL_SCANCODE_KP_PLUS:
+		return 0x4e; // DIK_NUMPADPLUS
+	case SDL_SCANCODE_KP_MINUS:
+		return 0x4a; // DIK_NUMPADMINUS
+	case SDL_SCANCODE_KP_DIVIDE:
+		return 0xB5; // DIK_NUMPADSLASH
+	case SDL_SCANCODE_KP_MULTIPLY:
+		return 0x37; // DIK_NUMPADSTAR
+	case SDL_SCANCODE_KP_ENTER:
+		return 0x9C; // DIK_NUMPADENTER
+
+	case SDL_SCANCODE_CAPSLOCK:
+		return 0x3a; // DIK_CAPSLOCK
+
+	case SDL_SCANCODE_INSERT:
+		return 0xd2; // DIK_INSERT
+	case SDL_SCANCODE_HOME:
+		return 0xc7; // DIK_HOME
+	case SDL_SCANCODE_PAGEUP:
+		return 0xc9; // DIK_PGUP
+	case SDL_SCANCODE_DELETE:
+		return 0xd3; // DIK_DELETE
+	case SDL_SCANCODE_END:
+		return 0xcf; // DIK_END
+	case SDL_SCANCODE_PAGEDOWN:
+		return 0xd1; // DIK_PGDN
+
+	case SDL_SCANCODE_SEMICOLON:
+		return 0x27; // DIK_SEMICOLON
+	case SDL_SCANCODE_SLASH:
+		return 0x35; // DIK_SLASH
+	case SDL_SCANCODE_APOSTROPHE:
+		return 0x28; // DIK_APOSTROPHE
+	case SDL_SCANCODE_GRAVE:
+		return 0x29; // DIK_GRAVE
+
+	case SDL_SCANCODE_NONUSBACKSLASH:
+		return 0x56; // DIK_OEM_102 - This might have issues with different keyboard layouts.
+
+	default:
+		return 0x00;
+	}
+};
+
+int convert_tomb_keycode_to_sdl_scancode(int tomb_keycode) {
+	switch (tomb_keycode) {
+	case 0x1e: // DIK_A
+		return SDL_SCANCODE_A;
+	case 0x30: // DIK_B
+		return SDL_SCANCODE_B;
+	case 0x2e: // DIK_C
+		return SDL_SCANCODE_C;
+	case 0x20: // DIK_D
+		return SDL_SCANCODE_D;
+	case 0x12: // DIK_E
+		return SDL_SCANCODE_E;
+	case 0x21: // DIK_F
+		return SDL_SCANCODE_F;
+	case 0x22: // DIK_G
+		return SDL_SCANCODE_G;
+	case 0x23: // DIK_H
+		return SDL_SCANCODE_H;
+	case 0x17: // DIK_I
+		return SDL_SCANCODE_I;
+	case 0x24: // DIK_J
+		return SDL_SCANCODE_J;
+	case 0x25: // DIK_K
+		return SDL_SCANCODE_K;
+	case 0x26: // DIK_L
+		return SDL_SCANCODE_L;
+	case 0x32: // DIK_M
+		return SDL_SCANCODE_M;
+	case 0x31: // DIK_N
+		return SDL_SCANCODE_N;
+	case 0x18: // DIK_O
+		return SDL_SCANCODE_O;
+	case 0x19: // DIK_P
+		return SDL_SCANCODE_P;
+	case 0x10: // DIK_Q
+		return SDL_SCANCODE_Q;
+	case 0x13: // DIK_R
+		return SDL_SCANCODE_R;
+	case 0x1f: // DIK_S
+		return SDL_SCANCODE_S;
+	case 0x14: // DIK_T
+		return SDL_SCANCODE_T;
+	case 0x16: // DIK_U
+		return SDL_SCANCODE_U;
+	case 0x2f: // DIK_V
+		return SDL_SCANCODE_V;
+	case 0x11: // DIK_W
+		return SDL_SCANCODE_W;
+	case 0x2d: // DIK_X
+		return SDL_SCANCODE_X;
+	case 0x15: // DIK_Y
+		return SDL_SCANCODE_Y;
+	case 0x2c: // DIK_Z
+		return SDL_SCANCODE_Z;
+
+	case 0x02: // DIK_1
+		return SDL_SCANCODE_1;
+	case 0x03: // DIK_2
+		return SDL_SCANCODE_2;
+	case 0x04: // DIK_3
+		return SDL_SCANCODE_3;
+	case 0x05: // DIK_4
+		return SDL_SCANCODE_4;
+	case 0x06: // DIK_5
+		return SDL_SCANCODE_5;
+	case 0x07: // DIK_6
+		return SDL_SCANCODE_6;
+	case 0x08: // DIK_7
+		return SDL_SCANCODE_7;
+	case 0x09: // DIK_8
+		return SDL_SCANCODE_8;
+	case 0x0a: // DIK_9
+		return SDL_SCANCODE_9;
+	case 0x0b: // DIK_0
+		return SDL_SCANCODE_0;
+
+	case 0x1c: // DIK_RETURN
+		return SDL_SCANCODE_RETURN;
+	case 0x01: // DIK_ESCAPE
+		return SDL_SCANCODE_ESCAPE;
+	case 0x0e: // DIK_BACK
+		return SDL_SCANCODE_BACKSPACE;
+	case 0x0f: // DIK_TAB
+		return SDL_SCANCODE_TAB;
+	case 0x39: // DIK_SPACE
+		return SDL_SCANCODE_SPACE;
+
+	case 0xcd: // DIK_RIGHT
+		return SDL_SCANCODE_RIGHT;
+	case 0xcb: // DIK_LEFT
+		return SDL_SCANCODE_LEFT;
+	case 0xd0: // DIK_DOWN
+		return SDL_SCANCODE_DOWN;
+	case 0xc8: // DIK_UP
+		return SDL_SCANCODE_UP;
+
+	case 0x0c: // DIK_MINUS
+		return SDL_SCANCODE_MINUS;
+	case 0x0d: // DIK_EQUALS
+		return SDL_SCANCODE_EQUALS;
+	case 0x1a: // DIK_LBRACKET
+		return SDL_SCANCODE_LEFTBRACKET;
+	case 0x1b: // DIK_RBRACKET
+		return SDL_SCANCODE_RIGHTBRACKET;
+	case 0x2b: // DIK_BACKSLASH
+		return SDL_SCANCODE_BACKSLASH;
+
+	case 0x1d: // DIK_LCONTROL
+		return SDL_SCANCODE_LCTRL;
+	case 0x2a: // DIK_LSHIFT
+		return SDL_SCANCODE_LSHIFT;
+	case 0x38: // DIK_LALT
+		return SDL_SCANCODE_LALT;
+	case 0xdb: // DIK_LWIN
+		return SDL_SCANCODE_LGUI;
+	case 0x9d: // DIK_RCONTROL
+		return SDL_SCANCODE_RCTRL;
+	case 0x36: // DIK_RSHIFT
+		return SDL_SCANCODE_RSHIFT;
+	case 0xb8: // DIK_RALT
+		return SDL_SCANCODE_RALT;
+	case 0xdc: // DIK_RWIN
+		return SDL_SCANCODE_RGUI;
+
+	case 0x33: // DIK_COMMA
+		return SDL_SCANCODE_COMMA;
+	case 0x34: // DIK_PERIOD
+		return SDL_SCANCODE_PERIOD;
+
+	case 0x4f: // DIK_NUMPAD1
+		return SDL_SCANCODE_KP_1;
+	case 0x50: // DIK_NUMPAD2
+		return SDL_SCANCODE_KP_2;
+	case 0x51: // DIK_NUMPAD3
+		return SDL_SCANCODE_KP_3;
+	case 0x4b: // DIK_NUMPAD4
+		return SDL_SCANCODE_KP_4;
+	case 0x4c: // DIK_NUMPAD5
+		return SDL_SCANCODE_KP_5;
+	case 0x4d: // DIK_NUMPAD6
+		return SDL_SCANCODE_KP_6;
+	case 0x47: // DIK_NUMPAD7
+		return SDL_SCANCODE_KP_7;
+	case 0x48: // DIK_NUMPAD8
+		return SDL_SCANCODE_KP_8;
+	case 0x49: // DIK_NUMPAD9
+		return SDL_SCANCODE_KP_9;
+	case 0x52: // DIK_NUMPAD0
+		return SDL_SCANCODE_KP_0;
+	case 0x53: // DIK_NUMPADPERIOD
+		return SDL_SCANCODE_KP_PERIOD;
+	case 0x4e: // DIK_NUMPADPLUS
+		return SDL_SCANCODE_KP_PLUS;
+	case 0x4a: // DIK_NUMPADMINUS
+		return SDL_SCANCODE_KP_MINUS;
+	case 0xb5: // DIK_NUMPADSLASH
+		return SDL_SCANCODE_KP_DIVIDE;
+	case 0x37: // DIK_NUMPADSTAR
+		return SDL_SCANCODE_KP_MULTIPLY;
+	case 0x9C: // DIK_NUMPADENTER
+		return SDL_SCANCODE_KP_ENTER;
+
+	case 0x3a:
+		return SDL_SCANCODE_CAPSLOCK; // DIK_CAPSLOCK
+
+	case 0xd2: // DIK_INSERT
+		return SDL_SCANCODE_INSERT;
+	case 0xc7: // DIK_HOME
+		return SDL_SCANCODE_HOME;
+	case 0xc9: // DIK_PGUP
+		return SDL_SCANCODE_PAGEUP;
+	case 0xd3: // DIK_DELETE
+		return SDL_SCANCODE_DELETE;
+	case 0xcf: // DIK_END
+		return SDL_SCANCODE_END;
+	case 0xd1: // DIK_PGDN
+		return SDL_SCANCODE_PAGEDOWN;
+
+	case 0x27: // DIK_SEMICOLON
+		return SDL_SCANCODE_SEMICOLON;
+	case 0x35: // DIK_SLASH
+		return SDL_SCANCODE_SLASH;
+	case 0x28: // DIK_APOSTROPHE
+		return SDL_SCANCODE_APOSTROPHE;
+	case 0x29: // DIK_GRAVE
+		return SDL_SCANCODE_GRAVE;
+
+	case 0x56: // DIK_OEM_102 - This might have issues with different keyboard layouts.
+		return SDL_SCANCODE_NONUSBACKSLASH;
+
+	default:
+		return SDL_SCANCODE_UNKNOWN;
+	}
+}
+#else 
+int convert_sdl_scancode_to_tomb_keycode(int scancode) {
+	return scancode;
+};
+
+int convert_tomb_keycode_to_sdl_scancode(int tomb_keycode) {
+	return tomb_keycode;
+}
+#endif
+
 const char* KeyboardButtons[272] =
 {
 	0,
@@ -107,7 +510,11 @@ static void DoWeaponHotkey()	//adds extra checks and does ammo type swaps..
 	if (!goin)
 		return;
 
+#ifdef USE_SDL
+	if (keymap[SDL_SCANCODE_1])
+#else
 	if (keymap[DIK_1])
+#endif
 	{
 		if (!(lara.pistols_type_carried & W_PRESENT))
 			return;
@@ -117,7 +524,11 @@ static void DoWeaponHotkey()	//adds extra checks and does ammo type swaps..
 		if (lara.gun_status == LG_NO_ARMS && lara.gun_type == WEAPON_PISTOLS)
 			lara.gun_status = LG_DRAW_GUNS;
 	}
+#ifdef USE_SDL
+	else if (keymap[SDL_SCANCODE_2])
+#else
 	else if (keymap[DIK_2])
+#endif
 	{
 		if (!(lara.shotgun_type_carried & W_PRESENT))
 			return;
@@ -152,7 +563,11 @@ static void DoWeaponHotkey()	//adds extra checks and does ammo type swaps..
 			}
 		}
 	}
+#ifdef USE_SDL
+	else if (keymap[SDL_SCANCODE_3])
+#else
 	else if (keymap[DIK_3])
+#endif
 	{
 		if (!(lara.uzis_type_carried & W_PRESENT))
 			return;
@@ -162,7 +577,11 @@ static void DoWeaponHotkey()	//adds extra checks and does ammo type swaps..
 		if (lara.gun_status == LG_NO_ARMS && lara.gun_type == WEAPON_UZI)
 			lara.gun_status = LG_DRAW_GUNS;
 	}
+#ifdef USE_SDL
+	else if (keymap[SDL_SCANCODE_4])
+#else
 	else if (keymap[DIK_4])
+#endif
 	{
 		if (!(lara.sixshooter_type_carried & W_PRESENT))
 			return;
@@ -172,7 +591,11 @@ static void DoWeaponHotkey()	//adds extra checks and does ammo type swaps..
 		if (lara.gun_status == LG_NO_ARMS && lara.gun_type == WEAPON_REVOLVER)
 			lara.gun_status = LG_DRAW_GUNS;
 	}
+#ifdef USE_SDL
+	else if (keymap[SDL_SCANCODE_5])
+#else
 	else if (keymap[DIK_5])
+#endif
 	{
 		if (!(lara.grenade_type_carried & W_PRESENT))
 			return;
@@ -214,7 +637,11 @@ static void DoWeaponHotkey()	//adds extra checks and does ammo type swaps..
 			}
 		}
 	}
+#ifdef USE_SDL
+	else if (keymap[SDL_SCANCODE_6])
+#else
 	else if (keymap[DIK_6])
+#endif
 	{
 		if (!(lara.crossbow_type_carried & W_PRESENT))
 			return;
@@ -262,15 +689,39 @@ long Key(long number)
 {
 	short key;
 
-	key = layout[1][number];
+#ifdef USE_SDL
+	if (!keymap)
+		return 0;
+#endif
 
-	if (key < 256)
+	key = convert_tomb_keycode_to_sdl_scancode(layout[1][number]);
+
+	if (key < keymap_count)
 	{
 		if (keymap[key])
 			return 1;
 
 		switch (key)
 		{
+#ifdef USE_SDL
+		case SDL_SCANCODE_RCTRL:
+			return keymap[SDL_SCANCODE_LCTRL];
+
+		case SDL_SCANCODE_LCTRL:
+			return keymap[SDL_SCANCODE_RCTRL];
+
+		case SDL_SCANCODE_RSHIFT:
+			return keymap[SDL_SCANCODE_LSHIFT];
+
+		case SDL_SCANCODE_LSHIFT:
+			return keymap[SDL_SCANCODE_RSHIFT];
+
+		case SDL_SCANCODE_RALT:
+			return keymap[SDL_SCANCODE_LALT];
+
+		case SDL_SCANCODE_LALT:
+			return keymap[SDL_SCANCODE_RALT];
+#else
 		case DIK_RCONTROL:
 			return keymap[DIK_LCONTROL];
 
@@ -288,6 +739,7 @@ long Key(long number)
 
 		case DIK_LMENU:
 			return keymap[DIK_RMENU];
+#endif
 		}
 	}
 	else if (joy_fire & (1 << key))
@@ -303,6 +755,26 @@ long Key(long number)
 
 	switch (key)
 	{
+#ifdef USE_SDL
+	case SDL_SCANCODE_RCTRL:
+		return keymap[SDL_SCANCODE_LCTRL];
+
+	case SDL_SCANCODE_LCTRL:
+		return keymap[SDL_SCANCODE_RCTRL];
+
+	case SDL_SCANCODE_RSHIFT:
+		return keymap[SDL_SCANCODE_LSHIFT];
+
+	case SDL_SCANCODE_LSHIFT:
+		return keymap[SDL_SCANCODE_RSHIFT];
+
+	case SDL_SCANCODE_RALT:
+		return keymap[SDL_SCANCODE_LALT];
+
+	case SDL_SCANCODE_LALT:
+		return keymap[SDL_SCANCODE_RALT];
+	}
+#else
 	case DIK_RCONTROL:
 		return keymap[DIK_LCONTROL];
 
@@ -321,7 +793,7 @@ long Key(long number)
 	case DIK_LMENU:
 		return keymap[DIK_RMENU];
 	}
-
+#endif
 	return 0;
 }
 
@@ -334,11 +806,17 @@ long S_UpdateInput()
 	bool debounce;
 
 	debounce = SetDebounce;
+#ifdef USE_SDL
+	keymap = DXReadKeyboard(keymap);
+	if (!keymap) {
+		return 0;
+	}
+#else
 	DXReadKeyboard(keymap);
-
 	if (appIsUnfocused) {
 		memset(&keymap, 0, 256);
 	}
+#endif
 
 	if (ControlMethod == 1)
 		joy_fire = ReadJoystick(joy_x, joy_y);
@@ -412,8 +890,13 @@ long S_UpdateInput()
 	if (Key(17))
 		linput |= IN_SELECT;
 
+#ifdef USE_SDL
+	if (keymap[SDL_SCANCODE_ESCAPE])
+		linput |= IN_DESELECT | IN_OPTION;
+#else
 	if (keymap[DIK_ESCAPE])
 		linput |= IN_DESELECT | IN_OPTION;
+#endif
 
 	linput = NGValidateInputAgainstLockTimers(linput);
 	linput = NGApplySimulatedInput(linput);
@@ -467,7 +950,11 @@ long S_UpdateInput()
 	if (NGValidateInputWeaponHotkeys())
 		DoWeaponHotkey();
 
+#ifdef USE_SDL
+	if (keymap[SDL_SCANCODE_0])
+#else
 	if (keymap[DIK_0])
+#endif
 	{
 		if (!med_hotkey_timer)
 		{
@@ -501,7 +988,11 @@ long S_UpdateInput()
 			}
 		}
 	}
+#ifdef USE_SDL
+	else if (keymap[SDL_SCANCODE_9])
+#else
 	else if (keymap[DIK_9])
+#endif
 	{
 		if (!med_hotkey_timer)
 		{
@@ -556,16 +1047,28 @@ long S_UpdateInput()
 
 	if (!gfGameMode && Gameflow->LoadSaveEnabled)
 	{
+#ifdef USE_SDL
+		if (keymap[SDL_SCANCODE_F5])
+#else
 		if (keymap[DIK_F5])
+#endif
 			if (NGValidateInputSavegame())
 				linput |= IN_SAVE;
 
+#ifdef USE_SDL
+		if (keymap[SDL_SCANCODE_F6])
+#else
 		if (keymap[DIK_F6])
-			if (NGValidateInputLoadgame()) 
+#endif
+			if (NGValidateInputLoadgame())
 				linput |= IN_LOAD;
 	}
 
+#ifdef USE_SDL
+	if (keymap[SDL_SCANCODE_APOSTROPHE])
+#else
 	if (keymap[DIK_APOSTROPHE])
+#endif
 		DXSaveScreen(App.dx.lpBackBuffer, "Tomb");
 
 	inputBusy = linput;

@@ -25,6 +25,7 @@
 #include "trng_triggergroup.h"
 
 #include "../../tomb4/tomb4plus/t4plus_inventory.h"
+#include "../../specific/input.h"
 
 #define SECTOR_SIZE 1024
 
@@ -167,6 +168,9 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 	}
 	case KEYBOARD_SCANCODE_IS_CURRENTLY: {
 		int scancode = param;
+#ifdef USE_SDL
+		scancode = convert_tomb_keycode_to_sdl_scancode(scancode);
+#endif
 		// TODO: find the difference between multishot and singleshot
 		switch (extra) {
 			// Inactive single shot

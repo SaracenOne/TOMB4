@@ -33,6 +33,442 @@ char* cutseqpakPtr;
 long resChangeCounter;
 bool appIsUnfocused = false;
 
+#ifdef USE_SDL
+
+#include <SDL.h>
+#include <SDL_syswm.h>
+
+SDL_Window* sdl_window = NULL;
+#ifdef _WIN32
+WNDPROC originalWndProc;
+#endif
+
+void SDLProcessCommandLine(int argc, char* argv[])
+{
+	COMMANDLINES* command;
+	char* pCommand;
+	char* p;
+	char* last;
+	ulong l;
+	long num;
+	char parameter[20];
+
+	Log(2, "SDLProcessCommandLine");
+
+	num = sizeof(commandlines) / sizeof(commandlines[0]);
+
+	for (int i = 0; i < num; i++)
+	{
+		command = &commandlines[i];
+		command->code((char*)"_INIT");
+	}
+
+	for (int cur_arg = 1; cur_arg < argc; cur_arg++) {
+		for (int i = 0; (ulong)i < strlen(argv[cur_arg]); i++)
+		{
+			if (toupper(argv[cur_arg][i]))
+				argv[cur_arg][i] = toupper(argv[cur_arg][i]);
+		}
+	}
+
+	for (int i = 0; i < num; i++)
+	{
+		command = &commandlines[i];
+		memset(parameter, 0, sizeof(parameter));
+
+		pCommand = NULL;
+		for (int cur_arg = 1; cur_arg < argc; cur_arg++) {
+			pCommand = strstr(argv[cur_arg], command->command);
+			if (pCommand != NULL) {
+				break;
+			}
+		}
+
+		if (pCommand)
+		{
+			if (command->needs_parameter)
+			{
+				p = 0;
+				l = strlen(pCommand);
+
+				for (int j = 0; (ulong)j < l; j++, pCommand++)
+				{
+					if (*pCommand != '=')
+						continue;
+
+					p = pCommand + 1;
+					l = strlen(p);
+
+					for (j = 0; (ulong)j < l; j++, p++)
+					{
+						if (*p != ' ')
+							break;
+					}
+
+					last = p;
+					l = strlen(last);
+
+					for (j = 0; (ulong)j < l; j++, last++)
+					{
+						if (*last == ' ')
+							break;
+					}
+
+					strncpy(parameter, p, j);
+					break;
+				}
+
+				command->code(parameter);
+			}
+			else
+				command->code(0);
+		}
+	}
+}
+
+float SDLFrameRate()
+{
+	double t, time_now;
+	static float fps;
+	static Uint64 time, counter;
+	static Uint8 first_time;
+
+	if (!(first_time & 1))
+	{
+		first_time |= 1;
+		time = SDL_GetTicks64();
+	}
+
+	counter++;
+
+	if (counter == 10)
+	{
+		time_now = SDL_GetTicks64();
+		t = (time_now - time) / (double)CLOCKS_PER_SEC;
+		time = (long)time_now;
+		fps = float(counter / t);
+		counter = 0;
+	}
+
+	App.fps = fps;
+	return fps;
+}
+
+#ifdef _WIN32
+LRESULT CALLBACK WinMainWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	static long mouseX, mouseY, mouseB;
+	static bool closing;
+
+	switch (uMsg)
+	{
+	case WM_MOVE:
+		Log(6, "WM_MOVE");
+		DXMove((short)lParam, short((lParam >> 16) & 0xFFFF));
+		break;
+	}
+
+	LRESULT result = CallWindowProc(originalWndProc, hwnd, uMsg, wParam, lParam);
+
+	return result;
+}
+#endif
+
+
+void SDLDisplayString(long x, long y, char* string, ...)
+{
+	va_list list;
+	char buf[4096];
+
+	va_start(list, string);
+	vsprintf(buf, string, list);
+	PrintString(x, y, 6, buf, 0);
+}
+
+void ClearSurfaces()
+{
+	D3DRECT r;
+
+	r.x1 = App.dx.rViewport.left;
+	r.y1 = App.dx.rViewport.top;
+	r.y2 = App.dx.rViewport.top + App.dx.rViewport.bottom;
+	r.x2 = App.dx.rViewport.left + App.dx.rViewport.right;
+
+	if (App.dx.Flags & DXF_HWR)
+		DXAttempt(App.dx.lpViewport->Clear2(1, &r, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0, 1.0F, 0));
+
+	S_DumpScreen();
+
+	if (App.dx.Flags & DXF_HWR)
+		DXAttempt(App.dx.lpViewport->Clear2(1, &r, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0, 1.0F, 0));
+
+	S_DumpScreen();
+}
+
+bool SDLCreateWindow()
+{
+	sdl_window = SDL_CreateWindow("Tomb4Plus", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_HIDDEN);
+	if (!sdl_window)
+	{
+		return false;
+	}
+
+	SDL_Renderer* renderer = SDL_CreateRenderer(sdl_window, -1, SDL_RENDERER_ACCELERATED);
+
+	SDL_RendererInfo* rendererInfo = new SDL_RendererInfo();
+	SDL_RendererInfo* driverInfo = new SDL_RendererInfo();
+
+	SDL_GetRendererInfo(renderer, rendererInfo);
+
+	int drivers = SDL_GetNumRenderDrivers();
+	for (int i = 0; i < drivers; ++i) {
+		SDL_GetRenderDriverInfo(i, driverInfo);
+		const char* availableDrivers = driverInfo->name;
+	}
+
+#ifdef _WIN32
+	SDL_SysWMinfo wmInfo;
+	SDL_VERSION(&wmInfo.version);
+	SDL_GetWindowWMInfo(sdl_window, &wmInfo);
+	App.hWnd = wmInfo.info.win.window;
+	App.hInstance = wmInfo.info.win.hinstance;
+
+	// Subclass the window procedure to intercept WM_MOVE messages
+	originalWndProc = (WNDPROC)GetWindowLongPtr(App.hWnd, GWLP_WNDPROC);
+	SetWindowLongPtr(App.hWnd, GWLP_WNDPROC, (LONG_PTR)WinMainWndProc);
+#endif
+
+	if (!App.hWnd)
+		return false;
+
+	return true;
+}
+
+void SDLSetStyle(bool fullscreen, ulong& set)
+{
+	ulong style;
+
+	style = GetWindowLong(App.hWnd, GWL_STYLE);
+
+	if (fullscreen)
+		style = (style & ~WS_OVERLAPPEDWINDOW) | WS_POPUP;
+	else
+		style = (style & ~WS_POPUP) | WS_OVERLAPPEDWINDOW;
+
+	style &= ~(WS_THICKFRAME | WS_MAXIMIZEBOX | WS_SYSMENU);
+
+	if (fullscreen)
+		SDL_SetWindowFullscreen(sdl_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+	else
+		SDL_SetWindowFullscreen(sdl_window, 0);
+
+	if (set)
+		set = style;
+}
+
+void SDLProcessEvents()
+{
+	SDL_bool quit = SDL_FALSE;
+	SDL_bool is_dragging = SDL_FALSE;
+
+	while (!quit) {
+		SDL_Event event;
+
+		while (SDL_PollEvent(&event)) {
+			switch (event.type) {
+				case SDL_QUIT:
+					quit = SDL_TRUE;
+				break;
+				case SDL_WINDOWEVENT:
+					switch (event.window.event) {
+						case SDL_WINDOWEVENT_FOCUS_LOST:
+							if (App.SetupComplete)
+							{
+								appIsUnfocused = true;
+								if (tomb4.hang_game_thread)
+								{
+									Log(5, "Change Video Mode");
+									Log(5, "HangGameThread");
+									S_PauseAudio();
+									S_SoundPauseSamples();
+
+									while (App.dx.InScene) {};
+									App.dx.WaitAtBeginScene = 1;
+									while (!App.dx.InScene) {};
+
+									Log(5, "Game Thread Suspended");
+								}
+							}
+						break;
+						case SDL_WINDOWEVENT_FOCUS_GAINED:
+							if (App.SetupComplete)
+							{
+								appIsUnfocused = false;
+								if (tomb4.hang_game_thread)
+								{
+									App.dx.WaitAtBeginScene = 0;
+									Log(5, "Game Thread Resumed");
+									S_SoundUnpauseSamples();
+									S_UnpauseAudio();
+								}
+							}
+
+							break;
+						case SDL_WINDOWEVENT_MOVED:
+							DXMove(event.window.data1, event.window.data2);
+						break;
+					}
+				break;
+			}
+		}
+	}
+}
+
+void SDLClose()
+{
+	Log(2, "SDLClose");
+	SaveSettings();
+	CloseHandle(App.mutex);
+	DXFreeInfo(&App.DXInfo);
+	DXClose();
+	FreeBinkStuff();
+
+	if (!G_dxptr)
+		return;
+
+	DXDSClose();
+
+	SDL_DestroyWindow(sdl_window);
+	SDL_Quit();
+}
+
+int main(int argc, char* argv[]) {
+	DXDISPLAYMODE* dm;
+	char* buf;
+	long size;
+
+	start_setup = 0;
+	App.mmx = 0;
+	App.SetupComplete = 0;
+	App.AutoTarget = 0;
+
+#if 0
+	if (WinRunCheck((char*)"Tomb Raider - The Last Revelation", (char*)"MainGameWindow", &App.mutex))
+		return 0;
+#endif
+
+	// Tomb4Plus
+	LoadGameModConfigFirstPass();
+	//
+
+	LoadGameflow();
+
+	// Tomb4Plus
+	LoadGameModConfigSecondPass();
+	//
+
+	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
+
+	SDLProcessCommandLine(argc, argv);
+
+	if (!SDLCreateWindow())
+	{
+		Log(1, "Unable To Create Window");
+		return 0;
+	}
+
+	DXGetInfo(&App.DXInfo, App.hWnd);
+
+	LoadSettings();
+
+	if (start_setup || !LoadSettings())
+	{
+		if (!DXSetupDialog())
+		{
+			free(gfScriptFile);
+			free(gfLanguageFile);
+
+			SDLClose();
+
+			return 0;
+		}
+
+		LoadSettings();
+	}
+
+	fmvs_disabled = 1; // Disable all FMVs for now.
+
+	SetWindowPos(App.hWnd, 0, App.dx.rScreen.left, App.dx.rScreen.top, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+	App.dx.WaitAtBeginScene = 0;
+	App.dx.InScene = 0;
+	App.fmv = 0;
+#ifndef USE_BGFX
+	dm = &G_dxinfo->DDInfo[G_dxinfo->nDD].D3DDevices[G_dxinfo->nD3D].DisplayModes[G_dxinfo->nDisplayMode];
+
+	SDL_SetWindowSize(sdl_window, dm->w, dm->h);
+#endif
+
+#ifdef USE_BGFX
+
+#else
+	if (!DXCreate(dm->w, dm->h, dm->bpp, App.StartFlags, &App.dx, App.hWnd, WS_OVERLAPPEDWINDOW))
+	{
+#ifdef USE_SDL
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR,
+			"Tomb4Plus",
+			SCRIPT_TEXT(TXT_Failed_To_Setup_DirectX),
+			sdl_window);
+#endif
+	}
+#endif
+
+	// TODO: add fullscreen support here.
+
+	SDL_ShowWindow(sdl_window);
+
+	if (!App.SoundDisabled)
+	{
+		DXDSCreate();
+		ACMInit();
+	}
+
+	cutseqpakPtr = 0;
+	buf = 0;
+	size = LoadFile("data\\cutseq.pak", &buf);
+
+	if (size)
+	{
+		cutseqpakPtr = (char*)malloc(*(long*)buf);
+		Decompress(cutseqpakPtr, buf + 4, size - 4, *(long*)buf);
+		free(buf);
+	}
+
+	MainThread.active = 1;
+	MainThread.ended = 0;
+
+	MainThread.handle = SDL_CreateThread(GameMain, "GameMain", (void*)NULL);
+	if (MainThread.handle == NULL) {
+		printf("SDL_CreateThread failed: %s\n", SDL_GetError());
+	}
+
+	SDLProcessEvents();
+
+	MainThread.ended = 1;
+	while (MainThread.active) {};
+
+	if (cutseqpakPtr)
+		free(cutseqpakPtr);
+
+#ifdef _WIN32
+	SetWindowLongPtr(App.hWnd, GWLP_WNDPROC, (LONG_PTR)originalWndProc);
+#endif
+
+	SDLClose();
+
+	return 0;
+}
+
+#else
 bool WinRunCheck(LPSTR WindowName, LPSTR ClassName, HANDLE* mutex)
 {
 	HWND window;
@@ -637,3 +1073,5 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
 	CoUninitialize();
 	return 0;
 }
+
+#endif

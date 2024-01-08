@@ -2,7 +2,11 @@
 #include "../global/types.h"
 
 void DXBitMask2ShiftCnt(ulong mask, uchar* shift, uchar* count);
+#ifdef USE_SDL
+const Uint8 *DXReadKeyboard(const Uint8* KeyMap);
+#else
 void DXReadKeyboard(char* KeyMap);
+#endif
 long DXAttempt(HRESULT r);
 void* AddStruct(void* p, long num, long size);
 long DXDDCreate(LPGUID pGuid, void** pDD4);
@@ -36,4 +40,10 @@ extern DXINFO* G_dxinfo;
 extern LPDIRECTDRAWX G_ddraw;
 extern LPDIRECT3DX G_d3d;
 extern HWND G_hwnd;
+
+extern int keymap_count;
+#ifdef USE_SDL
+extern const Uint8 *keymap;
+#else
 extern char keymap[256];
+#endif

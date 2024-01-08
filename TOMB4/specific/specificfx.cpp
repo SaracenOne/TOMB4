@@ -1479,6 +1479,9 @@ void DrawFlatSky(ulong color, long zpos, long ypos, long drawtype)
 
 void OutputSky()
 {
+#ifdef USE_BGFX
+	return;
+#else
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA);
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA);
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
@@ -1491,6 +1494,7 @@ void OutputSky()
 	DrawSortList();
 	InitBuckets();
 	InitialiseSortList();
+#endif
 }
 
 void ProjectTriPoints(PHD_VECTOR* pos, long& x, long& y, long& z)
@@ -2300,6 +2304,9 @@ void SetUpLensFlare(long x, long y, long z, GAME_VECTOR* lfobj)
 
 void InitTarget_2()
 {
+#ifdef USE_BGFX
+	return;
+#else
 	OBJECT_INFO* obj;
 	D3DTLVERTEX* v;
 
@@ -2322,10 +2329,14 @@ void InitTarget_2()
 	}
 
 	targetMeshP->SourceVB->Unlock();
+#endif
 }
 
 void InitBinoculars()
 {
+#ifdef USE_BGFX
+	return;
+#else
 	OBJECT_INFO* obj;
 	D3DTLVERTEX* v;
 
@@ -2348,6 +2359,7 @@ void InitBinoculars()
 	}
 
 	binocsMeshP->SourceVB->Unlock();
+#endif
 }
 
 void DrawBinoculars()

@@ -40,9 +40,13 @@ DXINFO* G_dxinfo;
 LPDIRECTDRAWX G_ddraw;
 LPDIRECT3DX G_d3d;
 HWND G_hwnd;
+#ifdef USE_SDL
+int keymap_count = 0;
+const Uint8 *keymap;
+#else 
+int keymap_count = 256;
 char keymap[256];
-
-static char keymap2[256];
+#endif
 
 void DXBitMask2ShiftCnt(ulong mask, uchar* shift, uchar* count)
 {
@@ -59,6 +63,21 @@ void DXBitMask2ShiftCnt(ulong mask, uchar* shift, uchar* count)
 	*count = i;
 }
 
+#ifdef USE_SDL
+#include <SDL.h>
+#endif
+
+#ifdef USE_SDL
+const Uint8 *DXReadKeyboard(const Uint8* KeyMap)
+{
+	SDL_PumpEvents();
+
+	const Uint8* sdl_keymap = SDL_GetKeyboardState(&keymap_count);
+
+	KeyMap = sdl_keymap;
+
+	return KeyMap;
+#else
 void DXReadKeyboard(char* KeyMap)
 {
 	HRESULT state;
@@ -72,6 +91,7 @@ void DXReadKeyboard(char* KeyMap)
 
 		G_dxptr->Keyboard->GetDeviceState(256, KeyMap);
 	}
+#endif
 }
 
 long DXAttempt(HRESULT r)
@@ -273,7 +293,9 @@ long DXGetInfo(DXINFO* dxinfo, HWND hwnd)
 	Log(2, "DXInitialise");
 	G_hwnd = hwnd;
 	Log(5, "Enumerating DirectDraw Devices");
+#ifndef USE_BGFX
 	DXAttempt(DirectDrawEnumerate(DXEnumDirectDraw, dxinfo));
+#endif
 	DXAttempt(DirectSoundEnumerate(DXEnumDirectSound, dxinfo));
 	G_dxinfo = dxinfo;
 	return 1;
@@ -450,8 +472,12 @@ long DXCreateSurface(LPDIRECTDRAWX dd, LPDDSURFACEDESCX desc, LPDIRECTDRAWSURFAC
 {
 	Log(2, "DXCreateSurface");
 
+#ifdef USE_BGFX
+	return 1;
+#else
 	if (DXAttempt(dd->CreateSurface(desc, surf, 0)) == DD_OK)
 		return 1;
+#endif
 
 	Log(1, "DXCreateSurface Failed");
 	return 0;
@@ -462,8 +488,12 @@ long DXSetVideoMode(LPDIRECTDRAWX dd, long dwWidth, long dwHeight, long dwBPP)
 	Log(2, "DXSetVideoMode");
 	Log(5, "SetDisplayMode - %dx%dx%d", dwWidth, dwHeight, dwBPP);
 
+#ifdef USE_BGFX
+	return 1;
+#else
 	if (DXAttempt(dd->SetDisplayMode(dwWidth, dwHeight, dwBPP, 0, 0)) != DD_OK)
 		return 0;
+#endif
 
 	return 1;
 }
@@ -472,6 +502,9 @@ long DXCreateD3DDevice(LPDIRECT3DX d3d, GUID guid, LPDIRECTDRAWSURFACEX surf, LP
 {
 	Log(2, "DXCreateD3DDevice");
 
+#ifdef USE_BGFX
+	return 1;
+#else
 	if (DXAttempt(d3d->CreateDevice(guid, surf, device, 0)) != DD_OK)
 	{
 		Log(1, "DXCreateD3DDevice Failed");
@@ -482,6 +515,7 @@ long DXCreateD3DDevice(LPDIRECT3DX d3d, GUID guid, LPDIRECTDRAWSURFACEX surf, LP
 		Log(2, "DXCreateD3DDevice Successful");
 		return 1;
 	}
+#endif
 }
 
 long DXCreateViewport(LPDIRECT3DX d3d, LPDIRECT3DDEVICEX device, long w, long h, LPDIRECT3DVIEWPORTX* viewport)
@@ -519,6 +553,7 @@ long DXCreateViewport(LPDIRECT3DX d3d, LPDIRECT3DDEVICEX device, long w, long h,
 
 HRESULT DXShowFrame()
 {
+#ifndef USE_BGFX
 	if (G_dxptr->lpPrimaryBuffer->IsLost())
 	{
 		Log(3, "Restored Primary Buffer");
@@ -530,14 +565,17 @@ HRESULT DXShowFrame()
 		Log(3, "Restored Back Buffer");
 		DXAttempt(G_dxptr->lpBackBuffer->Restore());
 	}
+#endif
 
 	if (!(App.dx.Flags & (DXF_HWR | DXF_WINDOWED)))
 		return 0;
 
+#ifndef USE_BGFX
 	if (G_dxptr->Flags & DXF_WINDOWED)
 		return DXAttempt(G_dxptr->lpPrimaryBuffer->Blt(&G_dxptr->rScreen, G_dxptr->lpBackBuffer, &G_dxptr->rViewport, DDBLT_WAIT, 0));
 	else
 		return DXAttempt(G_dxptr->lpPrimaryBuffer->Flip(0, DDFLIP_WAIT));
+#endif
 }
 
 void DXMove(long x, long y)
@@ -550,6 +588,7 @@ void DXMove(long x, long y)
 
 void DXInitKeyboard(HWND hwnd, HINSTANCE hinstance)
 {
+#ifndef USE_SDL
 	IDirectInput* dinput;
 	IDirectInputDevice* Keyboard;
 
@@ -578,8 +617,9 @@ void DXInitKeyboard(HWND hwnd, HINSTANCE hinstance)
 	DXAttempt(G_dxptr->Keyboard->SetCooperativeLevel(hwnd, DISCL_NONEXCLUSIVE | DISCL_BACKGROUND));
 	DXAttempt(G_dxptr->Keyboard->SetDataFormat(&c_dfDIKeyboard));
 	DXAttempt(G_dxptr->Keyboard->Acquire());
+
 	memset(keymap, 0, sizeof(keymap));
-	memset(keymap2, 0, sizeof(keymap2));
+#endif
 }
 
 void DXSaveScreen(LPDIRECTDRAWSURFACEX surf, const char* name)
@@ -953,7 +993,11 @@ long DXToggleFullScreen()
 	G_dxptr->lpD3D->EvictManagedTextures();
 	dm = &G_dxinfo->DDInfo[G_dxinfo->nDD].D3DDevices[G_dxinfo->nD3D].DisplayModes[G_dxinfo->nDisplayMode];
 	DXCreate(dm->w, dm->h, dm->bpp, G_dxptr->Flags, G_dxptr, G_dxptr->hWnd, G_dxptr->WindowStyle);
+#ifdef USE_SDL
+	SDLSetStyle(G_dxptr->Flags & DXF_FULLSCREEN, G_dxptr->WindowStyle);
+#else
 	WinSetStyle(G_dxptr->Flags & DXF_FULLSCREEN, G_dxptr->WindowStyle);
+#endif
 	G_dxptr->Flags ^= DXF_NOFREE;
 	return 1;
 }
@@ -1026,8 +1070,12 @@ HRESULT __stdcall DXEnumDirect3D(LPGUID lpGuid, LPSTR lpDeviceDescription, LPSTR
 	desc.dwSize = sizeof(DDSURFACEDESCX);
 	desc.dwFlags = DDSD_CAPS;
 	desc.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE | DDSCAPS_3DDEVICE;
+#ifdef USE_BGFX
+	surf = nullptr;
+#else
 	DXSetCooperativeLevel(G_ddraw, G_hwnd, DDSCL_FULLSCREEN | DDSCL_NOWINDOWCHANGES | DDSCL_EXCLUSIVE);
 	DXCreateSurface(G_ddraw, &desc, &surf);
+#endif
 
 	if (surf)
 	{
@@ -1078,11 +1126,13 @@ HRESULT __stdcall DXEnumDirect3D(LPGUID lpGuid, LPSTR lpDeviceDescription, LPSTR
 			Log(1, "%s Attempt To Release NULL Ptr", "DirectDrawSurface");
 	}
 
+#ifndef USE_BGFX
 	DXSetCooperativeLevel(G_ddraw, G_hwnd, DDSCL_NORMAL);
 	Log(5, "Enumerating ZBuffer Formats");
 	Log(2, "DXEnumZBufferFormats");
 	DXAttempt(G_d3d->EnumZBufferFormats(device->Guid, DXEnumZBufferFormats, (void*)device));
 	ddi->nD3DDevices++;
+#endif
 	return D3DENUMRET_OK;
 }
 

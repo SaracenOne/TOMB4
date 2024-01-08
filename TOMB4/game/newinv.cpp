@@ -701,7 +701,11 @@ void DrawInventoryItemMe(INVDRAWITEM* item, long shade, long overlay, long shagf
 
 				if (rings[RING_INVENTORY]->current_object_list[rings[RING_INVENTORY]->curobjinlist].invitem == INV_SMALLMEDI_ITEM)
 				{
+#ifdef USE_SDL
+					if (keymap[SDL_SCANCODE_G] && keymap[SDL_SCANCODE_U] && keymap[SDL_SCANCODE_N] && keymap[SDL_SCANCODE_S])
+#else
 					if (keymap[DIK_G] && keymap[DIK_U] && keymap[DIK_N] && keymap[DIK_S])
+#endif
 					{
 						lara.num_large_medipack = -1;
 						lara.num_small_medipack = -1;
@@ -733,13 +737,21 @@ void DrawInventoryItemMe(INVDRAWITEM* item, long shade, long overlay, long shagf
 
 				if (rings[RING_INVENTORY]->current_object_list[rings[RING_INVENTORY]->curobjinlist].invitem == INV_BIGMEDI_ITEM)
 				{
+#ifdef USE_SDL
+					if (keymap[SDL_SCANCODE_B] && keymap[SDL_SCANCODE_I] && keymap[SDL_SCANCODE_T] && keymap[SDL_SCANCODE_S])
+#else
 					if (keymap[DIK_B] && keymap[DIK_I] && keymap[DIK_T] && keymap[DIK_S])
+#endif					
 						dels_give_lara_items_cheat();
 				}
 
 				if (rings[RING_INVENTORY]->current_object_list[rings[RING_INVENTORY]->curobjinlist].invitem == INV_MEMCARD_LOAD_ITEM)
 				{
+#ifdef USE_SDL
+					if (keymap[SDL_SCANCODE_H] && keymap[SDL_SCANCODE_E] && keymap[SDL_SCANCODE_L] && keymap[SDL_SCANCODE_P])
+#else
 					if (keymap[DIK_H] && keymap[DIK_E] && keymap[DIK_L] && keymap[DIK_P])
+#endif				
 					{
 						if (gfCurrentLevel == 2 || gfCurrentLevel == 6 || gfCurrentLevel == 13 || gfCurrentLevel == 21 || gfCurrentLevel == 27)
 							skipped_level = 1;
@@ -751,7 +763,11 @@ void DrawInventoryItemMe(INVDRAWITEM* item, long shade, long overlay, long shagf
 
 				if (rings[RING_INVENTORY]->current_object_list[rings[RING_INVENTORY]->curobjinlist].invitem == INV_MEMCARD_SAVE_ITEM)
 				{
+#ifdef USE_SDL
+					if (keymap[SDL_SCANCODE_H] && keymap[SDL_SCANCODE_E] && keymap[SDL_SCANCODE_A] && keymap[SDL_SCANCODE_L])
+#else
 					if (keymap[DIK_H] && keymap[DIK_E] && keymap[DIK_A] && keymap[DIK_L])
+#endif	
 						lara_item->hit_points = 1000;
 				}
 			}
