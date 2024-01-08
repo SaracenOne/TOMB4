@@ -8,6 +8,7 @@
 #else
 #error "Platform not supported"
 #endif
+#include "function_stubs.h"
 
 int count_matching_characters(const char* s1, const char* s2) {
 	int count = 0;
@@ -81,4 +82,22 @@ void find_file_with_substring(const char* dir_path, const char* substring, char*
 
 	closedir(dirp);
 #endif
+}
+
+void platform_fatal_error(const char* s, ...) {
+	va_list list;
+	char buf[4096];
+
+	va_start(list, s);
+	vsprintf(buf, s, list);
+	strcat(buf, "\n");
+	va_end(list);
+
+	Log(0, "Fatal Error: %s", buf);
+
+#ifdef _WIN32
+	MessageBox(0, buf, "Fatal Error", 0);
+#endif
+
+	exit(-1);
 }

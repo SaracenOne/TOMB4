@@ -32,6 +32,7 @@
 #include "../game/trng/trng.h"
 #include "../tomb4/tomb4plus/t4plus_weather.h"
 #include "../tomb4/mod_config.h"
+#include "platform.h"
 
 TEXTURESTRUCT* textinfo;
 SPRITESTRUCT* spriteinfo;
@@ -52,10 +53,12 @@ long nAnimUVRanges;
 long number_cameras;
 short nAIObjects;
 
-static FILE* level_fp;
-static char* FileData;
-static char* CompressedData;
-static long num_items;
+static FILE* level_fp = nullptr;
+static char* FileData = nullptr;
+static char* UncompressedData = nullptr;
+static char* CompressedData = nullptr;
+static long num_items = 0;
+static bool file_loading_failed = false;
 
 unsigned int __stdcall LoadLevel(void* name)
 {
@@ -81,9 +84,10 @@ unsigned int __stdcall LoadLevel(void* name)
 	S_InitLoadBar(20);
 	S_LoadBar();
 
-	CompressedData = 0;
-	FileData = 0;
-	level_fp = 0;
+	CompressedData = nullptr;
+	UncompressedData = nullptr;
+	FileData = nullptr;
+
 	level_fp = FileOpen((const char*)name);
 
 	if (level_fp)
@@ -101,8 +105,12 @@ unsigned int __stdcall LoadLevel(void* name)
 		LoadTextures(RTPages, OTPages, BTPages);
 		fread(&size, 1, 4, level_fp);
 		fread(&compressedSize, 1, 4, level_fp);
+
 		CompressedData = (char*)malloc(compressedSize);
-		FileData = (char*)malloc(size);
+		UncompressedData = (char*)malloc(size);
+
+		FileData = UncompressedData;
+		
 		fread(CompressedData, compressedSize, 1u, level_fp);
 		Decompress(FileData, CompressedData, compressedSize, size);
 		free(CompressedData);
@@ -146,7 +154,7 @@ unsigned int __stdcall LoadLevel(void* name)
 		if (acm_ready && !App.SoundDisabled)
 			LoadSamples();
 
-		free(pData);
+		free(UncompressedData);
 		S_LoadBar();
 
 		for (int i = 0; i < 3; i++)
@@ -175,6 +183,10 @@ unsigned int __stdcall LoadLevel(void* name)
 		FileClose(level_fp);
 
 		T4PlusLevelSetup(gfCurrentLevel);
+	} 
+	else
+	{
+		file_loading_failed = true;
 	}
 
 	LevelLoadingThread.active = 0;
@@ -193,6 +205,11 @@ long S_LoadLevelFile(long num)
 	LevelLoadingThread.ended = 0;
 	LevelLoadingThread.handle = _beginthreadex(0, 0, &LoadLevel, name, 0, (unsigned int*)&LevelLoadingThread.address);
 	while (LevelLoadingThread.active);
+
+	if (file_loading_failed) {
+		platform_fatal_error("Level %s could not be loaded.", name);
+	}
+
 	return 1;
 }
 

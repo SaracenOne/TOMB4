@@ -35,9 +35,6 @@
     <Filter Include="TOMB4\tomb4\libs\miniaudio\extras">
       <UniqueIdentifier>{b4002152-887d-498f-a2f5-00371b732d4e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="TOMB4\game\trep">
-      <UniqueIdentifier>{27d6677f-1b77-45db-be7b-95d0482f3b67}</UniqueIdentifier>
-    </Filter>
     <Filter Include="TOMB4\game\trng\objects">
       <UniqueIdentifier>{8d1ddace-15fe-4237-8291-ecfd4e83f04f}</UniqueIdentifier>
     </Filter>
@@ -52,6 +49,9 @@
     </Filter>
     <Filter Include="TOMB4\game\trng\plugins\AkyVMix01">
       <UniqueIdentifier>{560324ff-bf81-4722-b5d6-91952ebca544}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TOMB4\game\trep">
+      <UniqueIdentifier>{27d6677f-1b77-45db-be7b-95d0482f3b67}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -475,6 +475,9 @@
     </ClInclude>
     <ClInclude Include="TOMB4\tomb4\tomb4plus\t4plus_mirror.h">
       <Filter>TOMB4\tomb4\tomb4plus</Filter>
+    </ClInclude>
+    <ClInclude Include="TOMB4\specific\platform.h">
+      <Filter>TOMB4\specific</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -900,6 +903,9 @@
     </ClCompile>
     <ClCompile Include="TOMB4\tomb4\tomb4plus\t4plus_mirror.cpp">
       <Filter>TOMB4\tomb4\tomb4plus</Filter>
+    </ClCompile>
+    <ClCompile Include="TOMB4\specific\platform.cpp">
+      <Filter>TOMB4\specific</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
