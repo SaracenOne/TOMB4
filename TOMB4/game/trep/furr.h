@@ -171,9 +171,24 @@ struct FURRNameTableEntry {
 
 extern FURRNameTableEntry furr_name_table[];
 
+enum FURRResult {
+	FURR_RESULT_ERROR = -3,
+	FURR_RESULT_UNIMPLEMENTED = -2,
+	FURR_RESULT_RET = -1,
+	FURR_RESULT_FAILED = 0,
+	FURR_RESULT_OK = 1
+};
+
+struct FURRParameters {
+	FURRResult previous_result;
+
+	int first_parameter = 0;
+	int second_parameter = 0;
+};
+
 struct FURRDataTable {
 	const int arg_count;
-	bool (*func_ptr)(int, int);
+	FURRResult (*func_ptr)(FURRParameters);
 };
 
 extern FURRDataTable furr_data_table[];

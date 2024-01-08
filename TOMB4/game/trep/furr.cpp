@@ -17,146 +17,191 @@
 char furr_oneshot_buffer[LAST_FURR_FLIPEFFECT];
 FURRFlipeffectTable furr_flipeffect_table[LAST_FURR_FLIPEFFECT - FIRST_FURR_FLIPEFFECT];
 
-bool furr_cmd_oneshot(int id, int id2) {
-	if (id == id2) {
-		furr_oneshot_buffer[id] = true;
+// Params:
+// ID_1
+// ID_2
+FURRResult furr_cmd_oneshot(FURRParameters params) {
+	if (params.first_parameter == params.second_parameter) {
+		furr_oneshot_buffer[params.first_parameter] = true;
 	} else {
 		Log(1, "Unknown ONESHOT FURR command behaviour!");
-		return false;
+		return FURR_RESULT_ERROR;
 	}
 
-	return true;
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_equip(int to_equip, int _unused2) {
-	return true;
+// Params:
+// TO_EQUIP
+FURRResult furr_cmd_equip(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_holster_weapons(int _unused1, int _unused2) {
-	return true;
+// Params:
+FURRResult furr_cmd_holster_weapons(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_inc_hp(int amount, int limit) {
-	return true;
+// Params:
+// AMOUNT
+// LIMIT
+FURRResult furr_cmd_inc_hp(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_dec_hp(int amount, int _unused2) {
-	items[lara.item_number].hit_points -= amount;
+// Params:
+// AMOUNT
+FURRResult furr_cmd_dec_hp(FURRParameters params) {
+	items[lara.item_number].hit_points -= params.first_parameter;
 
-	return true;
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_inc_air(int amount, int limit) {
-	return true;
+// Params:
+// AMOUNT
+// LIMIT
+FURRResult furr_cmd_inc_air(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_dec_air(int amount, int _unused2) {
-	lara.air -= amount;
+// Params:
+// AMOUNT
+FURRResult furr_cmd_dec_air(FURRParameters params) {
+	lara.air -= params.first_parameter;
 
-	return true;
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_inc_sprint(int amount, int limit) {
-	return true;
+// Params:
+// AMOUNT
+// LIMIT
+FURRResult furr_cmd_inc_sprint(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_dec_sprint(int amount, int _unused2) {
-	DashTimer -= amount;
+// Params:
+// AMOUNT
+FURRResult furr_cmd_dec_sprint(FURRParameters params) {
+	DashTimer -= params.first_parameter;
 
-	return true;
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_set_poison(int amount, int _unused2) {
-	return true;
+// Params:
+// AMOUNT
+FURRResult furr_cmd_set_poison(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_kill_lara(int _unused1, int _unused2) {
+// Params:
+FURRResult furr_cmd_kill_lara(FURRParameters params) {
 	if (items[lara.item_number].hit_points >= 0 && lara.water_status != LW_FLYCHEAT)
 	{
 		items[lara.item_number].hit_status = 1;
 		items[lara.item_number].hit_points = -1;
 	}
 
-	return true;
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_remove_pistols(int _unused1, int _unused2) {
-	return true;
+// Params:
+FURRResult furr_cmd_remove_pistols(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_set_binoculars(int onoff, int _unused2) {
-	return true;
+// Params:
+// ONOFF
+FURRResult furr_cmd_set_binoculars(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_set_crowbar(int onoff, int _unused2) {
-	return true;
+// Params:
+// ONOFF
+FURRResult furr_cmd_set_crowbar(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_set_lasersight(int onoff, int _unused2) {
-	return true;
+// Params:
+// ONOFF
+FURRResult furr_cmd_set_lasersight(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_deactive_weapons(int _unused1, int _unused2) {
+// Params:
+FURRResult furr_cmd_deactive_weapons(FURRParameters params) {
 	lara.last_gun_type = WEAPON_NONE;
 
-	return true;
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_activate_pistols(int _unused1, int _unused2) {
+// Params:
+FURRResult furr_cmd_activate_pistols(FURRParameters params) {
 	lara.last_gun_type = WEAPON_PISTOLS;
 
-	return true;
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_activate_uzis(int _unused1, int _unused2) {
+// Params:
+FURRResult furr_cmd_activate_uzis(FURRParameters params) {
 	lara.last_gun_type = WEAPON_UZI;
 
-	return true;
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_activate_revolver(int _unused1, int _unused2) {
+// Params:
+FURRResult furr_cmd_activate_revolver(FURRParameters params) {
 	lara.last_gun_type = WEAPON_REVOLVER;
 
-	return true;
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_activate_shotgun(int _unused1, int _unused2) {
+// Params:
+FURRResult furr_cmd_activate_shotgun(FURRParameters params) {
 	lara.last_gun_type = WEAPON_SHOTGUN;
 
-	return true;
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_activate_grenadegun(int _unused1, int _unused2) {
+// Params:
+FURRResult furr_cmd_activate_grenadegun(FURRParameters params) {
 	lara.last_gun_type = WEAPON_GRENADE;
 
-	return true;
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_activate_crossbow(int _unused1, int _unused2) {
+// Params:
+FURRResult furr_cmd_activate_crossbow(FURRParameters params) {
 	lara.last_gun_type = WEAPON_CROSSBOW;
 
-	return true;
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_empty_holsters(int _unused1, int _unused2) {
+// Params:
+FURRResult furr_cmd_empty_holsters(FURRParameters params) {
 	lara.holster = LARA;
 
-	return true;
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_fill_holsters(int weapon, int _unused2) {
-	return true;
+// Params:
+// WEAPON
+FURRResult furr_cmd_fill_holsters(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_empty_backdraw(int _unused1, int _unused2) {
-	return true;
+// Params:
+FURRResult furr_cmd_empty_backdraw(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_fill_backdraw(int weapon, int _unused2) {
-	return true;
+// Params:
+// WEAPON
+FURRResult furr_cmd_fill_backdraw(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_remove_all_guns(int _unused1, int _unused2) {
+// Params:
+FURRResult furr_cmd_remove_all_guns(FURRParameters params) {
 	T4PlusSetInventoryCount(PISTOLS_ITEM, 0, false);
 	T4PlusSetInventoryCount(SHOTGUN_ITEM, 0, false);
 	T4PlusSetInventoryCount(UZI_ITEM, 0, false);
@@ -166,518 +211,686 @@ bool furr_cmd_remove_all_guns(int _unused1, int _unused2) {
 
 	T4PlusSetValidLaraGunType();
 
-	return true;
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_call_flip(int flip_number, int _unused2) {
-	effect_routines[flip_number](0);
+// Params:
+// Flip Number
+FURRResult furr_cmd_call_flip(FURRParameters params) {
+	effect_routines[params.first_parameter](0);
 
-	return true;
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_move_byte(int value, int _unused2) {
-	return true;
+// Params:
+// VALUE
+FURRResult furr_cmd_move_byte(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_move_word(int value, int _unused2) {
-	return true;
+// Params:
+// VALUE
+FURRResult furr_cmd_move_word(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_move_dword(int value, int _unused2) {
-	return true;
+// Params:
+// VALUE
+FURRResult furr_cmd_move_dword(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_add_key(int keytype, int _unused2) {
-	return true;
+// Params:
+// KEYTYPE
+FURRResult furr_cmd_add_key(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_remove_key(int keytype, int _unused2) {
-	return true;
+// Params:
+// KEYTYPE
+FURRResult furr_cmd_remove_key(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_add_questitem(int itemid, int _unused2) {
-	return true;
+// Params:
+// QUEST_ITEM_ID
+FURRResult furr_cmd_add_questitem(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_remove_questitem(int itemid, int _unused2) {
-	return true;
+// Params:
+// QUEST_ITEM_ID
+FURRResult furr_cmd_remove_questitem(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_add_examine1(int _unused1, int _unused2) {
+// Params:
+FURRResult furr_cmd_add_examine1(FURRParameters params) {
 	T4PlusSetInventoryCount(EXAMINE1, 1, false);
 
-	return true;
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_remove_examine1(int _unused1, int _unused2) {
+// Params:
+FURRResult furr_cmd_remove_examine1(FURRParameters params) {
 	T4PlusSetInventoryCount(EXAMINE1, 0, false);
 
-	return true;
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_add_examine2(int _unused1, int _unused2) {
+// Params:
+FURRResult furr_cmd_add_examine2(FURRParameters params) {
 	T4PlusSetInventoryCount(EXAMINE2, 1, false);
 
-	return true;
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_remove_examine2(int _unused1, int _unused2) {
+// Params:
+FURRResult furr_cmd_remove_examine2(FURRParameters params) {
 	T4PlusSetInventoryCount(EXAMINE2, 0, false);
 
-	return true;
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_add_examine3(int _unused1, int _unused2) {
+// Params:
+FURRResult furr_cmd_add_examine3(FURRParameters params) {
 	T4PlusSetInventoryCount(EXAMINE3, 1, false);
 
-	return true;
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_remove_examine3(int _unused1, int _unused2) {
+// Params:
+FURRResult furr_cmd_remove_examine3(FURRParameters params) {
 	T4PlusSetInventoryCount(EXAMINE3, 0, false);
 
-	return true;
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_waterskin1(int waterskinid, int _unused2) {
-	return true;
+// Params:
+// WATERSKIN_ID
+FURRResult furr_cmd_waterskin1(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_waterskin2(int waterskinid, int _unused2) {
-	return true;
+// Params:
+// WATERSKIN_ID
+FURRResult furr_cmd_waterskin2(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_set_puzzleitem(int puzzleitemid, int _unused2) {
-	return true;
+// Params:
+// PUZZLEITEM_ID
+FURRResult furr_cmd_set_puzzleitem(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_add_puzzleitem(int puzzleitemid, int _unused2) {
-	return true;
+// Params:
+// PUZZLEITEM_ID
+FURRResult furr_cmd_add_puzzleitem(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_add_puzzlecombo(int combo, int _unused2) {
-	return true;
+// Params:
+// PUZZLECOMBO_ID
+FURRResult furr_cmd_add_puzzlecombo(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_set_supply(int supplyid, int _unused2) {
-	return true;
+// Params:
+// SUPPLY_ID
+FURRResult furr_cmd_set_supply(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_add_supply(int supplyid, int _unused2) {
-	return true;
+// Params:
+// SUPPLY_ID
+FURRResult furr_cmd_add_supply(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_add_weapon(int weaponid, int _unused2) {
-	return true;
+// Params:
+// WEAPON_ID
+FURRResult furr_cmd_add_weapon(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_remove_weapon(int weaponid, int _unused2) {
-	return true;
+// Params:
+// WEAPON_ID
+FURRResult furr_cmd_remove_weapon(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_start_timer(int seconds, int _unused2) {
-	return true;
+// Params:
+// SECONDS
+FURRResult furr_cmd_start_timer(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_start_timer_from_time(int time, int _unused2) {
-	return true;
+// Params:
+// TIME
+FURRResult furr_cmd_start_timer_from_time(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_set_timer(int seconds, int _unused2) {
-	return true;
+// Params:
+// SECONDS
+FURRResult furr_cmd_set_timer(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_stop_timer(int _unused1, int _unused2) {
-	return true;
+// Params:
+FURRResult furr_cmd_stop_timer(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_freeze_normal_timer(int _unused1, int _unused2) {
-	return true;
+// Params:
+FURRResult furr_cmd_freeze_normal_timer(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_freeze_inverted_timer(int _unused1, int _unused2) {
-	return true;
+// Params:
+FURRResult furr_cmd_freeze_inverted_timer(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_load_level(int levelnum, int _unused2) {
-	return true;
+// Params:
+// LEVEL_NUM
+FURRResult furr_cmd_load_level(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
 // The flash colours are likely not accurate. Should investigate.
-
-bool furr_cmd_flash_red(int _unused1, int _unused2) {
+// Params:
+FURRResult furr_cmd_flash_red(FURRParameters params) {
 	FlashFadeR = 0xff;
 	FlashFadeG = 0x00;
 	FlashFadeB = 0x00;
 	FlashFader = 32;
 
-	return true;
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_flash_orange(int _unused1, int _unused2) {
+// Params:
+FURRResult furr_cmd_flash_orange(FURRParameters params) {
 	FlashFadeR = 0xff;
 	FlashFadeG = 0xa5;
 	FlashFadeB = 0x00;
 	FlashFader = 32;
 
-	return true;
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_flash_yellow(int _unused1, int _unused2) {
+// Params:
+FURRResult furr_cmd_flash_yellow(FURRParameters params) {
 	FlashFadeR = 0xff;
 	FlashFadeG = 0xff;
 	FlashFadeB = 0x00;
 	FlashFader = 32;
 
-	return true;
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_flash_green(int _unused1, int _unused2) {
+// Params:
+FURRResult furr_cmd_flash_green(FURRParameters params) {
 	FlashFadeR = 0x00;
 	FlashFadeG = 0xff;
 	FlashFadeB = 0x00;
 	FlashFader = 32;
 
-	return true;
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_flash_lightgreen(int _unused1, int _unused2) {
+// Params:
+FURRResult furr_cmd_flash_lightgreen(FURRParameters params) {
 	FlashFadeR = 0x00;
 	FlashFadeG = 0xff;
 	FlashFadeB = 0xa5;
 	FlashFader = 32;
 
-	return true;
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_flash_blue(int _unused1, int _unused2) {
+// Params:
+FURRResult furr_cmd_flash_blue(FURRParameters params) {
 	FlashFadeR = 0x00;
 	FlashFadeG = 0x00;
 	FlashFadeB = 0xff;
 	FlashFader = 32;
 
-	return true;
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_shake_camera(int amount, int _unused2) {
-	return true;
+// Params:
+// AMOUNT
+FURRResult furr_cmd_shake_camera(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_shake_camera_soft(int _unused1, int _unused2) {
-	return true;
+// Params:
+FURRResult furr_cmd_shake_camera_soft(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_shake_camera_medium(int _unused1, int _unused2) {
-	return true;
+// Params:
+FURRResult furr_cmd_shake_camera_medium(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_shake_camera_heavy(int _unused1, int _unused2) {
-	return true;
+// Params:
+FURRResult furr_cmd_shake_camera_heavy(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_lara_drips(int dripamount, int _unused2) {
-	return true;
+// Params:
+// DRIP_AMOUNT
+FURRResult furr_cmd_lara_drips(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_legend_time(int legendtime, int _unused2) {
-	gfLegendTime = legendtime;
 
-	return true;
+// Params:
+// LEGEND_TIME
+FURRResult furr_cmd_legend_time(FURRParameters params) {
+	gfLegendTime = params.first_parameter;
+
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_legend_string(int legendstring, int _unused2) {
-	gfLegend = legendstring;
+// Params:
+// LEGEND_STRING
+FURRResult furr_cmd_legend_string(FURRParameters params) {
+	gfLegend = params.first_parameter;
 
-	return true;
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_play_anim(int animindex, int _unused2) {
-	items[lara.item_number].anim_number = animindex;
+// Params:
+// ANIM_INDEX
+FURRResult furr_cmd_play_anim(FURRParameters params) {
+	items[lara.item_number].anim_number = params.first_parameter;
 	items[lara.item_number].frame_number = anims[items[lara.item_number].anim_number].frame_base;
 
-	return true;
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_orientate(int orientation, int _unused2) {
-	items[lara.item_number].pos.y_rot = (short)orientation;
+// Params:
+// ORIENTATION
+FURRResult furr_cmd_orientate(FURRParameters params) {
+	items[lara.item_number].pos.y_rot = (short)params.first_parameter;
 
-	return true;
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_rotate(int rotation, int _unused2) {
-	items[lara.item_number].pos.y_rot = (short)rotation;
+// Params:
+// ROTATION
+FURRResult furr_cmd_rotate(FURRParameters params) {
+	items[lara.item_number].pos.y_rot = (short)params.first_parameter;
 
-	return true;
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_change_position(int arg1, int arg2) {
-	return true;
+// Params:
+// ARG_1
+// ARG_2
+FURRResult furr_cmd_change_position(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_change_position_x(int xcoordinate, int _unused2) {
-	items[lara.item_number].pos.x_pos = xcoordinate;
+// Params:
+// X_COORDINATE
+FURRResult furr_cmd_change_position_x(FURRParameters params) {
+	items[lara.item_number].pos.x_pos = params.first_parameter;
 
-	return true;
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_change_position_y(int ycoordinate, int _unused2) {
-	items[lara.item_number].pos.y_pos = ycoordinate;
+// Params:
+// Y_COORDINATE
+FURRResult furr_cmd_change_position_y(FURRParameters params) {
+	items[lara.item_number].pos.y_pos = params.first_parameter;
 
-	return true;
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_change_position_z(int zcoordinate, int _unused2) {
-	items[lara.item_number].pos.z_pos = zcoordinate;
+// Params:
+// Z_COORDINATE
+FURRResult furr_cmd_change_position_z(FURRParameters params) {
+	items[lara.item_number].pos.z_pos = params.first_parameter;
 
-	return true;
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_change_accel(int accel, int _unused2) {
-	return true;
+// Params:
+// ACCEL
+FURRResult furr_cmd_change_accel(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_vert_accel(int vert_accel, int _unused2) {
-	return true;
+// Params:
+// VERT_ACCEL
+FURRResult furr_cmd_vert_accel(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_change_room(int roomnumber, int _unused2) {
-	items[lara.item_number].room_number = roomnumber;
+// Params:
+// ROOM_NUMBER
+FURRResult furr_cmd_change_room(FURRParameters params) {
+	items[lara.item_number].room_number = params.first_parameter;
 
-	return true;
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_add_position(int xamount, int zamount) {
-	items[lara.item_number].pos.x_pos = xamount;
-	items[lara.item_number].pos.z_pos = zamount;
+// Params:
+// X_AMOUNT
+// Z_AMOUNT
+FURRResult furr_cmd_add_position(FURRParameters params) {
+	items[lara.item_number].pos.x_pos = params.first_parameter;
+	items[lara.item_number].pos.z_pos = params.second_parameter;
 
-	return true;
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_uvrotate(int uvrotate, int _unused2) {
-	return true;
+// Params:
+// UVROTATE
+FURRResult furr_cmd_uvrotate(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_move_item_x(int item, int itemposx) {
-	items[item].pos.x_pos = itemposx;
+// Params:
+// ID
+// POS_X
+FURRResult furr_cmd_move_item_x(FURRParameters params) {
+	items[params.first_parameter].pos.x_pos = params.second_parameter;
 
-	return true;
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_move_item_y(int item, int itemposy) {
-	items[item].pos.y_pos = itemposy;
+// Params:
+// ID
+// POS_Y
+FURRResult furr_cmd_move_item_y(FURRParameters params) {
+	items[params.first_parameter].pos.y_pos = params.second_parameter;
 
-	return true;
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_move_item_z(int item, int itemposz) {
-	items[item].pos.z_pos = itemposz;
+// Params:
+// ID
+// POS_Z
+FURRResult furr_cmd_move_item_z(FURRParameters params) {
+	items[params.first_parameter].pos.z_pos = params.second_parameter;
 
-	return true;
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_kill_item(int itemid, int _unused2) {
-	KillItem(itemid);
+// Params:
+// ITEM_ID
+FURRResult furr_cmd_kill_item(FURRParameters params) {
+	KillItem(params.first_parameter);
 
-	return true;
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_set_hp(int hp, int limit) {
-	return true;
+// Params:
+// HP
+// LIMIT
+FURRResult furr_cmd_set_hp(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_speeddn(int _unused1, int _unused2) {
-	return true;
+// Params:
+FURRResult furr_cmd_speeddn(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_speedup(int _unused1, int _unused2) {
-	return true;
+// Params:
+FURRResult furr_cmd_speedup(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_camera_follow(int _unused1, int _unused2) {
-	return true;
+// Params:
+FURRResult furr_cmd_camera_follow(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_lock_controls(int _unused1, int _unused2) {
-	return true;
+// Params:
+FURRResult furr_cmd_lock_controls(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_unlock_controls(int _unused1, int _unused2) {
-	return true;
+// Params:
+FURRResult furr_cmd_unlock_controls(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_move_mirror(int mirror_room, int mirror_border_world_coordinate) {
-	return true;
+// Params:
+// MIRROR_ROOM
+// WORLD_COORDINATE
+FURRResult furr_cmd_move_mirror(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_oneshot_state(int id, int state) {
-	furr_oneshot_buffer[id] = state ? true : false;
+// Params:
+// ID
+// STATE
+FURRResult furr_cmd_oneshot_state(FURRParameters params) {
+	furr_oneshot_buffer[params.first_parameter] = params.second_parameter ? true : false;
 
-	return true;
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_swap_inventory(int _unused1, int _unused2) {
-	return true;
+// Params:
+FURRResult furr_cmd_swap_inventory(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_change_weather(int weather, int _unused2) {
-	if (weather == 0) {
+// Params:
+// WEATHER
+FURRResult furr_cmd_change_weather(FURRParameters params) {
+	if (params.first_parameter == 0) {
 		rain_type = WEATHER_DISABLED;
 		snow_type = WEATHER_DISABLED;
-	} else if (weather == 1) {
+	} else if (params.first_parameter == 1) {
 		rain_type = WEATHER_ENABLED_ALL_OUTSIDE;
 		snow_type = WEATHER_DISABLED;
-	} else if (weather == 2) {
+	} else if (params.first_parameter == 2) {
 		rain_type = WEATHER_DISABLED;
 		snow_type = WEATHER_ENABLED_ALL_OUTSIDE;
 	}
 
-	return true;
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_swap_lara_mesh(int lara_mesh, int _unused2) {
-	return true;
+// Params:
+// LARA_MESH
+FURRResult furr_cmd_swap_lara_mesh(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_return_true(int _unused1, int _unused2) {
-	return true;
+// Params:
+FURRResult furr_cmd_return_true(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_stop(int _unused1, int _unused2) {
+// Params:
+FURRResult furr_cmd_stop(FURRParameters params) {
 	flipeffect = -1;
 
-	return true;
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_reset(int _unused1, int _unused2) {
-	return true;
+// Params:
+FURRResult furr_cmd_reset(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_ret(int _unused1, int _unused2) {
-	return false;
+// Params:
+FURRResult furr_cmd_ret(FURRParameters params) {
+	return FURR_RESULT_RET;
 }
 
-bool furr_cmd_retn(int _unused1, int _unused2) {
-	return false;
+// Params:
+FURRResult furr_cmd_retn(FURRParameters params) {
+	return FURR_RESULT_RET;
 }
 
-bool furr_cmd_nop(int _unused1, int _unused2) {
-	return true;
+// Params:
+FURRResult furr_cmd_nop(FURRParameters params) {
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_use_binoculars(int _unused1, int _unused2) {
-	return true;
+// Params:
+FURRResult furr_cmd_use_binoculars(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_add_diary(int diaryid, int _unused2) {
-	return true;
+// Params:
+// DIARY_ID
+FURRResult furr_cmd_add_diary(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_activate_bar(int _unused1, int _unused2) {
-	return true;
+// Params:
+FURRResult furr_cmd_activate_bar(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_deactivate_bar(int _unused1, int _unused2) {
-	return true;
+// Params:
+FURRResult furr_cmd_deactivate_bar(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_call(int _unused1, int _unused2) {
-	return true;
+// Params:
+FURRResult furr_cmd_call(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_shatter_item(int shattereditem, int _unused2) {
-	return true;
+// Params:
+// SHATER_ID
+FURRResult furr_cmd_shatter_item(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_lara_on_fire(int _unused1, int _unused2) {
+// Params:
+FURRResult furr_cmd_lara_on_fire(FURRParameters params) {
 	LaraBurn();
 
-	return true;
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_bleed(int _unused1, int _unused2) {
-	return true;
+// Params:
+FURRResult furr_cmd_bleed(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_show_stats(int _unused1, int _unused2) {
-	return true;
+// Params:
+FURRResult furr_cmd_show_stats(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_draw_bmp(int bmpid, int _unused2) {
-	return true;
+// Params:
+// BMP_ID
+FURRResult furr_cmd_draw_bmp(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_play_sample(int sampleid, int _unused2) {
-	return true;
+// Params:
+// SAMPLE_ID
+FURRResult furr_cmd_play_sample(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_play_soundtrack(int soundtrackid, int _unused2) {
-	return true;
+// Params:
+// SOUNDTRACK_ID
+FURRResult furr_cmd_play_soundtrack(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_save_game(int _unused1, int _unused2) {
-	return true;
+// Params:
+FURRResult furr_cmd_save_game(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_load_game(int _unused1, int _unused2) {
-	return true;
+// Params:
+FURRResult furr_cmd_load_game(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_pickup_item(int object_id, int _unused2) {
-	T4PlusSetInventoryCount(object_id, T4PlusGetInventoryCount(object_id) + 1, false);
-	T4ShowObjectPickup(object_id);
-	return true;
+// Params:
+// PICKUP_ID
+FURRResult furr_cmd_pickup_item(FURRParameters params) {
+	T4PlusSetInventoryCount(params.first_parameter, T4PlusGetInventoryCount(params.first_parameter) + 1, false);
+	T4ShowObjectPickup(params.first_parameter);
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_draw_item(int itemid, int _unused2) {
-	return true;
+// Params:
+// DRAW_ID
+FURRResult furr_cmd_draw_item(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_fadeout(int _unused1, int _unused2) {
-	return true;
+// Params:
+FURRResult furr_cmd_fadeout(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_show_inventory(int _unused1, int _unused2) {
-	return true;
+// Params:
+FURRResult furr_cmd_show_inventory(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_play_fmv(int fmvid, int _unused2) {
-	return true;
+// Params:
+// FMV_ID
+FURRResult furr_cmd_play_fmv(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_activate_item(int itemid, int _unused2) {
-	return true;
+// Params:
+// ITEM_ID
+FURRResult furr_cmd_activate_item(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_show_damp_looped(int damp_looped, int _unused2) {
-	return true;
+// Params:
+// DAMP_LOOPED
+FURRResult furr_cmd_show_damp_looped(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_only_in_water(int _unused1, int _unused2) {
+// Params:
+FURRResult furr_cmd_only_in_water(FURRParameters params) {
 	if (lara.water_status == LW_UNDERWATER || lara.water_status == LW_WADE || lara.water_status == LW_SURFACE) {
-		return true;
+		return FURR_RESULT_OK;
 	}
 
-	return false;
+	return FURR_RESULT_RET;
 }
 
-bool furr_cmd_only_on_land(int _unused1, int _unused2) {
+// Params:
+FURRResult furr_cmd_only_on_land(FURRParameters params) {
 	if (lara.water_status == LW_UNDERWATER || lara.water_status == LW_WADE || lara.water_status == LW_SURFACE) {
-		return false;
+		return FURR_RESULT_RET;
 	}
 
-	return true;
+	return FURR_RESULT_OK;
 }
 
-bool furr_cmd_environment(int environment, int _unused2) {
-	return true;
+// Params:
+// ENVIRONMENT
+FURRResult furr_cmd_environment(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_no_fadeout(int _unused1, int _unused2) {
-	return true;
+// Params:
+FURRResult furr_cmd_no_fadeout(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 
-bool furr_cmd_if_pressed(int button, int _unused2) {
-	return true;
+// Params:
+// BUTTON
+FURRResult furr_cmd_if_pressed(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
 }
 //
 
@@ -1032,6 +1245,7 @@ void furr_execute_furr_flipeffect(int id) {
 	FURRFlipeffectTable* curr_flipeffect_table = &furr_flipeffect_table[id];
 
 	int idx = 0;
+	FURRResult previous_result = FURR_RESULT_OK;
 	while (idx < curr_flipeffect_table->size) {
 		FURROpcode opcode = static_cast<FURROpcode>(curr_flipeffect_table->tokens[idx++]);
 		FURRDataTable* data_table = &furr_data_table[opcode];
@@ -1039,9 +1253,29 @@ void furr_execute_furr_flipeffect(int id) {
 		int argument_1 = data_table->arg_count >= 1 ? curr_flipeffect_table->tokens[idx++] : 0;
 		int argument_2 = data_table->arg_count >= 2 ? curr_flipeffect_table->tokens[idx++] : 0;
 
-		if (!data_table->func_ptr(argument_1, argument_2)) {
-			break;
-		};
+		FURRParameters params = { previous_result, argument_1, argument_2 };
+
+		previous_result = data_table->func_ptr(params);
+		switch (previous_result) {
+			case FURR_RESULT_ERROR: {
+				const char *opcode_name = furr_name_table[opcode].opcode_name;
+				Log(0, "Opcode %s failed with an error.\n");
+				break;
+			}
+			FURR_RESULT_UNIMPLEMENTED: {
+				const char* opcode_name = furr_name_table[opcode].opcode_name;
+				Log(0, "Opcode %s has not yet been implemented.\n");
+				break;
+			}
+			case FURR_RESULT_RET:
+				break;
+			case FURR_RESULT_FAILED:
+				previous_result = FURR_RESULT_FAILED;
+				break;
+			case FURR_RESULT_OK:
+				previous_result = FURR_RESULT_OK;
+				break;
+		}
 	}
 }
 
