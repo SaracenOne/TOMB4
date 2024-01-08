@@ -1623,9 +1623,9 @@ void NGSetupExtraState() {
 	ng_action_oneshot_floorstate = (char*)game_malloc(ng_floorstate_data_size);
 	memset(ng_action_oneshot_floorstate, 0x00, ng_floorstate_data_size);
 
-	// Input lock
-	memset(ng_input_lock_timers, 0x00, sizeof(ng_input_lock_timers) * sizeof(int));
-	memset(ng_input_simulate_timers, 0x00, sizeof(ng_input_simulate_timers) * sizeof(int));
+	// Input lock and simulator
+	memset(ng_input_lock_timers, 0x00, sizeof(ng_input_lock_timers));
+	memset(ng_input_simulate_timers, 0x00, sizeof(ng_input_simulate_timers));
 
 	// Looped samples
 	memset(ng_looped_sound_state, 0x00, NumSamples * sizeof(int));
