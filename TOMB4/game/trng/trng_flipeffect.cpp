@@ -1347,7 +1347,7 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ANIMATED_TEXTURES_STOP_ANIMATION_RANGE unimplemented!");
 			break;
 		}
-		case ANIMATED_TEXTURES_RESTART_ANATIMION_RANGE: {
+		case ANIMATED_TEXTURES_RESTART_ANIMATION_RANGE: {
 			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ANIMATED_TEXTURES_RESTART_ANATIMION_RANGE unimplemented!");
 			break;
