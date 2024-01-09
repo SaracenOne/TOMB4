@@ -922,6 +922,8 @@ void DoTitle(uchar Name, uchar Audio)
 	S_SetReverbType(1);
 	InitialiseCamera();
 
+	T4PlusLevelReset();
+
 	if (bDoCredits)
 	{
 		cutseq_num = 28;
