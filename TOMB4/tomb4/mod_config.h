@@ -3,6 +3,7 @@
 #include "../game/objects.h"
 #include "../game/text.h"
 
+#include "tomb4plus/t4plus_plugin.h"
 #include "tomb4plus/t4plus_weather.h"
 
 #define DEFAULT_FOG_START_VALUE 12288
@@ -13,6 +14,16 @@
 #define MAXIMUM_JSON_ALLOCATION_BLOCKS 32768 
 
 #define MAX_EQUIPMENT_MODIFIERS 32
+
+#define MAX_T4PLUS_STRINGS 4096
+extern int global_string_table_size;
+extern char **global_string_table;
+
+struct MOD_GLOBAL_PLUGIN {
+	char *plugin_name = nullptr;
+	char *plugin_type = nullptr;
+	char *plugin_source = nullptr;
+};
 
 struct MOD_LEVEL_ENVIRONMENT_INFO {
 	unsigned int fog_start_range = DEFAULT_FOG_START_VALUE;
@@ -138,9 +149,6 @@ struct MOD_LEVEL_LARA_INFO {
 	bool disable_hardcoded_breath_sound = false;
 };
 
-#define MAX_PLUGIN_COUNT 64
-#define MAX_PLUGIN_NAME_LEN 256
-
 struct TRNG_ENGINE_VERSION {
 	unsigned char trng_version_major = 1;
 	unsigned char trng_version_minor = 3;
@@ -170,9 +178,6 @@ struct MOD_GLOBAL_INFO {
 
 	bool show_lara_in_title = false;
 	unsigned short max_particles = 256;
-
-	unsigned int plugin_count = 0;
-	char plugins[MAX_PLUGIN_COUNT][MAX_PLUGIN_NAME_LEN];
 };
 
 struct MOD_EQUIPMENT_MODIFIER {
@@ -311,10 +316,11 @@ extern MOD_LEVEL_AMMO_INFO *get_game_mod_current_lara_ammo_info(MOD_LEVEL_WEAPON
 extern void LoadGameModConfigFirstPass();
 extern void LoadGameModConfigSecondPass();
 
-extern void T4PlusReset();
+extern void T4PlusLevelReset();
 extern void T4PlusLevelSetup(int current_level);
 extern void T4PlusEnterLevel(int current_level, bool initial_entry);
 extern void T4PlusCleanup();
+extern void T4PlusInit();
 
 extern bool is_mod_trng_version_equal_or_greater_than_target(
 	unsigned char target_major_version,

@@ -11,6 +11,9 @@
 
 #include "../game/trep/furr.h"
 
+int global_string_table_size = 0;
+char** global_string_table;
+
 #define READ_JSON_INTEGER_CAST(value_name, json, my_struct, my_type) { const json_t* value_name = json_getProperty(json, #value_name); \
     if (value_name && JSON_INTEGER == json_getType(value_name)) { \
         (my_struct)->value_name = (my_type)json_getInteger(value_name); } \
@@ -92,6 +95,43 @@
     } \
     }
     
+
+#define READ_JSON_STRING(value_name, json, my_struct) { const json_t* value_name = json_getProperty(json, #value_name); \
+    if (value_name && JSON_TEXT == json_getType(value_name)) { \
+        char *temp = (char *)json_getValue(value_name); \
+        if (temp) { \
+        (my_struct)->value_name = T4PlusAllocateString(temp); } \
+        else { \
+            (my_struct)->value_name = nullptr; \
+        } \
+    } \
+    };
+
+char *T4PlusAllocateString(char* str) {
+    if (global_string_table_size < MAX_T4PLUS_STRINGS) {
+        for (int i = 0; i < global_string_table_size; i++) {
+            if (strcmp(str, global_string_table[i]) == 0) {
+                return global_string_table[i];
+            }
+        }
+
+        char *new_string = (char*)malloc(strlen(str) + 1);
+        memcpy(new_string, str, strlen(str) + 1);
+        global_string_table[global_string_table_size] = new_string;
+        global_string_table_size++;
+
+        return new_string;
+    } else {
+        Log(2, "Maximum T4Plus Strings allocated!");
+    }
+}
+
+void T4PlusFreeAllStrings() {
+    for (int i = 0; i < global_string_table_size; i++) {
+        free(global_string_table[i]);
+    }
+    free(global_string_table);
+}
 
 // Full overrides
 bool scorpion_poison_override_found = false;
@@ -517,11 +557,6 @@ void SetupLevelDefaults() {
 
 void SetupGlobalDefaults() {
     MOD_GLOBAL_INFO* mod_global_info = &game_mod_config.global_info;
-
-    mod_global_info->plugin_count = 0;
-    for (int i = 0; i < MAX_PLUGIN_COUNT; i++) {
-        memset(mod_global_info->plugins[i], 0x00, MAX_PLUGIN_NAME_LEN);
-    }
 }
 
 void LoadGameModConfigFirstPass() {
@@ -658,25 +693,23 @@ void LoadGameModConfigFirstPass() {
                     const json_t* plugins = json_getProperty(global, "plugins");
                     if (plugins && JSON_ARRAY == json_getType(plugins)) {
                         json_t const* plugin;
-                        mod_global_info->plugin_count = 0;
                         for (plugin = json_getChild(plugins); plugin != 0; plugin = json_getSibling(plugin)) {
-                            if (mod_global_info->plugin_count < MAX_PLUGIN_COUNT) {
-                                if (JSON_TEXT == json_getType(plugin)) {
-                                    int plugin_str_length = strlen(plugin->u.value);
-                                    if (plugin_str_length < MAX_PLUGIN_NAME_LEN - 1) {
-                                        memcpy(mod_global_info->plugins[mod_global_info->plugin_count], plugin->u.value, plugin_str_length);
-                                    } else {
-                                        printf("Invalid plugin name. Too long\n");
+                            if (JSON_OBJ == json_getType(plugin)) {
+                                MOD_GLOBAL_PLUGIN mod_global_plugin {};
+
+                                READ_JSON_STRING(plugin_name, plugin, &mod_global_plugin);
+                                READ_JSON_STRING(plugin_type, plugin, &mod_global_plugin);
+                                READ_JSON_STRING(plugin_source, plugin, &mod_global_plugin);
+
+                                if (mod_global_plugin.plugin_type && mod_global_plugin.plugin_name && mod_global_plugin.plugin_source) {
+                                    if (strcmp(mod_global_plugin.plugin_type, "builtin") == 0) {
+                                        T4PlusRegisterBuiltinPlugin(mod_global_plugin.plugin_name, mod_global_plugin.plugin_source);
                                     }
                                 }
-                            } else {
-                                break;
                             }
-                            mod_global_info->plugin_count++;
                         }
-                    }
-                }
-
+                   }
+            }
                 level = json_getProperty(root_json, "global_level_info");
             } else {
                 Log(1, "LoadGameModConfigFirstPass: Not enough memory allocated for JSON buffer!");
@@ -779,7 +812,7 @@ void LoadGameModConfigSecondPass() {
         free(mem);
 }
 
-void T4PlusReset() {
+void T4PlusLevelReset() {
     furr_clear_oneshot_buffer();
     ClearWeatherFX();
     InitWeatherFX();
@@ -818,6 +851,14 @@ void T4PlusCleanup() {
     NGCleanup();
 
     furr_free_all_flipeffect_buffers();
+
+    T4PlusFreeAllStrings();
+}
+
+extern void T4PlusInit() {
+    global_string_table = (char **)malloc(MAX_T4PLUS_STRINGS * sizeof(char*));
+
+    NGInit();
 }
 
 bool is_source_trng_version_equal_or_greater_than_target(TRNG_ENGINE_VERSION source_version, TRNG_ENGINE_VERSION target_version) {

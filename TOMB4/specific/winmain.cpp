@@ -358,6 +358,10 @@ int main(int argc, char* argv[]) {
 #endif
 
 	// Tomb4Plus
+	T4PlusInit();
+	//
+
+	// Tomb4Plus
 	LoadGameModConfigFirstPass();
 	//
 
@@ -950,6 +954,10 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
 	App.mmx = 0;
 	App.SetupComplete = 0;
 	App.AutoTarget = 0;
+
+	// Tomb4Plus
+	T4PlusInit();
+	//
 
 	LoadGameModConfigFirstPass();
 

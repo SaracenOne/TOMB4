@@ -487,7 +487,7 @@ void DoLevel(uchar Name, uchar Audio)
 	}
 	else
 	{
-		T4PlusReset();
+		T4PlusLevelReset();
 
 		if (gfInitialiseGame)
 		{
@@ -999,7 +999,7 @@ void LoadGameflow()
 	char* d;
 	long l, end;
 
-	NGInit();
+	NGScriptInit();
 
 	s = 0;
 	int gameflow_len = LoadFile("SCRIPT.DAT", &s);

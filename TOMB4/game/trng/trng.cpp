@@ -367,7 +367,6 @@ bool NGTestUseInventoryObjectAndManagementReplaced(short inventory_object_id) {
 }
 
 void NGInit() {
-	NGScriptInit();
 }
 
 void NGCleanup() {
