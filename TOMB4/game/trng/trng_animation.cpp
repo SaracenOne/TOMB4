@@ -16,20 +16,7 @@
 
 #define NG_ANIM_TEST_INPUT(animation_flag, input_flag, key_number, return_variable) \
 if (animation->key_number & animation_flag) { \
-	if (animation->key_number & KEY1_RELEASED) {\
-		if (input & input_flag) { \
-			return_variable = false; \
-		} \
-	} else { \
-		if (!(input & input_flag)) { \
-			return_variable = false; \
-		} \
-	} \
-}
-
-#define NG_ANIM_KEY2_TEST_INPUT(animation_flag, input_flag, return_variable) \
-if (animation->key_2 & animation_flag) { \
-	if (animation->key_2 & KEY1_RELEASED) {\
+	if (animation->key_1 & KEY1_RELEASED) {\
 		if (input & input_flag) { \
 			return_variable = false; \
 		} \
