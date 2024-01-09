@@ -14,9 +14,22 @@
 #include "../../specific/3dmath.h"
 #include "../../tomb4/mod_config.h"
 
-#define NG_ANIM_TEST_INPUT(animation_flag, input_flag, return_variable) \
-if (animation->key_1 & animation_flag) { \
-	if (animation->key_1 & KEY1_RELEASED) {\
+#define NG_ANIM_TEST_INPUT(animation_flag, input_flag, key_number, return_variable) \
+if (animation->key_number & animation_flag) { \
+	if (animation->key_number & KEY1_RELEASED) {\
+		if (input & input_flag) { \
+			return_variable = false; \
+		} \
+	} else { \
+		if (!(input & input_flag)) { \
+			return_variable = false; \
+		} \
+	} \
+}
+
+#define NG_ANIM_KEY2_TEST_INPUT(animation_flag, input_flag, return_variable) \
+if (animation->key_2 & animation_flag) { \
+	if (animation->key_2 & KEY1_RELEASED) {\
 		if (input & input_flag) { \
 			return_variable = false; \
 		} \
@@ -31,13 +44,25 @@ void NGTestAnimation(NG_ANIMATION *animation) {
 	if (animation) {
 		bool is_valid = false;
 
+		// If Lara is no longer playing the NG Animation
+		if (animation->animation_index == ng_animation_current_animation) {
+			if (lara_item->anim_number != ng_animation_current_animation) {
+				if (animation->fan_flags & FAN_SET_FREE_HANDS_TEMP) {
+					lara.gun_status = ng_animation_prev_hands_state;
+				}
+				ng_animation_current_animation = -1;
+			}
+		}
+
 		// Add newly support flags here...
 		if (animation->fan_flags != 0xffff) {
 			if (animation->fan_flags & ~(
 				FAN_PERFORM_TRIGGER_GROUP |
 				FAN_ALIGN_TO_ENV_POS |
 				FAN_SET_BUSY_HANDS |
+				FAN_KEEP_NEXT_STATEID |
 				FAN_SET_FREE_HANDS |
+				FAN_SET_FREE_HANDS_TEMP |
 				FAN_SET_NEUTRAL_STATE_ID |
 				FAN_START_FROM_EXTRA_FRAME |
 				FAN_ENABLE_GRAVITY |
@@ -48,9 +73,12 @@ void NGTestAnimation(NG_ANIMATION *animation) {
 			}
 		}
 
-		if (animation->key_2 != 0 && animation->key_2 != 0xffff) {
-			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGTestAnimation: key_2 support missing!");
-			return;
+		if (animation->key_1 == 0xffff) {
+			animation->key_1 = 0;
+		}
+
+		if (animation->key_2 == 0xffff) {
+			animation->key_2 = 0;
 		}
 
 		if (animation->state_or_animation_condition_count == 0) {
@@ -71,18 +99,20 @@ void NGTestAnimation(NG_ANIMATION *animation) {
 			}
 		}
 		if (is_valid) {
-			if (1) {
-				NG_ANIM_TEST_INPUT(KEY1_UP, IN_FORWARD, is_valid);
-				NG_ANIM_TEST_INPUT(KEY1_DOWN, IN_BACK, is_valid);
-				NG_ANIM_TEST_INPUT(KEY1_LEFT, IN_LEFT, is_valid);
-				NG_ANIM_TEST_INPUT(KEY1_RIGHT, IN_RIGHT, is_valid);
-				NG_ANIM_TEST_INPUT(KEY1_JUMP, IN_JUMP, is_valid);
-				NG_ANIM_TEST_INPUT(KEY1_DRAW_WEAPON, IN_DRAW, is_valid);
-				NG_ANIM_TEST_INPUT(KEY1_ACTION, IN_ACTION, is_valid);
-				NG_ANIM_TEST_INPUT(KEY1_WALK, IN_WALK, is_valid);
-				NG_ANIM_TEST_INPUT(KEY1_LOOK, IN_LOOK, is_valid);
-				NG_ANIM_TEST_INPUT(KEY1_ROLL, IN_ROLL, is_valid);
-			}
+			NG_ANIM_TEST_INPUT(KEY1_UP, IN_FORWARD, key_1, is_valid);
+			NG_ANIM_TEST_INPUT(KEY1_DOWN, IN_BACK, key_1, is_valid);
+			NG_ANIM_TEST_INPUT(KEY1_LEFT, IN_LEFT, key_1, is_valid);
+			NG_ANIM_TEST_INPUT(KEY1_RIGHT, IN_RIGHT, key_1, is_valid);
+			NG_ANIM_TEST_INPUT(KEY1_JUMP, IN_JUMP, key_1, is_valid);
+			NG_ANIM_TEST_INPUT(KEY1_DRAW_WEAPON, IN_DRAW, key_1, is_valid);
+			NG_ANIM_TEST_INPUT(KEY1_ACTION, IN_ACTION, key_1, is_valid);
+			NG_ANIM_TEST_INPUT(KEY1_WALK, IN_WALK, key_1, is_valid);
+			NG_ANIM_TEST_INPUT(KEY1_LOOK, IN_LOOK, key_1, is_valid);
+			NG_ANIM_TEST_INPUT(KEY1_ROLL, IN_ROLL, key_1, is_valid);
+
+			NG_ANIM_TEST_INPUT(KEY2_USE_FLARE, IN_FLARE, key_2, is_valid);
+			NG_ANIM_TEST_INPUT(KEY2_DUCK, IN_DUCK, key_2, is_valid);
+			NG_ANIM_TEST_INPUT(KEY2_DASH, IN_SPRINT, key_2, is_valid);
 		}
 
 		if (is_valid) {
@@ -134,7 +164,9 @@ void NGTestAnimation(NG_ANIMATION *animation) {
 						if (lara_item->current_anim_state != anims[animation->animation_index].current_anim_state)
 						{
 							lara_item->current_anim_state = anims[animation->animation_index].current_anim_state;
-							lara_item->goal_anim_state = anims[animation->animation_index].current_anim_state;
+							if (!(animation->fan_flags & FAN_KEEP_NEXT_STATEID)) {
+								lara_item->goal_anim_state = anims[animation->animation_index].current_anim_state;
+							}
 						}
 
 						if (lara_item->required_anim_state == anims[animation->animation_index].current_anim_state)
@@ -150,7 +182,9 @@ void NGTestAnimation(NG_ANIMATION *animation) {
 					// This is likely not correct behaviour, needs further investigation.
 					if (animation->fan_flags & FAN_SET_NEUTRAL_STATE_ID) {
 						lara_item->current_anim_state = 69;
-						lara_item->goal_anim_state = 69;
+						if (!(animation->fan_flags & FAN_KEEP_NEXT_STATEID)) {
+							lara_item->goal_anim_state = 69;
+						}
 					}
 
 					if ((animation->fan_flags & FAN_DISABLE_GRAVITY) && (animation->fan_flags & FAN_ENABLE_GRAVITY)) {
@@ -163,7 +197,11 @@ void NGTestAnimation(NG_ANIMATION *animation) {
 						}
 					}
 
-					if (animation->fan_flags & FAN_SET_FREE_HANDS) {
+					// Is this the correct way of doing FAN_SET_FREE_HANDS_TEMP?
+					ng_animation_current_animation = lara_item->anim_number;
+
+					if (animation->fan_flags & FAN_SET_FREE_HANDS || animation->fan_flags & FAN_SET_FREE_HANDS_TEMP) {
+						ng_animation_prev_hands_state = lara.gun_status;
 						lara.gun_status = LG_NO_ARMS;
 					}
 				}

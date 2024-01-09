@@ -16,7 +16,7 @@ enum AnimationKey1Code {
 };
 
 enum AnimationKey2Code {
-	KEY2_USE_FLAREKEY1_ACTION = 0x0008,
+	KEY2_USE_FLARE = 0x0008,
 	KEY2_DUCK = 0x2000,
 	KEY2_DASH = 0x4000,
 };

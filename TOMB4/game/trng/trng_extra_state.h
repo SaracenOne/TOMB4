@@ -68,6 +68,8 @@ enum NGTimerPosition {
 	NG_TIMER_POSITION_DOWN_RIGHT_BARS,
 };
 
+extern int ng_animation_current_animation;
+extern short ng_animation_prev_hands_state;
 extern int ng_animation_target_item;
 extern int ng_animation_target_test_position;
 

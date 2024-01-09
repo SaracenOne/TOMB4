@@ -59,6 +59,11 @@ TestEnvConditionTripletResult TestEnvConditionTriplet(NG_MULTI_ENV_TRIPLET* trip
 			result.is_valid = true;
 			break;
 		}
+		case ENV_NO_BLOCK_IN_FRONT: {
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TestEnvConditionTriplet: ENV_NO_BLOCK_IN_FRONT is unimplemented!");
+			result.is_valid = false;
+			break;
+		}
 		case ENV_MULT_CONDITION: {
 			result.is_valid = true;
 

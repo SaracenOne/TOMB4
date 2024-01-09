@@ -90,6 +90,8 @@ void NGResetItemExtraData(int item_number) {
 	}
 }
 
+int ng_animation_current_animation = -1;
+short ng_animation_prev_hands_state = LG_NO_ARMS;
 int ng_animation_target_item = -1;
 int ng_animation_target_test_position = -1;
 
@@ -1498,6 +1500,8 @@ void NGSetupExtraState() {
 	ng_lara_infinite_air = false;
 
 	// Animation
+	ng_animation_current_animation = -1;
+	ng_animation_prev_hands_state = LG_NO_ARMS;
 	ng_animation_target_item = -1;
 	ng_animation_target_test_position = -1;
 
