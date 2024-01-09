@@ -254,6 +254,7 @@ void SwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 							if (item->trigger_flags & 0x2000)
 								l->anim_number++;
 							l->current_anim_state = AS_SWITCHOFF;
+							l->goal_anim_state = AS_STOP;
 						}
 						else
 						{
@@ -284,6 +285,7 @@ void SwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 						if (global_info->trng_switch_extended_ocb && (item->trigger_flags) >= 4) {
 							l->anim_number = item->trigger_flags & 0xfff;
 							l->current_anim_state = AS_SWITCHON;
+							l->goal_anim_state = AS_STOP;
 						}
 						else
 						{
