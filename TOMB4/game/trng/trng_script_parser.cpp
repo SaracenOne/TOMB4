@@ -157,6 +157,19 @@ char *NGGetPluginString(short plugin_id) {
 	return NULL;
 }
 
+int NGGetT4PluginID(short plugin_id) {
+	if (plugin_id < MAX_NG_PLUGINS) {
+		if (ng_plugins[plugin_id].t4plus_plugin) {
+			return ng_plugins[plugin_id].t4plus_plugin;
+		}
+	}
+	else {
+		NGLog(NG_LOG_TYPE_ERROR, "MAX_NG_STRINGS exceeded!");
+	}
+
+	return NULL;
+}
+
 void NGScriptCleanup() {
 	for (int i = 0; i < MAX_NG_LEVELS; i++) {
 		NGFreeLevel(ng_levels[i]);
@@ -1312,15 +1325,17 @@ int NGReadLevelBlock(char* gfScriptFile, unsigned int offset, NG_LEVEL_RECORD_TA
 					unsigned short third_field_upper = NG_READ_16(gfScriptFile, offset);
 
 					if (plugin_id != 0) {
-						char* plugin_string = NGGetPluginString(plugin_id);
+						char *plugin_string = NGGetPluginString(plugin_id);
 						if (plugin_string) {
-							NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TriggerGroup %u - Plugin TriggerGroup plugin:%s, first_field:0x%x, second_field:%u, third_field:0x%x (level %u)",
-								id,
-								plugin_string,
-								first_field,
-								((int)second_field_upper << 16 | (int)second_field_lower),
-								((int)third_field_upper << 16 | (int)third_field_lower),
-								current_level);
+							if (NGGetT4PluginID(plugin_id) == -1) {
+								NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TriggerGroup %u - Plugin TriggerGroup plugin:%s, first_field:0x%x, second_field:%u, third_field:0x%x (level %u)",
+									id,
+									plugin_string,
+									first_field,
+									((int)second_field_upper << 16 | (int)second_field_lower),
+									((int)third_field_upper << 16 | (int)third_field_lower),
+									current_level);
+							}
 						} else {
 							NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TriggerGroup %u - Plugin TriggerGroup plugin_id:%u, first_field:0x%x, second_field:%u, third_field:0x%x (level %u)",
 								id,
@@ -2082,8 +2097,9 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 					if (disable_array != 0xffff)
 						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Plugin disable array is not supported!");
 
-					ng_plugins[plugin_id].is_enabled = true;
 					ng_plugins[plugin_id].ng_plugin_string_id = plugin_string_id;
+					ng_plugins[plugin_id].is_enabled = true;
+
 					char *plugin_string = NGGetPluginString(plugin_id);
 
 					if (plugin_string) {

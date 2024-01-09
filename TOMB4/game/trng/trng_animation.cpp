@@ -160,22 +160,16 @@ void NGTestAnimation(NG_ANIMATION *animation) {
 					if (animation->fan_flags & FAN_PERFORM_TRIGGER_GROUP) {
 						NGTriggerGroupFunction(animation->animation_index, 0);
 					} else {
-						lara_item->anim_number = animation->animation_index;
-						if (lara_item->current_anim_state != anims[animation->animation_index].current_anim_state)
-						{
-							lara_item->current_anim_state = anims[animation->animation_index].current_anim_state;
-							if (!(animation->fan_flags & FAN_KEEP_NEXT_STATEID)) {
-								lara_item->goal_anim_state = anims[animation->animation_index].current_anim_state;
-							}
+						int original_goal_anim_state = lara_item->goal_anim_state;
+
+						NGForceItemAnimation(lara.item_number, animation->animation_index);
+
+						if (!(animation->fan_flags & FAN_KEEP_NEXT_STATEID)) {
+							lara_item->goal_anim_state = original_goal_anim_state;
 						}
 
-						if (lara_item->required_anim_state == anims[animation->animation_index].current_anim_state)
-							lara_item->required_anim_state = 0;
-
 						if (animation->fan_flags & FAN_START_FROM_EXTRA_FRAME) {
-							lara_item->frame_number = anims[animation->animation_index].frame_base + animation->environment.extra;
-						} else {
-							lara_item->frame_number = anims[animation->animation_index].frame_base;
+							lara_item->frame_number += animation->environment.extra;
 						}
 					}
 

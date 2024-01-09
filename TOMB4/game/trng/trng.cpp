@@ -308,9 +308,11 @@ void NGForceItemAnimation(unsigned short item_id, unsigned int animation) {
 	if (items[item_id].current_anim_state != anims[items[item_id].anim_number].current_anim_state)
 	{
 		items[item_id].current_anim_state = anims[items[item_id].anim_number].current_anim_state;
+		// Do we want to force the goal anim state too?
 		items[item_id].goal_anim_state = anims[items[item_id].anim_number].current_anim_state;
 	}
 
+	// Is required_anim_state_relevant?
 	if (items[item_id].required_anim_state == anims[items[item_id].anim_number].current_anim_state)
 		items[item_id].required_anim_state = 0;
 }

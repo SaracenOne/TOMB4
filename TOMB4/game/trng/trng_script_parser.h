@@ -383,6 +383,7 @@ extern NG_BIG_NUMBER current_big_numbers[MAX_NG_BIG_NUMBERS];
 
 extern char *NGGetString(short string_id);
 extern char *NGGetPluginString(short plugin_id);
+extern int NGGetT4PluginID(short plugin_id);
 
 extern void NGScriptInit();
 extern void NGScriptCleanup();

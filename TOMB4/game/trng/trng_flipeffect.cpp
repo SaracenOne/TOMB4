@@ -285,6 +285,14 @@ bool force_lara_animation_0_255_of_slot_animation(unsigned char animation_index,
 	return true;
 }
 
+// NGLE - 78
+bool lara_force_x_state_id_and_e_next_state_id_for_lara(unsigned char state_id, unsigned char next_state_id) {
+	items[lara.item_number].current_anim_state = state_id;
+	items[lara.item_number].goal_anim_state = next_state_id;
+
+	return true;
+}
+
 // NGLE - 79
 bool move_lara_to_lara_start_pos_in_x_way(unsigned char ocb, unsigned char teleport_type) {
 	int lara_start_pos_id = NGFindIndexForLaraStartPosWithMatchingOCB(ocb);
@@ -943,6 +951,45 @@ bool sound_play_sound_single_playback_of_global_sound_map(unsigned char lower_sa
 	return true;
 }
 
+// NGLE - 169
+bool lara_force_x_animation_for_lara_preserve_state_id(unsigned char lower_anim_id, unsigned char upper_anim_id) {
+	int animation_index = (int)lower_anim_id | ((int)(upper_anim_id) << 8 & 0xff00);
+
+	int original_anim_state = lara_item->current_anim_state;
+	int animation_index_offset = objects[LARA].anim_index + animation_index;
+
+	NGForceItemAnimation(lara.item_number, animation_index_offset);
+
+	lara_item->current_anim_state = original_anim_state;
+
+	return true;
+}
+
+// NGLE - 170
+bool lara_force_x_animation_for_lara_set_new_state_id(unsigned char lower_anim_id, unsigned char upper_anim_id) {
+	int animation_index = (int)lower_anim_id | ((int)(upper_anim_id) << 8 & 0xff00);
+	int animation_index_offset = objects[LARA].anim_index + animation_index;
+
+	NGForceItemAnimation(lara.item_number, animation_index_offset);
+
+	return true;
+}
+
+// NGLE - 171
+bool lara_force_x_animation_for_lara_set_neutral_state_id(unsigned char lower_anim_id, unsigned char upper_anim_id) {
+	int animation_index = (int)lower_anim_id | ((int)(upper_anim_id) << 8 & 0xff00);
+	int animation_index_offset = objects[LARA].anim_index + animation_index;
+
+	NGForceItemAnimation(lara.item_number, animation_index_offset);
+
+	// Do we set the goal state ID too?
+	items[lara.item_number].current_anim_state = 69;
+	items[lara.item_number].goal_anim_state = 69;
+
+	return true;
+}
+
+
 // NGLE - 180
 bool static_explode(unsigned char static_id_lower, unsigned char static_id_upper) {
 	unsigned short static_id = ((short)static_id_upper << 8) | (short)static_id_lower;
@@ -1454,7 +1501,7 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 		}
 		case FORCE_LARA_STATE_ID_AND_NEXT_STATE_ID: {
 			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "FORCE_LARA_STATE_ID_AND_NEXT_STATE_ID unimplemented!");
+				return lara_force_x_state_id_and_e_next_state_id_for_lara(action_data_1, action_data_2);
 			break;
 		}
 		case MOVE_LARA_TO_START_POS_WITH_OCB_VALUE_IN_X_WAY: {
@@ -2038,22 +2085,20 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 		}
 		case LARA_FORCE_X_ANIMATION_FOR_LARA_PRESERVE_STATE_ID: {
 			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_FORCE_X_ANIMATION_FOR_LARA_PRESERVE_STATE_ID unimplemented!");
+				return lara_force_x_animation_for_lara_preserve_state_id(action_data_1, action_data_2);
 				return true;
 			}
 			break;
 		}
 		case LARA_FORCE_X_ANIMATION_FOR_LARA_SET_NEW_STATE_ID: {
 			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_FORCE_X_ANIMATION_FOR_LARA_SET_NEW_STATE_ID unimplemented!");
-				return true;
+				return lara_force_x_animation_for_lara_set_new_state_id(action_data_1, action_data_2);
 			}
 			break;
 		}
 		case LARA_FORCE_X_ANIMATION_FOR_LARA_SET_NEUTRAL_STATE_ID: {
 			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_FORCE_X_ANIMATION_FOR_LARA_SET_NEUTRAL_STATE_ID unimplemented!");
-				return true;
+				return lara_force_x_animation_for_lara_set_neutral_state_id(action_data_1, action_data_2);
 			}
 			break;
 		}
