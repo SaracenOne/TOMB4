@@ -15,8 +15,9 @@
 	CLASS_NAME##_RECORD* VAR_NAME##_table = NULL; \
 
 struct NG_PLUGIN {
-	int plugin_string_id = 0;
 	bool is_enabled = false;
+	int ng_plugin_string_id = 0;
+	int t4plus_plugin = -1;
 };
 
 enum NG_PARAM_ENUMS {

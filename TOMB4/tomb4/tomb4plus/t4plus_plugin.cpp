@@ -42,3 +42,13 @@ T4PlusPluginRegistrationResult T4PlusRegisterBuiltinPlugin(const char *plugin_na
 
 	return T4PLUS_PLUGIN_REGISTRATION_RESULT_FAILED;
 }
+
+int T4PlusFindRegisteredPluginByName(const char* plugin_name) {
+	for (int i = 0; i < t4plus_active_plugin_count; i++) {
+		if (strcmp(plugin_name, t4plus_registered_plugins[i].plugin_name) == 0) {
+			return i;
+		}
+	}
+
+	return -1;
+}

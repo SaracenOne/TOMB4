@@ -46,7 +46,7 @@ void NGScriptInit() {
 
 	for (int i = 0; i < MAX_NG_PLUGINS; i++) {
 		ng_plugins[i].is_enabled;
-		ng_plugins[i].plugin_string_id = 0;
+		ng_plugins[i].ng_plugin_string_id = 0;
 	}
 }
 
@@ -148,7 +148,7 @@ char *NGGetString(short string_id) {
 char *NGGetPluginString(short plugin_id) {
 	if (plugin_id < MAX_NG_PLUGINS) {
 		if (ng_plugins[plugin_id].is_enabled) {
-			return NGGetString(ng_plugins[plugin_id].plugin_string_id);
+			return NGGetString(ng_plugins[plugin_id].ng_plugin_string_id);
 		}
 	} else {
 		NGLog(NG_LOG_TYPE_ERROR, "MAX_NG_STRINGS exceeded!");
@@ -2083,7 +2083,19 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Plugin disable array is not supported!");
 
 					ng_plugins[plugin_id].is_enabled = true;
-					ng_plugins[plugin_id].plugin_string_id = plugin_string_id;
+					ng_plugins[plugin_id].ng_plugin_string_id = plugin_string_id;
+					char *plugin_string = NGGetPluginString(plugin_id);
+
+					if (plugin_string) {
+						ng_plugins[plugin_id].t4plus_plugin = T4PlusFindRegisteredPluginByName(plugin_string);
+						if (ng_plugins[plugin_id].t4plus_plugin == -1) {
+							NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: Plugin %s was not included in the game's manifest.", plugin_string);
+						} else {
+							NGLog(NG_LOG_TYPE_PRINT, "NGReadNGGameflowInfo: Plugin %s was successfully linked with NG plugin interface.", plugin_string);
+						}
+					} else {
+						NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: Plugin string was not found.");
+					}
 
 					break;
 				}

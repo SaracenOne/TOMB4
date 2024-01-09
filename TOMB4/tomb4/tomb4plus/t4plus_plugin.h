@@ -50,3 +50,4 @@ enum T4PlusPluginRegistrationResult {
 };
 
 extern T4PlusPluginRegistrationResult T4PlusRegisterBuiltinPlugin(const char* plugin_name, const char* plugin_builtin_name);
+extern int T4PlusFindRegisteredPluginByName(const char* plugin_name);
