@@ -55,30 +55,20 @@ void NGTestAnimation(NG_ANIMATION *animation) {
 		}
 
 		// Add newly support flags here...
-		if (animation->fan_flags != 0xffff) {
-			if (animation->fan_flags & ~(
-				FAN_PERFORM_TRIGGER_GROUP |
-				FAN_ALIGN_TO_ENV_POS |
-				FAN_SET_BUSY_HANDS |
-				FAN_KEEP_NEXT_STATEID |
-				FAN_SET_FREE_HANDS |
-				FAN_SET_FREE_HANDS_TEMP |
-				FAN_SET_NEUTRAL_STATE_ID |
-				FAN_START_FROM_EXTRA_FRAME |
-				FAN_ENABLE_GRAVITY |
-				FAN_DISABLE_GRAVITY)
-				) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGTestAnimation: Unsupported FAN_ flags detected: %u!", animation->fan_flags);
-				return;
-			}
-		}
-
-		if (animation->key_1 == 0xffff) {
-			animation->key_1 = 0;
-		}
-
-		if (animation->key_2 == 0xffff) {
-			animation->key_2 = 0;
+		if (animation->fan_flags & ~(
+			FAN_PERFORM_TRIGGER_GROUP |
+			FAN_ALIGN_TO_ENV_POS |
+			FAN_SET_BUSY_HANDS |
+			FAN_KEEP_NEXT_STATEID |
+			FAN_SET_FREE_HANDS |
+			FAN_SET_FREE_HANDS_TEMP |
+			FAN_SET_NEUTRAL_STATE_ID |
+			FAN_START_FROM_EXTRA_FRAME |
+			FAN_ENABLE_GRAVITY |
+			FAN_DISABLE_GRAVITY)
+			) {
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGTestAnimation: Unsupported FAN_ flags detected: %u!", animation->fan_flags);
+			return;
 		}
 
 		if (animation->state_or_animation_condition_count == 0) {

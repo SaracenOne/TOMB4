@@ -495,11 +495,29 @@ int NGReadLevelBlock(char* gfScriptFile, unsigned int offset, NG_LEVEL_RECORD_TA
 
 			tables->level_animation_table[tables->level_animation_count].record.animation_index = NG_READ_16(gfScriptFile, offset);
 			tables->level_animation_table[tables->level_animation_count].record.key_1 = NG_READ_16(gfScriptFile, offset);
+			if (tables->level_animation_table[tables->level_animation_count].record.key_1 == 0xffff) {
+				tables->level_animation_table[tables->level_animation_count].record.key_1 = 0;
+			}
 			tables->level_animation_table[tables->level_animation_count].record.key_2 = NG_READ_16(gfScriptFile, offset);
+			if (tables->level_animation_table[tables->level_animation_count].record.key_2 == 0xffff) {
+				tables->level_animation_table[tables->level_animation_count].record.key_2 = 0;
+			}
 			tables->level_animation_table[tables->level_animation_count].record.fan_flags = NG_READ_16(gfScriptFile, offset);
+			if (tables->level_animation_table[tables->level_animation_count].record.fan_flags == 0xffff) {
+				tables->level_animation_table[tables->level_animation_count].record.fan_flags = 0;
+			}
 			tables->level_animation_table[tables->level_animation_count].record.environment.env_condition = NG_READ_16(gfScriptFile, offset);
+			if (tables->level_animation_table[tables->level_animation_count].record.environment.env_condition == 0xffff) {
+				tables->level_animation_table[tables->level_animation_count].record.environment.env_condition = 0;
+			}
 			tables->level_animation_table[tables->level_animation_count].record.environment.distance_for_env = NG_READ_16(gfScriptFile, offset);
+			if (tables->level_animation_table[tables->level_animation_count].record.environment.distance_for_env == 0xffff) {
+				tables->level_animation_table[tables->level_animation_count].record.environment.distance_for_env = 0;
+			}
 			tables->level_animation_table[tables->level_animation_count].record.environment.extra = NG_READ_16(gfScriptFile, offset);
+			if (tables->level_animation_table[tables->level_animation_count].record.environment.extra == 0xffff) {
+				tables->level_animation_table[tables->level_animation_count].record.environment.extra = 0;
+			}
 
 			while ((offset != command_block_end_position)) {
 				if (tables->level_animation_table[tables->level_animation_count].record.state_or_animation_condition_count >= NG_ANIMATION_CONDTION_MAX_SIZE) {
