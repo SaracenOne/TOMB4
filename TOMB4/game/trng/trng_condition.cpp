@@ -170,6 +170,9 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 		int scancode = param;
 #ifdef USE_SDL
 		scancode = convert_tomb_keycode_to_sdl_scancode(scancode);
+		if (!keymap) {
+			return false;
+		}
 #endif
 		// TODO: find the difference between multishot and singleshot
 		switch (extra) {
