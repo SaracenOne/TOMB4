@@ -4,6 +4,8 @@
 #include "trng_arithmetic.h"
 #include "trng_extra_state.h"
 
+#include "../lara.h"
+
 unsigned char NGNumericOperationByte(NGNumericOperationType number_operation_type, unsigned char variable, unsigned int value) {
 	switch (number_operation_type) {
 		case NG_SET: {
@@ -602,6 +604,113 @@ int NGNumericGetVariable(unsigned int variable) {
 
 int NGNumericGetSavegameValue(unsigned int variable) {
 	switch (variable) {
+		case 0x00: {
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGNumericGetSavegameValue: TRNG Index: Index of last item found with testposition or condition unimplemented");
+			break;
+		}
+		case 0x01: {
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGNumericGetSavegameValue: TRNG Index: Index of last item performing last AnimCommand unimplemented");
+			break;
+		}
+		case 0x02: {
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGNumericGetSavegameValue: TRNG Index: Item index for selected item unimplemented");
+			break;
+		}
+		case 0x03: {
+			return lara.item_number;
+			break;
+		}
+		case 0x04: {
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGNumericGetSavegameValue: Lara Hands: Attached Lara Status untested!");
+			return lara.gun_status;
+			break;
+		}
+		case 0x05: {
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGNumericGetSavegameValue: Lara Hands: Item in the hands (current) untested!");
+			return lara.gun_type;
+			break;
+		}
+		case 0x06: {
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGNumericGetSavegameValue: Lara Hands: Item in the hands (following) untested!");
+			return lara.request_gun_type;
+			break;
+		}
+		case 0x07: {
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGNumericGetSavegameValue: Lara Hands: current weapon (not necessarily in the hand) untested!");
+			return lara.last_gun_type;
+			break;
+		}
+		case 0x08: {
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGNumericGetSavegameValue: Lara: Environment where lara is is untested!");
+			return lara.water_status;
+			break;
+		}
+		case 0x09: {
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGNumericGetSavegameValue: Lara: Climb sector test is untested!");
+			return lara.climb_status;
+			break;
+		}
+		case 0x0a: {
+			return lara.air;
+			break;
+		}
+		case 0x0b: {
+			return lara.death_count;
+			break;
+		}
+		case 0x0c: {
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGNumericGetSavegameValue: Lara Hands: Remaining time with lighted flare is untested!");
+			return lara.flare_age;
+			break;
+		}
+		case 0x28: {
+			return lara.puzzleitems[0];
+			break;
+		}
+		case 0x29: {
+			return lara.puzzleitems[1];
+			break;
+		}
+		case 0x2A: {
+			return lara.puzzleitems[2];
+			break;
+		}
+		case 0x2B: {
+			return lara.puzzleitems[3];
+			break;
+		}
+		case 0x2C: {
+			return lara.puzzleitems[4];
+			break;
+		}
+		case 0x2D: {
+			return lara.puzzleitems[5];
+			break;
+		}
+		case 0x2E: {
+			return lara.puzzleitems[6];
+			break;
+		}
+		case 0x2F: {
+			return lara.puzzleitems[7];
+			break;
+		}
+		case 0x30: {
+			return lara.puzzleitems[8];
+			break;
+		}
+		case 0x31: {
+			return lara.puzzleitems[9];
+			break;
+		}
+		case 0x32: {
+			return lara.puzzleitems[10];
+			break;
+		}
+		case 0x33: {
+			return lara.puzzleitems[10];
+			break;
+		}
 		default: {
 			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGNumericGetSavegameValue: Unimplemented savegame value: %u", variable);
 			break;
