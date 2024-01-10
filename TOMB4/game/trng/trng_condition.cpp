@@ -124,6 +124,94 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 		break;
 	}
 	case LARA_IS_PERFORMING_X_ACTION: {
+		bool is_lara_performing = !extra;
+		switch (param) {
+			case 0: // Climbing
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_IS_PERFORMING_X_ACTION climbing not currently implemented!");
+				return !is_lara_performing;
+				break;
+			case 1: // Swimming underwater
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_IS_PERFORMING_X_ACTION swimming underwater not currently implemented!");
+				return !is_lara_performing;
+				break;
+			case 2: // Floating on water
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_IS_PERFORMING_X_ACTION floating on water not currently implemented!");
+				return !is_lara_performing;
+				break;
+			case 3: // Falling
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_IS_PERFORMING_X_ACTION falling not currently implemented!");
+				return !is_lara_performing;
+				break;
+			case 4: // Jumping
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_IS_PERFORMING_X_ACTION jumping not currently implemented!");
+				return !is_lara_performing;
+				break;
+			case 5: // Moving on all fours
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_IS_PERFORMING_X_ACTION moving on all fours not currently implemented!");
+				return !is_lara_performing;
+				break;
+			case 6: // Sliding
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_IS_PERFORMING_X_ACTION sliding not currently implemented!");
+				return !is_lara_performing;
+				break;
+			case 7: // Rolling
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_IS_PERFORMING_X_ACTION rolling not currently implemented!");
+				return !is_lara_performing;
+				break;
+			case 8: // Running
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_IS_PERFORMING_X_ACTION running not currently implemented!");
+				return !is_lara_performing;
+				break;
+			case 9: // Walking
+				if ((lara_item->current_anim_state == AS_WALK) == is_lara_performing) {
+					return true;
+				}
+				return false;
+				break;
+			case 10: // Dying
+				if ((lara_item->current_anim_state == AS_DEATH) == is_lara_performing) {
+					return true;
+				}
+				return false;
+				break;
+			case 11: // Stopping
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_IS_PERFORMING_X_ACTION stopping not currently implemented!");
+				return !is_lara_performing;
+				break;
+			case 12: // Monkeying
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_IS_PERFORMING_X_ACTION monkeying not currently implemented!");
+				return !is_lara_performing;
+				break;
+			case 13: // Pushing block
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_IS_PERFORMING_X_ACTION pushing block not currently implemented!");
+				return !is_lara_performing;
+				break;
+			case 14: // Pulling block
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_IS_PERFORMING_X_ACTION pulling block not currently implemented!");
+				return !is_lara_performing;
+				break;
+			case 15: // Pulling or pushing block
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_IS_PERFORMING_X_ACTION pulling or pushing block not currently implemented!");
+				return !is_lara_performing;
+				break;
+			case 16: // Swimming underwater or on water
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_IS_PERFORMING_X_ACTION swimming underwater or on water not currently implemented!");
+				return !is_lara_performing;
+				break;
+			case 17: // Shooting
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_IS_PERFORMING_X_ACTION shooting not currently implemented!");
+				return !is_lara_performing;
+				break;
+			case 18: // Hanging
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_IS_PERFORMING_X_ACTION hanging not currently implemented!");
+				return !is_lara_performing;
+				break;
+			case 19: // Dripping
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_IS_PERFORMING_X_ACTION dripping not currently implemented!");
+				return !is_lara_performing;
+				break;
+		}
+
 		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_IS_PERFORMING_X_ACTION is not currently implemented!");
 		return false;
 	}
