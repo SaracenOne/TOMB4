@@ -610,6 +610,12 @@ void ControlMineHelicopter(short item_number)
 
 void MineCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 {
+	// Tomb4Plus
+	if (lara.water_status == LW_FLYCHEAT)
+	{
+		return;
+	}
+
 	ITEM_INFO* item;
 	ITEM_INFO* mines;
 
@@ -662,6 +668,12 @@ void MineCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 
 void FallingSquishyBlockCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 {
+	// Tomb4Plus
+	if (lara.water_status == LW_FLYCHEAT)
+	{
+		return;
+	}
+
 	ITEM_INFO * item;
 
 	item = &items[item_number];
@@ -2293,6 +2305,12 @@ void RollingBallPush(short item_number, ITEM_INFO* l) {
 
 void RollingBallCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 {
+	// Tomb4Plus
+	if (lara.water_status == LW_FLYCHEAT)
+	{
+		return;
+	}
+
 	ITEM_INFO* item;
 
 	item = &items[item_number];
