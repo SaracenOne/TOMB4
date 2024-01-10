@@ -1259,22 +1259,28 @@ void furr_execute_furr_flipeffect(int id) {
 		switch (previous_result) {
 			case FURR_RESULT_ERROR: {
 				const char *opcode_name = furr_name_table[opcode].opcode_name;
-				Log(0, "Opcode %s failed with an error.\n");
+				Log(0, "Opcode %s failed with an error.\n", opcode_name);
 				break;
 			}
-			FURR_RESULT_UNIMPLEMENTED: {
+			case FURR_RESULT_UNIMPLEMENTED: {
 				const char* opcode_name = furr_name_table[opcode].opcode_name;
-				Log(0, "Opcode %s has not yet been implemented.\n");
+				Log(0, "Opcode %s has not yet been implemented.\n", opcode_name);
 				break;
 			}
-			case FURR_RESULT_RET:
-				break;
-			case FURR_RESULT_FAILED:
+			case FURR_RESULT_RET: {
+				return;
+			}
+			case FURR_RESULT_FAILED: {
 				previous_result = FURR_RESULT_FAILED;
 				break;
-			case FURR_RESULT_OK:
+			}
+			case FURR_RESULT_OK: {
 				previous_result = FURR_RESULT_OK;
 				break;
+			}
+			default: {
+				break;
+			}
 		}
 	}
 }
