@@ -173,6 +173,10 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 		if (!keymap) {
 			return false;
 		}
+		if (scancode == SDLK_UNKNOWN) {
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Unknown keyboard scancode %u!", scancode);
+			return false;
+		}
 #endif
 		// TODO: find the difference between multishot and singleshot
 		switch (extra) {

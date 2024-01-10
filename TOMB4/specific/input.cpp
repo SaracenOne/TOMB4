@@ -402,6 +402,31 @@ int convert_tomb_keycode_to_sdl_scancode(int tomb_keycode) {
 	case 0x29: // DIK_GRAVE
 		return SDL_SCANCODE_GRAVE;
 
+	case 0x3B: // DIK_F1
+		return SDL_SCANCODE_F1;
+	case 0x3C: // DIK_F2
+		return SDL_SCANCODE_F2;
+	case 0x3D: // DIK_F3
+		return SDL_SCANCODE_F3;
+	case 0x3E: // DIK_F4
+		return SDL_SCANCODE_F4;
+	case 0x3F: // DIK_F5
+		return SDL_SCANCODE_F5;
+	case 0x40: // DIK_F6
+		return SDL_SCANCODE_F6;
+	case 0x41: // DIK_F7
+		return SDL_SCANCODE_F7;
+	case 0x42: // DIK_F8
+		return SDL_SCANCODE_F8;
+	case 0x43: // DIK_F9
+		return SDL_SCANCODE_F9;
+	case 0x44: // DIK_F10
+		return SDL_SCANCODE_F10;
+	case 0x57: // DIK_F11
+		return SDL_SCANCODE_F11;
+	case 0x58: // DIK_F12
+		return SDL_SCANCODE_F12;
+
 	case 0x56: // DIK_OEM_102 - This might have issues with different keyboard layouts.
 		return SDL_SCANCODE_NONUSBACKSLASH;
 

@@ -11,6 +11,8 @@
 #include "trng_script_parser.h"
 #include "trng_triggergroup.h"
 #include "trng_globaltrigger.h"
+#include "../../specific/input.h"
+#include "../../specific/dxshell.h"
 
 bool NGExecuteSingleGlobalTrigger(int global_trigger_id, int inventory_object_id) {
 	NG_GLOBAL_TRIGGER* global_trigger = &ng_levels[gfCurrentLevel].records->global_trigger_table[global_trigger_id].record;
@@ -82,6 +84,23 @@ bool NGExecuteSingleGlobalTrigger(int global_trigger_id, int inventory_object_id
 		case GT_COLLIDE_STATIC_SLOT: {
 			int result = NGIsLaraCollidingWithStaticSlot(global_trigger->parameter);
 			if (result >= 0) {
+				global_trigger_condition_passed = true;
+			}
+			break;
+		}
+		case GT_KEYBOARD_CODE: {
+			int scancode = global_trigger->parameter;
+#ifdef USE_SDL
+			scancode = convert_tomb_keycode_to_sdl_scancode(scancode);
+			if (!keymap) {
+				break;
+			}
+			if (scancode == SDLK_UNKNOWN) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Unknown keyboard scancode %u!", scancode);
+				break;
+			}
+#endif
+			if (keymap[scancode] != 0) {
 				global_trigger_condition_passed = true;
 			}
 			break;
