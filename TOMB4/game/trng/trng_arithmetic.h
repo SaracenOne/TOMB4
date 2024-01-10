@@ -8,6 +8,7 @@ enum NGNumericOperationType {
 	NG_DIVIDE,
 	NG_BIT_SET,
 	NG_BIT_CLEAR,
+	NG_INVERT_SIGN,
 };
 
 enum NGSavegameMemoryValue {

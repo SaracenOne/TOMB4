@@ -6,6 +6,8 @@
 
 #include "../lara.h"
 
+
+// TODO: Investigate whether numeric operations operate as signed or unsigned.
 unsigned char NGNumericOperationByte(NGNumericOperationType number_operation_type, unsigned char variable, unsigned int value) {
 	switch (number_operation_type) {
 		case NG_SET: {
@@ -28,6 +30,9 @@ unsigned char NGNumericOperationByte(NGNumericOperationType number_operation_typ
 		}
 		case NG_BIT_CLEAR: {
 			return variable & ~(1 << value);
+		}
+		case NG_INVERT_SIGN: {
+			return (unsigned char)(-(signed char)value);
 		}
 	}
 
@@ -62,6 +67,9 @@ unsigned short NGNumericOperationShort(NGNumericOperationType number_operation_t
 		case NG_BIT_CLEAR: {
 			return variable & ~(1 << value);
 		}
+		case NG_INVERT_SIGN: {
+			return (unsigned short)(-(signed short)value);
+		}
 	}
 	
 	return 0;
@@ -95,6 +103,9 @@ unsigned long NGNumericOperationLong(NGNumericOperationType number_operation_typ
 		case NG_BIT_CLEAR: {
 			return variable & ~(1 << value);
 		}
+		case NG_INVERT_SIGN: {
+			return (unsigned int)(-(signed int)value);
+		}
 	}
 
 	return 0;
@@ -102,7 +113,15 @@ unsigned long NGNumericOperationLong(NGNumericOperationType number_operation_typ
 
 void NGNumericOperation(NGNumericOperationType number_operation, unsigned int variable, unsigned int value) {
 	switch (variable) {
+		case 0xffffffff: {
+			ng_current_value = NGNumericOperationByte(number_operation, ng_current_value, value);
+			break;
+		}
 		case 0xffff: {
+			ng_current_value = NGNumericOperationByte(number_operation, ng_current_value, value);
+			break;
+		}
+		case 0xff: {
 			ng_current_value = NGNumericOperationByte(number_operation, ng_current_value, value);
 			break;
 		}
@@ -392,7 +411,13 @@ void NGNumericOperation(NGNumericOperationType number_operation, unsigned int va
 
 int NGNumericGetVariable(unsigned int variable) {
 	switch (variable) {
+		case 0xffffffff: {
+			return ng_current_value;
+		}
 		case 0xffff: {
+			return ng_current_value;
+		}
+		case 0xff: {
 			return ng_current_value;
 		}
 

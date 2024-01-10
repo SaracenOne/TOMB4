@@ -1246,6 +1246,12 @@ bool variables_hide_the_x_trng_timer_in_seconds(unsigned char set_global_timer, 
 	return true;
 }
 
+// NGLE - 284
+bool variables_numeric_invert_the_sign_of_x_numeric_value(unsigned char variable, unsigned char unused) {
+	NGNumericOperation(NG_INVERT_SIGN, variable, NGNumericGetVariable(variable));
+	return true;
+}
+
 // NGLE - 367
 bool camera_show_black_screen_for_seconds_with_final_curtain_effect(unsigned char timer, unsigned char unused) {
 	NGSetCurtainTimer(timer * 30);
@@ -2860,8 +2866,7 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 		}
 		case VARIABLES_INVERT_THE_SIGN_OF_X_NUMERIC_VALUE: {
 			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "VARIABLES_INVERT_THE_SIGN_OF_X_NUMERIC_VALUE unimplemented!");
-				return true;
+				return variables_numeric_invert_the_sign_of_x_numeric_value(action_data_1, action_data_2);
 			}
 			break;
 		}
