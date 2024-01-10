@@ -1645,12 +1645,12 @@ void NGSetupExtraState() {
 	ng_current_trigger_state.room = -1;
 	ng_current_trigger_state.index = -1;
 	ng_backup_trigger_state_count = 0;
+
+	// Inventory
+	ng_used_inventory_object_for_frame = NO_ITEM;
 }
 
 void NGFrameFinishExtraState() {
-	// Inventory
-	ng_used_inventory_object_for_frame = NO_ITEM;
-
 	// Lara
 	ng_last_flipeffect_floor_trigger = ng_current_flipeffect_floor_trigger;
 	ng_current_flipeffect_floor_trigger = -1;
