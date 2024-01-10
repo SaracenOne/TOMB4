@@ -97,6 +97,9 @@ extern int ng_local_beta;
 extern int ng_local_delta;
 extern int ng_last_input_number;
 
+// Inventory
+extern int ng_used_inventory_object_for_frame;
+
 extern void NGStorePendingRoomNumber(int room_number);
 extern int NGRestorePendingRoomNumber();
 extern void NGUpdateCurrentTriggerRoomAndIndex(int new_room, int new_index);
@@ -105,6 +108,8 @@ extern void NGStoreBackupTriggerRoomAndIndex();
 extern void NGRestoreBackupTriggerRoomAndIndex();
 
 extern void NGSetupExtraState();
+
+extern void NGFrameStartExtraState();
 extern void NGFrameFinishExtraState();
 
 extern int NGValidateInputAgainstLockTimers(int input);
@@ -243,7 +248,7 @@ extern void NGResetOrganizer(int organizer_id);
 
 extern void NGSetDisplayTimerForMoveableWithType(int item_id, NGTimerTrackerType timer_type);
 
-extern bool NGProcessGlobalTriggers(int inventory_object_id);
+extern bool NGProcessGlobalTriggers(int selected_inventory_object_id);
 
 extern void NGDrawPhase();
 

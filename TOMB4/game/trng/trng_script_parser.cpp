@@ -1402,7 +1402,8 @@ int NGReadLevelBlock(char* gfScriptFile, unsigned int offset, NG_LEVEL_RECORD_TA
 			tables->level_global_triggers_table[tables->level_global_trigger_count].record.flags = flags;
 
 			unsigned short global_trigger_type = NG_READ_16(gfScriptFile, offset);
-			if (global_trigger_type != GT_ENEMY_KILLED &&
+			if (global_trigger_type != GT_USED_INVENTORY_ITEM &&
+				global_trigger_type != GT_ENEMY_KILLED &&
 				global_trigger_type != GT_LARA_HP_LESS_THAN &&
 				global_trigger_type != GT_LARA_HP_HIGHER_THAN &&
 				global_trigger_type != GT_LARA_POISONED &&

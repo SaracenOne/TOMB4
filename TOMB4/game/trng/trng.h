@@ -87,11 +87,11 @@ extern void NGSetup();
 
 extern void NGUpdateAllItems();
 extern void NGUpdateAllStatics();
-extern void NGFrameStartUpdate();
 extern void NGDrawPhase();
 
 extern bool NGIsItemFrozen(unsigned int item_num);
 
+extern void NGFrameStart();
 extern void NGFrameFinish();
 
 extern bool NGUseNGConditionals();
@@ -112,7 +112,8 @@ extern int NGFindIndexForLaraStartPosWithMatchingOCB(unsigned int ocb);
 
 extern bool NGLaraHasInfiniteAir();
 
-extern bool NGTestUseInventoryObjectAndManagementReplaced(short object_id);
+extern bool NGTestSelectedInventoryObjectAndManagementReplaced(short inventory_object_id);
+extern void NGSetUsedInventoryObject(short inventory_object_id);
 
 extern void NGInit();
 extern void NGCleanup();

@@ -240,7 +240,7 @@ long ControlPhase(long nframes, long demo_mode)
 	{
 		GlobalCounter++;
 
-		NGFrameStartUpdate();
+		NGFrameStart();
 
 		UpdateSky();
 		RPC_Update();
@@ -491,10 +491,10 @@ long ControlPhase(long nframes, long demo_mode)
 
 		KillMoveItems();
 
-		if (GLOBAL_inventoryitemchosen != -1)
+		if (GLOBAL_inventoryitemchosen != NO_ITEM)
 		{
 			SayNo();
-			GLOBAL_inventoryitemchosen = -1;
+			GLOBAL_inventoryitemchosen = NO_ITEM;
 		}
 
 		if (!GLOBAL_playing_cutseq)

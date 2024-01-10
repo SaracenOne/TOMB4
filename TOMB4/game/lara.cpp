@@ -4524,6 +4524,8 @@ long UseInventoryItems(ITEM_INFO* item)
 
 	if (item->anim_number == ANIM_BREATH && lara.gun_status == LG_NO_ARMS && in_use != NO_ITEM)
 	{
+		NGSetUsedInventoryObject(in_use); // TRNG
+
 		if (in_use >= WATERSKIN1_EMPTY && in_use <= WATERSKIN2_5)
 		{
 			item->item_flags[2] = LARA_WATER_MESH;

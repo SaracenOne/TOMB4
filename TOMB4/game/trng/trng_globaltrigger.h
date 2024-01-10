@@ -53,4 +53,4 @@ enum NGGlobalTriggerFlags {
 	FGT_HIDE_IN_DEBUG = 0x2000
 };
 
-extern bool NGExecuteSingleGlobalTrigger(int global_trigger_id, int inventory_object_id);
+extern bool NGExecuteSingleGlobalTrigger(int global_trigger_id, int selected_inventory_object_id);

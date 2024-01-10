@@ -14,7 +14,7 @@
 #include "../../specific/input.h"
 #include "../../specific/dxshell.h"
 
-bool NGExecuteSingleGlobalTrigger(int global_trigger_id, int inventory_object_id) {
+bool NGExecuteSingleGlobalTrigger(int global_trigger_id, int selected_inventory_object_id) {
 	NG_GLOBAL_TRIGGER* global_trigger = &ng_levels[gfCurrentLevel].records->global_trigger_table[global_trigger_id].record;
 	int record_id = ng_levels[gfCurrentLevel].records->global_trigger_table[global_trigger_id].record_id;
 
@@ -22,14 +22,14 @@ bool NGExecuteSingleGlobalTrigger(int global_trigger_id, int inventory_object_id
 
 	unsigned short condition_trigger_group_id = global_trigger->condition_trigger_group;
 
-	if (inventory_object_id == NO_ITEM) {
+	if (selected_inventory_object_id == NO_ITEM) {
 		// What the difference between GT_CONDITION_GROUP and GT_ALWAYS?
 		switch (global_trigger->type) {
 		case GT_USED_INVENTORY_ITEM: {
-#ifndef SILENCE_EXCESSIVE_LOGS
-			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "GT_USED_INVENTORY_ITEM globaltrigger type not yet supported!");
-#endif
-			global_trigger_condition_passed = false;
+			if (ng_used_inventory_object_for_frame != NO_ITEM) {
+				if (ng_used_inventory_object_for_frame == global_trigger->parameter)
+					global_trigger_condition_passed = true;
+			}
 			break;
 		}
 		case GT_ENEMY_KILLED: {
@@ -135,7 +135,7 @@ bool NGExecuteSingleGlobalTrigger(int global_trigger_id, int inventory_object_id
 	} else {
 		switch (global_trigger->type) {
 		case GT_SELECTED_INVENTORY_ITEM:
-			if (inventory_object_id == global_trigger->parameter)
+			if (selected_inventory_object_id == global_trigger->parameter)
 				global_trigger_condition_passed = true;
 			break;
 		}

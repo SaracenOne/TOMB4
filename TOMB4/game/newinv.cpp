@@ -1751,7 +1751,7 @@ void use_current_item()
 	gmeobject = inventry_objects_list[invobject].object_number;
 
 	// NGLE
-	if (NGTestUseInventoryObjectAndManagementReplaced(gmeobject))
+	if (NGTestSelectedInventoryObjectAndManagementReplaced(gmeobject))
 		return;
 
 	if (lara.water_status == LW_ABOVE_WATER || lara.water_status == LW_WADE)

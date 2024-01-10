@@ -167,6 +167,9 @@ int ng_local_beta = 0;
 int ng_local_delta = 0;
 int ng_last_input_number = 0;
 
+// Inventory
+int ng_used_inventory_object_for_frame = NO_ITEM;
+
 enum TRNG_INPUT {
 	TRNG_INPUT_UP,
 	TRNG_INPUT_DOWN,
@@ -890,12 +893,12 @@ int NGIsLaraCollidingWithStaticSlot(int slot) {
 	return -1;
 }
 
-bool NGProcessGlobalTriggers(int inventory_object_id) {
+bool NGProcessGlobalTriggers(int selected_inventory_object_id) {
 	bool management_replaced = false;
 	if (ng_levels[gfCurrentLevel].records) {
 		int global_trigger_count = ng_levels[gfCurrentLevel].records->global_trigger_count;
 		for (int i = 0; i < global_trigger_count; i++) {
-			if (NGExecuteSingleGlobalTrigger(i, inventory_object_id)) {
+			if (NGExecuteSingleGlobalTrigger(i, selected_inventory_object_id)) {
 				management_replaced = true;
 			}
 		}
@@ -904,13 +907,7 @@ bool NGProcessGlobalTriggers(int inventory_object_id) {
 	return management_replaced;
 }
 
-void NGFrameStartUpdate() {
-	NGProcessAnimations();
-
-	NGProcessGlobalTriggers(NO_ITEM);
-	NGProcessTriggerGroups();
-	NGProcessOrganizers();
-
+void NGFrameStartExtraState() {
 	if (pending_level_load_timer >= 0) {
 		if (pending_level_load_timer == 0) {
 			gfLevelComplete = pending_level_load_id;
@@ -1530,6 +1527,9 @@ void NGSetupExtraState() {
 	ng_local_delta = 0;
 	ng_last_input_number = 0;
 
+	// Inventory
+	ng_used_inventory_object_for_frame = NO_ITEM;
+
 	// Timer Trackers
 	timer_tracker_type = TTT_ONLY_SHOW_SECONDS;
 	timer_tracker = -1;
@@ -1648,6 +1648,9 @@ void NGSetupExtraState() {
 }
 
 void NGFrameFinishExtraState() {
+	// Inventory
+	ng_used_inventory_object_for_frame = NO_ITEM;
+
 	// Lara
 	ng_last_flipeffect_floor_trigger = ng_current_flipeffect_floor_trigger;
 	ng_current_flipeffect_floor_trigger = -1;

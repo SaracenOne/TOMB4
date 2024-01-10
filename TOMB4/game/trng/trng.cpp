@@ -14,6 +14,9 @@
 #include "../../tomb4/mod_config.h"
 #include "../../specific/file.h"
 #include "../../specific/3dmath.h"
+#include "trng_animation.h"
+#include "trng_triggergroup.h"
+#include "trng_organizer.h"
 
 bool ngle_footer_found = false;
 bool is_ngle_level = false;
@@ -322,6 +325,16 @@ void NGSetup() {
 	NGSetupExtraState();
 }
 
+void NGFrameStart() {
+	NGProcessAnimations();
+
+	NGProcessGlobalTriggers(NO_ITEM);
+	NGProcessTriggerGroups();
+	NGProcessOrganizers();
+
+	NGFrameStartExtraState();
+}
+
 void NGFrameFinish() {
 	NGFrameFinishExtraState();
 }
@@ -364,8 +377,12 @@ bool NGLaraHasInfiniteAir() {
 	return ng_lara_infinite_air;
 }
 
-bool NGTestUseInventoryObjectAndManagementReplaced(short inventory_object_id) {
+bool NGTestSelectedInventoryObjectAndManagementReplaced(short inventory_object_id) {
 	return NGProcessGlobalTriggers(inventory_object_id);
+}
+
+void NGSetUsedInventoryObject(short inventory_object_id) {
+	ng_used_inventory_object_for_frame = inventory_object_id;
 }
 
 void NGInit() {
