@@ -1031,7 +1031,7 @@ int NGReadLevelBlock(char* gfScriptFile, unsigned int offset, NG_LEVEL_RECORD_TA
 					break;
 				}
 				case CUST_BAR: {
-					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_ADD_DEATH_ANIMATION unimplemented! (level %u)", current_level);
+					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_BAR unimplemented! (level %u)", current_level);
 
 					printf("CUST_BAR unimplemented!\n");
 					offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
