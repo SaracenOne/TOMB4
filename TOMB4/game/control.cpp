@@ -2266,7 +2266,9 @@ void TriggerNormalCDTrack(short value, short flags, short type)
 		{
 			cd_flags[value] |= code;
 			S_CDPlay(value, 0);
-			IsAtmospherePlaying = 0;
+			if (IsUsingOldTriggerMode()) {
+				IsAtmospherePlaying = 0;
+			}
 		}
 	}
 }
