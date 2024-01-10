@@ -2135,7 +2135,7 @@ void ControlRollingBall(short item_number)
 	tyrot = item->pos.y_rot;
 
 	if (item->item_flags[1] || item->item_flags[0])
-		destyrot = ushort(phd_atan(item->item_flags[0], item->item_flags[0]));
+		destyrot = ushort(phd_atan(item->item_flags[1], item->item_flags[0]));
 	else
 		destyrot = item->pos.y_rot;
 
