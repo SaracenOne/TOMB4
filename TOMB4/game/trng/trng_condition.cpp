@@ -26,6 +26,7 @@
 
 #include "../../tomb4/tomb4plus/t4plus_inventory.h"
 #include "../../specific/input.h"
+#include "../../specific/dxsound.h"
 
 #define SECTOR_SIZE 1024
 
@@ -655,8 +656,7 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 		break;
 	}
 	case SOUND_THE_X_SOUND_EFFECT_IS_PLAYING: {
-		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: SOUND_THE_X_SOUND_EFFECT_IS_PLAYING unimplemented!");
-		return false;
+		return S_SoundSampleIsPlaying(param);
 		break;
 	}
 	default:
