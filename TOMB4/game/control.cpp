@@ -1159,7 +1159,7 @@ void TestTriggers(short* data, long heavy, long HeavyFlags, int room_number, int
 		case TO_TIMERFIELD:
 			for (int i = 0; i < trigger_items_count; i++) {
 				if (triggered_items[i] >= 0) {
-					timer = value;
+					timer = (char)(value & 0xff);
 					item = &items[triggered_items[i]];
 					item->timer = timer * 30;
 				}
