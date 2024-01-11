@@ -841,9 +841,12 @@ void swap_meshes_with_meshswap2(ITEM_INFO* item)
 
 	for (int i = 0; i < obj->nmeshes; i++)
 	{
-		tmp = meshes[obj->mesh_index + i * 2];
-		meshes[obj->mesh_index + i] = meshes[objects[MESHSWAP2].mesh_index + i * 2];
-		meshes[objects[MESHSWAP2].mesh_index + i * 2] = tmp;
+		// Changed this to only use single index offsets.
+		// Seems to be more compatible with TRLE, but may
+		// require more extensive testing.
+		tmp = meshes[obj->mesh_index + i];
+		meshes[obj->mesh_index + i] = meshes[objects[MESHSWAP2].mesh_index + i];
+		meshes[objects[MESHSWAP2].mesh_index + i] = tmp;
 	}
 }
 
