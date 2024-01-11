@@ -580,13 +580,13 @@ void SetupDefaultBarsInfoForLevel(MOD_LEVEL_INFO* level_info) {
     level_info->bars_info.health_bar.fade_color = 0xff000000;
     level_info->bars_info.health_bar.alternative_color = 0xffffff00;
 
-    level_info->bars_info.air_bar.main_color = 0xffff0000;
+    level_info->bars_info.air_bar.main_color = 0xff0000ff;
     level_info->bars_info.air_bar.fade_color = 0xff000000;
 
-    level_info->bars_info.sprint_bar.main_color = 0xffff0000;
+    level_info->bars_info.sprint_bar.main_color = 0xff00ff00;
     level_info->bars_info.sprint_bar.fade_color = 0xff000000;
 
-    level_info->bars_info.loading_bar.main_color = 0xffff0000;
+    level_info->bars_info.loading_bar.main_color = 0xff9f1f80;
     level_info->bars_info.loading_bar.fade_color = 0xff000000;
 }
 

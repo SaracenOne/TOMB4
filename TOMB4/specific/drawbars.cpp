@@ -297,7 +297,7 @@ static void S_DrawHealthBar2(long pos)
 
 	if (tomb4.bar_mode == BAR_MODE_CUSTOM)
 	{
-		MOD_LEVEL_BARS_INFO* bars_info = get_game_mod_level_bars_info(gfCurrentLevel);
+		MOD_LEVEL_BARS_INFO *bars_info = get_game_mod_level_bars_info(gfCurrentLevel);
 		DoBar(x, y, w, h, pos, bars_info->health_bar.fade_color, lara.poisoned ? bars_info->health_bar.alternative_color : bars_info->health_bar.main_color, 1);
 	}
 	else if (tomb4.bar_mode == BAR_MODE_PSX)
@@ -410,7 +410,7 @@ void S_DrawAirBar(long pos)
 		S_DrawGouraudBar(x, y, w, h, pos, &airBarColourSet, 1);
 	else if (tomb4.bar_mode == BAR_MODE_CUSTOM)
 	{
-		MOD_LEVEL_BARS_INFO* bars_info = get_game_mod_level_bars_info(gfCurrentLevel);
+		MOD_LEVEL_BARS_INFO *bars_info = get_game_mod_level_bars_info(gfCurrentLevel);
 		DoBar(x, y, w, h, pos, bars_info->air_bar.fade_color, bars_info->air_bar.main_color, 1);
 	}
 	else
@@ -455,7 +455,7 @@ void S_DrawDashBar(long pos)
 		S_DrawGouraudBar(x, y, w, h, pos, &dashBarColourSet, 1);
 	else if (tomb4.bar_mode == BAR_MODE_CUSTOM)
 	{
-		MOD_LEVEL_BARS_INFO* bars_info = get_game_mod_level_bars_info(gfCurrentLevel);
+		MOD_LEVEL_BARS_INFO *bars_info = get_game_mod_level_bars_info(gfCurrentLevel);
 		DoBar(x, y, w, h, pos, bars_info->sprint_bar.fade_color, bars_info->sprint_bar.main_color, 1);
 	}
 	else
@@ -575,7 +575,7 @@ void S_LoadBar()
 
 			if (tomb4.bar_mode == BAR_MODE_CUSTOM)
 			{
-				MOD_LEVEL_BARS_INFO * bars_info = get_game_mod_level_bars_info(gfCurrentLevel);
+				MOD_LEVEL_BARS_INFO *bars_info = get_game_mod_level_bars_info(gfCurrentLevel);
 				DoBar(x, y, w, h, (long)loadbar_pos, bars_info->loading_bar.fade_color, bars_info->loading_bar.main_color, 0);
 			}
 			else if (tomb4.bar_mode == BAR_MODE_PSX)
@@ -594,7 +594,7 @@ void S_LoadBar()
 
 			if (tomb4.bar_mode == BAR_MODE_CUSTOM)
 			{
-				MOD_LEVEL_BARS_INFO* bars_info = get_game_mod_level_bars_info(gfCurrentLevel);
+				MOD_LEVEL_BARS_INFO *bars_info = get_game_mod_level_bars_info(gfCurrentLevel);
 				DoBar(x, y, w, h, (long)loadbar_pos, bars_info->loading_bar.fade_color, bars_info->loading_bar.main_color, 0);
 			}
 			else if (tomb4.bar_mode == BAR_MODE_PSX)

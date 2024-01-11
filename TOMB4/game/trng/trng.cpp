@@ -377,11 +377,11 @@ bool NGLaraHasInfiniteAir() {
 	return ng_lara_infinite_air;
 }
 
-bool NGTestSelectedInventoryObjectAndManagementReplaced(short inventory_object_id) {
+bool NGTestSelectedInventoryObjectAndManagementReplaced(int inventory_object_id) {
 	return NGProcessGlobalTriggers(inventory_object_id);
 }
 
-void NGSetUsedInventoryObject(short inventory_object_id) {
+void NGSetUsedInventoryObject(int inventory_object_id) {
 	ng_used_inventory_object_for_frame = inventory_object_id;
 }
 

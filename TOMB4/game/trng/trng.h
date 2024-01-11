@@ -112,8 +112,8 @@ extern int NGFindIndexForLaraStartPosWithMatchingOCB(unsigned int ocb);
 
 extern bool NGLaraHasInfiniteAir();
 
-extern bool NGTestSelectedInventoryObjectAndManagementReplaced(short inventory_object_id);
-extern void NGSetUsedInventoryObject(short inventory_object_id);
+extern bool NGTestSelectedInventoryObjectAndManagementReplaced(int inventory_object_id);
+extern void NGSetUsedInventoryObject(int inventory_object_id);
 
 extern void NGInit();
 extern void NGCleanup();
