@@ -361,6 +361,22 @@ void LoadGameModLevelMiscInfo(const json_t *misc, MOD_LEVEL_MISC_INFO *misc_info
     READ_JSON_BOOL(enemy_gun_hit_underwater_sfx_fix, misc, misc_info);
     READ_JSON_BOOL(darts_poison_fix, misc, misc_info);
     READ_JSON_BOOL(disable_motorbike_headlights, misc, misc_info);
+
+    // TREP
+    READ_JSON_BOOL(trep_switch_maker, misc, misc_info);
+
+    READ_JSON_SINT32(trep_switch_on_ocb_1_anim, misc, misc_info);
+    READ_JSON_SINT32(trep_switch_off_ocb_1_anim, misc, misc_info);
+    READ_JSON_SINT32(trep_switch_on_ocb_2_anim, misc, misc_info);
+    READ_JSON_SINT32(trep_switch_off_ocb_2_anim, misc, misc_info);
+    READ_JSON_SINT32(trep_switch_on_ocb_3_anim, misc, misc_info);
+    READ_JSON_SINT32(trep_switch_off_ocb_3_anim, misc, misc_info);
+    READ_JSON_SINT32(trep_switch_on_ocb_4_anim, misc, misc_info);
+    READ_JSON_SINT32(trep_switch_off_ocb_4_anim, misc, misc_info);
+    READ_JSON_SINT32(trep_switch_on_ocb_5_anim, misc, misc_info);
+    READ_JSON_SINT32(trep_switch_off_ocb_5_anim, misc, misc_info);
+    READ_JSON_SINT32(trep_switch_on_ocb_6_anim, misc, misc_info);
+    READ_JSON_SINT32(trep_switch_off_ocb_6_anim, misc, misc_info);
 }
 
 void LoadGameModLevelStatInfo(const json_t* stats, MOD_LEVEL_STAT_INFO* stat_info) {
@@ -777,7 +793,9 @@ void LoadGameModConfigSecondPass() {
                     READ_JSON_BOOL(trng_switch_extended_ocb, global, mod_global_info);
                     READ_JSON_BOOL(trng_hack_allow_meshes_with_exactly_256_vertices, global, mod_global_info);
 
-                    // TOMO
+                    READ_JSON_BOOL(trep_using_extended_saves, global, mod_global_info);
+
+                    // Tomo
                     READ_JSON_BOOL(tomo_enable_weather_flipeffect, global, mod_global_info);
                     READ_JSON_BOOL(tomo_swap_whitelight_for_teleporter, global, mod_global_info);
 

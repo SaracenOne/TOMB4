@@ -233,7 +233,11 @@ long S_SaveGame(long slot_num)
 		wsprintf(counter, "%d", SaveCounter);
 		SaveCounter++;
 
-		S_TREPSavegame(slot_num);
+		MOD_GLOBAL_INFO* mod_global_info = get_game_mod_global_info();
+		if (mod_global_info->trep_using_extended_saves)
+		{
+			S_TREPSavegame(slot_num);
+		}
 
 		return 1;
 	}
@@ -262,7 +266,11 @@ long S_LoadGame(long slot_num)
 		ReadFile(file, &savegame, sizeof(SAVEGAME_INFO), &bytes, 0);
 		CloseHandle(file);
 
-		S_TREPLoadgame(slot_num);
+		MOD_GLOBAL_INFO *mod_global_info = get_game_mod_global_info();
+		if (mod_global_info->trep_using_extended_saves)
+		{
+			S_TREPLoadgame(slot_num);
+		}
 
 		return 1;
 	}

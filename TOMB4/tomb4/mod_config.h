@@ -88,6 +88,12 @@ struct MOD_LEVEL_OBJECT_INFO {
 	bool explosive_death_only : 1;
 };
 
+struct MOD_LEVEL_STATIC_INFO {
+	bool can_shatter = false;
+	bool shatter_sound_id = 0;
+	bool hard_collision = false;
+};
+
 struct MOD_LEVEL_CREATURE_INFO {
 	bool small_scorpion_is_poisonous = true;
 	int small_scorpion_poison_strength = 512;
@@ -171,6 +177,8 @@ struct MOD_GLOBAL_INFO {
 	bool trng_pushable_extended_ocb = false; // TRNG (climable pushables)
 	bool trng_switch_extended_ocb = false; // TRNG (custom switch animations)
 	bool trng_hack_allow_meshes_with_exactly_256_vertices = false; // TRNG seems to have a special hack which allows meshes of 256 verticies
+
+	bool trep_using_extended_saves = false;
 
 	// Tomo stuff
 	bool tomo_enable_weather_flipeffect = false;
@@ -265,6 +273,21 @@ struct MOD_LEVEL_MISC_INFO {
 	bool enemy_gun_hit_underwater_sfx_fix = false;
 	bool darts_poison_fix = false;
 	bool disable_motorbike_headlights = false;
+
+	// TREP
+	bool trep_switch_maker = false;
+	int trep_switch_on_ocb_1_anim = 0;
+	int trep_switch_off_ocb_1_anim = 0;
+	int trep_switch_on_ocb_2_anim = 0;
+	int trep_switch_off_ocb_2_anim = 0;
+	int trep_switch_on_ocb_3_anim = 0;
+	int trep_switch_off_ocb_3_anim = 0;
+	int trep_switch_on_ocb_4_anim = 0;
+	int trep_switch_off_ocb_4_anim = 0;
+	int trep_switch_on_ocb_5_anim = 0;
+	int trep_switch_off_ocb_5_anim = 0;
+	int trep_switch_on_ocb_6_anim = 0;
+	int trep_switch_off_ocb_6_anim = 0;
 };
 
 struct MOD_LEVEL_INFO {
@@ -280,6 +303,7 @@ struct MOD_LEVEL_INFO {
 	MOD_LEVEL_WEAPON_INFO weapon_info;
 	MOD_LEVEL_MISC_INFO misc_info;
 	MOD_LEVEL_OBJECT_INFO object_info[NUMBER_OBJECTS];
+	MOD_LEVEL_STATIC_INFO static_info[NUMBER_STATIC_OBJECTS];
 	short slot_info[NUMBER_OBJECTS];
 };
 
