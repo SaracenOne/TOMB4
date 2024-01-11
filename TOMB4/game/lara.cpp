@@ -629,10 +629,9 @@ void lara_col_hang(ITEM_INFO* item, COLL_INFO* coll)
 	item->fallspeed = 0;
 	item->gravity_status = 0;
 
-	if (tomb4.fix_climb_up_delay)
-		flag = item->anim_number == ANIM_GRABLEDGE;
-	else
-		flag = (item->anim_number == ANIM_GRABLEDGE && item->frame_number == anims[ANIM_GRABLEDGE].frame_base + 21);
+	// Tomb4Plus - revert to requiring a ledge climb delay for shimmying sideways since not having seems to cause bugs
+	// when treversing corners if the player immediately starts pressing left or right.
+	flag = (item->anim_number == ANIM_GRABLEDGE && item->frame_number == anims[ANIM_GRABLEDGE].frame_base + 21);
 
 	if (flag)
 	{
