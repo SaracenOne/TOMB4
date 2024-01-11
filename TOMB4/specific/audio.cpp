@@ -1430,7 +1430,7 @@ void S_CDPlay(long track, long mode) {
 
 // TODO: restore should restore at the specific time of the original track
 void S_CDPlayExt(unsigned char track_id, unsigned char channel_id, bool looping, bool restore_old_track) {
-	if (IsUsingNewAudioSystem) {
+	if (IsUsingNewAudioSystem()) {
 		if (channels[channel_id].current_track != track_id || !looping) {
 			if (restore_old_track) {
 				channels[channel_id].restore_track = channels[channel_id].current_track;
