@@ -461,6 +461,9 @@ BOOL CALLBACK DXSetupDlgProc(HWND dlg, UINT message, WPARAM wParam, LPARAM lPara
 
 bool DXSetupDialog()
 {
+#ifdef USE_BGFX
+	return 0;
+#else
 	long ret;
 
 	ShowCursor(1);
@@ -477,4 +480,5 @@ bool DXSetupDialog()
 		return 0;
 
 	return 1;
+#endif
 }

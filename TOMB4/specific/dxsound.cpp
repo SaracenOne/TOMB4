@@ -367,8 +367,6 @@ bool DXCreateSample(char* data, long size, int samples_per_second, long num)
 
 bool DXCreateSampleADPCM(char* data, long comp_size, long uncomp_size, long num)
 {
-	LPWAVEFORMATEX format;
-
 	Log(8, "DXCreateSampleADPCM");
 
 #ifdef MA_AUDIO_SAMPLES
@@ -420,6 +418,8 @@ bool DXCreateSampleADPCM(char* data, long comp_size, long uncomp_size, long num)
 
 	return result;
 #else
+	LPWAVEFORMATEX format;
+
 	if (!App.dx.lpDS)
 		return 0;
 

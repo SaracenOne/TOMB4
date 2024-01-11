@@ -339,11 +339,13 @@ void ProcessRoomVertices(ROOM_INFO* r)
 
 void ProcessRoomData(ROOM_INFO* r)
 {
+#ifndef USE_BGFX
 	D3DVERTEX* vptr;
+	D3DVERTEXBUFFERDESC vb;
+#endif
 	LIGHTINFO* light;
 	PCLIGHT_INFO* pclight;
 	FOGBULB_STRUCT* bulb;
-	D3DVERTEXBUFFERDESC vb;
 	short* data_ptr;
 	short* faces;
 	short* prelight;
@@ -462,11 +464,11 @@ void ProcessRoomData(ROOM_INFO* r)
 	r->prelight = (long*)game_malloc(4 * r->nVerts);
 	r->prelightwater = (long*)game_malloc(4 * r->nVerts);
 	r->watercalc = 0;
+#ifndef USE_BGFX
 	vb.dwNumVertices = r->nVerts;
 	vb.dwSize = sizeof(D3DVERTEXBUFFERDESC);
 	vb.dwCaps = 0;
 	vb.dwFVF = D3DFVF_VERTEX;
-#ifndef USE_BGFX
 	DXAttempt(App.dx.lpD3D->CreateVertexBuffer(&vb, &r->SourceVB, D3DDP_DONOTCLIP, 0));
 	r->SourceVB->Lock(DDLOCK_WRITEONLY, (void**)&vptr, 0);
 #endif
@@ -665,7 +667,7 @@ void ProcessMeshData(long num_meshes)
 	mesh_vtxbuf = (MESH_DATA**)game_malloc(4 * num_meshes);
 	mesh_base = (short*)malloc_ptr;
 	last_mesh_ptr = 0;
-	mesh = (MESH_DATA*)num_meshes;
+	mesh = (MESH_DATA*)(size_t)num_meshes;
 
 	bool hack_allow_meshes_with_exactly_256_vertices = get_game_mod_global_info()->trng_hack_allow_meshes_with_exactly_256_vertices;
 

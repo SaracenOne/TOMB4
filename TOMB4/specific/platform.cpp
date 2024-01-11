@@ -47,8 +47,8 @@ void find_file_with_substring(const char* dir_path, const char* substring, char*
 			continue; // Skip directories
 		}
 
-		int cmp_count = count_matching_characters(substring, find_file_data.cFileName);
-		int str_len = strlen(substring);
+		size_t cmp_count = count_matching_characters(substring, find_file_data.cFileName);
+		size_t str_len = strlen(substring);
 
 		if (cmp_count >= str_len) {
 			strncpy(found_filename, find_file_data.cFileName, 256 - 1);
@@ -71,8 +71,8 @@ void find_file_with_substring(const char* dir_path, const char* substring, char*
 			continue; // Skip directories
 		}
 
-		int cmp_count = count_matching_characters(substring, dp->d_name);
-		int str_len = strlen(substring);
+		size_t cmp_count = count_matching_characters(substring, dp->d_name);
+		size_t str_len = strlen(substring);
 
 		if (cmp_count >= str_len) {
 			strncpy(found_filename, dp->d_name, 256 - 1);
