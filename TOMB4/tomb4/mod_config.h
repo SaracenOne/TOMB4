@@ -151,6 +151,9 @@ struct MOD_LEVEL_LARA_INFO {
 
 	bool use_tr5_swimming_collision = false;
 	bool disable_hardcoded_breath_sound = false;
+
+	int ledge_to_jump_state = -1;
+	int ledge_to_down_state = -1;
 };
 
 struct TRNG_ENGINE_VERSION {

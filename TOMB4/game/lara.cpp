@@ -616,6 +616,20 @@ void lara_as_hang(ITEM_INFO* item, COLL_INFO* coll)
 	if (input & IN_LOOK)
 		LookUpDown();
 
+	// Tomb4Plus
+	MOD_LEVEL_LARA_INFO *mod_lara_info = get_game_mod_level_lara_info(gfCurrentLevel);
+	if (mod_lara_info->ledge_to_jump_state >= 0)
+	{
+		if (input & IN_JUMP)
+			item->goal_anim_state = mod_lara_info->ledge_to_jump_state;
+	}
+
+	if (mod_lara_info->ledge_to_down_state >= 0)
+	{
+		if (input & IN_BACK)
+			item->goal_anim_state = mod_lara_info->ledge_to_down_state;
+	}
+
 	coll->enable_baddie_push = 0;
 	coll->enable_spaz = 0;
 	camera.target_angle = 0;
