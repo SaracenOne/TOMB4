@@ -113,7 +113,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>USE_SDL;USE_BGFX;USE_INI;MA_AUDIO_ENGINE;MA_AUDIO_SAMPLES;LEVEL_EDITOR;FLYCHEAT_NOCLIP;DO_LOG;FORCE_COLOURED_FOG;USE_HIGHEST_BIT_DEPTH_ZBUFFER;WIN32;_CRT_SECURE_NO_WARNINGS;_DEBUG;TOMB4_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USE_SDL;USE_INI;MA_AUDIO_ENGINE;MA_AUDIO_SAMPLES;LEVEL_EDITOR;FLYCHEAT_NOCLIP;DO_LOG;FORCE_COLOURED_FOG;USE_HIGHEST_BIT_DEPTH_ZBUFFER;WIN32;_CRT_SECURE_NO_WARNINGS;_DEBUG;TOMB4_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>../tomb4/pch.h</PrecompiledHeaderFile>
@@ -132,7 +132,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>USE_SDL;USE_BGFX;USE_INI;MA_AUDIO_ENGINE;MA_AUDIO_SAMPLES;LEVEL_EDITOR;FLYCHEAT_NOCLIP;DO_LOG;FORCE_COLOURED_FOG;USE_HIGHEST_BIT_DEPTH_ZBUFFER;WIN32;_CRT_SECURE_NO_WARNINGS;_DEBUG;TOMB4_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USE_SDL;USE_INI;MA_AUDIO_ENGINE;MA_AUDIO_SAMPLES;LEVEL_EDITOR;FLYCHEAT_NOCLIP;DO_LOG;FORCE_COLOURED_FOG;USE_HIGHEST_BIT_DEPTH_ZBUFFER;WIN32;_CRT_SECURE_NO_WARNINGS;_DEBUG;TOMB4_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>../tomb4/pch.h</PrecompiledHeaderFile>
