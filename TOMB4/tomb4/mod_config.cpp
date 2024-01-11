@@ -169,8 +169,8 @@ MOD_LEVEL_AUDIO_INFO *get_game_mod_level_audio_info(int level) {
     return &game_mod_config.level_info[level].audio_info;
 }
 
-MOD_LEVEL_BAR_INFO *get_game_mod_level_bar_info(int level) {
-    return &game_mod_config.level_info[level].bar_info;
+MOD_LEVEL_BARS_INFO *get_game_mod_level_bars_info(int level) {
+    return &game_mod_config.level_info[level].bars_info;
 }
 
 MOD_LEVEL_ENVIRONMENT_INFO *get_game_mod_level_environment_info(int level) {
@@ -255,18 +255,31 @@ void LoadGameModLevelAudioInfo(const json_t* audio, MOD_LEVEL_AUDIO_INFO* audio_
 }
 
 void LoadGameModLevelBarInfo(const json_t* bar, MOD_LEVEL_BAR_INFO* bar_info) {
-    READ_JSON_ARGB(health_bar_main_color, bar, bar_info);
-    READ_JSON_ARGB(health_bar_fade_color, bar, bar_info);
-    READ_JSON_ARGB(health_bar_poison_color, bar, bar_info);
+    READ_JSON_ARGB(main_color, bar, bar_info);
+    READ_JSON_ARGB(fade_color, bar, bar_info);
+    READ_JSON_ARGB(alternative_color, bar, bar_info);
+}
 
-    READ_JSON_ARGB(air_bar_main_color, bar, bar_info);
-    READ_JSON_ARGB(air_bar_fade_color, bar, bar_info);
+void LoadGameModLevelBarsInfo(const json_t* bars, MOD_LEVEL_BARS_INFO *bars_info) {
+    const json_t* health_bar_info = json_getProperty(bars, "health_bar");
+    if (health_bar_info && JSON_OBJ == json_getType(health_bar_info)) {
+        LoadGameModLevelBarInfo(health_bar_info, &bars_info->health_bar);
+    }
 
-    READ_JSON_ARGB(sprint_bar_main_color, bar, bar_info);
-    READ_JSON_ARGB(sprint_bar_fade_color, bar, bar_info);
+    const json_t* air_bar_info = json_getProperty(bars, "air_bar");
+    if (air_bar_info && JSON_OBJ == json_getType(air_bar_info)) {
+        LoadGameModLevelBarInfo(air_bar_info, &bars_info->air_bar);
+    }
 
-    READ_JSON_ARGB(loading_bar_main_color, bar, bar_info);
-    READ_JSON_ARGB(loading_bar_fade_color, bar, bar_info);
+    const json_t* sprint_bar_info = json_getProperty(bars, "sprint_bar");
+    if (sprint_bar_info && JSON_OBJ == json_getType(sprint_bar_info)) {
+        LoadGameModLevelBarInfo(sprint_bar_info, &bars_info->sprint_bar);
+    }
+
+    const json_t* loading_bar_info = json_getProperty(bars, "loading_bar");
+    if (loading_bar_info && JSON_OBJ == json_getType(loading_bar_info)) {
+        LoadGameModLevelBarInfo(loading_bar_info, &bars_info->loading_bar);
+    }
 }
 
 void LoadGameModLevelEnvironmentInfo(const json_t* environment, MOD_LEVEL_ENVIRONMENT_INFO* environment_info) {
@@ -393,9 +406,9 @@ void LoadGameModLevel(const json_t *level, MOD_LEVEL_INFO *level_info) {
         LoadGameModLevelAudioInfo(audio_info, &level_info->audio_info);
     }
 
-    const json_t* bar_info = json_getProperty(level, "bar_info");
-    if (bar_info && JSON_OBJ == json_getType(bar_info)) {
-        LoadGameModLevelBarInfo(bar_info, &level_info->bar_info);
+    const json_t* bars_info = json_getProperty(level, "bars_info");
+    if (bars_info && JSON_OBJ == json_getType(bars_info)) {
+        LoadGameModLevelBarsInfo(bars_info, &level_info->bars_info);
     }
 
     const json_t* environment_info = json_getProperty(level, "environment_info");
@@ -560,6 +573,21 @@ void SetupDefaultObjectInfoForLevel(MOD_LEVEL_INFO* level_info) {
         obj->hit_type = HIT_NONE;
         obj->explosive_death_only = false;
     }
+}
+
+void SetupDefaultBarsInfoForLevel(MOD_LEVEL_INFO* level_info) {
+    level_info->bars_info.health_bar.main_color = 0xffff0000;
+    level_info->bars_info.health_bar.fade_color = 0xff000000;
+    level_info->bars_info.health_bar.alternative_color = 0xffffff00;
+
+    level_info->bars_info.air_bar.main_color = 0xffff0000;
+    level_info->bars_info.air_bar.fade_color = 0xff000000;
+
+    level_info->bars_info.sprint_bar.main_color = 0xffff0000;
+    level_info->bars_info.sprint_bar.fade_color = 0xff000000;
+
+    level_info->bars_info.loading_bar.main_color = 0xffff0000;
+    level_info->bars_info.loading_bar.fade_color = 0xff000000;
 }
 
 void SetupLevelDefaults() {
@@ -742,6 +770,7 @@ void LoadGameModConfigFirstPass() {
     SetupDefaultFontInfoForLevel(&global_level_info);
     SetupDefaultSlotInfoForLevel(&global_level_info);
     SetupDefaultObjectInfoForLevel(&global_level_info);
+    SetupDefaultBarsInfoForLevel(&global_level_info);
 
     if (level && JSON_OBJ == json_getType(level)) {
         LoadGameModLevel(level, &global_level_info);

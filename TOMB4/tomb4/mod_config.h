@@ -119,18 +119,16 @@ struct MOD_LEVEL_AUDIO_INFO {
 };
 
 struct MOD_LEVEL_BAR_INFO {
-	int health_bar_main_color = 0xffff0000; // ARGB
-	int health_bar_fade_color = 0xff000000; // ARGB
-	int health_bar_poison_color = 0xffffff00; // ARGB
+	int main_color;
+	int fade_color;
+	int alternative_color;
+};
 
-	int air_bar_main_color = 0xff0000ff; // ARGB
-	int air_bar_fade_color = 0xff000000; // ARGB
-
-	int sprint_bar_main_color = 0xff00ff00; // ARGB
-	int sprint_bar_fade_color = 0xff000000; // ARGB
-
-	int loading_bar_main_color = 0xff9f1f80; // ARGB
-	int loading_bar_fade_color = 0xff000000; // ARGB
+struct MOD_LEVEL_BARS_INFO {
+	MOD_LEVEL_BAR_INFO health_bar;
+	MOD_LEVEL_BAR_INFO air_bar;
+	MOD_LEVEL_BAR_INFO sprint_bar;
+	MOD_LEVEL_BAR_INFO loading_bar;
 };
 
 struct MOD_LEVEL_LARA_INFO {
@@ -291,7 +289,7 @@ struct MOD_LEVEL_MISC_INFO {
 };
 
 struct MOD_LEVEL_INFO {
-	MOD_LEVEL_BAR_INFO bar_info;
+	MOD_LEVEL_BARS_INFO bars_info;
 	MOD_LEVEL_ENVIRONMENT_INFO environment_info;
 	MOD_LEVEL_FONT_INFO font_info;
 	MOD_LEVEL_CAMERA_INFO camera_info;
@@ -323,7 +321,7 @@ extern void assign_slot_for_level(int level, int dest_slot, int src_slot);
 extern MOD_GLOBAL_INFO *get_game_mod_global_info();
 
 extern MOD_LEVEL_AUDIO_INFO *get_game_mod_level_audio_info(int level);
-extern MOD_LEVEL_BAR_INFO *get_game_mod_level_bar_info(int level);
+extern MOD_LEVEL_BARS_INFO *get_game_mod_level_bars_info(int level);
 extern MOD_LEVEL_ENVIRONMENT_INFO *get_game_mod_level_environment_info(int level);
 extern MOD_LEVEL_FONT_INFO *get_game_mod_level_font_info(int level);
 extern MOD_LEVEL_CAMERA_INFO *get_game_mod_level_camera_info(int level);
