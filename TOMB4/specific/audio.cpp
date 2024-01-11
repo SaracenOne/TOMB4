@@ -1463,7 +1463,7 @@ void S_CDStop() {
 }
 
 void S_CDStopExt(unsigned char channel_id) {
-	if (IsUsingNewAudioSystem) {
+	if (IsUsingNewAudioSystem()) {
 		stop_track_on_stream_channel(channel_id);
 	}
 	else {
