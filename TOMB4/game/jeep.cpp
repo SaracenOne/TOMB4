@@ -1128,9 +1128,12 @@ void JeepBaddieCollision(ITEM_INFO* item)
 						{
 							if (TestBoundsCollide(collided, lara_item, 100) && lara_item->hit_points > 0)
 							{
+								MOD_LEVEL_OBJECT_CUSTOMIZATION* mod_object_customization = get_game_mod_level_object_customization_for_slot(gfCurrentLevel, ROLLINGBALL);
+
+
 								DoLotsOfBlood(lara_item->pos.x_pos, lara_item->pos.y_pos - 512, lara_item->pos.z_pos,
 									(GetRandomControl() & 3) + 8, lara_item->pos.y_rot, lara_item->room_number, 5);
-								lara_item->hit_points -= 8;
+								lara_item->hit_points -= mod_object_customization->damage_1;;
 								lara_item->hit_status = 1;
 							}
 						}

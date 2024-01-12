@@ -10,6 +10,8 @@
 #include "lara.h"
 #include "control.h"
 #include "lot.h"
+#include "gameflow.h"
+#include "../tomb4/mod_config.h"
 
 static BITE_INFO troop_gun = { 0, 300, 64, 7 };
 
@@ -49,6 +51,8 @@ void TroopControl(short item_number)
 
 	if (!CreatureActive(item_number))
 		return;
+
+	MOD_LEVEL_OBJECT_CUSTOMIZATION *mod_object_customization = get_game_mod_level_object_customization_for_slot(gfCurrentLevel, TROOPS);
 
 	item = &items[item_number];
 	troop = (CREATURE_INFO*)item->data;
@@ -307,7 +311,7 @@ void TroopControl(short item_number)
 				troop->flags--;
 			else
 			{
-				ShotLara(item, &info, &troop_gun, torso_y, 23);
+				ShotLara(item, &info, &troop_gun, torso_y, mod_object_customization->damage_1);
 				troop->flags = 5;
 			}
 

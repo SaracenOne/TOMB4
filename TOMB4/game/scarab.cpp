@@ -9,6 +9,8 @@
 #include "../specific/output.h"
 #include "effect2.h"
 #include "lara.h"
+#include "gameflow.h"
+#include "../tomb4/mod_config.h"
 
 static BITE_INFO beetle_bite = { 0, 0, 0, 12 };
 
@@ -37,6 +39,8 @@ void ScarabControl(short item_number)
 
 	if (!CreatureActive(item_number))
 		return;
+
+	MOD_LEVEL_OBJECT_CUSTOMIZATION *mod_object_customization = get_game_mod_level_object_customization_for_slot(gfCurrentLevel, BIG_BEETLE);
 
 	angle = 0;
 	item = &items[item_number];
@@ -135,7 +139,7 @@ void ScarabControl(short item_number)
 
 			if (!beetle->flags && item->touch_bits & 0x60)
 			{
-				lara_item->hit_points -= 50;
+				lara_item->hit_points -= mod_object_customization->damage_1;
 				lara_item->hit_status = 1;
 				CreatureEffectT(item, &beetle_bite, 5, -1, DoBloodSplat);
 				beetle->flags = 1;
@@ -264,6 +268,8 @@ void UpdateScarabs()
 	long h, dx, dy, dz, oldx, oldy, oldz;
 	short angle;
 
+	MOD_LEVEL_OBJECT_CUSTOMIZATION *mod_object_customization = get_game_mod_level_object_customization_for_slot(gfCurrentLevel, LITTLE_BEETLE);
+
 	for (int i = 0; i < 128; i++)
 	{
 		fx = &Scarabs[i];
@@ -284,7 +290,7 @@ void UpdateScarabs()
 
 			if (abs(dz) < 85 && abs(dy) < 85 && abs(dx) < 85)
 			{
-				lara_item->hit_points--;
+				lara_item->hit_points -= mod_object_customization->damage_1;
 				lara_item->hit_status = 1;
 			}
 

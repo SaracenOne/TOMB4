@@ -266,13 +266,14 @@ void AhmetControl(short item_number)
 	angle = 0;
 	head = 0;
 
-	MOD_LEVEL_CREATURE_INFO *creature_info = get_game_mod_level_creature_info(gfCurrentLevel);
+	MOD_LEVEL_CREATURE_INFO *mod_creature_info = get_game_mod_level_creature_info(gfCurrentLevel);
+	MOD_LEVEL_OBJECT_CUSTOMIZATION* mod_object_customization = get_game_mod_level_object_customization_for_slot(gfCurrentLevel, AHMET);
 
 	if (item->hit_points <= 0)
 	{
 		if (item->current_anim_state == 7)
 		{
-			if (!creature_info->remove_ahmet_death_loop) {
+			if (!mod_creature_info->remove_ahmet_death_loop) {
 				if (item->frame_number == anims[item->anim_number].frame_end)
 				{
 					item->frame_number = anims[item->anim_number].frame_end - 1;
@@ -288,7 +289,7 @@ void AhmetControl(short item_number)
 			lara.spaz_effect_count = item_number;
 		}
 
-		if (!creature_info->remove_ahmet_death_flames) {
+		if (!mod_creature_info->remove_ahmet_death_flames) {
 			ExplodeAhmet(item);
 		}
 	}
@@ -406,14 +407,14 @@ void AhmetControl(short item_number)
 			if (frame > base + 7 && !(ahmet->flags & 1) && item->touch_bits & 0x3C000)
 			{
 				lara_item->hit_status = 1;
-				lara_item->hit_points -= 80;
+				lara_item->hit_points -= mod_object_customization->damage_1;
 				CreatureEffectT(item, &ahmet_left_claw, 10, -1, DoBloodSplat);
 				ahmet->flags |= 1;
 			}
 			else if (frame > base + 32 && !(ahmet->flags & 2) && item->touch_bits & 0xF00000)
 			{
 				lara_item->hit_status = 1;
-				lara_item->hit_points -= 80;
+				lara_item->hit_points -= mod_object_customization->damage_1;
 				CreatureEffectT(item, &ahmet_right_claw, 10, -1, DoBloodSplat);
 				ahmet->flags |= 2;
 			}
@@ -431,7 +432,7 @@ void AhmetControl(short item_number)
 			else if (!ahmet->flags && item->anim_number == objects[AHMET].anim_index + 4 && frame > base + 11 && item->touch_bits & 0xC00)
 			{
 				lara_item->hit_status = 1;
-				lara_item->hit_points -= 120;
+				lara_item->hit_points -= mod_object_customization->damage_2;
 				CreatureEffectT(item, &ahmet_bite, 20, -1, DoBloodSplat);
 				ahmet->flags = 1;
 			}
@@ -454,14 +455,14 @@ void AhmetControl(short item_number)
 			else if (frame > base + 21 && !(ahmet->flags & 1) && item->touch_bits & 0x3C000)
 			{
 				lara_item->hit_status = 1;
-				lara_item->hit_points -= 80;
+				lara_item->hit_points -= mod_object_customization->damage_1;
 				CreatureEffectT(item, &ahmet_left_claw, 10, -1, DoBloodSplat);
 				ahmet->flags |= 1;
 			}
 			else if (frame > base + 14 && !(ahmet->flags & 2) && item->touch_bits & 0xF00000)
 			{
 				lara_item->hit_status = 1;
-				lara_item->hit_points -= 80;
+				lara_item->hit_points -= mod_object_customization->damage_1;
 				CreatureEffectT(item, &ahmet_right_claw, 10, -1, DoBloodSplat);
 				ahmet->flags |= 2;
 			}
@@ -475,7 +476,7 @@ void AhmetControl(short item_number)
 	room_number = item->room_number;
 	floor = GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
 	GetHeight(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
-	if (!creature_info->disable_ahmet_heavy_trigger)
+	if (!mod_creature_info->disable_ahmet_heavy_trigger)
 		TestTriggers(trigger_data, 1, 0, trigger_index_room, trigger_index_floor);
 	CreatureAnimation(item_number, angle, 0);
 }

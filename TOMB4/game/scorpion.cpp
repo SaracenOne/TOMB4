@@ -55,6 +55,8 @@ void ScorpionControl(short item_number)
 	if (!CreatureActive(item_number))
 		return;
 
+	MOD_LEVEL_OBJECT_CUSTOMIZATION *mod_object_customization = get_game_mod_level_object_customization_for_slot(gfCurrentLevel, SCORPION);
+
 	angle = 0;
 	item = &items[item_number];
 	scorpion = (CREATURE_INFO*)item->data;
@@ -270,7 +272,7 @@ void ScorpionControl(short item_number)
 			}
 			else if (!scorpion->flags && item->touch_bits & 0x1B00100)
 			{
-				lara_item->hit_points -= 120;
+				lara_item->hit_points -= mod_object_customization->damage_1;
 				lara_item->hit_status = 1;
 
 				if (item->current_anim_state == 5)
@@ -349,6 +351,8 @@ void SmlscorpControl(short item_number)
 
 	if (!CreatureActive(item_number))
 		return;
+
+	MOD_LEVEL_OBJECT_CUSTOMIZATION *mod_object_customization = get_game_mod_level_object_customization_for_slot(gfCurrentLevel, SMALL_SCORPION);
 
 	angle = 0;
 	item = &items[item_number];
@@ -437,7 +441,7 @@ void SmlscorpControl(short item_number)
 			{
 				if (item->frame_number > anims[item->anim_number].frame_base + 20 && item->frame_number < anims[item->anim_number].frame_base + 32)
 				{
-					lara_item->hit_points -= 20;
+					lara_item->hit_points -= mod_object_customization->damage_1;
 					lara_item->hit_status = 1;
 
 					if (item->current_anim_state == 5)

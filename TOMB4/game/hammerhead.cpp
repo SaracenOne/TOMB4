@@ -6,6 +6,8 @@
 #include "effects.h"
 #include "control.h"
 #include "lara.h"
+#include "gameflow.h"
+#include "../tomb4/mod_config.h"
 
 static BITE_INFO hammerhead_bite = { 0, 0, 0, 12 };
 
@@ -30,6 +32,8 @@ void HammerheadControl(short item_number)
 
 	if (!CreatureActive(item_number))
 		return;
+
+	MOD_LEVEL_OBJECT_CUSTOMIZATION *mod_object_customization = get_game_mod_level_object_customization_for_slot(gfCurrentLevel, HAMMERHEAD);
 
 	item = &items[item_number];
 	shark = (CREATURE_INFO*)item->data;
@@ -91,7 +95,7 @@ void HammerheadControl(short item_number)
 
 			if (!shark->flags && item->touch_bits & 0x3400)
 			{
-				lara_item->hit_points -= 120;
+				lara_item->hit_points -= mod_object_customization->damage_1;
 				lara_item->hit_status = 1;
 				CreatureEffect(item, &hammerhead_bite, DoBloodSplat);
 				shark->flags = 1;

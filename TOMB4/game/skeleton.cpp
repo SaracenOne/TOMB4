@@ -18,6 +18,8 @@
 #include "savegame.h"
 
 #include "trng/trng.h"
+#include "gameflow.h"
+#include "../tomb4/mod_config.h"
 
 static BITE_INFO skelly_hit = { 180, 0, 0, 16 };
 
@@ -139,6 +141,8 @@ void SkeletonControl(short item_number)
 
 	if (!CreatureActive(item_number))
 		return;
+
+	MOD_LEVEL_OBJECT_CUSTOMIZATION *mod_object_customization = get_game_mod_level_object_customization_for_slot(gfCurrentLevel, SKELETON);
 
 	angle = 0;
 	item = &items[item_number];
@@ -430,7 +434,7 @@ void SkeletonControl(short item_number)
 
 			if (!skelly->flags && item->touch_bits & 0x18000)
 			{
-				lara_item->hit_points -= 80;
+				lara_item->hit_points -= mod_object_customization->damage_1;
 				lara_item->hit_status = 1;
 				CreatureEffectT(item, &skelly_hit, 10, item->pos.y_rot, DoBloodSplat);
 				SoundEffect(SFX_LARA_THUD, &item->pos, SFX_DEFAULT);
@@ -452,7 +456,7 @@ void SkeletonControl(short item_number)
 
 		if (!skelly->flags && item->touch_bits & 0x18000)
 		{
-			lara_item->hit_points -= 80;
+			lara_item->hit_points -= mod_object_customization->damage_1;
 			lara_item->hit_status = 1;
 			CreatureEffectT(item, &skelly_hit, 15, -1, DoBloodSplat);
 			SoundEffect(SFX_LARA_THUD, &item->pos, SFX_DEFAULT);

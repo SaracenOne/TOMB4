@@ -12,6 +12,8 @@
 #include "lara.h"
 #include "control.h"
 #include "lot.h"
+#include "gameflow.h"
+#include "../tomb4/mod_config.h"
 
 static BITE_INFO right_hand = { 0, 128, 0, 2 };
 static BITE_INFO left_hand = { 0, 128, 0, 4 };
@@ -290,6 +292,8 @@ void HarpyControl(short item_number)
 	if (!CreatureActive(item_number))
 		return;
 
+	MOD_LEVEL_OBJECT_CUSTOMIZATION *mod_object_customization = get_game_mod_level_object_customization_for_slot(gfCurrentLevel, HARPY);
+
 	item = &items[item_number];
 	harpy = (CREATURE_INFO*)item->data;
 	angle = 0;
@@ -486,7 +490,7 @@ void HarpyControl(short item_number)
 
 			if (item->touch_bits & 0x14 || enemy && enemy != lara_item && dy <= 1024 && info.distance < 0x40000)
 			{
-				lara_item->hit_points -= 10;
+				lara_item->hit_points -= mod_object_customization->damage_1;
 				lara_item->hit_status = 1;
 
 				if (item->touch_bits & 0x10)
@@ -506,7 +510,7 @@ void HarpyControl(short item_number)
 
 				if (item->touch_bits & 0x300000 || enemy && enemy != lara_item && dy <= 1024 && info.distance < 0x40000)
 				{
-					lara_item->hit_points -= 100;
+					lara_item->hit_points -= mod_object_customization->damage_2;
 					lara_item->hit_status = 1;
 					CreatureEffectT(item, &tail_hit, 10, -1, DoBloodSplat);
 

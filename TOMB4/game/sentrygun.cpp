@@ -13,6 +13,8 @@
 #include "people.h"
 #include "newinv.h"
 #include "control.h"
+#include "gameflow.h"
+#include "../tomb4/mod_config.h"
 
 static BITE_INFO AGOffsets = { 0, 0, 0, 8 };
 
@@ -101,6 +103,8 @@ void AutogunControl(short item_number)
 	if (!CreatureActive(item_number))
 		return;
 
+	MOD_LEVEL_OBJECT_CUSTOMIZATION *mod_object_customization = get_game_mod_level_object_customization_for_slot(gfCurrentLevel, SENTRY_GUN);
+
 	autogun = (CREATURE_INFO*)item->data;
 
 	if (!autogun)
@@ -158,7 +162,7 @@ void AutogunControl(short item_number)
 					if (info.distance > 0x400000)
 					{
 						item->item_flags[0] = 2;
-						ShotLara(item, &info, &AGOffsets, autogun->joint_rotation[0], 5);
+						ShotLara(item, &info, &AGOffsets, autogun->joint_rotation[0], mod_object_customization->damage_1);
 						SoundEffect(SFX_AUTOGUNS, &item->pos, SFX_DEFAULT);
 						item->item_flags[2] += 256;
 

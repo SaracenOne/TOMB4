@@ -1336,6 +1336,8 @@ void ControlScaledSpike(short item_number)
 
 	item = &items[item_number];
 
+	MOD_LEVEL_OBJECT_CUSTOMIZATION *mod_object_customization = get_game_mod_level_object_customization_for_slot(gfCurrentLevel, TEETH_SPIKES);
+
 	if (!TriggerActive(item) || item->item_flags[2])
 	{
 		if (TriggerActive(item))
@@ -1392,7 +1394,7 @@ void ControlScaledSpike(short item_number)
 			}
 			else
 			{
-				lara_item->hit_points -= 8;
+				lara_item->hit_points -= mod_object_customization->damage_1;
 				num = (GetRandomControl() & 3) + 2;
 			}
 
@@ -2342,9 +2344,11 @@ void DartsControl(short item_number)
 
 	item = &items[item_number];
 
+	MOD_LEVEL_OBJECT_CUSTOMIZATION *mod_object_customization = get_game_mod_level_object_customization_for_slot(gfCurrentLevel, DARTS);
+
 	if (item->touch_bits)
 	{
-		lara_item->hit_points -= 25;
+		lara_item->hit_points -= mod_object_customization->damage_1;
 		lara_item->hit_status = 1;
 		if (get_game_mod_level_misc_info(gfCurrentLevel)->darts_poison_fix) {
 			lara.dpoisoned += 160;
@@ -2464,6 +2468,8 @@ void FallingCeiling(short item_number)
 
 	item = &items[item_number];
 
+	MOD_LEVEL_OBJECT_CUSTOMIZATION* mod_object_customization = get_game_mod_level_object_customization_for_slot(gfCurrentLevel, FALLING_CEILING);
+
 	if (!item->current_anim_state)
 	{
 		item->gravity_status = 1;
@@ -2471,7 +2477,7 @@ void FallingCeiling(short item_number)
 	}
 	else if (item->current_anim_state == 1 && item->touch_bits)
 	{
-		lara_item->hit_points -= 300;
+		lara_item->hit_points -= mod_object_customization->damage_1;
 		lara_item->hit_status = 1;
 	}
 

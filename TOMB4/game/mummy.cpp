@@ -48,6 +48,8 @@ void MummyControl(short item_number)
 	if (!CreatureActive(item_number))
 		return;
 
+	MOD_LEVEL_OBJECT_CUSTOMIZATION *mod_object_customization = get_game_mod_level_object_customization_for_slot(gfCurrentLevel, MUMMY);
+
 	item = &items[item_number];
 	mummy = (CREATURE_INFO*)item->data;
 	angle = 0;
@@ -205,7 +207,7 @@ void MummyControl(short item_number)
 				if (item->frame_number > anims[item->anim_number].frame_base + 13 &&
 					item->frame_number < anims[item->anim_number].frame_base + 22)
 				{
-					lara_item->hit_points -= 100;
+					lara_item->hit_points -= mod_object_customization->damage_1;
 					lara_item->hit_status = 1;
 
 					if (item->anim_number == objects[MUMMY].anim_index + 15)

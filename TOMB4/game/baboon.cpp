@@ -11,6 +11,8 @@
 #include "../specific/3dmath.h"
 #include "effects.h"
 #include "lara.h"
+#include "gameflow.h"
+#include "../tomb4/mod_config.h"
 
 static BITE_INFO baboon_hit = { 10, 10, 11, 4 };
 
@@ -39,6 +41,8 @@ void BaboonControl(short item_number)
 	AI_INFO info;
 	long distance, dx, dz;
 	short tilt, head, angle, room_number;
+
+	MOD_LEVEL_OBJECT_CUSTOMIZATION *mod_object_customization = get_game_mod_level_object_customization_for_slot(gfCurrentLevel, BABOON_NORMAL);
 
 	if (CreatureActive(item_number))
 	{
@@ -363,7 +367,7 @@ void BaboonControl(short item_number)
 
 				if (!baboon->flags && item->touch_bits & 0x90)
 				{
-					lara_item->hit_points -= 70;
+					lara_item->hit_points -= mod_object_customization->damage_1;
 					lara_item->hit_status = 1;
 					CreatureEffectT(item, &baboon_hit, 10, -1, DoBloodSplat);
 					baboon->flags = 1;

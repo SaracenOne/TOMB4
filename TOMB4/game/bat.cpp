@@ -7,6 +7,8 @@
 #include "lara.h"
 #include "control.h"
 #include "lot.h"
+#include "../tomb4/mod_config.h"
+#include "gameflow.h"
 
 static BITE_INFO bat_bite = { 0, 16, 45, 4 };
 
@@ -38,6 +40,8 @@ void BatControl(short item_number)
 	item = &items[item_number];
 	bat = (CREATURE_INFO*)item->data;
 	angle = 0;
+
+	MOD_LEVEL_OBJECT_CUSTOMIZATION *mod_object_customization = get_game_mod_level_object_customization_for_slot(gfCurrentLevel, BAT);
 
 	if (item->hit_points <= 0)
 	{
@@ -130,7 +134,7 @@ void BatControl(short item_number)
 
 				if (bat->enemy == lara_item)
 				{
-					lara_item->hit_points -= 2;
+					lara_item->hit_points -= mod_object_customization->damage_1;
 					lara_item->hit_status = 1;
 				}
 

@@ -15,6 +15,8 @@
 #include "people.h"
 #include "../specific/input.h"
 #include "lara.h"
+#include "gameflow.h"
+#include "../tomb4/mod_config.h"
 
 static short DragSASBounds[12] = { -256, 256, -100, 100, -512, -460, -1820, 1820, -5460, 5460, 0, 0 };
 static PHD_VECTOR DragSASPos = { 0, 0, -460 };
@@ -199,6 +201,8 @@ void SasControl(short item_number)
 
 	if (!CreatureActive(item_number))
 		return;
+
+	MOD_LEVEL_OBJECT_CUSTOMIZATION *mod_object_customization = get_game_mod_level_object_customization_for_slot(gfCurrentLevel, SAS);
 
 	item = &items[item_number];
 	sas = (CREATURE_INFO*)item->data;
@@ -440,7 +444,7 @@ void SasControl(short item_number)
 				sas->flags--;
 			else
 			{
-				ShotLara(item, &info, &sas_fire, torso_y, 15);
+				ShotLara(item, &info, &sas_fire, torso_y, mod_object_customization->damage_1);
 				sas->flags = 5;
 				item->fired_weapon = 3;
 			}

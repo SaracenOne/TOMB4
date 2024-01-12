@@ -9,6 +9,8 @@
 #include "../specific/function_stubs.h"
 #include "effects.h"
 #include "lara.h"
+#include "gameflow.h"
+#include "../tomb4/mod_config.h"
 
 static BITE_INFO sphinx_bite = { 0, 0, 0, 6 };
 
@@ -37,6 +39,8 @@ void SphinxControl(short item_number)
 
 	if (!CreatureActive(item_number))
 		return;
+
+	MOD_LEVEL_OBJECT_CUSTOMIZATION *mod_object_customization = get_game_mod_level_object_customization_for_slot(gfCurrentLevel, SPHINX);
 
 	item = &items[item_number];
 	sphinx = (CREATURE_INFO*)item->data;
@@ -131,7 +135,7 @@ void SphinxControl(short item_number)
 		if (!sphinx->flags && item->touch_bits & 0x40)
 		{
 			CreatureEffectT(item, &sphinx_bite, 20, -1, DoBloodSplat);
-			lara_item->hit_points -= 200;
+			lara_item->hit_points -= mod_object_customization->damage_1;
 			sphinx->flags = 1;
 		}
 

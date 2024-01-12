@@ -7,6 +7,8 @@
 #include "../specific/3dmath.h"
 #include "lara.h"
 #include "control.h"
+#include "gameflow.h"
+#include "../tomb4/mod_config.h"
 
 static BITE_INFO dog_bite = { 0, 0, 100, 3 };
 static char DeathAnims[4] = { 20, 21, 22, 21 };
@@ -40,6 +42,8 @@ void DogControl(short item_number)
 
 	if (!CreatureActive(item_number))
 		return;
+
+	MOD_LEVEL_OBJECT_CUSTOMIZATION *mod_object_customization = get_game_mod_level_object_customization_for_slot(gfCurrentLevel, FUCKED_UP_DOG);
 
 	angle = 0;
 	head_x = 0;
@@ -176,7 +180,7 @@ void DogControl(short item_number)
 			if (info.bite && item->touch_bits & 0x6648 && frame >= 4 && frame <= 14)
 			{
 				CreatureEffectT(item, &dog_bite, 2, -1, DoBloodSplat);
-				lara_item->hit_points -= 20;
+				lara_item->hit_points -= mod_object_customization->damage_2;
 				lara_item->hit_status = 1;
 			}
 
@@ -266,7 +270,7 @@ void DogControl(short item_number)
 			if (info.bite && item->touch_bits & 0x48 && (frame >= 9 && frame <= 12 || frame >= 22 && frame <= 25))
 			{
 				CreatureEffectT(item, &dog_bite, 2, -1, DoBloodSplat);
-				lara_item->hit_points -= 10;
+				lara_item->hit_points -= mod_object_customization->damage_1;
 				lara_item->hit_status = 1;
 			}
 

@@ -7,6 +7,8 @@
 #include "lara.h"
 #include "control.h"
 #include "lot.h"
+#include "gameflow.h"
+#include "../tomb4/mod_config.h"
 
 static BITE_INFO wildboar_bite = { 0, 0, 0, 14 };
 
@@ -34,6 +36,8 @@ void WildboarControl(short item_number)
 
 	if (!CreatureActive(item_number))
 		return;
+
+	MOD_LEVEL_OBJECT_CUSTOMIZATION *mod_object_customization = get_game_mod_level_object_customization_for_slot(gfCurrentLevel, WILD_BOAR);
 
 	angle = 0;
 	neckX = 0;
@@ -147,7 +151,7 @@ void WildboarControl(short item_number)
 
 				if (boar->enemy == lara_item)
 				{
-					lara_item->hit_points -= 30;
+					lara_item->hit_points -= mod_object_customization->damage_1;
 					lara_item->hit_status = 1;
 				}
 

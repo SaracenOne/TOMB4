@@ -10,6 +10,7 @@
 #include "../game/lara.h"
 
 #include "../game/trep/furr.h"
+#include "../specific/platform.h"
 
 int global_string_table_size = 0;
 char** global_string_table;
@@ -116,6 +117,11 @@ char *T4PlusAllocateString(char* str) {
         }
 
         char *new_string = (char*)malloc(strlen(str) + 1);
+        if (!new_string) {
+            platform_fatal_error("Memory allocation failed!");
+            return nullptr;
+        }
+
         memcpy(new_string, str, strlen(str) + 1);
         global_string_table[global_string_table_size] = new_string;
         global_string_table_size++;
@@ -124,6 +130,8 @@ char *T4PlusAllocateString(char* str) {
     } else {
         Log(2, "Maximum T4Plus Strings allocated!");
     }
+
+    return nullptr;
 }
 
 void T4PlusFreeAllStrings() {
@@ -145,8 +153,8 @@ void setup_custom_slots_for_level(int level, OBJECT_INFO* current_object_info_ar
         memcpy(backup_object_info_array, current_object_info_array, sizeof(OBJECT_INFO) * NUMBER_OBJECTS);
 
         for (int i = 0; i < NUMBER_OBJECTS; i++) {
-            if (game_mod_config.level_info[level].slot_info[i] != i) {
-                memcpy(&current_object_info_array[i], &backup_object_info_array[game_mod_config.level_info[level].slot_info[i]], sizeof(OBJECT_INFO));
+            if (game_mod_config.level_info[level].objects_info.slot_override[i] != i) {
+                memcpy(&current_object_info_array[i], &backup_object_info_array[game_mod_config.level_info[level].objects_info.slot_override[i]], sizeof(OBJECT_INFO));
             }
         }
         free(backup_object_info_array);
@@ -155,9 +163,19 @@ void setup_custom_slots_for_level(int level, OBJECT_INFO* current_object_info_ar
 
 void assign_slot_for_level(int level, int dest_slot, int src_slot) {
     if (src_slot < NUMBER_OBJECTS && dest_slot < NUMBER_OBJECTS && level < MOD_LEVEL_COUNT) {
-        game_mod_config.level_info[level].slot_info[dest_slot] = src_slot;
+        game_mod_config.level_info[level].objects_info.slot_override[dest_slot] = src_slot;
     } else {
         printf("Invalid slot assignment!\n");
+    }
+}
+
+void T4PlusSetupObjectsForLevel(int level, OBJECT_INFO* current_object_info_array) {
+    setup_custom_slots_for_level(level, current_object_info_array);
+
+    for (int i = 0; i < NUMBER_OBJECTS; i++) {
+        if (game_mod_config.level_info[level].objects_info.object_customization[i].override_hit_points) {
+            current_object_info_array[i].hit_points = game_mod_config.level_info[level].objects_info.object_customization[i].hit_points;
+        }
     }
 }
 
@@ -235,6 +253,13 @@ MOD_LEVEL_AMMO_INFO *get_game_mod_current_lara_ammo_info(MOD_LEVEL_WEAPON_INFO *
             return &weapon_info->crossbow_3_ammo_info;
     default:
         return &weapon_info->pistol_ammo_info;
+    }
+}
+MOD_LEVEL_OBJECT_CUSTOMIZATION *get_game_mod_level_object_customization_for_slot(int level, int slot) {
+    if (slot < NUMBER_OBJECTS) {
+        return &game_mod_config.level_info[level].objects_info.object_customization[slot];
+    } else {
+        return nullptr;
     }
 }
 
@@ -367,6 +392,29 @@ void LoadGameModLevelCreatureInfo(const json_t* creature, MOD_LEVEL_CREATURE_INF
     READ_JSON_BOOL(remove_mummy_stun_animations, creature, creature_info);
 }
 
+void LoadGameModLevelObjectsInfo(const json_t* objects, MOD_LEVEL_OBJECTS_INFO* objects_info) {
+    const json_t *object_customization = json_getProperty(objects, "object_customization");
+    if (object_customization && JSON_ARRAY == json_getType(object_customization)) {
+        json_t const* object_customization_json;
+        int object_customization_index = 0;
+        for (object_customization_json = json_getChild(object_customization); object_customization_json != 0; object_customization_json = json_getSibling(object_customization_json)) {
+            if (object_customization_index >= NUMBER_OBJECTS)
+                break;
+
+            { const json_t* prop = json_getProperty(object_customization_json, "hit_points"); if (prop && JSON_INTEGER == json_getType(prop)) {
+                (&objects_info->object_customization[object_customization_index])->override_hit_points = true;
+                (&objects_info->object_customization[object_customization_index])->hit_points = (signed int)json_getInteger(prop);
+            } };
+
+            READ_JSON_SINT32(damage_1, object_customization_json, &objects_info->object_customization[object_customization_index]);
+            READ_JSON_SINT32(damage_2, object_customization_json, &objects_info->object_customization[object_customization_index]);
+            READ_JSON_SINT32(damage_3, object_customization_json, &objects_info->object_customization[object_customization_index]);
+
+            object_customization_index++;
+        }
+    }
+}
+
 void LoadGameModLevelMiscInfo(const json_t *misc, MOD_LEVEL_MISC_INFO *misc_info) {
     READ_JSON_INTEGER_CAST(rain_type, misc, misc_info, WeatherType);
     READ_JSON_INTEGER_CAST(snow_type, misc, misc_info, WeatherType);
@@ -435,6 +483,11 @@ void LoadGameModLevel(const json_t *level, MOD_LEVEL_INFO *level_info) {
         LoadGameModLevelCreatureInfo(creature_info, &level_info->creature_info);
     }
 
+    const json_t* objects_info = json_getProperty(level, "objects_info");
+    if (objects_info && JSON_OBJ == json_getType(objects_info)) {
+        LoadGameModLevelObjectsInfo(objects_info, &level_info->objects_info);
+    }
+
     const json_t* stat_info = json_getProperty(level, "stat_info");
     if (stat_info && JSON_OBJ == json_getType(stat_info)) {
         LoadGameModLevelStatInfo(stat_info, &level_info->stat_info);
@@ -460,7 +513,7 @@ void SetupDefaultFontInfoForLevel(MOD_LEVEL_INFO* level_info) {
 
 void SetupDefaultSlotInfoForLevel(MOD_LEVEL_INFO* level_info) {
     for (int i = 0; i < NUMBER_OBJECTS; i++) {
-        level_info->slot_info[i] = i;
+        level_info->objects_info.slot_override[i] = i;
     }
 }
 
@@ -562,21 +615,102 @@ void SetupDefaultWeaponInfoForLevel(MOD_LEVEL_INFO* level_info) {
 }
 
 void SetupDefaultObjectInfoForLevel(MOD_LEVEL_INFO* level_info) {
-    MOD_LEVEL_OBJECT_INFO* obj = nullptr;
+
+    MOD_LEVEL_OBJECT_CUSTOMIZATION *level_object_customization = level_info->objects_info.object_customization;
 
     for (int i = 0; i < NUMBER_OBJECTS; i++) {
-        obj = &level_info->object_info[i];
-        obj->hit_points = -16384;
-        obj->damage_1 = 0;
-        obj->damage_2 = 0;
-        obj->damage_3 = 0;
-        obj->override_hit_type = false;
-        obj->override_hit_type = false;
-        obj->explode_immediately = false;
-        obj->explode_after_death_animation = false;
-        obj->hit_type = HIT_NONE;
-        obj->explosive_death_only = false;
+        MOD_LEVEL_OBJECT_CUSTOMIZATION* cust = &level_object_customization[i];
+        cust->hit_points = -16384;
+        cust->damage_1 = 0;
+        cust->damage_2 = 0;
+        cust->damage_3 = 0;
+        cust->override_hit_points = false;
+        cust->override_hit_type = false;
+        cust->explode_immediately = false;
+        cust->explode_after_death_animation = false;
+        cust->hit_type = HIT_NONE;
+        cust->explosive_death_only = false;
     }
+
+    level_object_customization[JEEP].damage_1 = 1000; // TODO
+    
+    level_object_customization[SKELETON].damage_1 = 80;
+    
+    level_object_customization[RAGHEAD].damage_1 = 15;
+    level_object_customization[RAGHEAD].damage_2 = 120;
+
+    level_object_customization[SUPER_RAGHEAD].damage_1 = 15;
+    level_object_customization[SUPER_RAGHEAD].damage_2 = 120;
+
+    level_object_customization[SETHA].damage_1 = 200;
+    level_object_customization[SETHA].damage_2 = 250;
+
+    level_object_customization[MUMMY].damage_1 = 100;
+
+    level_object_customization[SPHINX].damage_1 = 200;
+
+    level_object_customization[CROCODILE].damage_1 = 120;
+
+    level_object_customization[HORSEMAN].damage_1 = 10; //TODO
+    level_object_customization[HORSEMAN].damage_2 = 20; // TODO
+    level_object_customization[HORSEMAN].damage_3 = 150; // TODO
+
+    level_object_customization[SCORPION].damage_1 = 120;
+
+    level_object_customization[TROOPS].damage_1 = 23;
+    level_object_customization[TROOPS].damage_2 = 15;
+
+    level_object_customization[KNIGHTS_TEMPLAR].damage_1 = 120;
+
+    level_object_customization[HORSE].damage_1 = 150; // TODO
+    level_object_customization[HORSE].damage_2 = 250; // TODO
+    level_object_customization[HORSE].damage_3 = 100; // TODO
+
+    level_object_customization[BABOON_NORMAL].damage_1 = 70;
+    level_object_customization[WILD_BOAR].damage_1 = 30;
+
+    level_object_customization[HARPY].damage_1 = 10;
+    level_object_customization[HARPY].damage_2 = 100;
+
+    level_object_customization[LITTLE_BEETLE].damage_1 = 1;
+
+    level_object_customization[BIG_BEETLE].damage_1 = 50;
+
+    //level_object_customization[WRAITH1].damage_1 = ?;
+    //level_object_customization[WRAITH2].damage_1 = ?;
+    //level_object_customization[WRAITH3].damage_1 = ?;
+    //level_object_customization[WRAITH4].damage_1 = ?;
+
+    level_object_customization[BAT].damage_1 = 2;
+
+    level_object_customization[FUCKED_UP_DOG].damage_1 = 10;
+    level_object_customization[FUCKED_UP_DOG].damage_2 = 20;
+
+    level_object_customization[HAMMERHEAD].damage_1 = 120;
+
+    level_object_customization[SAS].damage_1 = 15;
+    level_object_customization[SAS].damage_2 = 50; // TODO
+
+    level_object_customization[AHMET].damage_1 = 80;
+    level_object_customization[AHMET].damage_2 = 120;
+
+    level_object_customization[LARA_DOUBLE].damage_1 = 1000;
+
+    level_object_customization[SMALL_SCORPION].damage_1 = 20;
+
+    level_object_customization[FISH].damage_1 = 3;
+
+    level_object_customization[DARTS].damage_1 = 25;
+
+    level_object_customization[FALLING_CEILING].damage_1 = 300;
+
+    level_object_customization[ROLLINGBALL].damage_1 = 8;
+
+    level_object_customization[TEETH_SPIKES].damage_1 = 8;
+
+    // Fill in the rest...
+
+    level_object_customization[SENTRY_GUN].damage_1 = 5;
 }
 
 void SetupDefaultBarsInfoForLevel(MOD_LEVEL_INFO* level_info) {

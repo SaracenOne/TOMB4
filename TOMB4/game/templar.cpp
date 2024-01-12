@@ -45,6 +45,8 @@ void TemplarControl(short item_number)
 	if (!CreatureActive(item_number))
 		return;
 
+	MOD_LEVEL_OBJECT_CUSTOMIZATION *mod_object_customization = get_game_mod_level_object_customization_for_slot(gfCurrentLevel, KNIGHTS_TEMPLAR);
+
 	item = &items[item_number];
 	anim = item->anim_number - objects[KNIGHTS_TEMPLAR].anim_index;
 
@@ -162,7 +164,7 @@ void TemplarControl(short item_number)
 
 			if (!knight->flags && item->touch_bits & 0xC00)
 			{
-				lara_item->hit_points -= 120;
+				lara_item->hit_points -= mod_object_customization->damage_1;
 				lara_item->hit_status = 1;
 				CreatureEffectT(item, &templar_hit, 20, -1, DoBloodSplat);
 				knight->flags = 1;

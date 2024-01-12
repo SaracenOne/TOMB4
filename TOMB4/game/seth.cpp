@@ -13,6 +13,8 @@
 #include "effects.h"
 #include "lara_states.h"
 #include "lara.h"
+#include "gameflow.h"
+#include "../tomb4/mod_config.h"
 
 static BITE_INFO left_hand = { 0, 220, 50, 17 };
 static BITE_INFO right_hand = { 0, 220, 50, 13 };
@@ -406,6 +408,8 @@ void SethControl(short item_number)
 	if (!CreatureActive(item_number))
 		return;
 
+	MOD_LEVEL_OBJECT_CUSTOMIZATION *mod_object_customization = get_game_mod_level_object_customization_for_slot(gfCurrentLevel, SETHA);
+
 	item = &items[item_number];
 	seth = (CREATURE_INFO*)item->data;
 
@@ -554,7 +558,7 @@ void SethControl(short item_number)
 			{
 				if (item->touch_bits & 0xE000)
 				{
-					lara_item->hit_points -= 200;
+					lara_item->hit_points -= mod_object_customization->damage_1;
 					lara_item->hit_status = 1;
 					seth->flags = 1;
 					CreatureEffectT(item, &right_hand, 25, -1, DoBloodSplat);
@@ -562,7 +566,7 @@ void SethControl(short item_number)
 
 				if (item->touch_bits & 0xE0000)
 				{
-					lara_item->hit_points -= 200;
+					lara_item->hit_points -= mod_object_customization->damage_1;
 					lara_item->hit_status = 1;
 					seth->flags = 1;
 					CreatureEffectT(item, &left_hand, 25, -1, DoBloodSplat);
@@ -598,7 +602,7 @@ void SethControl(short item_number)
 			{
 				if (item->frame_number > anims[item->anim_number].frame_base + 15 && item->frame_number < anims[item->anim_number].frame_base + 26)
 				{
-					lara_item->hit_points -= 250;
+					lara_item->hit_points -= mod_object_customization->damage_2;
 					lara_item->hit_status = 1;
 					seth->flags = 1;
 					CreatureEffectT(item, &right_hand, 25, -1, DoBloodSplat);

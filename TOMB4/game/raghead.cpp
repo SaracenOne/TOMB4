@@ -14,6 +14,7 @@
 #include "effects.h"
 #include "lara.h"
 #include "gameflow.h"
+#include "../tomb4/mod_config.h"
 
 static BITE_INFO raghead_fire = { 0, -16, 200, 11 };
 static BITE_INFO raghead_blade = { 0, 0, 0, 15 };
@@ -123,6 +124,8 @@ void RagheadControl(short item_number)
 		obj_num = SUPER_RAGHEAD;
 	else
 		obj_num = RAGHEAD;
+
+	MOD_LEVEL_OBJECT_CUSTOMIZATION *mod_object_customization = get_game_mod_level_object_customization_for_slot(gfCurrentLevel, obj_num);
 
 	angle = 0;
 	tilt = 0;
@@ -603,7 +606,7 @@ void RagheadControl(short item_number)
 				if (!(item->ai_bits & MODIFY))
 					item->item_flags[2]--;
 
-				if (!ShotLara(item, &info, &raghead_fire, torso_y, 15))
+				if (!ShotLara(item, &info, &raghead_fire, torso_y, mod_object_customization->damage_1))
 					item->goal_anim_state = 0;
 			}
 
@@ -640,7 +643,7 @@ void RagheadControl(short item_number)
 			{
 				if (item->frame_number > anims[item->anim_number].frame_base + 13 && item->frame_number < anims[item->anim_number].frame_base + 21)
 				{
-					lara_item->hit_points -= 120;
+					lara_item->hit_points -= mod_object_customization->damage_2;
 					lara_item->hit_status = 1;
 					CreatureEffectT(item, &raghead_blade, 10, item->pos.y_rot, DoBloodSplat);
 					raghead->flags = 1;

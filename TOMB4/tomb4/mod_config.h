@@ -73,13 +73,13 @@ enum SLOT_HIT_TYPE {
 	HIT_SMOKE
 };
 
-struct MOD_LEVEL_OBJECT_INFO {
+struct MOD_LEVEL_OBJECT_CUSTOMIZATION {
 	short hit_points = 0;
 	short damage_1 = 0;
 	short damage_2 = 0;
 	short damage_3 = 0;
 
-	bool override_hp : 1;
+	bool override_hit_points : 1;
 	bool override_hit_type : 1;
 
 	bool explode_immediately : 1;
@@ -88,10 +88,19 @@ struct MOD_LEVEL_OBJECT_INFO {
 	bool explosive_death_only : 1;
 };
 
+struct MOD_LEVEL_OBJECTS_INFO {
+	short slot_override[NUMBER_OBJECTS];
+	MOD_LEVEL_OBJECT_CUSTOMIZATION object_customization[NUMBER_OBJECTS];
+};
+
 struct MOD_LEVEL_STATIC_INFO {
 	bool can_shatter = false;
 	bool shatter_sound_id = 0;
 	bool hard_collision = false;
+};
+
+struct MOD_LEVEL_STATICS_INFO {
+	MOD_LEVEL_STATIC_INFO static_info[NUMBER_STATIC_OBJECTS];
 };
 
 struct MOD_LEVEL_CREATURE_INFO {
@@ -303,9 +312,8 @@ struct MOD_LEVEL_INFO {
 	MOD_LEVEL_FLARE_INFO flare_info;
 	MOD_LEVEL_WEAPON_INFO weapon_info;
 	MOD_LEVEL_MISC_INFO misc_info;
-	MOD_LEVEL_OBJECT_INFO object_info[NUMBER_OBJECTS];
-	MOD_LEVEL_STATIC_INFO static_info[NUMBER_STATIC_OBJECTS];
-	short slot_info[NUMBER_OBJECTS];
+	MOD_LEVEL_OBJECTS_INFO objects_info;
+	MOD_LEVEL_STATICS_INFO statics_info;
 };
 
 #define MOD_LEVEL_COUNT 64
@@ -320,6 +328,8 @@ extern GAME_MOD_CONFIG game_mod_config;
 
 extern void setup_custom_slots_for_level(int level, OBJECT_INFO* current_object_info_array);
 extern void assign_slot_for_level(int level, int dest_slot, int src_slot);
+
+extern void T4PlusSetupObjectsForLevel(int level, OBJECT_INFO* current_object_info_array);
 
 extern MOD_GLOBAL_INFO *get_game_mod_global_info();
 
@@ -337,6 +347,8 @@ extern MOD_LEVEL_WEAPON_INFO *get_game_mod_level_weapon_info(int level);
 extern MOD_LEVEL_MISC_INFO *get_game_mod_level_misc_info(int level);
 
 extern MOD_LEVEL_AMMO_INFO *get_game_mod_current_lara_ammo_info(MOD_LEVEL_WEAPON_INFO *weapon_info);
+
+extern MOD_LEVEL_OBJECT_CUSTOMIZATION *get_game_mod_level_object_customization_for_slot(int level, int slot);
 
 extern void LoadGameModConfigFirstPass();
 extern void LoadGameModConfigSecondPass();

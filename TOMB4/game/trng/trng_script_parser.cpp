@@ -463,22 +463,69 @@ int NGReadLevelBlock(char* gfScriptFile, unsigned int offset, NG_LEVEL_RECORD_TA
 			break;
 		}
 		case 0x09: {
-			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Enemy unimplemented! (level %u)", current_level);
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Enemy configuration unfinished! (level %u)", current_level);
 
 			// Enemy (WIP)
 			unsigned short slot = NG_READ_16(gfScriptFile, offset);
+
+			MOD_LEVEL_OBJECT_CUSTOMIZATION *mod_object_customization = nullptr;
+			if (current_level == 0) {
+				for (int i = 0; i < MOD_LEVEL_COUNT; i++) {
+					mod_object_customization = get_game_mod_level_object_customization_for_slot(i, slot);
+				}
+			} else {
+				mod_object_customization = get_game_mod_level_object_customization_for_slot(current_level, slot);
+			}
+			
+			if (!mod_object_customization) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Invalid slot for enemy info! (level %u)", current_level);
+				break;
+			}
+
 			unsigned short hp = NG_READ_16(gfScriptFile, offset);
-			unsigned short nef_flags = NG_READ_16(gfScriptFile, offset);
-			unsigned short tomb_flags = NG_READ_16(gfScriptFile, offset);
-			unsigned short extra_flags = NG_READ_16(gfScriptFile, offset);
+			if (hp != 0xffff) {
+				mod_object_customization->hit_points = hp;
+				mod_object_customization->override_hit_points = true;
+			}
+
+			if (offset < command_block_end_position) {
+				unsigned short nef_flags = NG_READ_16(gfScriptFile, offset);
+				if (nef_flags != 0xffff) {
+					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Enemy EF_ flags unsupported (level %u)", current_level);
+				}
+			}
+
+			if (offset < command_block_end_position) {
+				unsigned short tomb_flags = NG_READ_16(gfScriptFile, offset);
+				if (tomb_flags != 0xffff) {
+					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Enemy TombFlags unsupported (level %u)", current_level);
+				}
+			}
+
+			if (offset < command_block_end_position) {
+				unsigned short extra_flags = NG_READ_16(gfScriptFile, offset);
+				if (extra_flags != 0xffff) {
+					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Enemy extra_flags unsupported (level %u)", current_level);
+				}
+			}
+
 			if (offset < command_block_end_position) {
 				unsigned short damage_1 = NG_READ_16(gfScriptFile, offset);
+				if (damage_1 != 0xffff) {
+					mod_object_customization->damage_1 = damage_1;
+				}
 			}
 			if (offset < command_block_end_position) {
 				unsigned short damage_2 = NG_READ_16(gfScriptFile, offset);
+				if (damage_2 != 0xffff) {
+					mod_object_customization->damage_2 = damage_2;
+				}
 			}
 			if (offset < command_block_end_position) {
 				unsigned short damage_3 = NG_READ_16(gfScriptFile, offset);
+				if (damage_3 != 0xffff) {
+					mod_object_customization->damage_3 = damage_3;
+				}
 			}
 
 			break;

@@ -15,6 +15,8 @@
 #include "tomb4fx.h"
 #include "effect2.h"
 #include "lara.h"
+#include "gameflow.h"
+#include "../tomb4/mod_config.h"
 
 LOCUST_STRUCT Locusts[64];
 
@@ -55,6 +57,8 @@ void CrocControl(short item_number)
 
 	if (!CreatureActive(item_number))
 		return;
+
+	MOD_LEVEL_OBJECT_CUSTOMIZATION *mod_object_customization = get_game_mod_level_object_customization_for_slot(gfCurrentLevel, CROCODILE);
 
 	item = &items[item_number];
 	croc = (CREATURE_INFO*)item->data;
@@ -204,7 +208,7 @@ void CrocControl(short item_number)
 				if (!item->required_anim_state)
 				{
 					CreatureEffectT(item, &croc_bite, 10, -1, DoBloodSplat);
-					lara_item->hit_points -= 120;
+					lara_item->hit_points -= mod_object_customization->damage_1;
 					lara_item->hit_status = 1;
 					item->required_anim_state = 1;
 				}
@@ -236,7 +240,7 @@ void CrocControl(short item_number)
 				if (!item->required_anim_state)
 				{
 					CreatureEffectT(item, &croc_bite, 10, -1, DoBloodSplat);
-					lara_item->hit_points -= 120;
+					lara_item->hit_points -= mod_object_customization->damage_1;
 					lara_item->hit_status = 1;
 					item->required_anim_state = 8;
 				}
@@ -466,6 +470,8 @@ void UpdateLocusts()
 	closestdist = 0xFFFFFFF;
 	closestnum = -1;
 
+	MOD_LEVEL_OBJECT_CUSTOMIZATION *mod_object_customization = get_game_mod_level_object_customization_for_slot(gfCurrentLevel, FISH);
+
 	for (int i = 0; i < 64; i++)
 	{
 		fx = &Locusts[i];
@@ -562,7 +568,7 @@ void UpdateLocusts()
 					TriggerBlood(fx->pos.x_pos, fx->pos.y_pos, fx->pos.z_pos, GetRandomControl() << 1, 2);
 
 					if (lara_item->hit_points > 0)
-						lara_item->hit_points -= 3;
+						lara_item->hit_points -= mod_object_customization->damage_1;
 				}
 			}
 		}

@@ -2009,7 +2009,7 @@ void InitialiseObjects()
 		obj->object_mip = (gfMips[i] & 0xF0) << 6;
 	}
 
-	setup_custom_slots_for_level(gfCurrentLevel, objects);
+	T4PlusSetupObjectsForLevel(gfCurrentLevel, objects);
 }
 
 void GetAIPickups()
