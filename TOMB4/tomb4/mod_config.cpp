@@ -377,6 +377,7 @@ void LoadGameModLevelMiscInfo(const json_t *misc, MOD_LEVEL_MISC_INFO *misc_info
     READ_JSON_BOOL(enemy_gun_hit_underwater_sfx_fix, misc, misc_info);
     READ_JSON_BOOL(darts_poison_fix, misc, misc_info);
     READ_JSON_BOOL(disable_motorbike_headlights, misc, misc_info);
+    READ_JSON_BOOL(always_exit_from_statistics_screen, misc, misc_info);
 
     // TREP
     READ_JSON_BOOL(trep_switch_maker, misc, misc_info);

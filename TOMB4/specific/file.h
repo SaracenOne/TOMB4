@@ -48,5 +48,3 @@ extern short* mesh_base;
 extern long nAnimUVRanges;
 extern long number_cameras;
 extern short nAIObjects;
-
-extern void LoadNGInfo();

@@ -508,17 +508,20 @@ void DisplayStatsUCunt()
 	PrintString(phd_centerx + (phd_centerx >> 2), y + 7 * font_height, 6, buf, 0);
 }
 
-long S_DisplayPauseMenu(long reset)
+long S_DisplayPauseMenu(long reset_selection, long reset_menu)
 {
 	static long menu, selection = 1;
 	long y;
 
 	if (!menu)
 	{
-		if (reset)
+		if (reset_selection)
 		{
-			selection = reset;
+			selection = reset_selection;
 			menu = 0;
+			if (reset_menu >= 0) {
+				menu = reset_menu;
+			}
 		}
 		else
 		{
@@ -585,6 +588,9 @@ long S_DisplayPauseMenu(long reset)
 		{
 			menu = 0;
 			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+
+			if (get_game_mod_level_misc_info(gfCurrentLevel)->always_exit_from_statistics_screen)
+				return 1;
 		}
 	}
 
@@ -1028,13 +1034,13 @@ void CheckKeyConflicts()
 	}
 }
 
-long S_PauseMenu()
+long S_PauseMenu(long force_menu)
 {
 	long fade, ret;
 
 	fade = 0;
 	CreateMonoScreen();
-	S_DisplayPauseMenu(1);
+	S_DisplayPauseMenu(1, force_menu);
 	InventoryActive = 1;
 	S_SetReverbType(1);
 

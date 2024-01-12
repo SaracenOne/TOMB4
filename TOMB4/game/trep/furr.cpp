@@ -785,7 +785,9 @@ FURRResult furr_cmd_bleed(FURRParameters params) {
 
 // Params:
 FURRResult furr_cmd_show_stats(FURRParameters params) {
-	return FURR_RESULT_UNIMPLEMENTED;
+	S_PauseMenu(2);
+
+	return FURR_RESULT_OK;
 }
 
 // Params:

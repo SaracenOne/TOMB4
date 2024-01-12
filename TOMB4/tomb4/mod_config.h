@@ -274,7 +274,7 @@ struct MOD_LEVEL_MISC_INFO {
 	bool enemy_gun_hit_underwater_sfx_fix = false;
 	bool darts_poison_fix = false;
 	bool disable_motorbike_headlights = false;
-
+	bool always_exit_from_statistics_screen = false;
 	// TREP
 	bool trep_switch_maker = false;
 	int trep_switch_on_ocb_1_anim = 0;
