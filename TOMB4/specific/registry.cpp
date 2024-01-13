@@ -121,8 +121,6 @@ void REG_WriteBool(char* SubKeyName, bool value)
 
 void REG_WriteString(char* SubKeyName, char* string, long length)
 {
-	long checkLength;
-
 #ifdef USE_INI
 	if (string)
 	{
@@ -133,6 +131,8 @@ void REG_WriteString(char* SubKeyName, char* string, long length)
 		ini.Delete(current_section, SubKeyName);
 	}
 #else
+	long checkLength;
+
 	if (string)
 	{
 		if (length < 0)
@@ -249,7 +249,7 @@ bool REG_ReadString(char* SubKeyName, char* value, long length, char* defaultVal
 bool REG_ReadFloat(char* SubKeyName, float& value, float defaultValue)
 {
 #ifdef USE_INI
-	value = ini.GetDoubleValue(current_section, SubKeyName, defaultValue);
+	value = (float)ini.GetDoubleValue(current_section, SubKeyName, defaultValue);
 	return true;
 #else
 	char buf[64];
