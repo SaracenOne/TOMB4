@@ -119,6 +119,9 @@ struct MOD_LEVEL_CREATURE_INFO {
 struct MOD_LEVEL_AUDIO_INFO {
 	bool new_audio_system = false;
 	bool old_cd_trigger_system = true;
+
+	int sample_rate = 22050;
+
 	short first_looped_audio_track = 105;
 	short last_looped_audio_track = 127;
 

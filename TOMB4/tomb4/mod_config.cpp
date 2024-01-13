@@ -271,6 +271,8 @@ void LoadGameModLevelAudioInfo(const json_t* audio, MOD_LEVEL_AUDIO_INFO* audio_
     READ_JSON_BOOL(new_audio_system, audio, audio_info);
     READ_JSON_BOOL(old_cd_trigger_system, audio, audio_info);
 
+    READ_JSON_SINT32(sample_rate, audio, audio_info);
+
     READ_JSON_SINT16(first_looped_audio_track, audio, audio_info);
     READ_JSON_SINT16(last_looped_audio_track, audio, audio_info);
 

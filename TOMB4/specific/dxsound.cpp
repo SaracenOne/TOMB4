@@ -27,6 +27,8 @@ static char source_pcm_format[50] =
 #define MINIAUDIO_IMPLEMENTATION
 #include "../tomb4/libs/miniaudio/miniaudio.h"
 #endif
+#include "../tomb4/mod_config.h"
+#include "../game/gameflow.h"
 
 char* samples_buffer;
 #if defined(MA_AUDIO_SAMPLES) && defined(MA_AUDIO_ENGINE)
@@ -337,13 +339,15 @@ bool DXCreateSample(char* data, long size, int samples_per_second, long num)
 	Log(8, "DXCreateSample");
 
 #if defined(MA_AUDIO_SAMPLES) && defined(MA_AUDIO_ENGINE)
+	MOD_LEVEL_AUDIO_INFO *mod_audio_info = get_game_mod_level_audio_info(gfCurrentLevel);
+
 	ma_audio_buffer_config bufferConfig = ma_audio_buffer_config_init(
 		ma_format_s16,
 		1,
 		size / 2,
 		data,
 		NULL);
-	bufferConfig.sampleRate = 22050;
+	bufferConfig.sampleRate = mod_audio_info->sample_rate;
 
 	ma_result result = ma_audio_buffer_alloc_and_init(&bufferConfig, &ma_sample_buffers[num]);
 	if (result != MA_SUCCESS) {
