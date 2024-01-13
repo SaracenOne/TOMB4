@@ -98,8 +98,8 @@ void FlameEmitterControl(short item_number)
 
 	if (!TriggerActive(item))
 	{
-		if (item->trigger_flags >= 0)
-			LibraryTab[item->trigger_flags & (MAX_LIBRARY_TABS - 1)] = 0;
+		if (item->trigger_flags >= 0 && item->trigger_flags < MAX_LIBRARY_TABS)
+			LibraryTab[item->trigger_flags] = 0;
 
 		return;
 	}
@@ -169,7 +169,8 @@ void FlameEmitterControl(short item_number)
 	}
 	else
 	{
-		LibraryTab[item->trigger_flags & (MAX_LIBRARY_TABS - 1)] = 1;
+		if (item->trigger_flags >= 0 && item->trigger_flags < MAX_LIBRARY_TABS)
+			LibraryTab[item->trigger_flags] = 1;
 		AddFire(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, 2, item->room_number, 0);
 		TriggerDynamic(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, 16 - (GetRandomControl() & 1),
 			(GetRandomControl() & 0x3F) + 192, (GetRandomControl() & 0x1F) + 96, 0);
