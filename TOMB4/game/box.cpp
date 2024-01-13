@@ -1682,15 +1682,13 @@ void GetAITarget(CREATURE_INFO* creature)
 			if (ai_bits & AMBUSH)
 				item->ai_bits |= MODIFY;
 		}
-		else if (!creature->patrol2)
+		else if (!creature->patrol2 && enemy_object != AI_PATROL1)
 		{
-			if (enemy_object != AI_PATROL1)
-				FindAITargetObject(creature, AI_PATROL1);
+			FindAITargetObject(creature, AI_PATROL1);
 		}
-		else if (creature->patrol2)
+		else if (creature->patrol2 && enemy_object != AI_PATROL2)
 		{
-			if (enemy_object != AI_PATROL2)
-				FindAITargetObject(creature, AI_PATROL2);
+			FindAITargetObject(creature, AI_PATROL2);
 		}
 		else if (abs(enemy->pos.x_pos - item->pos.x_pos) < 640 && abs(enemy->pos.y_pos - item->pos.y_pos) < 640 && abs(enemy->pos.z_pos - item->pos.z_pos) < 640)
 		{
