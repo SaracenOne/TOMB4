@@ -1234,21 +1234,23 @@ void furr_clear_oneshot_buffer() {
 	memset(furr_oneshot_buffer, 0, LAST_FURR_FLIPEFFECT);
 }
 
-void furr_execute_furr_flipeffect(int id) {	
-	if (id < FIRST_FURR_FLIPEFFECT) {
+void furr_execute_furr_flipeffect(int flipeffect_id) {	
+	if (flipeffect_id < FIRST_FURR_FLIPEFFECT) {
+		Log(1, "Invalid FURR flipeffect id %u!\n", flipeffect_id);
 		return;
 	}
-	if (id >= LAST_FURR_FLIPEFFECT) {
+	if (flipeffect_id >= LAST_FURR_FLIPEFFECT) {
+		Log(1, "Invalid FURR flipeffect id %u!\n", flipeffect_id);
 		return;
 	}
 
-	if (furr_oneshot_buffer[id]) {
+	if (furr_oneshot_buffer[flipeffect_id]) {
 		return;
 	}
 
-	id -= FIRST_FURR_FLIPEFFECT;
+	flipeffect_id -= FIRST_FURR_FLIPEFFECT;
 
-	FURRFlipeffectTable* curr_flipeffect_table = &furr_flipeffect_table[id];
+	FURRFlipeffectTable* curr_flipeffect_table = &furr_flipeffect_table[flipeffect_id];
 
 	int idx = 0;
 	FURRResult previous_result = FURR_RESULT_OK;
@@ -1292,10 +1294,14 @@ void furr_execute_furr_flipeffect(int id) {
 }
 
 void furr_allocate_flipeffect_buffer(int flipeffect_id, int size) {
-	if (flipeffect_id < FIRST_FURR_FLIPEFFECT)
+	if (flipeffect_id < FIRST_FURR_FLIPEFFECT) {
+		Log(1, "Invalid FURR flipeffect id %u!\n", flipeffect_id);
 		return;
-	if (flipeffect_id >= LAST_FURR_FLIPEFFECT)
+	}
+	if (flipeffect_id >= LAST_FURR_FLIPEFFECT) {
+		Log(1, "Invalid FURR flipeffect id %u!\n", flipeffect_id);
 		return;
+	}
 
 	int table_index = flipeffect_id - FIRST_FURR_FLIPEFFECT;
 
