@@ -85,7 +85,8 @@ static PHD_VECTOR CeilingTrapDoorPos = { 0, 1056, -480 };
 static short FloorTrapDoorBounds[12] = { -256, 256, 0, 0, -1024, -256, -1820, 1820, -5460, 5460, -1820, 1820 };
 static short CeilingTrapDoorBounds[12] = { -256, 256, 0, 900, -768, -256, -1820, 1820, -5460, 5460, -1820, 1820 };
 
-char LibraryTab[8];
+#define MAX_LIBRARY_TABS 8
+char LibraryTab[MAX_LIBRARY_TABS];
 
 void FlameEmitterControl(short item_number)
 {
@@ -98,7 +99,7 @@ void FlameEmitterControl(short item_number)
 	if (!TriggerActive(item))
 	{
 		if (item->trigger_flags >= 0)
-			LibraryTab[item->trigger_flags] = 0;
+			LibraryTab[item->trigger_flags & (MAX_LIBRARY_TABS - 1)] = 0;
 
 		return;
 	}
@@ -168,7 +169,7 @@ void FlameEmitterControl(short item_number)
 	}
 	else
 	{
-		LibraryTab[item->trigger_flags] = 1;
+		LibraryTab[item->trigger_flags & (MAX_LIBRARY_TABS - 1)] = 1;
 		AddFire(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, 2, item->room_number, 0);
 		TriggerDynamic(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, 16 - (GetRandomControl() & 1),
 			(GetRandomControl() & 0x3F) + 192, (GetRandomControl() & 0x1F) + 96, 0);
@@ -340,7 +341,7 @@ void DrawScaledSpike(ITEM_INFO* item)
 	{
 		if ((item->object_number == RAISING_BLOCK1 || item->object_number == RAISING_BLOCK2) && item->trigger_flags && !item->item_flags[0])
 		{
-			for (lp = 1; lp < 8; lp++)
+			for (lp = 1; lp < MAX_LIBRARY_TABS; lp++)
 			{
 				if (!LibraryTab[lp])
 					break;
