@@ -22,7 +22,11 @@ FURRFlipeffectTable furr_flipeffect_table[LAST_FURR_FLIPEFFECT - FIRST_FURR_FLIP
 // ID_2
 FURRResult furr_cmd_oneshot(FURRParameters params) {
 	if (params.first_parameter == params.second_parameter) {
-		furr_oneshot_buffer[params.first_parameter] = true;
+		if (params.first_parameter < LAST_FURR_FLIPEFFECT) {
+			furr_oneshot_buffer[params.first_parameter] = true;
+		} else {
+			Log(1, "ONESHOT FURR command wrote outside of valid memory range!");
+		}
 	} else {
 		Log(1, "Unknown ONESHOT FURR command behaviour!");
 		return FURR_RESULT_ERROR;
