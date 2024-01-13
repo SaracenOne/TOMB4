@@ -429,7 +429,7 @@ void SaveLevelData(long FullSave)
 
 	byte = 0;
 
-	for (int i = 0; i < 8; i++)
+	for (int i = 0; i < MAX_LIBRARY_TABS; i++)
 		byte |= LibraryTab[i] << i;
 
 	WriteSG(&byte, sizeof(uchar));
@@ -660,7 +660,7 @@ void SaveLevelData(long FullSave)
 		byte = 0;
 		item = &items[level_items];
 
-		for (int i = level_items; i < NATIVE_ITEM_COUNT; i++)
+		for (int i = level_items; i < ITEM_COUNT; i++)
 		{
 			if (item->active && (item->object_number == FLARE_ITEM || item->object_number == BURNING_TORCH_ITEM))
 				byte++;
@@ -671,7 +671,7 @@ void SaveLevelData(long FullSave)
 		WriteSG(&byte, sizeof(uchar));
 		item = &items[level_items];
 
-		for (int i = level_items; i < NATIVE_ITEM_COUNT; i++)
+		for (int i = level_items; i < ITEM_COUNT; i++)
 		{
 			if (item->active && (item->object_number == FLARE_ITEM || item->object_number == BURNING_TORCH_ITEM))
 			{
@@ -867,7 +867,7 @@ void RestoreLevelData(long FullSave)
 
 	ReadSG(&byte, sizeof(char));
 
-	for (int i = 0; i < 8; i++)
+	for (int i = 0; i < MAX_LIBRARY_TABS; i++)
 	{
 		LibraryTab[i] = byte & 1;
 		byte >>= 1;

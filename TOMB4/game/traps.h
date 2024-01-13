@@ -55,4 +55,5 @@ void CloseTrapDoor(ITEM_INFO* item);
 void TrapDoorControl(short item_number);
 void ControlObelisk(short item_number);
 
-extern char LibraryTab[8];
+#define MAX_LIBRARY_TABS 8
+extern char LibraryTab[MAX_LIBRARY_TABS];
