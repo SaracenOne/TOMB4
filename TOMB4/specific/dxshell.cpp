@@ -296,8 +296,7 @@ long DXGetInfo(DXINFO* dxinfo, HWND hwnd)
 #ifndef USE_BGFX
 	DXAttempt(DirectDrawEnumerate(DXEnumDirectDraw, dxinfo));
 #endif
-#ifdef USE_SDL
-	// Dummy information
+#if defined(MA_AUDIO_SAMPLES) && defined(MA_AUDIO_ENGINE)	// Dummy information
 	dxinfo->nDSInfo = 1;
 	dxinfo->DSInfo = (DXDIRECTSOUNDINFO*)malloc(sizeof(DXDIRECTSOUNDINFO));
 	if (dxinfo->DSInfo) {
@@ -1706,7 +1705,7 @@ const char* DXGetErrorString(HRESULT hr)
 	case D3DERR_ZBUFFER_NOTPRESENT:
 		return "ZBuffer not present";
 
-#ifndef USE_SDL
+#if !defined(MA_AUDIO_SAMPLES) || !defined(MA_AUDIO_ENGINE)
 	case DSERR_ALLOCATED:
 		return "The request failed because resources, such as a priority level, were already in use by another caller. ";
 

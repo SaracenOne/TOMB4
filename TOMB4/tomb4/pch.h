@@ -20,17 +20,19 @@
 #include <cmath>
 #include <stdio.h>
 #include <process.h>
-#ifndef USE_SDL
+#if !defined(MA_AUDIO_SAMPLES) || !defined(MA_AUDIO_ENGINE)
 #include <dsound.h>
-#endif
-#include <dinput.h>
 #include <xaudio2.h>
 #include <xaudio2fx.h>
-#include <mmreg.h>
 #include <MSAcm.h>
+#endif
+#include <dinput.h>
+#include <mmreg.h>
 
+#ifdef USE_BGFX
 #include <bgfx/bgfx.h>
 #include <bgfx/platform.h>
+#endif
 
 #include "../../resource.h"
 

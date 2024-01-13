@@ -659,7 +659,10 @@ static char source_wav_format[50] =
 };
 #pragma warning(pop)
 
+#if !defined(MA_AUDIO_SAMPLES) || !defined(MA_AUDIO_ENGINE)
 HACMDRIVER hACMDriver;
+#endif
+
 uchar* wav_file_buffer = 0;
 uchar* ADPCMBuffer = 0;
 bool acm_ready = 0;

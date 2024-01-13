@@ -5,7 +5,9 @@ void OpenStreamFile(char* name);
 void GetADPCMData();
 void ACMSetVolume();
 void ACMEmulateCDPlay(long track, long mode);
+#if !defined(MA_AUDIO_SAMPLES) || !defined(MA_AUDIO_ENGINE)
 BOOL __stdcall ACMEnumCallBack(HACMDRIVERID hadid, DWORD_PTR dwInstance, DWORD fdwSupport);
+#endif
 long ACMSetupNotifications();
 void FillADPCMBuffer(char* p, long track);
 long ACMHandleNotifications();
@@ -31,7 +33,10 @@ void SetUsingOldTriggerMode(bool enabled);
 bool IsUsingNewAudioSystem();
 bool IsUsingOldTriggerMode();
 
+#if !defined(MA_AUDIO_SAMPLES) || !defined(MA_AUDIO_ENGINE)
 extern HACMDRIVER hACMDriver;
+#endif
+
 extern uchar* wav_file_buffer;
 extern uchar* ADPCMBuffer;
 extern bool acm_ready;

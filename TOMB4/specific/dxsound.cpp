@@ -509,7 +509,7 @@ long DXStartSample(long num, long volume, long pitch, long pan, ulong flags)
 
 	ma_sound_uninit(&ma_voices[channel]);
 
-	bool is_looping = flags & XAUDIO2_LOOP_INFINITE ? MA_TRUE : MA_FALSE;
+	bool is_looping = flags & 0xff ? MA_TRUE : MA_FALSE;
 
 	ma_audio_buffer_config bufferConfig = ma_audio_buffer_config_init(
 		ma_sample_buffers[num]->ref.format,
@@ -609,7 +609,11 @@ long S_SoundPlaySample(long num, ushort volume, long pitch, short pan)
 
 long S_SoundPlaySampleLooped(long num, ushort volume, long pitch, short pan)
 {
+#ifndef MA_AUDIO_SAMPLES
 	return DXStartSample(num, CalcVolume(volume), pitch, pan, XAUDIO2_LOOP_INFINITE);
+#else
+	return DXStartSample(num, CalcVolume(volume), pitch, pan, 0xff);
+#endif
 }
 
 void DXFreeSounds()
