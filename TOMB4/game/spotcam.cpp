@@ -200,6 +200,7 @@ void InitialiseSpotCam(short Sequence)
 		camera_zposition[0] = InitialCameraPosition.z;
 		camera_roll[0] = 0;
 		camera_fov[0] = CurrentFov;
+		camera_speed[0] = s->speed;
 		camera_xposition[1] = camera_xposition[0];
 		camera_yposition[1] = camera_yposition[0];
 		camera_zposition[1] = camera_zposition[0];
