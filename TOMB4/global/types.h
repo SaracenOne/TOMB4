@@ -1252,7 +1252,9 @@ struct DXPTR
 	LPDIRECTDRAWSURFACEX lpBackBuffer;
 	LPDIRECTDRAWSURFACEX lpZBuffer;
 	LPDIRECT3DVIEWPORTX lpViewport;
+#ifndef USE_SDL
 	LPDIRECTSOUND8 lpDS;
+#endif
 	IXAudio2* lpXA;
 	ulong dwRenderWidth;
 	ulong dwRenderHeight;
@@ -2030,13 +2032,6 @@ struct SAMPLE_INFO
 	uchar randomness;
 	char pitch;
 	short flags;
-};
-
-struct DS_SAMPLE
-{
-	LPDIRECTSOUNDBUFFER buffer;
-	long frequency;
-	long playing;
 };
 
 struct BUBBLE_STRUCT

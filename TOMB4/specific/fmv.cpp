@@ -15,6 +15,7 @@
 #include "gamemain.h"
 #include "LoadSave.h"
 
+#ifndef USE_SDL
 static void (__stdcall* BinkCopyToBuffer)(BINK_STRUCT*, LPVOID, LONG, long, long, long, long);
 static void(__stdcall* BinkOpenDirectSound)(ulong);
 static void (__stdcall* BinkSetSoundSystem)(LPVOID, LPDIRECTSOUND);
@@ -35,9 +36,12 @@ static long BinkSurfaceType;
 	*(FARPROC *)&(proc) = GetProcAddress((dll), n); \
 	if(!proc) throw #proc; \
 }
+#endif
 
 bool LoadBinkStuff()
 {
+#ifndef USE_SDL
+
 	hBinkW32 = LoadLibrary("binkw32.dll");
 
 	if (!hBinkW32)
@@ -63,19 +67,25 @@ bool LoadBinkStuff()
 	}
 
 	return 1;
+#else
+	return 0;
+#endif
 }
 
 void FreeBinkStuff()
 {
+#ifndef USE_SDL
 	if (hBinkW32)
 	{
 		FreeLibrary(hBinkW32);
 		hBinkW32 = 0;
 	}
+#endif
 }
 
 void ShowBinkFrame()
 {
+#ifndef USE_SDL
 	DDSURFACEDESCX surf;
 
 	memset(&surf, 0, sizeof(surf));
@@ -86,6 +96,7 @@ void ShowBinkFrame()
 
 	if (App.dx.Flags & DXF_WINDOWED)
 		DXShowFrame();
+#endif
 }
 
 long PlayFmvNow(long num)
@@ -94,6 +105,7 @@ long PlayFmvNow(long num)
 	return 0;
 #endif
 
+#ifndef USE_SDL
 	DXDISPLAYMODE* modes;
 	DXDISPLAYMODE* current;
 	long dm, rm, ndms;
@@ -189,5 +201,6 @@ long PlayFmvNow(long num)
 	HWInitialise();
 	ClearSurfaces();
 	App.fmv = 0;
+#endif
 	return 0;
 }

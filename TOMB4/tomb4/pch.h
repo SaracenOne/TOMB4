@@ -12,6 +12,7 @@
 #define DIRECTSOUND_VERSION	0x0800
 #define XAUDIO2_HELPER_FUNCTIONS
 #define _USE_MATH_DEFINES
+#define NOMINMAX 
 #include <windows.h>
 #include <windowsx.h>
 #include <d3d.h>
@@ -19,12 +20,17 @@
 #include <cmath>
 #include <stdio.h>
 #include <process.h>
-#include <dinput.h>
+#ifndef USE_SDL
 #include <dsound.h>
+#endif
+#include <dinput.h>
 #include <xaudio2.h>
 #include <xaudio2fx.h>
 #include <mmreg.h>
 #include <MSAcm.h>
+
+#include <bgfx/bgfx.h>
+#include <bgfx/platform.h>
 
 #include "../../resource.h"
 

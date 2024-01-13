@@ -296,7 +296,18 @@ long DXGetInfo(DXINFO* dxinfo, HWND hwnd)
 #ifndef USE_BGFX
 	DXAttempt(DirectDrawEnumerate(DXEnumDirectDraw, dxinfo));
 #endif
+#ifdef USE_SDL
+	// Dummy information
+	dxinfo->nDSInfo = 1;
+	dxinfo->DSInfo = (DXDIRECTSOUNDINFO*)malloc(sizeof(DXDIRECTSOUNDINFO));
+	if (dxinfo->DSInfo) {
+		const char *DummyString = "Dummy Audio Device";
+		memcpy(dxinfo->DSInfo[0].Name, DummyString, strlen(DummyString) + 1);
+		memcpy(dxinfo->DSInfo[0].About, DummyString, strlen(DummyString) + 1);
+	}
+#else
 	DXAttempt(DirectSoundEnumerate(DXEnumDirectSound, dxinfo));
+#endif
 	G_dxinfo = dxinfo;
 	return 1;
 }
@@ -1695,6 +1706,7 @@ const char* DXGetErrorString(HRESULT hr)
 	case D3DERR_ZBUFFER_NOTPRESENT:
 		return "ZBuffer not present";
 
+#ifndef USE_SDL
 	case DSERR_ALLOCATED:
 		return "The request failed because resources, such as a priority level, were already in use by another caller. ";
 
@@ -1730,6 +1742,7 @@ const char* DXGetErrorString(HRESULT hr)
 
 	case DSERR_UNINITIALIZED:
 		return "The IDirectSound::Initialize method has not been called or has not been called successfully before other methods were called. ";
+#endif
 	}
 
 	return "Undefined Error";

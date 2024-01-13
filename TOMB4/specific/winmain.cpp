@@ -4,7 +4,6 @@
 #include "cmdline.h"
 #include "registry.h"
 #include "dxshell.h"
-#include <time.h>
 #include "../game/text.h"
 #include "lighting.h"
 #include "function_table.h"
@@ -128,9 +127,9 @@ void SDLProcessCommandLine(int argc, char* argv[])
 
 float SDLFrameRate()
 {
-	double t, time_now;
+	double t;
 	static float fps;
-	static Uint64 time, counter;
+	static Uint64 time, time_now, counter;
 	static Uint8 first_time;
 
 	if (!(first_time & 1))
@@ -144,7 +143,7 @@ float SDLFrameRate()
 	if (counter == 10)
 	{
 		time_now = SDL_GetTicks64();
-		t = (time_now - time) / (double)CLOCKS_PER_SEC;
+		t = (double)(time_now - time) / (double)1000;
 		time = (long)time_now;
 		fps = float(counter / t);
 		counter = 0;
@@ -213,18 +212,9 @@ bool SDLCreateWindow()
 		return false;
 	}
 
-	SDL_Renderer* renderer = SDL_CreateRenderer(sdl_window, -1, SDL_RENDERER_ACCELERATED);
-
-	SDL_RendererInfo* rendererInfo = new SDL_RendererInfo();
-	SDL_RendererInfo* driverInfo = new SDL_RendererInfo();
-
-	SDL_GetRendererInfo(renderer, rendererInfo);
-
-	int drivers = SDL_GetNumRenderDrivers();
-	for (int i = 0; i < drivers; ++i) {
-		SDL_GetRenderDriverInfo(i, driverInfo);
-		const char* availableDrivers = driverInfo->name;
-	}
+#ifdef USE_BGFX
+	bgfx::renderFrame();
+#endif
 
 #ifdef _WIN32
 	SDL_SysWMinfo wmInfo;
@@ -371,7 +361,7 @@ int main(int argc, char* argv[]) {
 	LoadGameModConfigSecondPass();
 	//
 
-	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
+	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_AUDIO);
 
 	SDLProcessCommandLine(argc, argv);
 
