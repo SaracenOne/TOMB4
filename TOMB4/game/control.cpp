@@ -983,41 +983,51 @@ void TestTriggers(short* data, long heavy, long HeavyFlags, int room_number, int
 
 		case TO_FLIPMAP:
 			flip_available = 1;
+			if (value < MAX_FLIPMAPS) {
+				if (flipmap[value] & IFL_INVISIBLE)
+					break;
 
-			if (flipmap[value] & IFL_INVISIBLE)
-				break;
+				if (type == SWITCH)
+					flipmap[value] ^= flags & IFL_CODEBITS;
+				else if (flags & IFL_CODEBITS)
+					flipmap[value] |= flags & IFL_CODEBITS;
 
-			if (type == SWITCH)
-				flipmap[value] ^= flags & IFL_CODEBITS;
-			else if (flags & IFL_CODEBITS)
-				flipmap[value] |= flags & IFL_CODEBITS;
+				if ((flipmap[value] & IFL_CODEBITS) == IFL_CODEBITS)
+				{
+					if (flags & IFL_INVISIBLE)
+						flipmap[value] |= IFL_INVISIBLE;
 
-			if ((flipmap[value] & IFL_CODEBITS) == IFL_CODEBITS)
-			{
-				if (flags & IFL_INVISIBLE)
-					flipmap[value] |= IFL_INVISIBLE;
-
-				if (!flip_stats[value])
+					if (!flip_stats[value])
+						flip = value;
+				}
+				else if (flip_stats[value])
 					flip = value;
+			} else {
+				Log(2, "Invalid value for flipmap!");
 			}
-			else if (flip_stats[value])
-				flip = value;
-
 			break;
 
 		case TO_FLIPON:
 			flip_available = 1;
 
-			if ((flipmap[value] & IFL_CODEBITS) == IFL_CODEBITS && !flip_stats[value])
-				flip = value;
+			if (value < MAX_FLIPMAPS) {
+				if ((flipmap[value] & IFL_CODEBITS) == IFL_CODEBITS && !flip_stats[value])
+					flip = value;
+			} else {
+				Log(2, "Invalid value for flipmap!");
+			}
 
 			break;
 
 		case TO_FLIPOFF:
 			flip_available = 1;
 
-			if ((flipmap[value] & IFL_CODEBITS) == IFL_CODEBITS && flip_stats[value])
-				flip = value;
+			if (value < MAX_FLIPMAPS) {
+				if ((flipmap[value] & IFL_CODEBITS) == IFL_CODEBITS && flip_stats[value])
+					flip = value;
+			} else {
+				Log(2, "Invalid value for flipmap!");
+			}
 
 			break;
 
