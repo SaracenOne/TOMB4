@@ -859,9 +859,9 @@ bool moveable_move_moveable_with_data_in_x_parameter_list(unsigned char move_par
 	switch (direction) {
 		case DIR_NORTH: {
 			if (!NGGetItemHorizontalMovementRemainingUnits(script_item)) {
-				short current_angle = 0xC000;
+				short current_angle = (short)0xC000;
 				if (move_item->direction & DIR_INVERT_DIRECTION) {
-					current_angle += 0x8000;
+					current_angle += (short)0x8000;
 				}
 				NGSetItemHorizontalMovementAngle(script_item, (short)current_angle);
 				NGSetItemHorizontalMovementRemainingUnits(script_item, move_item->distance);
@@ -877,9 +877,9 @@ bool moveable_move_moveable_with_data_in_x_parameter_list(unsigned char move_par
 		}
 		case DIR_EAST: {
 			if (!NGGetItemHorizontalMovementRemainingUnits(script_item)) {
-				short current_angle = 0x0000;
+				short current_angle = (short)0x0000;
 				if (move_item->direction & DIR_INVERT_DIRECTION) {
-					current_angle += 0x8000;
+					current_angle += (short)0x8000;
 				}
 				NGSetItemHorizontalMovementAngle(script_item, (short)current_angle);
 				NGSetItemHorizontalMovementRemainingUnits(script_item, move_item->distance);
@@ -895,9 +895,9 @@ bool moveable_move_moveable_with_data_in_x_parameter_list(unsigned char move_par
 		}
 		case DIR_SOUTH: {
 			if (!NGGetItemHorizontalMovementRemainingUnits(script_item)) {
-				short current_angle = 0x4000;
+				short current_angle = (short)0x4000;
 				if (move_item->direction & DIR_INVERT_DIRECTION) {
-					current_angle += 0x8000;
+					current_angle += (short)0x8000;
 				}
 				NGSetItemHorizontalMovementAngle(script_item, (short)current_angle);
 				NGSetItemHorizontalMovementRemainingUnits(script_item, move_item->distance);
@@ -913,9 +913,9 @@ bool moveable_move_moveable_with_data_in_x_parameter_list(unsigned char move_par
 		}
 		case DIR_WEST: {
 			if (!NGGetItemHorizontalMovementRemainingUnits(script_item)) {
-				short current_angle = 0x8000;
+				short current_angle = (short)0x8000;
 				if (move_item->direction & DIR_INVERT_DIRECTION) {
-					current_angle += 0x8000;
+					current_angle += (short)0x8000;
 				}
 				NGSetItemHorizontalMovementAngle(script_item, (short)current_angle);
 				NGSetItemHorizontalMovementRemainingUnits(script_item, move_item->distance);
