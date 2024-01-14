@@ -359,7 +359,9 @@ void ProcessRoomData(ROOM_INFO* r)
 	if (!r->nVerts)
 	{
 		r->num_lights = 0;
+#ifndef USE_BGFX
 		r->SourceVB = 0;
+#endif
 		return;
 	}
 
@@ -368,7 +370,7 @@ void ProcessRoomData(ROOM_INFO* r)
 	r->gt4cnt = *data_ptr++;
 	data_ptr += r->gt4cnt * 5;
 	r->gt3cnt = *data_ptr;
-	r->verts = (D3DVECTOR*)game_malloc(sizeof(D3DVECTOR) * r->nVerts);
+	r->verts = (GFXVECTOR*)game_malloc(sizeof(GFXVECTOR) * r->nVerts);
 	faces = (short*)malloc(2 * r->nVerts);
 #ifndef USE_BGFX
 	prelight = (short*)malloc(2 * r->nVerts);
@@ -637,7 +639,7 @@ void InsertRoom(ROOM_INFO* r)
 	}
 }
 
-void CalcTriFaceNormal(D3DVECTOR* p1, D3DVECTOR* p2, D3DVECTOR* p3, D3DVECTOR* N)
+void CalcTriFaceNormal(GFXVECTOR* p1, GFXVECTOR* p2, GFXVECTOR* p3, GFXVECTOR* N)
 {
 	FVECTOR u, v;
 
@@ -654,6 +656,7 @@ void CalcTriFaceNormal(D3DVECTOR* p1, D3DVECTOR* p2, D3DVECTOR* p3, D3DVECTOR* N
 
 void ProcessMeshData(long num_meshes)
 {
+#ifndef USE_BGFX
 	MESH_DATA* mesh;
 	D3DVERTEX* vtx;
 	D3DVERTEXBUFFERDESC buf;
@@ -714,17 +717,14 @@ void ProcessMeshData(long num_meshes)
 				buf.dwSize = sizeof(D3DVERTEXBUFFERDESC);
 				buf.dwCaps = 0;
 				buf.dwFVF = D3DFVF_TEX1 | D3DFVF_NORMAL | D3DFVF_XYZ;
-#ifndef USE_BGFX
+
 				DXAttempt(App.dx.lpD3D->CreateVertexBuffer(&buf, &mesh->SourceVB, 0, 0));
 				mesh->SourceVB->Lock(DDLOCK_WRITEONLY, (LPVOID*)&vtx, 0);
-#endif
 				for (int j = 0; j < mesh->nVerts; j++)
 				{
-#ifndef USE_BGFX
 					vtx[j].x = mesh_ptr[0];
 					vtx[j].y = mesh_ptr[1];
 					vtx[j].z = mesh_ptr[2];
-#endif
 					mesh_ptr += 3;
 				}
 
@@ -736,22 +736,20 @@ void ProcessMeshData(long num_meshes)
 
 				if (mesh->nNorms > 0)
 				{
-					mesh->Normals = (D3DVECTOR*)game_malloc(mesh->nNorms * sizeof(D3DVECTOR));
+					mesh->Normals = (GFXVECTOR*)game_malloc(mesh->nNorms * sizeof(GFXVECTOR));
 
 					for (int j = 0; j < mesh->nVerts; j++)
 					{
-#ifndef USE_BGFX
 						vtx[j].nx = mesh_ptr[0];
 						vtx[j].ny = mesh_ptr[1];
 						vtx[j].nz = mesh_ptr[2];
-#endif
+
 						mesh_ptr += 3;
-#ifndef USE_BGFX
-						D3DNormalise((D3DVECTOR*)&vtx[j].nx);
+
+						D3DNormalise((GFXVECTOR*)&vtx[j].nx);
 						mesh->Normals[j].x = vtx[j].nx;
 						mesh->Normals[j].y = vtx[j].ny;
 						mesh->Normals[j].z = vtx[j].nz;
-#endif
 					}
 
 					mesh->prelight = 0;
@@ -768,9 +766,7 @@ void ProcessMeshData(long num_meshes)
 						mesh_ptr++;
 					}
 				}
-#ifndef USE_BGFX
 				mesh->SourceVB->Unlock();
-#endif
 			}
 			else
 				mesh_ptr += 6 * lp + 1;
@@ -802,6 +798,7 @@ void ProcessMeshData(long num_meshes)
 			}
 		}
 	}
+#endif
 
 	Log(2, "End ProcessMeshData");
 }
@@ -828,6 +825,7 @@ void DrawBucket(TEXTUREBUCKET* bucket)
 
 	if (Textures[bucket->tpage].bump && App.BumpMapping)
 	{
+#ifndef USE_BGFX
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_FOGENABLE, 0);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_ONE);
@@ -845,21 +843,24 @@ void DrawBucket(TEXTUREBUCKET* bucket)
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
+#endif
 		DrawPrimitiveCnt++;
 	}
 
+#ifndef USE_BGFX
 	DXAttempt(App.dx.lpD3DDevice->SetTexture(0, Textures[bucket->tpage].tex));
 	App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, bucket->vtx, bucket->nVtx, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
 
 	if (App.BumpMapping)
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
+#endif
 
 	bucket->nVtx = 0;
 	bucket->tpage = -1;
 	DrawPrimitiveCnt++;
 }
 
-void FindBucket(long tpage, D3DTLBUMPVERTEX** Vpp, long** nVtxpp)
+void FindBucket(long tpage, GFXBUMPVERTEX** Vpp, long** nVtxpp)
 {
 	TEXTUREBUCKET* bucket;
 	long nVtx, biggest;
@@ -922,6 +923,7 @@ void DrawBuckets()
 
 	if (App.BumpMapping)
 	{
+#ifndef USE_BGFX
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_FOGENABLE, 0);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_ONE);
@@ -930,19 +932,22 @@ void DrawBuckets()
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_CURRENT);
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_CURRENT);
-
+#endif
 		for (int i = 0; i < MAX_BUCKETS; i++)
 		{
 			bucket = &Bucket[i];
 
 			if (Textures[bucket->tpage].bump && bucket->nVtx)
 			{
+#ifndef USE_BGFX
 				DXAttempt(App.dx.lpD3DDevice->SetTexture(0, Textures[Textures[bucket->tpage].bumptpage].tex));
 				App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, bucket->vtx, bucket->nVtx, D3DDP_DONOTCLIP);
+#endif
 				DrawPrimitiveCnt++;
 			}
 		}
 
+#ifndef USE_BGFX
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_FOGENABLE, 1);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 1);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_DESTCOLOR);
@@ -950,6 +955,7 @@ void DrawBuckets()
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
+#endif
 
 		for (int i = 0; i < MAX_BUCKETS; i++)
 		{
@@ -957,15 +963,19 @@ void DrawBuckets()
 
 			if (Textures[bucket->tpage].bump && bucket->nVtx)
 			{
+#ifndef USE_BGFX
 				DXAttempt(App.dx.lpD3DDevice->SetTexture(0, Textures[bucket->tpage].tex));
 				App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, bucket->vtx, bucket->nVtx, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
+#endif
 				bucket->nVtx = 0;
 				bucket->tpage = -1;
 				DrawPrimitiveCnt++;
 			}
 		}
 
+#ifndef USE_BGFX
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
+#endif
 
 		for (int i = 0; i < MAX_BUCKETS; i++)
 		{
@@ -973,8 +983,10 @@ void DrawBuckets()
 
 			if (!Textures[bucket->tpage].bump && bucket->nVtx)
 			{
+#ifndef USE_BGFX
 				DXAttempt(App.dx.lpD3DDevice->SetTexture(0, Textures[bucket->tpage].tex));
 				App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, bucket->vtx, bucket->nVtx, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
+#endif
 				bucket->nVtx = 0;
 				bucket->tpage = -1;
 				DrawPrimitiveCnt++;
@@ -993,17 +1005,17 @@ void DrawBuckets()
 
 void CreateVertexNormals(ROOM_INFO* r)
 {
-	D3DVECTOR p1;
-	D3DVECTOR p2;
-	D3DVECTOR p3;
-	D3DVECTOR n1;
-	D3DVECTOR n2;
+	GFXVECTOR p1;
+	GFXVECTOR p2;
+	GFXVECTOR p3;
+	GFXVECTOR n1;
+	GFXVECTOR n2;
 	short* data;
 	short nQuads;
 	short nTris;
 
 	data = r->FaceData;
-	r->fnormals = (D3DVECTOR*)game_malloc(sizeof(D3DVECTOR) * (r->gt3cnt + r->gt4cnt));
+	r->fnormals = (GFXVECTOR*)game_malloc(sizeof(GFXVECTOR) * (r->gt3cnt + r->gt4cnt));
 	nQuads = *data++;
 
 	for (int i = 0; i < nQuads; i++)
@@ -1039,7 +1051,7 @@ void CreateVertexNormals(ROOM_INFO* r)
 		data += 4;
 	}
 
-	r->vnormals = (D3DVECTOR*)game_malloc(sizeof(D3DVECTOR) * r->nVerts);
+	r->vnormals = (GFXVECTOR*)game_malloc(sizeof(GFXVECTOR) * r->nVerts);
 
 	data = r->FaceData;
 	nQuads = *data++;

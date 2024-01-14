@@ -245,7 +245,9 @@ void ShatterObject(SHATTER_ITEM* shatter_item, MESH_INFO* StaticMesh, short Num,
 
 	mesh = (MESH_DATA*)meshp;
 	DebrisMesh = mesh;
+#ifndef USE_BGFX
 	mesh->SourceVB->Lock(DDLOCK_READONLY, (LPVOID*)&vtx, 0);
+#endif
 	nVtx = mesh->nVerts;
 	nTris = mesh->ngt3;
 	nQuads = mesh->ngt4;
@@ -260,6 +262,7 @@ void ShatterObject(SHATTER_ITEM* shatter_item, MESH_INFO* StaticMesh, short Num,
 
 	for (lp = 0; lp < nVtx; lp++)
 	{
+#ifndef USE_BGFX
 		x = (long)*vtx++;
 		y = (long)*vtx++;
 		z = (long)*vtx++;
@@ -272,11 +275,14 @@ void ShatterObject(SHATTER_ITEM* shatter_item, MESH_INFO* StaticMesh, short Num,
 		pos.x += offsets[0];
 		pos.y += offsets[1];
 		pos.z += offsets[2];
+#endif
 
 		offsets += 3;
 	}
 
+#ifndef USE_BGFX
 	mesh->SourceVB->Unlock();
+#endif
 	VPos.x = pos.x / lp;
 	VPos.y = pos.y / lp;
 	VPos.z = pos.z / lp;

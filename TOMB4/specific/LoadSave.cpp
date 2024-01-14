@@ -54,7 +54,10 @@ void DoOptions()
 	static long sfx_quality_bak;
 	static long sfx_breath_db = -1;
 	ulong nMask;
-	long f, y, i, jread, jx, jy, lp;
+	long f, y, i, lp;
+#ifndef USE_SDL
+	long jread, jx, jy;
+#endif
 	static char sfx_backup_flag;	//have we backed sfx stuff up?
 	static bool waiting_for_key = 0;
 
@@ -754,9 +757,10 @@ long S_LoadSave(long load_or_save, long mono, long inv_active)
 	return ret;
 }
 
+#ifndef USE_BGFX
 static void S_DrawTile(long x, long y, long w, long h, LPDIRECT3DTEXTUREX t, long c0, long c1, long c2, long c3)
 {
-	D3DTLBUMPVERTEX v[4];
+	GFXBUMPVERTEX v[4];
 	float u1, v1, u2, v2;
 
 	u1 = 0;
@@ -800,7 +804,6 @@ static void S_DrawTile(long x, long y, long w, long h, LPDIRECT3DTEXTUREX t, lon
 	v[3].color = c2;
 	v[3].specular = 0xFF000000;
 
-#ifndef USE_BGFX
 	App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTFG_POINT);
 	App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_MINFILTER, D3DTFG_POINT);
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREPERSPECTIVE, 0);
@@ -813,11 +816,12 @@ static void S_DrawTile(long x, long y, long w, long h, LPDIRECT3DTEXTUREX t, lon
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTFG_LINEAR);
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_MINFILTER, D3DTFG_LINEAR);
 	}
-#endif
 }
+#endif
 
 void S_DisplayMonoScreen()
 {
+#ifndef USE_BGFX
 	ulong col;
 
 	if (tomb4.inv_bg_mode == INV_BG_MODE_ORIGINAL || tomb4.inv_bg_mode == INV_BG_MODE_CLEAR)
@@ -826,20 +830,24 @@ void S_DisplayMonoScreen()
 		col = 0xFFFFFF80;
 
 	S_DrawTile(0, 0, phd_winwidth, phd_winheight, MonoScreen.tex, col, col, col, col);
+#endif
 }
 
 void CreateMonoScreen()
 {
 	MonoScreenOn = 1;
 
+#ifndef USE_BGFX
 	if (App.dx.Flags & DXF_WINDOWED)
 		ConvertSurfaceToTextures(App.dx.lpBackBuffer);
 	else
 		ConvertSurfaceToTextures(App.dx.lpPrimaryBuffer);
+#endif
 }
 
 void FreeMonoScreen()
 {
+#ifndef USE_BGFX
 	if (MonoScreen.surface)
 	{
 		Log(4, "Released %s @ %x - RefCnt = %d", "Mono Screen Surface", MonoScreen.surface, MonoScreen.surface->Release());
@@ -857,6 +865,7 @@ void FreeMonoScreen()
 		Log(1, "%s Attempt To Release NULL Ptr", "Mono Screen Texture");
 
 	MonoScreenOn = 0;
+#endif
 }
 
 void RGBM_Mono(uchar * r, uchar * g, uchar * b)
@@ -894,6 +903,7 @@ static void BitMaskGetNumberOfBits(ulong bitMask, ulong& bitDepth, ulong& bitOff
 	bitDepth = i;
 }
 
+#ifndef USE_BGFX
 static void WinVidGetColorBitMasks(COLOR_BIT_MASKS* bm, LPDDPIXELFORMAT pixelFormat)
 {
 	bm->dwRBitMask = pixelFormat->dwRBitMask;
@@ -981,12 +991,11 @@ static void CustomBlt(LPDDSURFACEDESCX dst, ulong dstX, ulong dstY, LPDDSURFACED
 		dstLine += dst->lPitch;
 	}
 }
+#endif
 
+#ifndef USE_BGFX
 void ConvertSurfaceToTextures(LPDIRECTDRAWSURFACEX surface)
 {
-#ifdef USE_BGFX
-	return;
-#else
 	DDSURFACEDESCX tSurf;
 	DDSURFACEDESCX uSurf;
 	RECT r;
@@ -1013,8 +1022,8 @@ void ConvertSurfaceToTextures(LPDIRECTDRAWSURFACEX surface)
 	MonoScreen.surface->Unlock(0);
 	DXAttempt(MonoScreen.surface->QueryInterface(TEXGUID, (void**)&MonoScreen.tex));
 	surface->Unlock(0);
-#endif
 }
+#endif
 
 void CheckKeyConflicts()
 {

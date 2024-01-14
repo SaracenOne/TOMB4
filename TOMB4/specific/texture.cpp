@@ -7,6 +7,7 @@
 TEXTURE* Textures;
 long nTextures;
 
+#ifndef USE_BGFX
 LPDIRECTDRAWSURFACEX CreateTexturePage(long w, long h, long MipMapCount, long* pSrc, rgbfunc RGBM, long format)
 {
 	DXTEXTUREINFO* tex;
@@ -106,6 +107,7 @@ LPDIRECTDRAWSURFACEX CreateTexturePage(long w, long h, long MipMapCount, long* p
 	DXAttempt(tSurf->Unlock(0));
 	return tSurf;
 }
+#endif
 
 void FreeTextures()
 {

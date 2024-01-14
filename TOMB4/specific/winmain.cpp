@@ -163,7 +163,9 @@ LRESULT CALLBACK WinMainWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 	{
 	case WM_MOVE:
 		Log(6, "WM_MOVE");
+#ifndef USE_BGFX
 		DXMove((short)lParam, short((lParam >> 16) & 0xFFFF));
+#endif
 		break;
 	}
 
@@ -186,6 +188,7 @@ void SDLDisplayString(long x, long y, char* string, ...)
 
 void ClearSurfaces()
 {
+#ifndef USE_BGFX
 	D3DRECT r;
 
 	r.x1 = App.dx.rViewport.left;
@@ -202,6 +205,7 @@ void ClearSurfaces()
 		DXAttempt(App.dx.lpViewport->Clear2(1, &r, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0, 1.0F, 0));
 
 	S_DumpScreen();
+#endif
 }
 
 bool SDLCreateWindow()
@@ -305,7 +309,9 @@ void SDLProcessEvents()
 
 							break;
 						case SDL_WINDOWEVENT_MOVED:
+#ifndef USE_BGFX
 							DXMove(event.window.data1, event.window.data2);
+#endif
 						break;
 					}
 				break;
@@ -320,7 +326,9 @@ void SDLClose()
 	SaveSettings();
 	CloseHandle(App.mutex);
 	DXFreeInfo(&App.DXInfo);
+#ifndef USE_BGFX
 	DXClose();
+#endif
 	FreeBinkStuff();
 
 	if (!G_dxptr)
@@ -396,25 +404,26 @@ int main(int argc, char* argv[]) {
 	App.dx.WaitAtBeginScene = 0;
 	App.dx.InScene = 0;
 	App.fmv = 0;
-#ifndef USE_BGFX
-	dm = &G_dxinfo->DDInfo[G_dxinfo->nDD].D3DDevices[G_dxinfo->nD3D].DisplayModes[G_dxinfo->nDisplayMode];
-
-	SDL_SetWindowSize(sdl_window, dm->w, dm->h);
-#endif
 
 #ifdef USE_BGFX
+	DXDISPLAYMODE display_mode;
+	dm = &display_mode;
 
+	dm->w = 640;
+	dm->h = 480;
+	dm->bpp = 32;
 #else
+	dm = &G_dxinfo->DDInfo[G_dxinfo->nDD].D3DDevices[G_dxinfo->nD3D].DisplayModes[G_dxinfo->nDisplayMode];
+#endif
+	SDL_SetWindowSize(sdl_window, dm->w, dm->h);
+
 	if (!DXCreate(dm->w, dm->h, dm->bpp, App.StartFlags, &App.dx, App.hWnd, WS_OVERLAPPEDWINDOW))
 	{
-#ifdef USE_SDL
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR,
 			"Tomb4Plus",
 			SCRIPT_TEXT(TXT_Failed_To_Setup_DirectX),
 			sdl_window);
-#endif
 	}
-#endif
 
 	// TODO: add fullscreen support here.
 

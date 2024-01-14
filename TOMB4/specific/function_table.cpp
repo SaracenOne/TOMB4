@@ -6,16 +6,16 @@
 #include "3dmath.h"
 #include "winmain.h"
 
-void (*AddQuadSorted)(D3DTLVERTEX* v, short v0, short v1, short v2, short v3, TEXTURESTRUCT* tex, long double_sided);
-void (*AddTriSorted)(D3DTLVERTEX* v, short v0, short v1, short v2, TEXTURESTRUCT* tex, long double_sided);
-void (*AddQuadZBuffer)(D3DTLVERTEX* v, short v0, short v1, short v2, short v3, TEXTURESTRUCT* tex, long double_sided);
-void (*AddTriZBuffer)(D3DTLVERTEX* v, short v0, short v1, short v2, TEXTURESTRUCT* tex, long double_sided);
-void (*AddLineSorted)(D3DTLVERTEX* v0, D3DTLVERTEX* v1, short drawtype);
-bool (*IsVisible)(D3DTLVERTEX* v0, D3DTLVERTEX* v1, D3DTLVERTEX* v2);
+void (*AddQuadSorted)(GFXVERTEX* v, short v0, short v1, short v2, short v3, TEXTURESTRUCT* tex, long double_sided);
+void (*AddTriSorted)(GFXVERTEX* v, short v0, short v1, short v2, TEXTURESTRUCT* tex, long double_sided);
+void (*AddQuadZBuffer)(GFXVERTEX* v, short v0, short v1, short v2, short v3, TEXTURESTRUCT* tex, long double_sided);
+void (*AddTriZBuffer)(GFXVERTEX* v, short v0, short v1, short v2, TEXTURESTRUCT* tex, long double_sided);
+void (*AddLineSorted)(GFXVERTEX* v0, GFXVERTEX* v1, short drawtype);
+bool (*IsVisible)(GFXVERTEX* v0, GFXVERTEX* v1, GFXVERTEX* v2);
 HRESULT(*_BeginScene)();
 HRESULT(*_EndScene)();
 
-D3DTLVERTEX MyVertexBuffer[0x2000];
+GFXVERTEX MyVertexBuffer[0x2000];
 long CurrentFog;
 
 void SetFogColor(long r, long g, long b)
@@ -93,12 +93,12 @@ void HWInitialise()
 #endif
 }
 
-bool _NVisible(D3DTLVERTEX* v0, D3DTLVERTEX* v1, D3DTLVERTEX* v2)
+bool _NVisible(GFXVERTEX* v0, GFXVERTEX* v1, GFXVERTEX* v2)
 {
 	return (v0->sy - v1->sy) * (v2->sx - v1->sx) - (v2->sy - v1->sy) * (v0->sx - v1->sx) < 0;
 }
 
-bool _Visible(D3DTLVERTEX* v0, D3DTLVERTEX* v1, D3DTLVERTEX* v2)
+bool _Visible(GFXVERTEX* v0, GFXVERTEX* v1, GFXVERTEX* v2)
 {
 	return (v0->sy - v1->sy) * (v2->sx - v1->sx) - (v2->sy - v1->sy) * (v0->sx - v1->sx) > 0;
 }
@@ -144,13 +144,16 @@ void InitialiseFunctionTable()
 	_EndScene = HWEndScene;
 	IsVisible = _NVisible;
 
+#ifndef USE_BGFX
 	if (App.dx.lpZBuffer)
+#endif
 	{
 		AddQuadZBuffer = AddQuadClippedZBuffer;
 		AddTriZBuffer = AddTriClippedZBuffer;
 		AddQuadSorted = AddQuadClippedSorted;
 		AddTriSorted = AddTriClippedSorted;
 	}
+#ifndef USE_BGFX
 	else
 	{
 		AddQuadZBuffer = AddQuadSubdivide;
@@ -158,6 +161,7 @@ void InitialiseFunctionTable()
 		AddQuadSorted = AddQuadSubdivide;
 		AddTriSorted = AddTriSubdivide;
 	}
+#endif
 
 	AddLineSorted = AddLineClippedSorted;
 }

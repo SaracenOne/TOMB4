@@ -249,7 +249,7 @@ void CreateLightList(ITEM_INFO* item)
 	PCLIGHT* current_lights;
 	PCLIGHT* prev_lights;
 	PCLIGHT_INFO* room_light;
-	D3DVECTOR vec;
+	GFXVECTOR vec;
 	void* bakPtr;
 	long bakNum, dx, dy, dz, range;
 	bool in_range;
@@ -548,8 +548,8 @@ void CalcAmbientLight(ITEM_INFO* item)
 
 void ResetLighting()
 {
-	D3DMATRIX view;
-	D3DMATRIX cam;
+	GFXMATRIX view;
+	GFXMATRIX cam;
 	
 	ambientR = 0;
 	ambientG = 0;

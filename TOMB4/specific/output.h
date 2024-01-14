@@ -14,8 +14,10 @@ void phd_PutPolygonsPickup(short* objptr, float x, float y, long color);
 void phd_PutPolygonSkyMesh(short* objptr, long clipstatus);
 void S_DrawPickup(short object_number);
 long S_GetObjectBounds(short* bounds);
+#ifndef USE_BGFX
 HRESULT DDCopyBitmap(LPDIRECTDRAWSURFACEX surf, HBITMAP hbm, long x, long y, long dx, long dy);
 HRESULT _LoadBitmap(LPDIRECTDRAWSURFACEX surf, LPCSTR name);
+#endif
 void do_boot_screen(long language);
 void S_AnimateTextures(long n);
 long S_DumpScreen();

@@ -10,7 +10,9 @@ void S_DisplayMonoScreen();
 void CreateMonoScreen();
 void FreeMonoScreen();
 void RGBM_Mono(uchar* r, uchar* g, uchar* b);
+#ifndef USE_BGFX
 void ConvertSurfaceToTextures(LPDIRECTDRAWSURFACEX surface);
+#endif
 void CheckKeyConflicts();
 long S_PauseMenu(long force_menu = 0);
 long GetSaveLoadFiles();

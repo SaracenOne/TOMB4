@@ -58,7 +58,7 @@ short phd_winxmin;
 short phd_winymax;
 short phd_winymin;
 
-static D3DMATRIX D3DMW2VMatrix;
+static GFXMATRIX D3DMW2VMatrix;
 static float LfAspectCorrection;
 
 static void mInit()

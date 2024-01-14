@@ -80,25 +80,25 @@ static GouraudBarColourSet enemyBarColourSet =
 
 static void DrawColoredRect(float x0, float y0, float x1, float y1, float z, ulong c0, ulong c1, ulong c2, ulong c3, TEXTURESTRUCT* tex)
 {
-	D3DTLVERTEX* v;
+	GFXVERTEX* v;
 
 	v = MyVertexBuffer;
 
 	v[0].sx = x0;
 	v[0].sy = y0;
-	v[0].color = RGBA_SETALPHA(c0, 0xFF);
+	v[0].color = GFX_RGBA_SETALPHA(c0, 0xFF);
 
 	v[1].sx = x1;
 	v[1].sy = y0;
-	v[1].color = RGBA_SETALPHA(c1, 0xFF);
+	v[1].color = GFX_RGBA_SETALPHA(c1, 0xFF);
 
 	v[2].sx = x1;
 	v[2].sy = y1;
-	v[2].color = RGBA_SETALPHA(c2, 0xFF);
+	v[2].color = GFX_RGBA_SETALPHA(c2, 0xFF);
 
 	v[3].sx = x0;
 	v[3].sy = y1;
-	v[3].color = RGBA_SETALPHA(c3, 0xFF);
+	v[3].color = GFX_RGBA_SETALPHA(c3, 0xFF);
 
 	for (int i = 0; i < 4; i++)
 	{

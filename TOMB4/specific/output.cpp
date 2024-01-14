@@ -32,7 +32,7 @@
 #include "../tomb4/tomb4.h"
 #include "../tomb4/mod_config.h"
 
-D3DTLVERTEX SkinVerts[40][12];
+GFXVERTEX SkinVerts[40][12];
 short SkinClip[40][12];
 long GlobalAlpha = 0xFF000000;
 long GlobalAmbient;
@@ -846,10 +846,11 @@ static void RGB_M(ulong& c, long m)	//Original was a macro.
 
 void phd_PutPolygons(short* objptr, long clip)
 {
+#ifndef USE_BGFX
 	MESH_DATA* mesh;
 	SPRITESTRUCT* envmap_sprite;
 	TEXTURESTRUCT* pTex;
-	D3DVECTOR normals[4];
+	GFXVECTOR normals[4];
 	TEXTURESTRUCT envmap_texture;
 	short* quad;
 	short* tri;
@@ -1093,12 +1094,14 @@ void phd_PutPolygons(short* objptr, long clip)
 
 		pTex->drawtype = drawbak;
 	}
+#endif
 }
 
 void phd_PutPolygons_train(short* objptr, long x)
 {
+#ifndef USE_BGFX
 	MESH_DATA* mesh;
-	D3DTLVERTEX* v;
+	GFXVERTEX* v;
 	TEXTURESTRUCT* pTex;
 	short* quad;
 	short* tri;
@@ -1157,6 +1160,7 @@ void phd_PutPolygons_train(short* objptr, long x)
 		else if (pTex->drawtype <= 2)
 			AddTriSorted(v, tri[0], tri[1], tri[2], pTex, 0);
 	}
+#endif
 }
 
 void _InsertRoom(ROOM_INFO* r)
@@ -1243,6 +1247,7 @@ void RenderLoadPic(long unused)
 
 void S_InitialisePolyList()
 {
+#ifndef USE_BGFX
 	D3DRECT rect;
 	long col;
 
@@ -1269,14 +1274,16 @@ void S_InitialisePolyList()
 	_BeginScene();
 	InitBuckets();
 	InitialiseSortList();
+#endif
 }
 
 void phd_PutPolygonsPickup(short* objptr, float x, float y, long color)
 {
+#ifndef USE_BGFX
 	MESH_DATA* mesh;
 	SPRITESTRUCT* envmap_sprite;
 	TEXTURESTRUCT* pTex;
-	D3DVECTOR normals[4];
+	GFXVECTOR normals[4];
 	TEXTURESTRUCT envmap_texture;
 	short* quad;
 	short* tri;
@@ -1463,10 +1470,12 @@ void phd_PutPolygonsPickup(short* objptr, float x, float y, long color)
 
 		pTex->drawtype = drawbak;
 	}
+#endif
 }
 
 void phd_PutPolygonSkyMesh(short* objptr, long clipstatus)
 {
+#ifndef USE_BGFX
 	TEXTURESTRUCT* pTex;
 	MESH_DATA* mesh;
 	short* quad;
@@ -1553,6 +1562,7 @@ void phd_PutPolygonSkyMesh(short* objptr, long clipstatus)
 		AddTriSorted(MyVertexBuffer, tri[0], tri[1], tri[2], pTex, 0);
 		pTex->drawtype = drawbak;
 	}
+#endif
 }
 
 void S_DrawPickup(short object_number)
@@ -1665,6 +1675,7 @@ long S_GetObjectBounds(short* bounds)
 		return 0;
 }
 
+#ifndef USE_BGFX
 HRESULT DDCopyBitmap(LPDIRECTDRAWSURFACEX surf, HBITMAP hbm, long x, long y, long dx, long dy)
 {
 	HDC hdc;
@@ -1745,15 +1756,18 @@ HRESULT _LoadBitmap(LPDIRECTDRAWSURFACEX surf, LPCSTR name)
 	DeleteObject(hBitmap);
 	return result;
 }
+#endif
 
 void do_boot_screen(long language)
 {
 	Log(2, "do_boot_screen");
 
 #ifdef LEVEL_EDITOR
+#ifndef USE_BGFX
 	_LoadBitmap(App.dx.lpBackBuffer, "load.bmp");
 	S_DumpScreen();
 	_LoadBitmap(App.dx.lpBackBuffer, "load.bmp");
+#endif
 #else
 	switch (language)
 	{
@@ -1893,7 +1907,9 @@ long S_DumpScreen()
 
 void S_OutputPolyList()
 {
+#ifndef USE_BGFX
 	D3DRECT r;
+#endif
 	long h;
 
 #ifdef USE_SDL
@@ -1923,20 +1939,29 @@ void S_OutputPolyList()
 			resChangeCounter = 0;
 	}
 
+#ifndef USE_BGFX
 	if (App.dx.lpZBuffer)
+#endif
+	{
 		DrawBuckets();
+	}
 
 	if (!gfCurrentLevel)
 	{
 		Fade();
 
+#ifndef USE_BGFX
 		if (App.dx.lpZBuffer)
+#endif
+		{
 			DrawSortList();
+		}
 	}
 
 	SortPolyList(SortCount, SortList);
 	DrawSortList();
 
+#ifndef USE_BGFX
 	if (App.dx.lpZBuffer)
 	{
 		r.x1 = App.dx.rViewport.left;
@@ -1945,6 +1970,7 @@ void S_OutputPolyList()
 		r.y2 = App.dx.rViewport.top + App.dx.rViewport.bottom;
 		DXAttempt(App.dx.lpViewport->Clear2(1, &r, D3DCLEAR_ZBUFFER, 0, 1.0F, 0));
 	}
+#endif
 
 	if (BinocularRange && !MonoScreenOn)
 	{
@@ -1996,13 +2022,13 @@ void S_OutputPolyList()
 
 void StashSkinVertices(long node)
 {
-	D3DTLVERTEX* d;
+	GFXVERTEX* d;
 	short* cf;
 	char* vns;
 
 	vns = (char*)&SkinVertNums[node];
 	cf = (short*)&SkinClip[node];
-	d = (D3DTLVERTEX*)&SkinVerts[node];
+	d = (GFXVERTEX*)&SkinVerts[node];
 
 	while (1)
 	{
@@ -2025,13 +2051,13 @@ void StashSkinVertices(long node)
 
 void SkinVerticesToScratch(long node)
 {
-	D3DTLVERTEX* d;
+	GFXVERTEX* d;
 	short* cf;
 	char* vns;
 
 	vns = (char*)&ScratchVertNums[node];
 	cf = (short*)&SkinClip[node];
-	d = (D3DTLVERTEX*)&SkinVerts[node];
+	d = (GFXVERTEX*)&SkinVerts[node];
 
 	while (1)
 	{

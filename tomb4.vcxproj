@@ -122,13 +122,14 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>Default</LanguageStandard_C>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalOptions>/IGNORE:4099 /pdbaltpath:%_PDB% %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>SDL2.lib;SDL2Main.lib;winmm.lib;dxguid.lib;ddraw.lib;Dsound.lib;Msacm32.lib;dinput8.lib;xaudio2.lib;bgfxDebug.lib;bxDebug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2Main.lib;winmm.lib;dxguid.lib;ddraw.lib;Dsound.lib;Msacm32.lib;dinput8.lib;xaudio2.lib;gdi32.lib;psapi.lib;bgfxDebug.lib;bxDebug.lib;bimgDebug.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -166,6 +167,7 @@
       <DisableSpecificWarnings>%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

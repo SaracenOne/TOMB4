@@ -66,6 +66,7 @@ void InitDSDevice(HWND dlg, HWND hwnd)
 
 void InitTFormats(HWND dlg, HWND hwnd)
 {
+#ifndef USE_BGFX
 	DXD3DDEVICE* device;
 	DXTEXTUREINFO* tex;
 	long bpp, r, g, b, a;
@@ -102,10 +103,12 @@ void InitTFormats(HWND dlg, HWND hwnd)
 		else
 			SendMessage(hwnd, CB_SETCURSEL, 0, 0);
 	}
+#endif
 }
 
 void InitResolution(HWND dlg, HWND hwnd, bool resetvms)
 {
+#ifndef USE_BGFX
 	DXD3DDEVICE* device;
 	DXDISPLAYMODE* dm;
 	long bpp, w, h, n;
@@ -204,6 +207,7 @@ void InitResolution(HWND dlg, HWND hwnd, bool resetvms)
 
 	if (resetvms)
 		InitTFormats(dlg, GetDlgItem(dlg, 1006));
+#endif
 }
 
 void InitD3DDevice(HWND dlg, HWND hwnd)
@@ -223,6 +227,7 @@ void InitD3DDevice(HWND dlg, HWND hwnd)
 
 void InitDDDevice(HWND dlg, HWND hwnd)
 {
+#ifndef USE_BGFX
 	DDDEVICEIDENTIFIER* id;
 	char buffer[256];
 
@@ -240,6 +245,7 @@ void InitDDDevice(HWND dlg, HWND hwnd)
 	nDDDevice = App.DXInfo.nDDInfo - 1;
 	SendMessage(hwnd, CB_SETCURSEL, nDDDevice, 0);
 	InitD3DDevice(dlg, GetDlgItem(dlg, 1003));
+#endif
 }
 
 char* MapASCIIToANSI(char* s, char* d)
@@ -461,9 +467,6 @@ BOOL CALLBACK DXSetupDlgProc(HWND dlg, UINT message, WPARAM wParam, LPARAM lPara
 
 bool DXSetupDialog()
 {
-#ifdef USE_BGFX
-	return 0;
-#else
 	long ret;
 
 	ShowCursor(1);
@@ -480,5 +483,4 @@ bool DXSetupDialog()
 		return 0;
 
 	return 1;
-#endif
 }

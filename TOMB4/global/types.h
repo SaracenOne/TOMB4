@@ -1041,6 +1041,49 @@ struct PCLIGHT_INFO
 	uchar Pad;
 };
 
+#define GFX_RGBA_SETALPHA(rgba, x) (((x) << 24) | ((rgba) & 0x00ffffff))
+
+typedef unsigned long GFXCOLOR;
+typedef float GFXVALUE;
+
+struct GFXVECTOR {
+	float x;
+	float y;
+	float z;
+};
+
+struct GFXMATRIX {
+	float		_11, _12, _13, _14;
+	float		_21, _22, _23, _24;
+	float		_31, _32, _33, _34;
+	float		_41, _42, _43, _44;
+};
+
+struct GFXVERTEX {
+	float		sx;
+	float		sy;
+	float		sz;
+	float		rhw;
+	GFXCOLOR	color;
+	GFXCOLOR	specular;
+	float		tu;
+	float		tv;
+};
+
+struct GFXBUMPVERTEX
+{
+	GFXVALUE sx;
+	GFXVALUE sy;
+	GFXVALUE sz;
+	GFXVALUE rhw;
+	GFXCOLOR color;
+	GFXCOLOR specular;
+	GFXVALUE tu;
+	GFXVALUE tv;
+	GFXVALUE tx;
+	GFXVALUE ty;
+};
+
 struct ROOM_INFO
 {
 	short* data;
@@ -1077,17 +1120,19 @@ struct ROOM_INFO
 	long nVerts;
 	long nWaterVerts;
 	long nShoreVerts;
+#ifndef USE_BGFX
 	LPDIRECT3DVERTEXBUFFER SourceVB;
+#endif
 	short* FaceData;
 	float posx;
 	float posy;
 	float posz;
-	D3DVECTOR* vnormals;
-	D3DVECTOR* fnormals;
-	long* prelight;
-	long* prelightwater;
+	GFXVECTOR *vnormals;
+	GFXVECTOR *fnormals;
+	long *prelight;
+	long *prelightwater;
 	long watercalc;
-	D3DVECTOR* verts;
+	GFXVECTOR*verts;
 	long gt3cnt;
 	long gt4cnt;
 	PCLIGHT_INFO* pclight;
@@ -1112,14 +1157,17 @@ struct ANIM_STRUCT
 	short command_index;
 };
 
+#define MAX_ROPE_SEGMENTS 24
+#define MAX_ROPE_COORDS 3
+
 struct ROPE_STRUCT
 {
-	PHD_VECTOR Segment[24];
-	PHD_VECTOR Velocity[24];
-	PHD_VECTOR NormalisedSegment[24];
-	PHD_VECTOR MeshSegment[24];
+	PHD_VECTOR Segment[MAX_ROPE_SEGMENTS];
+	PHD_VECTOR Velocity[MAX_ROPE_SEGMENTS];
+	PHD_VECTOR NormalisedSegment[MAX_ROPE_SEGMENTS];
+	PHD_VECTOR MeshSegment[MAX_ROPE_SEGMENTS];
 	PHD_VECTOR Position;
-	long Coords[24][3];
+	long Coords[MAX_ROPE_SEGMENTS][MAX_ROPE_COORDS];
 	long SegmentLength;
 	long Active;
 };
@@ -1244,6 +1292,7 @@ struct STATIC_INFO
 
 struct DXPTR
 {
+#ifndef USE_BGFX
 	LPDIRECTDRAWX lpDD;
 	LPDIRECT3DX lpD3D;
 	LPDIRECT3DDEVICEX lpD3DDevice;
@@ -1252,6 +1301,7 @@ struct DXPTR
 	LPDIRECTDRAWSURFACEX lpBackBuffer;
 	LPDIRECTDRAWSURFACEX lpZBuffer;
 	LPDIRECT3DVIEWPORTX lpViewport;
+#endif
 #if !defined(MA_AUDIO_SAMPLES) || !defined(MA_AUDIO_ENGINE)
 	LPDIRECTSOUND8 lpDS;
 	IXAudio2* lpXA;
@@ -1280,7 +1330,9 @@ struct DXDISPLAYMODE
 	long bpp;
 	long RefreshRate;
 	long bPalette;
+#ifndef USE_BGFX
 	DDSURFACEDESCX ddsd;
+#endif
 	uchar rbpp;
 	uchar gbpp;
 	uchar bbpp;
@@ -1291,7 +1343,9 @@ struct DXDISPLAYMODE
 
 struct DXTEXTUREINFO
 {
+#ifndef USE_BGFX
 	DDPIXELFORMAT ddpf;
+#endif
 	ulong bpp;
 	long bPalette;
 	long bAlpha;
@@ -1307,7 +1361,9 @@ struct DXTEXTUREINFO
 
 struct DXZBUFFERINFO
 {
+#ifndef USE_BGFX
 	DDPIXELFORMAT ddpf;
+#endif
 	ulong bpp;
 };
 
@@ -1317,6 +1373,7 @@ struct DXD3DDEVICE
 	char About[80];
 	LPGUID lpGuid;
 	GUID Guid;
+#ifndef USE_BGFX
 	D3DDEVICEDESC DeviceDesc;
 	long bHardware;
 	long nDisplayModes;
@@ -1325,6 +1382,7 @@ struct DXD3DDEVICE
 	DXTEXTUREINFO* TextureInfos;
 	long nZBufferInfos;
 	DXZBUFFERINFO* ZBufferInfos;
+#endif
 };
 
 struct DXDIRECTDRAWINFO
@@ -1333,8 +1391,10 @@ struct DXDIRECTDRAWINFO
 	char About[80];
 	LPGUID lpGuid;
 	GUID Guid;
+#ifndef USE_BGFX
 	DDCAPS DDCaps;
 	DDDEVICEIDENTIFIER DDIdentifier;
+#endif
 	long nDisplayModes;
 	DXDISPLAYMODE* DisplayModes;
 	long nD3DDevices;
@@ -1373,8 +1433,10 @@ struct WINAPP
 	DXPTR dx;
 	HANDLE mutex;
 	float fps;
+#ifndef USE_BGFX
 	LPDIRECT3DMATERIALX GlobalMaterial;
 	D3DMATERIALHANDLE GlobalMaterialHandle;
+#endif
 	HACCEL hAccel;
 	bool SetupComplete;
 	bool BumpMapping;
@@ -1416,8 +1478,10 @@ struct MESH_DATA
 	ushort ngt3; // TRLE: Made unsigned, fixes some level loading
 	short* gt3;
 	long* prelight;
+#ifndef USE_BGFX
 	LPDIRECT3DVERTEXBUFFER SourceVB;
-	D3DVECTOR* Normals;
+#endif
+	GFXVECTOR* Normals;
 };
 
 struct TEXTURESTRUCT
@@ -1669,24 +1733,12 @@ struct BITE_INFO
 	long mesh_num;
 };
 
-struct D3DTLBUMPVERTEX
-{
-	D3DVALUE sx;
-	D3DVALUE sy;
-	D3DVALUE sz;
-	D3DVALUE rhw;
-	D3DCOLOR color;
-	D3DCOLOR specular;
-	D3DVALUE tu;
-	D3DVALUE tv;
-	D3DVALUE tx;
-	D3DVALUE ty;
-};
-
 struct TEXTURE
 {
+#ifndef USE_BGFX
 	LPDIRECT3DTEXTUREX tex;
 	LPDIRECTDRAWSURFACEX surface;
+#endif
 	ulong xoff;
 	ulong yoff;
 	ulong width;
@@ -1700,7 +1752,7 @@ struct TEXTUREBUCKET
 {
 	long tpage;
 	long nVtx;
-	D3DTLBUMPVERTEX vtx[BUCKET_VERT_COUNT]; // TRLE: increased size (256 * 32 + 32)
+	GFXBUMPVERTEX vtx[BUCKET_VERT_COUNT]; // TRLE: increased size (256 * 32 + 32)
 };
 
 struct THREAD
@@ -1885,8 +1937,10 @@ struct SMOKE_SPARKS
 
 struct MONOSCREEN_STRUCT
 {
+#ifndef USE_BGFX
 	LPDIRECT3DTEXTUREX tex;
 	LPDIRECTDRAWSURFACEX surface;
+#endif
 };
 
 struct VonCroyCutData

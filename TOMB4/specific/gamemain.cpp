@@ -21,7 +21,9 @@
 #include "../tomb4/tomb4plus/t4plus_weather.h"
 #include "../tomb4/mod_config.h"
 
+#ifndef USE_BGFX
 LPDIRECT3DVERTEXBUFFER DestVB;
+#endif
 WATERTAB WaterTable[22][64];
 THREAD MainThread;
 short* clipflags;
@@ -41,6 +43,7 @@ void GameClose()
 
 	T4PlusCleanup();
 
+#ifndef USE_BGFX
 	if (DestVB)
 	{
 		Log(4, "Released %s @ %x - RefCnt = %d", "Dest VB", DestVB, DestVB->Release());
@@ -48,6 +51,7 @@ void GameClose()
 	}
 	else
 		Log(1, "%s Attempt To Release NULL Ptr", "Dest VB");
+#endif
 
 	free(clipflags);
 
@@ -185,15 +189,13 @@ void init_water_table()
 
 bool GameInitialise()
 {
+#ifndef USE_BGFX
 	D3DVERTEXBUFFERDESC desc;
 
 	desc.dwCaps = 0;
 	desc.dwSize = sizeof(desc);
 	desc.dwFVF = D3DFVF_TLVERTEX;
 	desc.dwNumVertices = 0x2000;
-#ifdef USE_BGFX
-
-#else
 	DXAttempt(App.dx.lpD3D->CreateVertexBuffer(&desc, &DestVB, D3DDP_DONOTCLIP, 0));
 #endif
 	init_game_malloc();
@@ -259,11 +261,26 @@ long S_LoadGame(long slot_num)
 
 	if (file != INVALID_HANDLE_VALUE)
 	{
-		ReadFile(file, buffer, 75, &bytes, 0);
-		ReadFile(file, &value, sizeof(long), &bytes, 0);
-		ReadFile(file, &value, sizeof(long), &bytes, 0);
-		ReadFile(file, &value, sizeof(long), &bytes, 0);
-		ReadFile(file, &savegame, sizeof(SAVEGAME_INFO), &bytes, 0);
+		if (!ReadFile(file, buffer, 75, &bytes, 0)) {
+			CloseHandle(file);
+			return 0;
+		}
+		if (!ReadFile(file, &value, sizeof(long), &bytes, 0)) {
+			CloseHandle(file);
+			return 0;
+		}
+		if (!ReadFile(file, &value, sizeof(long), &bytes, 0)) {
+			CloseHandle(file);
+			return 0;
+		}
+		if (!ReadFile(file, &value, sizeof(long), &bytes, 0)) {
+			CloseHandle(file);
+			return 0;
+		}
+		if (!ReadFile(file, &savegame, sizeof(SAVEGAME_INFO), &bytes, 0)) {
+			CloseHandle(file);
+			return 0;
+		}
 		CloseHandle(file);
 
 		MOD_GLOBAL_INFO *mod_global_info = get_game_mod_global_info();

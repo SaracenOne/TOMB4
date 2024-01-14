@@ -1066,8 +1066,10 @@ long S_UpdateInput()
 	}
 
 
+#ifndef USE_BGFX
 	if (IsKeyPressed(T4P_KEY_APOSTROPHE))
 		DXSaveScreen(App.dx.lpBackBuffer, "Tomb");
+#endif
 
 	inputBusy = linput;
 

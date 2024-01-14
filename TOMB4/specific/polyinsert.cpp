@@ -17,8 +17,8 @@
 #include "gamemain.h"
 #include "../game/gameflow.h"
 
-D3DTLBUMPVERTEX XYUVClipperBuffer[20];
-D3DTLBUMPVERTEX zClipperBuffer[20];
+GFXBUMPVERTEX XYUVClipperBuffer[20];
+GFXBUMPVERTEX zClipperBuffer[20];
 
 FOGBULB_STRUCT FogBulbs[20];
 long NumLevelFogBulbs;
@@ -44,15 +44,13 @@ static long rgb80h = 0x808080;
 static long rgbmask = 0xFFFFFFFF;
 static long zero = 0;
 
-void HWR_DrawSortList(D3DTLBUMPVERTEX* info, short num_verts, short texture, short type)
+void HWR_DrawSortList(GFXBUMPVERTEX* info, short num_verts, short texture, short type)
 {
-#ifdef USE_BGFX
-	return;
-#else
 	switch (type)
 	{
 	case 0:
 
+#ifndef USE_BGFX
 		if (App.dx.lpZBuffer)
 			App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 1);
 
@@ -64,19 +62,22 @@ void HWR_DrawSortList(D3DTLBUMPVERTEX* info, short num_verts, short texture, sho
 		App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, info, num_verts, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHATESTENABLE, 1);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 1);
+#endif
 		break;
 
 	case 1:
+#ifndef USE_BGFX
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 1);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHATESTENABLE, 1);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA);
 		DXAttempt(App.dx.lpD3DDevice->SetTexture(0, Textures[texture].tex));
 		App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, info, num_verts, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
+#endif
 		break;
 
 	case 2:
-
+#ifndef USE_BGFX
 		if (App.dx.lpZBuffer)
 			App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 0);
 
@@ -89,10 +90,11 @@ void HWR_DrawSortList(D3DTLBUMPVERTEX* info, short num_verts, short texture, sho
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_SPECULARENABLE, 1);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA);
+#endif
 		break;
 
 	case 3:
-
+#ifndef USE_BGFX
 		if (App.dx.lpZBuffer)
 			App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 0);
 
@@ -103,9 +105,11 @@ void HWR_DrawSortList(D3DTLBUMPVERTEX* info, short num_verts, short texture, sho
 		DXAttempt(App.dx.lpD3DDevice->SetTexture(0, Textures[texture].tex));
 		App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, info, num_verts, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
+#endif
 		break;
 
 	case 4:
+#ifndef USE_BGFX
 		DXAttempt(App.dx.lpD3DDevice->SetTexture(0, Textures[texture].tex));
 
 		if (App.dx.lpZBuffer)
@@ -121,11 +125,12 @@ void HWR_DrawSortList(D3DTLBUMPVERTEX* info, short num_verts, short texture, sho
 			App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 1);
 			App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ZENABLE, 1);
 		}
+#endif
 
 		break;
 
 	case 5:
-
+#ifndef USE_BGFX
 		if (App.dx.lpZBuffer)
 			App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 0);
 
@@ -138,10 +143,11 @@ void HWR_DrawSortList(D3DTLBUMPVERTEX* info, short num_verts, short texture, sho
 		App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, info, num_verts, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
+#endif
 		break;
 
 	case 6:
-
+#ifndef USE_BGFX
 		if (App.dx.lpZBuffer)
 			App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 0);
 
@@ -150,10 +156,11 @@ void HWR_DrawSortList(D3DTLBUMPVERTEX* info, short num_verts, short texture, sho
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_ONE);
 		DXAttempt(App.dx.lpD3DDevice->SetTexture(0, 0));
 		App.dx.lpD3DDevice->DrawPrimitive(D3DPT_LINELIST, FVF, info, num_verts, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
+#endif
 		break;
 
 	case 7:
-
+#ifndef USE_BGFX
 		if (App.dx.lpZBuffer)
 			App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 1);
 
@@ -164,21 +171,18 @@ void HWR_DrawSortList(D3DTLBUMPVERTEX* info, short num_verts, short texture, sho
 		DXAttempt(App.dx.lpD3DDevice->SetTexture(0, Textures[texture].tex));
 		App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, info, num_verts, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
+#endif
 		break;
 	}
-#endif
 	DrawPrimitiveCnt++;
 }
 
 void DrawSortList()
 {
-#ifdef USE_BGFX
-	return;
-#else
 	SORTLIST* pSort;
-	D3DTLBUMPVERTEX* vtx;
-	D3DTLBUMPVERTEX* bVtx;
-	D3DTLBUMPVERTEX* bVtxbak;
+	GFXBUMPVERTEX* vtx;
+	GFXBUMPVERTEX* bVtx;
+	GFXBUMPVERTEX* bVtxbak;
 	long num;
 	short nVtx, tpage, drawtype, total_nVtx;
 
@@ -187,17 +191,20 @@ void DrawSortList()
 	if (!SortCount)
 		return;
 
+#ifndef USE_BGFX
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHATESTENABLE, 1);
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA);
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA);
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 1);
+#endif
 
+#ifndef USE_BGFX
 	if (!App.dx.lpZBuffer)
 	{
 		for (int i = 0; i < SortCount; i++)
 		{
 			pSort = SortList[i];
-			vtx = (D3DTLBUMPVERTEX*)(pSort + 1);
+			vtx = (GFXBUMPVERTEX*)(pSort + 1);
 
 			if (pSort->polytype == 4)
 				App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREPERSPECTIVE, 0);
@@ -210,6 +217,7 @@ void DrawSortList()
 		}
 	}
 	else
+#endif
 	{
 		pSort = SortList[0];
 
@@ -234,7 +242,7 @@ void DrawSortList()
 			{
 				if (pSort->drawtype == drawtype && pSort->tpage == tpage)
 				{
-					vtx = (D3DTLBUMPVERTEX*)(pSort + 1);
+					vtx = (GFXBUMPVERTEX*)(pSort + 1);
 
 					for (int i = 0; i < pSort->nVtx; i++, vtx++, bVtx++)
 					{
@@ -286,7 +294,7 @@ void DrawSortList()
 			{
 				if (pSort->tpage == tpage && pSort->drawtype == drawtype)
 				{
-					vtx = (D3DTLBUMPVERTEX*)(pSort + 1);
+					vtx = (GFXBUMPVERTEX*)(pSort + 1);
 					total_nVtx += pSort->nVtx;
 
 					// TRLE: extra check backported from TR5
@@ -327,10 +335,12 @@ void DrawSortList()
 			HWR_DrawSortList(bVtxbak, nVtx, tpage, drawtype);
 	}
 
+#ifndef USE_BGFX
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 1);
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHATESTENABLE, 0);
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
 #endif
+
 	InitBuckets();
 }
 
@@ -383,7 +393,7 @@ void CreateFogPos(FOGBULB_STRUCT* FogBulb)
 				FogBulb->pos.x = FogBulb->vec.x;
 				FogBulb->pos.y = FogBulb->vec.y;
 				FogBulb->pos.z = FogBulb->vec.z;
-				D3DNormalise((D3DVECTOR*)&FogBulb->vec);
+				D3DNormalise((GFXVECTOR*)&FogBulb->vec);
 				FogBulb->vec.x = FogBulb->rad * FogBulb->vec.x + FogBulb->pos.x;
 				FogBulb->vec.y = FogBulb->rad * FogBulb->vec.y + FogBulb->pos.y;
 				FogBulb->vec.z = FogBulb->rad * FogBulb->vec.z + FogBulb->pos.z;
@@ -544,7 +554,7 @@ void InitialiseFogBulbs()
 	}
 }
 
-void OmniEffect(D3DTLVERTEX* v)
+void OmniEffect(GFXVERTEX* v)
 {
 	FOGBULB_STRUCT* FogBulb;
 	FVECTOR pos;
@@ -618,7 +628,7 @@ void OmniEffect(D3DTLVERTEX* v)
 	}
 }
 
-void OmniFog(D3DTLVERTEX* v)
+void OmniFog(GFXVERTEX* v)
 {
 	FOGBULB_STRUCT* FogBulb;
 	FVECTOR pos;
@@ -709,13 +719,10 @@ void OmniFog(D3DTLVERTEX* v)
 	}
 }
 
-void AddTriClippedSorted(D3DTLVERTEX* v, short v0, short v1, short v2, TEXTURESTRUCT* tex, long double_sided)
+void AddTriClippedSorted(GFXVERTEX* v, short v0, short v1, short v2, TEXTURESTRUCT* tex, long double_sided)
 {
-#ifdef USE_BGFX
-	return;
-#else
-	D3DTLBUMPVERTEX* p;
-	D3DTLVERTEX* pV;
+	GFXBUMPVERTEX* p;
+	GFXVERTEX* pV;
 	SORTLIST* sl;
 	TEXTURESTRUCT tex2;
 	short* c;
@@ -791,13 +798,13 @@ void AddTriClippedSorted(D3DTLVERTEX* v, short v0, short v1, short v2, TEXTUREST
 		else
 		{
 			clip = 0;
-			p = (D3DTLBUMPVERTEX*)(sizeof(SORTLIST) + pSortBuffer);
+			p = (GFXBUMPVERTEX*)(sizeof(SORTLIST) + pSortBuffer);
 			sl = (SORTLIST*)pSortBuffer;
 			sl->tpage = tex->tpage;
 			sl->drawtype = tex->drawtype;
 			sl->nVtx = 3;
 			sl->polytype = (short)nPolyType;
-			pSortBuffer += sl->nVtx * sizeof(D3DTLBUMPVERTEX) + sizeof(SORTLIST);
+			pSortBuffer += sl->nVtx * sizeof(GFXBUMPVERTEX) + sizeof(SORTLIST);
 			*pSortList = sl;
 			pSortList++;
 		}
@@ -912,7 +919,7 @@ void AddTriClippedSorted(D3DTLVERTEX* v, short v0, short v1, short v2, TEXTUREST
 
 		if (num)
 		{
-			p = (D3DTLBUMPVERTEX*)(sizeof(SORTLIST) + pSortBuffer);
+			p = (GFXBUMPVERTEX*)(sizeof(SORTLIST) + pSortBuffer);
 			sl = (SORTLIST*)pSortBuffer;
 			sl->drawtype = tex->drawtype;
 			sl->nVtx = short(3 * num - 6);
@@ -924,7 +931,7 @@ void AddTriClippedSorted(D3DTLVERTEX* v, short v0, short v1, short v2, TEXTUREST
 
 			sl->tpage = tex->tpage;
 			sl->polytype = (short)nPolyType;
-			pSortBuffer += sl->nVtx * sizeof(D3DTLBUMPVERTEX) + sizeof(SORTLIST);
+			pSortBuffer += sl->nVtx * sizeof(GFXBUMPVERTEX) + sizeof(SORTLIST);
 			*pSortList = sl;
 			pSortList++;
 			SortCount++;
@@ -952,16 +959,12 @@ void AddTriClippedSorted(D3DTLVERTEX* v, short v0, short v1, short v2, TEXTUREST
 	v[v0].specular = specBak[0];
 	v[v1].specular = specBak[1];
 	v[v2].specular = specBak[2];
-#endif
 }
 
-void AddQuadClippedSorted(D3DTLVERTEX* v, short v0, short v1, short v2, short v3, TEXTURESTRUCT* tex, long double_sided)
+void AddQuadClippedSorted(GFXVERTEX* v, short v0, short v1, short v2, short v3, TEXTURESTRUCT* tex, long double_sided)
 {
-#ifdef USE_BGFX
-	return;
-#else
-	D3DTLBUMPVERTEX* p;
-	D3DTLVERTEX* pV;
+	GFXBUMPVERTEX* p;
+	GFXVERTEX* pV;
 	SORTLIST* sl;
 	TEXTURESTRUCT tex2;
 	short* c;
@@ -1029,13 +1032,13 @@ void AddQuadClippedSorted(D3DTLVERTEX* v, short v0, short v1, short v2, short v3
 		return;
 	}
 
-	p = (D3DTLBUMPVERTEX*)(sizeof(SORTLIST) + pSortBuffer);
+	p = (GFXBUMPVERTEX*)(sizeof(SORTLIST) + pSortBuffer);
 	sl = (SORTLIST*)pSortBuffer;
 	sl->drawtype = tex->drawtype;
 	sl->tpage = tex->tpage;
 	sl->nVtx = 6;
 	sl->polytype = (short)nPolyType;
-	pSortBuffer += sl->nVtx * sizeof(D3DTLBUMPVERTEX) + sizeof(SORTLIST);
+	pSortBuffer += sl->nVtx * sizeof(GFXBUMPVERTEX) + sizeof(SORTLIST);
 	*pSortList = sl;
 	pSortList++;
 	SortCount++;
@@ -1158,23 +1161,19 @@ void AddQuadClippedSorted(D3DTLVERTEX* v, short v0, short v1, short v2, short v3
 	v[v1].specular = specBak[1];
 	v[v2].specular = specBak[2];
 	v[v3].specular = specBak[3];
-#endif
 }
 
-void AddLineClippedSorted(D3DTLVERTEX* v0, D3DTLVERTEX* v1, short drawtype)
+void AddLineClippedSorted(GFXVERTEX* v0, GFXVERTEX* v1, short drawtype)
 {
-#ifdef USE_BGFX
-	return;
-#else
-	D3DTLBUMPVERTEX* v;
+	GFXBUMPVERTEX* v;
 	SORTLIST* sl;
 
-	v = (D3DTLBUMPVERTEX*)(sizeof(SORTLIST) + pSortBuffer);
+	v = (GFXBUMPVERTEX*)(sizeof(SORTLIST) + pSortBuffer);
 	sl = (SORTLIST*)pSortBuffer;
 	sl->tpage = 0;
 	sl->drawtype = drawtype;
 	sl->nVtx = 2;
-	pSortBuffer += sl->nVtx * sizeof(D3DTLBUMPVERTEX) + sizeof(SORTLIST);
+	pSortBuffer += sl->nVtx * sizeof(GFXBUMPVERTEX) + sizeof(SORTLIST);
 	*pSortList = sl;
 	pSortList++;
 	sl->zVal = v0->sz;
@@ -1191,7 +1190,6 @@ void AddLineClippedSorted(D3DTLVERTEX* v0, D3DTLVERTEX* v1, short drawtype)
 	v[1].rhw = v1->rhw;
 	v[1].color = v1->color;
 	v[1].specular = v1->specular;
-#endif
 }
 
 void InitialiseSortList()
@@ -1248,7 +1246,7 @@ void SortPolyList(long count, SORTLIST** list)
 	DoSort(0, count - 1, list);
 }
 
-void mD3DTransform(FVECTOR* vec, D3DMATRIX* mx)
+void mD3DTransform(FVECTOR* vec, GFXMATRIX* mx)
 {
 	float x, y, z;
 
@@ -1260,9 +1258,9 @@ void mD3DTransform(FVECTOR* vec, D3DMATRIX* mx)
 	vec->z = z;
 }
 
-void AddClippedPoly(D3DTLBUMPVERTEX* dest, long nPoints, D3DTLBUMPVERTEX* v, TEXTURESTRUCT* pTex)
+void AddClippedPoly(GFXBUMPVERTEX* dest, long nPoints, GFXBUMPVERTEX* v, TEXTURESTRUCT* pTex)
 {
-	D3DTLBUMPVERTEX* p;
+	GFXBUMPVERTEX* p;
 	float z;
 
 	p = dest;
@@ -1322,11 +1320,11 @@ void AddClippedPoly(D3DTLBUMPVERTEX* dest, long nPoints, D3DTLBUMPVERTEX* v, TEX
 	}
 }
 
-void AddTriClippedZBuffer(D3DTLVERTEX* v, short v0, short v1, short v2, TEXTURESTRUCT* tex, long double_sided)
+void AddTriClippedZBuffer(GFXVERTEX* v, short v0, short v1, short v2, TEXTURESTRUCT* tex, long double_sided)
 {
-	D3DTLVERTEX* vtx;
-	D3DTLBUMPVERTEX* p;
-	D3DTLBUMPVERTEX* bp;
+	GFXVERTEX* vtx;
+	GFXBUMPVERTEX* p;
+	GFXBUMPVERTEX* bp;
 	TEXTURESTRUCT tex2;
 	long* nVtx;
 	short* c;
@@ -1519,11 +1517,11 @@ void AddTriClippedZBuffer(D3DTLVERTEX* v, short v0, short v1, short v2, TEXTURES
 	v[v2].specular = specBak[2];
 }
 
-void AddQuadClippedZBuffer(D3DTLVERTEX* v, short v0, short v1, short v2, short v3, TEXTURESTRUCT* tex, long double_sided)
+void AddQuadClippedZBuffer(GFXVERTEX* v, short v0, short v1, short v2, short v3, TEXTURESTRUCT* tex, long double_sided)
 {
-	D3DTLBUMPVERTEX* p;
-	D3DTLBUMPVERTEX* bp;
-	D3DTLVERTEX* vtx;
+	GFXBUMPVERTEX* p;
+	GFXBUMPVERTEX* bp;
+	GFXVERTEX* vtx;
 	TEXTURESTRUCT tex2;
 	long* nVtx;
 	short* c;
@@ -1683,7 +1681,7 @@ void AddQuadClippedZBuffer(D3DTLVERTEX* v, short v0, short v1, short v2, short v
 	v[v3].specular = specBak[3];
 }
 
-void SubdivideEdge(D3DTLVERTEX* v0, D3DTLVERTEX* v1, D3DTLVERTEX* v, short* c, float tu1, float tv1, float tu2, float tv2, float* tu, float* tv)
+void SubdivideEdge(GFXVERTEX* v0, GFXVERTEX* v1, GFXVERTEX* v, short* c, float tu1, float tv1, float tu2, float tv2, float* tu, float* tv)
 {
 	float zv;
 	short cf, r0, g0, b0, a0, r1, g1, b1, a1;
@@ -1752,9 +1750,9 @@ void SubdivideEdge(D3DTLVERTEX* v0, D3DTLVERTEX* v1, D3DTLVERTEX* v, short* c, f
 	v->specular = RGBA(r1, g1, b1, a1);
 }
 
-void SubdivideQuad(D3DTLVERTEX* v0, D3DTLVERTEX* v1, D3DTLVERTEX* v2, D3DTLVERTEX* v3, TEXTURESTRUCT* tex, long double_sided, long steps, short* c)
+void SubdivideQuad(GFXVERTEX* v0, GFXVERTEX* v1, GFXVERTEX* v2, GFXVERTEX* v3, TEXTURESTRUCT* tex, long double_sided, long steps, short* c)
 {
-	D3DTLVERTEX v[5];
+	GFXVERTEX v[5];
 	TEXTURESTRUCT tex2;
 	float uv[10];
 	short aclip[5];
@@ -1853,9 +1851,9 @@ void SubdivideQuad(D3DTLVERTEX* v0, D3DTLVERTEX* v1, D3DTLVERTEX* v2, D3DTLVERTE
 	SubdivideQuad(&v[2], &v[4], &v[1], v3, &tex2, double_sided, steps - 1, bclip);
 }
 
-void SubdivideTri(D3DTLVERTEX* v0, D3DTLVERTEX* v1, D3DTLVERTEX* v2, TEXTURESTRUCT* tex, long double_sided, long steps, short* c)
+void SubdivideTri(GFXVERTEX* v0, GFXVERTEX* v1, GFXVERTEX* v2, TEXTURESTRUCT* tex, long double_sided, long steps, short* c)
 {
-	D3DTLVERTEX v[3];
+	GFXVERTEX v[3];
 	TEXTURESTRUCT tex2;
 	float uv[6];
 	short bclip[4];
@@ -1926,7 +1924,7 @@ void SubdivideTri(D3DTLVERTEX* v0, D3DTLVERTEX* v1, D3DTLVERTEX* v2, TEXTURESTRU
 	SubdivideQuad(&v[2], v, &v[1], v2, &tex2, double_sided, steps - 1, bclip);
 }
 
-void AddTriSubdivide(D3DTLVERTEX* v, short v0, short v1, short v2, TEXTURESTRUCT* tex, long double_sided)
+void AddTriSubdivide(GFXVERTEX* v, short v0, short v1, short v2, TEXTURESTRUCT* tex, long double_sided)
 {
 	long steps;
 	short c[4];
@@ -1947,7 +1945,7 @@ void AddTriSubdivide(D3DTLVERTEX* v, short v0, short v1, short v2, TEXTURESTRUCT
 	}
 }
 
-void AddQuadSubdivide(D3DTLVERTEX* v, short v0, short v1, short v2, short v3, TEXTURESTRUCT* tex, long double_sided)
+void AddQuadSubdivide(GFXVERTEX* v, short v0, short v1, short v2, short v3, TEXTURESTRUCT* tex, long double_sided)
 {
 	long steps;
 	short c[4];
@@ -1969,7 +1967,7 @@ void AddQuadSubdivide(D3DTLVERTEX* v, short v0, short v1, short v2, short v3, TE
 	}
 }
 
-void CalcColorSplit(D3DCOLOR s, D3DCOLOR* d)
+void CalcColorSplit(GFXCOLOR s, GFXCOLOR* d)
 {
 	long r, g, b, sr, sg, sb;
 

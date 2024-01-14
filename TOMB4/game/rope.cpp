@@ -25,7 +25,7 @@ void DrawRopeList()
 
 void ProjectRopePoints(ROPE_STRUCT* Rope)
 {
-	D3DVECTOR Output;
+	GFXVECTOR Output;
 	PHD_VECTOR t;
 	float zv;
 
@@ -37,9 +37,9 @@ void ProjectRopePoints(ROPE_STRUCT* Rope)
 		t.x = Rope->MeshSegment[i].x >> (W2V_SHIFT + 2);
 		t.y = Rope->MeshSegment[i].y >> (W2V_SHIFT + 2);
 		t.z = Rope->MeshSegment[i].z >> (W2V_SHIFT + 2);
-		Output.x = D3DVALUE(t.x * phd_mxptr[M00] + t.y * phd_mxptr[M01] + t.z * phd_mxptr[M02] + phd_mxptr[M03]);
-		Output.y = D3DVALUE(t.x * phd_mxptr[M10] + t.y * phd_mxptr[M11] + t.z * phd_mxptr[M12] + phd_mxptr[M13]);
-		Output.z = D3DVALUE(t.x * phd_mxptr[M20] + t.y * phd_mxptr[M21] + t.z * phd_mxptr[M22] + phd_mxptr[M23]);
+		Output.x = GFXVALUE(t.x * phd_mxptr[M00] + t.y * phd_mxptr[M01] + t.z * phd_mxptr[M02] + phd_mxptr[M03]);
+		Output.y = GFXVALUE(t.x * phd_mxptr[M10] + t.y * phd_mxptr[M11] + t.z * phd_mxptr[M12] + phd_mxptr[M13]);
+		Output.z = GFXVALUE(t.x * phd_mxptr[M20] + t.y * phd_mxptr[M21] + t.z * phd_mxptr[M22] + phd_mxptr[M23]);
 		zv = phd_persp / Output.z;
 		Rope->Coords[i][0] = long(Output.x * zv + f_centerx);
 		Rope->Coords[i][1] = long(Output.y * zv + f_centery);
@@ -391,7 +391,7 @@ void CalculateRope(ROPE_STRUCT* Rope)
 		Rope->Segment[n].z += Rope->Velocity[n].z;
 	}
 
-	for (n = Pendulum->node; n < 24; n++)
+	for (n = Pendulum->node; n < MAX_ROPE_SEGMENTS; n++)
 	{
 		Rope->Velocity[n].y += 0x30000;
 

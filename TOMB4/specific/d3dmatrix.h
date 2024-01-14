@@ -1,14 +1,14 @@
 #pragma once
 #include "../global/types.h"
 
-D3DMATRIX* D3DIdentityMatrix(D3DMATRIX* mx);
-void SetD3DMatrix(D3DMATRIX* mx, float* imx);
+GFXMATRIX* D3DIdentityMatrix(GFXMATRIX* mx);
+void SetD3DMatrix(GFXMATRIX* mx, float* imx);
 void SetD3DViewMatrix();
-void D3DTransform(D3DVECTOR* vec, D3DMATRIX* mx);
-D3DVECTOR* D3DNormalise(D3DVECTOR* vec);
+void D3DTransform(GFXVECTOR* vec, GFXMATRIX* mx);
+GFXVECTOR* D3DNormalise(GFXVECTOR* vec);
 void S_InitD3DMatrix();
-LPD3DMATRIX D3DMultMatrix(LPD3DMATRIX d, LPD3DMATRIX a, LPD3DMATRIX b);
+GFXMATRIX*D3DMultMatrix(GFXMATRIX *d, GFXMATRIX *a, GFXMATRIX *b);
 
-extern D3DMATRIX D3DMView;
-extern D3DMATRIX D3DLightMatrix;
-extern D3DMATRIX D3DInvCameraMatrix;
+extern GFXMATRIX D3DMView;
+extern GFXMATRIX D3DLightMatrix;
+extern GFXMATRIX D3DInvCameraMatrix;

@@ -5,11 +5,11 @@ void ProcessRoomDynamics(ROOM_INFO* r);
 void ProcessRoomVertices(ROOM_INFO* r);
 void ProcessRoomData(ROOM_INFO* r);
 void InsertRoom(ROOM_INFO* r);
-void CalcTriFaceNormal(D3DVECTOR* p1, D3DVECTOR* p2, D3DVECTOR* p3, D3DVECTOR* N);
+void CalcTriFaceNormal(GFXVECTOR* p1, GFXVECTOR* p2, GFXVECTOR* p3, GFXVECTOR* N);
 void ProcessMeshData(long num_meshes);
 void InitBuckets();
 void DrawBucket(TEXTUREBUCKET* bucket);
-void FindBucket(long tpage, D3DTLBUMPVERTEX** Vpp, long** nVtxpp);
+void FindBucket(long tpage, GFXBUMPVERTEX** Vpp, long** nVtxpp);
 void DrawBuckets();
 void CreateVertexNormals(ROOM_INFO* r);
 

@@ -13,7 +13,9 @@ bool GameInitialise();
 long S_SaveGame(long slot_num);
 long S_LoadGame(long slot_num);
 
+#ifndef USE_BGFX
 extern LPDIRECT3DVERTEXBUFFER DestVB;
+#endif
 extern WATERTAB WaterTable[22][64];
 extern THREAD MainThread;
 extern short* clipflags;

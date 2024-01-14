@@ -4,14 +4,14 @@
 #include "3dmath.h"
 #include "winmain.h"
 
-D3DMATRIX D3DMView;
-D3DMATRIX D3DLightMatrix;
-D3DMATRIX D3DInvCameraMatrix;
+GFXMATRIX D3DMView;
+GFXMATRIX D3DLightMatrix;
+GFXMATRIX D3DInvCameraMatrix;
 
-static D3DMATRIX D3DMWorld;
-static D3DMATRIX D3DMProjection;
+static GFXMATRIX D3DMWorld;
+static GFXMATRIX D3DMProjection;
 
-D3DMATRIX* D3DIdentityMatrix(D3DMATRIX* mx)
+GFXMATRIX* D3DIdentityMatrix(GFXMATRIX* mx)
 {
 	mx->_11 = 1;
 	mx->_12 = 0;
@@ -35,7 +35,7 @@ D3DMATRIX* D3DIdentityMatrix(D3DMATRIX* mx)
 	return mx;
 }
 
-void SetD3DMatrix(D3DMATRIX* mx, float* imx)
+void SetD3DMatrix(GFXMATRIX* mx, float* imx)
 {
 	D3DIdentityMatrix(mx);
 	mx->_11 = imx[M00];
@@ -56,11 +56,11 @@ void SetD3DViewMatrix()
 {
 	SetD3DMatrix(&D3DMView, mMXPtr);
 #ifndef USE_BGFX
-	DXAttempt(App.dx.lpD3DDevice->SetTransform(D3DTRANSFORMSTATE_VIEW, &D3DMView));
+	DXAttempt(App.dx.lpD3DDevice->SetTransform(D3DTRANSFORMSTATE_VIEW, (LPD3DMATRIX)&D3DMView));
 #endif
 }
 
-void D3DTransform(D3DVECTOR* vec, D3DMATRIX* mx)
+void D3DTransform(GFXVECTOR* vec, GFXMATRIX* mx)
 {
 	float x, y, z;
 
@@ -72,7 +72,7 @@ void D3DTransform(D3DVECTOR* vec, D3DMATRIX* mx)
 	vec->z = z;
 }
 
-D3DVECTOR* D3DNormalise(D3DVECTOR* vec)
+GFXVECTOR* D3DNormalise(GFXVECTOR* vec)
 {
 	float val;
 
@@ -93,12 +93,12 @@ void S_InitD3DMatrix()
 	D3DIdentityMatrix(&D3DMProjection);
 	D3DMProjection._22 = -1;
 #ifndef USE_BGFX
-	DXAttempt(App.dx.lpD3DDevice->SetTransform(D3DTRANSFORMSTATE_WORLD, &D3DMWorld));
-	DXAttempt(App.dx.lpD3DDevice->SetTransform(D3DTRANSFORMSTATE_PROJECTION, &D3DMProjection));
+	DXAttempt(App.dx.lpD3DDevice->SetTransform(D3DTRANSFORMSTATE_WORLD, (LPD3DMATRIX)&D3DMWorld));
+	DXAttempt(App.dx.lpD3DDevice->SetTransform(D3DTRANSFORMSTATE_PROJECTION, (LPD3DMATRIX)&D3DMProjection));
 #endif
 }
 
-LPD3DMATRIX D3DMultMatrix(LPD3DMATRIX d, LPD3DMATRIX a, LPD3DMATRIX b)
+GFXMATRIX *D3DMultMatrix(GFXMATRIX *d, GFXMATRIX *a, GFXMATRIX*b)
 {
 	d->_11 = a->_11 * b->_11;
 	d->_11 += a->_12 * b->_21;

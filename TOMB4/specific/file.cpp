@@ -79,8 +79,10 @@ unsigned int __stdcall LoadLevel(void* name)
 
 	Textures = (TEXTURE*)AddStruct(Textures, nTextures, sizeof(TEXTURE));
 	nTextures = 1;
+#ifndef USE_BGFX
 	Textures[0].tex = 0;
 	Textures[0].surface = 0;
+#endif
 	Textures[0].width = 0;
 	Textures[0].height = 0;
 	Textures[0].bump = 0;
@@ -239,11 +241,13 @@ void FreeLevel()
 		vbuf = &mesh_vtxbuf[i];
 		mesh = *vbuf;
 
+#ifndef USE_BGFX
 		if (mesh->SourceVB)
 		{
 			Log(4, "Released %s @ %x - RefCnt = %d", "Mesh VB", mesh->SourceVB, mesh->SourceVB->Release());
 			mesh->SourceVB = 0;
 		}
+#endif
 	}
 	
 	if (room)
@@ -252,6 +256,7 @@ void FreeLevel()
 		{
 			r = &room[i];
 
+#ifndef USE_BGFX
 			if (r->SourceVB)
 			{
 				Log(4, "Released %s @ %x - RefCnt = %d", "Source VB", r->SourceVB, r->SourceVB->Release());
@@ -259,6 +264,7 @@ void FreeLevel()
 			}
 			else
 				Log(1, "%s Attempt To Release NULL Ptr", "Source VB");
+#endif
 		}
 	}
 
@@ -379,8 +385,10 @@ long LoadFile(const char* name, char** dest)
 bool LoadTextures(long RTPages, long OTPages, long BTPages)
 {
 	DXTEXTUREINFO* dxtex;
+#ifndef USE_BGFX
 	LPDIRECTDRAWSURFACEX tSurf;
 	LPDIRECT3DTEXTUREX pTex;
+#endif
 	uchar* TextureData;
 	long* d;
 	char* pData;
