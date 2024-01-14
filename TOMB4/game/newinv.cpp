@@ -1911,7 +1911,7 @@ void DEL_picked_up_object(short objnum)	//notice fallthroughs
 
 		if (!(lara.uzis_type_carried & W_PRESENT))
 			lara.uzis_type_carried = W_PRESENT | W_AMMO1;
-
+		[[fallthrough]];
 	case UZI_AMMO_ITEM:
 
 		if (lara.num_uzi_ammo != -1)
@@ -1931,7 +1931,7 @@ void DEL_picked_up_object(short objnum)	//notice fallthroughs
 
 		if (!(lara.shotgun_type_carried & W_PRESENT))
 			lara.shotgun_type_carried = W_PRESENT | W_AMMO1;
-
+		[[fallthrough]];
 	case SHOTGUN_AMMO1_ITEM:
 
 		if (lara.num_shotgun_ammo1 != -1)
@@ -1950,7 +1950,7 @@ void DEL_picked_up_object(short objnum)	//notice fallthroughs
 
 		if (!(lara.sixshooter_type_carried & W_PRESENT))
 			lara.sixshooter_type_carried = W_PRESENT | W_AMMO1;
-
+		[[fallthrough]];
 	case SIXSHOOTER_AMMO_ITEM:
 
 		if (lara.num_revolver_ammo != -1)
@@ -1962,7 +1962,7 @@ void DEL_picked_up_object(short objnum)	//notice fallthroughs
 
 		if (!(lara.crossbow_type_carried & W_PRESENT))
 			lara.crossbow_type_carried = W_PRESENT | W_AMMO1;
-
+		[[fallthrough]];
 	case CROSSBOW_AMMO1_ITEM:
 
 		if (lara.num_crossbow_ammo1 != -1)
@@ -1988,7 +1988,7 @@ void DEL_picked_up_object(short objnum)	//notice fallthroughs
 
 		if (!(lara.grenade_type_carried & W_PRESENT))
 			lara.grenade_type_carried = W_PRESENT | W_AMMO1;
-
+		[[fallthrough]];
 	case GRENADE_GUN_AMMO1_ITEM:
 
 		if (lara.num_grenade_ammo1 != -1)
