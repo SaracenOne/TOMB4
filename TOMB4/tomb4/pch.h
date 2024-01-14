@@ -10,7 +10,6 @@
 // add headers that you want to pre-compile here
 #define DIRECTINPUT_VERSION 0x0800
 #define DIRECTSOUND_VERSION	0x0800
-#define XAUDIO2_HELPER_FUNCTIONS
 #define _USE_MATH_DEFINES
 #define NOMINMAX 
 #include <windows.h>
@@ -21,12 +20,15 @@
 #include <stdio.h>
 #include <process.h>
 #if !defined(MA_AUDIO_SAMPLES) || !defined(MA_AUDIO_ENGINE)
+#define XAUDIO2_HELPER_FUNCTIONS
 #include <dsound.h>
 #include <xaudio2.h>
 #include <xaudio2fx.h>
 #include <MSAcm.h>
 #endif
+#if !defined(USE_SDL)
 #include <dinput.h>
+#endif
 #include <mmreg.h>
 
 #ifdef USE_BGFX

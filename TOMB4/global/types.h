@@ -1263,8 +1263,10 @@ struct DXPTR
 	long Flags;
 	ulong WindowStyle;
 	long CoopLevel;
+#if !defined(USE_SDL)
 	LPDIRECTINPUTX lpDirectInput;
 	LPDIRECTINPUTDEVICEX Keyboard;
+#endif
 	HWND hWnd;
 	volatile long InScene;
 	volatile long WaitAtBeginScene;

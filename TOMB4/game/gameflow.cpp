@@ -799,11 +799,7 @@ long TitleOptions()
 		SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 	}
 
-#ifdef USE_SDL
-	if (dbinput & IN_SELECT && !keymap[SDL_SCANCODE_LALT] && menu < 2)
-#else
-	if (dbinput & IN_SELECT && !keymap[DIK_LALT] && menu < 2)
-#endif
+	if (dbinput & IN_SELECT && !IsKeyPressed(T4P_KEY_LALT) && menu < 2)
 	{
 		SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 

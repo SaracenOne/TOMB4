@@ -49,7 +49,7 @@ bool NGExecuteSingleGlobalTrigger(int global_trigger_id, int selected_inventory_
 			break;
 		}
 		case GT_LARA_POISONED: {
-			if (lara_item->poisoned > global_trigger->parameter)
+			if (lara_item->poisoned > (ulong)global_trigger->parameter)
 				global_trigger_condition_passed = true;
 			break;
 		}
@@ -89,18 +89,7 @@ bool NGExecuteSingleGlobalTrigger(int global_trigger_id, int selected_inventory_
 			break;
 		}
 		case GT_KEYBOARD_CODE: {
-			int scancode = global_trigger->parameter;
-#ifdef USE_SDL
-			scancode = convert_tomb_keycode_to_sdl_scancode(scancode);
-			if (!keymap) {
-				break;
-			}
-			if (scancode == SDLK_UNKNOWN) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Unknown keyboard scancode %u!", scancode);
-				break;
-			}
-#endif
-			if (keymap[scancode] != 0) {
+			if (IsKeyPressed(global_trigger->parameter) != 0) {
 				global_trigger_condition_passed = true;
 			}
 			break;

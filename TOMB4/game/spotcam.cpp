@@ -366,11 +366,8 @@ void CalculateSpotCams()
 	else if (!spotcam_timer)
 		current_spline_position += cspeed;
 
-#ifdef USE_SDL
-	if (tomb4.cutseq_skipper && keymap[SDL_SCANCODE_ESCAPE] && gfCurrentLevel)
-#else
-	if (tomb4.cutseq_skipper && keymap[DIK_ESCAPE] && gfCurrentLevel)
-#endif	
+
+	if (tomb4.cutseq_skipper && IsKeyPressed(T4P_KEY_ESCAPE) && gfCurrentLevel)
 		current_spline_position = 0x10000;
 
 	if (!(input & IN_LOOK))

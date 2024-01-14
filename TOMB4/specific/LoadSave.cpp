@@ -170,7 +170,7 @@ void DoOptions()
 				short tomb4_scancode = (short)convert_sdl_scancode_to_tomb_keycode(lp);
 				if (keymap[lp] && keyboard_buttons[tomb4_scancode])
 				{
-					if (tomb4_scancode != DIK_RETURN && tomb4_scancode != DIK_LEFT && tomb4_scancode != DIK_RIGHT && tomb4_scancode != DIK_UP && tomb4_scancode != DIK_DOWN)
+					if (tomb4_scancode != T4P_KEY_RETURN && tomb4_scancode != T4P_KEY_LEFT && tomb4_scancode != T4P_KEY_RIGHT && tomb4_scancode != T4P_KEY_UP && tomb4_scancode != T4P_KEY_DOWN)
 					{
 						waiting_for_key = 0;
 
@@ -213,6 +213,7 @@ void DoOptions()
 #endif
 			if (ControlMethod == 1)
 			{
+#ifndef USE_SDL
 				jread = ReadJoystick(jx, jy);
 
 				if (jread)
@@ -238,6 +239,7 @@ void DoOptions()
 					layout[1][i] = short(lp + 255);
 					waiting_for_key = 0;
 				}
+#endif
 			}
 
 			CheckKeyConflicts();
