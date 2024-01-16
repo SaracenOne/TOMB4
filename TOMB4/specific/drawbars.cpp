@@ -80,7 +80,7 @@ static GouraudBarColourSet enemyBarColourSet =
 
 static void DrawColoredRect(float x0, float y0, float x1, float y1, float z, ulong c0, ulong c1, ulong c2, ulong c3, TEXTURESTRUCT* tex)
 {
-	GFXVERTEX* v;
+	GFXTLVERTEX* v;
 
 	v = MyVertexBuffer;
 
@@ -556,7 +556,9 @@ void S_LoadBar()
 
 	if (gfCurrentLevel || App.dx.Flags & DXF_HWR)
 	{
+#ifndef USE_BGFX
 		_BeginScene();
+#endif
 		InitBuckets();
 		InitialiseSortList();
 #ifndef USE_BGFX
@@ -605,8 +607,10 @@ void S_LoadBar()
 				DoBar(x, y, w, h, (long)loadbar_pos, 0xFF000000, 0xFF9F1F80, 0);
 		}
 
+#ifndef USE_BGFX
 		SortPolyList(SortCount, SortList);
 		DrawSortList();
 		S_DumpScreen();
+#endif
 	}
 }

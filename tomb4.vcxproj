@@ -311,6 +311,7 @@
     <ClInclude Include="TOMB4\global\types.h" />
     <ClInclude Include="TOMB4\specific\3dmath.h" />
     <ClInclude Include="TOMB4\specific\audio.h" />
+    <ClInclude Include="TOMB4\specific\bgfx.h" />
     <ClInclude Include="TOMB4\specific\clipping.h" />
     <ClInclude Include="TOMB4\specific\cmdline.h" />
     <ClInclude Include="TOMB4\specific\d3dmatrix.h" />
@@ -655,6 +656,7 @@
     <ClCompile Include="TOMB4\game\wraith.cpp" />
     <ClCompile Include="TOMB4\specific\3dmath.cpp" />
     <ClCompile Include="TOMB4\specific\audio.cpp" />
+    <ClCompile Include="TOMB4\specific\bgfx.cpp" />
     <ClCompile Include="TOMB4\specific\clipping.cpp" />
     <ClCompile Include="TOMB4\specific\cmdline.cpp" />
     <ClCompile Include="TOMB4\specific\d3dmatrix.cpp" />

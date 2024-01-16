@@ -5,17 +5,18 @@
 #include "polyinsert.h"
 #include "3dmath.h"
 #include "winmain.h"
+#include "bgfx.h"
 
-void (*AddQuadSorted)(GFXVERTEX* v, short v0, short v1, short v2, short v3, TEXTURESTRUCT* tex, long double_sided);
-void (*AddTriSorted)(GFXVERTEX* v, short v0, short v1, short v2, TEXTURESTRUCT* tex, long double_sided);
-void (*AddQuadZBuffer)(GFXVERTEX* v, short v0, short v1, short v2, short v3, TEXTURESTRUCT* tex, long double_sided);
-void (*AddTriZBuffer)(GFXVERTEX* v, short v0, short v1, short v2, TEXTURESTRUCT* tex, long double_sided);
-void (*AddLineSorted)(GFXVERTEX* v0, GFXVERTEX* v1, short drawtype);
-bool (*IsVisible)(GFXVERTEX* v0, GFXVERTEX* v1, GFXVERTEX* v2);
+void (*AddQuadSorted)(GFXTLVERTEX* v, short v0, short v1, short v2, short v3, TEXTURESTRUCT* tex, long double_sided);
+void (*AddTriSorted)(GFXTLVERTEX* v, short v0, short v1, short v2, TEXTURESTRUCT* tex, long double_sided);
+void (*AddQuadZBuffer)(GFXTLVERTEX* v, short v0, short v1, short v2, short v3, TEXTURESTRUCT* tex, long double_sided);
+void (*AddTriZBuffer)(GFXTLVERTEX* v, short v0, short v1, short v2, TEXTURESTRUCT* tex, long double_sided);
+void (*AddLineSorted)(GFXTLVERTEX* v0, GFXTLVERTEX* v1, short drawtype);
+bool (*IsVisible)(GFXTLVERTEX* v0, GFXTLVERTEX* v1, GFXTLVERTEX* v2);
 HRESULT(*_BeginScene)();
 HRESULT(*_EndScene)();
 
-GFXVERTEX MyVertexBuffer[0x2000];
+GFXTLVERTEX MyVertexBuffer[0x2000];
 long CurrentFog;
 
 void SetFogColor(long r, long g, long b)
@@ -33,7 +34,7 @@ void HWInitialise()
 {
 	Log(2, "HWIntialise");	//nice typo
 #ifdef USE_BGFX
-
+	InitializeBGFX();
 #else
 	App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_DISABLE);
 	App.dx.lpD3DDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
@@ -93,12 +94,12 @@ void HWInitialise()
 #endif
 }
 
-bool _NVisible(GFXVERTEX* v0, GFXVERTEX* v1, GFXVERTEX* v2)
+bool _NVisible(GFXTLVERTEX* v0, GFXTLVERTEX* v1, GFXTLVERTEX* v2)
 {
 	return (v0->sy - v1->sy) * (v2->sx - v1->sx) - (v2->sy - v1->sy) * (v0->sx - v1->sx) < 0;
 }
 
-bool _Visible(GFXVERTEX* v0, GFXVERTEX* v1, GFXVERTEX* v2)
+bool _Visible(GFXTLVERTEX* v0, GFXTLVERTEX* v1, GFXTLVERTEX* v2)
 {
 	return (v0->sy - v1->sy) * (v2->sx - v1->sx) - (v2->sy - v1->sy) * (v0->sx - v1->sx) > 0;
 }
@@ -122,6 +123,7 @@ HRESULT HWBeginScene()
 	App.dx.DoneBlit = 0;
 	while (App.dx.WaitAtBeginScene) {};
 #ifdef USE_BGFX
+	StartBGFXFrame();
 	return 1;
 #else
 	return App.dx.lpD3DDevice->BeginScene();
@@ -132,7 +134,8 @@ HRESULT HWEndScene()
 {
 	App.dx.InScene = 0;
 #ifdef USE_BGFX
-	return 0;
+	EndBGFXFrame();
+	return 1;
 #else
 	return App.dx.lpD3DDevice->EndScene();
 #endif

@@ -340,7 +340,7 @@ void ProcessRoomVertices(ROOM_INFO* r)
 void ProcessRoomData(ROOM_INFO* r)
 {
 #ifndef USE_BGFX
-	D3DVERTEX* vptr;
+	GFXVERTEX* vptr;
 	D3DVERTEXBUFFERDESC vb;
 #endif
 	LIGHTINFO* light;
@@ -372,9 +372,7 @@ void ProcessRoomData(ROOM_INFO* r)
 	r->gt3cnt = *data_ptr;
 	r->verts = (GFXVECTOR*)game_malloc(sizeof(GFXVECTOR) * r->nVerts);
 	faces = (short*)malloc(2 * r->nVerts);
-#ifndef USE_BGFX
 	prelight = (short*)malloc(2 * r->nVerts);
-#endif
 	data_ptr = r->data + 1;	//go to vert data
 	nWaterVerts = 0;
 
@@ -382,12 +380,10 @@ void ProcessRoomData(ROOM_INFO* r)
 	{
 		if (data_ptr[4] & 0x2000)
 		{
-#ifndef USE_BGFX
 			r->verts[nWaterVerts].x = (float)data_ptr[0];
 			r->verts[nWaterVerts].y = (float)data_ptr[1];
 			r->verts[nWaterVerts].z = (float)data_ptr[2];
 			prelight[nWaterVerts] = data_ptr[5];
-#endif
 			faces[i] = short(nWaterVerts | 0x8000);
 			nWaterVerts++;
 		}
@@ -402,12 +398,11 @@ void ProcessRoomData(ROOM_INFO* r)
 	{
 		if (data_ptr[4] & 0x4000 && !(data_ptr[4] & 0x2000))
 		{
-#ifndef USE_BGFX
 			r->verts[nShoreVerts + nWaterVerts].x = (float)data_ptr[0];
 			r->verts[nShoreVerts + nWaterVerts].y = (float)data_ptr[1];
 			r->verts[nShoreVerts + nWaterVerts].z = (float)data_ptr[2];
 			prelight[nShoreVerts + nWaterVerts] = data_ptr[5];
-#endif
+
 			faces[i] = short(nShoreVerts + nWaterVerts);
 			nShoreVerts++;
 		}
@@ -422,12 +417,10 @@ void ProcessRoomData(ROOM_INFO* r)
 	{
 		if (!(data_ptr[4] & 0x4000) && !(data_ptr[4] & 0x2000))
 		{
-#ifndef USE_BGFX
 			r->verts[nRestOfVerts + nShoreVerts + nWaterVerts].x = (float)data_ptr[0];
 			r->verts[nRestOfVerts + nShoreVerts + nWaterVerts].y = (float)data_ptr[1];
 			r->verts[nRestOfVerts + nShoreVerts + nWaterVerts].z = (float)data_ptr[2];
 			prelight[nRestOfVerts + nShoreVerts + nWaterVerts] = data_ptr[5];
-#endif
 			faces[i] = short(nRestOfVerts + nShoreVerts + nWaterVerts);
 			nRestOfVerts++;
 		}
@@ -488,6 +481,7 @@ void ProcessRoomData(ROOM_INFO* r)
 		vptr->nx = r->vnormals[i].x;
 		vptr->ny = r->vnormals[i].y;
 		vptr->nz = r->vnormals[i].z;
+#endif
 		cR = ((prelight[i] & 0x7C00) >> 10) << 3;
 		cG = ((prelight[i] & 0x3E0) >> 5) << 3;
 		cB = (prelight[i] & 0x1F) << 3;
@@ -496,6 +490,7 @@ void ProcessRoomData(ROOM_INFO* r)
 		cG = ushort((cG * water_color_G) >> 8);
 		cB = ushort((cB * water_color_B) >> 8);
 		r->prelightwater[i] = RGBA(cR, cG, cB, 0xFF);
+#ifndef USE_BGFX
 		vptr++;
 #endif
 		data_ptr += 6;
@@ -505,6 +500,7 @@ void ProcessRoomData(ROOM_INFO* r)
 	r->SourceVB->Unlock();
 	free(prelight);
 #endif
+
 	r->pclight = 0;
 
 	if (r->num_lights)
@@ -656,10 +652,11 @@ void CalcTriFaceNormal(GFXVECTOR* p1, GFXVECTOR* p2, GFXVECTOR* p3, GFXVECTOR* N
 
 void ProcessMeshData(long num_meshes)
 {
-#ifndef USE_BGFX
 	MESH_DATA* mesh;
-	D3DVERTEX* vtx;
+	GFXVERTEX* vtx;
+#ifndef USE_BGFX
 	D3DVERTEXBUFFERDESC buf;
+#endif
 	short* mesh_ptr;
 	short* last_mesh_ptr;
 	long lp;
@@ -713,6 +710,7 @@ void ProcessMeshData(long num_meshes)
 
 			if (mesh->nVerts)
 			{
+#ifndef USE_BGFX
 				buf.dwNumVertices = mesh->nVerts;
 				buf.dwSize = sizeof(D3DVERTEXBUFFERDESC);
 				buf.dwCaps = 0;
@@ -720,11 +718,14 @@ void ProcessMeshData(long num_meshes)
 
 				DXAttempt(App.dx.lpD3D->CreateVertexBuffer(&buf, &mesh->SourceVB, 0, 0));
 				mesh->SourceVB->Lock(DDLOCK_WRITEONLY, (LPVOID*)&vtx, 0);
+#endif
 				for (int j = 0; j < mesh->nVerts; j++)
 				{
+#ifndef USE_BGFX
 					vtx[j].x = mesh_ptr[0];
 					vtx[j].y = mesh_ptr[1];
 					vtx[j].z = mesh_ptr[2];
+#endif
 					mesh_ptr += 3;
 				}
 
@@ -738,18 +739,21 @@ void ProcessMeshData(long num_meshes)
 				{
 					mesh->Normals = (GFXVECTOR*)game_malloc(mesh->nNorms * sizeof(GFXVECTOR));
 
+
 					for (int j = 0; j < mesh->nVerts; j++)
 					{
+#ifndef USE_BGFX
 						vtx[j].nx = mesh_ptr[0];
 						vtx[j].ny = mesh_ptr[1];
 						vtx[j].nz = mesh_ptr[2];
-
+#endif
 						mesh_ptr += 3;
-
+#ifndef USE_BGFX
 						D3DNormalise((GFXVECTOR*)&vtx[j].nx);
 						mesh->Normals[j].x = vtx[j].nx;
 						mesh->Normals[j].y = vtx[j].ny;
 						mesh->Normals[j].z = vtx[j].nz;
+#endif
 					}
 
 					mesh->prelight = 0;
@@ -766,7 +770,9 @@ void ProcessMeshData(long num_meshes)
 						mesh_ptr++;
 					}
 				}
+#ifndef USE_BGFX
 				mesh->SourceVB->Unlock();
+#endif
 			}
 			else
 				mesh_ptr += 6 * lp + 1;
@@ -798,7 +804,6 @@ void ProcessMeshData(long num_meshes)
 			}
 		}
 	}
-#endif
 
 	Log(2, "End ProcessMeshData");
 }
@@ -860,7 +865,7 @@ void DrawBucket(TEXTUREBUCKET* bucket)
 	DrawPrimitiveCnt++;
 }
 
-void FindBucket(long tpage, GFXBUMPVERTEX** Vpp, long** nVtxpp)
+void FindBucket(long tpage, GFXTLBUMPVERTEX** Vpp, long** nVtxpp)
 {
 	TEXTUREBUCKET* bucket;
 	long nVtx, biggest;

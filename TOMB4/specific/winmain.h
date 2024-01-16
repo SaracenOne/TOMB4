@@ -1,6 +1,9 @@
 #pragma once
 #include "../global/types.h"
 
+#define WINDOW_DEFAULT_WIDTH 640
+#define WINDOW_DEFAULT_HEIGHT 480
+
 #ifdef USE_SDL
 extern SDL_Window* sdl_window;
 
@@ -8,6 +11,10 @@ float SDLFrameRate();
 void SDLDisplayString(long x, long y, char* string, ...);
 void ClearSurfaces();
 void SDLSetStyle(bool fullscreen, ulong& set);
+
+void* SDLGetNativeWindowHandle(SDL_Window *window);
+void* SDLGetNativeDisplayHandle(SDL_Window *window);
+
 #else
 bool WinRunCheck(LPSTR WindowName, LPSTR ClassName, HANDLE* mutex);
 void WinProcessCommandLine(LPSTR cmd);

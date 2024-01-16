@@ -1060,6 +1060,17 @@ struct GFXMATRIX {
 };
 
 struct GFXVERTEX {
+	float x;
+	float y;
+	float z;
+	float nx;
+	float ny;
+	float nz;
+	float tu;
+	float tv;
+};
+
+struct GFXTLVERTEX {
 	float		sx;
 	float		sy;
 	float		sz;
@@ -1070,7 +1081,7 @@ struct GFXVERTEX {
 	float		tv;
 };
 
-struct GFXBUMPVERTEX
+struct GFXTLBUMPVERTEX
 {
 	GFXVALUE sx;
 	GFXVALUE sy;
@@ -1752,7 +1763,7 @@ struct TEXTUREBUCKET
 {
 	long tpage;
 	long nVtx;
-	GFXBUMPVERTEX vtx[BUCKET_VERT_COUNT]; // TRLE: increased size (256 * 32 + 32)
+	GFXTLBUMPVERTEX vtx[BUCKET_VERT_COUNT]; // TRLE: increased size (256 * 32 + 32)
 };
 
 struct THREAD

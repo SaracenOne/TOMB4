@@ -760,7 +760,7 @@ long S_LoadSave(long load_or_save, long mono, long inv_active)
 #ifndef USE_BGFX
 static void S_DrawTile(long x, long y, long w, long h, LPDIRECT3DTEXTUREX t, long c0, long c1, long c2, long c3)
 {
-	GFXBUMPVERTEX v[4];
+	GFXTLBUMPVERTEX v[4];
 	float u1, v1, u2, v2;
 
 	u1 = 0;

@@ -725,6 +725,9 @@
     <ClInclude Include="TOMB4\tomb4\tomb4plus\builtin_plugins\AkyVMix01\t4plus_plugin_akyvmix_01.h">
       <Filter>TOMB4\tomb4\tomb4plus\plugins</Filter>
     </ClInclude>
+    <ClInclude Include="TOMB4\specific\bgfx.h">
+      <Filter>TOMB4\specific</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TOMB4\game\lara.cpp">
@@ -1158,6 +1161,9 @@
     </ClCompile>
     <ClCompile Include="TOMB4\tomb4\tomb4plus\builtin_plugins\AkyVMix01\t4plus_plugin_akyvmix_01.cpp">
       <Filter>TOMB4\tomb4\tomb4plus\plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="TOMB4\specific\bgfx.cpp">
+      <Filter>TOMB4\specific</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -32,7 +32,7 @@
 #include "../tomb4/tomb4.h"
 #include "../tomb4/mod_config.h"
 
-GFXVERTEX SkinVerts[40][12];
+GFXTLVERTEX SkinVerts[40][12];
 short SkinClip[40][12];
 long GlobalAlpha = 0xFF000000;
 long GlobalAmbient;
@@ -1101,7 +1101,7 @@ void phd_PutPolygons_train(short* objptr, long x)
 {
 #ifndef USE_BGFX
 	MESH_DATA* mesh;
-	GFXVERTEX* v;
+	GFXTLVERTEX* v;
 	TEXTURESTRUCT* pTex;
 	short* quad;
 	short* tri;
@@ -2022,13 +2022,13 @@ void S_OutputPolyList()
 
 void StashSkinVertices(long node)
 {
-	GFXVERTEX* d;
+	GFXTLVERTEX* d;
 	short* cf;
 	char* vns;
 
 	vns = (char*)&SkinVertNums[node];
 	cf = (short*)&SkinClip[node];
-	d = (GFXVERTEX*)&SkinVerts[node];
+	d = (GFXTLVERTEX*)&SkinVerts[node];
 
 	while (1)
 	{
@@ -2051,13 +2051,13 @@ void StashSkinVertices(long node)
 
 void SkinVerticesToScratch(long node)
 {
-	GFXVERTEX* d;
+	GFXTLVERTEX* d;
 	short* cf;
 	char* vns;
 
 	vns = (char*)&ScratchVertNums[node];
 	cf = (short*)&SkinClip[node];
-	d = (GFXVERTEX*)&SkinVerts[node];
+	d = (GFXTLVERTEX*)&SkinVerts[node];
 
 	while (1)
 	{

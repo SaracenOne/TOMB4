@@ -9,11 +9,11 @@
 	result.tv = clipper * (v2->tv - v1->tv) + v1->tv;\
 }
 
-long ZClipper(long n, GFXBUMPVERTEX* in, GFXBUMPVERTEX* out)
+long ZClipper(long n, GFXTLBUMPVERTEX* in, GFXTLBUMPVERTEX* out)
 {
-	GFXBUMPVERTEX* pIn;
-	GFXBUMPVERTEX* pOut;
-	GFXBUMPVERTEX* last;
+	GFXTLBUMPVERTEX* pIn;
+	GFXTLBUMPVERTEX* pOut;
+	GFXTLBUMPVERTEX* last;
 	float lastZ, inZ, dz, iR, iG, iB, iA, lR, lG, lB, lA, fR, fG, fB, fA;
 	long nPoints, r, g, b, a;
 
@@ -102,18 +102,18 @@ long ZClipper(long n, GFXBUMPVERTEX* in, GFXBUMPVERTEX* out)
 	return nPoints;
 }
 
-long visible_zclip(GFXVERTEX* v0, GFXVERTEX* v1, GFXVERTEX* v2)
+long visible_zclip(GFXTLVERTEX* v0, GFXTLVERTEX* v1, GFXTLVERTEX* v2)
 {
 	return (v2->tu * v0->sz - v2->sz * v0->tu) * v1->tv
 		+ (v2->sz * v0->tv - v2->tv * v0->sz) * v1->tu
 		+ (v2->tv * v0->tu - v2->tu * v0->tv) * v1->sz < 0;
 }
 
-long XYUVGClipper(long n, GFXBUMPVERTEX* in)
+long XYUVGClipper(long n, GFXTLBUMPVERTEX* in)
 {
-	GFXBUMPVERTEX* v1;
-	GFXBUMPVERTEX* v2;
-	GFXBUMPVERTEX output[8];
+	GFXTLBUMPVERTEX* v1;
+	GFXTLBUMPVERTEX* v2;
+	GFXTLBUMPVERTEX output[8];
 	float cr1, cg1, cb1, ca1;
 	float sr1, sg1, sb1, sa1;
 	float cr2, cg2, cb2, ca2;

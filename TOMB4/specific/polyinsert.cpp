@@ -17,8 +17,8 @@
 #include "gamemain.h"
 #include "../game/gameflow.h"
 
-GFXBUMPVERTEX XYUVClipperBuffer[20];
-GFXBUMPVERTEX zClipperBuffer[20];
+GFXTLBUMPVERTEX XYUVClipperBuffer[20];
+GFXTLBUMPVERTEX zClipperBuffer[20];
 
 FOGBULB_STRUCT FogBulbs[20];
 long NumLevelFogBulbs;
@@ -44,7 +44,7 @@ static long rgb80h = 0x808080;
 static long rgbmask = 0xFFFFFFFF;
 static long zero = 0;
 
-void HWR_DrawSortList(GFXBUMPVERTEX* info, short num_verts, short texture, short type)
+void HWR_DrawSortList(GFXTLBUMPVERTEX* info, short num_verts, short texture, short type)
 {
 	switch (type)
 	{
@@ -180,9 +180,9 @@ void HWR_DrawSortList(GFXBUMPVERTEX* info, short num_verts, short texture, short
 void DrawSortList()
 {
 	SORTLIST* pSort;
-	GFXBUMPVERTEX* vtx;
-	GFXBUMPVERTEX* bVtx;
-	GFXBUMPVERTEX* bVtxbak;
+	GFXTLBUMPVERTEX* vtx;
+	GFXTLBUMPVERTEX* bVtx;
+	GFXTLBUMPVERTEX* bVtxbak;
 	long num;
 	short nVtx, tpage, drawtype, total_nVtx;
 
@@ -204,7 +204,7 @@ void DrawSortList()
 		for (int i = 0; i < SortCount; i++)
 		{
 			pSort = SortList[i];
-			vtx = (GFXBUMPVERTEX*)(pSort + 1);
+			vtx = (GFXTLBUMPVERTEX*)(pSort + 1);
 
 			if (pSort->polytype == 4)
 				App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREPERSPECTIVE, 0);
@@ -242,7 +242,7 @@ void DrawSortList()
 			{
 				if (pSort->drawtype == drawtype && pSort->tpage == tpage)
 				{
-					vtx = (GFXBUMPVERTEX*)(pSort + 1);
+					vtx = (GFXTLBUMPVERTEX*)(pSort + 1);
 
 					for (int i = 0; i < pSort->nVtx; i++, vtx++, bVtx++)
 					{
@@ -294,7 +294,7 @@ void DrawSortList()
 			{
 				if (pSort->tpage == tpage && pSort->drawtype == drawtype)
 				{
-					vtx = (GFXBUMPVERTEX*)(pSort + 1);
+					vtx = (GFXTLBUMPVERTEX*)(pSort + 1);
 					total_nVtx += pSort->nVtx;
 
 					// TRLE: extra check backported from TR5
@@ -554,7 +554,7 @@ void InitialiseFogBulbs()
 	}
 }
 
-void OmniEffect(GFXVERTEX* v)
+void OmniEffect(GFXTLVERTEX* v)
 {
 	FOGBULB_STRUCT* FogBulb;
 	FVECTOR pos;
@@ -628,7 +628,7 @@ void OmniEffect(GFXVERTEX* v)
 	}
 }
 
-void OmniFog(GFXVERTEX* v)
+void OmniFog(GFXTLVERTEX* v)
 {
 	FOGBULB_STRUCT* FogBulb;
 	FVECTOR pos;
@@ -719,10 +719,10 @@ void OmniFog(GFXVERTEX* v)
 	}
 }
 
-void AddTriClippedSorted(GFXVERTEX* v, short v0, short v1, short v2, TEXTURESTRUCT* tex, long double_sided)
+void AddTriClippedSorted(GFXTLVERTEX* v, short v0, short v1, short v2, TEXTURESTRUCT* tex, long double_sided)
 {
-	GFXBUMPVERTEX* p;
-	GFXVERTEX* pV;
+	GFXTLBUMPVERTEX* p;
+	GFXTLVERTEX* pV;
 	SORTLIST* sl;
 	TEXTURESTRUCT tex2;
 	short* c;
@@ -798,13 +798,13 @@ void AddTriClippedSorted(GFXVERTEX* v, short v0, short v1, short v2, TEXTURESTRU
 		else
 		{
 			clip = 0;
-			p = (GFXBUMPVERTEX*)(sizeof(SORTLIST) + pSortBuffer);
+			p = (GFXTLBUMPVERTEX*)(sizeof(SORTLIST) + pSortBuffer);
 			sl = (SORTLIST*)pSortBuffer;
 			sl->tpage = tex->tpage;
 			sl->drawtype = tex->drawtype;
 			sl->nVtx = 3;
 			sl->polytype = (short)nPolyType;
-			pSortBuffer += sl->nVtx * sizeof(GFXBUMPVERTEX) + sizeof(SORTLIST);
+			pSortBuffer += sl->nVtx * sizeof(GFXTLBUMPVERTEX) + sizeof(SORTLIST);
 			*pSortList = sl;
 			pSortList++;
 		}
@@ -919,7 +919,7 @@ void AddTriClippedSorted(GFXVERTEX* v, short v0, short v1, short v2, TEXTURESTRU
 
 		if (num)
 		{
-			p = (GFXBUMPVERTEX*)(sizeof(SORTLIST) + pSortBuffer);
+			p = (GFXTLBUMPVERTEX*)(sizeof(SORTLIST) + pSortBuffer);
 			sl = (SORTLIST*)pSortBuffer;
 			sl->drawtype = tex->drawtype;
 			sl->nVtx = short(3 * num - 6);
@@ -931,7 +931,7 @@ void AddTriClippedSorted(GFXVERTEX* v, short v0, short v1, short v2, TEXTURESTRU
 
 			sl->tpage = tex->tpage;
 			sl->polytype = (short)nPolyType;
-			pSortBuffer += sl->nVtx * sizeof(GFXBUMPVERTEX) + sizeof(SORTLIST);
+			pSortBuffer += sl->nVtx * sizeof(GFXTLBUMPVERTEX) + sizeof(SORTLIST);
 			*pSortList = sl;
 			pSortList++;
 			SortCount++;
@@ -961,10 +961,10 @@ void AddTriClippedSorted(GFXVERTEX* v, short v0, short v1, short v2, TEXTURESTRU
 	v[v2].specular = specBak[2];
 }
 
-void AddQuadClippedSorted(GFXVERTEX* v, short v0, short v1, short v2, short v3, TEXTURESTRUCT* tex, long double_sided)
+void AddQuadClippedSorted(GFXTLVERTEX* v, short v0, short v1, short v2, short v3, TEXTURESTRUCT* tex, long double_sided)
 {
-	GFXBUMPVERTEX* p;
-	GFXVERTEX* pV;
+	GFXTLBUMPVERTEX* p;
+	GFXTLVERTEX* pV;
 	SORTLIST* sl;
 	TEXTURESTRUCT tex2;
 	short* c;
@@ -1032,13 +1032,13 @@ void AddQuadClippedSorted(GFXVERTEX* v, short v0, short v1, short v2, short v3, 
 		return;
 	}
 
-	p = (GFXBUMPVERTEX*)(sizeof(SORTLIST) + pSortBuffer);
+	p = (GFXTLBUMPVERTEX*)(sizeof(SORTLIST) + pSortBuffer);
 	sl = (SORTLIST*)pSortBuffer;
 	sl->drawtype = tex->drawtype;
 	sl->tpage = tex->tpage;
 	sl->nVtx = 6;
 	sl->polytype = (short)nPolyType;
-	pSortBuffer += sl->nVtx * sizeof(GFXBUMPVERTEX) + sizeof(SORTLIST);
+	pSortBuffer += sl->nVtx * sizeof(GFXTLBUMPVERTEX) + sizeof(SORTLIST);
 	*pSortList = sl;
 	pSortList++;
 	SortCount++;
@@ -1163,17 +1163,17 @@ void AddQuadClippedSorted(GFXVERTEX* v, short v0, short v1, short v2, short v3, 
 	v[v3].specular = specBak[3];
 }
 
-void AddLineClippedSorted(GFXVERTEX* v0, GFXVERTEX* v1, short drawtype)
+void AddLineClippedSorted(GFXTLVERTEX* v0, GFXTLVERTEX* v1, short drawtype)
 {
-	GFXBUMPVERTEX* v;
+	GFXTLBUMPVERTEX* v;
 	SORTLIST* sl;
 
-	v = (GFXBUMPVERTEX*)(sizeof(SORTLIST) + pSortBuffer);
+	v = (GFXTLBUMPVERTEX*)(sizeof(SORTLIST) + pSortBuffer);
 	sl = (SORTLIST*)pSortBuffer;
 	sl->tpage = 0;
 	sl->drawtype = drawtype;
 	sl->nVtx = 2;
-	pSortBuffer += sl->nVtx * sizeof(GFXBUMPVERTEX) + sizeof(SORTLIST);
+	pSortBuffer += sl->nVtx * sizeof(GFXTLBUMPVERTEX) + sizeof(SORTLIST);
 	*pSortList = sl;
 	pSortList++;
 	sl->zVal = v0->sz;
@@ -1258,9 +1258,9 @@ void mD3DTransform(FVECTOR* vec, GFXMATRIX* mx)
 	vec->z = z;
 }
 
-void AddClippedPoly(GFXBUMPVERTEX* dest, long nPoints, GFXBUMPVERTEX* v, TEXTURESTRUCT* pTex)
+void AddClippedPoly(GFXTLBUMPVERTEX* dest, long nPoints, GFXTLBUMPVERTEX* v, TEXTURESTRUCT* pTex)
 {
-	GFXBUMPVERTEX* p;
+	GFXTLBUMPVERTEX* p;
 	float z;
 
 	p = dest;
@@ -1320,11 +1320,11 @@ void AddClippedPoly(GFXBUMPVERTEX* dest, long nPoints, GFXBUMPVERTEX* v, TEXTURE
 	}
 }
 
-void AddTriClippedZBuffer(GFXVERTEX* v, short v0, short v1, short v2, TEXTURESTRUCT* tex, long double_sided)
+void AddTriClippedZBuffer(GFXTLVERTEX* v, short v0, short v1, short v2, TEXTURESTRUCT* tex, long double_sided)
 {
-	GFXVERTEX* vtx;
-	GFXBUMPVERTEX* p;
-	GFXBUMPVERTEX* bp;
+	GFXTLVERTEX* vtx;
+	GFXTLBUMPVERTEX* p;
+	GFXTLBUMPVERTEX* bp;
 	TEXTURESTRUCT tex2;
 	long* nVtx;
 	short* c;
@@ -1517,11 +1517,11 @@ void AddTriClippedZBuffer(GFXVERTEX* v, short v0, short v1, short v2, TEXTURESTR
 	v[v2].specular = specBak[2];
 }
 
-void AddQuadClippedZBuffer(GFXVERTEX* v, short v0, short v1, short v2, short v3, TEXTURESTRUCT* tex, long double_sided)
+void AddQuadClippedZBuffer(GFXTLVERTEX* v, short v0, short v1, short v2, short v3, TEXTURESTRUCT* tex, long double_sided)
 {
-	GFXBUMPVERTEX* p;
-	GFXBUMPVERTEX* bp;
-	GFXVERTEX* vtx;
+	GFXTLBUMPVERTEX* p;
+	GFXTLBUMPVERTEX* bp;
+	GFXTLVERTEX* vtx;
 	TEXTURESTRUCT tex2;
 	long* nVtx;
 	short* c;
@@ -1681,7 +1681,7 @@ void AddQuadClippedZBuffer(GFXVERTEX* v, short v0, short v1, short v2, short v3,
 	v[v3].specular = specBak[3];
 }
 
-void SubdivideEdge(GFXVERTEX* v0, GFXVERTEX* v1, GFXVERTEX* v, short* c, float tu1, float tv1, float tu2, float tv2, float* tu, float* tv)
+void SubdivideEdge(GFXTLVERTEX* v0, GFXTLVERTEX* v1, GFXTLVERTEX* v, short* c, float tu1, float tv1, float tu2, float tv2, float* tu, float* tv)
 {
 	float zv;
 	short cf, r0, g0, b0, a0, r1, g1, b1, a1;
@@ -1750,9 +1750,9 @@ void SubdivideEdge(GFXVERTEX* v0, GFXVERTEX* v1, GFXVERTEX* v, short* c, float t
 	v->specular = RGBA(r1, g1, b1, a1);
 }
 
-void SubdivideQuad(GFXVERTEX* v0, GFXVERTEX* v1, GFXVERTEX* v2, GFXVERTEX* v3, TEXTURESTRUCT* tex, long double_sided, long steps, short* c)
+void SubdivideQuad(GFXTLVERTEX* v0, GFXTLVERTEX* v1, GFXTLVERTEX* v2, GFXTLVERTEX* v3, TEXTURESTRUCT* tex, long double_sided, long steps, short* c)
 {
-	GFXVERTEX v[5];
+	GFXTLVERTEX v[5];
 	TEXTURESTRUCT tex2;
 	float uv[10];
 	short aclip[5];
@@ -1851,9 +1851,9 @@ void SubdivideQuad(GFXVERTEX* v0, GFXVERTEX* v1, GFXVERTEX* v2, GFXVERTEX* v3, T
 	SubdivideQuad(&v[2], &v[4], &v[1], v3, &tex2, double_sided, steps - 1, bclip);
 }
 
-void SubdivideTri(GFXVERTEX* v0, GFXVERTEX* v1, GFXVERTEX* v2, TEXTURESTRUCT* tex, long double_sided, long steps, short* c)
+void SubdivideTri(GFXTLVERTEX* v0, GFXTLVERTEX* v1, GFXTLVERTEX* v2, TEXTURESTRUCT* tex, long double_sided, long steps, short* c)
 {
-	GFXVERTEX v[3];
+	GFXTLVERTEX v[3];
 	TEXTURESTRUCT tex2;
 	float uv[6];
 	short bclip[4];
@@ -1924,7 +1924,7 @@ void SubdivideTri(GFXVERTEX* v0, GFXVERTEX* v1, GFXVERTEX* v2, TEXTURESTRUCT* te
 	SubdivideQuad(&v[2], v, &v[1], v2, &tex2, double_sided, steps - 1, bclip);
 }
 
-void AddTriSubdivide(GFXVERTEX* v, short v0, short v1, short v2, TEXTURESTRUCT* tex, long double_sided)
+void AddTriSubdivide(GFXTLVERTEX* v, short v0, short v1, short v2, TEXTURESTRUCT* tex, long double_sided)
 {
 	long steps;
 	short c[4];
@@ -1945,7 +1945,7 @@ void AddTriSubdivide(GFXVERTEX* v, short v0, short v1, short v2, TEXTURESTRUCT* 
 	}
 }
 
-void AddQuadSubdivide(GFXVERTEX* v, short v0, short v1, short v2, short v3, TEXTURESTRUCT* tex, long double_sided)
+void AddQuadSubdivide(GFXTLVERTEX* v, short v0, short v1, short v2, short v3, TEXTURESTRUCT* tex, long double_sided)
 {
 	long steps;
 	short c[4];

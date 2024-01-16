@@ -21,7 +21,9 @@
 #include "../tomb4/tomb4plus/t4plus_weather.h"
 #include "../tomb4/mod_config.h"
 
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+#include "bgfx.h"
+#else
 LPDIRECT3DVERTEXBUFFER DestVB;
 #endif
 WATERTAB WaterTable[22][64];

@@ -62,7 +62,7 @@ void DoRain()
 	RAINDROPS* rptr;
 	ROOM_INFO* r;
 	FLOOR_INFO* floor;
-	GFXVERTEX v[2];
+	GFXTLVERTEX v[2];
 	TEXTURESTRUCT tex;
 	short* clip;
 	float ctop, cbottom, cright, cleft, zv, fx, fy, fz, mx, my, mz;
@@ -300,7 +300,7 @@ void DoSnow()
 	SNOWFLAKE* snow;
 	ROOM_INFO* r;
 	SPRITESTRUCT* sprite;
-	GFXVERTEX v[4];
+	GFXTLVERTEX v[4];
 	TEXTURESTRUCT tex;
 	float* pSize;
 	float x, y, z, xv, yv, zv, vx, vy, xSize, ySize;

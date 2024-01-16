@@ -62,7 +62,7 @@ void S_DrawFootPrints()
 {
 	FOOTPRINT* print;
 	SPRITESTRUCT* sprite;
-	GFXVERTEX* v;
+	GFXTLVERTEX* v;
 	PHD_VECTOR pos[3];
 	TEXTURESTRUCT tex;
 	float u1, v1, u2, v2;

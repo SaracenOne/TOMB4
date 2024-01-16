@@ -197,6 +197,7 @@ long GetFreeDebris()
 
 void ShatterObject(SHATTER_ITEM* shatter_item, MESH_INFO* StaticMesh, short Num, short RoomNumber, long NoXZVel)
 {
+#ifndef USE_BGFX
 	MESH_DATA* mesh;
 	TEXTURESTRUCT* tex;
 	PHD_VECTOR TPos;
@@ -448,4 +449,5 @@ void ShatterObject(SHATTER_ITEM* shatter_item, MESH_INFO* StaticMesh, short Num,
 
 		nQuads--;
 	}
+#endif
 }

@@ -17,6 +17,7 @@
 #include "gamemain.h"
 #include "fmv.h"
 #include "audio.h"
+#include "platform.h"
 
 #include "../tomb4/mod_config.h"
 #include "../tomb4/tomb4.h"
@@ -35,11 +36,31 @@ bool appIsUnfocused = false;
 #ifdef USE_SDL
 
 #include <SDL.h>
+#ifndef USE_BGFX
 #include <SDL_syswm.h>
+#endif
 
 SDL_Window* sdl_window = NULL;
 #ifdef _WIN32
 WNDPROC originalWndProc;
+#endif
+
+#ifdef USE_BGFX
+#if BX_PLATFORM_LINUX || BX_PLATFORM_BSD
+#	if ENTRY_CONFIG_USE_WAYLAND
+#		include <wayland-egl.h>
+#	endif
+#elif BX_PLATFORM_WINDOWS
+#	define SDL_MAIN_HANDLED
+#endif
+
+#include <bx/os.h>
+
+BX_PRAGMA_DIAGNOSTIC_PUSH()
+BX_PRAGMA_DIAGNOSTIC_IGNORED_CLANG("-Wextern-c-compat")
+#include <SDL_syswm.h>
+BX_PRAGMA_DIAGNOSTIC_POP()
+
 #endif
 
 void SDLProcessCommandLine(int argc, char* argv[])
@@ -175,6 +196,65 @@ LRESULT CALLBACK WinMainWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 }
 #endif
 
+#ifdef USE_BGFX
+void* SDLGetNativeWindowHandle(SDL_Window *window)
+{
+	SDL_SysWMinfo wmi;
+	SDL_VERSION(&wmi.version);
+	if (!SDL_GetWindowWMInfo(window, &wmi))
+	{
+		return NULL;
+	}
+
+#if BX_PLATFORM_LINUX || BX_PLATFORM_BSD
+#		if ENTRY_CONFIG_USE_WAYLAND
+	wl_egl_window* win_impl = (wl_egl_window*)SDL_GetWindowData(_window, "wl_egl_window");
+	if (!win_impl)
+	{
+		int width, height;
+		SDL_GetWindowSize(_window, &width, &height);
+		struct wl_surface* surface = wmi.info.wl.surface;
+		if (!surface)
+			return nullptr;
+		win_impl = wl_egl_window_create(surface, width, height);
+		SDL_SetWindowData(_window, "wl_egl_window", win_impl);
+	}
+	return (void*)(uintptr_t)win_impl;
+#		else
+	return (void*)wmi.info.x11.window;
+#		endif
+#elif BX_PLATFORM_OSX || BX_PLATFORM_IOS
+	return wmi.info.cocoa.window;
+#elif BX_PLATFORM_WINDOWS
+	return wmi.info.win.window;
+#elif BX_PLATFORM_ANDROID
+	return wmi.info.android.window;
+#else
+	#error "Unsupported platform!"
+#endif // BX_PLATFORM_
+}
+
+
+void* SDLGetNativeDisplayHandle(SDL_Window *window)
+{
+	SDL_SysWMinfo wmi;
+	SDL_VERSION(&wmi.version);
+	if (!SDL_GetWindowWMInfo(window, &wmi))
+	{
+		return NULL;
+	}
+
+#if BX_PLATFORM_LINUX || BX_PLATFORM_BSD
+#		if ENTRY_CONFIG_USE_WAYLAND
+	return wmi.info.wl.display;
+#		else
+	return wmi.info.x11.display;
+#		endif // ENTRY_CONFIG_USE_WAYLAND
+#else
+	return NULL;
+#endif // BX_PLATFORM_*
+}
+#endif
 
 void SDLDisplayString(long x, long y, char* string, ...)
 {
@@ -210,16 +290,11 @@ void ClearSurfaces()
 
 bool SDLCreateWindow()
 {
-	sdl_window = SDL_CreateWindow("Tomb4Plus", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_HIDDEN);
+	sdl_window = SDL_CreateWindow("Tomb4Plus", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_DEFAULT_WIDTH, WINDOW_DEFAULT_HEIGHT, SDL_WINDOW_HIDDEN);
 	if (!sdl_window)
 	{
 		return false;
 	}
-
-#ifdef USE_BGFX
-	bgfx::renderFrame();
-#endif
-
 #ifdef _WIN32
 	SDL_SysWMinfo wmInfo;
 	SDL_VERSION(&wmInfo.version);
@@ -369,7 +444,7 @@ int main(int argc, char* argv[]) {
 	LoadGameModConfigSecondPass();
 	//
 
-	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_AUDIO);
+	SDL_Init(SDL_INIT_EVENTS);
 
 	SDLProcessCommandLine(argc, argv);
 
@@ -409,8 +484,8 @@ int main(int argc, char* argv[]) {
 	DXDISPLAYMODE display_mode;
 	dm = &display_mode;
 
-	dm->w = 640;
-	dm->h = 480;
+	dm->w = WINDOW_DEFAULT_WIDTH;
+	dm->h = WINDOW_DEFAULT_HEIGHT;
 	dm->bpp = 32;
 #else
 	dm = &G_dxinfo->DDInfo[G_dxinfo->nDD].D3DDevices[G_dxinfo->nD3D].DisplayModes[G_dxinfo->nDisplayMode];
@@ -682,6 +757,7 @@ void WinProcessCommands(long cmd)
 		HWInitialise();
 		S_InitD3DMatrix();
 		SetD3DViewMatrix();
+		S_UpdateMVP();
 		ResumeThread((HANDLE)MainThread.handle);
 		App.dx.WaitAtBeginScene = 0;
 		Log(5, "Game Thread Resumed");
@@ -766,6 +842,7 @@ void WinProcessCommands(long cmd)
 			InitFont();
 			S_InitD3DMatrix();
 			SetD3DViewMatrix();
+			S_UpdateMVP();
 		}
 
 		ResumeThread((HANDLE)MainThread.handle);

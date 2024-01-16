@@ -9,7 +9,7 @@ void CalcTriFaceNormal(GFXVECTOR* p1, GFXVECTOR* p2, GFXVECTOR* p3, GFXVECTOR* N
 void ProcessMeshData(long num_meshes);
 void InitBuckets();
 void DrawBucket(TEXTUREBUCKET* bucket);
-void FindBucket(long tpage, GFXBUMPVERTEX** Vpp, long** nVtxpp);
+void FindBucket(long tpage, GFXTLBUMPVERTEX** Vpp, long** nVtxpp);
 void DrawBuckets();
 void CreateVertexNormals(ROOM_INFO* r);
 

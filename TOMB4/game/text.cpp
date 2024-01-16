@@ -101,7 +101,7 @@ void InitFont()
 
 	memcpy(CharDef, fontInfo->custom_font_table, sizeof(CHARDEF) * CHAR_TABLE_COUNT);
 
-	GFXVERTEX v;
+	GFXTLVERTEX v;
 	static CHARDEF copy[106];
 	static long init = 1;
 	ushort r, g, b;
@@ -181,7 +181,7 @@ void InitFont()
 
 void UpdatePulseColour()
 {
-	GFXVERTEX v;
+	GFXTLVERTEX v;
 	static uchar PulseCnt = 0;
 	uchar c, r, g, b;
 
@@ -312,7 +312,7 @@ long GetStringLength(const char* string, long* top, long* bottom)
 
 void DrawCharScaled(long x, long y, ushort col, CHARDEF* def, float glyph_scale_width, float glyph_scale_height)
 {
-	GFXVERTEX* v;
+	GFXTLVERTEX* v;
 	TEXTURESTRUCT tex;
 	float u1, v1, u2, v2;
 	long x1, y1, x2, y2, top, bottom;
