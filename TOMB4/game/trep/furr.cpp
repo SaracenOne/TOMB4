@@ -182,7 +182,7 @@ FURRResult furr_cmd_activate_crossbow(FURRParameters params) {
 
 // Params:
 FURRResult furr_cmd_empty_holsters(FURRParameters params) {
-	lara.holster = LARA;
+	lara.holster = LARA_HOLSTERS;
 
 	return FURR_RESULT_OK;
 }
