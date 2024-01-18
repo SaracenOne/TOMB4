@@ -448,6 +448,24 @@ void LoadGameModLevelMiscInfo(const json_t *misc, MOD_LEVEL_MISC_INFO *misc_info
 
 void LoadGameModLevelStatInfo(const json_t* stats, MOD_LEVEL_STAT_INFO* stat_info) {
     READ_JSON_UINT32(secret_count, stats, stat_info);
+
+    int equipment_modifier_index = 0;
+    const json_t* equipment_modifiers = json_getProperty(stats, "equipment_modifiers");
+    if (equipment_modifiers && JSON_ARRAY == json_getType(equipment_modifiers)) {
+        const json_t* equipment_modifier;
+        for (equipment_modifier = json_getChild(equipment_modifiers); equipment_modifier != nullptr; equipment_modifier = json_getSibling(equipment_modifier)) {
+            if (equipment_modifier_index >= MAX_EQUIPMENT_MODIFIERS) {
+                break;
+            }
+
+            MOD_EQUIPMENT_MODIFIER* mod_equipment_modifier = &stat_info->equipment_modifiers[equipment_modifier_index];
+            
+            READ_JSON_SINT32(object_id, equipment_modifier, mod_equipment_modifier);
+            READ_JSON_SINT32(amount, equipment_modifier, mod_equipment_modifier);
+
+            equipment_modifier_index++;
+        }
+    }
 }
 
 void LoadGameModLevelWeaponInfo(const json_t* stats, MOD_LEVEL_WEAPON_INFO* weapon_info) {
@@ -845,7 +863,7 @@ void LoadGameModConfigFirstPass() {
                                                 if (furr_flipeffect_data_index != 0) {
                                                     if (furr_flipeffect_data_index <= furr_command_arg_count) {
                                                         if (furr_flipeffect_data && JSON_INTEGER == json_getType(furr_flipeffect_data)) {
-                                                            int argument_value = json_getInteger(furr_flipeffect_data);
+                                                            int argument_value = (int)json_getInteger(furr_flipeffect_data);
                                                             furr_add_flipeffect_token(furr_flipeffect_index, argument_value);
                                                         }
                                                         else {
@@ -917,6 +935,14 @@ void LoadGameModConfigFirstPass() {
     }
     for (int i = 0; i < MOD_LEVEL_COUNT; i++) {
         memcpy(&game_mod_config.level_info[i], &global_level_info, sizeof(MOD_LEVEL_INFO));
+
+        // Reset equipment modifiers.
+        if (i > 0) {
+            for (int j = 0; j < MAX_EQUIPMENT_MODIFIERS; j++) {
+                game_mod_config.level_info[i].stat_info.equipment_modifiers[j].object_id = -1;
+                game_mod_config.level_info[i].stat_info.equipment_modifiers[j].amount = 0;
+            }
+        }
     }
 
     SetupLevelDefaults();
@@ -1022,14 +1048,24 @@ void T4PlusEnterLevel(int current_level, bool initial_entry) {
         rain_type = get_game_mod_level_misc_info(current_level)->rain_type;
         snow_type = get_game_mod_level_misc_info(current_level)->snow_type;
 
-        MOD_EQUIPMENT_MODIFIER* equipment_modifiers = get_game_mod_level_stat_info(current_level)->equipment_modifiers;
+        MOD_EQUIPMENT_MODIFIER *equipment_modifiers = get_game_mod_level_stat_info(current_level)->equipment_modifiers;
         for (int i = 0; i < MAX_EQUIPMENT_MODIFIERS; i++) {
             if (equipment_modifiers[i].object_id != -1) {
                 T4PlusSetInventoryCount(equipment_modifiers[i].object_id, equipment_modifiers[i].amount, true);
-            }
-            else {
+            } else {
                 break;
             }
+        }
+    }
+}
+
+void T4PlusInitializeLara() {
+    MOD_EQUIPMENT_MODIFIER *equipment_modifiers = get_game_mod_level_stat_info(0)->equipment_modifiers;
+    for (int i = 0; i < MAX_EQUIPMENT_MODIFIERS; i++) {
+        if (equipment_modifiers[i].object_id != -1) {
+            T4PlusSetInventoryCount(equipment_modifiers[i].object_id, equipment_modifiers[i].amount, true);
+        } else {
+            break;
         }
     }
 }

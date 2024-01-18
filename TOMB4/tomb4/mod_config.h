@@ -35,7 +35,7 @@ struct MOD_LEVEL_FONT_INFO {
 	int custom_glyph_scale_width = DEFAULT_GLYPH_SCALE_WIDTH;
 	int custom_glyph_scale_height = DEFAULT_GLYPH_SCALE_HEIGHT;
 
-	CHARDEF custom_font_table[CHAR_TABLE_COUNT];
+	CHARDEF custom_font_table[CHAR_TABLE_COUNT] = {};
 };
 
 struct MOD_LEVEL_CAMERA_INFO {
@@ -359,6 +359,7 @@ extern void LoadGameModConfigSecondPass();
 extern void T4PlusLevelReset();
 extern void T4PlusLevelSetup(int current_level);
 extern void T4PlusEnterLevel(int current_level, bool initial_entry);
+extern void T4PlusInitializeLara();
 extern void T4PlusCleanup();
 extern void T4PlusInit();
 

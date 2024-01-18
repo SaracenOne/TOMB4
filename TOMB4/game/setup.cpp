@@ -1946,6 +1946,8 @@ void InitialiseLara()
 	lara.beetle_uses = 3;
 	InitialiseLaraAnims(lara_item);
 	DashTimer = 120;
+
+	T4PlusInitializeLara();
 }
 
 void InitialiseObjects()
