@@ -4196,7 +4196,7 @@ void DrawLightning()
 		Z = (long*)&tsv_buffer[2048];
 		CalcLightningSpline(vec, offsets, pL);
 
-		if (vec[0].x > 0x6000 || vec[0].y > 0x6000 || vec[0].z > 0x6000)
+		if (abs(vec[0].x) > 0x6000 || abs(vec[0].y) > 0x6000 || abs(vec[0].z) > 0x6000)
 			continue;
 
 		for (int j = 0; j < pL->Segments; j++)
