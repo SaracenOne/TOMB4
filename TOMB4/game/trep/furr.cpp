@@ -13,6 +13,8 @@
 #include "../tomb4fx.h"
 #include "../items.h"
 #include "../traps.h"
+#include "../sound.h"
+#include "../../specific/audio.h"
 
 char furr_oneshot_buffer[LAST_FURR_FLIPEFFECT];
 FURRFlipeffectTable furr_flipeffect_table[LAST_FURR_FLIPEFFECT - FIRST_FURR_FLIPEFFECT];
@@ -850,13 +852,18 @@ FURRResult furr_cmd_draw_bmp(FURRParameters params) {
 // Params:
 // SAMPLE_ID
 FURRResult furr_cmd_play_sample(FURRParameters params) {
-	return FURR_RESULT_UNIMPLEMENTED;
+	SoundEffect(params.first_parameter, 0, SFX_DEFAULT);
+
+	return FURR_RESULT_OK;
 }
 
 // Params:
 // SOUNDTRACK_ID
 FURRResult furr_cmd_play_soundtrack(FURRParameters params) {
-	return FURR_RESULT_UNIMPLEMENTED;
+	// TODO: determine if this command also supports looped tracks.
+	S_CDPlay(params.first_parameter, 0);
+
+	return FURR_RESULT_OK;
 }
 
 // Params:
