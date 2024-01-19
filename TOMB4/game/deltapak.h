@@ -95,10 +95,8 @@ void special3_end();
 void special3_control();
 void special1_init();
 void special1_end();
-#ifdef TIMES_LEVEL
 void times_init();
 void times_control();
-#endif
 
 extern long cutseq_trig;
 extern long cutseq_num;

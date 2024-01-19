@@ -35,13 +35,15 @@ static DWORD dwDisposition;
 
 static bool REG_Setup;
 
+#ifndef USE_INI
+
 #ifdef LEVEL_EDITOR
 #define REGISTRY_PATH "Software\\Core Design\\Tomb Raider Level Editor"
 #else
 #define REGISTRY_PATH "Software\\Core Design\\Tomb Raider IV"
 #endif
 
-#ifndef USE_INI
+
 bool REG_OpenKey(const char *lpSubKey)
 {
 	return RegCreateKeyEx(HKEY_CURRENT_USER, lpSubKey, 0, (CHAR*)"", REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, 0, &phkResult, &dwDisposition) == ERROR_SUCCESS;

@@ -16,6 +16,7 @@
 #include "winmain.h"
 #include "gamemain.h"
 #include "../game/gameflow.h"
+#include "../tomb4/mod_config.h"
 
 GFXTLBUMPVERTEX XYUVClipperBuffer[20];
 GFXTLBUMPVERTEX zClipperBuffer[20];
@@ -642,11 +643,7 @@ void OmniFog(GFXTLVERTEX* v)
 
 	s = (v->specular & 0xFF000000) >> 24;
 
-#ifdef LEVEL_EDITOR
-	if (s != 255)
-#else
-	if (gfCurrentLevel != 5 && gfCurrentLevel != 6 && s != 255)
-#endif
+	if (!get_game_mod_level_environment_info(gfCurrentLevel)->force_train_fog && s != 255)
 	{
 		v->specular |= 0xFF000000;
 		r = (CLRR(v->color) * s) >> 8;
@@ -818,7 +815,7 @@ void AddTriClippedSorted(GFXTLVERTEX* v, short v0, short v1, short v2, TEXTUREST
 	specBak[1] = v[v1].specular;
 	specBak[2] = v[v2].specular;
 
-	if (App.Volumetric)
+	if (IsVolumetric())
 	{
 		if (tex->drawtype != 2 && tex->drawtype != 5)
 		{
@@ -1052,7 +1049,7 @@ void AddQuadClippedSorted(GFXTLVERTEX* v, short v0, short v1, short v2, short v3
 	specBak[2] = v[v2].specular;
 	specBak[3] = v[v3].specular;
 
-	if (App.Volumetric)
+	if (IsVolumetric())
 	{
 		if (tex->drawtype != 2 && tex->drawtype != 5)
 		{
@@ -1412,7 +1409,7 @@ void AddTriClippedZBuffer(GFXTLVERTEX* v, short v0, short v1, short v2, TEXTURES
 	specBak[1] = v[v1].specular;
 	specBak[2] = v[v2].specular;
 
-	if (App.Volumetric)
+	if (IsVolumetric())
 	{
 		OmniFog(&v[v0]);
 		OmniFog(&v[v1]);
@@ -1601,7 +1598,7 @@ void AddQuadClippedZBuffer(GFXTLVERTEX* v, short v0, short v1, short v2, short v
 	specBak[2] = v[v2].specular;
 	specBak[3] = v[v3].specular;
 
-	if (App.Volumetric)
+	if (IsVolumetric())
 	{
 		OmniFog(&v[v0]);
 		OmniFog(&v[v1]);

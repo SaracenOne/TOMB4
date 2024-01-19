@@ -89,11 +89,7 @@ void ProcessRoomVertices(ROOM_INFO* r)
 
 	clip = clipflags;
 
-#ifdef LEVEL_EDITOR
-	if (gfLevelFlags & GF_TRAIN)
-#else
-	if (gfLevelFlags & GF_TRAIN || gfCurrentLevel == 5 || gfCurrentLevel == 6)
-#endif
+	if (gfLevelFlags & GF_TRAIN || get_game_mod_level_environment_info(gfCurrentLevel)->force_train_fog)
 	{
 		DistanceFogStart = 12.0F * 1024.0F;
 		DistanceFogEnd = 1024.0F * 20.0F;
@@ -241,11 +237,7 @@ void ProcessRoomVertices(ROOM_INFO* r)
 
 		if (vPos.z > DistanceFogStart)
 		{
-#ifdef LEVEL_EDITOR
-			if (gfLevelFlags & GF_TRAIN)
-#else
-			if (gfLevelFlags & GF_TRAIN || gfCurrentLevel == 5 || gfCurrentLevel == 6)
-#endif
+			if (gfLevelFlags & GF_TRAIN || get_game_mod_level_environment_info(gfCurrentLevel)->force_train_fog)
 			{
 				val = (vPos.z - DistanceFogStart) / 512.0F;
 				sA -= long(val * (255.0F / 8.0F));

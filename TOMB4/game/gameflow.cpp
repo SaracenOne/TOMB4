@@ -159,6 +159,19 @@ static uchar gfResidentCut[4];
 static char fmv_to_play[2] = { 0, 0 };
 static char num_fmvs = 0;
 
+/*misc*/
+char* SCRIPT_TEXT(int num) {
+	int slc = num;
+	if (!get_game_mod_global_info()->tr_times_exclusive && slc > TXT_The_Gold_Mask) {
+		slc -= 3;
+	}
+
+	if (!get_game_mod_global_info()->tr_level_editor && slc > TXT_OEM1) {
+		slc -= 1;
+	}
+	return &gfStringWad[gfStringOffset[slc]];
+}
+
 void DoGameflow()
 {
 	uchar* gf;
@@ -560,19 +573,21 @@ void DoLevel(uchar Name, uchar Audio)
 
 		nFrames = DrawPhaseGame();
 
-#ifndef LEVEL_EDITOR
-		handle_cutseq_triggering(Name);
-
-		if (DEL_playingamefmv)
+		if (!get_game_mod_global_info()->tr_level_editor)
 		{
-			DEL_playingamefmv = 0;
-#ifndef TIMES_LEVEL
-			S_CDStop();
-			PlayFmvNow(7);
-			DelsHandyTeleportLara(54179, -8192, 50899, -32703);
-#endif
+			handle_cutseq_triggering(Name);
+
+			if (DEL_playingamefmv)
+			{
+				DEL_playingamefmv = 0;
+				if (!get_game_mod_global_info()->tr_times_exclusive)
+				{
+					S_CDStop();
+					PlayFmvNow(7);
+					DelsHandyTeleportLara(54179, -8192, 50899, -32703);
+				}
+			}
 		}
-#endif
 
 		if (gfLevelComplete)
 		{
@@ -976,12 +991,11 @@ void DoTitle(uchar Name, uchar Audio)
 	bUseSpotCam = 0;
 	bDisableLaraControl = 0;
 
-#ifndef TIMES_LEVEL
-#ifndef LEVEL_EDITOR
-	if (gfLevelComplete == 1 && gfStatus != 2)
-		PlayFmvNow(12);
-#endif
-#endif
+	if (!get_game_mod_global_info()->tr_level_editor && !get_game_mod_global_info()->tr_times_exclusive)
+	{
+		if (gfLevelComplete == 1 && gfStatus != 2)
+			PlayFmvNow(12);
+	}
 
 	if (gfStatus != 4)
 		RenderLoadPic(0);
@@ -1041,14 +1055,24 @@ void LoadGameflow()
 	gfLanguageFile = (uchar*)d;
 	Gameflow->Language = l;
 
+	int NumberOfStrings = TXT_NUM_STRINGS;
+	if (!get_game_mod_global_info()->tr_level_editor) {
+		NumberOfStrings -= 1;
+	}
+	if (!get_game_mod_global_info()->tr_times_exclusive) {
+		NumberOfStrings -= 3;
+	}
+
 	memcpy(&sh, gfStringOffset, sizeof(STRINGHEADER));
-	memcpy(gfStringOffset, gfStringOffset + (sizeof(STRINGHEADER) / sizeof(ushort)), TXT_NUM_STRINGS * sizeof(ushort));
-	gfStringWad = (char*)(gfStringOffset + TXT_NUM_STRINGS);
-	memcpy(gfStringOffset + TXT_NUM_STRINGS,
-		gfStringOffset + TXT_NUM_STRINGS + (sizeof(STRINGHEADER) / sizeof(ushort)),
+	memcpy(gfStringOffset, gfStringOffset + (sizeof(STRINGHEADER) / sizeof(ushort)), NumberOfStrings * sizeof(ushort));
+
+
+	gfStringWad = (char*)(gfStringOffset + NumberOfStrings);
+	memcpy(gfStringOffset + NumberOfStrings,
+		gfStringOffset + NumberOfStrings + (sizeof(STRINGHEADER) / sizeof(ushort)),
 		sh.StringWadLen + sh.PCStringWadLen + sh.PSXStringWadLen);
 
-	for (int i = 0; i < TXT_NUM_STRINGS - 1; i++)
+	for (int i = 0; i < NumberOfStrings - 1; i++)
 	{
 		s = &gfStringWad[gfStringOffset[i]];
 		d = &gfStringWad[gfStringOffset[i + 1]];

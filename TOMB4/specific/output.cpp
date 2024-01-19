@@ -61,11 +61,7 @@ void ProcessObjectMeshVertices(MESH_DATA* mesh)
 
 	clip = clipflags;
 
-#ifdef LEVEL_EDITOR
-	if (gfLevelFlags & GF_TRAIN)
-#else
-	if (gfLevelFlags & GF_TRAIN || gfCurrentLevel == 5 || gfCurrentLevel == 6)
-#endif
+	if (gfLevelFlags & GF_TRAIN || get_game_mod_level_environment_info(gfCurrentLevel)->force_train_fog)
 	{
 		DistanceFogStart = 12.0F * 1024.0F;
 		DistanceFogEnd = 1024.0F * 20.0F;
@@ -179,11 +175,7 @@ void ProcessObjectMeshVertices(MESH_DATA* mesh)
 		
 		if (vPos.z > DistanceFogStart)
 		{
-#ifdef LEVEL_EDITOR
-			if (gfLevelFlags & GF_TRAIN)
-#else
-			if (gfLevelFlags & GF_TRAIN || gfCurrentLevel == 5 || gfCurrentLevel == 6)
-#endif
+			if (gfLevelFlags & GF_TRAIN || get_game_mod_level_environment_info(gfCurrentLevel)->force_train_fog)
 			{
 				val = (vPos.z - DistanceFogStart) / 512.0F;
 				sA -= long(val * (255.0F / 8.0F));
@@ -357,11 +349,7 @@ void ProcessStaticMeshVertices(MESH_DATA* mesh)
 
 	clip = clipflags;
 
-#ifdef LEVEL_EDITOR
-	if (gfLevelFlags & GF_TRAIN)
-#else
-	if (gfLevelFlags & GF_TRAIN || gfCurrentLevel == 5 || gfCurrentLevel == 6)
-#endif
+	if (gfLevelFlags & GF_TRAIN || get_game_mod_level_environment_info(gfCurrentLevel)->force_train_fog)
 	{
 		DistanceFogStart = 12.0F * 1024.0F;
 		DistanceFogEnd = 1024.0F * 20.0F;
@@ -438,11 +426,7 @@ void ProcessStaticMeshVertices(MESH_DATA* mesh)
 
 		if (vPos.z > DistanceFogStart)
 		{
-#ifdef LEVEL_EDITOR
-			if (gfLevelFlags & GF_TRAIN)
-#else
-			if (gfLevelFlags & GF_TRAIN || gfCurrentLevel == 5 || gfCurrentLevel == 6)
-#endif
+			if (gfLevelFlags & GF_TRAIN || get_game_mod_level_environment_info(gfCurrentLevel)->force_train_fog)
 			{
 				val = (vPos.z - DistanceFogStart) / 512.0F;
 				sA -= long(val * (255.0F / 8.0F));
@@ -641,11 +625,7 @@ void ProcessTrainMeshVertices(MESH_DATA* mesh)
 
 		if (zbak > DistanceFogStart)
 		{
-#ifdef LEVEL_EDITOR
-			if (gfLevelFlags & GF_TRAIN)
-#else
-			if (gfLevelFlags & GF_TRAIN || gfCurrentLevel == 5 || gfCurrentLevel == 6)
-#endif
+			if (gfLevelFlags & GF_TRAIN || get_game_mod_level_environment_info(gfCurrentLevel)->force_train_fog)
 			{
 				val = (zbak - DistanceFogStart) / 512.0F;
 				sA -= long(val * (255.0F / 8.0F));
@@ -1256,17 +1236,26 @@ void S_InitialisePolyList()
 	rect.x2 = App.dx.rViewport.left + App.dx.rViewport.right;
 	rect.y2 = App.dx.rViewport.top + App.dx.rViewport.bottom;
 
-#ifndef LEVEL_EDITOR
-	if (gfLevelFlags & GF_TRAIN)
-		col = 0xD2B163;
-	else if (gfCurrentLevel == 5 || gfCurrentLevel == 6)
+	if (!get_game_mod_global_info()->tr_level_editor)
 	{
-		col = FogTableColor[19];
-		SetFogColor(CLRR(col), CLRG(col), CLRB(col));
+		if (gfLevelFlags & GF_TRAIN)
+		{
+			col = 0xD2B163;
+		}
+		else if (gfCurrentLevel == 5 || gfCurrentLevel == 6)
+		{
+			col = FogTableColor[19];
+			SetFogColor(CLRR(col), CLRG(col), CLRB(col));
+		}
+		else
+		{
+			col = 0;
+		}
 	}
 	else
-#endif
+	{
 		col = 0;
+	}
 	
 	if (App.dx.Flags & DXF_HWR)
 		DXAttempt(App.dx.lpViewport->Clear2(1, &rect, D3DCLEAR_TARGET, col, 1.0F, 0));
@@ -1528,11 +1517,7 @@ void phd_PutPolygonSkyMesh(short* objptr, long clipstatus)
 		else
 			pTex->drawtype = 4;
 
-#ifndef LEVEL_EDITOR
-		if (gfLevelFlags & GF_TRAIN || gfCurrentLevel == 5 || gfCurrentLevel == 6)
-#else 
-		if (gfLevelFlags & GF_TRAIN)
-#endif	
+		if (gfLevelFlags & GF_TRAIN || get_game_mod_level_environment_info(gfCurrentLevel)->force_train_fog)
 		{
 			MyVertexBuffer[quad[0]].color = 0xFFFFFFFF;
 			MyVertexBuffer[quad[1]].color = 0xFFFFFFFF;
@@ -1762,63 +1747,67 @@ void do_boot_screen(long language)
 {
 	Log(2, "do_boot_screen");
 
-#ifdef LEVEL_EDITOR
+	if(get_game_mod_global_info()->tr_level_editor) {
 #ifndef USE_BGFX
 	_LoadBitmap(App.dx.lpBackBuffer, "load.bmp");
 	S_DumpScreen();
 	_LoadBitmap(App.dx.lpBackBuffer, "load.bmp");
 #endif
-#else
-	switch (language)
-	{
-		case ENGLISH:
-		case DUTCH:
-			_LoadBitmap(App.dx.lpBackBuffer, "uk.bmp");
-			S_DumpScreen();
-			_LoadBitmap(App.dx.lpBackBuffer, "uk.bmp");
-			break;
+	} else {
+		switch (language)
+		{
+			case ENGLISH:
+			case DUTCH:
+				_LoadBitmap(App.dx.lpBackBuffer, "uk.bmp");
+				S_DumpScreen();
+				_LoadBitmap(App.dx.lpBackBuffer, "uk.bmp");
+				break;
 
-		case FRENCH:
-			_LoadBitmap(App.dx.lpBackBuffer, "france.bmp");
-			S_DumpScreen();
-			_LoadBitmap(App.dx.lpBackBuffer, "france.bmp");
-			break;
+			case FRENCH:
+				_LoadBitmap(App.dx.lpBackBuffer, "france.bmp");
+				S_DumpScreen();
+				_LoadBitmap(App.dx.lpBackBuffer, "france.bmp");
+				break;
 
-		case GERMAN:
-			_LoadBitmap(App.dx.lpBackBuffer, "germany.bmp");
-			S_DumpScreen();
-			_LoadBitmap(App.dx.lpBackBuffer, "germany.bmp");
-			break;
+			case GERMAN:
+				_LoadBitmap(App.dx.lpBackBuffer, "germany.bmp");
+				S_DumpScreen();
+				_LoadBitmap(App.dx.lpBackBuffer, "germany.bmp");
+				break;
 
-		case ITALIAN:
-			_LoadBitmap(App.dx.lpBackBuffer, "italy.bmp");
-			S_DumpScreen();
-			_LoadBitmap(App.dx.lpBackBuffer, "italy.bmp");
-			break;
+			case ITALIAN:
+				_LoadBitmap(App.dx.lpBackBuffer, "italy.bmp");
+				S_DumpScreen();
+				_LoadBitmap(App.dx.lpBackBuffer, "italy.bmp");
+				break;
 
-		case SPANISH:
-			_LoadBitmap(App.dx.lpBackBuffer, "spain.bmp");
-			S_DumpScreen();
-			_LoadBitmap(App.dx.lpBackBuffer, "spain.bmp");
-			break;
+			case SPANISH:
+				_LoadBitmap(App.dx.lpBackBuffer, "spain.bmp");
+				S_DumpScreen();
+				_LoadBitmap(App.dx.lpBackBuffer, "spain.bmp");
+				break;
 
-		case US:
-			_LoadBitmap(App.dx.lpBackBuffer, "usa.bmp");
-			S_DumpScreen();
-			_LoadBitmap(App.dx.lpBackBuffer, "usa.bmp");
-			break;
+			case US:
+				_LoadBitmap(App.dx.lpBackBuffer, "usa.bmp");
+				S_DumpScreen();
+				_LoadBitmap(App.dx.lpBackBuffer, "usa.bmp");
+				break;
 
-		case JAPAN:
-			_LoadBitmap(App.dx.lpBackBuffer, "japan.bmp");
-			S_DumpScreen();
-			_LoadBitmap(App.dx.lpBackBuffer, "japan.bmp");
-			break;
+			case JAPAN:
+				_LoadBitmap(App.dx.lpBackBuffer, "japan.bmp");
+				S_DumpScreen();
+				_LoadBitmap(App.dx.lpBackBuffer, "japan.bmp");
+				break;
+		}
 	}
 
-#ifdef TIMES_LEVEL
-	Sleep(2000);
+	if (get_game_mod_global_info()->tr_times_exclusive) {
+#ifdef USE_SDL
+		SDL_Delay(2000);
+#else
+		Sleep(2000);
 #endif
-#endif
+	}
 }
 
 void S_AnimateTextures(long n)

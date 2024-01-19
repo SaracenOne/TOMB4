@@ -22,8 +22,6 @@
 #define	CLRG(clr)	((clr >> 8) & 0xFF)		//shift b out of the way and 0xFF
 #define	CLRB(clr)	((clr) & 0xFF)			//and 0xFF
 
-/*misc*/
-#define SCRIPT_TEXT(num)		(&gfStringWad[gfStringOffset[num]])
 #define SetCutPlayed(num)	(CutSceneTriggered |= 1 << (num))
 #define SetCutNotPlayed(num)	(CutSceneTriggered &= ~(1 << (num)))
 #define CheckCutPlayed(num)	(CutSceneTriggered & (1 << (num)))
@@ -2491,12 +2489,10 @@ struct tomb4_options	//keep this at the bottom of the file, please
 	bool hang_game_thread;
 };
 
-#define NATIVE_ITEM_COUNT 256 // TRLE: For save compatibility
-
 #ifdef LEVEL_EDITOR
 #define ITEM_COUNT 6000 // TRLE: bumped from 256
 #else
-#define ITEM_COUNT NATIVE_ITEM_COUNT
+#define ITEM_COUNT 256
 #endif
 
 #pragma pack(pop)

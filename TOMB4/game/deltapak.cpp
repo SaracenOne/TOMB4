@@ -22,9 +22,8 @@
 #include "../specific/winmain.h"
 #include "lara.h"
 #include "gameflow.h"
-#ifdef TIMES_LEVEL
 #include "../specific/function_table.h"
-#endif
+#include "../tomb4/mod_config.h"
 
 static short frig_shadow_bbox[6] = { -165, 150, -777, 1, -87, 78 };
 static short frig_jeep_shadow_bbox[6] = { -600, 600, -777, 1, -600, 600 };
@@ -55,14 +54,12 @@ static short troop_chat_ranges24[16] = { 209, 490, 701, 975, 1146, 1583, 1654, 1
 static short lara_chat_ranges25[14] = { 476, 578, 976, 1018, 1028, 1069, 1317, 1340, 2065, 2178, 2835, 2865, -1, -1 };
 static short troop_chat_ranges25[26] = { 289, 363, 378, 449, 596, 604, 635, 744, 764, 780, 811, 959, 1088, 1157, 1191, 1313, 1360, 2046, 2227, 2295, 2330, 2821, 2877, 3322, -1, -1 };
 static short troop_chat_ranges26[4] = { 108, 432, -1, -1 };
-#ifdef TIMES_LEVEL
 static short lara_chat_ranges_times[28] = { 188, 271, 307, 330, 584, 638, 668, 700, 728, 755, 763, 819, 1181, 1238, 1263, 1290, 1363, 1411, 1926, 1934, 1981, 2011, 2017, 2045, 3030, 3095, -1, -1 };
 static short editor_chat_ranges_times[40] =
 {
 	340, 424, 432, 462, 480, 518, 521, 552, 843, 907, 931, 969, 974, 1002, 1020, 1057, 1060, 1090, 1110, 1119,
 	1123, 1172, 1299, 1352, 1417, 1423, 1442, 1513, 1544, 1627, 1634, 1691, 1710, 1770, 1775, 1843, 1864, 1902, -1, -1
 };
-#endif
 
 static CUTSEQ_ROUTINES cutseq_control_routines[] =
 {
@@ -97,9 +94,7 @@ static CUTSEQ_ROUTINES cutseq_control_routines[] =
 	{special1_init, 0, special1_end},
 	{special2_init, 0, special2_end},
 	{special2_init, special3_control, special3_end},
-#ifdef TIMES_LEVEL
 	{times_init, times_control, 0}
-#endif
 };
 
 long cutseq_trig = 0;
@@ -287,16 +282,16 @@ void handle_cutseq_triggering(long name)
 				if (GLOBAL_cutme->audio_track != -1)
 					S_StartSyncedAudio(GLOBAL_cutme->audio_track);
 			}
-#ifdef TIMES_LEVEL
-			else if (fuck == 31)
-#else
-			else if (fuck == 9 || fuck == 11 || fuck == 15 || fuck == 23)
-#endif
+			else if (
+				(get_game_mod_global_info()->tr_times_exclusive && (fuck == 31)) ||
+				(!get_game_mod_global_info()->tr_times_exclusive && ((fuck == 9 || fuck == 11 || fuck == 15 || fuck == 23)))
+				)
 			{
 				gfLevelComplete = gfCurrentLevel + 1;
-#ifdef TIMES_LEVEL
-				skipped_level = 1;
-#endif
+				if (get_game_mod_global_info()->tr_times_exclusive)
+				{
+					skipped_level = 1;
+				}
 				gfRequiredStartPos = 0;
 				cutseq_num = 0;
 				GLOBAL_playing_cutseq = 0;
@@ -1828,7 +1823,6 @@ void special1_end()
 	title_controls_locked_out = 0;
 }
 
-#ifdef TIMES_LEVEL
 void times_init()
 {
 	SetFogColor(128, 128, 128);
@@ -1840,4 +1834,3 @@ void times_control()
 	handle_actor_chatting(ACTOR2_SPEECH_HEAD1, 11, 1, ANIMATING16, editor_chat_ranges_times);
 	actor_chat_cnt = (actor_chat_cnt - 1) & 1;
 }
-#endif

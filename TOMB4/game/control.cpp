@@ -1108,12 +1108,12 @@ void TestTriggers(short* data, long heavy, long HeavyFlags, int room_number, int
 			if (camera_flags & IFL_INVISIBLE)
 				SpotCam[value].flags |= SP_FLYBYONESHOT;
 
-#ifdef LEVEL_EDITOR
-			if (bUseSpotCam && gfCurrentLevel)
-#else
-			if (bUseSpotCam)
-#endif
-				break;
+			if (bUseSpotCam) {
+				if (get_game_mod_global_info()->tr_level_editor && gfCurrentLevel > 0)
+					break;
+				else if (!get_game_mod_global_info()->tr_level_editor)
+					break;
+			}
 
 			bUseSpotCam = 1;
 

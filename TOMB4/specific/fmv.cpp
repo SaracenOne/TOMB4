@@ -14,6 +14,7 @@
 #include "cmdline.h"
 #include "gamemain.h"
 #include "LoadSave.h"
+#include "../tomb4/mod_config.h"
 
 #ifndef USE_SDL
 static void (__stdcall* BinkCopyToBuffer)(BINK_STRUCT*, LPVOID, LONG, long, long, long, long);
@@ -101,9 +102,9 @@ void ShowBinkFrame()
 
 long PlayFmvNow(long num)
 {
-#ifdef LEVEL_EDITOR
-	return 0;
-#endif
+	if (get_game_mod_global_info()->tr_level_editor) {
+		return 0;
+	}
 
 #ifndef USE_SDL
 	DXDISPLAYMODE* modes;

@@ -29,6 +29,7 @@ struct MOD_LEVEL_ENVIRONMENT_INFO {
 	unsigned int fog_start_range = DEFAULT_FOG_START_VALUE;
 	unsigned int fog_end_range = DEFAULT_FOG_END_VALUE;
 	unsigned int far_view = DEFAULT_FAR_VIEW_VALUE;
+	bool force_train_fog = false;
 };
 
 struct MOD_LEVEL_FONT_INFO {
@@ -175,7 +176,13 @@ struct TRNG_ENGINE_VERSION {
 	unsigned char trng_version_build = 7;
 };
 
+
 struct MOD_GLOBAL_INFO {
+	unsigned int tr_engine_version = 4;
+	bool tr_level_editor = true;
+	bool tr_times_exclusive = false;
+	bool tr_use_adpcm_audio = false;
+
 	// Default to latest known version.
 	TRNG_ENGINE_VERSION trng_engine_version;
 

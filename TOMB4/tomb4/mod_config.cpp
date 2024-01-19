@@ -313,6 +313,7 @@ void LoadGameModLevelEnvironmentInfo(const json_t* environment, MOD_LEVEL_ENVIRO
     READ_JSON_UINT32(fog_start_range, environment, environment_info);
     READ_JSON_UINT32(fog_end_range, environment, environment_info);
     READ_JSON_UINT32(far_view, environment, environment_info);
+    READ_JSON_BOOL(force_train_fog, environment, environment_info);
 }
 
 void LoadGameModLevelFontInfo(const json_t* font, MOD_LEVEL_FONT_INFO* font_info) {
@@ -748,17 +749,41 @@ void SetupDefaultBarsInfoForLevel(MOD_LEVEL_INFO* level_info) {
     level_info->bars_info.loading_bar.fade_color = 0xff000000;
 }
 
+void SetupDefaultStatInfoForLevel(MOD_LEVEL_INFO* level_info) {
+    level_info->stat_info.secret_count = 70;
+    if (get_game_mod_global_info()->tr_times_exclusive) {
+        level_info->stat_info.secret_count = 2;
+    }
+}
+
 void SetupLevelDefaults() {
     for (int i = 0; i < MOD_LEVEL_COUNT; i++) {
         if (i <= 3) {
             if (!scorpion_poison_override_found)
                 game_mod_config.level_info[i].creature_info.small_scorpion_is_poisonous = false;
         }
+
+        if (!get_game_mod_global_info()->tr_level_editor) {
+            if (i == 5 || i == 6) {
+                game_mod_config.level_info[i].environment_info.force_train_fog = true;
+            }
+        }
     }
 }
 
 void SetupGlobalDefaults() {
     MOD_GLOBAL_INFO* mod_global_info = &game_mod_config.global_info;
+
+#ifdef TIMES_LEVEL
+    mod_global_info->tr_times_exclusive = true;
+    mod_global_info->tr_level_editor = false;
+    mod_global_info->tr_use_adpcm_audio = true;
+#endif
+
+#ifndef LEVEL_EDITOR
+    mod_global_info->tr_level_editor = false;
+    mod_global_info->tr_use_adpcm_audio = true;
+#endif
 }
 
 void LoadGameModConfigFirstPass() {
@@ -783,6 +808,12 @@ void LoadGameModConfigFirstPass() {
                 if (global && JSON_OBJ == json_getType(global)) {
                     MOD_GLOBAL_INFO* mod_global_info = &game_mod_config.global_info;
 
+                    READ_JSON_UINT32(tr_engine_version, global, mod_global_info);
+                    READ_JSON_BOOL(tr_level_editor, global, mod_global_info);
+                    READ_JSON_BOOL(tr_times_exclusive, global, mod_global_info);
+                    READ_JSON_BOOL(tr_use_adpcm_audio, global, mod_global_info);
+
+                    // TRNG
                     READ_JSON_UINT8(trng_version_major, global, &mod_global_info->trng_engine_version);
                     READ_JSON_UINT8(trng_version_minor, global, &mod_global_info->trng_engine_version);
                     READ_JSON_UINT8(trng_version_maintainence, global, &mod_global_info->trng_engine_version);
@@ -929,6 +960,7 @@ void LoadGameModConfigFirstPass() {
     SetupDefaultSlotInfoForLevel(&global_level_info);
     SetupDefaultObjectInfoForLevel(&global_level_info);
     SetupDefaultBarsInfoForLevel(&global_level_info);
+    SetupDefaultStatInfoForLevel(&global_level_info);
 
     if (level && JSON_OBJ == json_getType(level)) {
         LoadGameModLevel(level, &global_level_info);
@@ -971,6 +1003,11 @@ void LoadGameModConfigSecondPass() {
                 const json_t* global = json_getProperty(root_json, "global_info");
                 if (global && JSON_OBJ == json_getType(global)) {
                     MOD_GLOBAL_INFO* mod_global_info = &game_mod_config.global_info;
+
+                    READ_JSON_UINT32(tr_engine_version, global, mod_global_info);
+                    READ_JSON_BOOL(tr_level_editor, global, mod_global_info);
+                    READ_JSON_BOOL(tr_times_exclusive, global, mod_global_info);
+                    READ_JSON_BOOL(tr_use_adpcm_audio, global, mod_global_info);
 
                     // TRNG
                     READ_JSON_UINT8(trng_version_major, global, &mod_global_info->trng_engine_version);

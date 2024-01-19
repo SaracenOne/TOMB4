@@ -1,6 +1,7 @@
 #pragma once
 #include "../global/types.h"
 
+char *SCRIPT_TEXT(int num);
 void DoGameflow();
 void DoLevel(uchar Name, uchar Audio);
 void DoTitle(uchar Name, uchar Audio);
@@ -182,11 +183,11 @@ enum gf_strings	//auto generated from the script compiler
 	TXT_Khufus_Queens_Pyramids,
 	TXT_Inside_The_Great_Pyramid,
 	TXT_Temple_Of_Horus,
-#ifdef TIMES_LEVEL
+	// Times Strings Start
 	TXT_The_Times_Office,
 	TXT_The_Times_Exclusive,
 	TXT_The_Gold_Mask,
-#endif
+	// Times Strings End
 	TXT_Unlimited_s,
 	TXT_USE,
 	TXT_CHOOSE_AMMO,
@@ -511,9 +512,9 @@ enum gf_strings	//auto generated from the script compiler
 	TXT_Demo_Mode_Esc_To_Exit,
 	TXT_Select_Level,
 	TXT_No_FMV,
-#ifdef LEVEL_EDITOR
+	// Level Editor Strings Start
 	TXT_OEM1,
-#endif
+	// Level Editor Strings End
 	TXT_THE_LAST_STRING_ENTRY,
 	TXT_NUM_STRINGS
 };

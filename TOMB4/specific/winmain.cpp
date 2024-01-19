@@ -1075,18 +1075,16 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
 		LoadSettings();
 	}
 
-#ifndef TIMES_LEVEL
-#ifndef LEVEL_EDITOR
-	if (!fmvs_disabled)
-	{
-		if (!LoadBinkStuff())
+	if (!get_game_mod_global_info()->tr_level_editor && !get_game_mod_global_info()->tr_times_exclusive) {
+		if (!fmvs_disabled)
 		{
-			MessageBox(0, "Failed to load Bink, disabling FMVs.", "Tomb Raider IV", 0);
-			fmvs_disabled = 1;
+			if (!LoadBinkStuff())
+			{
+				MessageBox(0, "Failed to load Bink, disabling FMVs.", "Tomb Raider IV", 0);
+				fmvs_disabled = 1;
+			}
 		}
 	}
-#endif
-#endif
 
 	SetWindowPos(App.hWnd, 0, App.dx.rScreen.left, App.dx.rScreen.top, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 	desktop = GetDesktopWindow();
