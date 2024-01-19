@@ -1801,6 +1801,7 @@ void do_boot_screen(long language)
 		}
 	}
 
+#ifndef SKIP_TIMES_DELAY
 	if (get_game_mod_global_info()->tr_times_exclusive) {
 #ifdef USE_SDL
 		SDL_Delay(2000);
@@ -1808,6 +1809,7 @@ void do_boot_screen(long language)
 		Sleep(2000);
 #endif
 	}
+#endif
 }
 
 void S_AnimateTextures(long n)
