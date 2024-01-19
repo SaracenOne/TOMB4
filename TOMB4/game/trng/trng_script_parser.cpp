@@ -131,7 +131,7 @@ char *NGGetString(short string_id) {
 		if (string_id > TXT_NUM_STRINGS) {
 			NGLog(NG_LOG_TYPE_ERROR, "Invalid string ID");
 		} else {
-			return SCRIPT_TEXT(string_id);
+			return GetStringForTextID(string_id);
 		}
 	} else {
 		short ng_string_id = string_id & ~(0x8000);

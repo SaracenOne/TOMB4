@@ -496,7 +496,7 @@ int main(int argc, char* argv[]) {
 	{
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR,
 			"Tomb4Plus",
-			SCRIPT_TEXT(TXT_Failed_To_Setup_DirectX),
+			GetStringForTextID(TXT_Failed_To_Setup_DirectX),
 			sdl_window);
 	}
 
@@ -1098,7 +1098,7 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
 
 	if (!DXCreate(dm->w, dm->h, dm->bpp, App.StartFlags, &App.dx, App.hWnd, WS_OVERLAPPEDWINDOW))
 	{
-		MessageBox(0, SCRIPT_TEXT(TXT_Failed_To_Setup_DirectX), "Tomb Raider IV", 0);
+		MessageBox(0, GetStringForTextID(TXT_Failed_To_Setup_DirectX), "Tomb Raider IV", 0);
 		return 0;
 	}
 

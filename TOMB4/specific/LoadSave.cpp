@@ -90,7 +90,7 @@ void DoOptions()
 
 		nMask = 17;
 		small_font = 1;
-		PrintString(phd_centerx >> 2, f, sel & 1 ? 1 : 2, SCRIPT_TEXT(TXT_Control_Method), 0);
+		PrintString(phd_centerx >> 2, f, sel & 1 ? 1 : 2, GetStringForTextID(TXT_Control_Method), 0);
 
 		y = 1;
 		i = 1;
@@ -99,25 +99,25 @@ void DoOptions()
 		PrintString(phd_centerx >> 2, f + y++ * font_height, sel & (1 << i++) ? 1 : 2, "\x1A", 0);
 		PrintString(phd_centerx >> 2, f + y++ * font_height, sel & (1 << i++) ? 1 : 2, "\x19", 0);
 		PrintString(phd_centerx >> 2, f + y++ * font_height, sel & (1 << i++) ? 1 : 2, "\x1B", 0);
-		PrintString(phd_centerx >> 2, f + y++ * font_height, sel & (1 << i++) ? 1 : 2, SCRIPT_TEXT(TXT_Duck), 0);
-		PrintString(phd_centerx >> 2, f + y++ * font_height, sel & (1 << i++) ? 1 : 2, SCRIPT_TEXT(TXT_Dash), 0);
-		PrintString(phd_centerx >> 2, f + y++ * font_height, sel & (1 << i++) ? 1 : 2, SCRIPT_TEXT(TXT_Walk), 0);
-		PrintString(phd_centerx >> 2, f + y++ * font_height, sel & (1 << i++) ? 1 : 2, SCRIPT_TEXT(TXT_Jump), 0);
-		PrintString(phd_centerx >> 2, f + y++ * font_height, sel & (1 << i++) ? 1 : 2, SCRIPT_TEXT(TXT_Action), 0);
-		PrintString(phd_centerx >> 2, f + y++ * font_height, sel & (1 << i++) ? 1 : 2, SCRIPT_TEXT(TXT_Draw_Weapon), 0);
-		PrintString(phd_centerx >> 2, f + y++ * font_height, sel & (1 << i++) ? 1 : 2, SCRIPT_TEXT(TXT_Use_Flare), 0);
-		PrintString(phd_centerx >> 2, f + y++ * font_height, sel & (1 << i++) ? 1 : 2, SCRIPT_TEXT(TXT_Look), 0);
-		PrintString(phd_centerx >> 2, f + y++ * font_height, sel & (1 << i++) ? 1 : 2, SCRIPT_TEXT(TXT_Roll), 0);
-		PrintString(phd_centerx >> 2, f + y++ * font_height, sel & (1 << i++) ? 1 : 2, SCRIPT_TEXT(TXT_Inventory), 0);
-		PrintString(phd_centerx >> 2, f + y++ * font_height, sel & (1 << i++) ? 1 : 2, SCRIPT_TEXT(TXT_Step_Left), 0);
-		PrintString(phd_centerx >> 2, f + y++ * font_height, sel & (1 << i++) ? 1 : 2, SCRIPT_TEXT(TXT_Step_Right), 0);
+		PrintString(phd_centerx >> 2, f + y++ * font_height, sel & (1 << i++) ? 1 : 2, GetStringForTextID(TXT_Duck), 0);
+		PrintString(phd_centerx >> 2, f + y++ * font_height, sel & (1 << i++) ? 1 : 2, GetStringForTextID(TXT_Dash), 0);
+		PrintString(phd_centerx >> 2, f + y++ * font_height, sel & (1 << i++) ? 1 : 2, GetStringForTextID(TXT_Walk), 0);
+		PrintString(phd_centerx >> 2, f + y++ * font_height, sel & (1 << i++) ? 1 : 2, GetStringForTextID(TXT_Jump), 0);
+		PrintString(phd_centerx >> 2, f + y++ * font_height, sel & (1 << i++) ? 1 : 2, GetStringForTextID(TXT_Action), 0);
+		PrintString(phd_centerx >> 2, f + y++ * font_height, sel & (1 << i++) ? 1 : 2, GetStringForTextID(TXT_Draw_Weapon), 0);
+		PrintString(phd_centerx >> 2, f + y++ * font_height, sel & (1 << i++) ? 1 : 2, GetStringForTextID(TXT_Use_Flare), 0);
+		PrintString(phd_centerx >> 2, f + y++ * font_height, sel & (1 << i++) ? 1 : 2, GetStringForTextID(TXT_Look), 0);
+		PrintString(phd_centerx >> 2, f + y++ * font_height, sel & (1 << i++) ? 1 : 2, GetStringForTextID(TXT_Roll), 0);
+		PrintString(phd_centerx >> 2, f + y++ * font_height, sel & (1 << i++) ? 1 : 2, GetStringForTextID(TXT_Inventory), 0);
+		PrintString(phd_centerx >> 2, f + y++ * font_height, sel & (1 << i++) ? 1 : 2, GetStringForTextID(TXT_Step_Left), 0);
+		PrintString(phd_centerx >> 2, f + y++ * font_height, sel & (1 << i++) ? 1 : 2, GetStringForTextID(TXT_Step_Right), 0);
 
 		if (!ControlMethod)
-			PrintString(phd_centerx + (phd_centerx >> 2), f, sel2 & 1 ? 1 : 6, SCRIPT_TEXT(TXT_Keyboard), 0);
+			PrintString(phd_centerx + (phd_centerx >> 2), f, sel2 & 1 ? 1 : 6, GetStringForTextID(TXT_Keyboard), 0);
 		else if (ControlMethod == 1)
-			PrintString(phd_centerx + (phd_centerx >> 2), f, sel2 & 1 ? 1 : 6, SCRIPT_TEXT(TXT_Joystick), 0);
+			PrintString(phd_centerx + (phd_centerx >> 2), f, sel2 & 1 ? 1 : 6, GetStringForTextID(TXT_Joystick), 0);
 		else if (ControlMethod == 2)
-			PrintString(phd_centerx + (phd_centerx >> 2), f, sel2 & 1 ? 1 : 6, SCRIPT_TEXT(TXT_Reset), 0);
+			PrintString(phd_centerx + (phd_centerx >> 2), f, sel2 & 1 ? 1 : 6, GetStringForTextID(TXT_Reset), 0);
 
 		y = 1;
 		i = 1;
@@ -126,7 +126,7 @@ void DoOptions()
 		{
 			int dik = layout[1][lp];
 
-			txt = (waiting_for_key && sel2 & (1 << i)) ? SCRIPT_TEXT(TXT_Waiting) : keyboard_buttons[dik];
+			txt = (waiting_for_key && sel2 & (1 << i)) ? GetStringForTextID(TXT_Waiting) : keyboard_buttons[dik];
 			if (txt)
 				PrintString(phd_centerx + (phd_centerx >> 2), f + y++ * font_height, sel2 & (1 << i++) ? 1 : 6, txt, 0);
 			else
@@ -322,26 +322,26 @@ void DoOptions()
 	{
 		nMask = 6;
 		f = 3 * font_height;
-		PrintString(phd_centerx, f, 6, SCRIPT_TEXT(TXT_Options), FF_CENTER);
-		PrintString(phd_centerx, f + font_height + (font_height >> 1), sel & 1 ? 1 : 2, SCRIPT_TEXT(TXT_Control_Configuration), FF_CENTER);
-		PrintString(phd_centerx >> 2, f + 3 * font_height, sel & 0x2 ? 1 : 2, SCRIPT_TEXT(TXT_Music_Volume), 0);
-		PrintString(phd_centerx >> 2, f + 4 * font_height, sel & 0x4 ? 1 : 2, SCRIPT_TEXT(TXT_SFX_Volume), 0);
-		PrintString(phd_centerx >> 2, f + 5 * font_height, sel & 0x8 ? 1 : 2, SCRIPT_TEXT(TXT_Sound_Quality), 0);
-		PrintString(phd_centerx >> 2, f + 6 * font_height, sel & 0x10 ? 1 : 2, SCRIPT_TEXT(TXT_Targeting), 0);
+		PrintString(phd_centerx, f, 6, GetStringForTextID(TXT_Options), FF_CENTER);
+		PrintString(phd_centerx, f + font_height + (font_height >> 1), sel & 1 ? 1 : 2, GetStringForTextID(TXT_Control_Configuration), FF_CENTER);
+		PrintString(phd_centerx >> 2, f + 3 * font_height, sel & 0x2 ? 1 : 2, GetStringForTextID(TXT_Music_Volume), 0);
+		PrintString(phd_centerx >> 2, f + 4 * font_height, sel & 0x4 ? 1 : 2, GetStringForTextID(TXT_SFX_Volume), 0);
+		PrintString(phd_centerx >> 2, f + 5 * font_height, sel & 0x8 ? 1 : 2, GetStringForTextID(TXT_Sound_Quality), 0);
+		PrintString(phd_centerx >> 2, f + 6 * font_height, sel & 0x10 ? 1 : 2, GetStringForTextID(TXT_Targeting), 0);
 		DoSlider(400, 3 * font_height - (font_height >> 1) + f + 4, 200, 16, MusicVolume, 0xFF1F1F1F, 0xFF3F3FFF, mSliderCol);
 		DoSlider(400, f + 4 * font_height + 4 - (font_height >> 1), 200, 16, SFXVolume, 0xFF1F1F1F, 0xFF3F3FFF, sSliderCol);
 
 		if (!SoundQuality)
-			PrintString(phd_centerx + (phd_centerx >> 2), f + 5 * font_height, sel & 8 ? 1 : 6, SCRIPT_TEXT(TXT_Low), 0);
+			PrintString(phd_centerx + (phd_centerx >> 2), f + 5 * font_height, sel & 8 ? 1 : 6, GetStringForTextID(TXT_Low), 0);
 		else if (SoundQuality == 1)
-			PrintString(phd_centerx + (phd_centerx >> 2), f + 5 * font_height, sel & 8 ? 1 : 6, SCRIPT_TEXT(TXT_Medium), 0);
+			PrintString(phd_centerx + (phd_centerx >> 2), f + 5 * font_height, sel & 8 ? 1 : 6, GetStringForTextID(TXT_Medium), 0);
 		else if (SoundQuality == 2)
-			PrintString(phd_centerx + (phd_centerx >> 2), f + 5 * font_height, sel & 8 ? 1 : 6, SCRIPT_TEXT(TXT_High), 0);
+			PrintString(phd_centerx + (phd_centerx >> 2), f + 5 * font_height, sel & 8 ? 1 : 6, GetStringForTextID(TXT_High), 0);
 
 		if (App.AutoTarget)
-			PrintString(phd_centerx + (phd_centerx >> 2), f + 6 * font_height, sel & 0x10 ? 1 : 6, SCRIPT_TEXT(TXT_Automatic), 0);
+			PrintString(phd_centerx + (phd_centerx >> 2), f + 6 * font_height, sel & 0x10 ? 1 : 6, GetStringForTextID(TXT_Automatic), 0);
 		else
-			PrintString(phd_centerx + (phd_centerx >> 2), f + 6 * font_height, sel & 0x10 ? 1 : 6, SCRIPT_TEXT(TXT_Manual), 0);
+			PrintString(phd_centerx + (phd_centerx >> 2), f + 6 * font_height, sel & 0x10 ? 1 : 6, GetStringForTextID(TXT_Manual), 0);
 
 		PrintString(phd_centerx, (font_height >> 1) + f + 7 * font_height, sel & 0x20 ? 1 : 2, "tomb4 options", FF_CENTER);
 
@@ -479,13 +479,13 @@ void DisplayStatsUCunt()
 	char buf[40];
 
 	y = phd_centery - (font_height << 2);
-	PrintString(phd_centerx, y, 6, SCRIPT_TEXT(TXT_Statistics), FF_CENTER);
-	PrintString(phd_centerx, y + 2 * font_height, 2, SCRIPT_TEXT(gfLevelNames[gfCurrentLevel]), FF_CENTER);
-	PrintString(phd_centerx >> 2, y + 3 * font_height, 2, SCRIPT_TEXT(TXT_Time_Taken), 0);
-	PrintString(phd_centerx >> 2, y + 4 * font_height, 2, SCRIPT_TEXT(TXT_Distance_Travelled), 0);
-	PrintString(phd_centerx >> 2, y + 5 * font_height, 2, SCRIPT_TEXT(TXT_Ammo_Used), 0);
-	PrintString(phd_centerx >> 2, y + 6 * font_height, 2, SCRIPT_TEXT(TXT_Health_Packs_Used), 0);
-	PrintString(phd_centerx >> 2, y + 7 * font_height, 2, SCRIPT_TEXT(TXT_Secrets_Found), 0);
+	PrintString(phd_centerx, y, 6, GetStringForTextID(TXT_Statistics), FF_CENTER);
+	PrintString(phd_centerx, y + 2 * font_height, 2, GetStringForTextID(gfLevelNames[gfCurrentLevel]), FF_CENTER);
+	PrintString(phd_centerx >> 2, y + 3 * font_height, 2, GetStringForTextID(TXT_Time_Taken), 0);
+	PrintString(phd_centerx >> 2, y + 4 * font_height, 2, GetStringForTextID(TXT_Distance_Travelled), 0);
+	PrintString(phd_centerx >> 2, y + 5 * font_height, 2, GetStringForTextID(TXT_Ammo_Used), 0);
+	PrintString(phd_centerx >> 2, y + 6 * font_height, 2, GetStringForTextID(TXT_Health_Packs_Used), 0);
+	PrintString(phd_centerx >> 2, y + 7 * font_height, 2, GetStringForTextID(TXT_Secrets_Found), 0);
 
 	sec = GameTimer / 30;
 	days = sec / 86400;
@@ -528,10 +528,10 @@ long S_DisplayPauseMenu(long reset_selection, long reset_menu)
 		else
 		{
 			y = phd_centery - font_height;
-			PrintString(phd_centerx, y - ((3 * font_height) >> 1), 6, SCRIPT_TEXT(TXT_Paused), FF_CENTER);
-			PrintString(phd_centerx, y, selection & 1 ? 1 : 2, SCRIPT_TEXT(TXT_Statistics), FF_CENTER);
-			PrintString(phd_centerx, y + font_height, selection & 2 ? 1 : 2, SCRIPT_TEXT(TXT_Options), FF_CENTER);
-			PrintString(phd_centerx, y + 2 * font_height, selection & 4 ? 1 : 2, SCRIPT_TEXT(TXT_Exit_to_Title), FF_CENTER);
+			PrintString(phd_centerx, y - ((3 * font_height) >> 1), 6, GetStringForTextID(TXT_Paused), FF_CENTER);
+			PrintString(phd_centerx, y, selection & 1 ? 1 : 2, GetStringForTextID(TXT_Statistics), FF_CENTER);
+			PrintString(phd_centerx, y + font_height, selection & 2 ? 1 : 2, GetStringForTextID(TXT_Options), FF_CENTER);
+			PrintString(phd_centerx, y + 2 * font_height, selection & 4 ? 1 : 2, GetStringForTextID(TXT_Exit_to_Title), FF_CENTER);
 
 			if (dbinput & IN_FORWARD)
 			{
@@ -613,7 +613,7 @@ long DoLoadSave(long LoadSave)
 	else
 		txt = TXT_Load_Game;
 
-	PrintString(phd_centerx, font_height, 6, SCRIPT_TEXT(txt), FF_CENTER);
+	PrintString(phd_centerx, font_height, 6, GetStringForTextID(txt), FF_CENTER);
 
 	for (int i = 0; i < 15; i++)
 	{
@@ -638,7 +638,7 @@ long DoLoadSave(long LoadSave)
 			wsprintf(string, "%03d", pSave->num);
 			PrintString(phd_centerx - long((float)phd_winwidth / 640.0F * 310.0), font_height + font_height * (i + 2), color, string, 0);
 			PrintString(phd_centerx - long((float)phd_winwidth / 640.0F * 270.0), font_height + font_height * (i + 2), color, name, 0);
-			wsprintf(string, "%d %s %02d:%02d:%02d", pSave->days, SCRIPT_TEXT(TXT_days), pSave->hours, pSave->minutes, pSave->seconds);
+			wsprintf(string, "%d %s %02d:%02d:%02d", pSave->days, GetStringForTextID(TXT_days), pSave->hours, pSave->minutes, pSave->seconds);
 			PrintString(phd_centerx - long((float)phd_winwidth / 640.0F * -135.0), font_height + font_height * (i + 2), color, string, 0);
 		}
 		else
@@ -1111,7 +1111,7 @@ long GetSaveLoadFiles()
 		if (!file)
 		{
 			pSave->valid = 0;
-			strcpy(pSave->name, SCRIPT_TEXT(TXT_Empty_Slot));
+			strcpy(pSave->name, GetStringForTextID(TXT_Empty_Slot));
 			continue;
 		}
 
@@ -1126,7 +1126,7 @@ long GetSaveLoadFiles()
 		if (!CheckSumValid((char*)&save_info))
 		{
 			pSave->valid = 0;
-			strcpy(pSave->name, SCRIPT_TEXT(TXT_Empty_Slot));
+			strcpy(pSave->name, GetStringForTextID(TXT_Empty_Slot));
 			continue;
 		}
 

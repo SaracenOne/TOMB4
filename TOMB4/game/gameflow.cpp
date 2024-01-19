@@ -160,16 +160,29 @@ static char fmv_to_play[2] = { 0, 0 };
 static char num_fmvs = 0;
 
 /*misc*/
-char* SCRIPT_TEXT(int num) {
-	int slc = num;
-	if (!get_game_mod_global_info()->tr_times_exclusive && slc > TXT_The_Gold_Mask) {
-		slc -= 3;
+
+char* GetStringForTextID(int id) {
+	int off_id = id;
+	if (!get_game_mod_global_info()->tr_times_exclusive && off_id > TXT_The_Gold_Mask) {
+		off_id -= 3;
 	}
 
-	if (!get_game_mod_global_info()->tr_level_editor && slc > TXT_OEM1) {
-		slc -= 1;
+	if (!get_game_mod_global_info()->tr_level_editor && off_id > TXT_OEM1) {
+		off_id -= 1;
 	}
-	return &gfStringWad[gfStringOffset[slc]];
+	return &gfStringWad[gfStringOffset[off_id]];
+}
+
+int CalculateTextIDForPuzzleItemName(int id) {
+	int off_id = id;
+	if (!get_game_mod_global_info()->tr_times_exclusive && off_id > TXT_The_Gold_Mask) {
+		off_id += 3;
+	}
+
+	if (!get_game_mod_global_info()->tr_level_editor && off_id > TXT_OEM1) {
+		off_id += 1;
+	}
+	return off_id;
 }
 
 void DoGameflow()
@@ -177,9 +190,10 @@ void DoGameflow()
 	uchar* gf;
 	uchar n;
 
-#ifndef TIMES_LEVEL
-	PlayFmvNow(0);
-#endif
+	if (!get_game_mod_global_info()->tr_times_exclusive)
+	{
+		PlayFmvNow(0);
+	}
 	do_boot_screen(Gameflow->Language);
 	num_fmvs = 0;
 	fmv_to_play[0] = 0;
@@ -192,10 +206,11 @@ void DoGameflow()
 		switch (n = *gf++)
 		{
 		case CMD_FMV:
-#ifndef TIMES_LEVEL
-			fmv_to_play[num_fmvs] = gf[0];
-			num_fmvs++;
-#endif
+			if (!get_game_mod_global_info()->tr_times_exclusive)
+			{
+				fmv_to_play[num_fmvs] = gf[0];
+				num_fmvs++;
+			}
 			gf++;
 			break;
 
@@ -444,7 +459,7 @@ void DoGameflow()
 			else if (n >= CMD_PICKUPCOMBO1_1 && n <= CMD_PICKUPCOMBO4_2)
 				n -= 113;
 
-			inventry_objects_list[n].objname = gf[0] | (gf[1] << 8);
+			inventry_objects_list[n].objname = CalculateTextIDForPuzzleItemName(gf[0] | (gf[1] << 8));
 			inventry_objects_list[n].yoff = gf[2] | (gf[3] << 8);
 			inventry_objects_list[n].scale1 = gf[4] | (gf[5] << 8);
 			inventry_objects_list[n].yrot = gf[6] | (gf[7] << 8);
@@ -567,7 +582,7 @@ void DoLevel(uchar Name, uchar Audio)
 
 		if (gfLegendTime && !DestFadeScreenHeight && !FadeScreenHeight && !cutseq_num)
 		{
-			PrintString(phd_winwidth >> 1, phd_winymax - font_height, 2, SCRIPT_TEXT(gfLegend), FF_CENTER);
+			PrintString(phd_winwidth >> 1, phd_winymax - font_height, 2, GetStringForTextID(gfLegend), FF_CENTER);
 			gfLegendTime--;
 		}
 
@@ -707,7 +722,7 @@ long TitleOptions()
 	switch (menu)
 	{
 	case 1:
-		PrintString(phd_centerx, font_height + phd_winymin, 6, SCRIPT_TEXT(TXT_Select_Level), FF_CENTER);
+		PrintString(phd_centerx, font_height + phd_winymin, 6, GetStringForTextID(TXT_Select_Level), FF_CENTER);
 
 		if (Gameflow->nLevels < 10)
 		{
@@ -748,7 +763,7 @@ long TitleOptions()
 		for (lp = nFirst; lp < nLevels + nFirst; lp++)
 		{
 			y += font_height;
-			PrintString(phd_centerx, y, selection & (1i64 << (lp - 1)) ? 1 : 2, SCRIPT_TEXT(gfLevelNames[lp]), FF_CENTER);
+			PrintString(phd_centerx, y, selection & (1i64 << (lp - 1)) ? 1 : 2, GetStringForTextID(gfLevelNames[lp]), FF_CENTER);
 		}
 
 		flag = 1i64 << (Gameflow->nLevels - 2);
@@ -775,10 +790,10 @@ long TitleOptions()
 	case 0:
 		ShowTitle();
 		Chris_Menu = 0;
-		PrintString(phd_centerx, phd_winymax - 4 * font_height, (selection & 1) ? 1 : 2, SCRIPT_TEXT(TXT_New_Game), FF_CENTER);
-		PrintString(phd_centerx, phd_winymax - 3 * font_height, (selection & 2) ? 1 : 2, SCRIPT_TEXT(TXT_Load_Game), FF_CENTER);
-		PrintString(phd_centerx, phd_winymax - 2 * font_height, (selection & 4) ? 1 : 2, SCRIPT_TEXT(TXT_Options), FF_CENTER);
-		PrintString(phd_centerx, phd_winymax - 1 * font_height, (selection & 8) ? 1 : 2, SCRIPT_TEXT(TXT_Exit), FF_CENTER);
+		PrintString(phd_centerx, phd_winymax - 4 * font_height, (selection & 1) ? 1 : 2, GetStringForTextID(TXT_New_Game), FF_CENTER);
+		PrintString(phd_centerx, phd_winymax - 3 * font_height, (selection & 2) ? 1 : 2, GetStringForTextID(TXT_Load_Game), FF_CENTER);
+		PrintString(phd_centerx, phd_winymax - 2 * font_height, (selection & 4) ? 1 : 2, GetStringForTextID(TXT_Options), FF_CENTER);
+		PrintString(phd_centerx, phd_winymax - 1 * font_height, (selection & 8) ? 1 : 2, GetStringForTextID(TXT_Exit), FF_CENTER);
 		flag = 8;
 		break;
 
@@ -1168,7 +1183,7 @@ long DoCredits()
 		if (y < font_height + phd_winheight + 1 && y > -font_height)
 		{
 			if (*s == '%')
-				PrintString(phd_winwidth >> 1, y, 6, SCRIPT_TEXT(CreditGroups[atoi(s + 1)]), FF_CENTER);
+				PrintString(phd_winwidth >> 1, y, 6, GetStringForTextID(CreditGroups[atoi(s + 1)]), FF_CENTER);
 			else if (*s != '0')
 				PrintString(phd_winwidth >> 1, y, 2 + (i == 72 ? 4 : 0), s, FF_CENTER);
 
