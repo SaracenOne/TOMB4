@@ -343,7 +343,54 @@ FURRResult furr_cmd_add_puzzlecombo(FURRParameters params) {
 // Params:
 // SUPPLY_ID
 FURRResult furr_cmd_set_supply(FURRParameters params) {
-	return FURR_RESULT_UNIMPLEMENTED;
+	switch (params.first_parameter) {
+		case 8445951: // (Pistol Ammo)
+			lara.num_pistols_ammo = params.second_parameter;
+			break;
+		case 8445953: // (Uzi Ammo)
+			lara.num_uzi_ammo = params.second_parameter;
+			break;
+		case 8445957: // (Shotgun Normal Ammo)
+			lara.num_shotgun_ammo1 = params.second_parameter;
+			break;
+		case 8445959: // (Shotgun Wideshot Ammo)
+			lara.num_shotgun_ammo1 = params.second_parameter;
+			break;
+		case 8445955: // (Revolver Ammo)
+			lara.num_revolver_ammo = params.second_parameter;
+			break;
+		case 8445961: // (Grenade Normal Ammo)
+			lara.num_grenade_ammo1 = params.second_parameter;
+			break;
+		case 8445963: // (Grenade Super Ammo)
+			lara.num_grenade_ammo2 = params.second_parameter;
+			break;
+		case 8445965: // (Grenade Flash Ammo)
+			lara.num_grenade_ammo3 = params.second_parameter;
+			break;
+		case 8445967: // (Crossbow Normal Ammo)
+			lara.num_crossbow_ammo1 = params.second_parameter;
+			break;
+		case 8445969: // (Crossbow Poison Ammo)
+			lara.num_crossbow_ammo2 = params.second_parameter;
+			break;
+		case 8445971: // (Crossbow Explosive Ammo)
+			lara.num_crossbow_ammo3 = params.second_parameter;
+			break;
+		case 8445945: // (Small Medkit)
+			lara.num_small_medipack = params.second_parameter;
+			break;
+		case 8445947: // (Large Medkit)
+			lara.num_large_medipack = params.second_parameter;
+			break;
+		case 8445949: // (Flares)
+			lara.num_flares = params.second_parameter;
+			break;
+		default:
+			return FURR_RESULT_ERROR;
+	}
+
+	return FURR_RESULT_OK;
 }
 
 // Params:
