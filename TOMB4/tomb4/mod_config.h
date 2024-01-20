@@ -197,6 +197,7 @@ struct MOD_GLOBAL_INFO {
 	bool trng_pushable_extended_ocb = false; // TRNG (climable pushables)
 	bool trng_switch_extended_ocb = false; // TRNG (custom switch animations)
 	bool trng_hack_allow_meshes_with_exactly_256_vertices = false; // TRNG seems to have a special hack which allows meshes of 256 verticies
+	bool trng_advanced_block_raising_behaviour = false;
 
 	bool trep_using_extended_saves = false;
 

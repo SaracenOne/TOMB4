@@ -580,8 +580,11 @@ void MovableBlockCollision(short item_number, ITEM_INFO* laraitem, COLL_INFO* co
 	// TODO: currently, climable blocks are not compatible with raising blocks.
 	if (climbable_block_height == 0)
 	{
-		item->pos.y_pos = GetHeight(GetFloor(item->pos.x_pos, item->pos.y_pos - 256, item->pos.z_pos, &room_number),
-			item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
+		if (!get_game_mod_global_info()->trng_advanced_block_raising_behaviour)
+		{
+			item->pos.y_pos = GetHeight(GetFloor(item->pos.x_pos, item->pos.y_pos - 256, item->pos.z_pos, &room_number),
+				item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
+		}
 	}
 
 	if (item->room_number != room_number)

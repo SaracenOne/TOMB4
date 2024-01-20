@@ -2114,6 +2114,7 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 			get_game_mod_global_info()->trng_switch_extended_ocb = true;
 		}
 		get_game_mod_global_info()->trng_hack_allow_meshes_with_exactly_256_vertices = true;
+		get_game_mod_global_info()->trng_advanced_block_raising_behaviour = true;
 
 		unsigned int options_header_block_start_position = offset;
 

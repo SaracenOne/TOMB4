@@ -1267,6 +1267,34 @@ void ControlBurningFloor(short item_number)
 	}
 }
 
+ITEM_INFO *GetPushableForRaisingBlock(ITEM_INFO* item, int check_range) {
+	ITEM_INFO** itemlist = nullptr;
+	itemlist = (ITEM_INFO**)&tsv_buffer[0];
+	ITEM_INFO* collided;
+	GetCollidedObjects(item, check_range, 1, itemlist, 0, 0);
+
+	if (itemlist[0])
+	{
+		for (int i = 0; itemlist[0] != 0; i++, itemlist++)
+		{
+			collided = itemlist[0];
+
+			if (collided->object_number >= PUSHABLE_OBJECT1 && collided->object_number <= PUSHABLE_OBJECT5)
+			{
+				if (
+					collided->pos.y_pos <= item->pos.y_pos &&
+					collided->pos.x_pos >= item->pos.x_pos &&
+					collided->pos.z_pos == item->pos.z_pos)
+				{
+					return collided;
+				}
+			}
+		}
+	}
+
+	return nullptr;
+}
+
 void ControlRaisingBlock(short item_number)
 {
 	ITEM_INFO* item;
@@ -1289,6 +1317,17 @@ void ControlRaisingBlock(short item_number)
 		{
 			SoundEffect(SFX_RUMBLE_NEXTDOOR, &item->pos, SFX_DEFAULT);
 			item->item_flags[1] += 64;
+
+			// TRNG
+			if (get_game_mod_global_info()->trng_advanced_block_raising_behaviour)
+			{
+				// TRNG
+				ITEM_INFO* pushable = GetPushableForRaisingBlock(item, item->object_number == RAISING_BLOCK2 ? 2048 : 1024);
+				if (pushable)
+				{
+					pushable->pos.y_pos -= item->object_number == RAISING_BLOCK2 ? 32 : 16;
+				}
+			}
 
 			if (item->trigger_flags && abs(item->pos.x_pos - lara_item->pos.x_pos) < 10240 &&
 				abs(item->pos.y_pos - lara_item->pos.y_pos) < 10240 && abs(item->pos.z_pos - lara_item->pos.z_pos) < 10240)
@@ -1314,6 +1353,16 @@ void ControlRaisingBlock(short item_number)
 		}
 
 		item->item_flags[1] -= 64;
+		
+		// TRNG
+		if (get_game_mod_global_info()->trng_advanced_block_raising_behaviour)
+		{
+			ITEM_INFO* pushable = GetPushableForRaisingBlock(item, item->object_number == RAISING_BLOCK2 ? 2048 : 1024);
+			if (pushable)
+			{
+				pushable->pos.y_pos += item->object_number == RAISING_BLOCK2 ? 32 : 16;
+			}
+		}
 	}
 	else if (item->item_flags[2])
 	{
