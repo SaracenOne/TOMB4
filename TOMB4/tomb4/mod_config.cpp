@@ -422,6 +422,8 @@ void LoadGameModLevelMiscInfo(const json_t *misc, MOD_LEVEL_MISC_INFO *misc_info
     READ_JSON_INTEGER_CAST(rain_type, misc, misc_info, WeatherType);
     READ_JSON_INTEGER_CAST(snow_type, misc, misc_info, WeatherType);
 
+    READ_JSON_BOOL(draw_legend_on_flyby, misc, misc_info);
+    READ_JSON_UINT32(legend_timer, misc, misc_info);
     READ_JSON_BOOL(lara_impales_on_spikes, misc, misc_info);
     READ_JSON_BOOL(enable_ricochet_sound_effect, misc, misc_info);
     READ_JSON_BOOL(enable_standing_pushables, misc, misc_info);

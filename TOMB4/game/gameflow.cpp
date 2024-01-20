@@ -145,7 +145,7 @@ char Chris_Menu = 0;
 char title_controls_locked_out;
 
 uchar gfLegend;
-uchar gfLegendTime = 0;
+ulong gfLegendTime = 0;
 
 static ushort* gfScriptOffset;
 static uchar* gfScriptWad = 0;
@@ -391,7 +391,7 @@ void DoGameflow()
 			gf++;
 
 			if (gfGameMode != 4)
-				gfLegendTime = 150;
+				gfLegendTime = get_game_mod_level_misc_info(gfCurrentLevel)->legend_timer;
 
 			break;
 
@@ -580,7 +580,7 @@ void DoLevel(uchar Name, uchar Audio)
 
 		S_InitialisePolyList();
 
-		if (gfLegendTime && !DestFadeScreenHeight && !FadeScreenHeight && !cutseq_num)
+		if (gfLegendTime && !cutseq_num && ((!DestFadeScreenHeight && !FadeScreenHeight) || get_game_mod_level_misc_info(gfCurrentLevel)->draw_legend_on_flyby))
 		{
 			PrintString(phd_winwidth >> 1, phd_winymax - font_height, 2, GetStringForTextID(gfLegend), FF_CENTER);
 			gfLegendTime--;

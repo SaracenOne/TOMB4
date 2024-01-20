@@ -46,7 +46,7 @@ extern char Chris_Menu;
 extern char title_controls_locked_out;
 
 extern uchar gfLegend;
-extern uchar gfLegendTime;
+extern ulong gfLegendTime;
 
 enum gf_commands
 {
