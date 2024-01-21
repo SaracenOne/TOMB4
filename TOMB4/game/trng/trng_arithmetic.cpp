@@ -23,7 +23,11 @@ unsigned char NGNumericOperationByte(NGNumericOperationType number_operation_typ
 			return variable * value;
 		}
 		case NG_DIVIDE: {
-			return variable / value;
+			if (value != 0) {
+				return variable / value;
+			} else {
+				return 0;
+			}
 		}
 		case NG_BIT_SET: {
 			return variable | (1 << value);
