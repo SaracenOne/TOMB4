@@ -1026,10 +1026,10 @@ void LoadGameflow()
 	char* d;
 	long l, end;
 
-	NGScriptInit();
-
 	s = 0;
 	int gameflow_len = LoadFile("SCRIPT.DAT", &s);
+
+	NGScriptInit(s, gameflow_len - (sizeof(unsigned int) * 2), gameflow_len);
 
 	gfScriptFile = (uchar*)s;
 

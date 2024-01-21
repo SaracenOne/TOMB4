@@ -35,7 +35,36 @@ scr_offset += sizeof(short)
 #define NG_READ_32(scr_buffer, scr_offset) (unsigned int)(((unsigned char)scr_buffer[scr_offset]) | (((unsigned int)(unsigned char)scr_buffer[scr_offset + 1]) << 8) | (((unsigned int)(unsigned char)scr_buffer[scr_offset + 2]) << 16) | (((unsigned int)(unsigned char)scr_buffer[scr_offset + 3]) << 24)); \
 scr_offset += sizeof(int)
 
-void NGScriptInit() {
+void NGDecryptScriptBlock(char *block) {
+	const char XOR_CYPHER[] = { 0xEF, 0x55, 0xE1, 0xF8, 0x3D, 0x6F, 0xD6, 0x19, 0xDA, 0x97, 0x1D, 0x8B, 0x85, 0x0F, 0xB4, 0x0A, 0xC4 };
+	const char SWIZZLE_CYPHER[] = { 0x39, 0x31, 0x01, 0x07, 0x24, 0x25, 0x00, 0x11, 0x2D, 0x0D, 0x28, 0x2C, 0x2E, 0x21, 0x1E, 0x22, 0x14, 0x29, 0x1A, 0x13, 0x3B, 0x35, 0x2B, 0x02, 0x16, 0x06, 0x17, 0x09, 0x1F, 0x0A, 0x15, 0x0F, 0x05, 0x08, 0x2A, 0x18, 0x37, 0x0E, 0x30, 0x38, 0x2F, 0x3C, 0x0C, 0x27, 0x1C, 0x20, 0x10, 0x1B, 0x34, 0x23, 0x3E, 0x3A, 0x3F, 0x0B, 0x12, 0x26, 0x04, 0x36, 0x32, 0x3D, 0x33, 0x19, 0x1D, 0x03 };
+
+	int block_counter = 0;
+	for (int i = 0; i < 64; i++) {
+		if (block_counter >= sizeof(XOR_CYPHER)) {
+			block_counter = 0;
+		}
+
+		block[i] ^= XOR_CYPHER[block_counter];
+		block_counter++;
+	}
+
+	char decrypted_block[64];
+
+	for (int i = 0; i < 64; i++) {
+		int j = 0;
+		while (j < 64 && SWIZZLE_CYPHER[j] != i) {
+			j++;
+		}
+		decrypted_block[i] = block[j];
+	}
+
+	for (int i = 0; i < 64; i++) {
+		block[i] = decrypted_block[i];
+	}
+}
+
+void NGScriptInit(char* gfScriptFile, unsigned int offset, unsigned int len) {
 	for (int i = 0; i < MAX_NG_LEVELS; i++) {
 		ng_levels[i].records = NULL;
 	}
@@ -47,6 +76,71 @@ void NGScriptInit() {
 	for (int i = 0; i < MAX_NG_PLUGINS; i++) {
 		ng_plugins[i].is_enabled;
 		ng_plugins[i].ng_plugin_string_id = 0;
+	}
+
+	bool ng_header_found = false;
+
+	unsigned int footer_ident = NG_READ_32(gfScriptFile, offset);
+	if (footer_ident != 0x454c474e) { // NGLE
+		return;
+	}
+
+	unsigned int footer_offset = NG_READ_32(gfScriptFile, offset);
+	offset -= footer_offset;
+
+	unsigned short header_ident = NG_READ_16(gfScriptFile, offset);
+	if (header_ident != 0x474e) { // NGLE
+		return;
+	}
+
+	ng_header_found = true;
+
+	if (ng_header_found) {
+		if (!is_mod_trng_version_equal_or_greater_than_target(0, 0, 0, 0)) {
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGHeader found in Script.dat in invalid TRNG version!");
+			return;
+		}
+
+		unsigned int options_header_block_start_position = offset;
+
+		unsigned short options_header_block_size = NG_READ_16(gfScriptFile, offset);
+		unsigned int options_header_block_end_pos = options_header_block_start_position + (options_header_block_size * sizeof(short));
+		unsigned short options_block_unknown_variable = NG_READ_16(gfScriptFile, offset);
+
+		bool is_encrypted = false;
+
+		while (1) {
+			unsigned int data_block_start_start_position = offset;
+			unsigned char current_data_block_size_wide = NG_READ_8(gfScriptFile, offset);
+
+			unsigned char block_type = NG_READ_8(gfScriptFile, offset);
+
+			if (offset >= options_header_block_end_pos) {
+				if (offset != options_header_block_end_pos) {
+					NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: Options header block size mismatch!");
+				}
+				break;
+			}
+
+			switch (block_type) {
+				// Settings
+				case 0x10: {
+					short flags = NG_READ_16(gfScriptFile, offset);
+					is_encrypted = flags & 0x08;
+					if (is_encrypted) {
+						NGLog(NG_LOG_TYPE_PRINT, "NGScriptInit: Gameflow script is encrypted...");
+					}
+					break;
+				}
+			}
+
+			int command_block_end_position = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+			offset = command_block_end_position;
+		}
+
+		if (is_encrypted) {
+			NGDecryptScriptBlock(gfScriptFile);
+		}
 	}
 }
 
@@ -2094,8 +2188,6 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 
 	ng_header_found = true;
 
-	//offset += 3;
-
 	if (ng_header_found) {
 		if (!is_mod_trng_version_equal_or_greater_than_target(0, 0, 0, 0)) {
 			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGHeader found in Script.dat in invalid TRNG version!");
@@ -2144,6 +2236,11 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 					for (int i = 0; i < MOD_LEVEL_COUNT; i++) {
 						get_game_mod_level_environment_info(i)->far_view = (unsigned int)world_far_view * 1024;
 					}
+					break;
+				}
+				// Settings
+				case 0x10: {
+					short flags = NG_READ_16(gfScriptFile, offset);
 					break;
 				}
 				// Plugin
