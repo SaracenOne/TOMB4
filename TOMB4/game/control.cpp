@@ -83,7 +83,7 @@ long tiltyoff;
 long OnObject;
 long height_type;
 
-long InItemControlLoop = 0;
+bool InItemControlLoop = false;
 short ItemNewRooms[256][2];
 short ItemNewRoomNo = 0;
 
@@ -376,7 +376,7 @@ long ControlPhase(long nframes, long demo_mode)
 		ClearDynamics();
 		ClearFires();
 		GotLaraSpheres = 0;
-		InItemControlLoop = 1;
+		InItemControlLoop = true;
 		item_num = next_item_active;
 
 		// TRNG (should these go before or after the control update?)
@@ -400,9 +400,9 @@ long ControlPhase(long nframes, long demo_mode)
 			item_num = nex;
 		}
 
-		InItemControlLoop = 0;
+		InItemControlLoop = false;
 		KillMoveItems();
-		InItemControlLoop = 1;
+		InItemControlLoop = true;
 		fx_num = next_fx_active;
 
 		while (fx_num != -1)
@@ -416,7 +416,7 @@ long ControlPhase(long nframes, long demo_mode)
 			fx_num = nex;
 		}
 
-		InItemControlLoop = 0;
+		InItemControlLoop = false;
 		KillMoveEffects();
 
 		if (KillEverythingFlag)
@@ -464,7 +464,7 @@ long ControlPhase(long nframes, long demo_mode)
 			}
 		}
 
-		InItemControlLoop = 1;
+		InItemControlLoop = true;
 
 		if (!GLOBAL_playing_cutseq && !gfGameMode)
 			LaraControl(0);
@@ -472,7 +472,7 @@ long ControlPhase(long nframes, long demo_mode)
 			// TRLE: Activate Lara if we have 'show_lara_in_title' flag set.
 			AnimateLara(lara_item);
 
-		InItemControlLoop = 0;
+		InItemControlLoop = false;
 
 		while (SmashedMeshCount)
 		{

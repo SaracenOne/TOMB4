@@ -71,7 +71,7 @@ extern long tiltyoff;
 extern long OnObject;
 extern long height_type;
 
-extern long InItemControlLoop;
+extern bool InItemControlLoop;
 extern short ItemNewRooms[256][2];
 extern short ItemNewRoomNo;
 
