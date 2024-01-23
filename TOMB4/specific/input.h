@@ -149,15 +149,43 @@
 extern int convert_sdl_scancode_to_tomb_keycode(int scancode);
 extern int convert_tomb_keycode_to_sdl_scancode(int tomb_keycode);
 
+extern void InputInit(void);
+extern void InputShutdown(void);
+
 extern bool IsKeyPressed(int t4p_key);
 
-long Key(long number);
+enum InputAction {
+	INPUT_ACTION_FORWARD = 0,
+	INPUT_ACTION_BACK,
+	INPUT_ACTION_LEFT,
+	INPUT_ACTION_RIGHT,
+	INPUT_ACTION_DUCK,
+	INPUT_ACTION_SPRINT,
+	INPUT_ACTION_WALK,
+	INPUT_ACTION_JUMP,
+	INPUT_ACTION_INTERACT,
+	INPUT_ACTION_DRAW,
+	INPUT_ACTION_FLARE,
+	INPUT_ACTION_LOOK,
+	INPUT_ACTION_ROLL,
+	INPUT_ACTION_OPTION,
+	INPUT_ACTION_SIDESTEP_LEFT,
+	INPUT_ACTION_SIDESTEP_RIGHT,
+	INPUT_ACTION_PAUSE,
+	INPUT_ACTION_SELECT,
+	INPUT_ACTION_COUNT
+};
+
+bool IsActionPressed(InputAction action);
+
 long S_UpdateInput();
 long ReadJoystick(long& x, long& y);
 
 extern const char* KeyboardButtons[272];
 extern const char* GermanKeyboard[272];
-extern short layout[2][18];
+
+extern bool use_gamepad;
+extern short keyboard_layout[2][18];
 
 extern long conflict[18];
 extern long input;

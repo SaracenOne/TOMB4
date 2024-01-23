@@ -47,6 +47,10 @@ HWND G_hwnd;
 #ifdef USE_SDL
 int keymap_count = 0;
 const Uint8 *keymap;
+
+SDL_GameController *controller = nullptr;
+const char* controller_name = nullptr;
+SDL_GameControllerType controller_type = SDL_CONTROLLER_TYPE_UNKNOWN;
 #else 
 int keymap_count = 256;
 char keymap[256];
@@ -269,7 +273,7 @@ BOOL __stdcall DXEnumDirectDraw(GUID FAR* lpGUID, LPSTR lpDriverDescription, LPS
 }
 #endif
 
-#ifndef USE_SDL
+#if !defined(MA_AUDIO_SAMPLES) || !defined(MA_AUDIO_ENGINE)
 BOOL __stdcall DXEnumDirectSound(LPGUID lpGuid, LPCSTR lpcstrDescription, LPCSTR lpcstrModule, LPVOID lpContext)
 {
 	DXINFO* dxinfo;

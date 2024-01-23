@@ -62,6 +62,7 @@ BX_PRAGMA_DIAGNOSTIC_IGNORED_CLANG("-Wextern-c-compat")
 BX_PRAGMA_DIAGNOSTIC_POP()
 
 #endif
+#include "input.h"
 
 void SDLProcessCommandLine(int argc, char* argv[])
 {
@@ -398,6 +399,7 @@ void SDLProcessEvents()
 void SDLClose()
 {
 	Log(2, "SDLClose");
+	InputShutdown();
 	SaveSettings();
 	CloseHandle(App.mutex);
 	DXFreeInfo(&App.DXInfo);
@@ -444,7 +446,9 @@ int main(int argc, char* argv[]) {
 	LoadGameModConfigSecondPass();
 	//
 
-	SDL_Init(SDL_INIT_EVENTS);
+	SDL_Init(SDL_INIT_EVENTS | SDL_INIT_GAMECONTROLLER);
+
+	InputInit();
 
 	SDLProcessCommandLine(argc, argv);
 

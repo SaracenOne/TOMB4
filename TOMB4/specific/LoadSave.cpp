@@ -124,7 +124,7 @@ void DoOptions()
 
 		for (lp = 0; lp < 16; lp++)
 		{
-			int dik = layout[1][lp];
+			int dik = keyboard_layout[1][lp];
 
 			txt = (waiting_for_key && sel2 & (1 << i)) ? GetStringForTextID(TXT_Waiting) : keyboard_buttons[dik];
 			if (txt)
@@ -187,7 +187,7 @@ void DoOptions()
 
 						sel2 = 0;
 
-						layout[1][i] = tomb4_scancode;
+						keyboard_layout[1][i] = tomb4_scancode;
 					}
 				}
 			}
@@ -263,7 +263,7 @@ void DoOptions()
 		{
 			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 			ControlMethod = 0;
-			memcpy(layout[1], layout, 72);
+			memcpy(keyboard_layout[1], keyboard_layout, 72);
 		}
 
 		if (sel & 1)
@@ -1028,12 +1028,12 @@ void CheckKeyConflicts()
 
 	for (int i = 0; i < 18; i++)
 	{
-		key = layout[0][i];
+		key = keyboard_layout[0][i];
 		conflict[i] = 0;
 
 		for (int j = 0; j < 18; j++)
 		{
-			if (key == layout[1][j])
+			if (key == keyboard_layout[1][j])
 			{
 				conflict[i] = 1;
 				break;

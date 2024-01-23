@@ -444,6 +444,37 @@ int convert_tomb_keycode_to_sdl_scancode(int tomb_keycode) {
 }
 #endif
 
+void InputInit(void)
+{
+#ifdef USE_SDL
+	if (controller) 
+	{
+		return;
+	}
+
+	int controller_count = SDL_NumJoysticks();
+	for (int i = 0; i < controller_count; i++)
+	{
+		controller_name = SDL_GameControllerNameForIndex(i);
+		controller_type = SDL_GameControllerTypeForIndex(i);
+		if (SDL_IsGameController(i)) {
+			controller = SDL_GameControllerOpen(i);
+		}
+	}
+#endif
+};
+
+void InputShutdown(void)
+{
+#ifdef USE_SDL
+	if (controller)
+	{
+		SDL_GameControllerClose(controller);
+		controller = NULL;
+	}
+#endif
+};
+
 const char* KeyboardButtons[272] =
 {
 	0,
@@ -496,7 +527,8 @@ const char* GermanKeyboard[272] =
 	"Joy 9", "Joy 10", "Joy 11", "Joy 12", "Joy 13", "Joy 14", "Joy 15", "Joy 16"
 };
 
-short layout[2][18] =
+bool use_gamepad = true;
+short keyboard_layout[2][18] =
 {
 	{ T4P_KEY_UP, T4P_KEY_DOWN, T4P_KEY_LEFT, T4P_KEY_RIGHT, T4P_KEY_PERIOD, T4P_KEY_SLASH, T4P_KEY_RSHIFT, T4P_KEY_RALT, T4P_KEY_RCONTROL,
 	T4P_KEY_SPACE, T4P_KEY_COMMA, T4P_KEY_NUMPAD0, T4P_KEY_END, T4P_KEY_ESCAPE, T4P_KEY_DELETE, T4P_KEY_PAGE_DOWN, T4P_KEY_P, T4P_KEY_RETURN },
@@ -513,9 +545,11 @@ long inputBusy;
 short ammo_change_timer = 0;
 char ammo_change_buf[12];
 
+#ifndef USE_SDL
 static long joy_x;
 static long joy_y;
 static long joy_fire;
+#endif
 
 bool IsKeyPressed(int t4p_key)
 {
@@ -701,15 +735,104 @@ static void DoWeaponHotkey()	//adds extra checks and does ammo type swaps..
 	}
 }
 
-long Key(long number)
+#ifdef USE_SDL;
+#define DEFAULT_AXIS_BUTTON_DEAD_ZONE (0x7fff / 2)
+
+enum GamepadBindingType {
+	TYPE_BUTTON,
+	TYPE_AXIS_BUTTON_POSITIVE,
+	TYPE_AXIS_BUTTON_NEGATIVE
+};
+
+struct GamepadButtonBinding {
+	GamepadBindingType binding_type;
+	int value;
+};
+
+GamepadButtonBinding default_controller_binding[INPUT_ACTION_COUNT] = {
+	{TYPE_BUTTON, SDL_CONTROLLER_BUTTON_DPAD_UP}, // FORWARD
+	{TYPE_BUTTON, SDL_CONTROLLER_BUTTON_DPAD_DOWN}, // BACKWARDS
+	{TYPE_BUTTON, SDL_CONTROLLER_BUTTON_DPAD_LEFT}, // LEFT
+	{TYPE_BUTTON, SDL_CONTROLLER_BUTTON_DPAD_RIGHT}, // RIGHT
+	{TYPE_AXIS_BUTTON_POSITIVE, SDL_CONTROLLER_AXIS_TRIGGERLEFT}, // DUCK
+	{TYPE_AXIS_BUTTON_POSITIVE, SDL_CONTROLLER_AXIS_TRIGGERRIGHT}, // SPRINT
+	{TYPE_BUTTON, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER}, // WALK
+	{TYPE_BUTTON, SDL_CONTROLLER_BUTTON_X}, // JUMP
+	{TYPE_BUTTON, SDL_CONTROLLER_BUTTON_A}, // INTERACT
+	{TYPE_BUTTON, SDL_CONTROLLER_BUTTON_Y}, // DRAW
+	{TYPE_BUTTON, SDL_CONTROLLER_BUTTON_RIGHTSTICK}, // FLARE
+	{TYPE_BUTTON, SDL_CONTROLLER_BUTTON_LEFTSHOULDER}, // LOOK
+	{TYPE_BUTTON, SDL_CONTROLLER_BUTTON_B}, // ROLL
+	{TYPE_BUTTON, SDL_CONTROLLER_BUTTON_START}, // OPTION,
+	{TYPE_BUTTON, SDL_CONTROLLER_BUTTON_INVALID}, // SIDESTEP_LEFT,
+	{TYPE_BUTTON, SDL_CONTROLLER_BUTTON_INVALID}, // SIDESTEP_RIGHT,
+	{TYPE_BUTTON, SDL_CONTROLLER_BUTTON_BACK}, // PAUSE,
+	{TYPE_BUTTON, SDL_CONTROLLER_BUTTON_A}, // SELECT,
+};
+
+bool IsGamepadButtonPressed(SDL_GameControllerButton button)
+{
+	if (button >= SDL_CONTROLLER_BUTTON_MAX || button <= SDL_CONTROLLER_BUTTON_INVALID)
+	{
+		return false;
+	}
+
+	return SDL_GameControllerGetButton(controller, button);
+}
+
+bool IsGamepadActionPressed(InputAction current_action) {
+	if (current_action >= INPUT_ACTION_COUNT || current_action < 0)
+	{
+		return false;
+	}
+
+	GamepadButtonBinding* binding = &default_controller_binding[current_action];
+	if (binding->binding_type == TYPE_BUTTON) {
+		return IsGamepadButtonPressed((SDL_GameControllerButton)binding->value);
+	} else if (binding->binding_type == TYPE_AXIS_BUTTON_POSITIVE || binding->binding_type == TYPE_AXIS_BUTTON_NEGATIVE) {
+		Sint16 axis = SDL_GameControllerGetAxis(controller, (SDL_GameControllerAxis)binding->value);
+
+		if (binding->binding_type == TYPE_AXIS_BUTTON_POSITIVE)
+		{
+			if (axis >= DEFAULT_AXIS_BUTTON_DEAD_ZONE)
+			{
+				return true;
+			}
+		}
+		else
+		{
+			if (axis <= -DEFAULT_AXIS_BUTTON_DEAD_ZONE)
+			{
+				return true;
+			}
+		}
+		return false;
+
+	}
+}
+#endif
+
+
+bool IsActionPressed(InputAction current_action)
 {
 	short key;
 
-#ifdef USE_SDL
-	if (!keymap)
-		return 0;
+	if (current_action >= INPUT_ACTION_COUNT || current_action < 0)
+	{
+		return false;
+	}
 
-	key = convert_tomb_keycode_to_sdl_scancode(layout[1][number]);
+#ifdef USE_SDL
+	if (use_gamepad)
+	{
+		if (IsGamepadActionPressed(current_action))
+			return true;
+	}
+
+	if (!keymap)
+		return false;
+
+	key = convert_tomb_keycode_to_sdl_scancode(keyboard_layout[1][current_action]);
 #else 
 	key = layout[1][number];
 #endif
@@ -717,7 +840,7 @@ long Key(long number)
 	if (key < keymap_count)
 	{
 		if (keymap[key])
-			return 1;
+			return true;
 
 		switch (key)
 		{
@@ -760,16 +883,18 @@ long Key(long number)
 #endif
 		}
 	}
+#ifndef USE_SDL
 	else if (joy_fire & (1 << key))
-		return 1;
+		return true;
+#endif
 
-	if (conflict[number])
-		return 0;
+	if (conflict[current_action])
+		return false;
 
-	key = layout[0][number];
+	key = keyboard_layout[0][current_action];
 
 	if (keymap[key])
-		return 1;
+		return true;
 
 	switch (key)
 	{
@@ -812,7 +937,8 @@ long Key(long number)
 		return keymap[DIK_RMENU];
 	}
 #endif
-	return 0;
+
+	return false;
 }
 
 long S_UpdateInput()
@@ -843,6 +969,7 @@ long S_UpdateInput()
 
 	linput = 0;
 
+#ifndef USE_SDL
 	if (ControlMethod == 1)
 	{
 		if (joy_x < -8)
@@ -855,59 +982,60 @@ long S_UpdateInput()
 		else if (joy_y < -8)
 			linput |= IN_FORWARD;
 	}
+#endif
 
-	if (Key(0))
+	if (IsActionPressed(INPUT_ACTION_FORWARD))
 		linput |= IN_FORWARD;
 
-	if (Key(1))
+	if (IsActionPressed(INPUT_ACTION_BACK))
 		linput |= IN_BACK;
 
-	if (Key(2))
+	if (IsActionPressed(INPUT_ACTION_LEFT))
 		linput |= IN_LEFT;
 
-	if (Key(3))
+	if (IsActionPressed(INPUT_ACTION_RIGHT))
 		linput |= IN_RIGHT;
 
-	if (Key(4))
+	if (IsActionPressed(INPUT_ACTION_DUCK))
 		linput |= IN_DUCK;
 
-	if (Key(5))
+	if (IsActionPressed(INPUT_ACTION_SPRINT))
 		linput |= IN_SPRINT;
 
-	if (Key(6))
+	if (IsActionPressed(INPUT_ACTION_WALK))
 		linput |= IN_WALK;
 
-	if (Key(7))
+	if (IsActionPressed(INPUT_ACTION_JUMP))
 		linput |= IN_JUMP;
 
-	if (Key(8))
+	if (IsActionPressed(INPUT_ACTION_INTERACT))
 		linput |= IN_SELECT | IN_ACTION;
 
-	if (Key(9))
+	if (IsActionPressed(INPUT_ACTION_DRAW))
 		linput |= IN_DRAW;
 
-	if (Key(10))
+	if (IsActionPressed(INPUT_ACTION_FLARE))
 		linput |= IN_FLARE;
 
-	if (Key(11))
+	if (IsActionPressed(INPUT_ACTION_LOOK))
 		linput |= IN_LOOK;
 
-	if (Key(12))
+	if (IsActionPressed(INPUT_ACTION_ROLL))
 		linput |= IN_ROLL;
 
-	if (Key(13))
+	if (IsActionPressed(INPUT_ACTION_OPTION))
 		linput |= IN_OPTION;
 
-	if (Key(14))
+	if (IsActionPressed(INPUT_ACTION_SIDESTEP_LEFT))
 		linput |= IN_WALK | IN_LEFT;
 
-	if (Key(15))
+	if (IsActionPressed(INPUT_ACTION_SIDESTEP_RIGHT))
 		linput |= IN_WALK | IN_RIGHT;
 
-	if (Key(16))
+	if (IsActionPressed(INPUT_ACTION_PAUSE))
 		linput |= IN_PAUSE;
 
-	if (Key(17))
+	if (IsActionPressed(INPUT_ACTION_SELECT))
 		linput |= IN_SELECT;
 
 

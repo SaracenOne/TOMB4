@@ -17,7 +17,9 @@ long DXD3DCreate(LPDIRECTDRAWX pDD4, void** pD3D);
 long DXSetCooperativeLevel(LPDIRECTDRAWX pDD4, HWND hwnd, long flags);
 BOOL __stdcall DXEnumDirectDraw(GUID FAR* lpGUID, LPSTR lpDriverDescription, LPSTR lpDriverName, LPVOID lpContext);
 #endif
+#if !defined(MA_AUDIO_SAMPLES) || !defined(MA_AUDIO_ENGINE)
 BOOL __stdcall DXEnumDirectSound(LPGUID lpGuid, LPCSTR lpcstrDescription, LPCSTR lpcstrModule, LPVOID lpContext);
+#endif
 long DXGetInfo(DXINFO* dxinfo, HWND hwnd);
 void DXFreeInfo(DXINFO* dxinfo);
 #ifndef USE_BGFX
@@ -58,6 +60,9 @@ extern HWND G_hwnd;
 extern int keymap_count;
 #ifdef USE_SDL
 extern const Uint8 *keymap;
+extern SDL_GameController *controller;
+extern const char* controller_name;
+extern SDL_GameControllerType controller_type;
 #else
 extern char keymap[256];
 #endif
