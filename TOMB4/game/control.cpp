@@ -42,6 +42,7 @@
 #include "../specific/dxshell.h"
 #include "savegame.h"
 #include "../specific/file.h"
+#include "../specific/platform.h"
 
 #include "../tomb4/mod_config.h"
 #include "../tomb4/tomb4plus/t4plus_savegame.h"
@@ -1388,6 +1389,14 @@ FLOOR_INFO* GetFloor(long x, long y, long z, short* room_number)
 		else if (y_floor >= r->y_size)
 			y_floor = r->y_size - 1;
 
+
+		int floor_index = x_floor + (y_floor * r->x_size);
+		if (floor_index < 0 || floor_index >= (r->x_size * r->y_size))
+		{
+			// Out of range.
+			return nullptr;
+		}
+
 		floor = &r->floor[x_floor + y_floor * r->x_size];
 		door = GetDoor(floor);
 
@@ -1542,6 +1551,12 @@ long GetHeight(FLOOR_INFO* floor, long x, long y, long z)
 	tiltyoff = 0;
 	OnObject = 0;
 	height_type = WALL;
+
+	if (!floor)
+	{
+		platform_fatal_error("NULL floordata passed into GetHeight function.");
+		return 0;
+	}
 
 	while (floor->pit_room != 255)
 	{
@@ -2957,9 +2972,7 @@ void UpdateItemRoom(short item_number, short y_test_offset)
 
 	short room_number = item->room_number;
 
-	// TODO: Make it so GetFloor can return null values in case of an invalid position.
 	FLOOR_INFO* floor_info = GetFloor(item->pos.x_pos, item->pos.y_pos + y_test_offset, item->pos.z_pos, &room_number);
-
 	if (floor_data)
 	{
 		if (item->room_number != room_number)
