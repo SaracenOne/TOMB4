@@ -366,7 +366,9 @@ void MovableBlock(short item_number)
 	if (global_info->trng_pushable_extended_ocb && item->trigger_flags & 0x40) {
 		climbable_block_height = item->trigger_flags & 0xf;
 	// TREP
-	} else if (misc_info->enable_standing_pushables) {
+	}
+	else if (misc_info->enable_standing_pushables)
+	{
 		climbable_block_height = (item->trigger_flags & 0xf00) >> 8;
 	}
 
@@ -478,6 +480,9 @@ void MovableBlock(short item_number)
 
 		if (lara_item->frame_number == anims[lara_item->anim_number].frame_end - 1)
 		{
+			// T4Plus: Update Room
+			UpdateItemRoom(item_number, -256);
+
 			if (input & IN_ACTION)
 			{
 				// TRNG
@@ -555,6 +560,9 @@ void MovableBlock(short item_number)
 
 		if (lara_item->frame_number == anims[lara_item->anim_number].frame_end - 1)
 		{
+			// T4Plus: Update Room
+			UpdateItemRoom(item_number, -256);
+
 			if (input & IN_ACTION)
 			{
 				if (!TestBlockPull(item, 1024, quadrant))
@@ -579,17 +587,11 @@ void MovableBlock(short item_number)
 		if (frame == anims[lara_item->anim_number].frame_end)
 		{
 			if (item->gravity_status == 0 || !global_info->trng_pushables_have_gravity) {
-				short room_number = item->room_number;
-				GetHeight(GetFloor(item->pos.x_pos, item->pos.y_pos - 256, item->pos.z_pos, &room_number),
-					item->pos.x_pos, item->pos.y_pos - 256, item->pos.z_pos);
 				TestTriggers(trigger_data, 1, item->flags & IFL_CODEBITS, trigger_index_room, trigger_index_floor);
 				RemoveActiveItem(item_number);
 				item->status = ITEM_INACTIVE;
 
 				if (climbable_block_height > 0) {
-					if (item->room_number != room_number)
-						ItemNewRoom(item_number, room_number);
-
 					AlterFloorHeight(item, -climbable_block_height * 256);
 				}
 			}

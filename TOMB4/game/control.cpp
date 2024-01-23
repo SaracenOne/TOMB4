@@ -2949,6 +2949,27 @@ long GetTargetOnLOS(GAME_VECTOR* src, GAME_VECTOR* dest, long DrawTarget, long f
 	return hit;
 }
 
+// T4Plus
+void UpdateItemRoom(short item_number, short y_test_offset)
+{
+	ITEM_INFO* item;
+	item = &items[item_number];
+
+	short room_number = item->room_number;
+
+	// TODO: Make it so GetFloor can return null values in case of an invalid position.
+	FLOOR_INFO* floor_info = GetFloor(item->pos.x_pos, item->pos.y_pos + y_test_offset, item->pos.z_pos, &room_number);
+
+	if (floor_data)
+	{
+		if (item->room_number != room_number)
+		{
+			ItemNewRoom(item_number, room_number);
+		}
+	}
+}
+
+// T4Plus
 void ApplyItemGravity(ITEM_INFO* item) {
 	if (item->fallspeed < 128)
 		item->fallspeed += 6;

@@ -561,6 +561,7 @@ void NGHandleItemMovement(unsigned int item_num) {
 			if (NGGetItemMovementInProgressSound(item_num) != -1)
 				SoundEffect(NGGetItemMovementInProgressSound(item_num), &items[item_num].pos, 0);
 		}
+		UpdateItemRoom(item_num, -128);
 	}
 
 	if (NGGetItemVerticalMovementRemainingUnits(item_num)) {
@@ -592,6 +593,7 @@ void NGHandleItemMovement(unsigned int item_num) {
 			if (NGGetItemMovementInProgressSound(item_num) != -1)
 				SoundEffect(NGGetItemMovementInProgressSound(item_num), &items[item_num].pos, 0);
 		}
+		UpdateItemRoom(item_num, -128);
 	}
 }
 
