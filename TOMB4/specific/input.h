@@ -173,6 +173,7 @@ enum InputAction {
 	INPUT_ACTION_SIDESTEP_RIGHT,
 	INPUT_ACTION_PAUSE,
 	INPUT_ACTION_SELECT,
+	INPUT_ACTION_UNSELECT,
 	INPUT_ACTION_COUNT
 };
 
@@ -181,13 +182,15 @@ bool IsActionPressed(InputAction action);
 long S_UpdateInput();
 long ReadJoystick(long& x, long& y);
 
+#define INPUT_LAYOUT_COUNT 2
+
 extern const char* KeyboardButtons[272];
 extern const char* GermanKeyboard[272];
 
 extern bool use_gamepad;
-extern short keyboard_layout[2][18];
+extern short keyboard_layout[INPUT_LAYOUT_COUNT][INPUT_ACTION_COUNT];
 
-extern long conflict[18];
+extern long conflict[INPUT_ACTION_COUNT];
 extern long input;
 extern long linput;
 extern long dbinput;
