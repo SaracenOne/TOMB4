@@ -32,6 +32,7 @@ long ExplodeItemNode(ITEM_INFO* item, long Node, long NoXZVel, long bits);
 long IsRoomOutside(long x, long y, long z);
 long ObjectOnLOS2(GAME_VECTOR* start, GAME_VECTOR* target, PHD_VECTOR* Coord, MESH_INFO** StaticMesh);
 long GetTargetOnLOS(GAME_VECTOR* src, GAME_VECTOR* dest, long DrawTarget, long firing);
+void ApplyItemGravity(ITEM_INFO* item);
 void AnimateItem(ITEM_INFO* item);
 long RayBoxIntersect(PHD_VECTOR* min, PHD_VECTOR* max, PHD_VECTOR* mid, PHD_VECTOR* dir, PHD_VECTOR* Coord);
 long DoRayBox(GAME_VECTOR* start, GAME_VECTOR* target, short* bounds, PHD_3DPOS* ItemPos, PHD_VECTOR* Coord, short item_number);

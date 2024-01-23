@@ -354,7 +354,7 @@ void MovableBlock(short item_number)
 	PHD_VECTOR pos;
 	long offset;
 	ushort quadrant;
-	short frame, base, room_number;
+	short frame, base;
 	static char sfx = 0;
 
 	item = &items[item_number];
@@ -368,6 +368,49 @@ void MovableBlock(short item_number)
 	// TREP
 	} else if (misc_info->enable_standing_pushables) {
 		climbable_block_height = (item->trigger_flags & 0xf00) >> 8;
+	}
+
+	// TRNG
+	if (global_info->trng_pushables_have_gravity) {
+		short room_number = item->room_number;
+		FLOOR_INFO *floor_info = GetFloor(item->pos.x_pos, item->pos.y_pos - 128, item->pos.z_pos, &room_number);
+		int height = GetHeight(floor_info, item->pos.x_pos, item->pos.y_pos - 128, item->pos.z_pos);
+
+		if (item->pos.y_pos < height)
+		{
+			item->gravity_status = 1;
+			ApplyItemGravity(item);
+
+			floor_info = GetFloor(item->pos.x_pos, item->pos.y_pos - 128, item->pos.z_pos, &room_number);
+			height = GetHeight(floor_info, item->pos.x_pos, item->pos.y_pos - 128, item->pos.z_pos);
+			if (item->room_number != room_number)
+				ItemNewRoom(item_number, room_number);
+		}
+		else if (item->gravity_status)
+		{
+			item->gravity_status = 0;
+			item->pos.y_pos = height;
+			SoundEffect(SFX_BOULDER_FALL, &item->pos, SFX_DEFAULT);
+
+			// If the object has landed and Lara is not performing animations, complete the sequence.
+			if (lara_item->anim_number != ANIM_PULL && lara_item->anim_number != ANIM_PUSH && lara_item->anim_number != 417 && lara_item->anim_number != 418)
+			{
+				floor_info = GetFloor(item->pos.x_pos, item->pos.y_pos - 128, item->pos.z_pos, &room_number);
+				height = GetHeight(floor_info, item->pos.x_pos, item->pos.y_pos - 128, item->pos.z_pos);
+
+				TestTriggers(trigger_data, 1, item->flags & IFL_CODEBITS, trigger_index_room, trigger_index_floor);
+				RemoveActiveItem(item_number);
+				item->status = ITEM_INACTIVE;
+
+				if (climbable_block_height > 0)
+				{
+					if (item->room_number != room_number)
+						ItemNewRoom(item_number, room_number);
+
+					AlterFloorHeight(item, -climbable_block_height * 256);
+				}
+			}
+		}
 	}
 
 	pos.x = 0;
@@ -535,18 +578,20 @@ void MovableBlock(short item_number)
 
 		if (frame == anims[lara_item->anim_number].frame_end)
 		{
-			room_number = item->room_number;
-			GetHeight(GetFloor(item->pos.x_pos, item->pos.y_pos - 256, item->pos.z_pos, &room_number),
-				item->pos.x_pos, item->pos.y_pos - 256, item->pos.z_pos);
-			TestTriggers(trigger_data, 1, item->flags & IFL_CODEBITS, trigger_index_room, trigger_index_floor);
-			RemoveActiveItem(item_number);
-			item->status = ITEM_INACTIVE;
+			if (item->gravity_status == 0 || !global_info->trng_pushables_have_gravity) {
+				short room_number = item->room_number;
+				GetHeight(GetFloor(item->pos.x_pos, item->pos.y_pos - 256, item->pos.z_pos, &room_number),
+					item->pos.x_pos, item->pos.y_pos - 256, item->pos.z_pos);
+				TestTriggers(trigger_data, 1, item->flags & IFL_CODEBITS, trigger_index_room, trigger_index_floor);
+				RemoveActiveItem(item_number);
+				item->status = ITEM_INACTIVE;
 
-			if (climbable_block_height > 0) {
-				if (item->room_number != room_number)
-					ItemNewRoom(item_number, room_number);
+				if (climbable_block_height > 0) {
+					if (item->room_number != room_number)
+						ItemNewRoom(item_number, room_number);
 
-				AlterFloorHeight(item, -climbable_block_height * 256);
+					AlterFloorHeight(item, -climbable_block_height * 256);
+				}
 			}
 		}
 

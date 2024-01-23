@@ -2949,6 +2949,15 @@ long GetTargetOnLOS(GAME_VECTOR* src, GAME_VECTOR* dest, long DrawTarget, long f
 	return hit;
 }
 
+void ApplyItemGravity(ITEM_INFO* item) {
+	if (item->fallspeed < 128)
+		item->fallspeed += 6;
+	else
+		item->fallspeed++;
+
+	item->pos.y_pos += item->fallspeed;
+}
+
 void AnimateItem(ITEM_INFO* item)
 {
 	ANIM_STRUCT* anim;
@@ -3112,12 +3121,7 @@ void AnimateItem(ITEM_INFO* item)
 
 	if (item->gravity_status)
 	{
-		if (item->fallspeed < 128)
-			item->fallspeed += 6;
-		else
-			item->fallspeed++;
-
-		item->pos.y_pos += item->fallspeed;
+		ApplyItemGravity(item);
 	}
 	else
 	{
