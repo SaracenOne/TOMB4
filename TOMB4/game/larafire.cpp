@@ -22,6 +22,7 @@
 #include "savegame.h"
 #include "lot.h"
 #include "gameflow.h"
+#include "../tomb4/mod_config.h"
 
 WEAPON_INFO weapons[9] =
 {
@@ -1388,7 +1389,7 @@ void LaraGun()
 
 	case LG_READY:
 
-		if (input & IN_ACTION)
+		if (input & IN_ACTION && !get_game_mod_level_lara_info(gfCurrentLevel)->disable_angry_face_meshswap_when_shooting)
 			lara.mesh_ptrs[LM_HEAD] = meshes[objects[LARA_SCREAM].mesh_index + LM_HEAD * 2];
 		else
 			lara.mesh_ptrs[LM_HEAD] = meshes[objects[LARA].mesh_index + LM_HEAD * 2];

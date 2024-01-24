@@ -167,6 +167,8 @@ struct MOD_LEVEL_LARA_INFO {
 
 	int ledge_to_jump_state = -1;
 	int ledge_to_down_state = -1;
+
+	bool disable_angry_face_meshswap_when_shooting = false;
 };
 
 struct TRNG_ENGINE_VERSION {

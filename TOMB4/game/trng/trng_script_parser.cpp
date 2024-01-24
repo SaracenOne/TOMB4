@@ -880,8 +880,7 @@ int NGReadLevelBlock(char* gfScriptFile, unsigned int offset, NG_LEVEL_RECORD_TA
 			if (plugin_id == 0) {
 				switch (customization_category) {
 				case CUST_DISABLE_SCREAMING_HEAD: {
-					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_DISABLE_SCREAMING_HEAD unimplemented (level %u)", current_level);
-					offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+					get_game_mod_level_lara_info(current_level)->disable_angry_face_meshswap_when_shooting = true;
 					break;
 				}
 				case CUST_SET_SECRET_NUMBER: {
@@ -916,8 +915,7 @@ int NGReadLevelBlock(char* gfScriptFile, unsigned int offset, NG_LEVEL_RECORD_TA
 					unsigned short new_sound_engine_flags = NG_READ_16(gfScriptFile, offset);
 					if (new_sound_engine_flags == 0xffff || new_sound_engine_flags == 0) {
 						new_sound_engine_flags = 0;
-					}
-					else {
+					} else {
 						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_NEW_SOUND_ENGINE flags not supported! (level %u)", current_level);
 					}
 

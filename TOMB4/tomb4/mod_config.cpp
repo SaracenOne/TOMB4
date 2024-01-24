@@ -380,6 +380,8 @@ void LoadGameModLevelLaraInfo(const json_t* level, MOD_LEVEL_LARA_INFO *lara_inf
 
     READ_JSON_SINT32(ledge_to_jump_state, level, lara_info);
     READ_JSON_SINT32(ledge_to_down_state, level, lara_info);
+
+    READ_JSON_BOOL(disable_angry_face_meshswap_when_shooting, level, lara_info);
 }
 
 void LoadGameModLevelCreatureInfo(const json_t* creature, MOD_LEVEL_CREATURE_INFO *creature_info) {
