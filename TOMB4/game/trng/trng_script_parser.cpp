@@ -1154,9 +1154,9 @@ int NGReadLevelBlock(char* gfScriptFile, unsigned int offset, NG_LEVEL_RECORD_TA
 					break;
 				}
 				case CUST_TEXT_ON_FLY_SCREEN: {
-					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_TEXT_ON_FLY_SCREEN unimplemented! (level %u)", current_level);
+					bool text_on_fly_screen = NG_READ_16(gfScriptFile, offset);
+					get_game_mod_level_misc_info(current_level)->draw_legend_on_flyby = text_on_fly_screen;
 
-					offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 					break;
 				}
 				case CUST_CD_SINGLE_PLAYBACK: {
