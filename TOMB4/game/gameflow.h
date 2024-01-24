@@ -33,7 +33,7 @@ extern uchar gfMirrorRoom;
 extern uchar gfNumMips;
 extern uchar gfRequiredStartPos;
 extern uchar gfMips[8];
-extern uchar gfLevelNames[40];
+extern uchar gfLevelNames[255]; // T4Plus: increased to 255
 extern char gfUVRotate;
 extern char gfLayer1Vel;
 extern char gfLayer2Vel;

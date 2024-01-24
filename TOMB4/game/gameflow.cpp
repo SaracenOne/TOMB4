@@ -132,7 +132,7 @@ uchar gfMirrorRoom;
 uchar gfNumMips = 0;
 uchar gfRequiredStartPos;
 uchar gfMips[8];
-uchar gfLevelNames[40];
+uchar gfLevelNames[255];
 char gfUVRotate;
 char gfLayer1Vel;
 char gfLayer2Vel;
