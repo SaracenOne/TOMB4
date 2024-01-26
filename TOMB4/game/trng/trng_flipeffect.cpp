@@ -3038,9 +3038,156 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 			}
 			break;
 		}
+		case FLIPMAP_ALTERNATIVE_CONTINOUSLY_THE_X_FLIPMAP_WITH_THE_E_FRAME_INTERVAL: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "FLIPMAP_ALTERNATIVE_CONTINOUSLY_THE_X_FLIPMAP_WITH_THE_E_FRAME_INTERVAL unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case FLIPMAP_STOP_THE_ALTERNATE_OF_X_FLIPMAP_LETTING_THE_E_FLIPMAP_TYPE: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "FLIPMAP_STOP_THE_ALTERNATE_OF_X_FLIPMAP_LETTING_THE_E_FLIPMAP_TYPE unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case VARIABLES_SET_THE_X_INVENTORY_ITEM_AS_SELECTED_INVENTORY_MEMORY: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "VARIABLES_SET_THE_X_INVENTORY_ITEM_AS_SELECTED_INVENTORY_MEMORY unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case VARAIBLES_COPY_FROM_X_NUMERIC_VARIABLE_TO_E_INVENTORY_MEMOY: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "VARAIBLES_COPY_FROM_X_NUMERIC_VARIABLE_TO_E_INVENTORY_MEMOY unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case VARIABLES_SET_IN_X_INVENTORY_MEMORY_THE_E_VALUE: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "VARIABLES_SET_IN_X_INVENTORY_MEMORY_THE_E_VALUE unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case VARIABLES_SET_IN_X_INVENTORY_MEMORY_THE_E_BIG_NUMBER: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "VARIABLES_SET_IN_X_INVENTORY_MEMORY_THE_E_BIG_NUMBER unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case VARIABLES_COPY_TO_X_NUMERIC_VARIBLE_THE_E_INVENTORY_MEMORY: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "VARIABLES_COPY_TO_X_NUMERIC_VARIBLE_THE_E_INVENTORY_MEMORY unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case LARA_SWAP_MESH_OF_X_LARA_SLOTS_WITH_THAT_OF_E_SLOT: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_SWAP_MESH_OF_X_LARA_SLOTS_WITH_THAT_OF_E_SLOT unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case SWAP_MESH_OF_X_SLOT_WITH_MESH_OF_E_SLOT: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "SWAP_MESH_OF_X_SLOT_WITH_MESH_OF_E_SLOT unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case VARIABLES_SET_IN_X_CODE_MEMORY_THE_E_NEGATIVE_NUMBER: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "VARIABLES_SET_IN_X_CODE_MEMORY_THE_E_NEGATIVE_NUMBER unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case FISH_CLEAR_ALL_FISH_OF_X_TYPE: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "FISH_CLEAR_ALL_FISH_OF_X_TYPE unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case SWAP_MESH_OF_CURRENT_HORIZONT_OBJECT_WITH_X_SLOT_MESH: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "SWAP_MESH_OF_CURRENT_HORIZONT_OBJECT_WITH_X_SLOT_MESH unimplemented!");
+				return true;
+			}
+			break;
+		}
 		case TRIGGERGROUP_ENABLE_NEWLY_THE_ONESHOT_X_TRIGGERGROUP_ALREADY_PERFORMED: {
 			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
 				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TRIGGERGROUP_ENABLE_NEWLY_THE_ONESHOT_X_TRIGGERGROUP_ALREADY_PERFORMED unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case CAMERA_ENABLE_THE_X_STANDBY_CAMERA_EFFECT_FOR_E_SECONDS: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "CAMERA_ENABLE_THE_X_STANDBY_CAMERA_EFFECT_FOR_E_SECONDS unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case ENEMY_FREEZE_ALL_ENEMIES_FOR_X_SECONDS_IN_E_WAY: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ENEMY_FREEZE_ALL_ENEMIES_FOR_X_SECONDS_IN_E_WAY unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case ENEMY_REMOVE_THE_FREEZE_ALL_ENEMIES_MODE: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ENEMY_REMOVE_THE_FREEZE_ALL_ENEMIES_MODE unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case LARA_TRIGGER_CLOCKWISE_WHIRL_AT_X_CENTER_AND_E_DIAMETER: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_TRIGGER_CLOCKWISE_WHIRL_AT_X_CENTER_AND_E_DIAMETER unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case LARA_TRIGGER_UNCLOCKWISE_WHIRL_AT_X_CENTER_AND_E_DIAMETER: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_TRIGGER_UNCLOCKWISE_WHIRL_AT_X_CENTER_AND_E_DIAMETER unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case VARIABLES_CONVERT_FROM_ITEM_ADDRESS_TO_ITEM_INDEX_THE_VALUE_IN_CURRENT_VALUE_VARIABLE: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "VARIABLES_CONVERT_FROM_ITEM_ADDRESS_TO_ITEM_INDEX_THE_VALUE_IN_CURRENT_VALUE_VARIABLE unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case STATICS_SCALE_A_STATIC_ITEM_USING_THE_DATA_IN_X_PARAMETERS_COMMAND: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "STATICS_SCALE_A_STATIC_ITEM_USING_THE_DATA_IN_X_PARAMETERS_COMMAND unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case STATICS_STOP_THE_ENDLESS_SCALING_OF_THE_STATICS_START_WITH_THE_X_PARAMETERS_COMMAND: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "STATICS_STOP_THE_ENDLESS_SCALING_OF_THE_STATICS_START_WITH_THE_X_PARAMETERS_COMMAND unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case ITEMGROUP_PERFORM_X_TRIGGER_WITH_E_ITEMGROUP_OF_STATICS: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ITEMGROUP_PERFORM_X_TRIGGER_WITH_E_ITEMGROUP_OF_STATICS unimplemented!");
 				return true;
 			}
 			break;
@@ -3051,6 +3198,13 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 				return true;
 			}
 			break;		
+		}
+		case SCREEN_REMOVE_INFINITE_FLASH_EFFECT: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "SCREEN_REMOVE_INFINITE_FLASH_EFFECT unimplemented!");
+				return true;
+			}
+			break;
 		}
 		case SPRITE_SHOW_SPRITE_WITH_DATA_IN_X_PARAMETERS_FOR_DURATION: {
 			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
@@ -3066,14 +3220,84 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 			}
 			break;
 		}
+		case WEATHER_PERFORM_A_LIGHTNING_WITH_DATA_IN_X_PARAMETER_FOR_E_DURATE_IN_TICK_FRAMES: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "WEATHER_PERFORM_A_LIGHTNING_WITH_DATA_IN_X_PARAMETER_FOR_E_DURATE_IN_TICK_FRAMES unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case TEXT_PRINT_UNLIMITED_X_EXTRA_NG_STRING_WITH_CURRENT_SETTINGS_FOR_INFINITE_TIME: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TEXT_PRINT_UNLIMITED_X_EXTRA_NG_STRING_WITH_CURRENT_SETTINGS_FOR_INFINITE_TIME unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case WEATHER_SET_IN_ADVANCE_THE_RAIN_SNOW_SETTINGS_USING_THE_INTENSITY_OF_X_ROOM: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "WEATHER_SET_IN_ADVANCE_THE_RAIN_SNOW_SETTINGS_USING_THE_INTENSITY_OF_X_ROOM unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case WEATHER_STOP_THE_ENDLESS_LIGHTNING_EFFECT_WITH_X_PARAMETERS: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "WEATHER_STOP_THE_ENDLESS_LIGHTNING_EFFECT_WITH_X_PARAMETERS unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case TEXT_PRINT_EXTRA_NG_X_STRING_WITH_WINDOWS_FONT_AND_FORMATTING_DATA_IN_THE_E_PARAMETERS_COMMAND: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TEXT_PRINT_EXTRA_NG_X_STRING_WITH_WINDOWS_FONT_AND_FORMATTING_DATA_IN_THE_E_PARAMETERS_COMMAND unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case TEXT_REMOVE_PRINT_EXTRA_NG_X_STRING_WITH_WINDOWS_FONT_THAT_USED_IN_THE_E_PARAMETERS_COMMAND: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TEXT_REMOVE_PRINT_EXTRA_NG_X_STRING_WITH_WINDOWS_FONT_THAT_USED_IN_THE_E_PARAMETERS_COMMAND unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case CAMERA_INCREASE_THE_ZOOM_FACTOR_FOR_BINOCULAR: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "CAMERA_INCREASE_THE_ZOOM_FACTOR_FOR_BINOCULAR unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case VARIABLES_MOVE_X_FUEL_TO_BOAT_TANK_IN_E_WAY: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "VARIABLES_MOVE_X_FUEL_TO_BOAT_TANK_IN_E_WAY unimplemented!");
+				return true;
+			}
+			break;
+		}
 		case CAMERA_SHOW_BLACK_SCREEN_FOR_SECONDS_WITH_FINAL_CURTAIN_EFFECT: {
 			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return camera_show_black_screen_for_seconds_with_final_curtain_effect(action_data_1, action_data_2);
 			break;
 		}
+		case CAMERA_STOP_BLACK_SCREEN_AND_OPEN_CURTAIN: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "CAMERA_STOP_BLACK_SCREEN_AND_OPEN_CURTAIN unimplemented!");
+				return true;
+			}
+			break;
+		}
 		case CAMERA_SET_CINEMA_EFFECT_TYPE_FOR_SECONDS: {
 			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return camera_set_cinema_effect_type_for_seconds(action_data_1, action_data_2);
+			break;
+		}
+		case ANIMCOMMAND_IF_CURRENT_ITEM_IS_WADING_WATER_ADD_TWIRLS_WITH_X_INTENSITY: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ANIMCOMMAND_IF_CURRENT_ITEM_IS_WADING_WATER_ADD_TWIRLS_WITH_X_INTENSITY unimplemented!");
+				return true;
+			}
 			break;
 		}
 		case PERFORM_X_TRIGGERGROUP_FROM_SCRIPT_IN_SINGLE_EXECUTION: {
@@ -3103,14 +3327,252 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 			}
 			break;
 		}
+		case ORGANIZER_RESUME_X_ORGANIZER_FROM_THE_FIRST_COMMAND: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ORGANIZER_RESUME_X_ORGANIZER_FROM_THE_FIRST_COMMAND unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case ORGANIZER_RESUME_X_ORGANIZER_FROM_NEXT_COMMAND_IMMEDIATE: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ORGANIZER_RESUME_X_ORGANIZER_FROM_NEXT_COMMAND_IMMEDIATE unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case ORGANIZER_RESUME_X_ORGANIZER_FROM_NEXT_COMMAND_IN_THE_GIVEN_TIME_SET_IN_NEXT_COMMAND: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ORGANIZER_RESUME_X_ORGANIZER_FROM_NEXT_COMMAND_IN_THE_GIVEN_TIME_SET_IN_NEXT_COMMAND unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case CUTSCENE_PERFORM_THE_DEMO_PAK_AT_X_INDEX_OF_DEMO_SCRIPT_COMMAND: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "CUTSCENE_PERFORM_THE_DEMO_PAK_AT_X_INDEX_OF_DEMO_SCRIPT_COMMAND unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case CUTSCENE_STOP_THE_CURRENT_DEMO_IN_PROGRESS: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "CUTSCENE_STOP_THE_CURRENT_DEMO_IN_PROGRESS unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case CUTSCENE_LOOK_AT_LEADING_ACTOR_FROM_X_VIEW_ANGLE_AND_E_DISTANCE: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "CUTSCENE_LOOK_AT_LEADING_ACTOR_FROM_X_VIEW_ANGLE_AND_E_DISTANCE unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case CUTSCENE_LOOK_EXTRA_ACTOR_FROM_X_VIEW_ANGLE_AND_E_DISTANCE: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "CUTSCENE_LOOK_EXTRA_ACTOR_FROM_X_VIEW_ANGLE_AND_E_DISTANCE unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case CUTSCENE_LOOK_LARA_FROM_X_VIEW_ANGLE_AND_E_DISTANCE: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "CUTSCENE_LOOK_LARA_FROM_X_VIEW_ANGLE_AND_E_DISTANCE unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case CUTSCENE_RESET_CUTSCENE_CAMERA_AND_COME_BACK_TO_LARAS_CHASE_CAMERA: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "CUTSCENE_RESET_CUTSCENE_CAMERA_AND_COME_BACK_TO_LARAS_CHASE_CAMERA unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case CUTSCENE_MOVE_UP_CUTSCENE_CAMERA_OF_X_CLICKS_IN_E_DEMO_FRAMES: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "CUTSCENE_MOVE_UP_CUTSCENE_CAMERA_OF_X_CLICKS_IN_E_DEMO_FRAMES unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case CUTSCENE_MOVE_DOWN_CUTSCENE_CAMERA_OF_X_CLICKS_IN_E_DEMO_FRAMES: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "CUTSCENE_MOVE_DOWN_CUTSCENE_CAMERA_OF_X_CLICKS_IN_E_DEMO_FRAMES unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case CUTSCENE_ZOOM_IN_CUTSCENE_CAMERA_COVERING_X_DISTANCE_IN_E_DEMO_FRAMES: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "CUTSCENE_ZOOM_IN_CUTSCENE_CAMERA_COVERING_X_DISTANCE_IN_E_DEMO_FRAMES unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case CUTSCENE_ZOOM_OUT_CUTSCENE_CAMERA_COVERING_X_DISTANCE_IN_E_DEMO_FRAMES: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "CUTSCENE_ZOOM_OUT_CUTSCENE_CAMERA_COVERING_X_DISTANCE_IN_E_DEMO_FRAMES unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case CUTSCENE_ROTATE_AT_RIGHT_CUTSCENE_CAMERA_AROUND_TARGET_BY_X_DEGREES_IN_E_DEMO_FRAMES: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "CUTSCENE_ROTATE_AT_RIGHT_CUTSCENE_CAMERA_AROUND_TARGET_BY_X_DEGREES_IN_E_DEMO_FRAMES unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case CUTSCENE_ROTATE_AT_LEFT_CUTSCENE_CAMERA_AROUND_TARGET_BY_X_DEGREES_IN_E_DEMO_FRAMES: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "CUTSCENE_ROTATE_AT_LEFT_CUTSCENE_CAMERA_AROUND_TARGET_BY_X_DEGREES_IN_E_DEMO_FRAMES unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case CUTSCENE_FREEZE_CUTSCENE_CAMERA_FOR_X_DEMO_FRAMES: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "CUTSCENE_FREEZE_CUTSCENE_CAMERA_FOR_X_DEMO_FRAMES unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case CUTSCENE_REMOVE_FREEZE_FROM_CUTSCENE_CAMERA: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "CUTSCENE_REMOVE_FREEZE_FROM_CUTSCENE_CAMERA unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case CUTSCENE_SWAP_ANIMATIONS_SET_IN_DATA_OF_X_PARAMETER_COMMAND_FOR_E_ACTOR: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "CUTSCENE_SWAP_ANIMATIONS_SET_IN_DATA_OF_X_PARAMETER_COMMAND_FOR_E_ACTOR unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case CUTSCENE_FREE_CUTSCENE_X_RESOURCES: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "CUTSCENE_FREE_CUTSCENE_X_RESOURCES unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case CUTSCENE_ACTOR_WITH_X_ROLE_WILL_LOOK_AT_LARA: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "CUTSCENE_ACTOR_WITH_X_ROLE_WILL_LOOK_AT_LARA unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case CUTSCENE_LARA_WILL_LOOK_ACTOR_WITH_X_ROLE: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "CUTSCENE_LARA_WILL_LOOK_ACTOR_WITH_X_ROLE unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case CUTSCENE_SWAP_VON_CROY_X_MESH_WITH_SAME_MESH_OF_E_SLOT: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "CUTSCENE_SWAP_VON_CROY_X_MESH_WITH_SAME_MESH_OF_E_SLOT unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case CUTSCENE_SWAP_VON_CROY_X_DATA_WITH_E_VALUE: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "CUTSCENE_SWAP_VON_CROY_X_DATA_WITH_E_VALUE unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case CUTSCENE_SET_X_COLOR_E_POSITION_OF_LARAS_TEXTS: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "CUTSCENE_SET_X_COLOR_E_POSITION_OF_LARAS_TEXTS unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case CUTSCENE_SET_X_COLOR_AND_E_POSITION_FOR_LEADING_ACTORS_TEXTS: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "CUTSCENE_SET_X_COLOR_AND_E_POSITION_FOR_LEADING_ACTORS_TEXTS unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case CUTSCENE_SET_X_COLOR_AND_E_POSITION_FOR_EXTRA_ACTORS_TEXTS: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "CUTSCENE_SET_X_COLOR_AND_E_POSITION_FOR_EXTRA_ACTORS_TEXTS unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case SPRITE_STOP_THE_ANIMATED_SPRITES_WITH_DATA_IN_X_PARAMETER_AT_E_FRAME: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "SPRITE_STOP_THE_ANIMATED_SPRITES_WITH_DATA_IN_X_PARAMETER_AT_E_FRAME unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case SPRITE_RESUME_ANIMATION_OF_SPRITES_WITH_DATA_IN_X_PARAMETER: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "SPRITE_RESUME_ANIMATION_OF_SPRITES_WITH_DATA_IN_X_PARAMETER unimplemented!");
+				return true;
+			}
+			break;
+		}
 		case TRIGGER_SECRET: {
 			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return trigger_secret(action_data_1, action_data_2);
 			break;
 		}
+		case FMV_PLAY_X_FMV: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "FMV_PLAY_X_FMV unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case CAMERA_GET_OR_REMOVE_X_INFINITE_DURATE_FOR_CURRENT_CAMERA: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "CAMERA_GET_OR_REMOVE_X_INFINITE_DURATE_FOR_CURRENT_CAMERA unimplemented!");
+				return true;
+			}
+			break;
+		}
 		case SET_LARA_HOLSTER_TYPE: {
 			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
 				return set_lara_holsters(action_data_1, action_data_2);
+			break;
+		}
+		case LARA_SET_CURRENT_SELECTED_WEAPON_FOR_X: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_SET_CURRENT_SELECTED_WEAPON_FOR_X unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case IMAGES_PERFORM_X_INPUT_BOX_PARAMETERS_AND_WAIT_FOR_PLAYER_INPUT: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "IMAGES_PERFORM_X_INPUT_BOX_PARAMETERS_AND_WAIT_FOR_PLAYER_INPUT unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case VARIABLES_CLEAR_X_TEXT_VARIABLE: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "VARIABLES_CLEAR_X_TEXT_VARIABLE unimplemented!");
+				return true;
+			}
+			break;
+		}
+		case LARA_SET_X_OPACITY_LEVEL_OFLARA_FOR_E_SECONDS: {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_SET_X_OPACITY_LEVEL_OFLARA_FOR_E_SECONDS unimplemented!");
+				return true;
+			}
 			break;
 		}
 		default: {
