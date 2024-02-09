@@ -32,6 +32,7 @@
 #include "../game/trng/trng.h"
 #include "../tomb4/tomb4plus/t4plus_weather.h"
 #include "../tomb4/mod_config.h"
+#include "cmdline.h"
 #include "platform.h"
 
 TEXTURESTRUCT* textinfo;
@@ -278,58 +279,21 @@ void FreeLevel()
 	malloc_free = malloc_size;
 }
 
-bool FindCDDrive()
-{
-	HANDLE file;
-	ulong drives, type;
-	char path[14];
-	char root[5];
-	static char cd_drive;
-
-	strcpy(path, "c:\\script.dat");
-	drives = GetLogicalDrives();
-	cd_drive = 'A';
-	lstrcpy(root, "A:\\");
-
-	while (drives)
-	{
-		if (drives & 1)
-		{
-			root[0] = cd_drive;
-			type = GetDriveType(root);
-
-			if (type == DRIVE_CDROM)
-			{
-				path[0] = cd_drive;
-				file = CreateFile(path, GENERIC_READ, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
-
-				if (file != INVALID_HANDLE_VALUE)
-				{
-					CloseHandle(file);
-					return 1;
-				}
-			}
-		}
-
-		cd_drive++;
-		drives >>= 1;
-	}
-
-	return 0;
-}
-
 FILE* FileOpen(const char* name)
 {
 	FILE* file;
-	char path_name[80];
+	char full_path[WORKING_DIR_MAX_PATH * 2];
 
-	memset(path_name, 0, 80);
-	strcat(path_name, name);
-	Log(5, "FileOpen - %s", path_name);
-	file = fopen(path_name, "rb");
+	memset(full_path, 0, WORKING_DIR_MAX_PATH * 2);
+
+	memcpy(full_path, working_dir_path, strlen(working_dir_path));
+	strcat(full_path, name);
+
+	Log(5, "FileOpen - %s", full_path);
+	file = fopen(full_path, "rb");
 
 	if (!file)
-		Log(1, "Unable To Open %s", path_name);
+		Log(1, "Unable To Open %s", full_path);
 
 	return file;
 }

@@ -3,6 +3,7 @@
 
 void CLSetup(char* cmd);
 void CLNoFMV(char* cmd);
+void CLPath(char* cmd);
 void InitDSDevice(HWND dlg, HWND hwnd);
 void InitTFormats(HWND dlg, HWND hwnd);
 void InitResolution(HWND dlg, HWND hwnd, bool resetvms);
@@ -14,3 +15,7 @@ bool DXSetupDialog();
 
 extern bool start_setup;
 extern bool fmvs_disabled;
+
+#define WORKING_DIR_MAX_PATH 1024
+
+extern char working_dir_path[WORKING_DIR_MAX_PATH];

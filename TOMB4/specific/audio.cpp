@@ -11,6 +11,7 @@
 #include "LoadSave.h"
 #include "winmain.h"
 #include "platform.h"
+#include "cmdline.h"
 
 const char *LastRevelationTrackFileNames[] = 
 {
@@ -1311,12 +1312,23 @@ bool load_and_play_track(const char* path, StreamMode mode, int channel_id) {
 }
 
 bool play_track_on_stream_channel(int channel_id, long track, StreamMode mode) {
-	char name[256];
+	char path[4096];
+	int total_string_size = strlen(working_dir_path) + strlen("audio\\");
+	if (total_string_size >= 4096) {
+		Log(1, "String buffer overflow!");
+		return false;
+	}
+
+	memset(path, 0x00, 4096);
+	memcpy(path, working_dir_path, strlen(working_dir_path));
+	strcat(path, "audio");
+
+	char name[2048];
 	memset(name, 0x00, sizeof(name));
 
 	if (get_game_mod_global_info()->tr_level_editor)
 	{
-		find_file_with_substring("audio", LevelEditorTrackFileNames[track], name);
+		find_file_with_substring(path, LevelEditorTrackFileNames[track], name);
 
 		// Not sure if we should detect vorbis by filename since ogg is container format.
 		// May need to investigate the spec further.
@@ -1340,8 +1352,14 @@ bool play_track_on_stream_channel(int channel_id, long track, StreamMode mode) {
 
 	}
 
-	char path[256];
-	wsprintf(path, "audio\\%s", name);
+	total_string_size += strlen(name);
+	if (total_string_size >= 4096) {
+		Log(1, "String buffer overflow!");
+		return false;
+	}
+
+	strcat(path, "\\");
+	strcat(path, name);
 
 	bool result = load_and_play_track(path, (StreamMode)mode, channel_id);
 
@@ -1369,8 +1387,7 @@ void track_complete_callback(int channel_id) {
 				S_CDPlay(CurrentAtmosphere, 1);
 			}
 		}
-	}
-	else {
+	} else {
 		if (channels[channel_id].current_stream_active) {
 			stop_track_on_stream_channel(channel_id);
 

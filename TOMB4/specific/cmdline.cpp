@@ -4,6 +4,7 @@
 #include "../game/gameflow.h"
 #include "registry.h"
 #include "winmain.h"
+#include "platform.h"
 
 char ASCIIToANSITable[7][2] =
 {
@@ -16,15 +17,18 @@ char ASCIIToANSITable[7][2] =
 	{'¢', 'ó'}
 };
 
-bool start_setup = 0;
-bool fmvs_disabled = 0;
+const char WORKING_DIR_DEFAULT[] = ".\\";
+
+bool start_setup = false;
+bool fmvs_disabled = false;
+char working_dir_path[WORKING_DIR_MAX_PATH];
 
 static long nDDDevice = 0;
 static long nD3DDevice = 0;
-static bool Filter = 1;
-static bool VolumetricFx = 0;
-static bool BumpMap = 0;
-static bool TextLow = 0;
+static bool Filter = true;
+static bool VolumetricFx = false;
+static bool BumpMap = false;
+static bool TextLow = false;
 
 void CLSetup(char* cmd)
 {
@@ -44,6 +48,24 @@ void CLNoFMV(char* cmd)
 		fmvs_disabled = 0;
 	else
 		fmvs_disabled = 1;
+}
+
+void CLPath(char* cmd)
+{
+	Log(2, "CLPath");
+
+	if (strcmp(cmd, "_INIT") == 0)
+	{
+		memcpy(working_dir_path, WORKING_DIR_DEFAULT, strlen(WORKING_DIR_DEFAULT));
+	}
+	else
+	{
+		memcpy(working_dir_path, cmd, strlen(cmd));
+		if (ends_with(working_dir_path, "\\") == 0)
+		{
+			strcat(working_dir_path, "\\");
+		}
+	}
 }
 
 void InitDSDevice(HWND dlg, HWND hwnd)

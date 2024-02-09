@@ -41,6 +41,7 @@
 #define MAX_SPARKS 256
 #endif
 #define MALLOC_SIZE	64000000	// TRLE: bumped from 15MB to 64MB 
+#define PARAMETER_MAX_LENGTH 1024
 
 /********************DX defs********************/
 #define LPDIRECTDRAWX			LPDIRECTDRAW4
@@ -2040,7 +2041,7 @@ struct COMMANDLINES
 	char command[20];
 	bool needs_parameter;
 	void (*code)(char*);
-	char parameter[20];
+	char parameter[PARAMETER_MAX_LENGTH];
 };
 
 struct CHANGE_STRUCT

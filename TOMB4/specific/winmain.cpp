@@ -25,7 +25,8 @@
 static COMMANDLINES commandlines[] =
 {
 	{ "SETUP", 0, &CLSetup },
-	{ "NOFMV", 0, &CLNoFMV }
+	{ "NOFMV", 0, &CLNoFMV },
+	{ "PATH", 1, &CLPath }
 };
 
 WINAPP App;
@@ -72,7 +73,7 @@ void SDLProcessCommandLine(int argc, char* argv[])
 	char* last;
 	ulong l;
 	long num;
-	char parameter[20];
+	char parameter[PARAMETER_MAX_LENGTH];
 
 	Log(2, "SDLProcessCommandLine");
 
@@ -87,6 +88,11 @@ void SDLProcessCommandLine(int argc, char* argv[])
 	for (int cur_arg = 1; cur_arg < argc; cur_arg++) {
 		for (int i = 0; (ulong)i < strlen(argv[cur_arg]); i++)
 		{
+			if (argv[cur_arg][i] == '=')
+			{
+				break;
+			}
+
 			if (toupper(argv[cur_arg][i]))
 				argv[cur_arg][i] = toupper(argv[cur_arg][i]);
 		}
@@ -129,13 +135,10 @@ void SDLProcessCommandLine(int argc, char* argv[])
 					last = p;
 					l = strlen(last);
 
-					for (j = 0; (ulong)j < l; j++, last++)
-					{
-						if (*last == ' ')
-							break;
-					}
+					if (l > (PARAMETER_MAX_LENGTH - 8))
+						l = (PARAMETER_MAX_LENGTH - 8);
 
-					strncpy(parameter, p, j);
+					strncpy(parameter, p, l);
 					break;
 				}
 
@@ -427,10 +430,7 @@ int main(int argc, char* argv[]) {
 	App.SetupComplete = 0;
 	App.AutoTarget = 0;
 
-#if 0
-	if (WinRunCheck((char*)"Tomb Raider - The Last Revelation", (char*)"MainGameWindow", &App.mutex))
-		return 0;
-#endif
+	SDLProcessCommandLine(argc, argv);
 
 	// Tomb4Plus
 	T4PlusInit();
@@ -449,8 +449,6 @@ int main(int argc, char* argv[]) {
 	SDL_Init(SDL_INIT_EVENTS | SDL_INIT_GAMECONTROLLER);
 
 	InputInit();
-
-	SDLProcessCommandLine(argc, argv);
 
 	if (!SDLCreateWindow())
 	{
@@ -583,7 +581,7 @@ void WinProcessCommandLine(LPSTR cmd)
 	char* last;
 	ulong l;
 	long num;
-	char parameter[20];
+	char parameter[PARAMETER_MAX_LENGTH];
 
 	Log(2, "WinProcessCommandLine");
 

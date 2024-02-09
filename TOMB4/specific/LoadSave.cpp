@@ -29,6 +29,7 @@
 
 #include "../specific/input.h"
 #include "../tomb4/mod_config.h"
+#include "file.h"
 
 long sfx_frequencies[3] = { 11025, 22050, 44100 };
 long SoundQuality = 1;
@@ -1106,7 +1107,7 @@ long GetSaveLoadFiles()
 	{
 		pSave = &SaveGames[i];
 		wsprintf(name, "savegame.%d", i);
-		file = fopen(name, "rb");
+		file = FileOpen(name);
 
 		if (!file)
 		{

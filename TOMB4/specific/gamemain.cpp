@@ -13,6 +13,7 @@
 #include "dxshell.h"
 #include "../game/savegame.h"
 #include "../tomb4/tomb4.h"
+#include "cmdline.h"
 
 #include "specificfx.h"
 
@@ -209,31 +210,39 @@ bool GameInitialise()
 
 long S_SaveGame(long slot_num)
 {
-	HANDLE file;
 	ulong bytes;
 	long days, hours, minutes, seconds;
 	char buffer[80], counter[16];
 
 	memset(buffer, 0, sizeof(buffer));
 	wsprintf(buffer, "savegame.%d", slot_num);
-	file = CreateFile(buffer, GENERIC_WRITE, 0, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
 
-	if (file != INVALID_HANDLE_VALUE)
+	char full_path[4096];
+	memset(full_path, 0, 4096);
+	memcpy(full_path, working_dir_path, strlen(working_dir_path));
+	strcat(full_path, buffer);
+
+	FILE* file = fopen(full_path, "wb");
+
+	if (file)
 	{
 		memset(buffer, 0, sizeof(buffer));
 		wsprintf(buffer, "%s", GetStringForTextID(gfLevelNames[gfCurrentLevel]));
-		WriteFile(file, buffer, 75, &bytes, 0);
-		WriteFile(file, &SaveCounter, sizeof(long), &bytes, 0);
+
+		bytes = fwrite(buffer, sizeof(char), 75, file);
+		bytes = fwrite(&SaveCounter, sizeof(long), 1, file);
 		days = savegame.Game.Timer / 30 / 86400;
 		hours = savegame.Game.Timer / 30 % 86400 / 3600;
 		minutes = savegame.Game.Timer / 30 / 60 % 60;
 		seconds = savegame.Game.Timer / 30 % 60;
-		WriteFile(file, &days, 2, &bytes, 0);
-		WriteFile(file, &hours, 2, &bytes, 0);
-		WriteFile(file, &minutes, 2, &bytes, 0);
-		WriteFile(file, &seconds, 2, &bytes, 0);
-		WriteFile(file, &savegame, sizeof(SAVEGAME_INFO), &bytes, 0);
-		CloseHandle(file);
+
+		bytes = fwrite(&days, sizeof(short), 1, file);
+		bytes = fwrite(&hours, sizeof(short), 1, file);
+		bytes = fwrite(&minutes, sizeof(short), 1, file);
+		bytes = fwrite(&seconds, sizeof(short), 1, file);
+		bytes = fwrite(&savegame, sizeof(SAVEGAME_INFO), 1, file);
+
+		fclose(file);
 		wsprintf(counter, "%d", SaveCounter);
 		SaveCounter++;
 
@@ -251,39 +260,44 @@ long S_SaveGame(long slot_num)
 
 long S_LoadGame(long slot_num)
 {
-	HANDLE file;
 	ulong bytes;
 	long value;
 	char buffer[80];
 
 	wsprintf(buffer, "savegame.%d", slot_num);
-	file = CreateFile(buffer, GENERIC_READ, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+
+	char full_path[4096];
+	memset(full_path, 0, 4096);
+	memcpy(full_path, working_dir_path, strlen(working_dir_path));
+	strcat(full_path, buffer);
+
+	FILE* file = fopen(full_path, "rb");
 
 	T4PlusLevelReset();
 
-	if (file != INVALID_HANDLE_VALUE)
+	if (file)
 	{
-		if (!ReadFile(file, buffer, 75, &bytes, 0)) {
-			CloseHandle(file);
+		if (!fread(buffer, sizeof(char), 75, file) > 0) {
+			fclose(file);
 			return 0;
 		}
-		if (!ReadFile(file, &value, sizeof(long), &bytes, 0)) {
-			CloseHandle(file);
+		if (!fread(&value, sizeof(long), 1, file) > 0) {
+			fclose(file);
 			return 0;
 		}
-		if (!ReadFile(file, &value, sizeof(long), &bytes, 0)) {
-			CloseHandle(file);
+		if (!fread(&value, sizeof(long), 1, file) > 0) {
+			fclose(file);
 			return 0;
 		}
-		if (!ReadFile(file, &value, sizeof(long), &bytes, 0)) {
-			CloseHandle(file);
+		if (!fread(&value, sizeof(long), 1, file) > 0) {
+			fclose(file);
 			return 0;
 		}
-		if (!ReadFile(file, &savegame, sizeof(SAVEGAME_INFO), &bytes, 0)) {
-			CloseHandle(file);
+		if (!fread(&savegame, sizeof(SAVEGAME_INFO), 1, file) > 0) {
+			fclose(file);
 			return 0;
 		}
-		CloseHandle(file);
+		fclose(file);
 
 		MOD_GLOBAL_INFO *mod_global_info = get_game_mod_global_info();
 		if (mod_global_info->trep_using_extended_saves)

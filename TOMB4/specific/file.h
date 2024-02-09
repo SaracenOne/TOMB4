@@ -8,7 +8,6 @@ unsigned int __stdcall LoadLevel(void* name);
 #endif
 long S_LoadLevelFile(long num);
 void FreeLevel();
-bool FindCDDrive();
 FILE* FileOpen(const char* name);
 void FileClose(FILE* file);
 long FileSize(FILE* file);

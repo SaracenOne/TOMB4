@@ -1,4 +1,5 @@
 #include "../../tomb4/pch.h"
+#include "../../specific/cmdline.h"
 
 #include "trepsave.h"
 #include "furr.h"
@@ -7,23 +8,28 @@
 #define TREPSAVE_BUFFER_SIZE 0x2ff0
 
 void S_TREPLoadgame(long slot_num) {
-	HANDLE file;
 	ulong bytes_read = 0;
 
 	char buffer[TREPSAVE_BUFFER_SIZE];
 	memset(buffer, 0x00, TREPSAVE_BUFFER_SIZE);
 
 	wsprintf(buffer, "trepsave.%d", slot_num);
-	file = CreateFile(buffer, GENERIC_READ, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+
+	char full_path[4096];
+	memset(full_path, 0, 4096);
+	memcpy(full_path, working_dir_path, strlen(working_dir_path));
+	strcat(full_path, buffer);
+
+	FILE* file = fopen(full_path, "rb");
 
 	furr_clear_oneshot_buffer();
 	rain_type = WEATHER_DISABLED;
 	snow_type = WEATHER_DISABLED;
 
-	if (file != INVALID_HANDLE_VALUE)
+	if (file)
 	{
-		BOOL result = ReadFile(file, buffer, TREPSAVE_BUFFER_SIZE, &bytes_read, 0);
-		if (result == TRUE) {
+		bytes_read = fread(buffer, 1, TREPSAVE_BUFFER_SIZE, file);
+		if (bytes_read == TREPSAVE_BUFFER_SIZE) {
 			memcpy(furr_oneshot_buffer, buffer, LAST_FURR_FLIPEFFECT);
 
 			char weather = 0;
@@ -43,35 +49,42 @@ void S_TREPLoadgame(long slot_num) {
 					break;
 			}
 		}
-		CloseHandle(file);
+		fclose(file);
 
 		return;
 	}
 }
 
 void S_TREPSavegame(long slot_num) {
-	HANDLE file;
 	ulong bytes_written = 0;
 
 	char buffer[TREPSAVE_BUFFER_SIZE];
 	memset(buffer, 0x00, TREPSAVE_BUFFER_SIZE);
 
 	wsprintf(buffer, "trepsave.%d", slot_num);
-	file = CreateFile(buffer, GENERIC_WRITE, 0, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
 
-	memcpy(buffer, furr_oneshot_buffer, LAST_FURR_FLIPEFFECT);
+	char full_path[4096];
+	memset(full_path, 0, 4096);
+	memcpy(full_path, working_dir_path, strlen(working_dir_path));
+	strcat(full_path, buffer);
 
-	char weather = 0;
-	if (rain_type == WEATHER_ENABLED_ALL_OUTSIDE) {
-		weather += 1;
+	FILE* file = fopen(full_path, "wb");
+	if (file)
+	{
+		memcpy(buffer, furr_oneshot_buffer, LAST_FURR_FLIPEFFECT);
+
+		char weather = 0;
+		if (rain_type == WEATHER_ENABLED_ALL_OUTSIDE) {
+			weather += 1;
+		}
+		if (snow_type == WEATHER_ENABLED_ALL_OUTSIDE) {
+			weather += 2;
+		}
+
+		memcpy(buffer + 0x270, &weather, sizeof(char));
+
+		bytes_written = fwrite(buffer, 1, TREPSAVE_BUFFER_SIZE, file);
+
+		fclose(file);
 	}
-	if (snow_type == WEATHER_ENABLED_ALL_OUTSIDE) {
-		weather += 2;
-	}
-
-	memcpy(buffer + 0x270, &weather, sizeof(char));
-
-	WriteFile(file, buffer, TREPSAVE_BUFFER_SIZE, &bytes_written, 0);
-
-	CloseHandle(file);
 }

@@ -180,6 +180,9 @@ struct TRNG_ENGINE_VERSION {
 
 
 struct MOD_GLOBAL_INFO {
+	char *level_name = nullptr;
+	char *author = nullptr;
+
 	unsigned int tr_engine_version = 4;
 	bool tr_level_editor = true;
 	bool tr_times_exclusive = false;

@@ -11,6 +11,7 @@
 
 #include "../game/trep/furr.h"
 #include "../specific/platform.h"
+#include "../specific/cmdline.h"
 
 int global_string_table_size = 0;
 char** global_string_table;
@@ -795,7 +796,7 @@ void LoadGameModConfigFirstPass() {
 
     char* json_buf = NULL;
     if (LoadFile("game_mod_config.json", &json_buf) <= 0) {
-        Log(1, "LoadGameModConfigFirstPass: Failed to load game_mod_config.json!");
+        platform_fatal_error("Missing game_mod_config.json from working directory \"%s\". Please examine README for further information", working_dir_path);
     }
 
     const json_t* level = nullptr;
@@ -811,6 +812,9 @@ void LoadGameModConfigFirstPass() {
                 const json_t* global = json_getProperty(root_json, "global_info");
                 if (global && JSON_OBJ == json_getType(global)) {
                     MOD_GLOBAL_INFO* mod_global_info = &game_mod_config.global_info;
+
+                    READ_JSON_STRING(level_name, global, mod_global_info);
+                    READ_JSON_STRING(author, global, mod_global_info);
 
                     READ_JSON_UINT32(tr_engine_version, global, mod_global_info);
                     READ_JSON_BOOL(tr_level_editor, global, mod_global_info);

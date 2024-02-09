@@ -8,6 +8,7 @@
 #else
 #error "Platform not supported"
 #endif
+#include "cmdline.h"
 #include "function_stubs.h"
 #include "winmain.h"
 
@@ -31,7 +32,7 @@ int strcicmp(char const* a, char const* b) {
 
 void find_file_with_substring(const char* dir_path, const char* substring, char* found_filename) {
 #ifdef _WIN32
-	char win32_path[256];
+	char win32_path[4096];
 	wsprintf(win32_path, "%s\\*", dir_path);
 
 	WIN32_FIND_DATA find_file_data;
@@ -51,15 +52,22 @@ void find_file_with_substring(const char* dir_path, const char* substring, char*
 		size_t str_len = strlen(substring);
 
 		if (cmp_count >= str_len) {
-			strncpy(found_filename, find_file_data.cFileName, 256 - 1);
-			found_filename[256 - 1] = '\0';
-			break;
+			int filename_length = strlen(find_file_data.cFileName);
+
+			if (filename_length < 256) {
+				strcpy(found_filename, find_file_data.cFileName);
+				found_filename[filename_length] = '\0';
+				break;
+			} else {
+				Log(1, "Audio filename %s too long!", find_file_data.cFileName);
+				return;
+			}
 		}
 	} while (FindNextFile(hFind, &find_file_data));
 
 	FindClose(hFind);
 #elif defined(_POSIX_VERSION)
-	DIR* dirp = opendir(dir_path);
+	DIR* dirp = opendir(concatinated_path);
 	if (dirp == NULL) {
 		perror("Error opening directory");
 		return;
@@ -75,14 +83,32 @@ void find_file_with_substring(const char* dir_path, const char* substring, char*
 		size_t str_len = strlen(substring);
 
 		if (cmp_count >= str_len) {
-			strncpy(found_filename, dp->d_name, 256 - 1);
-			found_filename[256 - 1] = '\0';
-			break;
+
+			int filename_length = strlen(dp->d_name);
+
+			if (filename_length < 256) {
+				strcpy(found_filename, dp->d_name);
+				found_filename[filename_length] = '\0';
+				break;
+			} else {
+				Log(1, "Audio filename %s too long!", dp->d_name);
+				return;
+			}
 		}
 	}
 
 	closedir(dirp);
 #endif
+}
+
+int ends_with(const char* str, const char* suffix) {
+	if (!str || !suffix)
+		return 0;
+	size_t len_str = strlen(str);
+	size_t len_suffix = strlen(suffix);
+	if (len_suffix > len_str)
+		return 0;
+	return strncmp(str + len_str - len_suffix, suffix, len_suffix) == 0;
 }
 
 void platform_fatal_error(const char* s, ...) {
