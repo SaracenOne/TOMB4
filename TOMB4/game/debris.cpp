@@ -5,6 +5,7 @@
 #include "tomb4fx.h"
 #include "../specific/3dmath.h"
 #include "draw.h"
+#include "../tomb4/mod_config.h"
 
 DEBRIS_STRUCT debris[256];
 long next_debris;
@@ -44,7 +45,7 @@ void UpdateDebris()
 
 			if (dptr->y >= height || dptr->y < ceiling)
 				dptr->On = 0;
-			else
+			else if (get_game_mod_global_info()->spinning_debris)
 			{
 				dptr->XRot += dptr->Yvel >> 6;
 
@@ -121,7 +122,7 @@ void TriggerDebris(GAME_VECTOR* pos, void* TextInfo, short* Offsets, long* Vels,
 	dptr->XYZOffsets3[1] = Offsets[7];
 	dptr->XYZOffsets3[2] = Offsets[8];
 
-	if (DebrisFlags & 1)
+	if (DebrisFlags & 1 && get_game_mod_global_info()->spinning_debris)
 	{
 		dptr->YRot = uchar(GetRandomControl() << 1);
 		dptr->XRot = dptr->YRot;

@@ -4687,8 +4687,14 @@ void ApplyVelocityToRope(long node, ushort angle, ushort n)
 {
 	long xvel, zvel;
 
-	xvel = n * phd_sin(angle) >> 2;
-	zvel = n * phd_cos(angle) >> 2;
+	if (get_game_mod_global_info()->fix_rope_glitch) {
+		xvel = rcossin_tbl[((angle & 0xfff0) >> 3)] * 4 * (int)(short)n >> 2;
+		zvel = rcossin_tbl[((angle & 0xfff0) >> 3) + 1] * 4 * (int)(short)n >> 2;
+	} else {
+		xvel = n * phd_sin(angle) >> 2;
+		zvel = n * phd_cos(angle) >> 2;
+	}
+
 	SetPendulumVelocity(xvel, 0, zvel);
 }
 

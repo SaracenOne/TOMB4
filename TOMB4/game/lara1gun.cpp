@@ -23,6 +23,7 @@
 #include "lara.h"
 #include "savegame.h"
 #include "gameflow.h"
+#include "../tomb4/mod_config.h"
 
 void DoGrenadeDamageOnBaddie(ITEM_INFO* baddie, ITEM_INFO* item)
 {
@@ -1205,7 +1206,7 @@ void ControlGrenade(short item_number)
 						target->status = ITEM_ACTIVE;
 						target->flags |= IFL_SWITCH_ONESHOT | IFL_CODEBITS;
 					}
-					else if (objects[target->object_number].intelligent || target->object_number == LARA)
+					else if (objects[target->object_number].intelligent || (target->object_number == LARA && get_game_mod_global_info()->grenades_damage_lara))
 						DoGrenadeDamageOnBaddie(target, item);
 
 					j++;

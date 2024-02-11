@@ -211,6 +211,11 @@ struct MOD_GLOBAL_INFO {
 	bool tomo_enable_weather_flipeffect = false;
 	bool tomo_swap_whitelight_for_teleporter = false;
 
+	// Patcher Bug Fixes
+	bool grenades_damage_lara = true;
+	bool spinning_debris = false;
+	bool fix_rope_glitch = true;
+
 	bool show_lara_in_title = false;
 	unsigned short max_particles = 256;
 };

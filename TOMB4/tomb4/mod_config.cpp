@@ -1040,6 +1040,11 @@ void LoadGameModConfigSecondPass() {
                     READ_JSON_BOOL(tomo_enable_weather_flipeffect, global, mod_global_info);
                     READ_JSON_BOOL(tomo_swap_whitelight_for_teleporter, global, mod_global_info);
 
+                    // Patcher Bug Fixes
+                    READ_JSON_BOOL(grenades_damage_lara, global, mod_global_info);
+                    READ_JSON_BOOL(spinning_debris, global, mod_global_info);
+                    READ_JSON_BOOL(fix_rope_glitch, global, mod_global_info);
+
                     // Misc
                     READ_JSON_BOOL(show_lara_in_title, global, mod_global_info);
                     READ_JSON_UINT16(max_particles, global, mod_global_info);
