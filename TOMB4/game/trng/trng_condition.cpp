@@ -602,6 +602,8 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 	}
 	case LARA_IS_LESS_OR_EVEN_CLICKS_DISTANT_TO_MOVEABLE: {
 		// TODO: I'm not sure this is accurate. More testing will be required.
+		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: LARA_IS_LESS_OR_EVEN_CLICKS_DISTANT_TO_MOVEABLE calculation is not accurate!");
+
 		long dx = (lara_item->pos.x_pos - items[param].pos.x_pos) >> 4;
 		long dy = (lara_item->pos.x_pos - items[param].pos.x_pos) >> 4;
 		long dz = (lara_item->pos.z_pos - items[param].pos.z_pos) >> 4;
@@ -647,8 +649,8 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 				}
 			}
 			return false;
-			break;
 		}
+		break;
 	}
 	case LARA_IS_TOUCHING_MOVEABLE_WITH_MESH_NUMBER: {
 		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: LARA_IS_TOUCHING_MOVEABLE_WITH_MESH_NUMBER unimplemented!");

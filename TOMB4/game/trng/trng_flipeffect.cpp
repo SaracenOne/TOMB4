@@ -160,7 +160,7 @@ bool disable_input_for_time(unsigned char input, unsigned char timer) {
 }
 
 // NGLE - 52
-bool keyboard_enable_input(unsigned char input, unsigned char unused) {
+bool keyboard_enable_input(unsigned char input, unsigned char _unused) {
 	NGEnableInput(input);
 	
 	return true;
@@ -168,6 +168,9 @@ bool keyboard_enable_input(unsigned char input, unsigned char unused) {
 
 // NGLE - 53
 bool keyboard_simulate_receivement_of_keyboard_command(unsigned char input, unsigned char timer) {
+	NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGFlipEffect: KEYBOARD_SIMULATE_RECEIVEMENT_OF_KEYBOARD_COMMAND calculation is not accurate!");
+
+
 	NGSimulateInputForTime(input, (int)timer * 30);
 
 	return true;
@@ -200,7 +203,7 @@ bool play_cd_track_channel_1(unsigned char track_id, unsigned char looping) {
 }
 
 // NGLE - 69
-bool stop_all_cd_tracks(unsigned char unused_1, unsigned char unused_2) {
+bool stop_all_cd_tracks(unsigned char _unused_1, unsigned char _unused_2) {
 	S_CDStopExt(0);
 	S_CDStopExt(1);
 
@@ -246,7 +249,7 @@ bool play_sound_from_second_group(unsigned char sound_sample, unsigned char time
 }
 
 // NGLE - 72
-bool stop_sound_from_first_group(unsigned char sound_sample, unsigned char unused_2) {
+bool stop_sound_from_first_group(unsigned char sound_sample, unsigned char _unused_2) {
 	int indexed_sound_sample = sound_sample;
 
 	StopSoundEffect(indexed_sound_sample);
@@ -256,7 +259,7 @@ bool stop_sound_from_first_group(unsigned char sound_sample, unsigned char unuse
 }
 
 // NGLE - 73
-bool stop_sound_from_second_group(unsigned char sound_sample, unsigned char unused_2) {
+bool stop_sound_from_second_group(unsigned char sound_sample, unsigned char _unused_2) {
 	int indexed_sound_sample = 256 + sound_sample;
 
 	StopSoundEffect(indexed_sound_sample);
@@ -266,7 +269,7 @@ bool stop_sound_from_second_group(unsigned char sound_sample, unsigned char unus
 }
 
 // NGLE - 74
-bool stop_all_sound_samples(unsigned char unused_1, unsigned char unused_2) {
+bool stop_all_sound_samples(unsigned char _unused_1, unsigned char _unused_2) {
 	S_SoundStopAllSamples();
 
 	memset(ng_looped_sound_state, 0x00, NumSamples * sizeof(int));
@@ -360,14 +363,14 @@ bool delay_load_x_level_in_seconds(unsigned char level_id, unsigned char level_t
 
 
 // NGLE - 83
-bool remove_weapons_or_flares_from_laras_hands(unsigned char unused1, unsigned char unused2) {
+bool remove_weapons_or_flares_from_laras_hands(unsigned char _unused1, unsigned char _unused2) {
 	lara.request_gun_type = WEAPON_NONE;
 
 	return true;
 }
 
 // NGLE - 84
-bool cutscene_set_fade_in_for_x_time(unsigned char fade_time, unsigned char unused2) {
+bool cutscene_set_fade_in_for_x_time(unsigned char fade_time, unsigned char _unused2) {
 	SetScreenFadeIn(fade_time);
 
 	return true;
@@ -381,7 +384,7 @@ bool cutscene_set_fade_out_for_x_time_in_way(unsigned char fade_time, unsigned c
 }
 
 // NGLE - 89
-bool damage_lara_life_by_percentage(unsigned char action_data_1, unsigned char unused2) {
+bool damage_lara_life_by_percentage(unsigned char action_data_1, unsigned char _unused2) {
 	const int MAX_LARA_HEALTH = 1000; // May need this to be customizable.
 	int new_hit_points = lara_item->hit_points;
 	if (action_data_1 <= 9) {
@@ -406,7 +409,7 @@ bool damage_lara_life_by_percentage(unsigned char action_data_1, unsigned char u
 }
 
 // NGLE - 90
-bool recharge_lara_life_by_percentage(unsigned char action_data_1, unsigned char unused2) {
+bool recharge_lara_life_by_percentage(unsigned char action_data_1, unsigned char _unused2) {
 	const int MAX_LARA_HEALTH = 1000; // May need this to be customizable.
 
 	int new_hit_points = lara_item->hit_points;
@@ -577,7 +580,7 @@ bool perform_triggergroup_from_script_in_specific_way(unsigned char trigger_grou
 }
 
 // NGLE - 125
-bool flipmap_on(unsigned char flipmap_id, unsigned char unused_2) {
+bool flipmap_on(unsigned char flipmap_id, unsigned char _unused_2) {
 	flipmap[flipmap_id] |= IFL_CODEBITS;
 
 	if (!flip_stats[flipmap_id])
@@ -587,7 +590,7 @@ bool flipmap_on(unsigned char flipmap_id, unsigned char unused_2) {
 }
 
 // NGLE - 126
-bool flipmap_off(unsigned char flipmap_id, unsigned char unused_2) {
+bool flipmap_off(unsigned char flipmap_id, unsigned char _unused_2) {
 	flipmap[flipmap_id] &= ~(IFL_CODEBITS);
 
 	if (flip_stats[flipmap_id])
@@ -626,7 +629,7 @@ bool sound_play_cd_track_channel_2(unsigned char track_id, unsigned char looping
 }
 
 // NGLE - 130
-bool sound_stop_cd_track_on_channel(unsigned char channel_id, unsigned char unused) {
+bool sound_stop_cd_track_on_channel(unsigned char channel_id, unsigned char _unused) {
 	S_CDStopExt(channel_id);
 
 	return true;
@@ -1247,13 +1250,19 @@ bool variables_hide_the_x_trng_timer_in_seconds(unsigned char set_global_timer, 
 }
 
 // NGLE - 284
-bool variables_numeric_invert_the_sign_of_x_numeric_value(unsigned char variable, unsigned char unused) {
+bool variables_numeric_invert_the_sign_of_x_numeric_value(unsigned char variable, unsigned char _unused) {
 	NGNumericOperation(NG_INVERT_SIGN, variable, NGNumericGetVariable(variable));
 	return true;
 }
 
+// NGLE - 335
+bool variables_set_the_x_inventory_item_as_selected_inventory_memory(unsigned char inventory_item, unsigned char _unused) {
+	ng_selected_inventory_item_memory = inventory_item;
+	return true;
+}
+
 // NGLE - 367
-bool camera_show_black_screen_for_seconds_with_final_curtain_effect(unsigned char timer, unsigned char unused) {
+bool camera_show_black_screen_for_seconds_with_final_curtain_effect(unsigned char timer, unsigned char _unused) {
 	NGSetCurtainTimer(timer * 30);
 
 	return true;
@@ -1300,13 +1309,13 @@ bool disable_global_trigger_with_id(unsigned char global_trigger_id_lower, unsig
 }
 
 // NGLE - 404
-bool trigger_secret(unsigned char secret_number, unsigned char unused) {
+bool trigger_secret(unsigned char secret_number, unsigned char _unused) {
 	T4TriggerSecret(secret_number);
 	return true;
 }
 
 // NGLE - 407
-bool set_lara_holsters(unsigned char holster_type, unsigned char unused) {
+bool set_lara_holsters(unsigned char holster_type, unsigned char _unused) {
 	switch (holster_type) {
 	case 0x0d: {
 		lara.holster = LARA_HOLSTERS;
@@ -3054,8 +3063,7 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 		}
 		case VARIABLES_SET_THE_X_INVENTORY_ITEM_AS_SELECTED_INVENTORY_MEMORY: {
 			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "VARIABLES_SET_THE_X_INVENTORY_ITEM_AS_SELECTED_INVENTORY_MEMORY unimplemented!");
-				return true;
+				return variables_set_the_x_inventory_item_as_selected_inventory_memory(action_data_1, action_data_2);
 			}
 			break;
 		}
