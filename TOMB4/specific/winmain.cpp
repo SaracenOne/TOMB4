@@ -347,14 +347,19 @@ void SDLProcessEvents()
 	while (!quit) {
 		SDL_Event event;
 
-		while (SDL_PollEvent(&event)) {
+		while (SDL_PollEvent(&event))
+		{
 			switch (event.type) {
-				case SDL_QUIT:
+				case SDL_QUIT: {
 					quit = SDL_TRUE;
-				break;
+					break;
+				}
 				case SDL_WINDOWEVENT:
-					switch (event.window.event) {
+				{
+					switch (event.window.event)
+					{
 						case SDL_WINDOWEVENT_FOCUS_LOST:
+						{
 							if (App.SetupComplete)
 							{
 								appIsUnfocused = true;
@@ -372,8 +377,10 @@ void SDLProcessEvents()
 									Log(5, "Game Thread Suspended");
 								}
 							}
-						break;
+							break;
+						}
 						case SDL_WINDOWEVENT_FOCUS_GAINED:
+						{
 							if (App.SetupComplete)
 							{
 								appIsUnfocused = false;
@@ -387,13 +394,31 @@ void SDLProcessEvents()
 							}
 
 							break;
+						}
 						case SDL_WINDOWEVENT_MOVED:
+						{
 #ifndef USE_BGFX
 							DXMove(event.window.data1, event.window.data2);
 #endif
-						break;
+							break;
+						}
 					}
-				break;
+					break;
+				}
+				case SDL_CONTROLLERDEVICEADDED:
+				{
+					UpdateGamepad();
+					break;
+				}
+				case SDL_CONTROLLERDEVICEREMOVED:
+				{
+					UpdateGamepad();
+					break;
+				}
+				default:
+				{
+					break;
+				}
 			}
 		}
 	}

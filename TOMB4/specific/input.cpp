@@ -444,12 +444,20 @@ int convert_tomb_keycode_to_sdl_scancode(int tomb_keycode) {
 }
 #endif
 
-void InputInit(void)
+void UpdateGamepad()
 {
 #ifdef USE_SDL
 	if (controller) 
 	{
-		return;
+		if (SDL_GameControllerGetAttached(controller))
+		{
+			return;
+		}
+		else
+		{
+			SDL_GameControllerClose(controller);
+			controller = nullptr;
+		}
 	}
 
 	int controller_count = SDL_NumJoysticks();
@@ -464,13 +472,18 @@ void InputInit(void)
 #endif
 };
 
-void InputShutdown(void)
+void InputInit()
+{
+	UpdateGamepad();
+}
+
+void InputShutdown()
 {
 #ifdef USE_SDL
 	if (controller)
 	{
 		SDL_GameControllerClose(controller);
-		controller = NULL;
+		controller = nullptr;
 	}
 #endif
 };

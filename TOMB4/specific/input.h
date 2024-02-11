@@ -149,8 +149,10 @@
 extern int convert_sdl_scancode_to_tomb_keycode(int scancode);
 extern int convert_tomb_keycode_to_sdl_scancode(int tomb_keycode);
 
-extern void InputInit(void);
-extern void InputShutdown(void);
+extern void UpdateGamepad();
+
+extern void InputInit();
+extern void InputShutdown();
 
 extern bool IsKeyPressed(int t4p_key);
 
