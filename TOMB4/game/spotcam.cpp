@@ -367,9 +367,6 @@ void CalculateSpotCams()
 		current_spline_position += cspeed;
 
 
-	if (tomb4.cutseq_skipper && IsKeyPressed(T4P_KEY_ESCAPE) && gfCurrentLevel)
-		current_spline_position = 0x10000;
-
 	if (!(input & IN_LOOK))
 		bFirstLook = 0;
 

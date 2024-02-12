@@ -224,7 +224,8 @@ long ControlPhase(long nframes, long demo_mode)
 	FLOOR_INFO* floor;
 	MESH_INFO* mesh;
 	short item_num, nex, fx_num;
-	
+	bool spotcam_skip_flag = false;
+
 	MOD_GLOBAL_INFO *global_info = get_game_mod_global_info();
 
 	RegeneratePickups();
@@ -508,9 +509,22 @@ long ControlPhase(long nframes, long demo_mode)
 			CalculateCamera();
 		}
 		else if (bUseSpotCam)
+		{
 			CalculateSpotCams();
+			if (tomb4.cutseq_skipper && IsKeyPressed(T4P_KEY_ESCAPE) && gfCurrentLevel)
+			{
+				if (!spotcam_skip_flag)
+				{
+					spotcam_skip_flag = true;
+					nframes *= 60;
+					framecount *= 60;
+				}
+			}
+		}
 		else if (!bVoncroyCutScene)
+		{
 			CalculateCamera();
+		}
 
 		// TRLE
 		LaraBreath(lara_item);
