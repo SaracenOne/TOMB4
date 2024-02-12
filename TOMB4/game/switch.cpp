@@ -14,6 +14,7 @@
 #include "lara.h"
 #include "newinv.h"
 #include "../tomb4/mod_config.h"
+#include "gameflow.h"
 
 static PHD_VECTOR FullBlockSwitchPos = { 0, 256, 0 };
 static PHD_VECTOR SwitchPos = { 0, 0, 0 };
@@ -243,23 +244,51 @@ void SwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 				if (global_info->trng_switch_extended_ocb && item->trigger_flags & 0x1000)
 					inverted_state = true;
 				
+				MOD_LEVEL_MISC_INFO *misc_info = get_game_mod_level_misc_info(gfCurrentLevel);
+
 				if (item->current_anim_state == (inverted_state ? 0 : 1))
 				{
 					if (item->trigger_flags)
 					{
-						// TRNG - custom animation overwrite
-						if (global_info->trng_switch_extended_ocb && (item->trigger_flags) >= 4)
-						{
-							l->anim_number = (item->trigger_flags & 0xfff); // TRNG
-							if (item->trigger_flags & 0x2000)
-								l->anim_number++;
-							l->current_anim_state = AS_SWITCHOFF;
-							l->goal_anim_state = AS_STOP;
-						}
-						else
-						{
-							l->anim_number = ANIM_HIDDENPICKUP;
-							l->current_anim_state = AS_HIDDENPICKUP;
+						// TREP switch maker
+						if (misc_info->trep_switch_maker) {
+							switch (item->trigger_flags) {
+								case 1:
+									l->anim_number = misc_info->trep_switch_off_ocb_1_anim;
+									l->current_anim_state = AS_SWITCHOFF;
+									break;
+								case 2:
+									l->anim_number = misc_info->trep_switch_off_ocb_2_anim;
+									l->current_anim_state = AS_SWITCHOFF;
+									break;
+								case 5:
+									l->anim_number = misc_info->trep_switch_off_ocb_5_anim;
+									l->current_anim_state = AS_SWITCHOFF;
+									break;
+								case 6:
+									l->anim_number = misc_info->trep_switch_off_ocb_6_anim;
+									l->current_anim_state = AS_SWITCHOFF;
+									break;
+								default:
+									l->anim_number = ANIM_HIDDENPICKUP;
+									l->current_anim_state = AS_HIDDENPICKUP;
+									break;
+							}
+						} else {
+							// TRNG - custom animation overwrite
+							if (global_info->trng_switch_extended_ocb && (item->trigger_flags) >= 4)
+							{
+								l->anim_number = (item->trigger_flags & 0xfff); // TRNG
+								if (item->trigger_flags & 0x2000)
+									l->anim_number++;
+								l->current_anim_state = AS_SWITCHOFF;
+								l->goal_anim_state = AS_STOP;
+							}
+							else
+							{
+								l->anim_number = ANIM_HIDDENPICKUP;
+								l->current_anim_state = AS_HIDDENPICKUP;
+							}
 						}
 					}
 					else
@@ -281,16 +310,44 @@ void SwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 						l->anim_number = ANIM_SMALLSWITCH;
 					else
 					{
-						// TRNG - custom animation overwrite
-						if (global_info->trng_switch_extended_ocb && (item->trigger_flags) >= 4) {
-							l->anim_number = item->trigger_flags & 0xfff;
-							l->current_anim_state = AS_SWITCHON;
-							l->goal_anim_state = AS_STOP;
-						}
-						else
+						// TREP switch maker
+						if (misc_info->trep_switch_maker)
 						{
-							l->anim_number = ANIM_HIDDENPICKUP;
-							l->current_anim_state = AS_HIDDENPICKUP;
+							switch (item->trigger_flags)
+							{
+								case 1:
+									l->anim_number = misc_info->trep_switch_on_ocb_1_anim;
+									l->current_anim_state = AS_SWITCHON;
+									break;
+								case 2:
+									l->anim_number = misc_info->trep_switch_on_ocb_2_anim;
+									l->current_anim_state = AS_SWITCHON;
+									break;
+								case 5:
+									l->anim_number = misc_info->trep_switch_on_ocb_5_anim;
+									l->current_anim_state = AS_SWITCHON;
+									break;
+								case 6:
+									l->anim_number = misc_info->trep_switch_on_ocb_6_anim;
+									l->current_anim_state = AS_SWITCHON;
+									break;
+								default:
+									l->anim_number = ANIM_HIDDENPICKUP;
+									l->current_anim_state = AS_HIDDENPICKUP;
+									break;
+							}
+						} else {
+							// TRNG - custom animation overwrite
+							if (global_info->trng_switch_extended_ocb && (item->trigger_flags) >= 4) {
+								l->anim_number = item->trigger_flags & 0xfff;
+								l->current_anim_state = AS_SWITCHON;
+								l->goal_anim_state = AS_STOP;
+							}
+							else
+							{
+								l->anim_number = ANIM_HIDDENPICKUP;
+								l->current_anim_state = AS_HIDDENPICKUP;
+							}
 						}
 					}
 
