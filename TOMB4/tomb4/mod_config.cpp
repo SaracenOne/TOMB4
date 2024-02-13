@@ -12,6 +12,8 @@
 #include "../game/trep/furr.h"
 #include "../specific/platform.h"
 #include "../specific/cmdline.h"
+#include <string>
+#include "../specific/registry.h"
 
 int global_string_table_size = 0;
 char** global_string_table;
@@ -108,6 +110,40 @@ char** global_string_table;
         } \
     } \
     };
+
+bool SetupUserDirectories() {
+    if (game_mod_config.global_info.game_user_dir_name) {
+        game_user_dir_path = platform_get_userdata_path() + "game_data" + PATH_SEPARATOR + game_mod_config.global_info.game_user_dir_name + PATH_SEPARATOR;
+        if (platform_create_directory(game_user_dir_path.c_str())) {
+            // Saves
+            std::string game_user_saves_dir_name = game_user_dir_path + "saves" + PATH_SEPARATOR;
+            if (platform_create_directory(game_user_saves_dir_name.c_str())) {
+                savegame_dir_path = game_user_saves_dir_name;
+            } else {
+                platform_fatal_error("Failed to create game user saves directory at path '%s'.", game_user_saves_dir_name);
+                return false;
+            }
+
+            // Screenshots
+            std::string game_user_screenshots_dir_name = game_user_dir_path + "screenshots" + PATH_SEPARATOR;
+            if (platform_create_directory(game_user_screenshots_dir_name.c_str())) {
+                screenshots_dir_path = game_user_screenshots_dir_name;
+            } else {
+                platform_fatal_error("Failed to create game user screenshots directory at path '%s'.", game_user_screenshots_dir_name);
+                return false;
+            }
+        } else {
+            platform_fatal_error("Failed to create game user directory at path '%s'.", game_user_dir_path);
+            return false;
+        }
+    } else {
+        platform_fatal_error("game_mod_config.json manifest is missing field 'game_user_dir_name'.");
+        return false;
+    }
+
+    GlobalLog("Starting Tomb4Plus game: %s...", game_mod_config.global_info.game_user_dir_name);
+    return true;
+}
 
 char *T4PlusAllocateString(char* str) {
     if (global_string_table_size < MAX_T4PLUS_STRINGS) {
@@ -206,6 +242,10 @@ extern MOD_LEVEL_CAMERA_INFO *get_game_mod_level_camera_info(int level) {
 
 MOD_LEVEL_CREATURE_INFO *get_game_mod_level_creature_info(int level) {
     return &game_mod_config.level_info[level].creature_info;
+}
+
+MOD_LEVEL_GFX_INFO *get_game_mod_level_gfx_info(int level) {
+    return &game_mod_config.level_info[level].gfx_info;
 }
 
 MOD_LEVEL_LARA_INFO *get_game_mod_level_lara_info(int level) {
@@ -791,13 +831,16 @@ void SetupGlobalDefaults() {
 #endif
 }
 
-void LoadGameModConfigFirstPass() {
-    SetupGlobalDefaults();
+bool LoadGameModConfigFirstPass() {
+    #define CLEANUP_JSON_MEMORY if (json_buf) {free(json_buf);} if (mem) {free(mem);}
 
     char* json_buf = NULL;
     if (LoadFile("game_mod_config.json", &json_buf) <= 0) {
         platform_fatal_error("Missing game_mod_config.json from working directory \"%s\". Please examine README for further information", working_dir_path);
+        return false;
     }
+
+    SetupGlobalDefaults();
 
     const json_t* level = nullptr;
 
@@ -813,8 +856,20 @@ void LoadGameModConfigFirstPass() {
                 if (global && JSON_OBJ == json_getType(global)) {
                     MOD_GLOBAL_INFO* mod_global_info = &game_mod_config.global_info;
 
+                    READ_JSON_SINT32(manifest_compatibility_version, global, mod_global_info);
+                    if (mod_global_info->manifest_compatibility_version < ENGINE_MANIFEST_VERSION) {
+                        CLEANUP_JSON_MEMORY
+                        platform_fatal_error("game_mod_config manifest version (%i) is incompatible with the ENGINE_MANIFEST_VERSION (%i). Update the manifest and try running again.", mod_global_info->manifest_compatibility_version, ENGINE_MANIFEST_VERSION);
+                        return false;
+                    } else if (mod_global_info->manifest_compatibility_version > ENGINE_MANIFEST_VERSION) {
+                        CLEANUP_JSON_MEMORY
+                        platform_fatal_error("game_mod_config manifest version (%i) is incompatible with the ENGINE_MANIFEST_VERSION (%i). Update the engine to a newer version and try running again.", mod_global_info->manifest_compatibility_version, ENGINE_MANIFEST_VERSION);
+                        return false;
+                    }
+
                     READ_JSON_STRING(level_name, global, mod_global_info);
                     READ_JSON_STRING(author, global, mod_global_info);
+                    READ_JSON_STRING(game_user_dir_name, global, mod_global_info);
 
                     READ_JSON_UINT32(tr_engine_version, global, mod_global_info);
                     READ_JSON_BOOL(tr_level_editor, global, mod_global_info);
@@ -866,13 +921,15 @@ void LoadGameModConfigFirstPass() {
                                                             if (furr_command_count >= MAX_FURR_COMMANDS) {
                                                                 Log(1, "LoadGameModConfigFirstPass: Exceed maximum allowed FURR commands in flipeffect!");
                                                                 free(furr_command_list);
-                                                                return;
+                                                                CLEANUP_JSON_MEMORY
+                                                                return false;
                                                             }
                                                             furr_command_buffer_size += (1 + furr_command_arg_count);
                                                         } else {
                                                             Log(1, "LoadGameModConfigFirstPass: unknown FURR opcode detected!");
                                                             free(furr_command_list);
-                                                            return;
+                                                            CLEANUP_JSON_MEMORY
+                                                            return false;
                                                         }
                                                     }
                                                 } else {
@@ -950,13 +1007,15 @@ void LoadGameModConfigFirstPass() {
                             }
                         }
                    }
-            }
+                }
                 level = json_getProperty(root_json, "global_level_info");
             } else {
-                Log(1, "LoadGameModConfigFirstPass: Not enough memory allocated for JSON buffer!");
+                platform_fatal_error("Not enough memory allocated for JSON buffer!");
+                return false;
             }
         } else {
-            Log(1, "LoadGameModConfigFirstPass: Failed to allocate memory for JSON buffer!");
+            platform_fatal_error("Failed to allocate memory for JSON buffer!");
+            return false;
         }
     }
 
@@ -985,19 +1044,20 @@ void LoadGameModConfigFirstPass() {
         }
     }
 
+    CLEANUP_JSON_MEMORY
+
     SetupLevelDefaults();
+    if (!SetupUserDirectories()) {
+        return false;
+    }
 
-    if (json_buf)
-        free(json_buf);
-
-    if (mem)
-        free(mem);
+    return true;
 }
 
 void LoadGameModConfigSecondPass() {
     char* json_buf = NULL;
     if (LoadFile("game_mod_config.json", &json_buf) <= 0) {
-        Log(1, "LoadGameModConfigSecondPass: Failed to load game_mod_config.json!");
+        platform_fatal_error("Missing game_mod_config.json from working directory \"%s\". Please examine README for further information", working_dir_path);
         return;
     }
 
@@ -1046,6 +1106,7 @@ void LoadGameModConfigSecondPass() {
                     READ_JSON_BOOL(fix_rope_glitch, global, mod_global_info);
 
                     // Misc
+                    READ_JSON_BOOL(show_logo_in_title, global, mod_global_info);
                     READ_JSON_BOOL(show_lara_in_title, global, mod_global_info);
                     READ_JSON_UINT16(max_particles, global, mod_global_info);
                 }

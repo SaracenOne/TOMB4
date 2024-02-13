@@ -32,6 +32,7 @@
 #include "trng/trng.h"
 #include "trng/trng_script_parser.h"
 #include "../tomb4/mod_config.h"
+#include "../specific/platform.h"
 
 short CreditGroups[18] =
 {
@@ -104,7 +105,11 @@ const char* CreditsTable[]
 
 	"0",
 	"Tomb Raider IV Community Edition",
-	"Troye", "ChocolateFan"
+	"Troye", "ChocolateFan",
+
+	"0",
+	"Tomb4Plus Engine",
+	"Saracen"
 };
 
 GAMEFLOW* Gameflow;
@@ -161,7 +166,11 @@ static char num_fmvs = 0;
 
 /*misc*/
 
-char* GetStringForTextID(int id) {
+char *GetCustomStringForTextID(int id) {
+	return &gfStringWad[gfStringOffset[id]];
+}
+
+char *GetFixedStringForTextID(int id) {
 	int off_id = id;
 	if (!get_game_mod_global_info()->tr_times_exclusive && off_id > TXT_The_Gold_Mask) {
 		off_id -= 3;
@@ -170,7 +179,7 @@ char* GetStringForTextID(int id) {
 	if (!get_game_mod_global_info()->tr_level_editor && off_id > TXT_OEM1) {
 		off_id -= 1;
 	}
-	return &gfStringWad[gfStringOffset[off_id]];
+	return GetCustomStringForTextID(off_id);
 }
 
 int CalculateTextIDForPuzzleItemName(int id) {
@@ -582,7 +591,7 @@ void DoLevel(uchar Name, uchar Audio)
 
 		if (gfLegendTime && !cutseq_num && ((!DestFadeScreenHeight && !FadeScreenHeight) || get_game_mod_level_misc_info(gfCurrentLevel)->draw_legend_on_flyby))
 		{
-			PrintString(phd_winwidth >> 1, phd_winymax - font_height, 2, GetStringForTextID(gfLegend), FF_CENTER);
+			PrintString(phd_winwidth >> 1, phd_winymax - font_height, 2, GetCustomStringForTextID(gfLegend), FF_CENTER);
 			gfLegendTime--;
 		}
 
@@ -722,7 +731,7 @@ long TitleOptions()
 	switch (menu)
 	{
 	case 1:
-		PrintString(phd_centerx, font_height + phd_winymin, 6, GetStringForTextID(TXT_Select_Level), FF_CENTER);
+		PrintString(phd_centerx, font_height + phd_winymin, 6, GetFixedStringForTextID(TXT_Select_Level), FF_CENTER);
 
 		if (Gameflow->nLevels < 10)
 		{
@@ -763,14 +772,12 @@ long TitleOptions()
 		for (lp = nFirst; lp < nLevels + nFirst; lp++)
 		{
 			y += font_height;
-			PrintString(phd_centerx, y, selection & (1i64 << (lp - 1)) ? 1 : 2, GetStringForTextID(gfLevelNames[lp]), FF_CENTER);
+			PrintString(phd_centerx, y, selection & (1i64 << (lp - 1)) ? 1 : 2, GetCustomStringForTextID(gfLevelNames[lp]), FF_CENTER);
 		}
 
 		flag = 1i64 << (Gameflow->nLevels - 2);
 		break;
-
 	case 2:
-
 		if (Gameflow->LoadSaveEnabled)
 		{
 			load = DoLoadSave(IN_LOAD);
@@ -786,17 +793,16 @@ long TitleOptions()
 
 		SoundEffect(SFX_LARA_NO, 0, SFX_ALWAYS);
 		menu = 0;
-
+		break;
 	case 0:
 		ShowTitle();
 		Chris_Menu = 0;
-		PrintString(phd_centerx, phd_winymax - 4 * font_height, (selection & 1) ? 1 : 2, GetStringForTextID(TXT_New_Game), FF_CENTER);
-		PrintString(phd_centerx, phd_winymax - 3 * font_height, (selection & 2) ? 1 : 2, GetStringForTextID(TXT_Load_Game), FF_CENTER);
-		PrintString(phd_centerx, phd_winymax - 2 * font_height, (selection & 4) ? 1 : 2, GetStringForTextID(TXT_Options), FF_CENTER);
-		PrintString(phd_centerx, phd_winymax - 1 * font_height, (selection & 8) ? 1 : 2, GetStringForTextID(TXT_Exit), FF_CENTER);
+		PrintString(phd_centerx, phd_winymax - 4 * font_height, (selection & 1) ? 1 : 2, GetFixedStringForTextID(TXT_New_Game), FF_CENTER);
+		PrintString(phd_centerx, phd_winymax - 3 * font_height, (selection & 2) ? 1 : 2, GetFixedStringForTextID(TXT_Load_Game), FF_CENTER);
+		PrintString(phd_centerx, phd_winymax - 2 * font_height, (selection & 4) ? 1 : 2, GetFixedStringForTextID(TXT_Options), FF_CENTER);
+		PrintString(phd_centerx, phd_winymax - 1 * font_height, (selection & 8) ? 1 : 2, GetFixedStringForTextID(TXT_Exit), FF_CENTER);
 		flag = 8;
 		break;
-
 	case 3:
 		DoOptions();
 		break;
@@ -840,11 +846,7 @@ long TitleOptions()
 				switch (selection)
 				{
 				case 1:
-#ifdef _DEBUG
-					if (true)
-#else
-					if (Gameflow->PlayAnyLevel)
-#endif
+					if (Gameflow->PlayAnyLevel || tomb4.cheats)
 					{
 						selection_bak = selection;
 						menu = 1;
@@ -1027,7 +1029,11 @@ void LoadGameflow()
 	long l, end;
 
 	s = 0;
-	int gameflow_len = LoadFile("SCRIPT.DAT", &s);
+	size_t gameflow_len = LoadFile("SCRIPT.DAT", &s);
+	if (gameflow_len == 0) {
+		platform_fatal_error("Failed to load SCRIPT.DAT");
+		return;
+	}
 
 	NGScriptInit(s, gameflow_len - (sizeof(unsigned int) * 2), gameflow_len);
 
@@ -1051,8 +1057,8 @@ void LoadGameflow()
 	gfScriptWad = (uchar*)s;
 	s += Gameflow->ScriptLen;
 
-	int language_len = 0;
-	for (l = 0;; l++)
+	size_t language_len = 0;
+	for (l = 0; l < LANGUAGE_COUNT; l++)
 	{
 		d = 0;
 
@@ -1061,6 +1067,11 @@ void LoadGameflow()
 			break;
 
 		s += strlen(s) + 1;
+	}
+
+	if (language_len == 0) {
+		platform_fatal_error("Failed to load language file.");
+		return;
 	}
 
 	NGReadNGExtraStrings(d, language_len - (sizeof(unsigned int) * 2), language_len);
@@ -1183,9 +1194,9 @@ long DoCredits()
 		if (y < font_height + phd_winheight + 1 && y > -font_height)
 		{
 			if (*s == '%')
-				PrintString(phd_winwidth >> 1, y, 6, GetStringForTextID(CreditGroups[atoi(s + 1)]), FF_CENTER);
+				PrintString(phd_winwidth >> 1, y, 6, GetFixedStringForTextID(CreditGroups[atoi(s + 1)]), FF_CENTER);
 			else if (*s != '0')
-				PrintString(phd_winwidth >> 1, y, 2 + (i == 72 ? 4 : 0), s, FF_CENTER);
+				PrintString(phd_winwidth >> 1, y, 2 + (i == 72 || i == 76 ? 4 : 0), s, FF_CENTER);
 
 			num_drawn++;
 		}

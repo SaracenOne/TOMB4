@@ -13,7 +13,7 @@
 #include "dxshell.h"
 #include "../game/savegame.h"
 #include "../tomb4/tomb4.h"
-#include "cmdline.h"
+#include "platform.h"
 
 #include "specificfx.h"
 
@@ -217,17 +217,14 @@ long S_SaveGame(long slot_num)
 	memset(buffer, 0, sizeof(buffer));
 	wsprintf(buffer, "savegame.%d", slot_num);
 
-	char full_path[4096];
-	memset(full_path, 0, 4096);
-	memcpy(full_path, working_dir_path, strlen(working_dir_path));
-	strcat(full_path, buffer);
+	std::string full_path = savegame_dir_path + buffer;
 
-	FILE* file = fopen(full_path, "wb");
+	FILE* file = fopen(full_path.c_str(), "wb");
 
 	if (file)
 	{
 		memset(buffer, 0, sizeof(buffer));
-		wsprintf(buffer, "%s", GetStringForTextID(gfLevelNames[gfCurrentLevel]));
+		wsprintf(buffer, "%s", GetCustomStringForTextID(gfLevelNames[gfCurrentLevel]));
 
 		bytes = fwrite(buffer, sizeof(char), 75, file);
 		bytes = fwrite(&SaveCounter, sizeof(long), 1, file);
@@ -260,40 +257,36 @@ long S_SaveGame(long slot_num)
 
 long S_LoadGame(long slot_num)
 {
-	ulong bytes;
 	long value;
 	char buffer[80];
 
 	wsprintf(buffer, "savegame.%d", slot_num);
 
-	char full_path[4096];
-	memset(full_path, 0, 4096);
-	memcpy(full_path, working_dir_path, strlen(working_dir_path));
-	strcat(full_path, buffer);
+	std::string full_path = savegame_dir_path + buffer;
 
-	FILE* file = fopen(full_path, "rb");
+	FILE* file = fopen(full_path.c_str(), "rb");
 
 	T4PlusLevelReset();
 
 	if (file)
 	{
-		if (!fread(buffer, sizeof(char), 75, file) > 0) {
+		if (fread(buffer, sizeof(char), 75, file) == 0) {
 			fclose(file);
 			return 0;
 		}
-		if (!fread(&value, sizeof(long), 1, file) > 0) {
+		if (fread(&value, sizeof(long), 1, file) == 0) {
 			fclose(file);
 			return 0;
 		}
-		if (!fread(&value, sizeof(long), 1, file) > 0) {
+		if (fread(&value, sizeof(long), 1, file) == 0) {
 			fclose(file);
 			return 0;
 		}
-		if (!fread(&value, sizeof(long), 1, file) > 0) {
+		if (fread(&value, sizeof(long), 1, file) == 0) {
 			fclose(file);
 			return 0;
 		}
-		if (!fread(&savegame, sizeof(SAVEGAME_INFO), 1, file) > 0) {
+		if (fread(&savegame, sizeof(SAVEGAME_INFO), 1, file) == 0) {
 			fclose(file);
 			return 0;
 		}

@@ -6,6 +6,8 @@
 #include "tomb4plus/t4plus_plugin.h"
 #include "tomb4plus/t4plus_weather.h"
 
+#define ENGINE_MANIFEST_VERSION 0
+
 #define DEFAULT_FOG_START_VALUE 12288
 #define DEFAULT_FOG_END_VALUE 20480
 #define DEFAULT_FAR_VIEW_VALUE 20480
@@ -14,6 +16,7 @@
 #define MAXIMUM_JSON_ALLOCATION_BLOCKS 32768 
 
 #define MAX_EQUIPMENT_MODIFIERS 32
+#define MAX_VAPOR_OCB_CUSTOMIZATIONS 16
 
 #define MAX_T4PLUS_STRINGS 4096
 extern int global_string_table_size;
@@ -117,6 +120,16 @@ struct MOD_LEVEL_CREATURE_INFO {
 	bool remove_mummy_stun_animations = false;
 };
 
+struct MOD_LEVEL_VAPOR_CUSTOMIZATION {
+
+};
+
+struct MOD_LEVEL_GFX_INFO {
+	MOD_LEVEL_VAPOR_CUSTOMIZATION white_smoke_emitter_customization_for_OCB[MAX_VAPOR_OCB_CUSTOMIZATIONS];
+	MOD_LEVEL_VAPOR_CUSTOMIZATION black_smoke_emitter_customization_for_OCB[MAX_VAPOR_OCB_CUSTOMIZATIONS];
+	MOD_LEVEL_VAPOR_CUSTOMIZATION vapor_emitter_customization_for_OCB[MAX_VAPOR_OCB_CUSTOMIZATIONS];
+};
+
 struct MOD_LEVEL_AUDIO_INFO {
 	bool new_audio_system = false;
 	bool old_cd_trigger_system = true;
@@ -180,8 +193,10 @@ struct TRNG_ENGINE_VERSION {
 
 
 struct MOD_GLOBAL_INFO {
+	int manifest_compatibility_version = -1;
 	char *level_name = nullptr;
 	char *author = nullptr;
+	char *game_user_dir_name = nullptr;
 
 	unsigned int tr_engine_version = 4;
 	bool tr_level_editor = true;
@@ -213,9 +228,10 @@ struct MOD_GLOBAL_INFO {
 
 	// Patcher Bug Fixes
 	bool grenades_damage_lara = true;
-	bool spinning_debris = false;
+	bool spinning_debris = true;
 	bool fix_rope_glitch = true;
 
+	bool show_logo_in_title = true;
 	bool show_lara_in_title = false;
 	unsigned short max_particles = 256;
 };
@@ -245,6 +261,8 @@ struct MOD_LEVEL_FLARE_INFO {
 };
 
 struct MOD_LEVEL_AMMO_INFO {
+	bool disable_explosion_sfx = false;
+
 	short damage = 0;
 	short poison_damage = 0;
 	short explosion_damage = 0;
@@ -330,6 +348,7 @@ struct MOD_LEVEL_INFO {
 	MOD_LEVEL_FONT_INFO font_info;
 	MOD_LEVEL_CAMERA_INFO camera_info;
 	MOD_LEVEL_CREATURE_INFO creature_info;
+	MOD_LEVEL_GFX_INFO gfx_info;
 	MOD_LEVEL_STAT_INFO stat_info;
 	MOD_LEVEL_LARA_INFO lara_info;
 	MOD_LEVEL_AUDIO_INFO audio_info;
@@ -363,7 +382,7 @@ extern MOD_LEVEL_ENVIRONMENT_INFO *get_game_mod_level_environment_info(int level
 extern MOD_LEVEL_FONT_INFO *get_game_mod_level_font_info(int level);
 extern MOD_LEVEL_CAMERA_INFO *get_game_mod_level_camera_info(int level);
 extern MOD_LEVEL_CREATURE_INFO *get_game_mod_level_creature_info(int level);
-
+extern MOD_LEVEL_GFX_INFO *get_game_mod_level_gfx_info(int level);
 extern MOD_LEVEL_LARA_INFO *get_game_mod_level_lara_info(int level);
 extern MOD_LEVEL_STAT_INFO *get_game_mod_level_stat_info(int level);
 extern MOD_LEVEL_FLARE_INFO *get_game_mod_level_flare_info(int level);
@@ -374,7 +393,7 @@ extern MOD_LEVEL_AMMO_INFO *get_game_mod_current_lara_ammo_info(MOD_LEVEL_WEAPON
 
 extern MOD_LEVEL_OBJECT_CUSTOMIZATION *get_game_mod_level_object_customization_for_slot(int level, int slot);
 
-extern void LoadGameModConfigFirstPass();
+extern bool LoadGameModConfigFirstPass();
 extern void LoadGameModConfigSecondPass();
 
 extern void T4PlusLevelReset();

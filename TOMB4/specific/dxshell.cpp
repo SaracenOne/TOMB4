@@ -2,6 +2,7 @@
 #include "dxshell.h"
 #include "function_stubs.h"
 #include "winmain.h"
+#include "cmdline.h"
 
 #ifndef USE_BGFX
 long DDSCL_FLAGS[11] =	// for DXSetCooperativeLevel logging
@@ -316,9 +317,9 @@ long DXGetInfo(DXINFO* dxinfo, HWND hwnd)
 	dxinfo->nDSInfo = 1;
 	dxinfo->DSInfo = (DXDIRECTSOUNDINFO*)malloc(sizeof(DXDIRECTSOUNDINFO));
 	if (dxinfo->DSInfo) {
-		const char *DummyString = "Dummy Audio Device";
-		memcpy(dxinfo->DSInfo[0].Name, DummyString, strlen(DummyString) + 1);
-		memcpy(dxinfo->DSInfo[0].About, DummyString, strlen(DummyString) + 1);
+		const char *MiniAudioString = "MiniAudio Device";
+		memcpy(dxinfo->DSInfo[0].Name, MiniAudioString, strlen(MiniAudioString) + 1);
+		memcpy(dxinfo->DSInfo[0].About, MiniAudioString, strlen(MiniAudioString) + 1);
 	}
 #else
 	DXAttempt(DirectSoundEnumerate(DXEnumDirectSound, dxinfo));
@@ -643,9 +644,9 @@ void DXInitKeyboard(HWND hwnd, HINSTANCE hinstance)
 }
 
 #ifndef USE_BGFX
+#if 0
 void DXSaveScreen(LPDIRECTDRAWSURFACEX surf, const char* name)
 {
-	FILE* file;
 	DDSURFACEDESCX desc;
 	short* pSurf;
 	short* pDest;
@@ -662,7 +663,13 @@ void DXSaveScreen(LPDIRECTDRAWSURFACEX surf, const char* name)
 	pSurf = (short*)desc.lpSurface;
 	sprintf(buf, "%s%04d.tga", name, num);
 	num++;
-	file = fopen(buf, "wb");
+
+	char full_path[4096];
+	memset(full_path, 0, 4096);
+	memcpy(full_path, working_dir_path, strlen(working_dir_path));
+	strcat(full_path, buf);
+
+	FILE* file = fopen(full_path, "wb");
 
 	if (file)
 	{
@@ -707,6 +714,7 @@ void DXSaveScreen(LPDIRECTDRAWSURFACEX surf, const char* name)
 
 	DXAttempt(surf->Unlock(0));
 }
+#endif
 #endif
 
 void DXClose()

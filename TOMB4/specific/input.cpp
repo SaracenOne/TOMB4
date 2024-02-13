@@ -15,6 +15,7 @@
 #include "../tomb4/tomb4.h"
 
 #include "../game/trng/trng_extra_state.h"
+#include "function_stubs.h"
 
 #ifdef USE_SDL
 int convert_sdl_scancode_to_tomb_keycode(int scancode) {
@@ -456,6 +457,7 @@ void UpdateGamepad()
 		else
 		{
 			SDL_GameControllerClose(controller);
+			Log(2, "Gamepad %s disconnected.", controller_name);
 			controller = nullptr;
 		}
 	}
@@ -467,6 +469,7 @@ void UpdateGamepad()
 		controller_type = SDL_GameControllerTypeForIndex(i);
 		if (SDL_IsGameController(i)) {
 			controller = SDL_GameControllerOpen(i);
+			Log(2, "Gamepad %s connected.", controller_name);
 		}
 	}
 #endif
@@ -1210,8 +1213,10 @@ long S_UpdateInput()
 
 
 #ifndef USE_BGFX
+#if 0
 	if (IsKeyPressed(T4P_KEY_APOSTROPHE))
 		DXSaveScreen(App.dx.lpBackBuffer, "Tomb");
+#endif
 #endif
 
 	inputBusy = linput;

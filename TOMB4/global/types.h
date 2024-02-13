@@ -119,7 +119,8 @@ enum languages
 	SPANISH,
 	US,
 	JAPAN,
-	DUTCH
+	DUTCH,
+	LANGUAGE_COUNT
 };
 
 enum font_flags

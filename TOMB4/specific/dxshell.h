@@ -37,7 +37,9 @@ long DXCreateViewport(LPDIRECT3DX d3d, LPDIRECT3DDEVICEX device, long w, long h,
 HRESULT DXShowFrame();
 #ifndef USE_BGFX
 void DXMove(long x, long y);
+#if 0
 void DXSaveScreen(LPDIRECTDRAWSURFACEX surf, const char* name);
+#endif
 void DXClose();
 #endif
 long DXCreate(long w, long h, long bpp, long Flags, DXPTR* dxptr, HWND hWnd, long WindowStyle);

@@ -25,6 +25,7 @@
 #include "../game/deltapak.h"
 
 #include "../game/draw.h"
+#include "../tomb4/mod_config.h"
 
 #define CIRCUMFERENCE_POINTS 32 // Number of points in the circumference
 #define LINE_POINTS	4	//number of points in each grid line
@@ -2015,87 +2016,89 @@ void ShowTitle()
 	x = phd_centerx - w;
 	y = phd_winymin + w;
 
-	v[0].sx = x;
-	v[0].sy = (float)phd_winymin;
-	v[0].sz = 0;
-	v[0].rhw = f_moneoznear;
-	v[0].color = 0xFFFFFFFF;
-	v[0].specular = 0xFF000000;
+	if (get_game_mod_global_info()->show_logo_in_title) {
+		v[0].sx = x;
+		v[0].sy = (float)phd_winymin;
+		v[0].sz = 0;
+		v[0].rhw = f_moneoznear;
+		v[0].color = 0xFFFFFFFF;
+		v[0].specular = 0xFF000000;
 
-	v[1].sx = w + x;
-	v[1].sy = (float)phd_winymin;
-	v[1].sz = 0;
-	v[1].rhw = f_moneoznear;
-	v[1].color = 0xFFFFFFFF;
-	v[1].specular = 0xFF000000;
+		v[1].sx = w + x;
+		v[1].sy = (float)phd_winymin;
+		v[1].sz = 0;
+		v[1].rhw = f_moneoznear;
+		v[1].color = 0xFFFFFFFF;
+		v[1].specular = 0xFF000000;
 
-	v[2].sx = w + x;
-	v[2].sy = y;
-	v[2].sz = 0;
-	v[2].rhw = f_moneoznear;
-	v[2].color = 0xFFFFFFFF;
-	v[2].specular = 0xFF000000;
+		v[2].sx = w + x;
+		v[2].sy = y;
+		v[2].sz = 0;
+		v[2].rhw = f_moneoznear;
+		v[2].color = 0xFFFFFFFF;
+		v[2].specular = 0xFF000000;
 
-	v[3].sx = x;
-	v[3].sy = y;
-	v[3].sz = 0;
-	v[3].rhw = f_moneoznear;
-	v[3].color = 0xFFFFFFFF;
-	v[3].specular = 0xFF000000;
+		v[3].sx = x;
+		v[3].sy = y;
+		v[3].sz = 0;
+		v[3].rhw = f_moneoznear;
+		v[3].color = 0xFFFFFFFF;
+		v[3].specular = 0xFF000000;
 
-	tex.drawtype = 1;
-	tex.flag = 0;
-	tex.tpage = ushort(nTextures - 4);
-	tex.u1 = float(1.0F / 256.0F);
-	tex.v1 = float(1.0F / 256.0F);
-	tex.u2 = 1.0F - float(1.0F / 256.0F);
-	tex.v2 = float(1.0F / 256.0F);
-	tex.u3 = 1.0F - float(1.0F / 256.0F);
-	tex.v3 = 1.0F - float(1.0F / 256.0F);
-	tex.u4 = float(1.0F / 256.0F);
-	tex.v4 = 1.0F - float(1.0F / 256.0F);
-	AddQuadSorted(v, 0, 1, 2, 3, &tex, 0);
+		tex.drawtype = 1;
+		tex.flag = 0;
+		tex.tpage = ushort(nTextures - 4);
+		tex.u1 = float(1.0F / 256.0F);
+		tex.v1 = float(1.0F / 256.0F);
+		tex.u2 = 1.0F - float(1.0F / 256.0F);
+		tex.v2 = float(1.0F / 256.0F);
+		tex.u3 = 1.0F - float(1.0F / 256.0F);
+		tex.v3 = 1.0F - float(1.0F / 256.0F);
+		tex.u4 = float(1.0F / 256.0F);
+		tex.v4 = 1.0F - float(1.0F / 256.0F);
+		AddQuadSorted(v, 0, 1, 2, 3, &tex, 0);
 
-	v[0].sx = w + x;
-	v[0].sy = phd_winymin;
-	v[0].sz = 0;
-	v[0].rhw = f_moneoznear;
-	v[0].color = 0xFFFFFFFF;
-	v[0].specular = 0xFF000000;
+		v[0].sx = w + x;
+		v[0].sy = phd_winymin;
+		v[0].sz = 0;
+		v[0].rhw = f_moneoznear;
+		v[0].color = 0xFFFFFFFF;
+		v[0].specular = 0xFF000000;
 
-	v[1].sx = x + 2 * w;
-	v[1].sy = (float)phd_winymin;
-	v[1].sz = 0;
-	v[1].rhw = f_moneoznear;
-	v[1].color = 0xFFFFFFFF;
-	v[1].specular = 0xFF000000;
+		v[1].sx = x + 2 * w;
+		v[1].sy = (float)phd_winymin;
+		v[1].sz = 0;
+		v[1].rhw = f_moneoznear;
+		v[1].color = 0xFFFFFFFF;
+		v[1].specular = 0xFF000000;
 
-	v[2].sx = x + 2 * w;
-	v[2].sy = y;
-	v[2].sz = 0;
-	v[2].rhw = f_moneoznear;
-	v[2].color = 0xFFFFFFFF;
-	v[2].specular = 0xFF000000;
+		v[2].sx = x + 2 * w;
+		v[2].sy = y;
+		v[2].sz = 0;
+		v[2].rhw = f_moneoznear;
+		v[2].color = 0xFFFFFFFF;
+		v[2].specular = 0xFF000000;
 
-	v[3].sx = w + x;
-	v[3].sy = y;
-	v[3].sz = 0;
-	v[3].rhw = f_moneoznear;
-	v[3].color = 0xFFFFFFFF;
-	v[3].specular = 0xFF000000;
+		v[3].sx = w + x;
+		v[3].sy = y;
+		v[3].sz = 0;
+		v[3].rhw = f_moneoznear;
+		v[3].color = 0xFFFFFFFF;
+		v[3].specular = 0xFF000000;
 
-	tex.drawtype = 1;
-	tex.flag = 0;
-	tex.tpage = ushort(nTextures - 3);
-	tex.u1 = float(1.0F / 256.0F);
-	tex.v1 = float(1.0F / 256.0F);
-	tex.u2 = 1.0F - float(1.0F / 256.0F);
-	tex.v2 = float(1.0F / 256.0F);
-	tex.u3 = 1.0F - float(1.0F / 256.0F);
-	tex.v3 = 1.0F - float(1.0F / 256.0F);
-	tex.u4 = float(1.0F / 256.0F);
-	tex.v4 = 1.0F - float(1.0F / 256.0F);
-	AddQuadSorted(v, 0, 1, 2, 3, &tex, 1);
+		tex.drawtype = 1;
+		tex.flag = 0;
+		tex.tpage = ushort(nTextures - 3);
+		tex.u1 = float(1.0F / 256.0F);
+		tex.v1 = float(1.0F / 256.0F);
+		tex.u2 = 1.0F - float(1.0F / 256.0F);
+		tex.v2 = float(1.0F / 256.0F);
+		tex.u3 = 1.0F - float(1.0F / 256.0F);
+		tex.v3 = 1.0F - float(1.0F / 256.0F);
+		tex.u4 = float(1.0F / 256.0F);
+		tex.v4 = 1.0F - float(1.0F / 256.0F);
+		AddQuadSorted(v, 0, 1, 2, 3, &tex, 1);
+	}
 }
 
 void SetUpLensFlare(long x, long y, long z, GAME_VECTOR* lfobj)

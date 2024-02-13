@@ -75,7 +75,7 @@ void SDLProcessCommandLine(int argc, char* argv[])
 	long num;
 	char parameter[PARAMETER_MAX_LENGTH];
 
-	Log(2, "SDLProcessCommandLine");
+	GlobalLog("SDLProcessCommandLine");
 
 	num = sizeof(commandlines) / sizeof(commandlines[0]);
 
@@ -448,7 +448,7 @@ void SDLClose()
 int main(int argc, char* argv[]) {
 	DXDISPLAYMODE* dm;
 	char* buf;
-	long size;
+	size_t size;
 
 	start_setup = 0;
 	App.mmx = 0;
@@ -462,7 +462,9 @@ int main(int argc, char* argv[]) {
 	//
 
 	// Tomb4Plus
-	LoadGameModConfigFirstPass();
+	if (!LoadGameModConfigFirstPass()) {
+		return -1;
+	}
 	//
 
 	LoadGameflow();
@@ -478,7 +480,7 @@ int main(int argc, char* argv[]) {
 	if (!SDLCreateWindow())
 	{
 		Log(1, "Unable To Create Window");
-		return 0;
+		return -1;
 	}
 
 	DXGetInfo(&App.DXInfo, App.hWnd);
@@ -521,10 +523,8 @@ int main(int argc, char* argv[]) {
 
 	if (!DXCreate(dm->w, dm->h, dm->bpp, App.StartFlags, &App.dx, App.hWnd, WS_OVERLAPPEDWINDOW))
 	{
-		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR,
-			"Tomb4Plus",
-			GetStringForTextID(TXT_Failed_To_Setup_DirectX),
-			sdl_window);
+		platform_fatal_error(GetFixedStringForTextID(TXT_Failed_To_Setup_DirectX));
+		return -1;
 	}
 
 	// TODO: add fullscreen support here.
@@ -1125,7 +1125,7 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
 
 	if (!DXCreate(dm->w, dm->h, dm->bpp, App.StartFlags, &App.dx, App.hWnd, WS_OVERLAPPEDWINDOW))
 	{
-		MessageBox(0, GetStringForTextID(TXT_Failed_To_Setup_DirectX), "Tomb Raider IV", 0);
+		MessageBox(0, GetFixedStringForTextID(TXT_Failed_To_Setup_DirectX), "Tomb Raider IV", 0);
 		return 0;
 	}
 

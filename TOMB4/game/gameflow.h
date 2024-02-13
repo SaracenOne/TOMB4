@@ -1,7 +1,8 @@
 #pragma once
 #include "../global/types.h"
 
-char *GetStringForTextID(int id);
+char *GetCustomStringForTextID(int id);
+char *GetFixedStringForTextID(int id);
 void DoGameflow();
 void DoLevel(uchar Name, uchar Audio);
 void DoTitle(uchar Name, uchar Audio);

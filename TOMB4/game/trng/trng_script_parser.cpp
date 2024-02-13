@@ -225,7 +225,7 @@ char *NGGetString(short string_id) {
 		if (string_id > TXT_NUM_STRINGS) {
 			NGLog(NG_LOG_TYPE_ERROR, "Invalid string ID");
 		} else {
-			return GetStringForTextID(string_id);
+			return GetFixedStringForTextID(string_id);
 		}
 	} else {
 		short ng_string_id = string_id & ~(0x8000);
@@ -2168,7 +2168,7 @@ void NGFreeLevelRecordTablesContent(NG_LEVEL_RECORD_TABLES *tables) {
 	free(tables->level_big_number_table);
 }
 
-void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int len) {
+void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, size_t len) {
 	bool ng_header_found = false;
 
 	unsigned int footer_ident = NG_READ_32(gfScriptFile, offset);
@@ -2358,7 +2358,7 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, unsigned int 
 	}
 }
 
-void NGReadNGExtraStrings(char *gfLanguageFile, unsigned int offset, unsigned int len) {
+void NGReadNGExtraStrings(char *gfLanguageFile, unsigned int offset, size_t len) {
 	unsigned int footer_ident = NG_READ_32(gfLanguageFile, offset);
 	if (footer_ident != 0x454c474e) { // NGLE
 		return;

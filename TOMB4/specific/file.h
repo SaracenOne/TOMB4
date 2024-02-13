@@ -11,7 +11,7 @@ void FreeLevel();
 FILE* FileOpen(const char* name);
 void FileClose(FILE* file);
 long FileSize(FILE* file);
-long LoadFile(const char* name, char** dest);
+size_t LoadFile(const char* name, char** dest);
 bool LoadTextures(long RTPages, long OTPages, long BTPages);
 bool LoadRooms();
 bool LoadObjects();

@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 #include "../global/types.h"
 
 void CLSetup(char* cmd);
@@ -15,7 +16,3 @@ bool DXSetupDialog();
 
 extern bool start_setup;
 extern bool fmvs_disabled;
-
-#define WORKING_DIR_MAX_PATH 1024
-
-extern char working_dir_path[WORKING_DIR_MAX_PATH];

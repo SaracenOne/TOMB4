@@ -305,7 +305,7 @@ const char* RPC_GetLevelName()
 			return "In Title";
 	}
 	else
-		return GetStringForTextID(gfLevelNames[gfCurrentLevel]);
+		return GetCustomStringForTextID(gfLevelNames[gfCurrentLevel]);
 }
 
 const char* RPC_GetTimer()

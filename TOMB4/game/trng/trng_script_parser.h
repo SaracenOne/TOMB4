@@ -385,8 +385,8 @@ extern char *NGGetString(short string_id);
 extern char *NGGetPluginString(short plugin_id);
 extern int NGGetT4PluginID(short plugin_id);
 
-extern void NGScriptInit(char* gfScriptFile, unsigned int offset, unsigned int len);
+extern void NGScriptInit(char* gfScriptFile, unsigned int offset, size_t len);
 extern void NGScriptCleanup();
 extern void NGLoadTablesForLevel(unsigned int level);
-extern void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, unsigned int len);
-extern void NGReadNGExtraStrings(char* gfLanguageFile, unsigned int offset, unsigned int len);
+extern void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, size_t len);
+extern void NGReadNGExtraStrings(char* gfLanguageFile, unsigned int offset, size_t len);

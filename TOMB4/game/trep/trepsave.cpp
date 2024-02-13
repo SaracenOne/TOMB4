@@ -1,5 +1,5 @@
 #include "../../tomb4/pch.h"
-#include "../../specific/cmdline.h"
+#include "../../specific/platform.h"
 
 #include "trepsave.h"
 #include "furr.h"
@@ -15,12 +15,9 @@ void S_TREPLoadgame(long slot_num) {
 
 	wsprintf(buffer, "trepsave.%d", slot_num);
 
-	char full_path[4096];
-	memset(full_path, 0, 4096);
-	memcpy(full_path, working_dir_path, strlen(working_dir_path));
-	strcat(full_path, buffer);
+	std::string full_path = savegame_dir_path + buffer;
 
-	FILE* file = fopen(full_path, "rb");
+	FILE* file = fopen(full_path.c_str(), "rb");
 
 	furr_clear_oneshot_buffer();
 	rain_type = WEATHER_DISABLED;
@@ -63,12 +60,9 @@ void S_TREPSavegame(long slot_num) {
 
 	wsprintf(buffer, "trepsave.%d", slot_num);
 
-	char full_path[4096];
-	memset(full_path, 0, 4096);
-	memcpy(full_path, working_dir_path, strlen(working_dir_path));
-	strcat(full_path, buffer);
+	std::string full_path = savegame_dir_path + buffer;
 
-	FILE* file = fopen(full_path, "wb");
+	FILE* file = fopen(full_path.c_str(), "wb");
 	if (file)
 	{
 		memcpy(buffer, furr_oneshot_buffer, LAST_FURR_FLIPEFFECT);

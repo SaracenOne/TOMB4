@@ -1,5 +1,23 @@
-int strcicmp(char const* a, char const* b);
-void find_file_with_substring(const char* dir_path, const char* substring, char* found_filename);
-int ends_with(const char* str, const char* suffix);
+#include <string>
+#include <stdio.h>
 
+extern std::string working_dir_path;
+
+extern std::string game_user_dir_path;
+extern std::string savegame_dir_path;
+extern std::string screenshots_dir_path;
+
+#ifdef _WIN32
+#include <direct.h>
+#define PATH_SEPARATOR "\\"
+#else
+#include <sys/stat.h>
+#define PATH_SEPARATOR "/"
+#endif
+
+int strcicmp(char const* a, char const* b);
+void platform_find_file_with_substring(const char* dir_path, const char* substring, char* found_filename);
+int platform_string_ends_with(const char* str, const char* suffix);
 void platform_fatal_error(const char* s, ...);
+bool platform_create_directory(const char* path);
+std::string platform_get_userdata_path();

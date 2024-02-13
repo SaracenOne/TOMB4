@@ -1,7 +1,11 @@
 #include "../tomb4/pch.h"
 #include "function_stubs.h"
+#include <string>
+#include "platform.h"
+#include "cmdline.h"
 
-FILE* logF = 0;
+FILE *logF = nullptr;
+FILE *global_logF = nullptr;
 
 PHD_VECTOR CamPos;
 PHD_VECTOR CamRot;
@@ -71,19 +75,47 @@ void* game_malloc(long size)
 	}
 }
 
+
+void GlobalLog(const char* s, ...)
+{
+#ifdef DO_LOG
+	va_list list;
+	char log_bufffer[8192];
+
+	va_start(list, s);
+	vsprintf(log_bufffer, s, list);
+	va_end(list);
+
+	std::string full_path = platform_get_userdata_path() + "log.txt";
+
+	if (!global_logF)
+		global_logF = fopen(full_path.c_str(), "w+");
+
+	strcat(log_bufffer, "\n");
+	fwrite(log_bufffer, strlen(log_bufffer), 1, global_logF);
+#endif
+}
+
 void Log(ulong type, const char* s, ...)
 {
 #ifdef DO_LOG
 	va_list list;
-	char buf[4096 * 8];
-
-	if (!logF)
-		logF = fopen("log.txt", "w+");
+	char log_buffer[8192];
 
 	va_start(list, s);
-	vsprintf(buf, s, list);
-	strcat(buf, "\n");
+	vsprintf(log_buffer, s, list);
 	va_end(list);
-	fwrite(buf, strlen(buf), 1, logF);
+
+	if (!game_user_dir_path.empty()) {
+		std::string full_path = game_user_dir_path + "log.txt";
+
+		if (!logF)
+			logF = fopen(full_path.c_str(), "w+");
+
+		strcat(log_buffer, "\n");
+		fwrite(log_buffer, strlen(log_buffer), 1, logF);
+	} else {
+		GlobalLog(log_buffer);
+	}
 #endif
 }

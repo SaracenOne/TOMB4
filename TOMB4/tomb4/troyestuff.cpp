@@ -102,20 +102,20 @@ bool Page0(long& num, long textY, ulong selection)
 	s = 0;
 
 	PrintString(phd_centerx, 2 * font_height, 6, "New tomb4 options", FF_CENTER);
-	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "FootPrints", 0);
+	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Footprints", 0);
 	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Shadow mode", 0);
 	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Crawl Tilting", 0);
-	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Flexible crawling", 0);
-	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Fix climb up delay", 0);
-	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Gameover menu", 0);
-	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Bar mode", 0);
-	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Bar positions", 0);
-	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Enemy bars", 0);
-	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Cutscene skipper", 0);
+	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Flexible Crawling", 0);
+	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Fix Climb Up Delay", 0);
+	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Gameover Menu", 0);
+	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Bar Mode", 0);
+	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Bar Positions", 0);
+	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Enemy Bars", 0);
+	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Cutscene Skipper", 0);
 	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Cheats", 0);
 	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Loading text", 0);
-	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "mono screen style", 0);
-	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "loadbar style", 0);
+	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Mono Screen Style", 0);
+	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Loadbar Style", 0);
 
 	y = 2;
 	s = 0;
@@ -402,17 +402,17 @@ bool Page1(long& num, long textY, ulong selection)
 	y = 2;
 	s = 0;
 
-	PrintString(phd_centerx, 2 * font_height, 6, "New tomb4 options", FF_CENTER);
-	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "look transparency", 0);
-	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "ammo counter", 0);
-	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "ammotype hotkeys", 0);
-	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "combat cam tilt", 0);
-	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Inv healthbar", 0);
-	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "static lighting", 0);
+	PrintString(phd_centerx, 2 * font_height, 6, "New Tomb4 Options", FF_CENTER);
+	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Look Transparency", 0);
+	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Ammo Counter", 0);
+	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Ammotype Hotkeys", 0);
+	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Combat Cam Tilt", 0);
+	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Show Healthbar in Inventory", 0);
+	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Static Lighting", 0);
 	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Reverb", 0);
-	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "distance fog", 0);
-	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Bars scale", 0);
-	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Freeze when game unfocused", 0);
+	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Distance Fog", 0);
+	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Bars Scale", 0);
+	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Freeze When Game Unfocused", 0);
 
 	y = 2;
 	s = 0;

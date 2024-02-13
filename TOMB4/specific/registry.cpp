@@ -4,7 +4,7 @@
 #include "cmdline.h"
 #include "input.h"
 #include "winmain.h"
-
+#include <string>
 
 #ifdef USE_INI
 #ifndef USE_SDL
@@ -15,19 +15,16 @@
 
 #include <filesystem>
 #include <algorithm>
-#include <string>
 
 #include "simpleIni.h"
+#include "platform.h"
 
 CSimpleIniA ini;
-const char *config_file_path = "";
+
+std::string config_file_path = "";
+
 const char *current_section = "";
 bool section_just_created = false;
-
-char *CFG_GetTomb4PlusPrefPath() {
-	return SDL_GetPrefPath("", "Tomb4Plus");
-
-}
 #else
 static HKEY phkResult;
 static DWORD dwDisposition;
@@ -53,8 +50,7 @@ bool REG_OpenKey(const char *lpSubKey)
 bool OpenRegistry(const char *section_key)
 {
 #ifdef USE_INI
-	std::string data_path = CFG_GetTomb4PlusPrefPath();
-	std::string config_file_path = data_path + "config.ini";
+	config_file_path = platform_get_userdata_path() + "config.ini";
 
 	ini.SetUnicode();
 
@@ -90,11 +86,11 @@ void REG_CloseKey()
 void CloseRegistry()
 {
 #ifdef USE_INI
-	std::string data_path = CFG_GetTomb4PlusPrefPath();
+	std::string config_path = platform_get_userdata_path();
 
 	ini.SetUnicode();
 
-	ini.SaveFile((data_path + std::string("config.ini")).c_str());
+	ini.SaveFile((config_path + std::string("config.ini")).c_str());
 #else
 	REG_CloseKey();
 #endif
@@ -433,7 +429,7 @@ bool SaveSetup(HWND hDlg)
 	OpenRegistry("System");
 
 	REG_WriteLong((char*)"DD", SendMessage(GetDlgItem(hDlg, 1000), CB_GETCURSEL, 0, 0));
-	REG_WriteLong((char*)"D3D", SendMessage(GetDlgItem(hDlg, 1003), CB_GETCURSEL, 0, 0));
+	REG_WriteLong((char*)"D3D", SendMessage(GetDlgItem(hDlg, 1003), CB_GETCURSEL, 0, 0) + 1); // Tomb4Plus: +1 due to us skipping the software emulation device.
 	REG_WriteLong((char*)"VMode", SendMessage(GetDlgItem(hDlg, 1004), CB_GETITEMDATA, SendMessage(GetDlgItem(hDlg, 1004), CB_GETCURSEL, 0, 0), 0));
 	REG_WriteLong((char*)"DS", SendMessage(GetDlgItem(hDlg, 1005), CB_GETCURSEL, 0, 0));
 	REG_WriteLong((char*)"TFormat", SendMessage(GetDlgItem(hDlg, 1006), CB_GETCURSEL, 0, 0));

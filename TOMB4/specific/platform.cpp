@@ -12,6 +12,13 @@
 #include "function_stubs.h"
 #include "winmain.h"
 
+std::string userdata_path_dir = "";
+
+std::string working_dir_path;
+std::string game_user_dir_path;
+std::string savegame_dir_path;
+std::string screenshots_dir_path;
+
 int count_matching_characters(const char* s1, const char* s2) {
 	int count = 0;
 	while (*s1 && *s2 && *s1 == *s2) {
@@ -30,7 +37,7 @@ int strcicmp(char const* a, char const* b) {
 	}
 }
 
-void find_file_with_substring(const char* dir_path, const char* substring, char* found_filename) {
+void platform_find_file_with_substring(const char* dir_path, const char* substring, char* found_filename) {
 #ifdef _WIN32
 	char win32_path[4096];
 	wsprintf(win32_path, "%s\\*", dir_path);
@@ -101,7 +108,7 @@ void find_file_with_substring(const char* dir_path, const char* substring, char*
 #endif
 }
 
-int ends_with(const char* str, const char* suffix) {
+int platform_string_ends_with(const char* str, const char* suffix) {
 	if (!str || !suffix)
 		return 0;
 	size_t len_str = strlen(str);
@@ -132,4 +139,57 @@ void platform_fatal_error(const char* s, ...) {
 #endif
 
 	exit(-1);
+}
+
+bool platform_create_directory(const char* path) {
+	char tmp[256];
+	char* p = NULL;
+	size_t len;
+
+	snprintf(tmp, sizeof(tmp), "%s", path);
+	len = strlen(tmp);
+	if (tmp[len - 1] == *PATH_SEPARATOR) {
+		tmp[len - 1] = 0;
+	}
+	for (p = tmp + 1; *p; p++) {
+		if (*p == *PATH_SEPARATOR) {
+			*p = 0;
+#ifdef _WIN32
+			if (_mkdir(tmp) != 0 && errno != EEXIST) {
+				return false;
+			}
+#else
+			if (mkdir(tmp, S_IRWXU) != 0 && errno != EEXIST) {
+				return false;
+			}
+#endif
+			* p = *PATH_SEPARATOR;
+		}
+	}
+#ifdef _WIN32
+	if (_mkdir(tmp) != 0 && errno != EEXIST) {
+		return false;
+	}
+#else
+	if (mkdir(tmp, S_IRWXU) != 0 && errno != EEXIST) {
+		return false;
+	}
+#endif
+
+	return true;
+}
+
+std::string platform_get_userdata_path() {
+	if (userdata_path_dir.empty()) {
+		FILE *portable_file = fopen("portable.txt", "r");
+		if (portable_file) {
+			fclose(portable_file);
+			userdata_path_dir = ".";
+			userdata_path_dir += PATH_SEPARATOR;
+		} else {
+			userdata_path_dir = SDL_GetPrefPath("", "Tomb4Plus");
+		}
+	}
+
+	return userdata_path_dir;
 }

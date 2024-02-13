@@ -1191,10 +1191,10 @@ void RenderLoadPic(long unused)
 		{
 			if (tomb4.bar_mode == BAR_MODE_IMPROVED || tomb4.bar_mode == BAR_MODE_PSX)
 				PrintString(phd_centerx, long(float((480 - (font_height >> 1)) * float(phd_winymax / 480.0F))) - (font_height >> 1),
-					5, GetStringForTextID(TXT_LOADING2), FF_CENTER);
+					5, GetFixedStringForTextID(TXT_LOADING2), FF_CENTER);
 			else
 				PrintString(phd_centerx, long(float(phd_winymax / 480.0F) + (phd_winymax - font_height)) - (font_height >> 1),
-					5, GetStringForTextID(TXT_LOADING2), FF_CENTER);
+					5, GetFixedStringForTextID(TXT_LOADING2), FF_CENTER);
 		}
 
 		S_OutputPolyList();
@@ -1213,10 +1213,10 @@ void RenderLoadPic(long unused)
 	{
 		if (tomb4.bar_mode == 2 || tomb4.bar_mode == 3)
 			PrintString(phd_centerx, long(float((480 - (font_height >> 1)) * float(phd_winymax / 480.0F))) - (font_height >> 1),
-				5, GetStringForTextID(TXT_LOADING2), FF_CENTER);
+				5, GetFixedStringForTextID(TXT_LOADING2), FF_CENTER);
 		else
 			PrintString(phd_centerx, long(float(phd_winymax / 480.0F) + (phd_winymax - font_height)) - (font_height >> 1),
-				5, GetStringForTextID(TXT_LOADING2), FF_CENTER);
+				5, GetFixedStringForTextID(TXT_LOADING2), FF_CENTER);
 	}
 
 	S_OutputPolyList();

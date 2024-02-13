@@ -104,6 +104,16 @@ unsigned int __stdcall LoadLevel(void* name)
 		fseek(level_fp, 0, SEEK_SET);
 
 		fread(&version, 1, 4, level_fp);
+		if (version != 0x345254) {
+			if (version == 0x63345254) {
+				platform_fatal_error("Level %s is encrypted. Encrypted levels are not currently supported. Please decrypt the level and try again.", name);
+				return -1;
+			} else {
+				platform_fatal_error("Level %s has an invalid ident and failed to load", name);
+				return -1;
+			}
+		}
+
 		fread(&RTPages, 1, 2, level_fp);
 		fread(&OTPages, 1, 2, level_fp);
 		fread(&BTPages, 1, 2, level_fp);
@@ -113,8 +123,18 @@ unsigned int __stdcall LoadLevel(void* name)
 		fread(&size, 1, 4, level_fp);
 		fread(&compressedSize, 1, 4, level_fp);
 
+		if (compressedSize <= 0 || size <= 0) {
+			platform_fatal_error("Level %s format is invalid.", name);
+			return -1;
+		}
+
 		CompressedData = (char*)malloc(compressedSize);
 		UncompressedData = (char*)malloc(size);
+
+		if (!CompressedData || !UncompressedData) {
+			platform_fatal_error("Failed to allocate memory for level %s.", name);
+			return -1;
+		}
 
 		FileData = UncompressedData;
 		
@@ -125,42 +145,76 @@ unsigned int __stdcall LoadLevel(void* name)
 		pData = FileData;
 		S_LoadBar();
 
-		LoadRooms();
+		if (!LoadRooms())
+		{
+			platform_fatal_error("Failed to load rooms for level %s.", name);
+			return -1;
+		}
 		S_LoadBar();
 
-		LoadObjects();
+		if (!LoadObjects())
+		{
+			platform_fatal_error("Failed to load objects for level %s.", name);
+			return -1;
+		}
 		S_LoadBar();
 
-		LoadSprites();
+		if (!LoadSprites()) {
+			platform_fatal_error("Failed to load sprites for level %s.", name);
+			return -1;
+		}
 		S_LoadBar();
 
-		LoadCameras();
+		if (!LoadCameras()) {
+			platform_fatal_error("Failed to load cameras for level %s.", name);
+			return -1;
+		}
 		S_LoadBar();
 
-		LoadSoundEffects();
+		if (!LoadSoundEffects()) {
+			platform_fatal_error("Failed to load sound effects for level %s.", name);
+			return -1;
+		}
 		S_LoadBar();
 
-		LoadBoxes();
+		if (!LoadBoxes()) {
+			platform_fatal_error("Failed to load boxes for level %s.", name);
+			return -1;
+		}
 		S_LoadBar();
 
-		LoadAnimatedTextures();
+		if (!LoadAnimatedTextures()) {
+			platform_fatal_error("Failed to load animated textures for level %s.", name);
+			return -1;
+		}
 		S_LoadBar();
 
-		LoadTextureInfos();
+		if (!LoadTextureInfos()) {
+			platform_fatal_error("Failed to load texture infos for level %s.", name);
+			return -1;
+		}
 		S_LoadBar();
 
-		LoadItems();
+		if (!LoadItems()) {
+			platform_fatal_error("Failed to load items for level %s.", name);
+			return -1;
+		}
 		S_LoadBar();
 
-		LoadAIInfo();
+		if (!LoadAIInfo()) {
+			platform_fatal_error("Failed to load AI info for level %s.", name);
+			return -1;
+		}
 		S_LoadBar();
 
-		LoadCinematic();
+		if (!LoadCinematic()) {
+			platform_fatal_error("Failed to load cinematic for level %s.", name);
+			return -1;
+		}
 		S_LoadBar();
 
 		if (acm_ready && !App.SoundDisabled)
 			LoadSamples();
-
 		free(UncompressedData);
 		S_LoadBar();
 
@@ -281,16 +335,11 @@ void FreeLevel()
 
 FILE* FileOpen(const char* name)
 {
-	FILE* file;
-	char full_path[WORKING_DIR_MAX_PATH * 2];
+	std::string full_path = working_dir_path;
+	full_path += name;
 
-	memset(full_path, 0, WORKING_DIR_MAX_PATH * 2);
-
-	memcpy(full_path, working_dir_path, strlen(working_dir_path));
-	strcat(full_path, name);
-
-	Log(5, "FileOpen - %s", full_path);
-	file = fopen(full_path, "rb");
+	Log(5, "FileOpen - %s", full_path.c_str());
+	FILE *file = fopen(full_path.c_str(), "rb");
 
 	if (!file)
 		Log(1, "Unable To Open %s", full_path);
@@ -314,10 +363,10 @@ long FileSize(FILE* file)
 	return size;
 }
 
-long LoadFile(const char* name, char** dest)
+size_t LoadFile(const char* name, char** dest)
 {
 	FILE* file;
-	long size, count;
+	size_t size, count;
 
 	Log(2, "LoadFile");
 	Log(5, "File - %s", name);
@@ -358,7 +407,8 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 	char* pData;
 	char* pComp;
 	char* s;
-	long format, skip, size, compressedSize, nTex, c;
+	long format, skip, compressedSize, nTex, c;
+	size_t size;
 	uchar r, g, b, a;
 
 	Log(2, "LoadTextures");
@@ -540,17 +590,25 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 #ifndef USE_BGFX
 	if (!gfCurrentLevel)	//main menu logo
 	{
+		const char *logo_pak_path = nullptr;
+
 		pComp = 0;
 		CompressedData = 0;
 
 		if (Gameflow->Language == US)
-			size = LoadFile("data\\uslogo.pak", &CompressedData);
+			logo_pak_path = "data\\uslogo.pak";
 		else if (Gameflow->Language == GERMAN)
-			size = LoadFile("data\\grlogo.pak", &CompressedData);
+			logo_pak_path = "data\\grlogo.pak";
 		else if (Gameflow->Language == FRENCH)
-			size = LoadFile("data\\frlogo.pak", &CompressedData);
+			logo_pak_path = "data\\frlogo.pak";
 		else
-			size = LoadFile("data\\uklogo.pak", &CompressedData);
+			logo_pak_path = "data\\uklogo.pak";
+
+		size = LoadFile(logo_pak_path, &CompressedData);
+		if (size == 0) {
+			platform_fatal_error("Failed to load %s", logo_pak_path);
+			return false;
+		}
 
 		pComp = (char*)malloc(*(long*)CompressedData);
 		Decompress(pComp, CompressedData + 4, size - 4, *(long*)CompressedData);
@@ -650,13 +708,13 @@ bool LoadRooms()
 	if (number_rooms < 0 || number_rooms > 1024)
 	{
 		Log(1, "Incorrect Number Of Rooms");
-		return 0;
+		return false;
 	}
 
 	room = (ROOM_INFO*)game_malloc(number_rooms * sizeof(ROOM_INFO));
 
 	if (!room)
-		return 0;
+		return false;
 
 	for (int i = 0; i < number_rooms; i++)
 	{
@@ -792,7 +850,15 @@ bool LoadObjects()
 	memset(static_objects, 0, sizeof(STATIC_INFO) * NUMBER_STATIC_OBJECTS);
 
 	size = *(long*)FileData;
+	if (size <= 0) {
+		return false;
+	}
+
 	FileData += sizeof(long);
+	if (size <= 0) {
+		return false;
+	}
+
 	mesh_base = (short*)game_malloc(size * sizeof(short));
 	memcpy(mesh_base, FileData, size * sizeof(short));
 	FileData += size * sizeof(short);

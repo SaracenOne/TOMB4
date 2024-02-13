@@ -1,5 +1,6 @@
 #pragma once
 #include "../global/types.h"
+#include <string>
 
 void DoOptions();
 void DisplayStatsUCunt();

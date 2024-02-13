@@ -250,6 +250,8 @@ bool DXDSCreate()
 	for (int i = 0; i < MAX_VOICES; i++) {
 		ma_voice_active[i] = false;
 	}
+
+	return true;
 #else
 	XAUDIO2_EFFECT_DESCRIPTOR chaind;
 	XAUDIO2_EFFECT_CHAIN chain;
@@ -280,7 +282,7 @@ bool DXDSCreate()
 		ReverbConvertI3DL2ToNative(&reverb_preset[i], &reverb_type[i], FALSE);
 
 	sound_active = 1;
-	return 1;
+	return true;
 #endif
 }
 
@@ -506,6 +508,8 @@ long DXStartSample(long num, long volume, long pitch, long pan, ulong flags)
 	if (channel < 0)
 		return -1;
 
+	if (!ma_sample_buffers[num])
+		return -1;
 
 	ma_sound_uninit(&ma_voices[channel]);
 
@@ -521,7 +525,7 @@ long DXStartSample(long num, long volume, long pitch, long pan, ulong flags)
 
 	ma_result buffer_result = ma_audio_buffer_init(&bufferConfig, &ma_voice_buffers[channel]);
 	if (buffer_result != MA_SUCCESS) {
-		return 0;
+		return -1;
 	}
 
 	ma_sound_config config = ma_sound_config_init_2(&ma_samples_engine);

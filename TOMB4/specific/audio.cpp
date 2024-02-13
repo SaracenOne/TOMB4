@@ -1312,23 +1312,14 @@ bool load_and_play_track(const char* path, StreamMode mode, int channel_id) {
 }
 
 bool play_track_on_stream_channel(int channel_id, long track, StreamMode mode) {
-	char path[4096];
-	int total_string_size = strlen(working_dir_path) + strlen("audio\\");
-	if (total_string_size >= 4096) {
-		Log(1, "String buffer overflow!");
-		return false;
-	}
-
-	memset(path, 0x00, 4096);
-	memcpy(path, working_dir_path, strlen(working_dir_path));
-	strcat(path, "audio");
+	std::string audio_path = working_dir_path + "audio" + PATH_SEPARATOR;
 
 	char name[2048];
 	memset(name, 0x00, sizeof(name));
 
 	if (get_game_mod_global_info()->tr_level_editor)
 	{
-		find_file_with_substring(path, LevelEditorTrackFileNames[track], name);
+		platform_find_file_with_substring(audio_path.c_str(), LevelEditorTrackFileNames[track], name);
 
 		// Not sure if we should detect vorbis by filename since ogg is container format.
 		// May need to investigate the spec further.
@@ -1352,16 +1343,10 @@ bool play_track_on_stream_channel(int channel_id, long track, StreamMode mode) {
 
 	}
 
-	total_string_size += strlen(name);
-	if (total_string_size >= 4096) {
-		Log(1, "String buffer overflow!");
-		return false;
-	}
+	audio_path += PATH_SEPARATOR;
+	audio_path += name;
 
-	strcat(path, "\\");
-	strcat(path, name);
-
-	bool result = load_and_play_track(path, (StreamMode)mode, channel_id);
+	bool result = load_and_play_track(audio_path.c_str(), (StreamMode)mode, channel_id);
 
 	if (result) {
 		channels[channel_id].current_stream_active = true;

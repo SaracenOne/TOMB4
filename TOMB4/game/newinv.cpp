@@ -1671,8 +1671,8 @@ void do_examine_mode()
 		DrawThreeDeeObject2D(long(((float)phd_centerx / 256) * 256 + inventry_xpos), long(((float)phd_centery / 120 * 256 + inventry_ypos) / 2),
 			INV_EXAMINE2_ITEM, examine_mode, 0, 0, 0, 0, 0);
 		objme->scale1 = saved_scale;
-		PrintString(phd_centerx, WANK_RULES_YPOS, 5, GetStringForTextID(TXT_RULES1), FF_CENTER);
-		PrintString(phd_centerx, WANK_RULES_YPOS + phd_winheight / 2, 5, GetStringForTextID(TXT_RULES2), FF_CENTER);
+		PrintString(phd_centerx, WANK_RULES_YPOS, 5, GetFixedStringForTextID(TXT_RULES1), FF_CENTER);
+		PrintString(phd_centerx, WANK_RULES_YPOS + phd_winheight / 2, 5, GetFixedStringForTextID(TXT_RULES2), FF_CENTER);
 		break;
 
 	case INV_EXAMINE3_ITEM:
@@ -1681,7 +1681,7 @@ void do_examine_mode()
 		DrawThreeDeeObject2D(long(((float)phd_centerx / 256) * 256 + inventry_xpos), long(((float)phd_centery / 120 * 256 + inventry_ypos) / 2 - 8),
 			INV_EXAMINE3_ITEM, examine_mode, 0x8000, 0x4000, 0x4000, 96, 0);
 		objme->scale1 = saved_scale;
-		PrintString(phd_centerx, WANK_SCROL_YPOS, 8, GetStringForTextID(TXT_PETEPOO), FF_CENTER);
+		PrintString(phd_centerx, WANK_SCROL_YPOS, 8, GetFixedStringForTextID(TXT_PETEPOO), FF_CENTER);
 		break;
 	}
 
@@ -2208,9 +2208,9 @@ void draw_ammo_selector()
 		if (i == *current_ammo_type)
 		{
 			if (ammo_object_list[i].amount == -1)
-				sprintf(cunter, GetStringForTextID(TXT_Unlimited_s), GetStringForTextID(objme->objname));
+				sprintf(cunter, GetFixedStringForTextID(TXT_Unlimited_s), GetFixedStringForTextID(objme->objname));
 			else
-				sprintf(cunter, "%d x %s", ammo_object_list[i].amount, GetStringForTextID(objme->objname));
+				sprintf(cunter, "%d x %s", ammo_object_list[i].amount, GetFixedStringForTextID(objme->objname));
 
 			if (ammo_selector_fade_val)
 				PrintString(phd_centerx, font_height + phd_centery + 2 * font_height - 9, 8, cunter, FF_CENTER);
@@ -2233,7 +2233,7 @@ void handle_inventry_menu()
 
 	if (rings[RING_AMMO]->ringactive)
 	{
-		PrintString(phd_centerx, phd_centery, 1, GetStringForTextID(optmessages[5]), FF_CENTER);
+		PrintString(phd_centerx, phd_centery, 1, GetFixedStringForTextID(optmessages[5]), FF_CENTER);
 
 		if (rings[RING_INVENTORY]->objlistmovement || rings[RING_AMMO]->objlistmovement)
 			return;
@@ -2302,16 +2302,16 @@ void handle_inventry_menu()
 	if (ammo_active)
 	{
 		current_options[num].type = 6;
-		current_options[num].text = GetStringForTextID(inventry_objects_list[ammo_object_list[num].invitem].objname);
+		current_options[num].text = GetFixedStringForTextID(inventry_objects_list[ammo_object_list[num].invitem].objname);
 		num++;
 		current_options[num].type = 7;
-		current_options[num].text = GetStringForTextID(inventry_objects_list[ammo_object_list[num].invitem].objname);
+		current_options[num].text = GetFixedStringForTextID(inventry_objects_list[ammo_object_list[num].invitem].objname);
 		num++;
 
 		if (opts & 0x80 || opts & 0x100)
 		{
 			current_options[num].type = 8;
-			current_options[num].text = GetStringForTextID(inventry_objects_list[ammo_object_list[num].invitem].objname);
+			current_options[num].text = GetFixedStringForTextID(inventry_objects_list[ammo_object_list[num].invitem].objname);
 			num++;
 		}
 
@@ -2322,42 +2322,42 @@ void handle_inventry_menu()
 		if (opts & 0x1000)
 		{
 			current_options[num].type = 9;
-			current_options[num].text = GetStringForTextID(optmessages[6]);
+			current_options[num].text = GetFixedStringForTextID(optmessages[6]);
 			num++;
 		}
 
 		if (opts & 0x2000)
 		{
 			current_options[num].type = 10;
-			current_options[num].text = GetStringForTextID(optmessages[7]);
+			current_options[num].text = GetFixedStringForTextID(optmessages[7]);
 			num++;
 		}
 
 		if (opts & 0x20)
 		{
 			current_options[num].type = 11;
-			current_options[num].text = GetStringForTextID(optmessages[8]);
+			current_options[num].text = GetFixedStringForTextID(optmessages[8]);
 			num++;
 		}
 
 		if (opts & 4)
 		{
 			current_options[num].type = 1;
-			current_options[num].text = GetStringForTextID(optmessages[0]);
+			current_options[num].text = GetFixedStringForTextID(optmessages[0]);
 			num++;
 		}
 
 		if (opts & 2)
 		{
 			current_options[num].type = 5;
-			current_options[num].text = GetStringForTextID(optmessages[4]);
+			current_options[num].text = GetFixedStringForTextID(optmessages[4]);
 			num++;
 		}
 
 		if (opts & 0xC0 || opts & 0x100)
 		{
 			current_options[num].type = 2;
-			current_options[num].text = GetStringForTextID(optmessages[1]);
+			current_options[num].text = GetFixedStringForTextID(optmessages[1]);
 			num++;
 		}
 
@@ -2366,7 +2366,7 @@ void handle_inventry_menu()
 			if (is_item_currently_combinable(inv_item))
 			{
 				current_options[num].type = 3;
-				current_options[num].text = GetStringForTextID(optmessages[2]);
+				current_options[num].text = GetFixedStringForTextID(optmessages[2]);
 				num++;
 			}
 		}
@@ -2374,14 +2374,14 @@ void handle_inventry_menu()
 		if (opts & 1)
 		{
 			current_options[num].type = 3;
-			current_options[num].text = GetStringForTextID(optmessages[2]);
+			current_options[num].text = GetFixedStringForTextID(optmessages[2]);
 			num++;
 		}
 
 		if (opts & 0x10)
 		{
 			current_options[num].type = 4;
-			current_options[num].text = GetStringForTextID(optmessages[3]);
+			current_options[num].text = GetFixedStringForTextID(optmessages[3]);
 			num++;
 		}
 	}
@@ -2769,12 +2769,12 @@ void draw_current_object_list(long ringnum)
 			if (nummeup)
 			{
 				if (nummeup == -1)
-					sprintf(textbufme, GetStringForTextID(TXT_Unlimited_s), GetStringForTextID(objme->objname));
+					sprintf(textbufme, GetFixedStringForTextID(TXT_Unlimited_s), GetFixedStringForTextID(objme->objname));
 				else
-					sprintf(textbufme, "%d x %s", nummeup, GetStringForTextID(objme->objname));
+					sprintf(textbufme, "%d x %s", nummeup, GetFixedStringForTextID(objme->objname));
 			}
 			else
-				sprintf(textbufme, GetStringForTextID(objme->objname));
+				sprintf(textbufme, GetFixedStringForTextID(objme->objname));
 
 			if (ringnum == RING_INVENTORY)
 				objmeup = long(phd_centery - float(phd_winymax + 1) / 16.0F * 3.0F);
