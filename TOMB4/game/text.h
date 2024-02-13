@@ -120,6 +120,7 @@ void InitFont();
 void UpdatePulseColour();
 long GetStringLength(const char* string, long* top, long* bottom);
 void DrawChar(long x, long y, ushort col, CHARDEF* def);
+void PrintStringScaled(long x, long y, uchar col, const char* string, ushort flags, float glyph_scale_width, float glyph_scale_height);
 void PrintString(long x, long y, uchar col, const char* string, ushort flags);
 
 extern long stash_font_height;

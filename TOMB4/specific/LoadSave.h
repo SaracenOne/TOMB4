@@ -2,6 +2,8 @@
 #include "../global/types.h"
 #include <string>
 
+#define MAX_SAVEGAMES 32
+
 void DoOptions();
 void DisplayStatsUCunt();
 long S_DisplayPauseMenu(long reset_selection, long reset_menu = -1);

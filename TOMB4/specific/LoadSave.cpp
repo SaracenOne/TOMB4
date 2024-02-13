@@ -40,7 +40,7 @@ long ControlMethod;
 char MonoScreenOn;
 
 static MONOSCREEN_STRUCT MonoScreen;
-static SAVEFILE_INFO SaveGames[15];
+static SAVEFILE_INFO SaveGames[MAX_SAVEGAMES];
 
 void DoOptions()
 {
@@ -603,6 +603,8 @@ long S_DisplayPauseMenu(long reset_selection, long reset_menu)
 
 long DoLoadSave(long LoadSave)
 {
+	// Tomb4Plus: handling for increased savegame count.
+
 	SAVEFILE_INFO* pSave;
 	static long selection;
 	long txt, l;
@@ -615,9 +617,12 @@ long DoLoadSave(long LoadSave)
 	else
 		txt = TXT_Load_Game;
 
+	float font_scale = 15.0f / (float)MAX_SAVEGAMES * 1.06f;
+	long scaled_font_height = font_height * font_scale;
+
 	PrintString(phd_centerx, font_height, 6, GetFixedStringForTextID(txt), FF_CENTER);
 
-	for (int i = 0; i < 15; i++)
+	for (int i = 0; i < MAX_SAVEGAMES; i++)
 	{
 		pSave = &SaveGames[i];
 		color = 2;
@@ -638,15 +643,15 @@ long DoLoadSave(long LoadSave)
 		if (pSave->valid)
 		{
 			wsprintf(string, "%03d", pSave->num);
-			PrintString(phd_centerx - long((float)phd_winwidth / 640.0F * 310.0), font_height + font_height * (i + 2), color, string, 0);
-			PrintString(phd_centerx - long((float)phd_winwidth / 640.0F * 270.0), font_height + font_height * (i + 2), color, name, 0);
+			PrintStringScaled(phd_centerx - long((float)phd_winwidth / 640.0F * 310.0), font_height + scaled_font_height * (i + 2), color, string, 0, 1.0F, font_scale);
+			PrintStringScaled(phd_centerx - long((float)phd_winwidth / 640.0F * 270.0), font_height + scaled_font_height * (i + 2), color, name, 0, 1.0F, font_scale);
 			wsprintf(string, "%d %s %02d:%02d:%02d", pSave->days, GetFixedStringForTextID(TXT_days), pSave->hours, pSave->minutes, pSave->seconds);
-			PrintString(phd_centerx - long((float)phd_winwidth / 640.0F * -135.0), font_height + font_height * (i + 2), color, string, 0);
+			PrintStringScaled(phd_centerx - long((float)phd_winwidth / 640.0F * -135.0), font_height + scaled_font_height * (i + 2), color, string, 0, 1.0F, font_scale);
 		}
 		else
 		{
 			wsprintf(string, "%s", pSave->name);
-			PrintString(phd_centerx, font_height + font_height * (i + 2), color, string, FF_CENTER);
+			PrintStringScaled(phd_centerx, font_height + scaled_font_height * (i + 2), color, string, FF_CENTER, 1.0F, font_scale);
 		}
 
 		small_font = 0;
@@ -666,8 +671,8 @@ long DoLoadSave(long LoadSave)
 
 	if (selection < 0)
 		selection = 0;
-	else if (selection > 14)
-		selection = 14;
+	else if (selection > MAX_SAVEGAMES)
+		selection = MAX_SAVEGAMES;
 
 	if (dbinput & IN_SELECT)
 	{
@@ -1104,7 +1109,7 @@ long GetSaveLoadFiles()
 
 	SaveCounter = 0;
 
-	for (int i = 0; i < 15; i++)
+	for (int i = 0; i < MAX_SAVEGAMES; i++)
 	{
 		pSave = &SaveGames[i];
 		wsprintf(name, "savegame.%d", i);
