@@ -37,17 +37,13 @@ void LaraCheatyBits()
 		return;
 
 #ifdef DEBUG
-#ifdef USE_SDL
-	if (keymap[SDL_SCANCODE_F1])
+	if (keymap[convert_tomb_keycode_to_sdl_scancode(T4P_KEY_F1)])
 #else
-	if (keymap[DIK_F1])
-#endif
-#else
-#ifdef USE_SDL
-	if (keymap[SDL_SCANCODE_G] && keymap[SDL_SCANCODE_U] && keymap[SDL_SCANCODE_N] && keymap[SDL_SCANCODE_S])
-#else
-	if (keymap[DIK_G] && keymap[DIK_N] && keymap[DIK_U] && keymap[DIK_S])
-#endif
+	if (
+		keymap[convert_tomb_keycode_to_sdl_scancode(T4P_KEY_S)] &&
+		keymap[convert_tomb_keycode_to_sdl_scancode(T4P_KEY_T)] &&
+		keymap[convert_tomb_keycode_to_sdl_scancode(T4P_KEY_U)] &&
+		keymap[convert_tomb_keycode_to_sdl_scancode(T4P_KEY_F)])
 #endif
 	{
 		lara.num_large_medipack = -1;
@@ -83,17 +79,13 @@ void LaraCheatyBits()
 	}
 
 #ifdef DEBUG
-#ifdef USE_SDL
-	if (keymap[SDL_SCANCODE_F2])
+	if (keymap[convert_tomb_keycode_to_sdl_scancode(T4P_KEY_F2)])
 #else
-	if (keymap[DIK_F2])
-#endif
-#else
-#ifdef USE_SDL
-	if (keymap[SDL_SCANCODE_D] && keymap[SDL_SCANCODE_O] && keymap[SDL_SCANCODE_Z] && keymap[SDL_SCANCODE_Y])
-#else
-	if (keymap[DIK_D] && keymap[DIK_O] && keymap[DIK_Z] && keymap[DIK_Y])
-#endif
+	if (
+		keymap[convert_tomb_keycode_to_sdl_scancode(T4P_KEY_D)] &&
+		keymap[convert_tomb_keycode_to_sdl_scancode(T4P_KEY_O)] &&
+		keymap[convert_tomb_keycode_to_sdl_scancode(T4P_KEY_Z)] &&
+		keymap[convert_tomb_keycode_to_sdl_scancode(T4P_KEY_Y)])
 #endif
 	{
 		if (lara.vehicle != NO_ITEM)
@@ -120,17 +112,13 @@ void LaraCheatyBits()
 	}
 
 #ifdef DEBUG
-#ifdef USE_SDL
-	if (keymap[SDL_SCANCODE_F3])
+	if (keymap[convert_tomb_keycode_to_sdl_scancode(T4P_KEY_F3)])
 #else
-	if (keymap[DIK_F3])
-#endif
-#else
-#ifdef USE_SDL
-		if (keymap[SDL_SCANCODE_H] && keymap[SDL_SCANCODE_E] && keymap[SDL_SCANCODE_L] && keymap[SDL_SCANCODE_P])
-#else
-		if (keymap[DIK_H] && keymap[DIK_E] && keymap[DIK_L] && keymap[DIK_P])
-#endif
+	if (
+		keymap[convert_tomb_keycode_to_sdl_scancode(T4P_KEY_M)] &&
+		keymap[convert_tomb_keycode_to_sdl_scancode(T4P_KEY_O)] &&
+		keymap[convert_tomb_keycode_to_sdl_scancode(T4P_KEY_V)] &&
+		keymap[convert_tomb_keycode_to_sdl_scancode(T4P_KEY_E)])
 #endif
 	{
 		if (gfCurrentLevel == 2 || gfCurrentLevel == 6 || gfCurrentLevel == 13 || gfCurrentLevel == 21 || gfCurrentLevel == 27)
