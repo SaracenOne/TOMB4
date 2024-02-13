@@ -462,14 +462,22 @@ void UpdateGamepad()
 		}
 	}
 
-	int controller_count = SDL_NumJoysticks();
-	for (int i = 0; i < controller_count; i++)
+	if (!controller)
 	{
-		controller_name = SDL_GameControllerNameForIndex(i);
-		controller_type = SDL_GameControllerTypeForIndex(i);
-		if (SDL_IsGameController(i)) {
-			controller = SDL_GameControllerOpen(i);
-			Log(2, "Gamepad %s connected.", controller_name);
+		int controller_count = SDL_NumJoysticks();
+		for (int i = 0; i < controller_count; i++)
+		{
+			controller_name = SDL_GameControllerNameForIndex(i);
+			controller_type = SDL_GameControllerTypeForIndex(i);
+			if (SDL_IsGameController(i)) {
+				controller = SDL_GameControllerOpen(i);
+				if (SDL_GameControllerGetAttached(controller)) {
+					Log(2, "Gamepad %s connected.", controller_name);
+				} else {
+					SDL_GameControllerClose(controller);
+					controller = nullptr;
+				}
+			}
 		}
 	}
 #endif
@@ -485,8 +493,13 @@ void InputShutdown()
 #ifdef USE_SDL
 	if (controller)
 	{
-		SDL_GameControllerClose(controller);
-		controller = nullptr;
+		if (SDL_GameControllerGetAttached(controller))
+		{
+			return;
+		} else {
+			SDL_GameControllerClose(controller);
+			controller = nullptr;
+		}
 	}
 #endif
 };
