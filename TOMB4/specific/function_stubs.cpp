@@ -7,6 +7,112 @@
 FILE *logF = nullptr;
 FILE *global_logF = nullptr;
 
+#ifdef _DEBUG
+#define MAX_MEMORY_ALLOCATIONS 256
+#define MAX_ALLOCATION_FILENAME 64
+
+struct allocation_table_entry {
+	char filename[64];
+	int line_number = -1;
+	void* buffer = nullptr;
+};
+
+allocation_table_entry allocation_table[MAX_MEMORY_ALLOCATIONS];
+long alloc_count = 0;
+
+void* system_malloc(long size, const char* filename, int line_number)
+{
+	alloc_count++;
+	if (alloc_count >= MAX_MEMORY_ALLOCATIONS) {
+		platform_fatal_error("Exceed maximum memory allocations!");
+		return nullptr;
+	}
+
+	int first_free = -1;
+	for (int i = 0; i < MAX_MEMORY_ALLOCATIONS; i++) {
+		if (allocation_table[i].buffer == nullptr) {
+			first_free = i;
+			break;
+		}
+	}
+
+	if (first_free < 0) {
+		platform_fatal_error("Failed to an valid memory allocation table entry!");
+		return nullptr;
+	}
+
+	void* ptr = malloc(size);
+	if (!ptr) {
+		platform_fatal_error("Failed to allocate memory!");
+		return nullptr;
+	}
+
+	allocation_table[first_free].buffer = ptr;
+	memcpy(allocation_table[first_free].filename, filename, MAX_ALLOCATION_FILENAME);
+	allocation_table[first_free].line_number = line_number;
+
+	return ptr;
+}
+
+void* system_realloc(void* ptr, long size, const char* filename, int line_number) {
+	if (!ptr) {
+		return system_malloc(size, filename, line_number);
+	}
+
+	void* new_ptr = realloc(ptr, size);
+	if (!new_ptr) {
+		platform_fatal_error("Failed to reallocate memory!");
+		return nullptr;
+	}
+
+	for (int i = 0; i < MAX_MEMORY_ALLOCATIONS; i++) {
+		if (allocation_table[i].buffer == ptr) {
+			allocation_table[i].buffer = new_ptr;
+			break;
+		}
+	}
+
+	return new_ptr;
+}
+
+void system_free(void* ptr)
+{
+	if (!ptr) {
+		platform_fatal_error("Attempted to free nullptr!");
+	}
+
+	for (int i = 0; i < MAX_MEMORY_ALLOCATIONS; i++) {
+		if (allocation_table[i].buffer == ptr) {
+			allocation_table[i].buffer = nullptr;
+			break;
+		}
+	}
+
+	free(ptr);
+	alloc_count--;
+	if (alloc_count) {
+		if (alloc_count < 0) {
+			platform_fatal_error("Memory allocation underflow!");
+		}
+	}
+}
+#endif
+
+void system_report_stray_allocation()
+{
+#ifdef _DEBUG
+	if (alloc_count != 0) {
+		for (int i = 0; i < MAX_MEMORY_ALLOCATIONS; i++) {
+			if (allocation_table[i].buffer) {
+				Log(0, "Leaked memory at %s:%i\n", allocation_table[i].filename, allocation_table[i].line_number);
+			}
+		}
+
+		Log(0, "Attempted to exit application with %i stray allocations.", alloc_count);
+	}
+#endif
+}
+
 PHD_VECTOR CamPos;
 PHD_VECTOR CamRot;
 
@@ -46,7 +152,7 @@ void SeedRandomDraw(long seed)
 
 void init_game_malloc()
 {
-	malloc_buffer = (char*)malloc(MALLOC_SIZE);
+	malloc_buffer = (char*)SYSTEM_MALLOC(MALLOC_SIZE);
 	malloc_size = MALLOC_SIZE;
 	malloc_ptr = malloc_buffer;
 	malloc_free = MALLOC_SIZE;
@@ -74,7 +180,6 @@ void* game_malloc(long size)
 		return ptr;
 	}
 }
-
 
 void GlobalLog(const char* s, ...)
 {

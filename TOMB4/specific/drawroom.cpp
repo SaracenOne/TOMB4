@@ -363,8 +363,8 @@ void ProcessRoomData(ROOM_INFO* r)
 	data_ptr += r->gt4cnt * 5;
 	r->gt3cnt = *data_ptr;
 	r->verts = (GFXVECTOR*)game_malloc(sizeof(GFXVECTOR) * r->nVerts);
-	faces = (short*)malloc(2 * r->nVerts);
-	prelight = (short*)malloc(2 * r->nVerts);
+	faces = (short*)SYSTEM_MALLOC(2 * r->nVerts);
+	prelight = (short*)SYSTEM_MALLOC(2 * r->nVerts);
 	data_ptr = r->data + 1;	//go to vert data
 	nWaterVerts = 0;
 
@@ -446,7 +446,7 @@ void ProcessRoomData(ROOM_INFO* r)
 		data_ptr += 4;
 	}
 
-	free(faces);
+	SYSTEM_FREE(faces);
 	CreateVertexNormals(r);
 	r->prelight = (long*)game_malloc(4 * r->nVerts);
 	r->prelightwater = (long*)game_malloc(4 * r->nVerts);
@@ -490,7 +490,7 @@ void ProcessRoomData(ROOM_INFO* r)
 
 #ifndef USE_BGFX
 	r->SourceVB->Unlock();
-	free(prelight);
+	SYSTEM_FREE(prelight);
 #endif
 
 	r->pclight = 0;

@@ -8,6 +8,7 @@
 
 #include "../../tomb4/mod_config.h"
 #include "trng_globaltrigger.h"
+#include "../../specific/function_stubs.h"
 
 char *ng_strings[MAX_NG_STRINGS];
 NG_LEVEL ng_levels[MAX_NG_LEVELS];
@@ -49,7 +50,7 @@ void NGDecryptScriptBlock(char *block) {
 		block_counter++;
 	}
 
-	char decrypted_block[64];
+	char decrypted_block[64] = {};
 
 	for (int i = 0; i < 64; i++) {
 		int j = 0;
@@ -146,14 +147,14 @@ void NGScriptInit(char* gfScriptFile, unsigned int offset, unsigned int len) {
 
 #define NG_FREE_RECORD(record_name_lowercase) level.records->record_name_lowercase##_count = 0; \
 if (level.records->record_name_lowercase##_table) { \
-	free(level.records->record_name_lowercase##_table); \
+	SYSTEM_FREE(level.records->record_name_lowercase##_table); \
 	level.records->record_name_lowercase##_table = NULL; \
 }
 
 #define NG_ALLOCATE_RECORD(record_name_lowercase, record_name_uppercase, struct_name) level.records->record_name_lowercase##_count = struct_name##.record_name_lowercase##_table_count; \
 level.records->record_name_lowercase##_table = NULL; \
 if (struct_name##.record_name_lowercase##_table_count) { \
-	level.records->record_name_lowercase##_table = (NG_##record_name_uppercase##_RECORD*)malloc(sizeof(NG_##record_name_uppercase##_RECORD) * struct_name##.record_name_lowercase##_table_count); \
+	level.records->record_name_lowercase##_table = (NG_##record_name_uppercase##_RECORD*)SYSTEM_MALLOC(sizeof(NG_##record_name_uppercase##_RECORD) * struct_name##.record_name_lowercase##_table_count); \
 	if (!level.records->record_name_lowercase##_table) { \
 		NGLog(NG_LOG_TYPE_ERROR, "NGReallocateLevel: Memory allocation failed!"); \
 		return false; \
@@ -190,6 +191,8 @@ void NGFreeLevel(NG_LEVEL& level) {
 		NG_FREE_RECORD(move_item);
 		NG_FREE_RECORD(rotate_item);
 		NG_FREE_RECORD(big_number);
+
+		SYSTEM_FREE(level.records);
 	}
 }
 
@@ -198,7 +201,7 @@ bool NGReallocateLevel(
 	NG_TABLE_ALLOCATION_COUNT &allocation_struct) {
 	NGFreeLevel(level);
 
-	level.records = (NG_LEVEL_RECORD_DATA*)malloc(sizeof(NG_LEVEL_RECORD_DATA));
+	level.records = (NG_LEVEL_RECORD_DATA*)SYSTEM_MALLOC(sizeof(NG_LEVEL_RECORD_DATA));
 
 	if (level.records) {
 		NG_ALLOCATE_RECORD(global_trigger, GLOBAL_TRIGGER, allocation_struct);
@@ -270,8 +273,8 @@ void NGScriptCleanup() {
 	}
 
 	for (int i = 0; i < MAX_NG_STRINGS; i++) {
-		if (ng_strings) {
-			free(ng_strings[i]);
+		if (ng_strings[i]) {
+			SYSTEM_FREE(ng_strings[i]);
 			ng_strings[i] = NULL;
 		}
 	}
@@ -2139,33 +2142,33 @@ void NGAllocateLevelRecordTablesContent(NG_LEVEL_RECORD_TABLES *tables) {
 	tables->level_rotate_item_count = 0;
 	tables->level_big_number_count = 0;
 
-	tables->level_global_triggers_table = (NG_GLOBAL_TRIGGER_RECORD*)malloc(sizeof(NG_GLOBAL_TRIGGER_RECORD) * MAX_NG_GLOBAL_TRIGGERS);
-	tables->level_trigger_group_table = (NG_TRIGGER_GROUP_RECORD*)malloc(sizeof(NG_TRIGGER_GROUP_RECORD) * MAX_NG_TRIGGER_GROUPS);
-	tables->level_organizer_table = (NG_ORGANIZER_RECORD*)malloc(sizeof(NG_ORGANIZER_RECORD) * MAX_NG_ORGANIZERS);
-	tables->level_item_group_table = (NG_ITEM_GROUP_RECORD*)malloc(sizeof(NG_ITEM_GROUP_RECORD) * MAX_NG_ITEM_GROUPS);
-	tables->level_animation_table = (NG_ANIMATION_RECORD*)malloc(sizeof(NG_ANIMATION_RECORD) * MAX_NG_ANIMATIONS);
-	tables->level_multi_env_condition_table = (NG_MULTI_ENV_CONDITION_RECORD*)malloc(sizeof(NG_MULTI_ENV_CONDITION_RECORD) * MAX_NG_MULTI_ENV_CONDITIONS);
-	tables->level_test_position_table = (NG_TEST_POSITION_RECORD*)malloc(sizeof(NG_TEST_POSITION_RECORD) * MAX_NG_TEST_POSITIONS);
+	tables->level_global_triggers_table = (NG_GLOBAL_TRIGGER_RECORD*)SYSTEM_MALLOC(sizeof(NG_GLOBAL_TRIGGER_RECORD) * MAX_NG_GLOBAL_TRIGGERS);
+	tables->level_trigger_group_table = (NG_TRIGGER_GROUP_RECORD*)SYSTEM_MALLOC(sizeof(NG_TRIGGER_GROUP_RECORD) * MAX_NG_TRIGGER_GROUPS);
+	tables->level_organizer_table = (NG_ORGANIZER_RECORD*)SYSTEM_MALLOC(sizeof(NG_ORGANIZER_RECORD) * MAX_NG_ORGANIZERS);
+	tables->level_item_group_table = (NG_ITEM_GROUP_RECORD*)SYSTEM_MALLOC(sizeof(NG_ITEM_GROUP_RECORD) * MAX_NG_ITEM_GROUPS);
+	tables->level_animation_table = (NG_ANIMATION_RECORD*)SYSTEM_MALLOC(sizeof(NG_ANIMATION_RECORD) * MAX_NG_ANIMATIONS);
+	tables->level_multi_env_condition_table = (NG_MULTI_ENV_CONDITION_RECORD*)SYSTEM_MALLOC(sizeof(NG_MULTI_ENV_CONDITION_RECORD) * MAX_NG_MULTI_ENV_CONDITIONS);
+	tables->level_test_position_table = (NG_TEST_POSITION_RECORD*)SYSTEM_MALLOC(sizeof(NG_TEST_POSITION_RECORD) * MAX_NG_TEST_POSITIONS);
 
 	// Params
-	tables->level_move_item_table = (NG_MOVE_ITEM_RECORD*)malloc(sizeof(NG_MOVE_ITEM_RECORD) * MAX_NG_MOVE_ITEMS);
-	tables->level_rotate_item_table = (NG_ROTATE_ITEM_RECORD*)malloc(sizeof(NG_ROTATE_ITEM_RECORD) * MAX_NG_ROTATE_ITEMS);
-	tables->level_big_number_table = (NG_BIG_NUMBER_RECORD*)malloc(sizeof(NG_BIG_NUMBER_RECORD) * MAX_NG_BIG_NUMBERS);
+	tables->level_move_item_table = (NG_MOVE_ITEM_RECORD*)SYSTEM_MALLOC(sizeof(NG_MOVE_ITEM_RECORD) * MAX_NG_MOVE_ITEMS);
+	tables->level_rotate_item_table = (NG_ROTATE_ITEM_RECORD*)SYSTEM_MALLOC(sizeof(NG_ROTATE_ITEM_RECORD) * MAX_NG_ROTATE_ITEMS);
+	tables->level_big_number_table = (NG_BIG_NUMBER_RECORD*)SYSTEM_MALLOC(sizeof(NG_BIG_NUMBER_RECORD) * MAX_NG_BIG_NUMBERS);
 }
 
 void NGFreeLevelRecordTablesContent(NG_LEVEL_RECORD_TABLES *tables) {
-	free(tables->level_global_triggers_table);
-	free(tables->level_trigger_group_table);
-	free(tables->level_organizer_table);
-	free(tables->level_item_group_table);
-	free(tables->level_animation_table);
-	free(tables->level_multi_env_condition_table);
-	free(tables->level_test_position_table);
+	SYSTEM_FREE(tables->level_global_triggers_table);
+	SYSTEM_FREE(tables->level_trigger_group_table);
+	SYSTEM_FREE(tables->level_organizer_table);
+	SYSTEM_FREE(tables->level_item_group_table);
+	SYSTEM_FREE(tables->level_animation_table);
+	SYSTEM_FREE(tables->level_multi_env_condition_table);
+	SYSTEM_FREE(tables->level_test_position_table);
 
 	// Params
-	free(tables->level_move_item_table);
-	free(tables->level_rotate_item_table);
-	free(tables->level_big_number_table);
+	SYSTEM_FREE(tables->level_move_item_table);
+	SYSTEM_FREE(tables->level_rotate_item_table);
+	SYSTEM_FREE(tables->level_big_number_table);
 }
 
 void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, size_t len) {
@@ -2316,7 +2319,7 @@ void NGReadNGGameflowInfo(char *gfScriptFile, unsigned int offset, size_t len) {
 			// Call level block load function here!
 			offset = NGReadLevelBlock(gfScriptFile, offset, &record_tables, current_level, world_far_view);
 			if (offset == 0) {
-				return;
+				break;
 			}
 
 			NG_TABLE_ALLOCATION_COUNT table_allocation_count;
@@ -2391,7 +2394,7 @@ void NGReadNGExtraStrings(char *gfLanguageFile, unsigned int offset, size_t len)
 			continue;
 		}
 
-		char *current_string = (char *)malloc(string_len);
+		char *current_string = (char *)SYSTEM_MALLOC(string_len);
 		if (current_string) {
 			memset(current_string, 0x00, string_len);
 
@@ -2404,7 +2407,7 @@ void NGReadNGExtraStrings(char *gfLanguageFile, unsigned int offset, size_t len)
 			
 			// Detect duplicates...
 			if (ng_strings[string_id]) {
-				free(ng_strings[string_id]);
+				SYSTEM_FREE(ng_strings[string_id]);
 				ng_strings[string_id] = NULL;
 				NGLog(NG_LOG_TYPE_ERROR, "Duplicate string ID %u!", string_id);
 			}

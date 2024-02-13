@@ -1758,8 +1758,8 @@ void BuildOutsideTable()
 	char flipped[256];
 
 	max_slots = 0;
-	OutsideRoomOffsets = (short*)malloc(0x5B2);
-	OutsideRoomTable = (char*)malloc(0xB640);
+	OutsideRoomOffsets = (short*)SYSTEM_MALLOC(0x5B2);
+	OutsideRoomTable = (char*)SYSTEM_MALLOC(0xB640);
 	memset(OutsideRoomTable, 0xFF, 0xB640);
 	memset(flipped, 0, 255);
 

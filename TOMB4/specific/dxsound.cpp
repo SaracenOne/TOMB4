@@ -294,8 +294,8 @@ bool InitSampleDecompress()
 	if (mmresult != DS_OK)
 		Log(1, "Stream Open %d", mmresult);
 
-	decompressed_samples_buffer = (char*)malloc(DECOMPRESS_BUFFER_LEN);
-	samples_buffer = (char*)malloc(DECOMPRESS_BUFFER_LEN + 0x5A);
+	decompressed_samples_buffer = (char*)SYSTEM_MALLOC(DECOMPRESS_BUFFER_LEN);
+	samples_buffer = (char*)SYSTEM_MALLOC(DECOMPRESS_BUFFER_LEN + 0x5A);
 	memset(&ACMStreamHeader, 0, sizeof(ACMStreamHeader));
 	ACMStreamHeader.pbSrc = (uchar*)(samples_buffer + 0x5A);
 	ACMStreamHeader.cbStruct = 84;
@@ -307,7 +307,7 @@ bool InitSampleDecompress()
 	if (mmresult != DS_OK)
 		Log(1, "Prepare Stream %d", mmresult);
 #else
-	samples_buffer = (char*)malloc(DECOMPRESS_BUFFER_LEN + 0x5A);
+	samples_buffer = (char*)SYSTEM_MALLOC(DECOMPRESS_BUFFER_LEN + 0x5A);
 #endif
 
 	return 1;
@@ -327,10 +327,10 @@ bool FreeSampleDecompress()
 	if (mmresult != DS_OK)
 		Log(1, "Stream Close %d", mmresult);
 
-	free(decompressed_samples_buffer);
-	free(samples_buffer);
+	SYSTEM_FREE(decompressed_samples_buffer);
+	SYSTEM_FREE(samples_buffer);
 #else
-	free(samples_buffer);
+	SYSTEM_FREE(samples_buffer);
 #endif
 
 	return 1;
@@ -364,7 +364,7 @@ bool DXCreateSample(char* data, long size, int samples_per_second, long num)
 	if (samples_per_second != 22050)
 		Log(1, "Incorrect SamplesPerSec");
 
-	XA_Buffers[num].pAudioData = (BYTE*)malloc(size);
+	XA_Buffers[num].pAudioData = (BYTE*)SYSTEM_MALLOC(size);
 	memcpy((void*)XA_Buffers[num].pAudioData, data, size);
 	XA_Buffers[num].AudioBytes = size;
 	return 1;
@@ -380,7 +380,7 @@ bool DXCreateSampleADPCM(char* data, long comp_size, long uncomp_size, long num)
 
 	// Load the ADPCM data into a buffer
 	ma_uint8* pPCMData = nullptr;
-	ma_uint8* pADPCMData = (ma_uint8*)malloc(comp_size);
+	ma_uint8* pADPCMData = (ma_uint8*)SYSTEM_MALLOC(comp_size);
 	ma_decoder decoder;
 
 	if (pADPCMData) {
@@ -390,7 +390,7 @@ bool DXCreateSampleADPCM(char* data, long comp_size, long uncomp_size, long num)
 		ma_decoder_config config = ma_decoder_config_init(ma_format_s16, 1, 22050);
 		if (ma_decoder_init_memory(pADPCMData, comp_size, &config, &decoder) == MA_SUCCESS) {
 			// Decode the ADPCM data into PCM
-			ma_uint8* pPCMData = (ma_uint8*)malloc(uncomp_size);
+			ma_uint8* pPCMData = (ma_uint8*)SYSTEM_MALLOC(uncomp_size);
 			ma_uint64 frameCount;
 			ma_result decoder_result = ma_decoder_read_pcm_frames(&decoder, pPCMData, uncomp_size / ma_get_bytes_per_frame(config.format, config.channels), &frameCount);
 
@@ -416,9 +416,9 @@ bool DXCreateSampleADPCM(char* data, long comp_size, long uncomp_size, long num)
 
 	// Clean up
 	if (pADPCMData)
-		free(pADPCMData);
+		SYSTEM_FREE(pADPCMData);
 	if (pPCMData)
-		free(pPCMData);
+		SYSTEM_FREE(pPCMData);
 
 	ma_decoder_uninit(&decoder);
 
@@ -440,7 +440,7 @@ bool DXCreateSampleADPCM(char* data, long comp_size, long uncomp_size, long num)
 	if (mmresult != DS_OK)
 		Log(1, "Stream Convert %d", mmresult);
 
-	XA_Buffers[num].pAudioData = (BYTE*)malloc(uncomp_size - 32);
+	XA_Buffers[num].pAudioData = (BYTE*)SYSTEM_MALLOC(uncomp_size - 32);
 	memcpy((void*)XA_Buffers[num].pAudioData, decompressed_samples_buffer, uncomp_size - 32);
 	XA_Buffers[num].AudioBytes = uncomp_size - 32;
 	return 1;
@@ -636,7 +636,7 @@ void DXFreeSounds()
 	{
 		if (XA_Buffers[i].pAudioData)
 		{
-			free((void*)XA_Buffers[i].pAudioData);
+			SYSTEM_FREE((void*)XA_Buffers[i].pAudioData);
 			XA_Buffers[i].pAudioData = 0;
 		}
 	}

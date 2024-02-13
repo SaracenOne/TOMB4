@@ -139,6 +139,8 @@ void FreeTextures()
 	}
 #endif
 
-	free(Textures);
-	Textures = 0;
+	if (Textures) {
+		SYSTEM_FREE(Textures);
+		Textures = nullptr;
+	}
 }

@@ -119,9 +119,9 @@ void* AddStruct(void* p, long num, long size)
 	void* ptr;
 
 	if (!num)
-		ptr = malloc(size);
+		ptr = SYSTEM_MALLOC(size);
 	else
-		ptr = realloc(p, size * (num + 1));
+		ptr = SYSTEM_REALLOC(p, size * (num + 1));
 
 	memset((char*)ptr + size * num, 0, size);
 	return ptr;
@@ -315,7 +315,7 @@ long DXGetInfo(DXINFO* dxinfo, HWND hwnd)
 #endif
 #if defined(MA_AUDIO_SAMPLES) && defined(MA_AUDIO_ENGINE)	// Dummy information
 	dxinfo->nDSInfo = 1;
-	dxinfo->DSInfo = (DXDIRECTSOUNDINFO*)malloc(sizeof(DXDIRECTSOUNDINFO));
+	dxinfo->DSInfo = (DXDIRECTSOUNDINFO*)SYSTEM_MALLOC(sizeof(DXDIRECTSOUNDINFO));
 	if (dxinfo->DSInfo) {
 		const char *MiniAudioString = "MiniAudio Device";
 		memcpy(dxinfo->DSInfo[0].Name, MiniAudioString, strlen(MiniAudioString) + 1);
@@ -343,17 +343,17 @@ void DXFreeInfo(DXINFO* dxinfo)
 		for (int j = 0; j < DDInfo->nD3DDevices; j++)
 		{
 			d3d = &DDInfo->D3DDevices[j];
-			free(d3d->DisplayModes);
-			free(d3d->TextureInfos);
-			free(d3d->ZBufferInfos);
+			SYSTEM_FREE(d3d->DisplayModes);
+			SYSTEM_FREE(d3d->TextureInfos);
+			SYSTEM_FREE(d3d->ZBufferInfos);
 		}
 
-		free(DDInfo->D3DDevices);
-		free(DDInfo->DisplayModes);
+		SYSTEM_FREE(DDInfo->D3DDevices);
+		SYSTEM_FREE(DDInfo->DisplayModes);
 	}
 
-	free(dxinfo->DDInfo);
-	free(dxinfo->DSInfo);
+	SYSTEM_FREE(dxinfo->DDInfo);
+	SYSTEM_FREE(dxinfo->DSInfo);
 #endif
 }
 
@@ -676,7 +676,7 @@ void DXSaveScreen(LPDIRECTDRAWSURFACEX surf, const char* name)
 		*(short*)&tga_header[12] = (short)desc.dwWidth;
 		*(short*)&tga_header[14] = (short)desc.dwHeight;
 		fwrite(tga_header, sizeof(tga_header), 1, file);
-		pM = (char*)malloc(2 * desc.dwWidth * desc.dwHeight);
+		pM = (char*)SYSTEM_MALLOC(2 * desc.dwWidth * desc.dwHeight);
 		pDest = (short*)pM;
 		pSurf += desc.dwHeight * (desc.lPitch / 2);
 
@@ -702,7 +702,7 @@ void DXSaveScreen(LPDIRECTDRAWSURFACEX surf, const char* name)
 
 		fwrite(pM, 2 * desc.dwWidth * desc.dwHeight, 1, file);
 		fclose(file);
-		free(pM);
+		SYSTEM_FREE(pM);
 		buf[7]++;
 
 		if (buf[7] > '9')
@@ -792,10 +792,10 @@ long DXCreate(long w, long h, long bpp, long Flags, DXPTR* dxptr, HWND hWnd, lon
 	DXDISPLAYMODE* dm;
 	LPDIRECTDRAWCLIPPER clipper;
 	HWND desktop;
-	DEVMODE dev;
+	DEVMODE dev = {};
 	HDC hDC;
 	DDSURFACEDESCX desc;
-	RECT r;
+	RECT r = {};
 	long CoopLevel;
 #endif
 	long flag;

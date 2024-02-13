@@ -766,7 +766,8 @@ static void DoWeaponHotkey()	//adds extra checks and does ammo type swaps..
 	}
 }
 
-#ifdef USE_SDL;
+#ifdef USE_SDL
+
 #define DEFAULT_AXIS_BUTTON_DEAD_ZONE (0x7fff / 2)
 
 enum GamepadBindingType {

@@ -153,7 +153,7 @@ char *T4PlusAllocateString(char* str) {
             }
         }
 
-        char *new_string = (char*)malloc(strlen(str) + 1);
+        char *new_string = (char*)SYSTEM_MALLOC(strlen(str) + 1);
         if (!new_string) {
             platform_fatal_error("Memory allocation failed!");
             return nullptr;
@@ -173,9 +173,9 @@ char *T4PlusAllocateString(char* str) {
 
 void T4PlusFreeAllStrings() {
     for (int i = 0; i < global_string_table_size; i++) {
-        free(global_string_table[i]);
+        SYSTEM_FREE(global_string_table[i]);
     }
-    free(global_string_table);
+    SYSTEM_FREE(global_string_table);
 }
 
 // Full overrides
@@ -184,7 +184,7 @@ bool scorpion_poison_override_found = false;
 GAME_MOD_CONFIG game_mod_config;
 
 void setup_custom_slots_for_level(int level, OBJECT_INFO* current_object_info_array) {
-    OBJECT_INFO* backup_object_info_array = (OBJECT_INFO* )malloc(sizeof(OBJECT_INFO) * NUMBER_OBJECTS);
+    OBJECT_INFO* backup_object_info_array = (OBJECT_INFO* )SYSTEM_MALLOC(sizeof(OBJECT_INFO) * NUMBER_OBJECTS);
 
     if (backup_object_info_array) {
         memcpy(backup_object_info_array, current_object_info_array, sizeof(OBJECT_INFO) * NUMBER_OBJECTS);
@@ -194,7 +194,7 @@ void setup_custom_slots_for_level(int level, OBJECT_INFO* current_object_info_ar
                 memcpy(&current_object_info_array[i], &backup_object_info_array[game_mod_config.level_info[level].objects_info.slot_override[i]], sizeof(OBJECT_INFO));
             }
         }
-        free(backup_object_info_array);
+        SYSTEM_FREE(backup_object_info_array);
     }
 }
 
@@ -831,9 +831,9 @@ void SetupGlobalDefaults() {
 #endif
 }
 
-bool LoadGameModConfigFirstPass() {
-    #define CLEANUP_JSON_MEMORY if (json_buf) {free(json_buf);} if (mem) {free(mem);}
+#define CLEANUP_JSON_MEMORY if (json_buf) {SYSTEM_FREE(json_buf);} if (mem) {SYSTEM_FREE(mem);}
 
+bool LoadGameModConfigFirstPass() {
     char* json_buf = NULL;
     if (LoadFile("game_mod_config.json", &json_buf) <= 0) {
         platform_fatal_error("Missing game_mod_config.json from working directory \"%s\". Please examine README for further information", working_dir_path);
@@ -844,11 +844,11 @@ bool LoadGameModConfigFirstPass() {
 
     const json_t* level = nullptr;
 
-    FURROpcode *furr_command_list = (FURROpcode * )malloc(MAX_FURR_COMMANDS * sizeof(FURROpcode));
+    FURROpcode *furr_command_list = (FURROpcode * )SYSTEM_MALLOC(MAX_FURR_COMMANDS * sizeof(FURROpcode));
    
     json_t* mem = NULL;
     if (json_buf) {
-        mem = (json_t*)malloc(MAXIMUM_JSON_ALLOCATION_BLOCKS * sizeof(json_t));
+        mem = (json_t*)SYSTEM_MALLOC(MAXIMUM_JSON_ALLOCATION_BLOCKS * sizeof(json_t));
         if (mem) {
             const json_t* root_json = json_create(json_buf, mem, MAXIMUM_JSON_ALLOCATION_BLOCKS);
             if (root_json) {
@@ -920,14 +920,14 @@ bool LoadGameModConfigFirstPass() {
                                                             furr_command_count++;
                                                             if (furr_command_count >= MAX_FURR_COMMANDS) {
                                                                 Log(1, "LoadGameModConfigFirstPass: Exceed maximum allowed FURR commands in flipeffect!");
-                                                                free(furr_command_list);
+                                                                SYSTEM_FREE(furr_command_list);
                                                                 CLEANUP_JSON_MEMORY
                                                                 return false;
                                                             }
                                                             furr_command_buffer_size += (1 + furr_command_arg_count);
                                                         } else {
                                                             Log(1, "LoadGameModConfigFirstPass: unknown FURR opcode detected!");
-                                                            free(furr_command_list);
+                                                            SYSTEM_FREE(furr_command_list);
                                                             CLEANUP_JSON_MEMORY
                                                             return false;
                                                         }
@@ -1019,7 +1019,7 @@ bool LoadGameModConfigFirstPass() {
         }
     }
 
-    free(furr_command_list);
+    SYSTEM_FREE(furr_command_list);
 
     MOD_LEVEL_INFO global_level_info;
 
@@ -1064,7 +1064,7 @@ void LoadGameModConfigSecondPass() {
     json_t *mem = NULL;
 
     if (json_buf) {
-        mem = (json_t*)malloc(MAXIMUM_JSON_ALLOCATION_BLOCKS * sizeof(json_t));
+        mem = (json_t*)SYSTEM_MALLOC(MAXIMUM_JSON_ALLOCATION_BLOCKS * sizeof(json_t));
         if (mem) {
             const json_t* root_json = json_create(json_buf, mem, MAXIMUM_JSON_ALLOCATION_BLOCKS);
             if (root_json) {
@@ -1130,11 +1130,7 @@ void LoadGameModConfigSecondPass() {
         }
     }
 
-    if (json_buf)
-        free(json_buf);
-
-    if (mem)
-        free(mem);
+    CLEANUP_JSON_MEMORY
 }
 
 void T4PlusLevelReset() {
@@ -1191,7 +1187,7 @@ void T4PlusCleanup() {
 }
 
 extern void T4PlusInit() {
-    global_string_table = (char **)malloc(MAX_T4PLUS_STRINGS * sizeof(char*));
+    global_string_table = (char **)SYSTEM_MALLOC(MAX_T4PLUS_STRINGS * sizeof(char*));
 
     NGInit();
 }

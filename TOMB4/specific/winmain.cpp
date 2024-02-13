@@ -273,7 +273,7 @@ void SDLDisplayString(long x, long y, char* string, ...)
 void ClearSurfaces()
 {
 #ifndef USE_BGFX
-	D3DRECT r;
+	D3DRECT r = {};
 
 	r.x1 = App.dx.rViewport.left;
 	r.y1 = App.dx.rViewport.top;
@@ -300,7 +300,7 @@ bool SDLCreateWindow()
 		return false;
 	}
 #ifdef _WIN32
-	SDL_SysWMinfo wmInfo;
+	SDL_SysWMinfo wmInfo = {};
 	SDL_VERSION(&wmInfo.version);
 	SDL_GetWindowWMInfo(sdl_window, &wmInfo);
 	App.hWnd = wmInfo.info.win.window;
@@ -441,7 +441,10 @@ void SDLClose()
 
 	DXDSClose();
 
+	system_report_stray_allocation();
+
 	SDL_DestroyWindow(sdl_window);
+
 	SDL_Quit();
 }
 
@@ -491,8 +494,8 @@ int main(int argc, char* argv[]) {
 	{
 		if (!DXSetupDialog())
 		{
-			free(gfScriptFile);
-			free(gfLanguageFile);
+			SYSTEM_FREE(gfScriptFile);
+			SYSTEM_FREE(gfLanguageFile);
 
 			SDLClose();
 
@@ -543,9 +546,9 @@ int main(int argc, char* argv[]) {
 
 	if (size)
 	{
-		cutseqpakPtr = (char*)malloc(*(long*)buf);
+		cutseqpakPtr = (char*)SYSTEM_MALLOC(*(long*)buf);
 		Decompress(cutseqpakPtr, buf + 4, size - 4, *(long*)buf);
-		free(buf);
+		SYSTEM_FREE(buf);
 	}
 
 	MainThread.active = 1;
@@ -562,7 +565,7 @@ int main(int argc, char* argv[]) {
 	while (MainThread.active) {};
 
 	if (cutseqpakPtr)
-		free(cutseqpakPtr);
+		SYSTEM_FREE(cutseqpakPtr);
 
 #ifdef _WIN32
 	SetWindowLongPtr(App.hWnd, GWLP_WNDPROC, (LONG_PTR)originalWndProc);
@@ -1093,8 +1096,8 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
 	{
 		if (!DXSetupDialog())
 		{
-			free(gfScriptFile);
-			free(gfLanguageFile);
+			SYSTEM_FREE(gfScriptFile);
+			SYSTEM_FREE(gfLanguageFile);
 			WinClose();
 			return 0;
 		}
@@ -1156,9 +1159,9 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
 
 	if (size)
 	{
-		cutseqpakPtr = (char*)malloc(*(long*)buf);
+		cutseqpakPtr = (char*)SYSTEM_MALLOC(*(long*)buf);
 		Decompress(cutseqpakPtr, buf + 4, size - 4, *(long*)buf);
-		free(buf);
+		SYSTEM_FREE(buf);
 	}
 
 	MainThread.active = 1;
@@ -1169,7 +1172,7 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
 	while (MainThread.active) {};
 
 	if (cutseqpakPtr)
-		free(cutseqpakPtr);
+		SYSTEM_FREE(cutseqpakPtr);
 
 	WinClose();
 	desktop = GetDesktopWindow();

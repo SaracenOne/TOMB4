@@ -128,8 +128,8 @@ unsigned int __stdcall LoadLevel(void* name)
 			return -1;
 		}
 
-		CompressedData = (char*)malloc(compressedSize);
-		UncompressedData = (char*)malloc(size);
+		CompressedData = (char*)SYSTEM_MALLOC(compressedSize);
+		UncompressedData = (char*)SYSTEM_MALLOC(size);
 
 		if (!CompressedData || !UncompressedData) {
 			platform_fatal_error("Failed to allocate memory for level %s.", name);
@@ -140,7 +140,7 @@ unsigned int __stdcall LoadLevel(void* name)
 		
 		fread(CompressedData, compressedSize, 1u, level_fp);
 		Decompress(FileData, CompressedData, compressedSize, size);
-		free(CompressedData);
+		SYSTEM_FREE(CompressedData);
 
 		pData = FileData;
 		S_LoadBar();
@@ -215,7 +215,7 @@ unsigned int __stdcall LoadLevel(void* name)
 
 		if (acm_ready && !App.SoundDisabled)
 			LoadSamples();
-		free(UncompressedData);
+		SYSTEM_FREE(UncompressedData);
 		S_LoadBar();
 
 		for (int i = 0; i < 3; i++)
@@ -327,8 +327,10 @@ void FreeLevel()
 	FreeTextures();
 	Log(5, "Free Lights");
 	DXFreeSounds();
-	free(OutsideRoomTable);
-	free(OutsideRoomOffsets);
+	if (OutsideRoomTable)
+		SYSTEM_FREE(OutsideRoomTable);
+	if (OutsideRoomOffsets)
+		SYSTEM_FREE(OutsideRoomOffsets);
 	malloc_ptr = malloc_buffer;
 	malloc_free = malloc_size;
 }
@@ -378,7 +380,7 @@ size_t LoadFile(const char* name, char** dest)
 	size = FileSize(file);
 
 	if (!*dest)
-		*dest = (char*)malloc(size);
+		*dest = (char*)SYSTEM_MALLOC(size);
 
 	count = fread(*dest, 1, size, file);
 	Log(5, "Read - %d FileSize - %d", count, size);
@@ -387,7 +389,7 @@ size_t LoadFile(const char* name, char** dest)
 	{
 		Log(1, "Error Reading File");
 		FileClose(file);
-		free(*dest);
+		SYSTEM_FREE(*dest);
 		return 0;
 	}
 
@@ -400,7 +402,7 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 	DXTEXTUREINFO* dxtex;
 #ifndef USE_BGFX
 	LPDIRECTDRAWSURFACEX tSurf;
-	LPDIRECT3DTEXTUREX pTex;
+	LPDIRECT3DTEXTUREX pTex = {};
 #endif
 	uchar* TextureData;
 	long* d;
@@ -434,8 +436,16 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 		fread(&size, 1, 4, level_fp);
 		fread(&compressedSize, 1, 4, level_fp);
 
-		CompressedData = (char*)malloc(compressedSize);
-		FileData = (char*)malloc(size);
+		CompressedData = (char*)SYSTEM_MALLOC(compressedSize);
+		if (!CompressedData) {
+			platform_fatal_error("Failed to allocate memory!");
+			return false;
+		}
+		FileData = (char*)SYSTEM_MALLOC(size);
+		if (!FileData) {
+			platform_fatal_error("Failed to allocate memory!");
+			return false;
+		}
 
 		fread(CompressedData, compressedSize, 1, level_fp);
 		Decompress(FileData, CompressedData, compressedSize, size);
@@ -443,7 +453,7 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 		fread(&size, 1, 4, level_fp);
 		fread(&compressedSize, 1, 4, level_fp);
 		fseek(level_fp, compressedSize, SEEK_CUR);
-		free(CompressedData);
+		SYSTEM_FREE(CompressedData);
 	}
 	else
 	{
@@ -454,18 +464,18 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 		fread(&size, 1, 4, level_fp);
 		fread(&compressedSize, 1, 4, level_fp);
 
-		CompressedData = (char*)malloc(compressedSize);
-		FileData = (char*)malloc(size);
+		CompressedData = (char*)SYSTEM_MALLOC(compressedSize);
+		FileData = (char*)SYSTEM_MALLOC(size);
 		fread(CompressedData, compressedSize, 1, level_fp);
 		Decompress(FileData, CompressedData, compressedSize, size);
-		free(CompressedData);
+		SYSTEM_FREE(CompressedData);
 	}
 
 	pData = FileData;
 
 	Log(5, "RTPages %d", RTPages);
 	size = RTPages * skip * 0x10000;
-	TextureData = (uchar*)malloc(size);
+	TextureData = (uchar*)SYSTEM_MALLOC(size);
 	memcpy(TextureData, FileData, size);
 	FileData += size;
 	S_LoadBar();
@@ -487,11 +497,11 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 #endif
 	}
 
-	free(TextureData);
+	SYSTEM_FREE(TextureData);
 
 	Log(5, "OTPages %d", OTPages);
 	size = OTPages * skip * 0x10000;
-	TextureData = (uchar*)malloc(size);
+	TextureData = (uchar*)SYSTEM_MALLOC(size);
 	memcpy(TextureData, FileData, size);
 	FileData += size;
 	S_LoadBar();
@@ -513,7 +523,7 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 #endif
 	}
 
-	free(TextureData);
+	SYSTEM_FREE(TextureData);
 	S_LoadBar();
 
 	Log(5, "BTPages %d", BTPages);
@@ -522,7 +532,7 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 	if (BTPages)
 	{
 		size = BTPages * skip * 0x10000;
-		TextureData = (uchar*)malloc(size);
+		TextureData = (uchar*)SYSTEM_MALLOC(size);
 		memcpy(TextureData, FileData, size);
 		FileData += size;
 
@@ -560,32 +570,32 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 			Textures[nTex].bumptpage = nTex + (BTPages >> 1);
 		}
 
-		free(TextureData);
+		SYSTEM_FREE(TextureData);
 	}
 #else
 	if (BTPages)
 	{
 		size = BTPages * skip * 0x10000;
-		TextureData = (uchar*)malloc(size);
+		TextureData = (uchar*)SYSTEM_MALLOC(size);
 		memcpy(TextureData, FileData, size);
 		FileData += size;
 
-		free(TextureData);
+		SYSTEM_FREE(TextureData);
 	}
 #endif
 
-	free(pData);
+	SYSTEM_FREE(pData);
 
 	fread(&size, 1, 4, level_fp);
 	fread(&compressedSize, 1, 4, level_fp);
-	CompressedData = (char*)malloc(compressedSize);
-	FileData = (char*)malloc(size);
+	CompressedData = (char*)SYSTEM_MALLOC(compressedSize);
+	FileData = (char*)SYSTEM_MALLOC(size);
 	fread(CompressedData, compressedSize, 1, level_fp);
 	Decompress(FileData, CompressedData, compressedSize, size);
-	free(CompressedData);
+	SYSTEM_FREE(CompressedData);
 
 	pData = FileData;
-	TextureData = (uchar*)malloc(0x40000);
+	TextureData = (uchar*)SYSTEM_MALLOC(0x40000);
 
 #ifndef USE_BGFX
 	if (!gfCurrentLevel)	//main menu logo
@@ -610,9 +620,9 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 			return false;
 		}
 
-		pComp = (char*)malloc(*(long*)CompressedData);
+		pComp = (char*)SYSTEM_MALLOC(*(long*)CompressedData);
 		Decompress(pComp, CompressedData + 4, size - 4, *(long*)CompressedData);
-		free(CompressedData);
+		SYSTEM_FREE(CompressedData);
 
 		for (int i = 0; i < 2; i++)
 		{
@@ -648,7 +658,7 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 			Textures[nTex].bump = 0;
 		}
 
-		free(pComp);
+		SYSTEM_FREE(pComp);
 	}
 #endif
 
@@ -687,8 +697,8 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 	Textures[nTex].bump = 0;
 #endif
 
-	free(TextureData);
-	free(pData);
+	SYSTEM_FREE(TextureData);
+	SYSTEM_FREE(pData);
 	return 1;
 }
 

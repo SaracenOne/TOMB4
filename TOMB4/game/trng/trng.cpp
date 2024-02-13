@@ -126,7 +126,7 @@ void NGLoadInfo(FILE* level_fp) {
 				}
 				// Level version
 				case 0x8024: {
-					unsigned short version_info[4];
+					unsigned short version_info[4] = {};
 					for (int i = 0; i < 4; i++) {
 						fread(&version_info[i], 1, sizeof(unsigned short), level_fp);
 					}
@@ -134,7 +134,7 @@ void NGLoadInfo(FILE* level_fp) {
 				}
 				// TOM version
 				case 0x8025: {
-					unsigned short version_info[4];
+					unsigned short version_info[4] = {};
 					for (int i = 0; i < 4; i++) {
 						fread(&version_info[i], 1, sizeof(unsigned short), level_fp);
 					}
@@ -394,24 +394,24 @@ void NGCleanup() {
 
 void NGLog(NGLogType type, const char* s, ...) {
 	va_list list;
-	char buf[4096 * 8];
+	char buf[8192];
 
 	va_start(list, s);
 	vsprintf(buf, s, list);
 	va_end(list);
 
 	switch (type) {
-		case NG_LOG_TYPE_PRINT: {
-			Log(0, "NGLogPrint: %s", buf);
-			break;
-		}
-		case NG_LOG_TYPE_UNIMPLEMENTED_FEATURE: {
-			Log(0, "NGLogUnimplementedFeature: %s", buf);
-			break;
-		}
-		case NG_LOG_TYPE_ERROR: {
-			Log(0, "NGLogError: %s", buf);
-			break;
-		}
+	case NG_LOG_TYPE_PRINT: {
+		Log(0, "NGLogPrint: %s", buf);
+		break;
+	}
+	case NG_LOG_TYPE_UNIMPLEMENTED_FEATURE: {
+		Log(0, "NGLogUnimplementedFeature: %s", buf);
+		break;
+	}
+	case NG_LOG_TYPE_ERROR: {
+		Log(0, "NGLogError: %s", buf);
+		break;
+	}
 	}
 }

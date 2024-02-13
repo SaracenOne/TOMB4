@@ -1007,8 +1007,8 @@ bool ACMInit()
 		return 0;
 	}
 
-	ADPCMBuffer = (uchar*)malloc(0x5800);
-	wav_file_buffer = (uchar*)malloc(0x37000);
+	ADPCMBuffer = (uchar*)SYSTEM_MALLOC(0x5800);
+	wav_file_buffer = (uchar*)SYSTEM_MALLOC(0x37000);
 	wav_format.wFormatTag = WAVE_FORMAT_PCM;
 	acmMetrics(0, ACM_METRIC_MAX_SIZE_FORMAT, &pMetric);
 	acmFormatSuggest(hACMDriver, (LPWAVEFORMATEX)&source_wav_format, &wav_format, pMetric, ACM_FORMATSUGGESTF_WFORMATTAG);

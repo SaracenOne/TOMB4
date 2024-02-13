@@ -1360,7 +1360,7 @@ void furr_allocate_flipeffect_buffer(int flipeffect_id, int size) {
 	int table_index = flipeffect_id - FIRST_FURR_FLIPEFFECT;
 
 	if (furr_flipeffect_table[table_index].tokens == nullptr) {
-		furr_flipeffect_table[table_index].tokens = (int*)malloc(size * sizeof(int));
+		furr_flipeffect_table[table_index].tokens = (int*)SYSTEM_MALLOC(size * sizeof(int));
 		if (furr_flipeffect_table[table_index].tokens) {
 			memset(furr_flipeffect_table[table_index].tokens, 0, size * sizeof(int));
 		}
@@ -1370,7 +1370,7 @@ void furr_allocate_flipeffect_buffer(int flipeffect_id, int size) {
 void furr_free_all_flipeffect_buffers() {
 	for (int i = 0; i < LAST_FURR_FLIPEFFECT - FIRST_FURR_FLIPEFFECT; i++) {
 		if (furr_flipeffect_table[i].tokens != nullptr) {
-			free(furr_flipeffect_table[i].tokens);
+			SYSTEM_FREE(furr_flipeffect_table[i].tokens);
 			furr_flipeffect_table[i].tokens = nullptr;
 			furr_flipeffect_table[i].size = 0;
 		}

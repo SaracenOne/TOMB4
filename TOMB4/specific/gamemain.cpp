@@ -56,21 +56,20 @@ void GameClose()
 		Log(1, "%s Attempt To Release NULL Ptr", "Dest VB");
 #endif
 
-	free(clipflags);
+	SYSTEM_FREE(clipflags);
 
 	if (wav_file_buffer)
-		free(wav_file_buffer);
+		SYSTEM_FREE(wav_file_buffer);
 
 	if (ADPCMBuffer)
-		free(ADPCMBuffer);
+		SYSTEM_FREE(ADPCMBuffer);
 
 	if (logF)
 		fclose(logF);
 
-	free(malloc_buffer);
-	free(gfScriptFile);
-	free(gfLanguageFile);
-
+	SYSTEM_FREE(malloc_buffer);
+	SYSTEM_FREE(gfScriptFile);
+	SYSTEM_FREE(gfLanguageFile);
 }
 
 #ifdef USE_SDL
@@ -193,7 +192,7 @@ void init_water_table()
 bool GameInitialise()
 {
 #ifndef USE_BGFX
-	D3DVERTEXBUFFERDESC desc;
+	D3DVERTEXBUFFERDESC desc = {};
 
 	desc.dwCaps = 0;
 	desc.dwSize = sizeof(desc);
@@ -202,7 +201,7 @@ bool GameInitialise()
 	DXAttempt(App.dx.lpD3D->CreateVertexBuffer(&desc, &DestVB, D3DDP_DONOTCLIP, 0));
 #endif
 	init_game_malloc();
-	clipflags = (short*)malloc(0x4000);
+	clipflags = (short*)SYSTEM_MALLOC(0x4000);
 	init_water_table();
 	InitWeatherFX(); // TRLE
 	return 1;
