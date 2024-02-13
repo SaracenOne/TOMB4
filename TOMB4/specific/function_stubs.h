@@ -8,7 +8,7 @@ void SeedRandomDraw(long seed);
 void init_game_malloc();
 void* game_malloc(long size);
 
-#ifndef _DEBUG
+#ifndef DEBUG
 #define SYSTEM_MALLOC(size) malloc(size)
 #define SYSTEM_REALLOC(ptr, size) realloc(ptr, size)
 #define SYSTEM_FREE(ptr) free(ptr)

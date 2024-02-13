@@ -10,7 +10,7 @@
 SAMPLE_INFO* sample_infos;
 SoundSlot LaSlot[32];
 short* sample_lut;
-long sound_active = 0;
+bool sound_active = false;
 
 void GetPanVolume(SoundSlot* slot)
 {
@@ -98,7 +98,7 @@ void SOUND_Init()
 	for (int i = 0; i < 32; i++)
 		LaSlot[i].nSampleInfo = -1;
 
-	sound_active = 1;
+	sound_active = true;
 }
 
 void SOUND_Stop()
@@ -241,7 +241,7 @@ long SoundEffect(long sfx, PHD_3DPOS* pos, long flags)
 		{
 			if (LaSlot[i].nSampleInfo == lut)
 			{
-				if (S_SoundSampleIsPlaying(i))
+				if (S_SoundSampleIsPlayingOnChannel(i))
 					return 0;
 
 				LaSlot[i].nSampleInfo = -1;

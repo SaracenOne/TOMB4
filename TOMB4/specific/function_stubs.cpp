@@ -7,8 +7,8 @@
 FILE *logF = nullptr;
 FILE *global_logF = nullptr;
 
-#ifdef _DEBUG
-#define MAX_MEMORY_ALLOCATIONS 256
+#ifdef DEBUG
+#define MAX_MEMORY_ALLOCATIONS 4096
 #define MAX_ALLOCATION_FILENAME 64
 
 struct allocation_table_entry {
@@ -100,7 +100,7 @@ void system_free(void* ptr)
 
 void system_report_stray_allocation()
 {
-#ifdef _DEBUG
+#ifdef DEBUG
 	if (alloc_count != 0) {
 		for (int i = 0; i < MAX_MEMORY_ALLOCATIONS; i++) {
 			if (allocation_table[i].buffer) {

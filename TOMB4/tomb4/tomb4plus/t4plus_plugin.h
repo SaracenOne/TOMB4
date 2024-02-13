@@ -1,7 +1,7 @@
 #pragma once
 
 #define PLUGIN_LOG(plugin_name, t, s)	va_list list;\
-char buf[4096 * 8]; \
+char buf[4096]; \
 \
 va_start(list, s); \
 vsprintf(buf, s, list); \

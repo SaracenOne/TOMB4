@@ -1216,10 +1216,10 @@ struct ma_audio_stream_channel {
 	int restore_track = -1;
 	StreamMode restore_stream_mode = StreamMode::STREAM_ONESHOT_AND_RESTORE_ATMOSPHERE;
 
-	ma_decoder_config decoder_config;
-	ma_decoder decoder;
-	ma_device device;
-	ma_device_config deviceConfig;
+	ma_decoder_config decoder_config = {};
+	ma_decoder decoder = {};
+	ma_device device = {};
+	ma_device_config deviceConfig = {};
 };
 
 struct ma_callback_userdata {
@@ -1421,7 +1421,7 @@ void ACMSetVolume()
 		if (!MusicVolume || !channels[i].current_volume) {
 			volume = -10000;
 		} else {
-			volume = -4000 * (1.0f - (current_volume_float * master_volume_float));
+			volume = (long)roundf(- 4000 * (1.0f - (current_volume_float * master_volume_float)));
 		}
 
 		ma_device_set_master_volume_db(&channels[i].device, (float)volume * 0.01f);

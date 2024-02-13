@@ -40,11 +40,10 @@ long ControlMethod;
 char MonoScreenOn;
 
 static MONOSCREEN_STRUCT MonoScreen;
-static SAVEFILE_INFO SaveGames[MAX_SAVEGAMES];
+static SAVEFILE_INFO SaveGames[MAX_SAVEGAMES] = {};
 
 void DoOptions()
 {
-	JOYINFOEX joy;
 	char** keyboard_buttons;
 	char* txt;
 	static long menu;
@@ -290,6 +289,7 @@ void DoOptions()
 
 			if (ControlMethod == 1)
 			{
+#if 0
 				joy.dwSize = sizeof(JOYINFOEX);
 
 				if (joyGetPosEx(0, &joy) == JOYERR_UNPLUGGED)
@@ -300,6 +300,7 @@ void DoOptions()
 					if (dbinput & IN_RIGHT)
 						ControlMethod = 2;
 				}
+#endif
 			}
 		}
 
@@ -618,7 +619,7 @@ long DoLoadSave(long LoadSave)
 		txt = TXT_Load_Game;
 
 	float font_scale = 15.0f / (float)MAX_SAVEGAMES * 1.06f;
-	long scaled_font_height = font_height * font_scale;
+	long scaled_font_height = (long)(font_height * font_scale);
 
 	PrintString(phd_centerx, font_height, 6, GetFixedStringForTextID(txt), FF_CENTER);
 
@@ -764,7 +765,7 @@ long S_LoadSave(long load_or_save, long mono, long inv_active)
 #ifndef USE_BGFX
 static void S_DrawTile(long x, long y, long w, long h, LPDIRECT3DTEXTUREX t, long c0, long c1, long c2, long c3)
 {
-	GFXTLBUMPVERTEX v[4];
+	GFXTLBUMPVERTEX v[4] = {};
 	float u1, v1, u2, v2;
 
 	u1 = 0;
@@ -1002,7 +1003,7 @@ void ConvertSurfaceToTextures(LPDIRECTDRAWSURFACEX surface)
 {
 	DDSURFACEDESCX tSurf;
 	DDSURFACEDESCX uSurf;
-	RECT r;
+	RECT r = {};
 	ushort* pTexture;
 	ushort* pSrc;
 

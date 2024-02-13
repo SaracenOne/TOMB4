@@ -613,7 +613,7 @@ void DrawInventoryItemMe(INVDRAWITEM* item, long shade, long overlay, long shagf
 {
 	ANIM_STRUCT* anim;
 	OBJECT_INFO* object;
-	PHD_VECTOR vec;
+	PHD_VECTOR vec = {};
 	short** meshpp;
 	long* bone;
 	short* rotation1;
@@ -801,7 +801,7 @@ void DrawInventoryItemMe(INVDRAWITEM* item, long shade, long overlay, long shagf
 void DrawThreeDeeObject2D(long x, long y, long num, long shade, long xrot, long yrot, long zrot, long bright, long overlay)
 {
 	INVOBJ* objme;
-	INVDRAWITEM item;
+	INVDRAWITEM item = {};
 
 	objme = &inventry_objects_list[num];
 	item.xrot = (short)xrot + objme->xrot;

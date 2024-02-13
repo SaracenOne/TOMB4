@@ -18,13 +18,13 @@
 
 #include "../tomb4/mod_config.h"
 
-float SnowSizes[32]
+float SnowSizes[MAX_SNOW_SIZES]
 {
 	-24.0F, -24.0F, -24.0F, 24.0F, 24.0F, -24.0F, 24.0F, 24.0F, -12.0F, -12.0F, -12.0F, 12.0F, 12.0F, -12.0F, 12.0F, 12.0F,
 	-8.0F, -8.0F, -8.0F, 8.0F, 8.0F, -8.0F, 8.0F, 8.0F, -6.0F, -6.0F, -6.0F, 6.0F, 6.0F, -6.0F, 6.0F, 6.0F
 };
 
-NODEOFFSET_INFO NodeOffsets[16] =
+NODEOFFSET_INFO NodeOffsets[MAX_NODE_OFFSETS] =
 {
 	{ -16, 40, 160, -14, 0 },
 	{ -16, -8, 160, 0, 0 },
@@ -45,16 +45,17 @@ NODEOFFSET_INFO NodeOffsets[16] =
 	{ 0, 0, 0, 0, 0 }
 };
 
-LIGHTNING_STRUCT Lightning[16];
-GUNSHELL_STRUCT Gunshells[24];
-DRIP_STRUCT Drips[32];
-SMOKE_SPARKS smoke_spark[32];
-BUBBLE_STRUCT Bubbles[40];
-SHOCKWAVE_STRUCT ShockWaves[16];
-FIRE_SPARKS fire_spark[20];
-BLOOD_STRUCT blood[32];
-GUNFLASH_STRUCT Gunflashes[4];
-FIRE_LIST fires[32];
+LIGHTNING_STRUCT Lightning[MAX_LIGHTNING] = {};
+GUNSHELL_STRUCT Gunshells[MAX_GUNSHELLS] = {};
+DRIP_STRUCT Drips[MAX_DRIPS] = {};
+SMOKE_SPARKS smoke_spark[MAX_SMOKE_SPARKS] = {};
+BUBBLE_STRUCT Bubbles[MAX_BUBBLES] = {};
+SHOCKWAVE_STRUCT ShockWaves[MAX_SHOCKWAVES] = {};
+FIRE_SPARKS fire_spark[MAX_FIRE_SPARKS] = {};
+BLOOD_STRUCT blood[MAX_BLOOD] = {};
+GUNFLASH_STRUCT Gunflashes[MAX_GUN_FLASHES] = {};
+FIRE_LIST fires[MAX_FIRES] = {};
+
 long next_fire_spark = 1;
 long next_smoke_spark = 0;
 long next_gunshell = 0;
@@ -74,17 +75,16 @@ short FadeScreenHeight = 0;
 short DestFadeScreenHeight = 0;
 short FadeClipSpeed = 0;
 short ScreenFadeSpeed = 8;
-char tsv_buffer[16384];
+char tsv_buffer[TSV_BUFFER_SIZE] = {};
 
-static PHD_VECTOR NodeVectors[16];
-
+static PHD_VECTOR NodeVectors[16] = {};
 
 LIGHTNING_STRUCT* TriggerLightning(PHD_VECTOR* s, PHD_VECTOR* d, char variation, long rgb, uchar flags, uchar size, uchar segments)
 {
 	LIGHTNING_STRUCT* lptr;
 	char* vptr;
 
-	for (int i = 0; i < 16; i++)
+	for (int i = 0; i < MAX_LIGHTNING; i++)
 	{
 		lptr = &Lightning[i];
 
@@ -407,7 +407,7 @@ void UpdateDrips()
 	FLOOR_INFO* floor;
 	long h;
 
-	for (int i = 0; i < 32; i++)
+	for (int i = 0; i < MAX_DRIPS; i++)
 	{
 		drip = &Drips[i];
 
@@ -455,7 +455,7 @@ long GetFreeFireSpark()
 	min_life = 4095;
 	min_life_num = 0;
 
-	for (int free = next_fire_spark, i = 0; i < 20; i++)
+	for (int free = next_fire_spark, i = 0; i < MAX_FIRE_SPARKS; i++)
 	{
 		if (sptr->On)
 		{
@@ -465,7 +465,7 @@ long GetFreeFireSpark()
 				min_life = sptr->Life;
 			}
 
-			if (free == 19)
+			if (free == MAX_FIRE_SPARKS - 1)
 			{
 				sptr = &fire_spark[1];
 				free = 1;
@@ -480,7 +480,7 @@ long GetFreeFireSpark()
 		{
 			next_fire_spark = free + 1;
 
-			if (next_fire_spark >= 20)
+			if (next_fire_spark >= MAX_FIRE_SPARKS)
 				next_fire_spark = 1;
 
 			return free;
@@ -489,7 +489,7 @@ long GetFreeFireSpark()
 
 	next_fire_spark = min_life_num + 1;
 
-	if (next_fire_spark >= 20)
+	if (next_fire_spark >= MAX_FIRE_SPARKS)
 		next_fire_spark = 1;
 
 	return min_life_num;
@@ -631,7 +631,7 @@ void UpdateFireSparks()
 
 	keep_those_fires_burning();
 
-	for (int i = 0; i < 20; i++)
+	for (int i = 0; i < MAX_FIRE_SPARKS; i++)
 	{
 		sptr = &fire_spark[i];
 
@@ -709,7 +709,7 @@ void ClearFires()
 {
 	FIRE_LIST* fire;
 
-	for (int i = 0; i < 32; i++)
+	for (int i = 0; i < MAX_FIRES; i++)
 	{
 		fire = &fires[i];
 		fire->on = 0;
@@ -720,7 +720,7 @@ void AddFire(long x, long y, long z, long size, short room_number, short fade)
 {
 	FIRE_LIST* fire;
 
-	for (int i = 0; i < 32; i++)
+	for (int i = 0; i < MAX_FIRES; i++)
 	{
 		fire = &fires[i];
 
@@ -750,7 +750,7 @@ void S_DrawFires()
 
 	bounds = (short*)&tsv_buffer[0];
 
-	for (int i = 0; i < 32; i++)
+	for (int i = 0; i < MAX_FIRES; i++)
 	{
 		fire = &fires[i];
 
@@ -804,7 +804,7 @@ long GetFreeSmokeSpark()
 	min_life = 4095;
 	min_life_num = 0;
 
-	for (int free = next_smoke_spark, i = 0; i < 32; i++)
+	for (int free = next_smoke_spark, i = 0; i < MAX_SMOKE_SPARKS; i++)
 	{
 		if (sptr->On)
 		{
@@ -814,7 +814,7 @@ long GetFreeSmokeSpark()
 				min_life = sptr->Life;
 			}
 
-			if (free == 31)
+			if (free == MAX_SMOKE_SPARKS-1)
 			{
 				sptr = &smoke_spark[0];
 				free = 0;
@@ -841,7 +841,7 @@ void UpdateSmokeSparks()
 	SMOKE_SPARKS* sptr;
 	long fade;
 
-	for (int i = 0; i < 32; i++)
+	for (int i = 0; i < MAX_SMOKE_SPARKS; i++)
 	{
 		sptr = &smoke_spark[i];
 
@@ -998,7 +998,7 @@ long GetFreeGunshell()
 	min_life = 4095;
 	min_life_num = 0;
 
-	for (int free = next_gunshell, i = 0; i < 24; i++)
+	for (int free = next_gunshell, i = 0; i < MAX_GUNSHELLS; i++)
 	{
 		if (shell->counter)
 		{
@@ -1008,7 +1008,7 @@ long GetFreeGunshell()
 				min_life = shell->counter;
 			}
 
-			if (free == 23)
+			if (free == MAX_GUNSHELLS-1)
 			{
 				shell = &Gunshells[0];
 				free = 0;
@@ -1023,7 +1023,7 @@ long GetFreeGunshell()
 		{
 			next_gunshell = free + 1;
 
-			if (next_gunshell >= 24)
+			if (next_gunshell >= MAX_GUNSHELLS)
 				next_gunshell = 0;
 
 			return free;
@@ -1032,7 +1032,7 @@ long GetFreeGunshell()
 
 	next_gunshell = min_life_num + 1;
 
-	if (next_gunshell >= 24)
+	if (next_gunshell >= MAX_GUNSHELLS)
 		next_gunshell = 0;
 
 	return min_life_num;
@@ -1269,7 +1269,7 @@ void TriggerGunflash(SVECTOR* pos)
 	{
 		num++;
 
-		if (num >= 4)
+		if (num >= MAX_GUN_FLASHES)
 			return;
 	}
 
@@ -1342,7 +1342,7 @@ void DrawGunflashes()
 	GetRandomDraw();
 	GetRandomDraw();
 
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < MAX_GUN_FLASHES; i++)
 	{
 		flash = &Gunflashes[i];
 
@@ -1380,7 +1380,7 @@ long GetFreeBlood()
 	min_life = 4095;
 	min_life_num = 0;
 
-	for (int i = 0; i < 32; i++)
+	for (int i = 0; i < MAX_BLOOD; i++)
 	{
 		if (bptr->On)
 		{
@@ -1390,7 +1390,7 @@ long GetFreeBlood()
 				min_life = bptr->Life;
 			}
 
-			if (free == 31)
+			if (free == MAX_BLOOD - 1)
 			{
 				bptr = &blood[0];
 				free = 0;
@@ -1417,7 +1417,7 @@ void UpdateBlood()
 	BLOOD_STRUCT* bptr;
 	long fade;
 
-	for (int i = 0; i < 32; i++)
+	for (int i = 0; i < MAX_BLOOD; i++)
 	{
 		bptr = &blood[i];
 
@@ -1525,11 +1525,11 @@ long GetFreeBubble()
 	free = next_bubble;
 	bubble = &Bubbles[next_bubble];
 
-	for (int i = 0; i < 40; i++)
+	for (int i = 0; i < MAX_BUBBLES; i++)
 	{
 		if (bubble->size)
 		{
-			if (free == 39)
+			if (free == MAX_BUBBLES - 1)
 			{
 				bubble = &Bubbles[0];
 				free = 0;
@@ -1544,7 +1544,7 @@ long GetFreeBubble()
 		{
 			next_bubble = free + 1;
 
-			if (next_bubble >= 40)
+			if (next_bubble >= MAX_BUBBLES)
 				next_bubble = 0;
 
 			return free;
@@ -1553,7 +1553,7 @@ long GetFreeBubble()
 
 	next_bubble = free + 1;
 
-	if (next_bubble >= 40)
+	if (next_bubble >= MAX_BUBBLES)
 		next_bubble = 0;
 
 	return free;
@@ -1593,7 +1593,7 @@ void UpdateBubbles()
 	long h, c;
 	short room_number;
 
-	for (int i = 0; i < 40; i++)
+	for (int i = 0; i < MAX_BUBBLES; i++)
 	{
 		bubble = &Bubbles[i];
 
@@ -1651,7 +1651,7 @@ long GetFreeDrip()
 	min_life = 4095;
 	min_life_num = 0;
 
-	for (int i = 0; i < 32; i++)
+	for (int i = 0; i < MAX_DRIPS; i++)
 	{
 		if (drip->On)
 		{
@@ -1661,7 +1661,7 @@ long GetFreeDrip()
 				min_life = drip->Life;
 			}
 
-			if (free == 31)
+			if (free == MAX_DRIPS-1)
 			{
 				drip = &Drips[0];
 				free = 0;
@@ -1719,7 +1719,7 @@ void TriggerLaraDrips()
 
 long GetFreeShockwave()
 {
-	for (int i = 0; i < 16; i++)
+	for (int i = 0; i < MAX_SHOCKWAVES; i++)
 	{
 		if (!ShockWaves[i].life)
 			return i;
@@ -1821,7 +1821,7 @@ void UpdateShockwaves()
 	long dx, dz, dist;
 	short dir;
 
-	for (int i = 0; i < 16; i++)
+	for (int i = 0; i < MAX_SHOCKWAVES; i++)
 	{
 		sw = &ShockWaves[i];
 
@@ -1863,7 +1863,7 @@ void UpdateLightning()
 	long* pPoint;
 	char* pVel;
 
-	for (int i = 0; i < 16; i++)
+	for (int i = 0; i < MAX_LIGHTNING; i++)
 	{
 		lptr = &Lightning[i];
 
@@ -2065,7 +2065,7 @@ void S_DrawSparks()
 	SPARKS* sptr;
 	FX_INFO* fx;
 	ITEM_INFO* item;
-	PHD_VECTOR pos;
+	PHD_VECTOR pos = {};
 	FVECTOR fPos;
 	long* XY;
 	long* Z;
@@ -2075,7 +2075,7 @@ void S_DrawSparks()
 
 	smallest_size = 0;
 
-	for (int i = 0; i < 16; i++)
+	for (int i = 0; i < MAX_NODE_OFFSETS; i++)
 		NodeOffsets[i].GotIt = 0;
 
 	phd_PushMatrix();
@@ -2114,27 +2114,29 @@ void S_DrawSparks()
 
 			if (sptr->Flags & 0x1000)
 			{
-				if (NodeOffsets[sptr->NodeNumber].GotIt)
-				{
-					pos.x = NodeVectors[sptr->NodeNumber].x;
-					pos.y = NodeVectors[sptr->NodeNumber].y;
-					pos.z = NodeVectors[sptr->NodeNumber].z;
-				}
-				else
-				{
-					pos.x = NodeOffsets[sptr->NodeNumber].x;
-					pos.y = NodeOffsets[sptr->NodeNumber].y;
-					pos.z = NodeOffsets[sptr->NodeNumber].z;
-
-					if (NodeOffsets[sptr->NodeNumber].mesh_num < 0)
-						GetLaraJointPos(&pos, -NodeOffsets[sptr->NodeNumber].mesh_num);
+				if (sptr->NodeNumber < MAX_NODE_OFFSETS) {
+					if (NodeOffsets[sptr->NodeNumber].GotIt)
+					{
+						pos.x = NodeVectors[sptr->NodeNumber].x;
+						pos.y = NodeVectors[sptr->NodeNumber].y;
+						pos.z = NodeVectors[sptr->NodeNumber].z;
+					}
 					else
-						GetJointAbsPosition(item, &pos, NodeOffsets[sptr->NodeNumber].mesh_num);
+					{
+						pos.x = NodeOffsets[sptr->NodeNumber].x;
+						pos.y = NodeOffsets[sptr->NodeNumber].y;
+						pos.z = NodeOffsets[sptr->NodeNumber].z;
 
-					NodeOffsets[sptr->NodeNumber].GotIt = 1;
-					NodeVectors[sptr->NodeNumber].x = pos.x;
-					NodeVectors[sptr->NodeNumber].y = pos.y;
-					NodeVectors[sptr->NodeNumber].z = pos.z;
+						if (NodeOffsets[sptr->NodeNumber].mesh_num < 0)
+							GetLaraJointPos(&pos, -NodeOffsets[sptr->NodeNumber].mesh_num);
+						else
+							GetJointAbsPosition(item, &pos, NodeOffsets[sptr->NodeNumber].mesh_num);
+
+						NodeOffsets[sptr->NodeNumber].GotIt = 1;
+						NodeVectors[sptr->NodeNumber].x = pos.x;
+						NodeVectors[sptr->NodeNumber].y = pos.y;
+						NodeVectors[sptr->NodeNumber].z = pos.z;
+					}
 				}
 
 				x = sptr->x + pos.x;

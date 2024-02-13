@@ -1087,7 +1087,7 @@ void SoundEffects()
 	if (!sound_active)
 		return;
 
-	for (int i = 0; i < 32; i++)
+	for (int i = 0; i < MAX_VOICES; i++)
 	{
 		slot = &LaSlot[i];
 
@@ -1096,7 +1096,7 @@ void SoundEffects()
 
 		if ((sample_infos[slot->nSampleInfo].flags & 3) != 3)
 		{
-			if (!S_SoundSampleIsPlaying(i))
+			if (!S_SoundSampleIsPlayingOnChannel(i))
 				slot->nSampleInfo = -1;
 			else
 			{

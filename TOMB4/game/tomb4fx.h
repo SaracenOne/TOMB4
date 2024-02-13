@@ -52,18 +52,33 @@ void SetScreenFadeOut(short speed, short back);
 void SetScreenFadeIn(short speed);
 void Fade();
 
-extern float SnowSizes[32]; // TRLE
-extern NODEOFFSET_INFO NodeOffsets[16];
-extern LIGHTNING_STRUCT Lightning[16];
-extern GUNSHELL_STRUCT Gunshells[24];
-extern DRIP_STRUCT Drips[32];
-extern SMOKE_SPARKS smoke_spark[32];
-extern BUBBLE_STRUCT Bubbles[40];
-extern SHOCKWAVE_STRUCT ShockWaves[16];
-extern FIRE_SPARKS fire_spark[20];
-extern BLOOD_STRUCT blood[32];
-extern GUNFLASH_STRUCT Gunflashes[4];
-extern FIRE_LIST fires[32];
+#define MAX_SNOW_SIZES 32
+#define MAX_NODE_OFFSETS 16
+#define MAX_LIGHTNING 16
+#define MAX_GUNSHELLS 24
+#define MAX_DRIPS 32
+#define MAX_SMOKE_SPARKS 32
+#define MAX_BUBBLES 40
+#define MAX_SHOCKWAVES 16
+#define MAX_FIRE_SPARKS 20
+#define MAX_BLOOD 32
+#define MAX_GUN_FLASHES 4
+#define MAX_FIRES 32
+
+#define TSV_BUFFER_SIZE 16384
+
+extern float SnowSizes[MAX_SNOW_SIZES]; // TRLE
+extern NODEOFFSET_INFO NodeOffsets[MAX_NODE_OFFSETS];
+extern LIGHTNING_STRUCT Lightning[MAX_LIGHTNING];
+extern GUNSHELL_STRUCT Gunshells[MAX_GUNSHELLS];
+extern DRIP_STRUCT Drips[MAX_DRIPS];
+extern SMOKE_SPARKS smoke_spark[MAX_SMOKE_SPARKS];
+extern BUBBLE_STRUCT Bubbles[MAX_BUBBLES];
+extern SHOCKWAVE_STRUCT ShockWaves[MAX_SHOCKWAVES];
+extern FIRE_SPARKS fire_spark[MAX_FIRE_SPARKS];
+extern BLOOD_STRUCT blood[MAX_BLOOD];
+extern GUNFLASH_STRUCT Gunflashes[MAX_GUN_FLASHES];
+extern FIRE_LIST fires[MAX_FIRES];
 extern long next_fire_spark;
 extern long next_smoke_spark;
 extern long next_gunshell;

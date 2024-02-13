@@ -71,7 +71,7 @@ void HorsemanControl(short item_number)
 		if (item->item_flags[0])
 			item2 = &items[item->item_flags[0]];
 		else
-			item2 = 0;
+			item2 = nullptr;
 
 		horseman = (CREATURE_INFO*)item->data;
 		angle = 0;

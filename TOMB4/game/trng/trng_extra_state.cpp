@@ -168,6 +168,7 @@ int ng_local_delta = 0;
 int ng_last_input_number = 0;
 
 // Inventory
+unsigned char ng_selected_inventory_item_memory = 0;
 int ng_used_inventory_object_for_frame = NO_ITEM;
 
 enum TRNG_INPUT {
@@ -1052,6 +1053,7 @@ void NGDrawTimer(int timer, NGTimerPosition timer_position, int timer_time_until
 				break;
 			case NG_TIMER_POSITION_DOWN_LEFT_BARS:
 				PrintString(0, font_height, 0, format_buffer, 0);
+				break;
 			case NG_TIMER_POSITION_DOWN_RIGHT_BARS:
 				PrintString(phd_winxmax, font_height, 0, format_buffer, FF_RJUSTIFY);
 				break;
@@ -1101,7 +1103,7 @@ void NGDrawPhase() {
 					sprintf(format_buffer, "%d", items[timer_tracker].timer);
 					break;
 			}
-			PrintString(phd_centerx, phd_winymax - font_height * 0.25, 0, format_buffer, FF_CENTER);
+			PrintString(phd_centerx, (long)phd_winymax - font_height * 0.25, 0, format_buffer, FF_CENTER);
 		}
 	}
 
@@ -1530,6 +1532,7 @@ void NGSetupExtraState() {
 	ng_last_input_number = 0;
 
 	// Inventory
+	ng_selected_inventory_item_memory = 0;
 	ng_used_inventory_object_for_frame = NO_ITEM;
 
 	// Timer Trackers

@@ -123,7 +123,9 @@ void* AddStruct(void* p, long num, long size)
 	else
 		ptr = SYSTEM_REALLOC(p, size * (num + 1));
 
-	memset((char*)ptr + size * num, 0, size);
+	if (((char*)ptr + size * num)) {
+		memset((char*)ptr + size * num, 0, size);
+	}
 	return ptr;
 }
 

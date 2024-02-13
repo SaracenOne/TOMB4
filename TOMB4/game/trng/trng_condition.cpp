@@ -658,7 +658,7 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 		break;
 	}
 	case SOUND_THE_X_SOUND_EFFECT_IS_PLAYING: {
-		return S_SoundSampleIsPlaying(param);
+		return DSIsSamplePlaying(param);
 		break;
 	}
 	default:

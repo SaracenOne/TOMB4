@@ -579,7 +579,7 @@ void InitialiseEffects()
 	memset(Drips, 0, sizeof(Drips));
 	memset(ShockWaves, 0, sizeof(ShockWaves));
 
-	for (int i = 0; i < 256; i++)
+	for (int i = 0; i < MAX_SPARKS; i++)
 		spark[i].Dynamic = -1;
 
 	next_fire_spark = 1;

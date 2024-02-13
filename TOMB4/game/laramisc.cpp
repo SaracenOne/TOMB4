@@ -36,11 +36,18 @@ void LaraCheatyBits()
 	if (!tomb4.cheats)
 		return;
 
-#ifdef _DEBUG
+#ifdef DEBUG
 #ifdef USE_SDL
 	if (keymap[SDL_SCANCODE_F1])
 #else
 	if (keymap[DIK_F1])
+#endif
+#else
+#ifdef USE_SDL
+	if (keymap[SDL_SCANCODE_G] && keymap[SDL_SCANCODE_U] && keymap[SDL_SCANCODE_N] && keymap[SDL_SCANCODE_S])
+#else
+	if (keymap[DIK_G] && keymap[DIK_N] && keymap[DIK_U] && keymap[DIK_S])
+#endif
 #endif
 	{
 		lara.num_large_medipack = -1;
@@ -74,9 +81,8 @@ void LaraCheatyBits()
 		dels_give_lara_items_cheat();
 		lara_item->hit_points = 1000;
 	}
-#endif
 
-#ifdef _DEBUG
+#ifdef DEBUG
 #ifdef USE_SDL
 	if (keymap[SDL_SCANCODE_F2])
 #else
@@ -113,11 +119,18 @@ void LaraCheatyBits()
 		}
 	}
 
-#ifdef _DEBUG
+#ifdef DEBUG
 #ifdef USE_SDL
 	if (keymap[SDL_SCANCODE_F3])
 #else
 	if (keymap[DIK_F3])
+#endif
+#else
+#ifdef USE_SDL
+		if (keymap[SDL_SCANCODE_H] && keymap[SDL_SCANCODE_E] && keymap[SDL_SCANCODE_L] && keymap[SDL_SCANCODE_P])
+#else
+		if (keymap[DIK_H] && keymap[DIK_E] && keymap[DIK_L] && keymap[DIK_P])
+#endif
 #endif
 	{
 		if (gfCurrentLevel == 2 || gfCurrentLevel == 6 || gfCurrentLevel == 13 || gfCurrentLevel == 21 || gfCurrentLevel == 27)
@@ -126,7 +139,6 @@ void LaraCheatyBits()
 		gfRequiredStartPos = 0;
 		gfLevelComplete = gfCurrentLevel + 1;
 	}
-#endif
 }
 
 void LaraCheat(ITEM_INFO* item, COLL_INFO* coll)
@@ -180,7 +192,7 @@ void InitialiseLaraAnims(ITEM_INFO* item)
 
 void LaraInitialiseMeshes()
 {
-	for (int i = 0; i < 15; i++)
+	for (int i = 0; i < LARA_MESH_PTR_COUNT; i++)
 	{
 		meshes[objects[LARA].mesh_index + i * 2] = meshes[objects[LARA_SKIN].mesh_index + i * 2];
 		lara.mesh_ptrs[i] = meshes[objects[LARA].mesh_index + i * 2];
@@ -473,9 +485,7 @@ void LaraControl(short item_number)
 					Splash(l);
 				}
 			}
-			else
-				break;
-
+			break;
 		case LW_WADE:
 			camera.target_elevation = -4004;
 

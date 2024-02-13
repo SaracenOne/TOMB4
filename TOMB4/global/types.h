@@ -694,6 +694,8 @@ struct LARA_ARM
 	short flash_gun;
 };
 
+#define LARA_MESH_PTR_COUNT 15
+
 struct LARA_INFO
 {
 	short item_number;
@@ -744,7 +746,7 @@ struct LARA_INFO
 	PHD_VECTOR last_pos;
 	FX_INFO* spaz_effect;
 	long mesh_effects;
-	short* mesh_ptrs[15];
+	short* mesh_ptrs[LARA_MESH_PTR_COUNT];
 	ITEM_INFO* target;
 	short target_angles[2];
 	short turn_rate;
