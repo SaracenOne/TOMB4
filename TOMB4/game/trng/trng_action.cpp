@@ -603,19 +603,15 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame, bool 
 			break;
 		}
 		case EFFECT_ADD_TO_ENEMY: {
-#ifndef SILENCE_EXCESSIVE_LOGS
 			if (first_frame) {
 				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "EFFECT_ADD_TO_ENEMY unimplemented!");
 			}
-#endif
 			break;
 		}
 		case EFFECT_REMOVE_TO_ENEMY: {
-#ifndef SILENCE_EXCESSIVE_LOGS
 			if (first_frame) {
 				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "EFFECT_REMOVE_TO_ENEMY unimplemented!");
 			}
-#endif
 			break;
 		}
 		case ENEMY_SET_MESH_AS_INVISIBLE: {
