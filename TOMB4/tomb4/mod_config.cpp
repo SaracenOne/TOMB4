@@ -836,7 +836,7 @@ void SetupGlobalDefaults() {
 bool LoadGameModConfigFirstPass() {
     char* json_buf = NULL;
     if (LoadFile("game_mod_config.json", &json_buf) <= 0) {
-        platform_fatal_error("Missing game_mod_config.json from working directory \"%s\". Please examine README for further information", working_dir_path);
+        platform_fatal_error("Missing 'game_mod_config.json' game manifest from working directory \"%s\". Please examine README.md file for further information about how to create a game manifest.", working_dir_path.c_str());
         return false;
     }
 
@@ -1057,7 +1057,7 @@ bool LoadGameModConfigFirstPass() {
 void LoadGameModConfigSecondPass() {
     char* json_buf = NULL;
     if (LoadFile("game_mod_config.json", &json_buf) <= 0) {
-        platform_fatal_error("Missing game_mod_config.json from working directory \"%s\". Please examine README for further information", working_dir_path);
+        platform_fatal_error("Missing 'game_mod_config.json' game manifest from working directory \"%s\". Please examine README.md file for further information about how to create a game manifest.", working_dir_path.c_str());
         return;
     }
 
