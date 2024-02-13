@@ -672,8 +672,8 @@ long DoLoadSave(long LoadSave)
 
 	if (selection < 0)
 		selection = 0;
-	else if (selection > MAX_SAVEGAMES)
-		selection = MAX_SAVEGAMES;
+	else if (selection >= MAX_SAVEGAMES)
+		selection = MAX_SAVEGAMES - 1;
 
 	if (dbinput & IN_SELECT)
 	{
