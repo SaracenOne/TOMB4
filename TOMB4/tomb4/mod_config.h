@@ -194,8 +194,8 @@ struct TRNG_ENGINE_VERSION {
 
 struct MOD_GLOBAL_INFO {
 	int manifest_compatibility_version = -1;
-	char *level_name = nullptr;
-	char *author = nullptr;
+	char *game_name = nullptr;
+	char *authors = nullptr;
 	char *game_user_dir_name = nullptr;
 
 	unsigned int tr_engine_version = 4;

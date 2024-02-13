@@ -867,8 +867,8 @@ bool LoadGameModConfigFirstPass() {
                         return false;
                     }
 
-                    READ_JSON_STRING(level_name, global, mod_global_info);
-                    READ_JSON_STRING(author, global, mod_global_info);
+                    READ_JSON_STRING(game_name, global, mod_global_info);
+                    READ_JSON_STRING(authors, global, mod_global_info);
                     READ_JSON_STRING(game_user_dir_name, global, mod_global_info);
 
                     READ_JSON_UINT32(tr_engine_version, global, mod_global_info);
