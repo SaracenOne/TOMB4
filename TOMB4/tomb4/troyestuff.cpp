@@ -101,7 +101,7 @@ bool Page0(long& num, long textY, ulong selection)
 	y = 2;
 	s = 0;
 
-	PrintString(phd_centerx, 2 * font_height, 6, "New tomb4 options", FF_CENTER);
+	PrintString(phd_centerx, 2 * font_height, 6, "New Tomb4 Options", FF_CENTER);
 	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Footprints", 0);
 	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Shadow mode", 0);
 	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Crawl Tilting", 0);
