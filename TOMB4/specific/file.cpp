@@ -616,8 +616,14 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 
 		size = LoadFile(logo_pak_path, &CompressedData);
 		if (size == 0) {
-			platform_fatal_error("Failed to load %s", logo_pak_path);
-			return false;
+			logo_pak_path = "data\\uklogo.pak";
+			// Fallback to uklogo.pak if the corresponding logo failed to load.
+			size = LoadFile(logo_pak_path, &CompressedData);
+			if (size == 0)
+			{
+				platform_fatal_error("Failed to load %s", logo_pak_path);
+				return false;
+			}
 		}
 
 		pComp = (char*)SYSTEM_MALLOC(*(long*)CompressedData);
