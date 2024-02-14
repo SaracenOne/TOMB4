@@ -56,6 +56,7 @@ void CLPath(char* cmd)
 		char cwd[1024];
 		if (_getcwd(cwd, sizeof(cwd)) != NULL) {
 			working_dir_path = cwd;
+			working_dir_path += PATH_SEPARATOR;
 		}
 		else {
 			working_dir_path = ".";
