@@ -8,7 +8,7 @@ The intention is to provide backwards compatibility with as many custom Tomb Rai
 Reimplement the functionality of Tomb Raider Level Editor with support for extended functionality from Tomb Raider Next Generation (TRNG), Tomb Raider Engine Patcher (TREP), FLEP (FLExible Patcher), and associated TRNG plugins.
 
 ### Instructions
-* Before you run the program, you need a manifest file to be placed in the directory of the game you are attempting to run. You can download existing manifest files from [here](https://github.com/SaracenOne/tomb4_manifest_directory) or if you believe the engine has the features capable of running a particular custom level, you can attempt to generate your own manifest file with [this]([here](https://github.com/SaracenOne/tomb4_feature_extractor)) tool.
+* Before you run the program, you need a manifest file to be placed in the directory of the game you are attempting to run. You can download existing manifest files from [here](https://github.com/SaracenOne/tomb4_manifest_directory) or if you believe the engine has the features capable of running a particular custom level, you can attempt to generate your own manifest file with [this](https://github.com/SaracenOne/tomb4_feature_extractor) tool.
 * You can then run the custom level be either playing the `tomb4plus.exe` file in the game's directory, or running it with the `PATH="path/to/directory/"` command line argument.
 * When you first launch, you will see a setup screen. Choose your preferred setting click the `okay` button.
 * If you wish to see the setup screen again, run `tomb4plus.exe` with the `-SETUP` command line argument.
