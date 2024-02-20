@@ -120,7 +120,7 @@ void SetupBGFXOutputPolyList() {
 
     bx::mtxLookAt(view, eye, at);
 
-    bx::mtxOrtho(ortho, 0.0f, WINDOW_DEFAULT_WIDTH, WINDOW_DEFAULT_HEIGHT, 0.0f, 0.00001f, 10000.0f, 0.0f, bgfx::getCaps()->homogeneousDepth);
+    bx::mtxOrtho(ortho, 0.0f, WINDOW_DEFAULT_WIDTH, WINDOW_DEFAULT_HEIGHT, 0.0f, 0.0f, 100.0f, 0.0f, bgfx::getCaps()->homogeneousDepth);
 
     bgfx::setViewTransform(0, view, ortho);
 

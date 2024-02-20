@@ -335,9 +335,6 @@ void ProcessObjectMeshVertices(MESH_DATA* mesh)
 
 void ProcessStaticMeshVertices(MESH_DATA* mesh)
 {
-#ifdef USE_BGFX
-	return;
-#else
 	DYNAMIC* l;
 	FVECTOR d;
 	FVECTOR lPos;
@@ -375,7 +372,11 @@ void ProcessStaticMeshVertices(MESH_DATA* mesh)
 	pR = (StaticMeshShade & 0x1F) << 3;
 	pG = ((StaticMeshShade >> 5) & 0x1F) << 3;
 	pB = ((StaticMeshShade >> 10) & 0x1F) << 3;
+#ifdef USE_BGFX
+	v = (float*)mesh->Buffer;
+#else
 	mesh->SourceVB->Lock(DDLOCK_READONLY, (LPVOID*)&v, 0);
+#endif
 
 	for (int i = 0; i < mesh->nVerts; i++)
 	{
@@ -579,6 +580,7 @@ void ProcessStaticMeshVertices(MESH_DATA* mesh)
 		MyVertexBuffer[i].specular = RGBA(sR, sG, sB, sA);
 	}
 
+#ifndef USE_BGFX
 	mesh->SourceVB->Unlock();
 #endif
 }
@@ -1232,12 +1234,13 @@ void S_InitialisePolyList()
 {
 #ifndef USE_BGFX
 	D3DRECT rect;
-	long col;
 
 	rect.x1 = App.dx.rViewport.left;
 	rect.y1 = App.dx.rViewport.top;
 	rect.x2 = App.dx.rViewport.left + App.dx.rViewport.right;
 	rect.y2 = App.dx.rViewport.top + App.dx.rViewport.bottom;
+#endif
+	long col;
 
 	if (!get_game_mod_global_info()->tr_level_editor)
 	{
@@ -1260,13 +1263,14 @@ void S_InitialisePolyList()
 		col = 0;
 	}
 	
+#ifndef USE_BGFX
 	if (App.dx.Flags & DXF_HWR)
 		DXAttempt(App.dx.lpViewport->Clear2(1, &rect, D3DCLEAR_TARGET, col, 1.0F, 0));
+#endif
 
 	_BeginScene();
 	InitBuckets();
 	InitialiseSortList();
-#endif
 }
 
 void phd_PutPolygonsPickup(short* objptr, float x, float y, long color)
@@ -1952,14 +1956,18 @@ void S_OutputPolyList()
 
 #ifndef USE_BGFX
 		if (App.dx.lpZBuffer)
-#endif
 		{
+			// BGFX TODO: Sort list is currently broken
 			DrawSortList();
 		}
+	#endif
 	}
 
+#ifndef USE_BGFX
+	// BGFX TODO: Sort list is currently broken
 	SortPolyList(SortCount, SortList);
 	DrawSortList();
+#endif
 
 #ifndef USE_BGFX
 	if (App.dx.lpZBuffer)
