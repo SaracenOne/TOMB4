@@ -52,12 +52,23 @@ void SetD3DMatrix(GFXMATRIX* mx, float* imx)
 	mx->_43 = imx[M23];
 }
 
+void D3DTransposeMatrix(float matrix[4][4])
+{
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = i + 1; j < 4; j++)
+		{
+			float temp = matrix[i][j];
+			matrix[i][j] = matrix[j][i];
+			matrix[j][i] = temp;
+		}
+	}
+}
+
+
 void SetD3DViewMatrix()
 {
 	SetD3DMatrix(&D3DMView, mMXPtr);
-#ifndef USE_BGFX
-	DXAttempt(App.dx.lpD3DDevice->SetTransform(D3DTRANSFORMSTATE_VIEW, (LPD3DMATRIX)&D3DMView));
-#endif
 }
 
 void D3DTransform(GFXVECTOR* vec, GFXMATRIX* mx)
@@ -92,10 +103,6 @@ void S_InitD3DMatrix()
 	D3DIdentityMatrix(&D3DMWorld);
 	D3DIdentityMatrix(&D3DMProjection);
 	D3DMProjection._22 = -1;
-#ifndef USE_BGFX
-	DXAttempt(App.dx.lpD3DDevice->SetTransform(D3DTRANSFORMSTATE_WORLD, (LPD3DMATRIX)&D3DMWorld));
-	DXAttempt(App.dx.lpD3DDevice->SetTransform(D3DTRANSFORMSTATE_PROJECTION, (LPD3DMATRIX)&D3DMProjection));
-#endif
 }
 
 GFXMATRIX *D3DMultMatrix(GFXMATRIX *d, GFXMATRIX *a, GFXMATRIX*b)

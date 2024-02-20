@@ -93,7 +93,9 @@ void InitDSDevice(HWND dlg, HWND hwnd)
 
 void InitTFormats(HWND dlg, HWND hwnd)
 {
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+	// Put BGFX code here...
+#else
 	DXD3DDEVICE* device;
 	DXTEXTUREINFO* tex;
 	long bpp, r, g, b, a;
@@ -135,7 +137,9 @@ void InitTFormats(HWND dlg, HWND hwnd)
 
 void InitResolution(HWND dlg, HWND hwnd, bool resetvms)
 {
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+	// Put BGFX code here...
+#else
 	DXD3DDEVICE* device;
 	DXDISPLAYMODE* dm;
 	long bpp, w, h, n;
@@ -259,7 +263,9 @@ void InitD3DDevice(HWND dlg, HWND hwnd)
 
 void InitDDDevice(HWND dlg, HWND hwnd)
 {
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+	// Put BGFX code here...
+#else
 	DDDEVICEIDENTIFIER* id;
 	char buffer[256];
 

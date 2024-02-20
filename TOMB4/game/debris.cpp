@@ -198,7 +198,9 @@ long GetFreeDebris()
 
 void ShatterObject(SHATTER_ITEM* shatter_item, MESH_INFO* StaticMesh, short Num, short RoomNumber, long NoXZVel)
 {
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+	// Put BGFX code here...
+#else
 	MESH_DATA* mesh;
 	TEXTURESTRUCT* tex;
 	PHD_VECTOR TPos;
@@ -247,7 +249,9 @@ void ShatterObject(SHATTER_ITEM* shatter_item, MESH_INFO* StaticMesh, short Num,
 
 	mesh = (MESH_DATA*)meshp;
 	DebrisMesh = mesh;
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+	// Put BGFX code here...
+#else
 	mesh->SourceVB->Lock(DDLOCK_READONLY, (LPVOID*)&vtx, 0);
 #endif
 	nVtx = mesh->nVerts;
@@ -264,7 +268,9 @@ void ShatterObject(SHATTER_ITEM* shatter_item, MESH_INFO* StaticMesh, short Num,
 
 	for (lp = 0; lp < nVtx; lp++)
 	{
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+		// Put BGFX code here...
+#else
 		x = (long)*vtx++;
 		y = (long)*vtx++;
 		z = (long)*vtx++;
@@ -282,7 +288,9 @@ void ShatterObject(SHATTER_ITEM* shatter_item, MESH_INFO* StaticMesh, short Num,
 		offsets += 3;
 	}
 
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+	// Put BGFX code here...
+#else
 	mesh->SourceVB->Unlock();
 #endif
 	VPos.x = pos.x / lp;

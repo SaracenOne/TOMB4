@@ -31,6 +31,7 @@
 #include "../game/effect2.h"
 #include "../tomb4/tomb4.h"
 #include "../tomb4/mod_config.h"
+#include "bgfx.h"
 
 GFXTLVERTEX SkinVerts[40][12];
 short SkinClip[40][12];
@@ -42,9 +43,6 @@ static short AnimatingTexturesVOffset;
 
 void ProcessObjectMeshVertices(MESH_DATA* mesh)
 {
-#ifdef USE_BGFX
-	return;
-#else
 	POINTLIGHT_STRUCT* point;
 	SUNLIGHT_STRUCT* sun;
 	FVECTOR vPos;
@@ -78,7 +76,11 @@ void ProcessObjectMeshVertices(MESH_DATA* mesh)
 		}
 	}
 
+#ifdef USE_BGFX
+	v = (float *)mesh->Buffer;
+#else
 	mesh->SourceVB->Lock(DDLOCK_READONLY, (LPVOID*)&v, 0);
+#endif
 
 	for (int i = 0; i < mesh->nVerts; i++)
 	{
@@ -324,6 +326,9 @@ void ProcessObjectMeshVertices(MESH_DATA* mesh)
 		MyVertexBuffer[i].specular = RGBA(sR, sG, sB, sA);
 	}
 
+#ifdef USE_BGFX
+	// Put BGFX code here...
+#else
 	mesh->SourceVB->Unlock();
 #endif
 }
@@ -826,7 +831,6 @@ static void RGB_M(ulong& c, long m)	//Original was a macro.
 
 void phd_PutPolygons(short* objptr, long clip)
 {
-#ifndef USE_BGFX
 	MESH_DATA* mesh;
 	SPRITESTRUCT* envmap_sprite;
 	TEXTURESTRUCT* pTex;
@@ -1074,7 +1078,6 @@ void phd_PutPolygons(short* objptr, long clip)
 
 		pTex->drawtype = drawbak;
 	}
-#endif
 }
 
 void phd_PutPolygons_train(short* objptr, long x)
@@ -1754,6 +1757,7 @@ void do_boot_screen(long language)
 	_LoadBitmap(App.dx.lpBackBuffer, "load.bmp");
 #endif
 	} else {
+#ifndef USE_BGFX
 		switch (language)
 		{
 			case ENGLISH:
@@ -1799,6 +1803,7 @@ void do_boot_screen(long language)
 				_LoadBitmap(App.dx.lpBackBuffer, "japan.bmp");
 				break;
 		}
+#endif
 	}
 
 #ifndef SKIP_TIMES_DELAY
@@ -1902,6 +1907,10 @@ void S_OutputPolyList()
 	D3DRECT r;
 #endif
 	long h;
+
+#ifdef USE_BGFX
+	SetupBGFXOutputPolyList();
+#endif
 
 #ifdef USE_SDL
 	SDLFrameRate();

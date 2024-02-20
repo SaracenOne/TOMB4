@@ -1073,14 +1073,14 @@ struct GFXVERTEX {
 };
 
 struct GFXTLVERTEX {
-	float		sx;
-	float		sy;
-	float		sz;
-	float		rhw;
+	GFXVALUE	sx;
+	GFXVALUE	sy;
+	GFXVALUE	sz;
+	GFXVALUE	rhw;
 	GFXCOLOR	color;
 	GFXCOLOR	specular;
-	float		tu;
-	float		tv;
+	GFXVALUE	tu;
+	GFXVALUE	tv;
 };
 
 struct GFXTLBUMPVERTEX
@@ -1133,7 +1133,9 @@ struct ROOM_INFO
 	long nVerts;
 	long nWaterVerts;
 	long nShoreVerts;
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+	GFXVERTEX *Buffer = nullptr;
+#else
 	LPDIRECT3DVERTEXBUFFER SourceVB;
 #endif
 	short* FaceData;
@@ -1145,10 +1147,10 @@ struct ROOM_INFO
 	long *prelight;
 	long *prelightwater;
 	long watercalc;
-	GFXVECTOR*verts;
+	GFXVECTOR *verts;
 	long gt3cnt;
 	long gt4cnt;
-	PCLIGHT_INFO* pclight;
+	PCLIGHT_INFO *pclight;
 };
 
 struct ANIM_STRUCT
@@ -1305,7 +1307,9 @@ struct STATIC_INFO
 
 struct DXPTR
 {
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+	// Put BGFX code here...
+#else
 	LPDIRECTDRAWX lpDD;
 	LPDIRECT3DX lpD3D;
 	LPDIRECT3DDEVICEX lpD3DDevice;
@@ -1343,7 +1347,9 @@ struct DXDISPLAYMODE
 	long bpp;
 	long RefreshRate;
 	long bPalette;
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+	// Put BGFX code here...
+#else
 	DDSURFACEDESCX ddsd;
 #endif
 	uchar rbpp;
@@ -1356,7 +1362,9 @@ struct DXDISPLAYMODE
 
 struct DXTEXTUREINFO
 {
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+	// Put BGFX code here...
+#else
 	DDPIXELFORMAT ddpf;
 #endif
 	ulong bpp;
@@ -1374,7 +1382,9 @@ struct DXTEXTUREINFO
 
 struct DXZBUFFERINFO
 {
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+	// Put BGFX code here...
+#else
 	DDPIXELFORMAT ddpf;
 #endif
 	ulong bpp;
@@ -1386,7 +1396,9 @@ struct DXD3DDEVICE
 	char About[80];
 	LPGUID lpGuid;
 	GUID Guid;
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+	// Put BGFX code here...
+#else
 	D3DDEVICEDESC DeviceDesc;
 	long bHardware;
 	long nDisplayModes;
@@ -1404,7 +1416,9 @@ struct DXDIRECTDRAWINFO
 	char About[80];
 	LPGUID lpGuid;
 	GUID Guid;
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+	// Put BGFX code here...
+#else
 	DDCAPS DDCaps;
 	DDDEVICEIDENTIFIER DDIdentifier;
 #endif
@@ -1446,7 +1460,9 @@ struct WINAPP
 	DXPTR dx;
 	HANDLE mutex;
 	float fps;
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+	// Put BGFX code here...
+#else
 	LPDIRECT3DMATERIALX GlobalMaterial;
 	D3DMATERIALHANDLE GlobalMaterialHandle;
 #endif
@@ -1491,7 +1507,9 @@ struct MESH_DATA
 	ushort ngt3; // TRLE: Made unsigned, fixes some level loading
 	short* gt3;
 	long* prelight;
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+	GFXVERTEX *Buffer = nullptr;
+#else
 	LPDIRECT3DVERTEXBUFFER SourceVB;
 #endif
 	GFXVECTOR* Normals;
@@ -1748,7 +1766,9 @@ struct BITE_INFO
 
 struct TEXTURE
 {
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+	bgfx::TextureHandle tex;
+#else
 	LPDIRECT3DTEXTUREX tex;
 	LPDIRECTDRAWSURFACEX surface;
 #endif
@@ -1766,6 +1786,9 @@ struct TEXTUREBUCKET
 	long tpage;
 	long nVtx;
 	GFXTLBUMPVERTEX vtx[BUCKET_VERT_COUNT]; // TRLE: increased size (256 * 32 + 32)
+#ifdef USE_BGFX
+	bgfx::DynamicVertexBufferHandle handle = BGFX_INVALID_HANDLE;
+#endif
 };
 
 struct THREAD
@@ -1950,7 +1973,9 @@ struct SMOKE_SPARKS
 
 struct MONOSCREEN_STRUCT
 {
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+	bgfx::TextureHandle tex;
+#else
 	LPDIRECT3DTEXTUREX tex;
 	LPDIRECTDRAWSURFACEX surface;
 #endif

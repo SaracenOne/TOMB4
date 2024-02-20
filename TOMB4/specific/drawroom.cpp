@@ -18,6 +18,24 @@
 #include "../game/gameflow.h"
 #include "../tomb4/tomb4.h"
 #include "../tomb4/mod_config.h"
+#include "bgfx.h"
+
+#ifdef USE_BGFX
+bgfx::UniformHandle s_texColor;
+bgfx::VertexLayout ms_outputBucketVertexLayout;
+
+void SetupOutputBucketVertexLayout()
+{
+	ms_outputBucketVertexLayout
+        .begin()
+        .add(bgfx::Attrib::Position, 4, bgfx::AttribType::Float)
+		.add(bgfx::Attrib::Color0, 4, bgfx::AttribType::Uint8, true)
+		.add(bgfx::Attrib::Color1, 4, bgfx::AttribType::Uint8, true)
+		.add(bgfx::Attrib::TexCoord0, 2, bgfx::AttribType::Float)
+		.add(bgfx::Attrib::TexCoord1, 2, bgfx::AttribType::Float)
+        .end();
+}
+#endif
 
 static ROOM_DYNAMIC RoomDynamics[MAX_DYNAMICS];
 static long nRoomDynamics;
@@ -331,8 +349,10 @@ void ProcessRoomVertices(ROOM_INFO* r)
 
 void ProcessRoomData(ROOM_INFO* r)
 {
-#ifndef USE_BGFX
 	GFXVERTEX* vptr;
+#ifdef USE_BGFX
+	// TODO
+#else
 	D3DVERTEXBUFFERDESC vb;
 #endif
 	LIGHTINFO* light;
@@ -351,7 +371,9 @@ void ProcessRoomData(ROOM_INFO* r)
 	if (!r->nVerts)
 	{
 		r->num_lights = 0;
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+		r->Buffer = nullptr;
+#else
 		r->SourceVB = 0;
 #endif
 		return;
@@ -451,7 +473,11 @@ void ProcessRoomData(ROOM_INFO* r)
 	r->prelight = (long*)game_malloc(4 * r->nVerts);
 	r->prelightwater = (long*)game_malloc(4 * r->nVerts);
 	r->watercalc = 0;
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+	uint32_t numVertices = r->nVerts;
+	r->Buffer = (GFXVERTEX *)SYSTEM_MALLOC(sizeof(GFXVERTEX) * numVertices);
+	vptr = r->Buffer;
+#else
 	vb.dwNumVertices = r->nVerts;
 	vb.dwSize = sizeof(D3DVERTEXBUFFERDESC);
 	vb.dwCaps = 0;
@@ -466,14 +492,13 @@ void ProcessRoomData(ROOM_INFO* r)
 
 	for (int i = 0; i < r->nVerts; i++)
 	{
-#ifndef USE_BGFX
 		vptr->x = r->verts[i].x + (float)r->x;
 		vptr->y = r->verts[i].y + (float)r->y;
 		vptr->z = r->verts[i].z + (float)r->z;
 		vptr->nx = r->vnormals[i].x;
 		vptr->ny = r->vnormals[i].y;
 		vptr->nz = r->vnormals[i].z;
-#endif
+
 		cR = ((prelight[i] & 0x7C00) >> 10) << 3;
 		cG = ((prelight[i] & 0x3E0) >> 5) << 3;
 		cB = (prelight[i] & 0x1F) << 3;
@@ -482,16 +507,16 @@ void ProcessRoomData(ROOM_INFO* r)
 		cG = ushort((cG * water_color_G) >> 8);
 		cB = ushort((cB * water_color_B) >> 8);
 		r->prelightwater[i] = RGBA(cR, cG, cB, 0xFF);
-#ifndef USE_BGFX
 		vptr++;
-#endif
 		data_ptr += 6;
 	}
 
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+#else
 	r->SourceVB->Unlock();
-	SYSTEM_FREE(prelight);
 #endif
+
+	SYSTEM_FREE(prelight);
 
 	r->pclight = 0;
 
@@ -576,7 +601,9 @@ void ProcessRoomData(ROOM_INFO* r)
 			}
 		}
 	}
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+	// Put BGFX code here...
+#else
 	r->SourceVB->Optimize(App.dx._lpD3DDevice, 0);
 #endif
 }
@@ -646,7 +673,9 @@ void ProcessMeshData(long num_meshes)
 {
 	MESH_DATA* mesh;
 	GFXVERTEX* vtx;
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+	// Put BGFX code here...
+#else
 	D3DVERTEXBUFFERDESC buf;
 #endif
 	short* mesh_ptr;
@@ -702,7 +731,11 @@ void ProcessMeshData(long num_meshes)
 
 			if (mesh->nVerts)
 			{
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+				uint32_t numVertices = mesh->nVerts;
+				mesh->Buffer = (GFXVERTEX*)SYSTEM_MALLOC(sizeof(GFXVERTEX) * numVertices);
+				vtx = mesh->Buffer;
+#else
 				buf.dwNumVertices = mesh->nVerts;
 				buf.dwSize = sizeof(D3DVERTEXBUFFERDESC);
 				buf.dwCaps = 0;
@@ -713,11 +746,9 @@ void ProcessMeshData(long num_meshes)
 #endif
 				for (int j = 0; j < mesh->nVerts; j++)
 				{
-#ifndef USE_BGFX
 					vtx[j].x = mesh_ptr[0];
 					vtx[j].y = mesh_ptr[1];
 					vtx[j].z = mesh_ptr[2];
-#endif
 					mesh_ptr += 3;
 				}
 
@@ -734,18 +765,14 @@ void ProcessMeshData(long num_meshes)
 
 					for (int j = 0; j < mesh->nVerts; j++)
 					{
-#ifndef USE_BGFX
 						vtx[j].nx = mesh_ptr[0];
 						vtx[j].ny = mesh_ptr[1];
 						vtx[j].nz = mesh_ptr[2];
-#endif
 						mesh_ptr += 3;
-#ifndef USE_BGFX
 						D3DNormalise((GFXVECTOR*)&vtx[j].nx);
 						mesh->Normals[j].x = vtx[j].nx;
 						mesh->Normals[j].y = vtx[j].ny;
 						mesh->Normals[j].z = vtx[j].nz;
-#endif
 					}
 
 					mesh->prelight = 0;
@@ -762,7 +789,9 @@ void ProcessMeshData(long num_meshes)
 						mesh_ptr++;
 					}
 				}
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+				// Put BGFX code here...
+#else
 				mesh->SourceVB->Unlock();
 #endif
 			}
@@ -800,9 +829,23 @@ void ProcessMeshData(long num_meshes)
 	Log(2, "End ProcessMeshData");
 }
 
+#ifdef USE_BGFX
+void SetupBuckets()
+{
+	SetupOutputBucketVertexLayout();
+	TEXTUREBUCKET* bucket;
+
+	for (int i = 0; i < MAX_BUCKETS; i++)
+	{
+		bucket = &Bucket[i];
+		bucket->handle = bgfx::createDynamicVertexBuffer(BUCKET_VERT_COUNT, ms_outputBucketVertexLayout);
+	}
+}
+#endif
+
 void InitBuckets()
 {
-	TEXTUREBUCKET* bucket;
+	TEXTUREBUCKET *bucket;
 
 	for (int i = 0; i < MAX_BUCKETS; i++)
 	{
@@ -822,7 +865,9 @@ void DrawBucket(TEXTUREBUCKET* bucket)
 
 	if (Textures[bucket->tpage].bump && App.BumpMapping)
 	{
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+		// Put BGFX code here...
+#else
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_FOGENABLE, 0);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_ONE);
@@ -844,7 +889,25 @@ void DrawBucket(TEXTUREBUCKET* bucket)
 		DrawPrimitiveCnt++;
 	}
 
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+	uint64_t state = 0
+		| BGFX_STATE_WRITE_R
+		| BGFX_STATE_WRITE_G
+		| BGFX_STATE_WRITE_B
+		| BGFX_STATE_WRITE_A
+		| BGFX_STATE_WRITE_Z
+		| BGFX_STATE_DEPTH_TEST_LESS
+		| BGFX_STATE_MSAA
+		| UINT64_C(0);
+
+	bgfx::update(bucket->handle, 0, bgfx::makeRef(bucket->vtx, bucket->nVtx * sizeof(GFXTLBUMPVERTEX)));
+
+	bgfx::setVertexBuffer(0, bucket->handle, 0, bucket->nVtx);
+	bgfx::setTexture(0, s_texColor, Textures[bucket->tpage].tex);
+	bgfx::setState(state);
+
+	bgfx::submit(0, m_outputProgram);
+#else
 	DXAttempt(App.dx.lpD3DDevice->SetTexture(0, Textures[bucket->tpage].tex));
 	App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, bucket->vtx, bucket->nVtx, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
 
@@ -920,7 +983,9 @@ void DrawBuckets()
 
 	if (App.BumpMapping)
 	{
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+		// Put BGFX code here...
+#else
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_FOGENABLE, 0);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_ONE);
@@ -936,7 +1001,9 @@ void DrawBuckets()
 
 			if (Textures[bucket->tpage].bump && bucket->nVtx)
 			{
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+				// Put BGFX code here...
+#else
 				DXAttempt(App.dx.lpD3DDevice->SetTexture(0, Textures[Textures[bucket->tpage].bumptpage].tex));
 				App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, bucket->vtx, bucket->nVtx, D3DDP_DONOTCLIP);
 #endif
@@ -944,7 +1011,9 @@ void DrawBuckets()
 			}
 		}
 
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+		// Put BGFX code here...
+#else
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_FOGENABLE, 1);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 1);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_DESTCOLOR);
@@ -960,7 +1029,9 @@ void DrawBuckets()
 
 			if (Textures[bucket->tpage].bump && bucket->nVtx)
 			{
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+				// Put BGFX code here...
+#else
 				DXAttempt(App.dx.lpD3DDevice->SetTexture(0, Textures[bucket->tpage].tex));
 				App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, bucket->vtx, bucket->nVtx, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
 #endif
@@ -970,7 +1041,9 @@ void DrawBuckets()
 			}
 		}
 
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+		// Put BGFX code here...
+#else
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
 #endif
 
@@ -980,7 +1053,9 @@ void DrawBuckets()
 
 			if (!Textures[bucket->tpage].bump && bucket->nVtx)
 			{
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+				// Put BGFX code here...
+#else
 				DXAttempt(App.dx.lpD3DDevice->SetTexture(0, Textures[bucket->tpage].tex));
 				App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, bucket->vtx, bucket->nVtx, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
 #endif

@@ -4,6 +4,8 @@
 
 #include <bgfx/bgfx.h>
 
+extern bgfx::ProgramHandle m_outputProgram;
+
 struct BGFXTransformLitVertex
 {
     float		    x;
@@ -29,6 +31,7 @@ struct BGFXTransformLitVertex
 };
 
 extern void InitializeBGFX();
+extern void SetupBGFXOutputPolyList();
 extern void StartBGFXFrame();
 extern void EndBGFXFrame();
 

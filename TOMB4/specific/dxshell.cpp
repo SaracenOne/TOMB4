@@ -4,7 +4,9 @@
 #include "winmain.h"
 #include "cmdline.h"
 
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+	// Put BGFX code here...
+#else
 long DDSCL_FLAGS[11] =	// for DXSetCooperativeLevel logging
 {
 	DDSCL_ALLOWMODEX,
@@ -40,7 +42,9 @@ char tga_header[18] = { 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 64, 1, 0, 1, 16, 0 }
 
 DXPTR* G_dxptr;
 DXINFO* G_dxinfo;
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+// Put BGFX code here...
+#else
 LPDIRECTDRAWX G_ddraw;
 LPDIRECT3DX G_d3d;
 #endif
@@ -103,7 +107,9 @@ void DXReadKeyboard(char* KeyMap)
 #endif
 }
 
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+	// Put BGFX code here...
+#else
 long DXAttempt(HRESULT r)
 {
 	if (SUCCEEDED(r))
@@ -129,7 +135,9 @@ void* AddStruct(void* p, long num, long size)
 	return ptr;
 }
 
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+	// Put BGFX code here...
+#else
 long DXDDCreate(LPGUID pGuid, void** pDD4)
 {
 	LPDIRECTDRAW pDD;
@@ -332,7 +340,9 @@ long DXGetInfo(DXINFO* dxinfo, HWND hwnd)
 
 void DXFreeInfo(DXINFO* dxinfo)
 {
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+	// Put BGFX code here...
+#else
 	DXDIRECTDRAWINFO* DDInfo;
 	DXD3DDEVICE* d3d;
 
@@ -359,7 +369,9 @@ void DXFreeInfo(DXINFO* dxinfo)
 #endif
 }
 
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+	// Put BGFX code here...
+#else
 HRESULT __stdcall DXEnumDisplayModes(LPDDSURFACEDESCX lpDDSurfaceDesc2, LPVOID lpContext)
 {
 	DXDIRECTDRAWINFO* DDInfo;
@@ -574,7 +586,9 @@ long DXCreateViewport(LPDIRECT3DX d3d, LPDIRECT3DDEVICEX device, long w, long h,
 #endif
 HRESULT DXShowFrame()
 {
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+	// Put BGFX code here...
+#else
 	if (G_dxptr->lpPrimaryBuffer->IsLost())
 	{
 		Log(3, "Restored Primary Buffer");
@@ -599,7 +613,9 @@ HRESULT DXShowFrame()
 	return 1;
 }
 
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+	// Put BGFX code here...
+#else
 void DXMove(long x, long y)
 {
 	Log(2, "DXMove : x %d y %d", x, y);
@@ -645,7 +661,9 @@ void DXInitKeyboard(HWND hwnd, HINSTANCE hinstance)
 #endif
 }
 
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+	// Put BGFX code here...
+#else
 #if 0
 void DXSaveScreen(LPDIRECTDRAWSURFACEX surf, const char* name)
 {
@@ -721,7 +739,9 @@ void DXSaveScreen(LPDIRECTDRAWSURFACEX surf, const char* name)
 
 void DXClose()
 {
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+	// Put BGFX code here...
+#else
 	Log(2, "CloseDirectX");
 
 	if (G_dxptr)
@@ -790,7 +810,9 @@ void DXClose()
 
 long DXCreate(long w, long h, long bpp, long Flags, DXPTR* dxptr, HWND hWnd, long WindowStyle)
 {
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+	// Put BGFX code here...
+#else
 	DXDISPLAYMODE* dm;
 	LPDIRECTDRAWCLIPPER clipper;
 	HWND desktop;
@@ -814,7 +836,10 @@ long DXCreate(long w, long h, long bpp, long Flags, DXPTR* dxptr, HWND hWnd, lon
 
 	DXClose();
 
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+	G_dxptr->dwRenderWidth = w;
+	G_dxptr->dwRenderHeight = h;
+#else
 	if (!flag)
 	{
 		if (!DXDDCreate(G_dxinfo->DDInfo[G_dxinfo->nDD].lpGuid, (void**)&G_dxptr->lpDD) || !DXD3DCreate(G_dxptr->lpDD, (void**)&G_dxptr->lpD3D))
@@ -1001,7 +1026,10 @@ long DXCreate(long w, long h, long bpp, long Flags, DXPTR* dxptr, HWND hWnd, lon
 
 long DXChangeVideoMode()
 {
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+	// Put BGFX code here...
+	return 1;
+#else
 	long val;
 
 	Log(2, "DXChangeVideoMode");
@@ -1011,14 +1039,14 @@ long DXChangeVideoMode()
 	G_dxptr->Flags ^= DXF_NOFREE;
 	Log(2, "Exited DXChangeVideoMode %d", val);
 	return val;
-#else
-	return 1;
 #endif
 }
 
 long DXToggleFullScreen()
 {
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+	// Put BGFX code here...
+#else
 	DXDISPLAYMODE* dm;
 
 	Log(2, "DXToggleFullScreen");
@@ -1049,7 +1077,9 @@ long DXToggleFullScreen()
 	return 1;
 }
 
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+// Put BGFX code here...
+#else
 HRESULT __stdcall DXEnumDirect3D(LPGUID lpGuid, LPSTR lpDeviceDescription, LPSTR lpDeviceName, LPD3DDEVICEDESC lpHWDesc, LPD3DDEVICEDESC lpHELDesc, LPVOID lpContext)
 {
 	DXDIRECTDRAWINFO* ddi;

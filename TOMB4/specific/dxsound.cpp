@@ -355,7 +355,7 @@ bool DXCreateSample(char* data, long size, int samples_per_second, long num)
 		NULL);
 	bufferConfig.sampleRate = mod_audio_info->sample_rate;
 
-	ma_result result = ma_audio_buffer_alloc_and_init(&bufferConfig, &ma_sample_buffers[channel_id]);
+	ma_result result = ma_audio_buffer_alloc_and_init(&bufferConfig, &ma_sample_buffers[num]);
 	if (result != MA_SUCCESS) {
 		return false;
 	}
