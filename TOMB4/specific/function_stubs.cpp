@@ -20,7 +20,7 @@ struct allocation_table_entry {
 allocation_table_entry allocation_table[MAX_MEMORY_ALLOCATIONS];
 long alloc_count = 0;
 
-void* system_malloc(long size, const char* filename, int line_number)
+void* system_malloc(size_t size, const char* filename, int line_number)
 {
 	alloc_count++;
 	if (alloc_count >= MAX_MEMORY_ALLOCATIONS) {
@@ -54,7 +54,7 @@ void* system_malloc(long size, const char* filename, int line_number)
 	return ptr;
 }
 
-void* system_realloc(void* ptr, long size, const char* filename, int line_number) {
+void* system_realloc(void* ptr, size_t size, const char* filename, int line_number) {
 	if (!ptr) {
 		return system_malloc(size, filename, line_number);
 	}
@@ -159,7 +159,7 @@ void init_game_malloc()
 	malloc_used = 0;
 }
 
-void* game_malloc(long size)
+void* game_malloc(size_t size)
 {
 	char* ptr;
 
@@ -167,7 +167,7 @@ void* game_malloc(long size)
 
 	if (size > malloc_free)
 	{
-		Log(0, "OUT OF MEMORY");
+		platform_fatal_error("game_malloc: out of memory!");
 		return 0;
 	}
 	else

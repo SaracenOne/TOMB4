@@ -294,7 +294,13 @@ void ClearSurfaces()
 
 bool SDLCreateWindow()
 {
-	sdl_window = SDL_CreateWindow("Tomb4Plus", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_DEFAULT_WIDTH, WINDOW_DEFAULT_HEIGHT, SDL_WINDOW_HIDDEN);
+#if INTPTR_MAX == INT64_MAX
+	sdl_window = SDL_CreateWindow("Tomb4Plus (64-bit)", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_DEFAULT_WIDTH, WINDOW_DEFAULT_HEIGHT, SDL_WINDOW_HIDDEN);
+#elif INTPTR_MAX == INT32_MAX
+	sdl_window = SDL_CreateWindow("Tomb4Plus (32-bit)", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_DEFAULT_WIDTH, WINDOW_DEFAULT_HEIGHT, SDL_WINDOW_HIDDEN);
+#else
+#error Unknown pointer size or missing size macros!
+#endif
 	if (!sdl_window)
 	{
 		return false;

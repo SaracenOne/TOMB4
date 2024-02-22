@@ -20,7 +20,7 @@ void ControlTriggerTriggerer(short item_number);
 void PoleCollision(short item_num, ITEM_INFO* l, COLL_INFO* coll);
 void ControlAnimatingSlots(short item_number);
 void SmashObjectControl(short item_number);
-void SmashObject(short item_number);
+void SmashObject(size_t item_number);
 void EarthQuake(short item_number);
 
 enum object_types 

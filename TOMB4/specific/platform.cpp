@@ -59,7 +59,7 @@ void platform_find_file_with_substring(const char* dir_path, const char* substri
 		size_t str_len = strlen(substring);
 
 		if (cmp_count >= str_len) {
-			int filename_length = strlen(find_file_data.cFileName);
+			size_t filename_length = strlen(find_file_data.cFileName);
 
 			if (filename_length < 256) {
 				strcpy(found_filename, find_file_data.cFileName);
@@ -155,8 +155,18 @@ bool platform_create_directory(const char* path) {
 		if (*p == *PATH_SEPARATOR) {
 			*p = 0;
 #ifdef _WIN32
-			if (_mkdir(tmp) != 0 && errno != EEXIST) {
+			DWORD attr = GetFileAttributes(tmp);
+			if (attr == INVALID_FILE_ATTRIBUTES) {
 				return false;
+			}
+
+			if (!(attr & FILE_ATTRIBUTE_DIRECTORY)) {
+				int res = _mkdir(tmp);
+				int er = errno;
+
+				if (res != 0 && er != EEXIST) {
+					return false;
+				}
 			}
 #else
 			if (mkdir(tmp, S_IRWXU) != 0 && errno != EEXIST) {

@@ -508,7 +508,7 @@ bool DXSetupDialog()
 	long ret;
 
 	ShowCursor(1);
-	ret = DialogBox(App.hInstance, MAKEINTRESOURCE(109), 0, DXSetupDlgProc);
+	ret = DialogBox(App.hInstance, MAKEINTRESOURCE(109), 0, (DLGPROC)DXSetupDlgProc);
 	ShowCursor(0);
 
 	if (ret == -1)

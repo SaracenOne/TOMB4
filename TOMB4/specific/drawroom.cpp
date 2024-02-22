@@ -470,8 +470,8 @@ void ProcessRoomData(ROOM_INFO* r)
 
 	SYSTEM_FREE(faces);
 	CreateVertexNormals(r);
-	r->prelight = (long*)game_malloc(4 * r->nVerts);
-	r->prelightwater = (long*)game_malloc(4 * r->nVerts);
+	r->prelight = (long*)game_malloc(sizeof(long *) * r->nVerts);
+	r->prelightwater = (long*)game_malloc(sizeof(long *) * r->nVerts);
 	r->watercalc = 0;
 #ifdef USE_BGFX
 	uint32_t numVertices = r->nVerts;
@@ -685,7 +685,7 @@ void ProcessMeshData(long num_meshes)
 
 	Log(2, "ProcessMeshData %d", num_meshes);
 	num_level_meshes = num_meshes;
-	mesh_vtxbuf = (MESH_DATA**)game_malloc(4 * num_meshes);
+	mesh_vtxbuf = (MESH_DATA**)game_malloc(sizeof(MESH_DATA *) * num_meshes);
 	mesh_base = (short*)malloc_ptr;
 	last_mesh_ptr = 0;
 	mesh = (MESH_DATA*)(size_t)num_meshes;
@@ -780,7 +780,7 @@ void ProcessMeshData(long num_meshes)
 				else
 				{
 					mesh->Normals = 0;
-					mesh->prelight = (long*)game_malloc(4 * mesh->nVerts);
+					mesh->prelight = (long*)game_malloc(sizeof(long *) * mesh->nVerts);
 
 					for (int j = 0; j < mesh->nVerts; j++)
 					{
@@ -903,7 +903,7 @@ void DrawBucket(TEXTUREBUCKET* bucket)
 	bgfx::update(bucket->handle, 0, bgfx::makeRef(bucket->vtx, bucket->nVtx * sizeof(GFXTLBUMPVERTEX)));
 
 	bgfx::setVertexBuffer(0, bucket->handle, 0, bucket->nVtx);
-	bgfx::setTexture(0, s_texColor, Textures[bucket->tpage].tex);
+	//bgfx::setTexture(0, s_texColor, Textures[bucket->tpage].tex);
 	bgfx::setState(state);
 
 	bgfx::submit(0, m_outputProgram);

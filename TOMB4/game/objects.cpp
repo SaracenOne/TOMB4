@@ -23,6 +23,7 @@
 #include "lara.h"
 #include "../specific/file.h"
 #include "gameflow.h"
+#include "../specific/platform.h"
 
 OBJECT_INFO objects[NUMBER_OBJECTS];
 
@@ -773,8 +774,13 @@ void SmashObjectControl(short item_number)
 	}
 }
 
-void SmashObject(short item_number)
+void SmashObject(size_t item_number)
 {
+	if (item_number >= ITEM_COUNT) {
+		platform_fatal_error("SmashObject: item_number out of range!");
+		return;
+	}
+
 	ITEM_INFO* item;
 	ROOM_INFO* r;
 	BOX_INFO* box;

@@ -1026,7 +1026,8 @@ void LoadGameflow()
 	uchar* n;
 	char* s;
 	char* d;
-	long l, end;
+	size_t l;
+	long end;
 
 	s = 0;
 	size_t gameflow_len = LoadFile("SCRIPT.DAT", &s);

@@ -430,7 +430,7 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 	char* pComp;
 	char* s;
 	long format, skip, compressedSize, nTex, c;
-	size_t size;
+	uint32_t size;
 	uchar r, g, b, a;
 
 	Log(2, "LoadTextures");
@@ -924,19 +924,53 @@ bool LoadObjects()
 	size = *(long*)FileData;
 	FileData += sizeof(long);
 	meshes = (short**)game_malloc(2 * size * sizeof(short*));
-	memcpy(meshes, FileData, size * sizeof(short*));
-	FileData += size * sizeof(short*);
+
+#if INTPTR_MAX == INT64_MAX
+	{
+		int read_amount = 0;
+		for (int i = 0; i < size; i++) {
+			meshes[i] = (short *)(*(uint32_t*)FileData);
+			FileData += sizeof(uint32_t);
+
+			read_amount += sizeof(uint32_t);
+		}
+	}
+#elif INTPTR_MAX == INT32_MAX
+	{
+		int read_amount = size * sizeof(short*);
+		memcpy(meshes, FileData, read_amount);
+		FileData += read_amount;
+	}
+#else
+	#error Unknown pointer size or missing size macros!
+#endif
 
 	for (int i=0;i<size;i++)
-		meshes[i] = mesh_base + (long)meshes[i] / 2;
+		meshes[i] = mesh_base + (uint32_t)meshes[i] / 2;
 
 	num_meshes = size;
 
 	num_anims = *(long*)FileData;
 	FileData += sizeof(long);
 	anims = (ANIM_STRUCT*)game_malloc(sizeof(ANIM_STRUCT) * num_anims);
+#if INTPTR_MAX == INT64_MAX
+	size_t remaining_struct_size = sizeof(ANIM_STRUCT) - sizeof(size_t);
+
+	for (int i = 0; i < num_anims; i++) {
+		anims[i].frame_ptr = (short *)(*(uint32_t*)FileData);
+		FileData += sizeof(uint32_t);
+
+		void *offset_ptr = &anims[i].interpolation;
+
+		memcpy(offset_ptr, FileData, remaining_struct_size);
+		FileData += remaining_struct_size;
+	}
+#elif INTPTR_MAX == INT32_MAX
 	memcpy(anims, FileData, sizeof(ANIM_STRUCT) * num_anims);
 	FileData += sizeof(ANIM_STRUCT) * num_anims;
+#else
+	#error Unknown pointer size or missing size macros!
+#endif
 
 	size = *(long*)FileData;
 	FileData += sizeof(long);
@@ -969,7 +1003,8 @@ bool LoadObjects()
 	FileData += sizeof(short) * size;
 
 	for (int i = 0; i < num_anims; i++)
-		anims[i].frame_ptr = (short*)((long)anims[i].frame_ptr + (long)frames);
+		anims[i].frame_ptr = (short*)((size_t)anims[i].frame_ptr + (size_t)frames);
+		//anims[i].frame_ptr = (short*)(frames + (long)anims[i].frame_ptr);
 
 	num = *(long*)FileData;
 	FileData += sizeof(long);
@@ -989,8 +1024,9 @@ bool LoadObjects()
 		obj->bone_index = *(long*)FileData;
 		FileData += sizeof(long);
 
-		obj->frame_base = (short*)(*(short**)FileData);
-		FileData += sizeof(short*);
+		uint32_t frame_base = *(uint32_t*)FileData;
+		obj->frame_base = (short*)frame_base;
+		FileData += sizeof(uint32_t);
 
 		obj->anim_index = *(short*)FileData;
 		FileData += sizeof(short);
@@ -1008,7 +1044,7 @@ bool LoadObjects()
 
 	mesh = meshes;
 	mesh_size = &meshes[num_meshes];
-	memcpy(mesh_size, mesh, num_meshes * 4);
+	memcpy(mesh_size, mesh, num_meshes * sizeof(short *));
 
 	for (int i = 0; i < num_meshes; i++)
 	{
@@ -1387,7 +1423,7 @@ struct  T4PLUS_WAV_FORMAT {
 
 bool LoadSamples()
 {
-	long num_samples, uncomp_size, comp_size;
+	uint32_t num_samples, uncomp_size, comp_size;
 	static long num_sample_infos;
 
 	// Still not sure if this flag consistently determines the size of the sample buffer, but lets try it...
@@ -1424,7 +1460,7 @@ bool LoadSamples()
 	}
 
 	Log(8, "Number Of Samples %d", num_samples);
-	fread(&num_samples, 1, 4, level_fp);
+	fread(&num_samples, sizeof(uint32_t), 1, level_fp);
 	InitSampleDecompress();
 
 	if (num_samples <= 0)
@@ -1440,15 +1476,20 @@ bool LoadSamples()
 
 	for (int i = 0; i < num_samples; i++)
 	{
-		fread(&uncomp_size, 1, 4, level_fp);
-		fread(&comp_size, 1, 4, level_fp);
+		fread(&uncomp_size, sizeof(uint32_t), 1, level_fp);
+		fread(&comp_size, sizeof(uint32_t), 1, level_fp);
 
 		if (get_game_mod_global_info()->tr_use_adpcm_audio) {
-			fread(samples_buffer, comp_size, 1, level_fp);
+			if (comp_size < (DECOMPRESS_BUFFER_LEN + 0x5A)) {
+				fread(samples_buffer, comp_size, 1, level_fp);
 
-			if (!DXCreateSampleADPCM(samples_buffer, comp_size, uncomp_size, i))
-			{
-				FreeSampleDecompress();
+				if (!DXCreateSampleADPCM(samples_buffer, comp_size, uncomp_size, i))
+				{
+					FreeSampleDecompress();
+					return 0;
+				}
+			} else {
+				platform_fatal_error("Sample buffer overrun!");
 				return 0;
 			}
 		} else {

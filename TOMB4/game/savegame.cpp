@@ -78,17 +78,17 @@ void SaveLaraData()
 	ITEM_INFO* item;
 
 	for (int i = 0; i < LARA_MESH_PTR_COUNT; i++)
-		lara.mesh_ptrs[i] = (short*)((long)lara.mesh_ptrs[i] - (long)mesh_base);
+		lara.mesh_ptrs[i] = (short*)((size_t)lara.mesh_ptrs[i] - (size_t)mesh_base);
 
-	lara.left_arm.frame_base = (short*)((long)lara.left_arm.frame_base - (long)objects[PISTOLS_ANIM].frame_base);
-	lara.right_arm.frame_base = (short*)((long)lara.right_arm.frame_base - (long)objects[PISTOLS_ANIM].frame_base);
+	lara.left_arm.frame_base = (short*)((size_t)lara.left_arm.frame_base - (size_t)objects[PISTOLS_ANIM].frame_base);
+	lara.right_arm.frame_base = (short*)((size_t)lara.right_arm.frame_base - (size_t)objects[PISTOLS_ANIM].frame_base);
 	memcpy(&savegame.Lara, &lara, sizeof(savegame.Lara));
 
 	for (int i = 0; i < LARA_MESH_PTR_COUNT; i++)
-		lara.mesh_ptrs[i] = (short*)((long)lara.mesh_ptrs[i] + (long)mesh_base);
+		lara.mesh_ptrs[i] = (short*)((size_t)lara.mesh_ptrs[i] + (size_t)mesh_base);
 
-	lara.left_arm.frame_base = (short*)((long)lara.left_arm.frame_base + (long)objects[PISTOLS_ANIM].frame_base);
-	lara.right_arm.frame_base = (short*)((long)lara.right_arm.frame_base + (long)objects[PISTOLS_ANIM].frame_base);
+	lara.left_arm.frame_base = (short*)((size_t)lara.left_arm.frame_base + (size_t)objects[PISTOLS_ANIM].frame_base);
+	lara.right_arm.frame_base = (short*)((size_t)lara.right_arm.frame_base + (size_t)objects[PISTOLS_ANIM].frame_base);
 
 	if (lara.weapon_item != NO_ITEM)
 	{
@@ -141,8 +141,8 @@ void RestoreLaraData(long FullSave)
 	memcpy(&lara, &savegame.Lara, sizeof(lara));
 	lara.target = 0;
 	lara.spaz_effect = 0;
-	lara.left_arm.frame_base = (short*)((long)lara.left_arm.frame_base + (long)objects[PISTOLS_ANIM].frame_base);
-	lara.right_arm.frame_base = (short*)((long)lara.right_arm.frame_base + (long)objects[PISTOLS_ANIM].frame_base);
+	lara.left_arm.frame_base = (short*)((size_t)lara.left_arm.frame_base + (size_t)objects[PISTOLS_ANIM].frame_base);
+	lara.right_arm.frame_base = (short*)((size_t)lara.right_arm.frame_base + (size_t)objects[PISTOLS_ANIM].frame_base);
 	// Tomb4Plus - we've modified the GeneralPtr to be an index rather than a memory address since it was buggy and barely used as memory address directly.
 	// Added a check to make sure the item is within range to prevent crashing with old savegames.
 	if (lara.GeneralPtr >= ITEM_COUNT) {
@@ -186,7 +186,7 @@ void RestoreLaraData(long FullSave)
 	else
 	{
 		for (int i = 0; i < LARA_MESH_PTR_COUNT; i++)
-			lara.mesh_ptrs[i] = (short*)((long)lara.mesh_ptrs[i] + (long)mesh_base);
+			lara.mesh_ptrs[i] = (short*)((size_t)lara.mesh_ptrs[i] + (size_t)mesh_base);
 	}
 
 	CutSceneTriggered = savegame.cutscene_triggered;
@@ -607,9 +607,9 @@ void SaveLevelData(long FullSave)
 					{
 						creature = (CREATURE_INFO*)item->data;
 
-						creature->enemy = (ITEM_INFO*)((long)creature->enemy - (long)malloc_buffer);
+						creature->enemy = (ITEM_INFO*)((size_t)creature->enemy - (size_t)malloc_buffer);
 						WriteSG(item->data, 22);
-						creature->enemy = (ITEM_INFO*)((long)creature->enemy + (long)malloc_buffer);
+						creature->enemy = (ITEM_INFO*)((size_t)creature->enemy + (size_t)malloc_buffer);
 
 						WriteSG(&creature->ai_target.object_number, sizeof(short));
 						WriteSG(&creature->ai_target.room_number, sizeof(short));
@@ -1016,7 +1016,7 @@ void RestoreLevelData(long FullSave)
 					if (creature)
 					{
 						ReadSG(creature, 22);
-						creature->enemy = (ITEM_INFO*)((long)creature->enemy + (long)malloc_buffer);
+						creature->enemy = (ITEM_INFO*)((size_t)creature->enemy + (size_t)malloc_buffer);
 
 						if ((int)creature->enemy < 0)
 							creature->enemy = 0;

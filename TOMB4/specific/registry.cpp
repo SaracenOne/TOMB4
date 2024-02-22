@@ -207,7 +207,7 @@ bool REG_ReadString(char* SubKeyName, char* value, long length, char* defaultVal
 #ifdef USE_INI
 	const char* loaded_string = ini.GetValue(current_section, SubKeyName, defaultValue);
 	if (loaded_string) {
-		long loaded_str_length = strlen(loaded_string);
+		size_t loaded_str_length = strlen(loaded_string);
 		if (loaded_str_length <= length) {
 			memcpy(value, loaded_string, loaded_str_length);
 		}

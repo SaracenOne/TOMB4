@@ -809,7 +809,7 @@ bool static_move_static_with_data_in_x_parameter_list(unsigned char move_param_i
 		}
 		case DIR_WEST: {
 			if (!NGGetStaticHorizontalMovementRemainingUnits(script_static)) {
-				short current_angle = 0x8000;
+				short current_angle = (short)0x8000;
 				if (move_item->direction & DIR_INVERT_DIRECTION) {
 					current_angle += 0x8000;
 				}

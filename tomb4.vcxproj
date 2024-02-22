@@ -31,7 +31,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>NotSet</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -44,7 +44,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>NotSet</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -57,14 +57,14 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>NotSet</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -86,35 +86,41 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(ProjectDir)Build\</OutDir>
+    <OutDir>$(ProjectDir)Build\$(PlatformTarget)\$(Configuration)</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <IncludePath>TOMB4\tomb4\libs\SDL2\include;TOMB4\tomb4\libs\simpleini;TOMB4\tomb4\libs\bgfx\include;TOMB4\tomb4\libs\bx\include;TOMB4\tomb4\libs\bx\include\compat\msvc;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
     <LibraryPath>TOMB4\tomb4\libs\SDL2\lib\x86;TOMB4\tomb4\libs\bgfx\.build\win32_vs2022\bin;$(LibraryPath)</LibraryPath>
+    <TargetName>$(ProjectName)_$(PlatformTarget)_$(Configuration)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <IncludePath>TOMB4\tomb4\libs\SDL2\include;TOMB4\tomb4\libs\simpleini;TOMB4\tomb4\libs\bgfx\include;TOMB4\tomb4\libs\bx\include;TOMB4\tomb4\libs\bx\include\compat\msvc;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
-    <LibraryPath>TOMB4\tomb4\libs\SDL2\lib\x64;$(LibraryPath)</LibraryPath>
+    <LibraryPath>TOMB4\tomb4\libs\SDL2\lib\x64;TOMB4\tomb4\libs\bgfx\.build\win64_vs2022\bin;$(LibraryPath)</LibraryPath>
     <LinkIncremental>true</LinkIncremental>
+    <TargetName>$(ProjectName)_$(PlatformTarget)_$(Configuration)</TargetName>
+    <OutDir>$(ProjectDir)Build\$(PlatformTarget)\$(Configuration)</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(ProjectDir)Build\</OutDir>
+    <OutDir>$(ProjectDir)Build\$(PlatformTarget)\$(Configuration)</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <IncludePath>TOMB4\tomb4\libs\SDL2\include;TOMB4\tomb4\libs\simpleini;TOMB4\tomb4\libs\bgfx\include;TOMB4\tomb4\libs\bx\include;TOMB4\tomb4\libs\bx\include\compat\msvc;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
     <LibraryPath>TOMB4\tomb4\libs\SDL2\lib\x86;TOMB4\tomb4\libs\bgfx\.build\win32_vs2022\bin;$(LibraryPath)</LibraryPath>
+    <TargetName>$(ProjectName)_$(PlatformTarget)_$(Configuration)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <IncludePath>TOMB4\tomb4\libs\SDL2\include;TOMB4\tomb4\libs\simpleini;TOMB4\tomb4\libs\bgfx\include;TOMB4\tomb4\libs\bx\include;TOMB4\tomb4\libs\bx\include\compat\msvc;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
     <LibraryPath>TOMB4\tomb4\libs\SDL2\lib\x64;$(LibraryPath)</LibraryPath>
     <LinkIncremental>false</LinkIncremental>
+    <TargetName>$(ProjectName)_$(PlatformTarget)_$(Configuration)</TargetName>
+    <OutDir>$(ProjectDir)Build\$(PlatformTarget)\$(Configuration)</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>USE_SDL;USE_INI;MA_AUDIO_ENGINE;LEVEL_EDITOR;SKIP_TIMES_DELAY;FLYCHEAT_NOCLIP;DO_LOG;FORCE_COLOURED_FOG;USE_HIGHEST_BIT_DEPTH_ZBUFFER;WIN32;_CRT_SECURE_NO_WARNINGS;DEBUG;_DEBUG;TOMB4_EXPORTS;_WINDOWS;_USRDLL;__STDC_LIMIT_MACROS;__STDC_FORMAT_MACROS;__STDC_CONSTANT_MACROS;_HAS_EXCEPTIONS=0;_SCL_SECURE=0;_SECURE_SCL=0;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;ENTRY_CONFIG_IMPLEMENT_MAIN=1;BX_CONFIG_DEBUG=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USE_SDL;USE_INI;USE_BGFX;MA_AUDIO_ENGINE;MA_AUDIO_SAMPLES;LEVEL_EDITOR;SKIP_TIMES_DELAY;FLYCHEAT_NOCLIP;DO_LOG;FORCE_COLOURED_FOG;USE_HIGHEST_BIT_DEPTH_ZBUFFER;WIN32;_CRT_SECURE_NO_WARNINGS;DEBUG;_DEBUG;TOMB4_EXPORTS;_WINDOWS;_USRDLL;__STDC_LIMIT_MACROS;__STDC_FORMAT_MACROS;__STDC_CONSTANT_MACROS;_HAS_EXCEPTIONS=0;_SCL_SECURE=0;_SECURE_SCL=0;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;ENTRY_CONFIG_IMPLEMENT_MAIN=1;BX_CONFIG_DEBUG=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>../tomb4/pch.h</PrecompiledHeaderFile>
@@ -137,7 +143,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>USE_SDL;USE_INI;MA_AUDIO_ENGINE;LEVEL_EDITOR;SKIP_TIMES_DELAY;FLYCHEAT_NOCLIP;DO_LOG;FORCE_COLOURED_FOG;USE_HIGHEST_BIT_DEPTH_ZBUFFER;WIN32;_CRT_SECURE_NO_WARNINGS;DEBUG;_DEBUG;TOMB4_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USE_SDL;USE_INI;USE_BGFX;MA_AUDIO_ENGINE;MA_AUDIO_SAMPLES;LEVEL_EDITOR;SKIP_TIMES_DELAY;FLYCHEAT_NOCLIP;DO_LOG;FORCE_COLOURED_FOG;USE_HIGHEST_BIT_DEPTH_ZBUFFER;WIN32;_CRT_SECURE_NO_WARNINGS;DEBUG;_DEBUG;TOMB4_EXPORTS;_WINDOWS;_USRDLL;__STDC_LIMIT_MACROS;__STDC_FORMAT_MACROS;__STDC_CONSTANT_MACROS;_HAS_EXCEPTIONS=0;_SCL_SECURE=0;_SECURE_SCL=0;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;ENTRY_CONFIG_IMPLEMENT_MAIN=1;BX_CONFIG_DEBUG=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>../tomb4/pch.h</PrecompiledHeaderFile>
@@ -145,13 +151,14 @@
       <DisableSpecificWarnings>%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalOptions>/IGNORE:4099 /pdbaltpath:%_PDB% %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>SDL2.lib;SDL2Main.lib;winmm.lib;dxguid.lib;ddraw.lib;Dsound.lib;Msacm32.lib;dinput8.lib;xaudio2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2Main.lib;winmm.lib;dxguid.lib;ddraw.lib;Dsound.lib;Msacm32.lib;dinput8.lib;xaudio2.lib;gdi32.lib;psapi.lib;bgfxDebug.lib;bxDebug.lib;bimgDebug.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -160,7 +167,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>USE_SDL;USE_INI;MA_AUDIO_ENGINE;LEVEL_EDITOR;SKIP_TIMES_DELAY;FLYCHEAT_NOCLIP;FORCE_COLOURED_FOG;USE_HIGHEST_BIT_DEPTH_ZBUFFER;WIN32;_CRT_SECURE_NO_WARNINGS;TOMB4_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USE_SDL;USE_INI;USE_BGFX;MA_AUDIO_ENGINE;LEVEL_EDITOR;SKIP_TIMES_DELAY;FLYCHEAT_NOCLIP;FORCE_COLOURED_FOG;USE_HIGHEST_BIT_DEPTH_ZBUFFER;WIN32;_CRT_SECURE_NO_WARNINGS;TOMB4_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>../tomb4/pch.h</PrecompiledHeaderFile>

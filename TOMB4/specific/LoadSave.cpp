@@ -608,7 +608,8 @@ long DoLoadSave(long LoadSave)
 
 	SAVEFILE_INFO* pSave;
 	static long selection;
-	long txt, l;
+	long txt;
+	size_t l;
 	uchar color;
 	char string[80];
 	char name[41];

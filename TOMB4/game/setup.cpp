@@ -1846,7 +1846,7 @@ void BuildOutsideTable()
 				{
 					if (!memcmp(cTable, pTable, z))
 					{
-						OutsideRoomOffsets[offset] = short((long)cTable - (long)OutsideRoomTable);
+						OutsideRoomOffsets[offset] = short((size_t)cTable - (size_t)OutsideRoomTable);
 						break;
 					}
 
@@ -1859,7 +1859,7 @@ void BuildOutsideTable()
 
 				if (cTable >= oTable)
 				{
-					OutsideRoomOffsets[offset] = short((long)oTable - (long)OutsideRoomTable);
+					OutsideRoomOffsets[offset] = short((size_t)oTable - (size_t)OutsideRoomTable);
 					memcpy(oTable, pTable, z);
 					oTable += z;
 					*oTable++ = -1;

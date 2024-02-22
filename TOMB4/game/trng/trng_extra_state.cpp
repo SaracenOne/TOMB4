@@ -220,7 +220,7 @@ void NGClearCurrentTriggerRoomAndIndex() {
 }
 
 int NGGetPluginIDForFloorData(short *floor_data_ptr) {
-	int index = floor_data_ptr - floor_data;
+	size_t index = floor_data_ptr - floor_data;
 	if (ng_floor_id_table) {
 		if (index < ng_floor_id_size) {
 			int plugin_id = ng_floor_id_table[index];
@@ -1626,10 +1626,10 @@ void NGSetupExtraState() {
 		ng_room_offset_table[i] = ng_floorstate_data_size;
 		ng_floorstate_data_size += room[i].x_size * room[i].y_size;
 	}
-	ng_flipeffect_oneshot_floorstate = (char*)game_malloc(ng_floorstate_data_size);
+	ng_flipeffect_oneshot_floorstate = (char*)game_malloc(sizeof(char) * ng_floorstate_data_size);
 	memset(ng_flipeffect_oneshot_floorstate, 0x00, ng_floorstate_data_size);
 
-	ng_action_oneshot_floorstate = (char*)game_malloc(ng_floorstate_data_size);
+	ng_action_oneshot_floorstate = (char*)game_malloc(sizeof(char) * ng_floorstate_data_size);
 	memset(ng_action_oneshot_floorstate, 0x00, ng_floorstate_data_size);
 
 	// Input lock and simulator

@@ -732,7 +732,7 @@ void GhostTrap(ITEM_INFO* item)
 
 			if (wraith->object_number == WRAITH3 && !wraith->hit_points)
 			{
-				wraith->hit_points = item - items;
+				wraith->hit_points = short(item - items);
 				break;
 			}
 

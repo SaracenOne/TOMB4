@@ -209,7 +209,7 @@ bool GameInitialise()
 
 long S_SaveGame(long slot_num)
 {
-	ulong bytes;
+	size_t bytes;
 	long days, hours, minutes, seconds;
 	char buffer[80], counter[16];
 

@@ -14,7 +14,10 @@ bgfx::TextureHandle CreateTexturePage(long w, long h, long MipMapCount, long* pS
 #endif
 {
 #ifdef USE_BGFX
-	bgfx::TextureHandle tSurf;
+	bgfx::TextureHandle tSurf = BGFX_INVALID_HANDLE;
+
+	// BGFX (todo): Don't upload textures for now...
+	return tSurf;
 #else
 	DXTEXTUREINFO* tex;
 	LPDIRECTDRAWSURFACEX tSurf;

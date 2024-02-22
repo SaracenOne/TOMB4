@@ -6,6 +6,7 @@
 #include "control.h"
 #include "effects.h"
 #include "lara.h"
+#include "../specific/platform.h"
 
 short next_fx_active;
 short next_item_active;
@@ -13,7 +14,7 @@ short next_item_active;
 static short next_fx_free;
 static short next_item_free;
 
-void InitialiseItemArray(short num)
+void InitialiseItemArray(size_t num)
 {
 	ITEM_INFO* item;
 
@@ -31,8 +32,13 @@ void InitialiseItemArray(short num)
 	item->next_item = NO_ITEM;
 }
 
-void KillItem(short item_num)
+void KillItem(size_t item_num)
 {
+	if (item_num >= ITEM_COUNT) {
+		platform_fatal_error("KillItem: item_num out of range!");
+		return;
+	}
+
 	ITEM_INFO* item;
 	short linknum;
 
@@ -108,8 +114,13 @@ short CreateItem()
 	return item_num;
 }
 
-void InitialiseItem(short item_num)
+void InitialiseItem(size_t item_num)
 {
+	if (item_num >= ITEM_COUNT) {
+		platform_fatal_error("InitialiseItem: item_num out of range!");
+		return;
+	}
+
 	ITEM_INFO* item;
 	ROOM_INFO* r;
 	FLOOR_INFO* floor;
@@ -191,8 +202,13 @@ void InitialiseItem(short item_num)
 	item->il.pPrevLights = item->il.PrevLights;
 }
 
-void RemoveActiveItem(short item_num)
+void RemoveActiveItem(size_t item_num)
 {
+	if (item_num >= ITEM_COUNT) {
+		platform_fatal_error("RemoveActiveItem: item_num out of range!");
+		return;
+	}
+
 	short linknum;
 
 	if (!items[item_num].active)
@@ -215,8 +231,13 @@ void RemoveActiveItem(short item_num)
 	}
 }
 
-void RemoveDrawnItem(short item_num)
+void RemoveDrawnItem(size_t item_num)
 {
+	if (item_num >= ITEM_COUNT) {
+		platform_fatal_error("RemoveDrawnItem: item_num out of range!");
+		return;
+	}
+
 	ITEM_INFO* item;
 	short linknum;
 
@@ -238,8 +259,13 @@ void RemoveDrawnItem(short item_num)
 	}
 }
 
-void AddActiveItem(short item_num)
+void AddActiveItem(size_t item_num)
 {
+	if (item_num >= ITEM_COUNT) {
+		platform_fatal_error("AddActiveItem: item_num out of range!");
+		return;
+	}
+
 	ITEM_INFO* item;
 
 	item = &items[item_num];
@@ -258,8 +284,13 @@ void AddActiveItem(short item_num)
 		item->status = ITEM_INACTIVE;
 }
 
-void ItemNewRoom(short item_num, short room_num)
+void ItemNewRoom(size_t item_num, short room_num)
 {
+	if (item_num >= ITEM_COUNT) {
+		platform_fatal_error("ItemNewRoom: item_num out of range!");
+		return;
+	}
+
 	ITEM_INFO* item;
 	ROOM_INFO* r;
 	short linknum;
@@ -299,7 +330,7 @@ void ItemNewRoom(short item_num, short room_num)
 	room[room_num].item_number = item_num;
 }
 
-void InitialiseFXArray(long allocmem)
+void InitialiseFXArray(size_t allocmem)
 {
 	FX_INFO* fx;
 

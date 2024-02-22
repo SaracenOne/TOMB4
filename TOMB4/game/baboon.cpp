@@ -246,7 +246,7 @@ void BaboonControl(short item_number)
 					{
 						if (item2->room_number != 255 && item2->status != ITEM_INVISIBLE && !(item2->flags & IFL_CLEARBODY))
 						{
-							item->carried_item = item2 - items;
+							item->carried_item = short(item2 - items);
 							RemoveDrawnItem(item->carried_item);
 							item2->room_number = 255;
 							item2->carried_item = -1;

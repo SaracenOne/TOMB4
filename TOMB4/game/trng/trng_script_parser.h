@@ -230,15 +230,15 @@ struct NG_ANIMATION {
 	unsigned short key_1 = 0;
 	unsigned short key_2 = 0;
 	unsigned short fan_flags = 0;
-	NG_MULTI_ENV_TRIPLET environment;
+	NG_MULTI_ENV_TRIPLET environment = {};
 	unsigned short state_or_animation_condition_count = 0;
-	short state_or_animation_condition_array[NG_ANIMATION_CONDTION_MAX_SIZE];
+	short state_or_animation_condition_array[NG_ANIMATION_CONDTION_MAX_SIZE] = {};
 };
 
 #define NG_MULTI_ENV_CONDITION_MAX_TRIPLETS 128
 struct NG_MULTI_ENV_CONDITION {
 	int env_condition_triplet_count = 0;
-	NG_MULTI_ENV_TRIPLET env_condition_triplet_array[NG_MULTI_ENV_CONDITION_MAX_TRIPLETS];
+	NG_MULTI_ENV_TRIPLET env_condition_triplet_array[NG_MULTI_ENV_CONDITION_MAX_TRIPLETS] = {};
 };
 
 struct NG_TEST_POSITION {
@@ -385,8 +385,8 @@ extern char *NGGetString(short string_id);
 extern char *NGGetPluginString(short plugin_id);
 extern int NGGetT4PluginID(short plugin_id);
 
-extern void NGScriptInit(char* gfScriptFile, unsigned int offset, size_t len);
+extern void NGScriptInit(char* gfScriptFile, size_t offset, size_t len);
 extern void NGScriptCleanup();
 extern void NGLoadTablesForLevel(unsigned int level);
-extern void NGReadNGGameflowInfo(char* gfScriptFile, unsigned int offset, size_t len);
-extern void NGReadNGExtraStrings(char* gfLanguageFile, unsigned int offset, size_t len);
+extern void NGReadNGGameflowInfo(char* gfScriptFile, size_t offset, size_t len);
+extern void NGReadNGExtraStrings(char* gfLanguageFile, size_t offset, size_t len);

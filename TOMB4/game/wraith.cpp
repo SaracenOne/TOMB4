@@ -19,13 +19,13 @@ void InitialiseWraith(short item_number)
 	WRAITH_STRUCT* data;
 
 	item = &items[item_number];
-	data = (WRAITH_STRUCT*)game_malloc(8 * sizeof(WRAITH_STRUCT));
+	data = (WRAITH_STRUCT*)game_malloc(MAX_WRAITH_DATA * sizeof(WRAITH_STRUCT));
 	item->data = data;
 	item->item_flags[0] = 0;
 	item->hit_points = 0;
 	item->speed = WraithSpeed;
 
-	for (int i = 0; i < 8; i++)
+	for (int i = 0; i < MAX_WRAITH_DATA; i++)
 	{
 		data->pos.x = item->pos.x_pos;
 		data->pos.y = item->pos.y_pos;
@@ -400,9 +400,9 @@ void WraithControl(short item_number)
 		TriggerWraithEffect(x, y, z, item->pos.y_rot + 0x8000, item->object_number);
 
 	wraith = (WRAITH_STRUCT*)item->data;
-	wraith += 7;
+	wraith += (MAX_WRAITH_DATA - 1);
 
-	for (int i = 0; i < 7; i++)
+	for (int i = 0; i < (MAX_WRAITH_DATA - 1); i++)
 	{
 		wraith[-1].pos.x += wraith[-1].xv >> 4;
 		wraith[-1].pos.y += wraith[-1].yv >> 4;
