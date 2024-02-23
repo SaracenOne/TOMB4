@@ -95,8 +95,8 @@ void InitializeBGFX() {
     init.vendorId = BGFX_PCI_ID_NONE;
     init.platformData.nwh = SDLGetNativeWindowHandle(sdl_window);
     init.platformData.ndt = SDLGetNativeDisplayHandle(sdl_window);
-    init.resolution.width = WINDOW_DEFAULT_WIDTH;
-    init.resolution.height = WINDOW_DEFAULT_HEIGHT;
+    init.resolution.width = App.dx.dwRenderWidth;
+    init.resolution.height = App.dx.dwRenderHeight;
     init.resolution.reset = BGFX_RESET_VSYNC;
     if (!bgfx::init(init))
     {
@@ -116,15 +116,15 @@ void SetupBGFXOutputPolyList() {
     float ortho[16];
 
     const bx::Vec3 at = { 0.0f, 0.0f, 0.0f };
-    const bx::Vec3 eye = { 0.0f, 0.0f, -30.0f};
+    const bx::Vec3 eye = { 0.0f, 0.0f, -1.0f };
 
     bx::mtxLookAt(view, eye, at);
 
-    bx::mtxOrtho(ortho, 0.0f, WINDOW_DEFAULT_WIDTH, WINDOW_DEFAULT_HEIGHT, 0.0f, 0.0f, 100.0f, 0.0f, bgfx::getCaps()->homogeneousDepth);
+    bx::mtxOrtho(ortho, 0.0f, App.dx.dwRenderWidth, App.dx.dwRenderHeight, 0.0f, 0.0f, 100.0f, 0.0f, bgfx::getCaps()->homogeneousDepth);
 
     bgfx::setViewTransform(0, view, ortho);
 
-    bgfx::setViewRect(0, 0, 0, uint16_t(WINDOW_DEFAULT_WIDTH), uint16_t(WINDOW_DEFAULT_HEIGHT));
+    bgfx::setViewRect(0, 0, 0, uint16_t(App.dx.dwRenderWidth), uint16_t(App.dx.dwRenderHeight));
 
 }
 
