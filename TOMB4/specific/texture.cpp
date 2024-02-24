@@ -14,10 +14,7 @@ bgfx::TextureHandle CreateTexturePage(long w, long h, long MipMapCount, long* pS
 #endif
 {
 #ifdef USE_BGFX
-	bgfx::TextureHandle tSurf = BGFX_INVALID_HANDLE;
-
-	// BGFX (todo): Don't upload textures for now...
-	return tSurf;
+	bgfx::TextureHandle tSurf;
 #else
 	DXTEXTUREINFO* tex;
 	LPDIRECTDRAWSURFACEX tSurf;
@@ -37,8 +34,8 @@ bgfx::TextureHandle CreateTexturePage(long w, long h, long MipMapCount, long* pS
 	desc.dwWidth = w;
 	desc.dwHeight = h;
 #endif
-	ulong buffer_width = w;
-	ulong buffer_height = h;
+	uint16_t buffer_width = w;
+	uint16_t buffer_height = h;
 
 	if (w < 32 || h < 32)
 		MipMapCount = 0;
@@ -97,9 +94,9 @@ bgfx::TextureHandle CreateTexturePage(long w, long h, long MipMapCount, long* pS
 				o = ro | go | bo | ao;
 #else
 				ro = r;
-				go = g;
-				bo = b;
-				ao = a;
+				go = g << 8;
+				bo = b << 16;
+				ao = a << 24;
 				o = ro | go | bo | ao;
 #endif
 
@@ -148,7 +145,7 @@ bgfx::TextureHandle CreateTexturePage(long w, long h, long MipMapCount, long* pS
 	}
 
 #ifdef USE_BGFX
-	tSurf = bgfx::createTexture2D(buffer_width, buffer_height, false, 1, bgfx::TextureFormat::RGBA8U, BGFX_TEXTURE_NONE | BGFX_SAMPLER_NONE, texture_buffer);
+	tSurf = bgfx::createTexture2D(buffer_width, buffer_height, false, 1, bgfx::TextureFormat::BGRA8, BGFX_TEXTURE_NONE | BGFX_SAMPLER_NONE, texture_buffer);
 #else
 	DXAttempt(tSurf->Unlock(0));
 #endif

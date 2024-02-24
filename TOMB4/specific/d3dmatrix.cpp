@@ -8,9 +8,6 @@ GFXMATRIX D3DMView;
 GFXMATRIX D3DLightMatrix;
 GFXMATRIX D3DInvCameraMatrix;
 
-static GFXMATRIX D3DMWorld;
-static GFXMATRIX D3DMProjection;
-
 GFXMATRIX* D3DIdentityMatrix(GFXMATRIX* mx)
 {
 	mx->_11 = 1;
@@ -82,13 +79,6 @@ GFXVECTOR* D3DNormalise(GFXVECTOR* vec)
 	}
 
 	return vec;
-}
-
-void S_InitD3DMatrix()
-{
-	D3DIdentityMatrix(&D3DMWorld);
-	D3DIdentityMatrix(&D3DMProjection);
-	D3DMProjection._22 = -1;
 }
 
 GFXMATRIX *D3DMultMatrix(GFXMATRIX *d, GFXMATRIX *a, GFXMATRIX*b)

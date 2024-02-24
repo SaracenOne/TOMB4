@@ -556,11 +556,7 @@ void S_LoadBar()
 
 	if (gfCurrentLevel || App.dx.Flags & DXF_HWR)
 	{
-#ifdef USE_BGFX
-		// Put BGFX code here...
-#else
 		_BeginScene();
-#endif
 		InitBuckets();
 		InitialiseSortList();
 #ifdef USE_BGFX

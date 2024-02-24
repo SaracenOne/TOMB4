@@ -903,7 +903,7 @@ void DrawBucket(TEXTUREBUCKET* bucket)
 	bgfx::update(bucket->handle, 0, bgfx::makeRef(bucket->vtx, bucket->nVtx * sizeof(GFXTLBUMPVERTEX)));
 
 	bgfx::setVertexBuffer(0, bucket->handle, 0, bucket->nVtx);
-	//bgfx::setTexture(0, s_texColor, Textures[bucket->tpage].tex);
+	bgfx::setTexture(0, s_texColor, Textures[bucket->tpage].tex);
 	bgfx::setState(state);
 
 	bgfx::submit(0, m_outputProgram);

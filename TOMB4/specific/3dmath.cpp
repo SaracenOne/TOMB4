@@ -979,5 +979,4 @@ void phd_LookAt(long sx, long sy, long sz, long tx, long ty, long tz, short roll
 	CamPos.y = sy;
 	CamPos.z = sz;
 	phd_GenerateW2V(&viewPos);
-	S_InitD3DMatrix();
 }
