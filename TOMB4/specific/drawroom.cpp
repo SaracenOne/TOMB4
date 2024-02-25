@@ -891,6 +891,19 @@ void DrawBucket(TEXTUREBUCKET* bucket)
 
 	bgfx::update(bucket->handle, 0, bgfx::makeRef(bucket->vtx, bucket->nVtx * sizeof(GFXTLBUMPVERTEX)));
 
+	// Compatibility for the old D3DTL XYZRWH polygon buffer
+	for (int i = 0; i < bucket->nVtx; i++)
+	{
+		if (bucket->vtx[i].rhw != 1.0f && bucket->vtx[i].rhw != 0.0f)
+		{
+			float w = 1.0f / bucket->vtx[i].rhw;
+			bucket->vtx[i].sx *= w;
+			bucket->vtx[i].sy *= w;
+			bucket->vtx[i].sz *= w;
+			bucket->vtx[i].rhw = w;
+		}
+	}
+
 	bgfx::setVertexBuffer(0, bucket->handle, 0, bucket->nVtx);
 	bgfx::setTexture(0, s_texColor, Textures[bucket->tpage].tex);
 	bgfx::setState(state);
