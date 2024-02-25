@@ -1,8 +1,8 @@
 #pragma once
 #include "../global/types.h"
 
-#define WINDOW_DEFAULT_WIDTH 640
-#define WINDOW_DEFAULT_HEIGHT 480
+#define WINDOW_DEFAULT_WIDTH 1600
+#define WINDOW_DEFAULT_HEIGHT 900
 
 #ifdef USE_SDL
 extern SDL_Window* sdl_window;

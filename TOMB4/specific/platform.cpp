@@ -131,7 +131,7 @@ void platform_fatal_error(const char* s, ...) {
 
 #ifdef USE_SDL
 	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR,
-		"Tomb4Main.",
+		"Tomb4Main",
 		buf,
 		NULL);
 #elif _WIN32

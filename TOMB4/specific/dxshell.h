@@ -7,15 +7,11 @@ const Uint8 *DXReadKeyboard(const Uint8* KeyMap);
 #else
 void DXReadKeyboard(char* KeyMap);
 #endif
-#ifdef USE_BGFX
-// Put BGFX code here...
-#else
+#ifndef USE_BGFX
 long DXAttempt(HRESULT r);
 #endif
 void* AddStruct(void* p, long num, long size);
-#ifdef USE_BGFX
-// Put BGFX code here...
-#else
+#ifndef USE_BGFX
 long DXDDCreate(LPGUID pGuid, void** pDD4);
 long DXD3DCreate(LPDIRECTDRAWX pDD4, void** pD3D);
 long DXSetCooperativeLevel(LPDIRECTDRAWX pDD4, HWND hwnd, long flags);
@@ -26,15 +22,11 @@ BOOL __stdcall DXEnumDirectSound(LPGUID lpGuid, LPCSTR lpcstrDescription, LPCSTR
 #endif
 long DXGetInfo(DXINFO* dxinfo, HWND hwnd);
 void DXFreeInfo(DXINFO* dxinfo);
-#ifdef USE_BGFX
-// Put BGFX code here...
-#else
+#ifndef USE_BGFX
 HRESULT __stdcall DXEnumDisplayModes(LPDDSURFACEDESCX lpDDSurfaceDesc2, LPVOID lpContext);
 #endif
 long BPPToDDBD(long BPP);
-#ifdef USE_BGFX
-// Put BGFX code here...
-#else
+#ifndef USE_BGFX
 HRESULT __stdcall DXEnumTextureFormats(LPDDPIXELFORMAT lpDDPixFmt, LPVOID lpContext);
 HRESULT __stdcall DXEnumZBufferFormats(LPDDPIXELFORMAT lpDDPixFmt, LPVOID lpContext);
 long DXCreateSurface(LPDIRECTDRAWX dd, LPDDSURFACEDESCX desc, LPDIRECTDRAWSURFACEX* surf);
@@ -43,9 +35,7 @@ long DXCreateD3DDevice(LPDIRECT3DX d3d, GUID guid, LPDIRECTDRAWSURFACEX surf, LP
 long DXCreateViewport(LPDIRECT3DX d3d, LPDIRECT3DDEVICEX device, long w, long h, LPDIRECT3DVIEWPORTX* viewport);
 #endif
 HRESULT DXShowFrame();
-#ifdef USE_BGFX
-// Put BGFX code here...
-#else
+#ifndef USE_BGFX
 void DXMove(long x, long y);
 #if 0
 void DXSaveScreen(LPDIRECTDRAWSURFACEX surf, const char* name);
@@ -53,9 +43,7 @@ void DXSaveScreen(LPDIRECTDRAWSURFACEX surf, const char* name);
 void DXClose();
 #endif
 long DXCreate(long w, long h, long bpp, long Flags, DXPTR* dxptr, HWND hWnd, long WindowStyle);
-#ifdef USE_BGFX
-// Put BGFX code here...
-#else
+#ifndef USE_BGFX
 long DXChangeVideoMode();
 long DXToggleFullScreen();
 HRESULT __stdcall DXEnumDirect3D(LPGUID lpGuid, LPSTR lpDeviceDescription, LPSTR lpDeviceName, LPD3DDEVICEDESC lpHWDesc, LPD3DDEVICEDESC lpHELDesc, LPVOID lpContext);
@@ -65,9 +53,7 @@ void DXInitKeyboard(HWND hwnd, HINSTANCE hinstance);
 
 extern DXPTR* G_dxptr;
 extern DXINFO* G_dxinfo;
-#ifdef USE_BGFX
-// Put BGFX code here...
-#else
+#ifndef USE_BGFX
 extern LPDIRECTDRAWX G_ddraw;
 extern LPDIRECT3DX G_d3d;
 #endif

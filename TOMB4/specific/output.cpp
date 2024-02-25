@@ -326,9 +326,7 @@ void ProcessObjectMeshVertices(MESH_DATA* mesh)
 		MyVertexBuffer[i].specular = RGBA(sR, sG, sB, sA);
 	}
 
-#ifdef USE_BGFX
-	// Put BGFX code here...
-#else
+#ifndef USE_BGFX
 	mesh->SourceVB->Unlock();
 #endif
 }

@@ -350,9 +350,7 @@ void ProcessRoomVertices(ROOM_INFO* r)
 void ProcessRoomData(ROOM_INFO* r)
 {
 	GFXVERTEX* vptr;
-#ifdef USE_BGFX
-	// TODO
-#else
+#ifndef USE_BGFX
 	D3DVERTEXBUFFERDESC vb;
 #endif
 	LIGHTINFO* light;
@@ -511,8 +509,7 @@ void ProcessRoomData(ROOM_INFO* r)
 		data_ptr += 6;
 	}
 
-#ifdef USE_BGFX
-#else
+#ifndef USE_BGFX
 	r->SourceVB->Unlock();
 #endif
 
@@ -601,9 +598,7 @@ void ProcessRoomData(ROOM_INFO* r)
 			}
 		}
 	}
-#ifdef USE_BGFX
-	// Put BGFX code here...
-#else
+#ifndef USE_BGFX
 	r->SourceVB->Optimize(App.dx._lpD3DDevice, 0);
 #endif
 }
@@ -673,9 +668,7 @@ void ProcessMeshData(long num_meshes)
 {
 	MESH_DATA* mesh;
 	GFXVERTEX* vtx;
-#ifdef USE_BGFX
-	// Put BGFX code here...
-#else
+#ifndef USE_BGFX
 	D3DVERTEXBUFFERDESC buf;
 #endif
 	short* mesh_ptr;
@@ -789,9 +782,7 @@ void ProcessMeshData(long num_meshes)
 						mesh_ptr++;
 					}
 				}
-#ifdef USE_BGFX
-				// Put BGFX code here...
-#else
+#ifndef USE_BGFX
 				mesh->SourceVB->Unlock();
 #endif
 			}
@@ -865,9 +856,7 @@ void DrawBucket(TEXTUREBUCKET* bucket)
 
 	if (Textures[bucket->tpage].bump && App.BumpMapping)
 	{
-#ifdef USE_BGFX
-		// Put BGFX code here...
-#else
+#ifndef USE_BGFX
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_FOGENABLE, 0);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_ONE);
@@ -909,7 +898,7 @@ void DrawBucket(TEXTUREBUCKET* bucket)
 	bgfx::submit(0, m_outputProgram);
 #else
 	DXAttempt(App.dx.lpD3DDevice->SetTexture(0, Textures[bucket->tpage].tex));
-	App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, bucket->vtx, bucket->nVtx, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
+	App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, bucket->vtx, bucket->nVtx, 0);
 
 	if (App.BumpMapping)
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
@@ -983,9 +972,7 @@ void DrawBuckets()
 
 	if (App.BumpMapping)
 	{
-#ifdef USE_BGFX
-		// Put BGFX code here...
-#else
+#ifndef USE_BGFX
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_FOGENABLE, 0);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_ONE);
@@ -1001,9 +988,7 @@ void DrawBuckets()
 
 			if (Textures[bucket->tpage].bump && bucket->nVtx)
 			{
-#ifdef USE_BGFX
-				// Put BGFX code here...
-#else
+#ifndef USE_BGFX
 				DXAttempt(App.dx.lpD3DDevice->SetTexture(0, Textures[Textures[bucket->tpage].bumptpage].tex));
 				App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, bucket->vtx, bucket->nVtx, D3DDP_DONOTCLIP);
 #endif
@@ -1011,9 +996,7 @@ void DrawBuckets()
 			}
 		}
 
-#ifdef USE_BGFX
-		// Put BGFX code here...
-#else
+#ifndef USE_BGFX
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_FOGENABLE, 1);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 1);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_DESTCOLOR);
@@ -1029,9 +1012,7 @@ void DrawBuckets()
 
 			if (Textures[bucket->tpage].bump && bucket->nVtx)
 			{
-#ifdef USE_BGFX
-				// Put BGFX code here...
-#else
+#ifndef USE_BGFX
 				DXAttempt(App.dx.lpD3DDevice->SetTexture(0, Textures[bucket->tpage].tex));
 				App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, bucket->vtx, bucket->nVtx, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
 #endif
@@ -1041,9 +1022,7 @@ void DrawBuckets()
 			}
 		}
 
-#ifdef USE_BGFX
-		// Put BGFX code here...
-#else
+#ifndef USE_BGFX
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
 #endif
 
@@ -1053,9 +1032,7 @@ void DrawBuckets()
 
 			if (!Textures[bucket->tpage].bump && bucket->nVtx)
 			{
-#ifdef USE_BGFX
-				// Put BGFX code here...
-#else
+#ifndef USE_BGFX
 				DXAttempt(App.dx.lpD3DDevice->SetTexture(0, Textures[bucket->tpage].tex));
 				App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, bucket->vtx, bucket->nVtx, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
 #endif

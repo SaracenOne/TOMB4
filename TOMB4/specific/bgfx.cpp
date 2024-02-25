@@ -68,10 +68,19 @@ bgfx::ShaderHandle loadShader(const char* _name) {
     bx::strCat(filePath, BX_COUNTOF(filePath), _name);
     bx::strCat(filePath, BX_COUNTOF(filePath), ".bin");
 
-    bgfx::ShaderHandle handle = bgfx::createShader(loadMem(filePath));
-    bgfx::setName(handle, _name);
+    const bgfx::Memory *shader_memory = loadMem(filePath);
+    if (shader_memory) {
+        bgfx::ShaderHandle handle = bgfx::createShader(shader_memory);
+        bgfx::setName(handle, _name);
 
-    return handle;
+        return handle;
+    }
+    else
+    {
+        platform_fatal_error("Failed to load shader at path: '%s'", filePath);
+    }
+
+    return BGFX_INVALID_HANDLE;
 }
 
 bgfx::ProgramHandle loadProgram(const char* _vsName, const char* _fsName)

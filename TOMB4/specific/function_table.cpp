@@ -25,9 +25,7 @@ void SetFogColor(long r, long g, long b)
 	g &= 0xFF;
 	b &= 0xFF;
 	CurrentFog = RGBA(r, g, b, 0xFF);
-#ifdef USE_BGFX
-	// Put BGFX code here...
-#else
+#ifndef USE_BGFX
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_FOGCOLOR, CurrentFog);
 #endif
 }

@@ -4,9 +4,7 @@
 #include "winmain.h"
 #include "cmdline.h"
 
-#ifdef USE_BGFX
-	// Put BGFX code here...
-#else
+#ifndef USE_BGFX
 long DDSCL_FLAGS[11] =	// for DXSetCooperativeLevel logging
 {
 	DDSCL_ALLOWMODEX,
@@ -42,9 +40,7 @@ char tga_header[18] = { 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 64, 1, 0, 1, 16, 0 }
 
 DXPTR* G_dxptr;
 DXINFO* G_dxinfo;
-#ifdef USE_BGFX
-// Put BGFX code here...
-#else
+#ifndef USE_BGFX
 LPDIRECTDRAWX G_ddraw;
 LPDIRECT3DX G_d3d;
 #endif
@@ -107,9 +103,7 @@ void DXReadKeyboard(char* KeyMap)
 #endif
 }
 
-#ifdef USE_BGFX
-	// Put BGFX code here...
-#else
+#ifndef USE_BGFX
 long DXAttempt(HRESULT r)
 {
 	if (SUCCEEDED(r))
@@ -135,9 +129,7 @@ void* AddStruct(void* p, long num, long size)
 	return ptr;
 }
 
-#ifdef USE_BGFX
-	// Put BGFX code here...
-#else
+#ifndef USE_BGFX
 long DXDDCreate(LPGUID pGuid, void** pDD4)
 {
 	LPDIRECTDRAW pDD;
@@ -318,9 +310,7 @@ long DXGetInfo(DXINFO* dxinfo, HWND hwnd)
 	Log(2, "DXInitialise");
 	G_hwnd = hwnd;
 	Log(5, "Enumerating DirectDraw Devices");
-#ifdef USE_BGFX
-	// TODO: Put virtual device setup here...
-#else
+#ifndef USE_BGFX
 	DXAttempt(DirectDrawEnumerate(DXEnumDirectDraw, dxinfo));
 #endif
 #if defined(MA_AUDIO_SAMPLES) && defined(MA_AUDIO_ENGINE)	// Dummy information
@@ -340,9 +330,7 @@ long DXGetInfo(DXINFO* dxinfo, HWND hwnd)
 
 void DXFreeInfo(DXINFO* dxinfo)
 {
-#ifdef USE_BGFX
-	// Put BGFX code here...
-#else
+#ifndef USE_BGFX
 	DXDIRECTDRAWINFO* DDInfo;
 	DXD3DDEVICE* d3d;
 
@@ -586,9 +574,7 @@ long DXCreateViewport(LPDIRECT3DX d3d, LPDIRECT3DDEVICEX device, long w, long h,
 #endif
 HRESULT DXShowFrame()
 {
-#ifdef USE_BGFX
-	// Put BGFX code here...
-#else
+#ifndef USE_BGFX
 	if (G_dxptr->lpPrimaryBuffer->IsLost())
 	{
 		Log(3, "Restored Primary Buffer");
@@ -661,9 +647,7 @@ void DXInitKeyboard(HWND hwnd, HINSTANCE hinstance)
 #endif
 }
 
-#ifdef USE_BGFX
-	// Put BGFX code here...
-#else
+#ifndef USE_BGFX
 #if 0
 void DXSaveScreen(LPDIRECTDRAWSURFACEX surf, const char* name)
 {
@@ -739,9 +723,7 @@ void DXSaveScreen(LPDIRECTDRAWSURFACEX surf, const char* name)
 
 void DXClose()
 {
-#ifdef USE_BGFX
-	// Put BGFX code here...
-#else
+#ifndef USE_BGFX
 	Log(2, "CloseDirectX");
 
 	if (G_dxptr)
@@ -810,9 +792,7 @@ void DXClose()
 
 long DXCreate(long w, long h, long bpp, long Flags, DXPTR* dxptr, HWND hWnd, long WindowStyle)
 {
-#ifdef USE_BGFX
-	// Put BGFX code here...
-#else
+#ifndef USE_BGFX
 	DXDISPLAYMODE* dm;
 	LPDIRECTDRAWCLIPPER clipper;
 	HWND desktop;
@@ -1044,9 +1024,7 @@ long DXChangeVideoMode()
 
 long DXToggleFullScreen()
 {
-#ifdef USE_BGFX
-	// Put BGFX code here...
-#else
+#ifndef USE_BGFX
 	DXDISPLAYMODE* dm;
 
 	Log(2, "DXToggleFullScreen");
@@ -1077,9 +1055,7 @@ long DXToggleFullScreen()
 	return 1;
 }
 
-#ifdef USE_BGFX
-// Put BGFX code here...
-#else
+#ifndef USE_BGFX
 HRESULT __stdcall DXEnumDirect3D(LPGUID lpGuid, LPSTR lpDeviceDescription, LPSTR lpDeviceName, LPD3DDEVICEDESC lpHWDesc, LPD3DDEVICEDESC lpHELDesc, LPVOID lpContext)
 {
 	DXDIRECTDRAWINFO* ddi;

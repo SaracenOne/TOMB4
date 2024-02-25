@@ -711,9 +711,7 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 	FileData += 0x40000;
 
 
-#ifdef USE_BGFX
-	// Put BGFX code here...
-#else
+#ifndef USE_BGFX
 	Textures = (TEXTURE*)AddStruct(Textures, nTextures, sizeof(TEXTURE));
 	nTex = nTextures;
 	nTextures++;
@@ -730,9 +728,7 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 	memcpy(TextureData, FileData, 0x40000);
 	FileData += 0x40000;
 
-#ifdef USE_BGFX
-	// Put BGFX code here...
-#else
+#ifndef USE_BGFX
 	Textures = (TEXTURE*)AddStruct(Textures, nTextures, sizeof(TEXTURE));
 	nTex = nTextures;
 	nTextures++;

@@ -281,9 +281,7 @@ void ShatterObject(SHATTER_ITEM* shatter_item, MESH_INFO* StaticMesh, short Num,
 		offsets += 3;
 	}
 
-#ifdef USE_BGFX
-	// Put BGFX code here...
-#else
+#ifndef USE_BGFX
 	mesh->SourceVB->Unlock();
 #endif
 	VPos.x = pos.x / lp;

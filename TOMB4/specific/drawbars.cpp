@@ -559,9 +559,7 @@ void S_LoadBar()
 		_BeginScene();
 		InitBuckets();
 		InitialiseSortList();
-#ifdef USE_BGFX
-		// Put BGFX code here...
-#else
+#ifndef USE_BGFX
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
@@ -607,9 +605,7 @@ void S_LoadBar()
 				DoBar(x, y, w, h, (long)loadbar_pos, 0xFF000000, 0xFF9F1F80, 0);
 		}
 
-#ifdef USE_BGFX
-		// Put BGFX code here...
-#else
+#ifndef USE_BGFX
 		SortPolyList(SortCount, SortList);
 		DrawSortList();
 		S_DumpScreen();

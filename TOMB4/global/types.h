@@ -1307,9 +1307,7 @@ struct STATIC_INFO
 
 struct DXPTR
 {
-#ifdef USE_BGFX
-	// Put BGFX code here...
-#else
+#ifndef USE_BGFX
 	LPDIRECTDRAWX lpDD;
 	LPDIRECT3DX lpD3D;
 	LPDIRECT3DDEVICEX lpD3DDevice;
@@ -1347,9 +1345,7 @@ struct DXDISPLAYMODE
 	long bpp;
 	long RefreshRate;
 	long bPalette;
-#ifdef USE_BGFX
-	// Put BGFX code here...
-#else
+#ifndef USE_BGFX
 	DDSURFACEDESCX ddsd;
 #endif
 	uchar rbpp;
@@ -1362,9 +1358,7 @@ struct DXDISPLAYMODE
 
 struct DXTEXTUREINFO
 {
-#ifdef USE_BGFX
-	// Put BGFX code here...
-#else
+#ifndef USE_BGFX
 	DDPIXELFORMAT ddpf;
 #endif
 	ulong bpp;
@@ -1382,9 +1376,7 @@ struct DXTEXTUREINFO
 
 struct DXZBUFFERINFO
 {
-#ifdef USE_BGFX
-	// Put BGFX code here...
-#else
+#ifndef USE_BGFX
 	DDPIXELFORMAT ddpf;
 #endif
 	ulong bpp;
@@ -1396,9 +1388,7 @@ struct DXD3DDEVICE
 	char About[80];
 	LPGUID lpGuid;
 	GUID Guid;
-#ifdef USE_BGFX
-	// Put BGFX code here...
-#else
+#ifndef USE_BGFX
 	D3DDEVICEDESC DeviceDesc;
 	long bHardware;
 	long nDisplayModes;
@@ -1416,9 +1406,7 @@ struct DXDIRECTDRAWINFO
 	char About[80];
 	LPGUID lpGuid;
 	GUID Guid;
-#ifdef USE_BGFX
-	// Put BGFX code here...
-#else
+#ifndef USE_BGFX
 	DDCAPS DDCaps;
 	DDDEVICEIDENTIFIER DDIdentifier;
 #endif
@@ -1460,9 +1448,7 @@ struct WINAPP
 	DXPTR dx;
 	HANDLE mutex;
 	float fps;
-#ifdef USE_BGFX
-	// Put BGFX code here...
-#else
+#ifndef USE_BGFX
 	LPDIRECT3DMATERIALX GlobalMaterial;
 	D3DMATERIALHANDLE GlobalMaterialHandle;
 #endif
