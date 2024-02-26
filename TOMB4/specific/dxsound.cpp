@@ -541,7 +541,7 @@ bool DSIsSamplePlaying(long sample_id)
 #if defined(MA_AUDIO_SAMPLES) && defined(MA_AUDIO_ENGINE)
 // Resets the voice active flag upon ending so that the channel can be reused.
 void ma_sample_end_callback(void* pUserData, ma_sound* pSound) {
-	*(bool*)pUserData = false;
+	*(int*)pUserData = -1;
 }
 #endif
 
