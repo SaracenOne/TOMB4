@@ -113,8 +113,10 @@ char** global_string_table;
 
 bool SetupUserDirectories() {
     if (game_mod_config.global_info.game_user_dir_name) {
-        game_user_dir_path = platform_get_userdata_path() + "game_data" + PATH_SEPARATOR + game_mod_config.global_info.game_user_dir_name + PATH_SEPARATOR;
-        if (platform_create_directory(game_user_dir_path.c_str())) {
+        std::string new_game_user_dir_path = platform_get_userdata_path() + "game_data" + PATH_SEPARATOR + game_mod_config.global_info.game_user_dir_name + PATH_SEPARATOR;
+        if (platform_create_directory(new_game_user_dir_path.c_str())) {
+            game_user_dir_path = new_game_user_dir_path;
+
             // Saves
             std::string game_user_saves_dir_name = game_user_dir_path + "saves" + PATH_SEPARATOR;
             if (platform_create_directory(game_user_saves_dir_name.c_str())) {
