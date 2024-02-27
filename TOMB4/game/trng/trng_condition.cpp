@@ -604,13 +604,13 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 		// TODO: I'm not sure this is accurate. More testing will be required.
 		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: LARA_IS_LESS_OR_EVEN_CLICKS_DISTANT_TO_MOVEABLE calculation is not accurate!");
 
-		long dx = (lara_item->pos.x_pos - items[param].pos.x_pos) >> 4;
-		long dy = (lara_item->pos.x_pos - items[param].pos.x_pos) >> 4;
-		long dz = (lara_item->pos.z_pos - items[param].pos.z_pos) >> 4;
+		long dx = (lara_item->pos.x_pos - items[param].pos.x_pos) ;
+		long dy = (lara_item->pos.y_pos - items[param].pos.y_pos);
+		long dz = (lara_item->pos.z_pos - items[param].pos.z_pos);
 		long distance = SQUARE(dx) + SQUARE(dy) + SQUARE(dz);
-		long check_distance = (extra * 256);
+		long check_distance = (extra) * (0x2000 << 4);
 
-		if (distance < check_distance)
+		if (distance <= check_distance)
 			return true;
 
 		return false;
