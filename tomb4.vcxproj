@@ -86,35 +86,35 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(ProjectDir)Build\$(PlatformTarget)\$(Configuration)</OutDir>
+    <OutDir>$(ProjectDir)Build\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>TOMB4\tomb4\libs\SDL2\include;TOMB4\tomb4\libs\simpleini;TOMB4\tomb4\libs\bgfx\include;TOMB4\tomb4\libs\bx\include;TOMB4\tomb4\libs\bx\include\compat\msvc;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <IncludePath>TOMB4\tomb4\libs\SDL2\include;TOMB4\tomb4\libs\simpleini;TOMB4\tomb4\libs\bgfx\include;TOMB4\tomb4\libs\bx\include;TOMB4\tomb4\libs\bx\include\compat\msvc;TOMB4\tomb4\libs\tiny-json;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
     <LibraryPath>TOMB4\tomb4\libs\SDL2\lib\x86;TOMB4\tomb4\libs\bgfx\.build\win32_vs2022\bin;$(LibraryPath)</LibraryPath>
     <TargetName>$(ProjectName)_$(PlatformTarget)_$(Configuration)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>TOMB4\tomb4\libs\SDL2\include;TOMB4\tomb4\libs\simpleini;TOMB4\tomb4\libs\bgfx\include;TOMB4\tomb4\libs\bx\include;TOMB4\tomb4\libs\bx\include\compat\msvc;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <IncludePath>TOMB4\tomb4\libs\SDL2\include;TOMB4\tomb4\libs\simpleini;TOMB4\tomb4\libs\bgfx\include;TOMB4\tomb4\libs\bx\include;TOMB4\tomb4\libs\bx\include\compat\msvc;TOMB4\tomb4\libs\tiny-json;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
     <LibraryPath>TOMB4\tomb4\libs\SDL2\lib\x64;TOMB4\tomb4\libs\bgfx\.build\win64_vs2022\bin;$(LibraryPath)</LibraryPath>
     <LinkIncremental>true</LinkIncremental>
     <TargetName>$(ProjectName)_$(PlatformTarget)_$(Configuration)</TargetName>
-    <OutDir>$(ProjectDir)Build\$(PlatformTarget)\$(Configuration)</OutDir>
+    <OutDir>$(ProjectDir)Build\$(PlatformTarget)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(ProjectDir)Build\$(PlatformTarget)\$(Configuration)</OutDir>
+    <OutDir>$(ProjectDir)Build\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>TOMB4\tomb4\libs\SDL2\include;TOMB4\tomb4\libs\simpleini;TOMB4\tomb4\libs\bgfx\include;TOMB4\tomb4\libs\bx\include;TOMB4\tomb4\libs\bx\include\compat\msvc;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <IncludePath>TOMB4\tomb4\libs\SDL2\include;TOMB4\tomb4\libs\simpleini;TOMB4\tomb4\libs\bgfx\include;TOMB4\tomb4\libs\bx\include;TOMB4\tomb4\libs\bx\include\compat\msvc;TOMB4\tomb4\libs\tiny-json;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
     <LibraryPath>TOMB4\tomb4\libs\SDL2\lib\x86;TOMB4\tomb4\libs\bgfx\.build\win32_vs2022\bin;$(LibraryPath)</LibraryPath>
     <TargetName>$(ProjectName)_$(PlatformTarget)_$(Configuration)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>TOMB4\tomb4\libs\SDL2\include;TOMB4\tomb4\libs\simpleini;TOMB4\tomb4\libs\bgfx\include;TOMB4\tomb4\libs\bx\include;TOMB4\tomb4\libs\bx\include\compat\msvc;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
-    <LibraryPath>TOMB4\tomb4\libs\SDL2\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>TOMB4\tomb4\libs\SDL2\include;TOMB4\tomb4\libs\simpleini;TOMB4\tomb4\libs\bgfx\include;TOMB4\tomb4\libs\bx\include;TOMB4\tomb4\libs\bx\include\compat\msvc;TOMB4\tomb4\libs\tiny-json;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <LibraryPath>TOMB4\tomb4\libs\SDL2\lib\x64;TOMB4\tomb4\libs\bgfx\.build\win64_vs2022\bin;$(LibraryPath)</LibraryPath>
     <LinkIncremental>false</LinkIncremental>
     <TargetName>$(ProjectName)_$(PlatformTarget)_$(Configuration)</TargetName>
-    <OutDir>$(ProjectDir)Build\$(PlatformTarget)\$(Configuration)</OutDir>
+    <OutDir>$(ProjectDir)Build\$(PlatformTarget)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -213,7 +213,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\tiny-json\tiny-json.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="TOMB4\game\lara_states.h" />
     <ClInclude Include="TOMB4\game\ahmet.h" />
@@ -424,6 +423,7 @@
     <ClInclude Include="TOMB4\tomb4\libs\SDL2\include\SDL_version.h" />
     <ClInclude Include="TOMB4\tomb4\libs\SDL2\include\SDL_video.h" />
     <ClInclude Include="TOMB4\tomb4\libs\SDL2\include\SDL_vulkan.h" />
+    <ClInclude Include="TOMB4\tomb4\libs\tiny-json\tiny-json.h" />
     <ClInclude Include="TOMB4\tomb4\libs\zlib\zlib.h" />
     <ClInclude Include="TOMB4\tomb4\mod_config.h" />
     <ClInclude Include="TOMB4\tomb4\pch.h" />
@@ -438,14 +438,6 @@
     <ClInclude Include="TOMB4\tomb4\troyestuff.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\tiny-json\tiny-json.c">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="TOMB4\game\ahmet.cpp" />
     <ClCompile Include="TOMB4\game\baboon.cpp" />
     <ClCompile Include="TOMB4\game\bat.cpp" />
@@ -701,6 +693,20 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="TOMB4\tomb4\libs\tiny-json\tiny-json.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="TOMB4\tomb4\libs\zlib\adler32.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>

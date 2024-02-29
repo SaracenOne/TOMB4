@@ -401,9 +401,6 @@
     <ClInclude Include="TOMB4\tomb4\mod_config.h">
       <Filter>TOMB4\tomb4</Filter>
     </ClInclude>
-    <ClInclude Include="..\tiny-json\tiny-json.h">
-      <Filter>TOMB4\tomb4\libs\tiny-json</Filter>
-    </ClInclude>
     <ClInclude Include="TOMB4\game\trng\trng_action.h">
       <Filter>TOMB4\game\trng</Filter>
     </ClInclude>
@@ -727,6 +724,9 @@
     </ClInclude>
     <ClInclude Include="TOMB4\specific\bgfx.h">
       <Filter>TOMB4\specific</Filter>
+    </ClInclude>
+    <ClInclude Include="TOMB4\tomb4\libs\tiny-json\tiny-json.h">
+      <Filter>TOMB4\tomb4\libs\tiny-json</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1069,9 +1069,6 @@
     <ClCompile Include="TOMB4\tomb4\mod_config.cpp">
       <Filter>TOMB4\tomb4</Filter>
     </ClCompile>
-    <ClCompile Include="..\tiny-json\tiny-json.c">
-      <Filter>TOMB4\tomb4\libs\tiny-json</Filter>
-    </ClCompile>
     <ClCompile Include="TOMB4\game\trng\trng_action.cpp">
       <Filter>TOMB4\game\trng</Filter>
     </ClCompile>
@@ -1164,6 +1161,9 @@
     </ClCompile>
     <ClCompile Include="TOMB4\specific\bgfx.cpp">
       <Filter>TOMB4\specific</Filter>
+    </ClCompile>
+    <ClCompile Include="TOMB4\tomb4\libs\tiny-json\tiny-json.c">
+      <Filter>TOMB4\tomb4\libs\tiny-json</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
