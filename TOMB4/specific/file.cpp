@@ -711,35 +711,39 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 	FileData += 0x40000;
 
 
-#ifndef USE_BGFX
 	Textures = (TEXTURE*)AddStruct(Textures, nTextures, sizeof(TEXTURE));
 	nTex = nTextures;
 	nTextures++;
 	tSurf = CreateTexturePage(256, 256, 0, (long*)TextureData, 0, 0);
+#ifdef USE_BGFX
+	Textures[nTex].tex = tSurf;
+#else
 	DXAttempt(tSurf->QueryInterface(TEXGUID, (LPVOID*)&pTex));
 	Textures[nTex].tex = pTex;
 	Textures[nTex].surface = tSurf;
+#endif
 	Textures[nTex].width = 256;
 	Textures[nTex].height = 256;
 	Textures[nTex].bump = 0;
-#endif
 
 	//sky
 	memcpy(TextureData, FileData, 0x40000);
 	FileData += 0x40000;
 
-#ifndef USE_BGFX
 	Textures = (TEXTURE*)AddStruct(Textures, nTextures, sizeof(TEXTURE));
 	nTex = nTextures;
 	nTextures++;
 	tSurf = CreateTexturePage(256, 256, 0, (long*)TextureData, 0, 0);
+#ifdef USE_BGFX
+	Textures[nTex].tex = tSurf;
+#else
 	DXAttempt(tSurf->QueryInterface(TEXGUID, (LPVOID*)&pTex));
 	Textures[nTex].tex = pTex;
 	Textures[nTex].surface = tSurf;
+#endif
 	Textures[nTex].width = 256;
 	Textures[nTex].height = 256;
 	Textures[nTex].bump = 0;
-#endif
 
 	SYSTEM_FREE(TextureData);
 	SYSTEM_FREE(pData);

@@ -725,6 +725,7 @@ void DrawRooms(short CurrentRoom)
 			nPolyType = 6;
 			phd_PushMatrix();
 
+#ifndef USE_BGFX
 			if (gfLevelFlags & GF_LAYER1)
 			{
 				phd_RotY(32760);
@@ -748,6 +749,7 @@ void DrawRooms(short CurrentRoom)
 				phd_PutPolygonSkyMesh(meshes[objects[HORIZON].mesh_index], -1);
 				OutputSky();
 			}
+#endif
 
 			phd_PopMatrix();
 

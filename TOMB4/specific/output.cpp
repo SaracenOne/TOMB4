@@ -1201,8 +1201,8 @@ void RenderLoadPic(long unused)
 		}
 
 		S_OutputPolyList();
-		S_DumpScreen();
 
+		S_DumpScreen();
 	} while (DoFade != 2);
 
 	phd_LookAt(camera.pos.x, camera.pos.y, camera.pos.z, camera.target.x, camera.target.y, camera.target.z, 0);
@@ -1954,18 +1954,14 @@ void S_OutputPolyList()
 
 #ifndef USE_BGFX
 		if (App.dx.lpZBuffer)
+#endif
 		{
-			// BGFX TODO: Sort list is currently broken
 			DrawSortList();
 		}
-	#endif
 	}
 
-#ifndef USE_BGFX
-	// BGFX TODO: Sort list is currently broken
 	SortPolyList(SortCount, SortList);
 	DrawSortList();
-#endif
 
 #ifndef USE_BGFX
 	if (App.dx.lpZBuffer)
@@ -2024,6 +2020,10 @@ void S_OutputPolyList()
 		DoScreenFade();
 		DrawSortList();
 	}
+
+#ifdef USE_BGFX
+	RenderBGFXDrawLists();
+#endif
 }
 
 void StashSkinVertices(long node)

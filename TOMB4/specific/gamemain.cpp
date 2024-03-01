@@ -70,6 +70,10 @@ void GameClose()
 	SYSTEM_FREE(malloc_buffer);
 	SYSTEM_FREE(gfScriptFile);
 	SYSTEM_FREE(gfLanguageFile);
+
+#ifdef USE_BGFX
+	ShutdownBGFX();
+#endif
 }
 
 #ifdef USE_SDL

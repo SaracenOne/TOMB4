@@ -20,23 +20,6 @@
 #include "../tomb4/mod_config.h"
 #include "bgfx.h"
 
-#ifdef USE_BGFX
-bgfx::UniformHandle s_texColor;
-bgfx::VertexLayout ms_outputBucketVertexLayout;
-
-void SetupOutputBucketVertexLayout()
-{
-	ms_outputBucketVertexLayout
-        .begin()
-        .add(bgfx::Attrib::Position, 4, bgfx::AttribType::Float)
-		.add(bgfx::Attrib::Color0, 4, bgfx::AttribType::Uint8, true)
-		.add(bgfx::Attrib::Color1, 4, bgfx::AttribType::Uint8, true)
-		.add(bgfx::Attrib::TexCoord0, 2, bgfx::AttribType::Float)
-		.add(bgfx::Attrib::TexCoord1, 2, bgfx::AttribType::Float)
-        .end();
-}
-#endif
-
 static ROOM_DYNAMIC RoomDynamics[MAX_DYNAMICS];
 static long nRoomDynamics;
 
@@ -820,20 +803,6 @@ void ProcessMeshData(long num_meshes)
 	Log(2, "End ProcessMeshData");
 }
 
-#ifdef USE_BGFX
-void SetupBuckets()
-{
-	SetupOutputBucketVertexLayout();
-	TEXTUREBUCKET* bucket;
-
-	for (int i = 0; i < MAX_BUCKETS; i++)
-	{
-		bucket = &Bucket[i];
-		bucket->handle = bgfx::createDynamicVertexBuffer(BUCKET_VERT_COUNT, ms_outputBucketVertexLayout);
-	}
-}
-#endif
-
 void InitBuckets()
 {
 	TEXTUREBUCKET *bucket;
@@ -880,16 +849,13 @@ void DrawBucket(TEXTUREBUCKET* bucket)
 
 #ifdef USE_BGFX
 	uint64_t state = 0
-		| BGFX_STATE_WRITE_R
-		| BGFX_STATE_WRITE_G
-		| BGFX_STATE_WRITE_B
-		| BGFX_STATE_WRITE_A
+		| BGFX_STATE_WRITE_RGB
 		| BGFX_STATE_WRITE_Z
 		| BGFX_STATE_DEPTH_TEST_LESS
 		| BGFX_STATE_MSAA
 		| UINT64_C(0);
 
-	bgfx::update(bucket->handle, 0, bgfx::makeRef(bucket->vtx, bucket->nVtx * sizeof(GFXTLBUMPVERTEX)));
+	bgfx::update(bucket->handle, 0, bgfx::makeRef(bucket->vtx, BUCKET_VERT_COUNT * sizeof(GFXTLBUMPVERTEX)));
 
 	// Compatibility for the old D3DTL XYZRWH polygon buffer
 	for (int i = 0; i < bucket->nVtx; i++)
@@ -908,7 +874,7 @@ void DrawBucket(TEXTUREBUCKET* bucket)
 	bgfx::setTexture(0, s_texColor, Textures[bucket->tpage].tex);
 	bgfx::setState(state);
 
-	bgfx::submit(0, m_outputProgram);
+	bgfx::submit(0, m_outputVTLProgram);
 #else
 	DXAttempt(App.dx.lpD3DDevice->SetTexture(0, Textures[bucket->tpage].tex));
 	App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, bucket->vtx, bucket->nVtx, 0);

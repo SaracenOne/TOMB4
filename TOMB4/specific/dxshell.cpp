@@ -574,7 +574,9 @@ long DXCreateViewport(LPDIRECT3DX d3d, LPDIRECT3DDEVICEX device, long w, long h,
 #endif
 HRESULT DXShowFrame()
 {
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+	bgfx::frame();
+#else
 	if (G_dxptr->lpPrimaryBuffer->IsLost())
 	{
 		Log(3, "Restored Primary Buffer");

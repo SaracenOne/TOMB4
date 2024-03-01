@@ -17,6 +17,8 @@
 #include "gamemain.h"
 #include "../game/gameflow.h"
 #include "../tomb4/mod_config.h"
+#include "bgfx.h"
+#include "platform.h"
 
 GFXTLBUMPVERTEX XYUVClipperBuffer[20];
 GFXTLBUMPVERTEX zClipperBuffer[20];
@@ -47,6 +49,42 @@ static long zero = 0;
 
 void HWR_DrawSortList(GFXTLBUMPVERTEX* info, short num_verts, short texture, short type)
 {
+#ifdef USE_BGFX
+	short remaining_verts = num_verts;
+
+	if (current_sort_vertex_buffer_offset + num_verts >= SORT_BUFFER_VERT_COUNT) {
+		platform_fatal_error("Overrun max sort vertex buffer size.");
+		return;
+	}
+
+	GFXTLBUMPVERTEX *gfx_vert_ptr = info;
+	while (remaining_verts > 0) {
+		int size_of_vertex = sizeof(GFXTLBUMPVERTEX);
+		short current_verts = remaining_verts;
+
+		if (current_verts >= MAX_VERTS_PER_SORT_BUFFER) {
+			current_verts = MAX_VERTS_PER_SORT_BUFFER;
+		}
+		if (current_sort_vertex_buffer_idx >= MAX_SORT_VERTEX_BUFFERS) {
+			platform_fatal_error("Overrun max sort vertex buffers.");
+			return;
+		}
+
+		bgfx::update(sort_buffer_vertex_handle[current_sort_vertex_buffer_idx], 0, bgfx::makeRef(gfx_vert_ptr, current_verts * sizeof(GFXTLBUMPVERTEX)));
+		sort_buffer_commands[current_sort_vertex_buffer_idx].count = current_verts;
+		sort_buffer_commands[current_sort_vertex_buffer_idx].texture = Textures[texture].tex;
+		sort_buffer_commands[current_sort_vertex_buffer_idx].blend_type = type;
+
+		gfx_vert_ptr += current_verts;
+
+		current_sort_vertex_buffer_offset += current_verts;
+		current_sort_vertex_buffer_idx++;
+
+		remaining_verts -= current_verts;
+	}
+	return;
+#endif
+
 	switch (type)
 	{
 	case 0:
@@ -183,7 +221,9 @@ void DrawSortList()
 	SORTLIST* pSort;
 	GFXTLBUMPVERTEX* vtx;
 	GFXTLBUMPVERTEX* bVtx;
+#ifndef USE_BGFX
 	GFXTLBUMPVERTEX* bVtxbak;
+#endif
 	long num;
 	short nVtx, tpage, drawtype, total_nVtx;
 
@@ -192,7 +232,10 @@ void DrawSortList()
 	if (!SortCount)
 		return;
 
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+	bgfx::setState(BGFX_STATE_BLEND_ALPHA);
+	bgfx::setState(BGFX_STATE_BLEND_FUNC(BGFX_STATE_BLEND_SRC_ALPHA, BGFX_STATE_BLEND_INV_SRC_ALPHA));
+#else
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHATESTENABLE, 1);
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA);
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA);
@@ -230,8 +273,12 @@ void DrawSortList()
 				break;
 		}
 
+#ifdef USE_BGFX
+		bVtx = &sort_buffer_vertex_buffers_frontbuffer[current_sort_vertex_buffer_offset];
+#else
 		bVtxbak = Bucket[0].vtx;
 		bVtx = bVtxbak;
+#endif
 		tpage = pSort->tpage;
 		drawtype = pSort->drawtype;
 
@@ -255,23 +302,39 @@ void DrawSortList()
 						bVtx->specular = vtx->specular;
 						bVtx->tu = vtx->tu;
 						bVtx->tv = vtx->tv;
+						bVtx->tx = vtx->tx;
+						bVtx->ty = vtx->ty;
 						nVtx++;
 					}
 				}
 				else
 				{
+#ifdef USE_BGFX
+					HWR_DrawSortList(&sort_buffer_vertex_buffers_frontbuffer[current_sort_vertex_buffer_offset], nVtx, tpage, drawtype);	//inlined
+#else
 					HWR_DrawSortList(bVtxbak, nVtx, tpage, drawtype);	//inlined
+#endif
 					drawtype = pSort->drawtype;
 					tpage = pSort->tpage;
+#ifdef USE_BGFX
+					bVtx = &sort_buffer_vertex_buffers_frontbuffer[current_sort_vertex_buffer_offset];
+#else
 					bVtx = bVtxbak;
+#endif
 					nVtx = 0;
 					num--;
 				}
 			}
 		}
 
+
 		if (nVtx)
-			HWR_DrawSortList(bVtxbak, nVtx, tpage, drawtype);
+#ifdef USE_BGFX
+			HWR_DrawSortList(&sort_buffer_vertex_buffers_frontbuffer[current_sort_vertex_buffer_offset], nVtx, tpage, drawtype);	//inlined
+#else
+			HWR_DrawSortList(bVtxbak, nVtx, tpage, drawtype);	//inlined
+#endif
+
 
 		for (num = SortCount - 1; num >= 0; num--)
 		{
@@ -283,7 +346,11 @@ void DrawSortList()
 
 		tpage = pSort->tpage;
 		drawtype = pSort->drawtype;
+#ifdef USE_BGFX
+		bVtx = &sort_buffer_vertex_buffers_frontbuffer[current_sort_vertex_buffer_offset];
+#else
 		bVtx = bVtxbak;
+#endif
 		nVtx = 0;
 		total_nVtx = 0;
 
@@ -299,11 +366,23 @@ void DrawSortList()
 					total_nVtx += pSort->nVtx;
 
 					// TRLE: extra check backported from TR5
+#ifdef USE_BGFX
+					if (total_nVtx >= MAX_VERTS_PER_SORT_BUFFER - 4)
+#else
 					if (total_nVtx >= BUCKET_VERT_COUNT - 4)
+#endif
 					{
-						HWR_DrawSortList(bVtxbak, nVtx, tpage, drawtype);
+#ifdef USE_BGFX
+						HWR_DrawSortList(&sort_buffer_vertex_buffers_frontbuffer[current_sort_vertex_buffer_offset], nVtx, tpage, drawtype);	//inlined
+#else
+						HWR_DrawSortList(bVtxbak, nVtx, tpage, drawtype);	//inlined
+#endif
 						nVtx = 0;
+#ifdef USE_BGFX
+						bVtx = &sort_buffer_vertex_buffers_frontbuffer[current_sort_vertex_buffer_offset];
+#else
 						bVtx = bVtxbak;
+#endif
 						total_nVtx = 0;
 					}
 
@@ -317,23 +396,37 @@ void DrawSortList()
 						bVtx->specular = vtx->specular;
 						bVtx->tu = vtx->tu;
 						bVtx->tv = vtx->tv;
+						bVtx->tx = vtx->tx;
+						bVtx->ty = vtx->ty;
 						nVtx++;
 					}
 				}
 				else
 				{
-					HWR_DrawSortList(bVtxbak, nVtx, tpage, drawtype);
+#ifdef USE_BGFX
+					HWR_DrawSortList(&sort_buffer_vertex_buffers_frontbuffer[current_sort_vertex_buffer_offset], nVtx, tpage, drawtype);	//inlined
+#else
+					HWR_DrawSortList(bVtxbak, nVtx, tpage, drawtype);	//inlined
+#endif
 					tpage = pSort->tpage;
 					nVtx = 0;
 					drawtype = pSort->drawtype;
+#ifdef USE_BGFX
+					bVtx = &sort_buffer_vertex_buffers_frontbuffer[current_sort_vertex_buffer_offset];
+#else
 					bVtx = bVtxbak;
+#endif
 					num++;
 				}
 			}
 		}
 
 		if (nVtx)
-			HWR_DrawSortList(bVtxbak, nVtx, tpage, drawtype);
+#ifdef USE_BGFX
+			HWR_DrawSortList(&sort_buffer_vertex_buffers_frontbuffer[current_sort_vertex_buffer_offset], nVtx, tpage, drawtype);	//inlined
+#else
+			HWR_DrawSortList(bVtxbak, nVtx, tpage, drawtype);	//inlined
+#endif
 	}
 
 #ifndef USE_BGFX
