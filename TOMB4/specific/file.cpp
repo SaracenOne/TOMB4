@@ -508,19 +508,16 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 #ifdef USE_BGFX
 		tSurf = CreateTexturePage(App.TextureSize, App.TextureSize, 0, (long*)(TextureData + (i * skip * 0x10000)), 0, format);
 		Textures[nTex].tex = tSurf;
-		Textures[nTex].width = App.TextureSize;
-		Textures[nTex].height = App.TextureSize;
-		Textures[nTex].bump = 0;
 #else
 		tSurf = CreateTexturePage(App.TextureSize, App.TextureSize, 0, (long*)(TextureData + (i * skip * 0x10000)), 0, format);
 		DXAttempt(tSurf->QueryInterface(TEXGUID, (LPVOID*)&pTex));
 		Textures[nTex].tex = pTex;
 		Textures[nTex].surface = tSurf;
+		App.dx.lpD3DDevice->SetTexture(0, pTex);
+#endif
 		Textures[nTex].width = App.TextureSize;
 		Textures[nTex].height = App.TextureSize;
 		Textures[nTex].bump = 0;
-		App.dx.lpD3DDevice->SetTexture(0, pTex);
-#endif
 	}
 
 	SYSTEM_FREE(TextureData);
@@ -540,19 +537,16 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 #ifdef USE_BGFX
 		tSurf = CreateTexturePage(App.TextureSize, App.TextureSize, 0, (long*)(TextureData + (i * skip * 0x10000)), 0, format);
 		Textures[nTex].tex = tSurf;
-		Textures[nTex].width = App.TextureSize;
-		Textures[nTex].height = App.TextureSize;
-		Textures[nTex].bump = 0;
 #else
 		tSurf = CreateTexturePage(App.TextureSize, App.TextureSize, 0, (long*)(TextureData + (i * skip * 0x10000)), 0, format);
 		DXAttempt(tSurf->QueryInterface(TEXGUID, (LPVOID*)&pTex));
 		Textures[nTex].tex = pTex;
 		Textures[nTex].surface = tSurf;
+		App.dx.lpD3DDevice->SetTexture(0, pTex);
+#endif
 		Textures[nTex].width = App.TextureSize;
 		Textures[nTex].height = App.TextureSize;
 		Textures[nTex].bump = 0;
-		App.dx.lpD3DDevice->SetTexture(0, pTex);
-#endif
 	}
 
 	SYSTEM_FREE(TextureData);
@@ -560,18 +554,6 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 
 	Log(5, "BTPages %d", BTPages);
 
-#ifdef USE_BGFX
-	// Put BGFX code here...
-	if (BTPages)
-	{
-		size = BTPages * skip * 0x10000;
-		TextureData = (uchar*)SYSTEM_MALLOC(size);
-		memcpy(TextureData, FileData, size);
-		FileData += size;
-
-		SYSTEM_FREE(TextureData);
-	}
-#else
 	if (BTPages)
 	{
 		size = BTPages * skip * 0x10000;
@@ -594,9 +576,13 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 			Textures = (TEXTURE*)AddStruct(Textures, nTextures, sizeof(TEXTURE));
 			nTex = nTextures;
 			nTextures++;
+#ifdef USE_BGFX
+			Textures[nTex].tex = tSurf;
+#else
 			DXAttempt(tSurf->QueryInterface(TEXGUID, (LPVOID*)&pTex));
 			Textures[nTex].tex = pTex;
 			Textures[nTex].surface = tSurf;
+#endif
 
 			if (i < (BTPages >> 1))
 			{
@@ -615,7 +601,6 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 
 		SYSTEM_FREE(TextureData);
 	}
-#endif
 
 	SYSTEM_FREE(pData);
 
@@ -690,17 +675,14 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 			tSurf = CreateTexturePage(256, 256, 0, (long*)TextureData, 0, 0);
 #ifdef USE_BGFX
 			Textures[nTex].tex = tSurf;
-			Textures[nTex].width = 256;
-			Textures[nTex].height = 256;
-			Textures[nTex].bump = 0;
 #else
 			DXAttempt(tSurf->QueryInterface(TEXGUID, (LPVOID*)&pTex));
 			Textures[nTex].tex = pTex;
 			Textures[nTex].surface = tSurf;
+#endif
 			Textures[nTex].width = 256;
 			Textures[nTex].height = 256;
 			Textures[nTex].bump = 0;
-#endif
 		}
 
 		SYSTEM_FREE(pComp);
