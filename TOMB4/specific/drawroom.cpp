@@ -903,6 +903,7 @@ void FindBucket(long tpage, GFXTLBUMPVERTEX** Vpp, long** nVtxpp)
 			return;
 		}
 
+#ifndef USE_BGFX
 		if (bucket->nVtx > BUCKET_VERT_COUNT - 32)
 		{
 			DrawBucket(bucket);
@@ -912,6 +913,7 @@ void FindBucket(long tpage, GFXTLBUMPVERTEX** Vpp, long** nVtxpp)
 			*nVtxpp = &bucket->nVtx;
 			return;
 		}
+#endif
 	}
 
 	nVtx = 0;
