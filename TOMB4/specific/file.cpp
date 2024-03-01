@@ -656,9 +656,15 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 			{
 				for (int x = 0; x < 256; x++)
 				{
-					r = *(s + (x * 3) + (y * 1536));
-					g = *(s + (x * 3) + (y * 1536) + 1);
-					b = *(s + (x * 3) + (y * 1536) + 2);
+#ifdef USE_BGFX
+					b = *(s + (x * 3) + (y * 0x600));
+					g = *(s + (x * 3) + (y * 0x600) + 1);
+					r = *(s + (x * 3) + (y * 0x600) + 2);
+#else
+					r = *(s + (x * 3) + (y * 0x600));
+					g = *(s + (x * 3) + (y * 0x600) + 1);
+					b = *(s + (x * 3) + (y * 0x600) + 2);
+#endif
 					a = -1;
 
 					if (!r && !b && !g)
