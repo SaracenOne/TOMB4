@@ -8,23 +8,22 @@
 
 #ifdef USE_BGFX
 
-bgfx::ProgramHandle m_outputVTLProgram = BGFX_INVALID_HANDLE;
+bgfx::ProgramHandle m_outputVTLTexProgram = BGFX_INVALID_HANDLE;
+bgfx::ProgramHandle m_outputVTLTexAlphaProgram = BGFX_INVALID_HANDLE;
 bgfx::ProgramHandle m_outputVTLAlphaProgram = BGFX_INVALID_HANDLE;
+
 bgfx::UniformHandle s_texColor;
 bgfx::VertexLayout ms_outputBucketVertexLayout;
 
 size_t current_sort_vertex_buffer_idx = 0;
 size_t current_sort_vertex_buffer_offset = 0;
 
-GFXTLBUMPVERTEX *sort_buffer_vertex_buffers_first = nullptr;
-GFXTLBUMPVERTEX *sort_buffer_vertex_buffers_second = nullptr;
+extern GFXTLBUMPVERTEX *sort_buffer_vertex_buffer = nullptr;
+const bgfx::Memory *sort_buffer_vertex_buffers_ref = nullptr;
 
-GFXTLBUMPVERTEX *sort_buffer_vertex_buffers_frontbuffer = nullptr;
-GFXTLBUMPVERTEX *sort_buffer_vertex_buffers_backbuffer = nullptr;
+bgfx::DynamicVertexBufferHandle sort_buffer_vertex_handle;
 
-bgfx::DynamicVertexBufferHandle sort_buffer_vertex_handle[MAX_SORT_VERTEX_BUFFERS];
-
-BGFXSortDrawCommand sort_buffer_commands[MAX_SORT_VERTEX_BUFFERS];
+BGFXSortDrawCommand sort_buffer_commands[MAX_SORT_DRAW_COMMANDS];
 
 void SetupOutputBucketVertexLayout()
 {
@@ -152,24 +151,16 @@ void InitializeBGFX() {
         bucket->handle = bgfx::createDynamicVertexBuffer(BUCKET_VERT_COUNT, ms_outputBucketVertexLayout);
     }
 
-    for (int i = 0; i < MAX_SORT_VERTEX_BUFFERS; i++)
-    {
-        sort_buffer_vertex_handle[i] = bgfx::createDynamicVertexBuffer(MAX_VERTS_PER_SORT_BUFFER, ms_outputBucketVertexLayout);
-    }
+    sort_buffer_vertex_buffer = (GFXTLBUMPVERTEX*) SYSTEM_MALLOC(SORT_BUFFER_VERT_COUNT * sizeof(GFXTLBUMPVERTEX));
+    sort_buffer_vertex_handle = bgfx::createDynamicVertexBuffer(SORT_BUFFER_VERT_COUNT, ms_outputBucketVertexLayout);
 
-    m_outputVTLProgram = loadProgram("vs_vtl", "fs_vtl");
+    m_outputVTLTexProgram = loadProgram("vs_vtl_tex", "fs_vtl_tex");
+    m_outputVTLTexAlphaProgram = loadProgram("vs_vtl_tex_alpha", "fs_vtl_tex_alpha");
     m_outputVTLAlphaProgram = loadProgram("vs_vtl_alpha", "fs_vtl_alpha");
-
-    sort_buffer_vertex_buffers_first = (GFXTLBUMPVERTEX * )SYSTEM_MALLOC(SORT_BUFFER_VERT_COUNT * sizeof(GFXTLBUMPVERTEX));
-    sort_buffer_vertex_buffers_second = (GFXTLBUMPVERTEX*)SYSTEM_MALLOC(SORT_BUFFER_VERT_COUNT * sizeof(GFXTLBUMPVERTEX));
-
-    sort_buffer_vertex_buffers_frontbuffer = sort_buffer_vertex_buffers_first;
-    sort_buffer_vertex_buffers_backbuffer = sort_buffer_vertex_buffers_second;
 }
 
 void ShutdownBGFX() {
-    SYSTEM_FREE(sort_buffer_vertex_buffers_first);
-    SYSTEM_FREE(sort_buffer_vertex_buffers_second);
+    SYSTEM_FREE(sort_buffer_vertex_buffer);
 }
 
 void SetupBGFXOutputPolyList() {
@@ -192,29 +183,33 @@ void SetupBGFXOutputPolyList() {
 void RenderBGFXDrawLists() {
     // Compatibility for the old D3DTL XYZRWH polygon buffer
     for (int i = 0; i < current_sort_vertex_buffer_offset; i++) {
-        if (sort_buffer_vertex_buffers_frontbuffer[i].rhw != 1.0f && sort_buffer_vertex_buffers_frontbuffer[i].rhw != 0.0f)
+        if (sort_buffer_vertex_buffer[i].rhw != 1.0f && sort_buffer_vertex_buffer[i].rhw != 0.0f)
         {
-            float w = 1.0f / sort_buffer_vertex_buffers_frontbuffer[i].rhw;
-            sort_buffer_vertex_buffers_frontbuffer[i].sx *= w;
-            sort_buffer_vertex_buffers_frontbuffer[i].sy *= w;
-            sort_buffer_vertex_buffers_frontbuffer[i].sz *= w;
-            sort_buffer_vertex_buffers_frontbuffer[i].rhw = w;
+            float w = 1.0f / sort_buffer_vertex_buffer[i].rhw;
+            sort_buffer_vertex_buffer[i].sx *= w;
+            sort_buffer_vertex_buffer[i].sy *= w;
+            sort_buffer_vertex_buffer[i].sz *= w;
+            sort_buffer_vertex_buffer[i].rhw = w;
         }
     }
+
+    bgfx::update(sort_buffer_vertex_handle, 0, sort_buffer_vertex_buffers_ref);
 
     for (int i = current_sort_vertex_buffer_idx-1; i >= 0; i--) {
         uint64_t state = 0
             | BGFX_STATE_WRITE_RGB
             | BGFX_STATE_DEPTH_TEST_LESS
-            | BGFX_STATE_MSAA
             | BGFX_STATE_BLEND_ALPHA
             | UINT64_C(0);
 
 
-        if (sort_buffer_commands[i].texture.idx < 0xffff) {
-            bgfx::setState(state);
-            bgfx::setVertexBuffer(0, sort_buffer_vertex_handle[i], 0, sort_buffer_commands[i].count);
+        bgfx::setState(state);
+        bgfx::setVertexBuffer(0, sort_buffer_vertex_handle, sort_buffer_commands[i].offset, sort_buffer_commands[i].count);
+
+        if (sort_buffer_commands[i].texture.idx != 0xffff) {
             bgfx::setTexture(0, s_texColor, sort_buffer_commands[i].texture);
+            bgfx::submit(0, m_outputVTLTexAlphaProgram);
+        } else {
             bgfx::submit(0, m_outputVTLAlphaProgram);
         }
     }
@@ -223,12 +218,12 @@ void RenderBGFXDrawLists() {
 void StartBGFXFrame() {
     current_sort_vertex_buffer_idx = 0;
     current_sort_vertex_buffer_offset = 0;
+
+    sort_buffer_vertex_buffers_ref = bgfx::makeRef(sort_buffer_vertex_buffer, SORT_BUFFER_VERT_COUNT * sizeof(GFXTLBUMPVERTEX));
+    sort_buffer_vertex_buffer = (GFXTLBUMPVERTEX*)sort_buffer_vertex_buffers_ref->data;
 }
 
 void EndBGFXFrame() {
-    GFXTLBUMPVERTEX* sort_buffer_vertex_buffers_backup = sort_buffer_vertex_buffers_frontbuffer;
-    sort_buffer_vertex_buffers_frontbuffer = sort_buffer_vertex_buffers_backbuffer;
-    sort_buffer_vertex_buffers_backbuffer = sort_buffer_vertex_buffers_backup;
 }
 
 #endif

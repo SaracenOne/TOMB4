@@ -50,38 +50,24 @@ static long zero = 0;
 void HWR_DrawSortList(GFXTLBUMPVERTEX* info, short num_verts, short texture, short type)
 {
 #ifdef USE_BGFX
-	short remaining_verts = num_verts;
-
 	if (current_sort_vertex_buffer_offset + num_verts >= SORT_BUFFER_VERT_COUNT) {
 		platform_fatal_error("Overrun max sort vertex buffer size.");
 		return;
 	}
 
-	GFXTLBUMPVERTEX *gfx_vert_ptr = info;
-	while (remaining_verts > 0) {
-		int size_of_vertex = sizeof(GFXTLBUMPVERTEX);
-		short current_verts = remaining_verts;
-
-		if (current_verts >= MAX_VERTS_PER_SORT_BUFFER) {
-			current_verts = MAX_VERTS_PER_SORT_BUFFER;
-		}
-		if (current_sort_vertex_buffer_idx >= MAX_SORT_VERTEX_BUFFERS) {
-			platform_fatal_error("Overrun max sort vertex buffers.");
-			return;
-		}
-
-		bgfx::update(sort_buffer_vertex_handle[current_sort_vertex_buffer_idx], 0, bgfx::makeRef(gfx_vert_ptr, current_verts * sizeof(GFXTLBUMPVERTEX)));
-		sort_buffer_commands[current_sort_vertex_buffer_idx].count = current_verts;
-		sort_buffer_commands[current_sort_vertex_buffer_idx].texture = Textures[texture].tex;
-		sort_buffer_commands[current_sort_vertex_buffer_idx].blend_type = type;
-
-		gfx_vert_ptr += current_verts;
-
-		current_sort_vertex_buffer_offset += current_verts;
-		current_sort_vertex_buffer_idx++;
-
-		remaining_verts -= current_verts;
+	if (current_sort_vertex_buffer_idx >= MAX_SORT_DRAW_COMMANDS) {
+		platform_fatal_error("Overrun max sort commands.");
+		return;
 	}
+
+	sort_buffer_commands[current_sort_vertex_buffer_idx].count = num_verts;
+	sort_buffer_commands[current_sort_vertex_buffer_idx].offset = current_sort_vertex_buffer_offset;
+	sort_buffer_commands[current_sort_vertex_buffer_idx].texture = Textures[texture].tex;
+	sort_buffer_commands[current_sort_vertex_buffer_idx].blend_type = type;
+
+	current_sort_vertex_buffer_offset += num_verts;
+	current_sort_vertex_buffer_idx++;
+
 	return;
 #endif
 
@@ -274,7 +260,7 @@ void DrawSortList()
 		}
 
 #ifdef USE_BGFX
-		bVtx = &sort_buffer_vertex_buffers_frontbuffer[current_sort_vertex_buffer_offset];
+		bVtx = &sort_buffer_vertex_buffer[current_sort_vertex_buffer_offset];
 #else
 		bVtxbak = Bucket[0].vtx;
 		bVtx = bVtxbak;
@@ -310,14 +296,14 @@ void DrawSortList()
 				else
 				{
 #ifdef USE_BGFX
-					HWR_DrawSortList(&sort_buffer_vertex_buffers_frontbuffer[current_sort_vertex_buffer_offset], nVtx, tpage, drawtype);	//inlined
+					HWR_DrawSortList(&sort_buffer_vertex_buffer[current_sort_vertex_buffer_offset], nVtx, tpage, drawtype);	//inlined
 #else
 					HWR_DrawSortList(bVtxbak, nVtx, tpage, drawtype);	//inlined
 #endif
 					drawtype = pSort->drawtype;
 					tpage = pSort->tpage;
 #ifdef USE_BGFX
-					bVtx = &sort_buffer_vertex_buffers_frontbuffer[current_sort_vertex_buffer_offset];
+					bVtx = &sort_buffer_vertex_buffer[current_sort_vertex_buffer_offset];
 #else
 					bVtx = bVtxbak;
 #endif
@@ -330,7 +316,7 @@ void DrawSortList()
 
 		if (nVtx)
 #ifdef USE_BGFX
-			HWR_DrawSortList(&sort_buffer_vertex_buffers_frontbuffer[current_sort_vertex_buffer_offset], nVtx, tpage, drawtype);	//inlined
+			HWR_DrawSortList(&sort_buffer_vertex_buffer[current_sort_vertex_buffer_offset], nVtx, tpage, drawtype);	//inlined
 #else
 			HWR_DrawSortList(bVtxbak, nVtx, tpage, drawtype);	//inlined
 #endif
@@ -347,7 +333,7 @@ void DrawSortList()
 		tpage = pSort->tpage;
 		drawtype = pSort->drawtype;
 #ifdef USE_BGFX
-		bVtx = &sort_buffer_vertex_buffers_frontbuffer[current_sort_vertex_buffer_offset];
+		bVtx = &sort_buffer_vertex_buffer[current_sort_vertex_buffer_offset];
 #else
 		bVtx = bVtxbak;
 #endif
@@ -367,19 +353,19 @@ void DrawSortList()
 
 					// TRLE: extra check backported from TR5
 #ifdef USE_BGFX
-					if (total_nVtx >= MAX_VERTS_PER_SORT_BUFFER - 4)
+					if (total_nVtx >= SORT_BUFFER_VERT_COUNT - 4)
 #else
 					if (total_nVtx >= BUCKET_VERT_COUNT - 4)
 #endif
 					{
 #ifdef USE_BGFX
-						HWR_DrawSortList(&sort_buffer_vertex_buffers_frontbuffer[current_sort_vertex_buffer_offset], nVtx, tpage, drawtype);	//inlined
+						HWR_DrawSortList(&sort_buffer_vertex_buffer[current_sort_vertex_buffer_offset], nVtx, tpage, drawtype);	//inlined
 #else
 						HWR_DrawSortList(bVtxbak, nVtx, tpage, drawtype);	//inlined
 #endif
 						nVtx = 0;
 #ifdef USE_BGFX
-						bVtx = &sort_buffer_vertex_buffers_frontbuffer[current_sort_vertex_buffer_offset];
+						bVtx = &sort_buffer_vertex_buffer[current_sort_vertex_buffer_offset];
 #else
 						bVtx = bVtxbak;
 #endif
@@ -404,7 +390,7 @@ void DrawSortList()
 				else
 				{
 #ifdef USE_BGFX
-					HWR_DrawSortList(&sort_buffer_vertex_buffers_frontbuffer[current_sort_vertex_buffer_offset], nVtx, tpage, drawtype);	//inlined
+					HWR_DrawSortList(&sort_buffer_vertex_buffer[current_sort_vertex_buffer_offset], nVtx, tpage, drawtype);	//inlined
 #else
 					HWR_DrawSortList(bVtxbak, nVtx, tpage, drawtype);	//inlined
 #endif
@@ -412,7 +398,7 @@ void DrawSortList()
 					nVtx = 0;
 					drawtype = pSort->drawtype;
 #ifdef USE_BGFX
-					bVtx = &sort_buffer_vertex_buffers_frontbuffer[current_sort_vertex_buffer_offset];
+					bVtx = &sort_buffer_vertex_buffer[current_sort_vertex_buffer_offset];
 #else
 					bVtx = bVtxbak;
 #endif
@@ -423,7 +409,7 @@ void DrawSortList()
 
 		if (nVtx)
 #ifdef USE_BGFX
-			HWR_DrawSortList(&sort_buffer_vertex_buffers_frontbuffer[current_sort_vertex_buffer_offset], nVtx, tpage, drawtype);	//inlined
+			HWR_DrawSortList(&sort_buffer_vertex_buffer[current_sort_vertex_buffer_offset], nVtx, tpage, drawtype);	//inlined
 #else
 			HWR_DrawSortList(bVtxbak, nVtx, tpage, drawtype);	//inlined
 #endif

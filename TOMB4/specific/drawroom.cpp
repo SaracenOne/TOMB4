@@ -852,7 +852,6 @@ void DrawBucket(TEXTUREBUCKET* bucket)
 		| BGFX_STATE_WRITE_RGB
 		| BGFX_STATE_WRITE_Z
 		| BGFX_STATE_DEPTH_TEST_LESS
-		| BGFX_STATE_MSAA
 		| UINT64_C(0);
 
 	bgfx::update(bucket->handle, 0, bgfx::makeRef(bucket->vtx, BUCKET_VERT_COUNT * sizeof(GFXTLBUMPVERTEX)));
@@ -874,7 +873,7 @@ void DrawBucket(TEXTUREBUCKET* bucket)
 	bgfx::setTexture(0, s_texColor, Textures[bucket->tpage].tex);
 	bgfx::setState(state);
 
-	bgfx::submit(0, m_outputVTLProgram);
+	bgfx::submit(0, m_outputVTLTexProgram);
 #else
 	DXAttempt(App.dx.lpD3DDevice->SetTexture(0, Textures[bucket->tpage].tex));
 	App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, bucket->vtx, bucket->nVtx, 0);
