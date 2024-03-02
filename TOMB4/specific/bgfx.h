@@ -5,15 +5,15 @@
 
 #include <bgfx/bgfx.h>
 
-#define SORT_BUFFER_VERT_COUNT 5461 * 3
-#define MAX_SORT_DRAW_COMMANDS 1024
+#define SORT_BUFFER_VERT_COUNT 8192 * 3
+#define MAX_SORT_DRAW_COMMANDS 2048
 
 extern size_t current_sort_vertex_buffer_idx;
 extern size_t current_sort_vertex_buffer_offset;
 
 extern bgfx::ProgramHandle m_outputVTLTexProgram;
-extern bgfx::ProgramHandle m_outputVTLTexAlphaProgram;
-
+extern bgfx::ProgramHandle m_outputVTLTexAlphaClippedProgram;
+extern bgfx::ProgramHandle m_outputVTLTexAlphaBlendedProgram;
 extern bgfx::ProgramHandle m_outputVTLAlphaProgram;
 
 extern bgfx::UniformHandle s_texColor;

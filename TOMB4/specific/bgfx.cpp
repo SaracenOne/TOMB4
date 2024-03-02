@@ -9,7 +9,8 @@
 #ifdef USE_BGFX
 
 bgfx::ProgramHandle m_outputVTLTexProgram = BGFX_INVALID_HANDLE;
-bgfx::ProgramHandle m_outputVTLTexAlphaProgram = BGFX_INVALID_HANDLE;
+bgfx::ProgramHandle m_outputVTLTexAlphaClippedProgram = BGFX_INVALID_HANDLE;
+bgfx::ProgramHandle m_outputVTLTexAlphaBlendedProgram = BGFX_INVALID_HANDLE;
 bgfx::ProgramHandle m_outputVTLAlphaProgram = BGFX_INVALID_HANDLE;
 
 bgfx::UniformHandle s_texColor;
@@ -143,6 +144,7 @@ void InitializeBGFX() {
 
     bgfx::setDebug(0);
     bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x000000ff, 1.0f, 0);
+    bgfx::setViewMode(0, bgfx::ViewMode::Sequential);
 
     SetupOutputBucketVertexLayout();
     for (int i = 0; i < MAX_BUCKETS; i++)
@@ -155,7 +157,8 @@ void InitializeBGFX() {
     sort_buffer_vertex_handle = bgfx::createDynamicVertexBuffer(SORT_BUFFER_VERT_COUNT, ms_outputBucketVertexLayout);
 
     m_outputVTLTexProgram = loadProgram("vs_vtl_tex", "fs_vtl_tex");
-    m_outputVTLTexAlphaProgram = loadProgram("vs_vtl_tex_alpha", "fs_vtl_tex_alpha");
+    m_outputVTLTexAlphaClippedProgram = loadProgram("vs_vtl_tex_alpha_clipped", "fs_vtl_tex_alpha_clipped");
+    m_outputVTLTexAlphaBlendedProgram = loadProgram("vs_vtl_tex_alpha_blended", "fs_vtl_tex_alpha_blended");
     m_outputVTLAlphaProgram = loadProgram("vs_vtl_alpha", "fs_vtl_alpha");
 }
 
@@ -196,10 +199,13 @@ void RenderBGFXDrawLists() {
     bgfx::update(sort_buffer_vertex_handle, 0, sort_buffer_vertex_buffers_ref);
 
     for (int i = 0; i < current_sort_vertex_buffer_idx; i++) {
+    //for (int i = current_sort_vertex_buffer_idx-1; i >= 0; i--) {
         uint64_t state = UINT64_C(0);
+        bool is_blended = false;
 
         switch (sort_buffer_commands[i].draw_type) {
             case 0: {
+                is_blended = false;
                 state = 0
                     | BGFX_STATE_WRITE_RGB
                     | BGFX_STATE_WRITE_A
@@ -209,15 +215,18 @@ void RenderBGFXDrawLists() {
                 break;
             }
             case 1: {
+                is_blended = false;
                 state = 0
                     | BGFX_STATE_WRITE_RGB
                     | BGFX_STATE_WRITE_A
+                    | BGFX_STATE_WRITE_Z
                     | BGFX_STATE_DEPTH_TEST_LESS
                     | BGFX_STATE_BLEND_ALPHA
                     | UINT64_C(0);
                 break;
             }
             case 2: {
+                is_blended = true;
                 state = 0
                     | BGFX_STATE_WRITE_RGB
                     | BGFX_STATE_DEPTH_TEST_LESS
@@ -226,6 +235,7 @@ void RenderBGFXDrawLists() {
                 break;
             }
             case 3: {
+                is_blended = true;
                 state = 0
                     | BGFX_STATE_WRITE_RGB
                     | BGFX_STATE_DEPTH_TEST_LESS
@@ -234,6 +244,7 @@ void RenderBGFXDrawLists() {
                 break;
             }
             case 4: {
+                is_blended = false;
                 state = 0
                     | BGFX_STATE_WRITE_RGB
                     | BGFX_STATE_BLEND_ALPHA
@@ -241,6 +252,7 @@ void RenderBGFXDrawLists() {
                 break;
             }
             case 5: {
+                is_blended = true;
                 state = 0
                     | BGFX_STATE_WRITE_RGB
                     | BGFX_STATE_DEPTH_TEST_LESS
@@ -249,6 +261,7 @@ void RenderBGFXDrawLists() {
                 break;
             }
             case 6: {
+                is_blended = true;
                 state = 0
                     | BGFX_STATE_WRITE_RGB
                     | BGFX_STATE_WRITE_A
@@ -259,6 +272,7 @@ void RenderBGFXDrawLists() {
                 break;
             }
             case 7: {
+                is_blended = true;
                 state = 0
                     | BGFX_STATE_WRITE_RGB
                     | BGFX_STATE_WRITE_A
@@ -282,7 +296,11 @@ void RenderBGFXDrawLists() {
 
         if (sort_buffer_commands[i].texture.idx != 0xffff) {
             bgfx::setTexture(0, s_texColor, sort_buffer_commands[i].texture);
-            bgfx::submit(0, m_outputVTLTexAlphaProgram);
+            if (is_blended) {
+                bgfx::submit(0, m_outputVTLTexAlphaBlendedProgram);
+            } else {
+                bgfx::submit(0, m_outputVTLTexAlphaClippedProgram);
+            }
         } else {
             bgfx::submit(0, m_outputVTLAlphaProgram);
         }

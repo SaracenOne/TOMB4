@@ -9,4 +9,5 @@ void main()
 	v_color0 = a_color0;
 
 	v_texcoord0 = vec2(a_texcoord0.x, a_texcoord0.y);
+	v_texcoord1 = vec2(a_texcoord1.x, a_texcoord1.y);
 }
