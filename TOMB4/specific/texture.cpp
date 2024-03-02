@@ -145,7 +145,13 @@ bgfx::TextureHandle CreateTexturePage(long w, long h, long MipMapCount, long* pS
 	}
 
 #ifdef USE_BGFX
-	tSurf = bgfx::createTexture2D(buffer_width, buffer_height, false, 1, bgfx::TextureFormat::BGRA8, BGFX_TEXTURE_NONE | BGFX_SAMPLER_NONE, texture_buffer);
+	uint64_t flags = BGFX_TEXTURE_NONE;
+	if (App.Filtering) {
+		flags |= BGFX_SAMPLER_NONE;
+	} else {
+		flags |= BGFX_SAMPLER_POINT;
+	}
+	tSurf = bgfx::createTexture2D(buffer_width, buffer_height, false, 1, bgfx::TextureFormat::BGRA8, flags, texture_buffer);
 #else
 	DXAttempt(tSurf->Unlock(0));
 #endif
