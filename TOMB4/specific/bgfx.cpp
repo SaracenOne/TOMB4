@@ -233,7 +233,7 @@ void RenderBGFXDrawLists() {
                 is_blended = true;
                 state = 0
                     | BGFX_STATE_WRITE_RGB
-                    | BGFX_STATE_DEPTH_TEST_LESS
+                    | BGFX_STATE_DEPTH_TEST_LEQUAL
                     | BGFX_STATE_BLEND_ADD
                     | UINT64_C(0);
                 break;
