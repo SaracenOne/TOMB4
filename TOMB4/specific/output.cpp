@@ -585,9 +585,6 @@ void ProcessStaticMeshVertices(MESH_DATA* mesh)
 
 void ProcessTrainMeshVertices(MESH_DATA* mesh)
 {
-#ifdef USE_BGFX
-	return;
-#else
 	FVECTOR vPos;
 	FVECTOR vtx;
 	float* v;
@@ -604,7 +601,11 @@ void ProcessTrainMeshVertices(MESH_DATA* mesh)
 	DistanceFogEnd = 25.0F * 1024.0F;
 	DistanceClipRange = 20.0F * 1024.0F;
 	num = 255.0F / DistanceFogStart;
+#ifdef USE_BGFX
+	v = (float*)mesh->Buffer;
+#else
 	mesh->SourceVB->Lock(DDLOCK_READONLY, (LPVOID*)&v, 0);
+#endif
 
 	for (int i = 0; i < mesh->nVerts; i++)
 	{
@@ -712,6 +713,7 @@ void ProcessTrainMeshVertices(MESH_DATA* mesh)
 		MyVertexBuffer[i].specular = RGBA(sR, sG, sB, sA);
 	}
 
+#ifndef USE_BGFX
 	mesh->SourceVB->Unlock();
 #endif
 }
@@ -1084,7 +1086,6 @@ void phd_PutPolygons(short* objptr, long clip)
 
 void phd_PutPolygons_train(short* objptr, long x)
 {
-#ifndef USE_BGFX
 	MESH_DATA* mesh;
 	GFXTLVERTEX* v;
 	TEXTURESTRUCT* pTex;
@@ -1145,7 +1146,6 @@ void phd_PutPolygons_train(short* objptr, long x)
 		else if (pTex->drawtype <= 2)
 			AddTriSorted(v, tri[0], tri[1], tri[2], pTex, 0);
 	}
-#endif
 }
 
 void _InsertRoom(ROOM_INFO* r)
