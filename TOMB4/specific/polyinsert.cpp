@@ -63,7 +63,7 @@ void HWR_DrawSortList(GFXTLBUMPVERTEX* info, short num_verts, short texture, sho
 	sort_buffer_commands[current_sort_vertex_buffer_idx].count = num_verts;
 	sort_buffer_commands[current_sort_vertex_buffer_idx].offset = current_sort_vertex_buffer_offset;
 	sort_buffer_commands[current_sort_vertex_buffer_idx].texture = Textures[texture].tex;
-	sort_buffer_commands[current_sort_vertex_buffer_idx].blend_type = type;
+	sort_buffer_commands[current_sort_vertex_buffer_idx].draw_type = type;
 
 	current_sort_vertex_buffer_offset += num_verts;
 	current_sort_vertex_buffer_idx++;

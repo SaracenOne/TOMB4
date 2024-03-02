@@ -196,12 +196,86 @@ void RenderBGFXDrawLists() {
     bgfx::update(sort_buffer_vertex_handle, 0, sort_buffer_vertex_buffers_ref);
 
     for (int i = current_sort_vertex_buffer_idx-1; i >= 0; i--) {
-        uint64_t state = 0
-            | BGFX_STATE_WRITE_RGB
-            | BGFX_STATE_DEPTH_TEST_LESS
-            | BGFX_STATE_BLEND_ALPHA
-            | UINT64_C(0);
+        uint64_t state = UINT64_C(0);
 
+        switch (sort_buffer_commands[i].draw_type) {
+            case 0: {
+                state = 0
+                    | BGFX_STATE_WRITE_RGB
+                    | BGFX_STATE_WRITE_A
+                    | BGFX_STATE_WRITE_Z
+                    | BGFX_STATE_DEPTH_TEST_LESS
+                    | UINT64_C(0);
+                break;
+            }
+            case 1: {
+                state = 0
+                    | BGFX_STATE_WRITE_RGB
+                    | BGFX_STATE_WRITE_A
+                    | BGFX_STATE_DEPTH_TEST_LESS
+                    | BGFX_STATE_BLEND_ALPHA
+                    | UINT64_C(0);
+                break;
+            }
+            case 2: {
+                state = 0
+                    | BGFX_STATE_WRITE_RGB
+                    | BGFX_STATE_DEPTH_TEST_LESS
+                    | BGFX_STATE_BLEND_ADD
+                    | UINT64_C(0);
+                break;
+            }
+            case 3: {
+                state = 0
+                    | BGFX_STATE_WRITE_RGB
+                    | BGFX_STATE_DEPTH_TEST_LESS
+                    | BGFX_STATE_BLEND_ALPHA
+                    | UINT64_C(0);
+                break;
+            }
+            case 4: {
+                state = 0
+                    | BGFX_STATE_WRITE_RGB
+                    | BGFX_STATE_BLEND_ALPHA
+                    | UINT64_C(0);
+                break;
+            }
+            case 5: {
+                state = 0
+                    | BGFX_STATE_WRITE_RGB
+                    | BGFX_STATE_DEPTH_TEST_LESS
+                    | BGFX_STATE_BLEND_FUNC(BGFX_STATE_BLEND_ZERO, BGFX_STATE_BLEND_INV_SRC_COLOR)
+                    | UINT64_C(0);
+                break;
+            }
+            case 6: {
+                state = 0
+                    | BGFX_STATE_WRITE_RGB
+                    | BGFX_STATE_WRITE_A
+                    | BGFX_STATE_DEPTH_TEST_LESS
+                    | BGFX_STATE_BLEND_ADD
+                    | BGFX_STATE_PT_LINES
+                    | UINT64_C(0);
+                break;
+            }
+            case 7: {
+                state = 0
+                    | BGFX_STATE_WRITE_RGB
+                    | BGFX_STATE_WRITE_A
+                    | BGFX_STATE_DEPTH_TEST_LESS
+                    | BGFX_STATE_BLEND_FUNC(BGFX_STATE_BLEND_SRC_ALPHA, BGFX_STATE_BLEND_INV_SRC_ALPHA)
+                    | UINT64_C(0);
+                break;
+            }
+            default: {
+                state = 0
+                    | BGFX_STATE_WRITE_RGB
+                    | BGFX_STATE_DEPTH_TEST_LESS
+                    | BGFX_STATE_BLEND_ALPHA
+                    | UINT64_C(0);
+                break;
+            }
+        }
 
         bgfx::setState(state);
         bgfx::setVertexBuffer(0, sort_buffer_vertex_handle, sort_buffer_commands[i].offset, sort_buffer_commands[i].count);

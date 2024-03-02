@@ -23,7 +23,7 @@ extern GFXTLBUMPVERTEX* sort_buffer_vertex_buffer;
 extern bgfx::DynamicVertexBufferHandle sort_buffer_vertex_handle;
 
 struct BGFXSortDrawCommand {
-	size_t blend_type = 0;
+	size_t draw_type = 0;
 	size_t offset = 0;
 	size_t count = 0;
 	bgfx::TextureHandle texture;
