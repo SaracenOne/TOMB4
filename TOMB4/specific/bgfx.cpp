@@ -195,7 +195,7 @@ void RenderBGFXDrawLists() {
 
     bgfx::update(sort_buffer_vertex_handle, 0, sort_buffer_vertex_buffers_ref);
 
-    for (int i = current_sort_vertex_buffer_idx-1; i >= 0; i--) {
+    for (int i = 0; i < current_sort_vertex_buffer_idx; i++) {
         uint64_t state = UINT64_C(0);
 
         switch (sort_buffer_commands[i].draw_type) {
