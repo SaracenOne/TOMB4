@@ -19,6 +19,7 @@
 #include "../tomb4/tomb4.h"
 #include "../tomb4/mod_config.h"
 #include "bgfx.h"
+#include "platform.h"
 
 static ROOM_DYNAMIC RoomDynamics[MAX_DYNAMICS];
 static long nRoomDynamics;
@@ -889,6 +890,7 @@ void DrawBucket(TEXTUREBUCKET* bucket)
 
 void FindBucket(long tpage, GFXTLBUMPVERTEX** Vpp, long** nVtxpp)
 {
+#ifndef USE_BGFX
 	TEXTUREBUCKET* bucket;
 	long nVtx, biggest;
 
@@ -903,7 +905,6 @@ void FindBucket(long tpage, GFXTLBUMPVERTEX** Vpp, long** nVtxpp)
 			return;
 		}
 
-#ifndef USE_BGFX
 		if (bucket->nVtx > BUCKET_VERT_COUNT - 32)
 		{
 			DrawBucket(bucket);
@@ -913,7 +914,6 @@ void FindBucket(long tpage, GFXTLBUMPVERTEX** Vpp, long** nVtxpp)
 			*nVtxpp = &bucket->nVtx;
 			return;
 		}
-#endif
 	}
 
 	nVtx = 0;
@@ -944,15 +944,16 @@ void FindBucket(long tpage, GFXTLBUMPVERTEX** Vpp, long** nVtxpp)
 	bucket->nVtx = 0;
 	*Vpp = bucket->vtx;
 	*nVtxpp = &bucket->nVtx;
+#endif
 }
 
 void DrawBuckets()
 {
+#ifndef USE_BGFX
 	TEXTUREBUCKET* bucket;
 
 	if (App.BumpMapping)
 	{
-#ifndef USE_BGFX
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_FOGENABLE, 0);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_ONE);
@@ -961,22 +962,18 @@ void DrawBuckets()
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_CURRENT);
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_CURRENT);
-#endif
 		for (int i = 0; i < MAX_BUCKETS; i++)
 		{
 			bucket = &Bucket[i];
 
 			if (Textures[bucket->tpage].bump && bucket->nVtx)
 			{
-#ifndef USE_BGFX
 				DXAttempt(App.dx.lpD3DDevice->SetTexture(0, Textures[Textures[bucket->tpage].bumptpage].tex));
 				App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, bucket->vtx, bucket->nVtx, D3DDP_DONOTCLIP);
-#endif
 				DrawPrimitiveCnt++;
 			}
 		}
 
-#ifndef USE_BGFX
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_FOGENABLE, 1);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 1);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_DESTCOLOR);
@@ -984,7 +981,6 @@ void DrawBuckets()
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
-#endif
 
 		for (int i = 0; i < MAX_BUCKETS; i++)
 		{
@@ -992,19 +988,15 @@ void DrawBuckets()
 
 			if (Textures[bucket->tpage].bump && bucket->nVtx)
 			{
-#ifndef USE_BGFX
 				DXAttempt(App.dx.lpD3DDevice->SetTexture(0, Textures[bucket->tpage].tex));
 				App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, bucket->vtx, bucket->nVtx, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
-#endif
 				bucket->nVtx = 0;
 				bucket->tpage = -1;
 				DrawPrimitiveCnt++;
 			}
 		}
 
-#ifndef USE_BGFX
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
-#endif
 
 		for (int i = 0; i < MAX_BUCKETS; i++)
 		{
@@ -1012,10 +1004,8 @@ void DrawBuckets()
 
 			if (!Textures[bucket->tpage].bump && bucket->nVtx)
 			{
-#ifndef USE_BGFX
 				DXAttempt(App.dx.lpD3DDevice->SetTexture(0, Textures[bucket->tpage].tex));
 				App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, bucket->vtx, bucket->nVtx, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
-#endif
 				bucket->nVtx = 0;
 				bucket->tpage = -1;
 				DrawPrimitiveCnt++;
@@ -1030,6 +1020,7 @@ void DrawBuckets()
 			DrawBucket(bucket);
 		}
 	}
+#endif
 }
 
 void CreateVertexNormals(ROOM_INFO* r)

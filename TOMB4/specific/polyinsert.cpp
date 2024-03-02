@@ -49,33 +49,10 @@ static long zero = 0;
 
 void HWR_DrawSortList(GFXTLBUMPVERTEX* info, short num_verts, short texture, short type)
 {
-#ifdef USE_BGFX
-	if (current_sort_vertex_buffer_offset + num_verts >= SORT_BUFFER_VERT_COUNT) {
-		platform_fatal_error("Overrun max sort vertex buffer size.");
-		return;
-	}
-
-	if (current_sort_vertex_buffer_idx >= MAX_SORT_DRAW_COMMANDS) {
-		platform_fatal_error("Overrun max sort commands.");
-		return;
-	}
-
-	sort_buffer_commands[current_sort_vertex_buffer_idx].count = num_verts;
-	sort_buffer_commands[current_sort_vertex_buffer_idx].offset = current_sort_vertex_buffer_offset;
-	sort_buffer_commands[current_sort_vertex_buffer_idx].texture = Textures[texture].tex;
-	sort_buffer_commands[current_sort_vertex_buffer_idx].draw_type = type;
-
-	current_sort_vertex_buffer_offset += num_verts;
-	current_sort_vertex_buffer_idx++;
-
-	return;
-#endif
-
+#ifndef USE_BGFX
 	switch (type)
 	{
 	case 0:
-
-#ifndef USE_BGFX
 		if (App.dx.lpZBuffer)
 			App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 1);
 
@@ -87,22 +64,18 @@ void HWR_DrawSortList(GFXTLBUMPVERTEX* info, short num_verts, short texture, sho
 		App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, info, num_verts, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHATESTENABLE, 1);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 1);
-#endif
 		break;
 
 	case 1:
-#ifndef USE_BGFX
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 1);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHATESTENABLE, 1);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA);
 		DXAttempt(App.dx.lpD3DDevice->SetTexture(0, Textures[texture].tex));
 		App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, info, num_verts, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
-#endif
 		break;
 
 	case 2:
-#ifndef USE_BGFX
 		if (App.dx.lpZBuffer)
 			App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 0);
 
@@ -115,11 +88,9 @@ void HWR_DrawSortList(GFXTLBUMPVERTEX* info, short num_verts, short texture, sho
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_SPECULARENABLE, 1);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA);
-#endif
 		break;
 
 	case 3:
-#ifndef USE_BGFX
 		if (App.dx.lpZBuffer)
 			App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 0);
 
@@ -130,11 +101,9 @@ void HWR_DrawSortList(GFXTLBUMPVERTEX* info, short num_verts, short texture, sho
 		DXAttempt(App.dx.lpD3DDevice->SetTexture(0, Textures[texture].tex));
 		App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, info, num_verts, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
-#endif
 		break;
 
 	case 4:
-#ifndef USE_BGFX
 		DXAttempt(App.dx.lpD3DDevice->SetTexture(0, Textures[texture].tex));
 
 		if (App.dx.lpZBuffer)
@@ -150,12 +119,9 @@ void HWR_DrawSortList(GFXTLBUMPVERTEX* info, short num_verts, short texture, sho
 			App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 1);
 			App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ZENABLE, 1);
 		}
-#endif
-
 		break;
 
 	case 5:
-#ifndef USE_BGFX
 		if (App.dx.lpZBuffer)
 			App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 0);
 
@@ -168,11 +134,9 @@ void HWR_DrawSortList(GFXTLBUMPVERTEX* info, short num_verts, short texture, sho
 		App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, info, num_verts, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
-#endif
 		break;
 
 	case 6:
-#ifndef USE_BGFX
 		if (App.dx.lpZBuffer)
 			App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 0);
 
@@ -181,11 +145,9 @@ void HWR_DrawSortList(GFXTLBUMPVERTEX* info, short num_verts, short texture, sho
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_ONE);
 		DXAttempt(App.dx.lpD3DDevice->SetTexture(0, 0));
 		App.dx.lpD3DDevice->DrawPrimitive(D3DPT_LINELIST, FVF, info, num_verts, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
-#endif
 		break;
 
 	case 7:
-#ifndef USE_BGFX
 		if (App.dx.lpZBuffer)
 			App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 1);
 
@@ -196,10 +158,10 @@ void HWR_DrawSortList(GFXTLBUMPVERTEX* info, short num_verts, short texture, sho
 		DXAttempt(App.dx.lpD3DDevice->SetTexture(0, Textures[texture].tex));
 		App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, info, num_verts, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
-#endif
 		break;
 	}
 	DrawPrimitiveCnt++;
+#endif
 }
 
 void DrawSortList()
@@ -260,7 +222,7 @@ void DrawSortList()
 		}
 
 #ifdef USE_BGFX
-		bVtx = &sort_buffer_vertex_buffer[current_sort_vertex_buffer_offset];
+		bVtx = &sort_buffer_vertex_buffer[last_sort_vertex_buffer_offset];
 #else
 		bVtxbak = Bucket[0].vtx;
 		bVtx = bVtxbak;
@@ -296,14 +258,14 @@ void DrawSortList()
 				else
 				{
 #ifdef USE_BGFX
-					HWR_DrawSortList(&sort_buffer_vertex_buffer[current_sort_vertex_buffer_offset], nVtx, tpage, drawtype);	//inlined
+					AddBGFXDrawSortCommand(&sort_buffer_vertex_buffer[last_sort_vertex_buffer_offset], nVtx, tpage, drawtype);	//inlined
 #else
 					HWR_DrawSortList(bVtxbak, nVtx, tpage, drawtype);	//inlined
 #endif
 					drawtype = pSort->drawtype;
 					tpage = pSort->tpage;
 #ifdef USE_BGFX
-					bVtx = &sort_buffer_vertex_buffer[current_sort_vertex_buffer_offset];
+					bVtx = &sort_buffer_vertex_buffer[last_sort_vertex_buffer_offset];
 #else
 					bVtx = bVtxbak;
 #endif
@@ -316,7 +278,7 @@ void DrawSortList()
 
 		if (nVtx)
 #ifdef USE_BGFX
-			HWR_DrawSortList(&sort_buffer_vertex_buffer[current_sort_vertex_buffer_offset], nVtx, tpage, drawtype);	//inlined
+			AddBGFXDrawSortCommand(&sort_buffer_vertex_buffer[last_sort_vertex_buffer_offset], nVtx, tpage, drawtype);	//inlined
 #else
 			HWR_DrawSortList(bVtxbak, nVtx, tpage, drawtype);	//inlined
 #endif
@@ -333,7 +295,7 @@ void DrawSortList()
 		tpage = pSort->tpage;
 		drawtype = pSort->drawtype;
 #ifdef USE_BGFX
-		bVtx = &sort_buffer_vertex_buffer[current_sort_vertex_buffer_offset];
+		bVtx = &sort_buffer_vertex_buffer[last_sort_vertex_buffer_offset];
 #else
 		bVtx = bVtxbak;
 #endif
@@ -359,13 +321,13 @@ void DrawSortList()
 #endif
 					{
 #ifdef USE_BGFX
-						HWR_DrawSortList(&sort_buffer_vertex_buffer[current_sort_vertex_buffer_offset], nVtx, tpage, drawtype);	//inlined
+						AddBGFXDrawSortCommand(&sort_buffer_vertex_buffer[last_sort_vertex_buffer_offset], nVtx, tpage, drawtype);	//inlined
 #else
 						HWR_DrawSortList(bVtxbak, nVtx, tpage, drawtype);	//inlined
 #endif
 						nVtx = 0;
 #ifdef USE_BGFX
-						bVtx = &sort_buffer_vertex_buffer[current_sort_vertex_buffer_offset];
+						bVtx = &sort_buffer_vertex_buffer[last_sort_vertex_buffer_offset];
 #else
 						bVtx = bVtxbak;
 #endif
@@ -390,7 +352,7 @@ void DrawSortList()
 				else
 				{
 #ifdef USE_BGFX
-					HWR_DrawSortList(&sort_buffer_vertex_buffer[current_sort_vertex_buffer_offset], nVtx, tpage, drawtype);	//inlined
+					AddBGFXDrawSortCommand(&sort_buffer_vertex_buffer[last_sort_vertex_buffer_offset], nVtx, tpage, drawtype);	//inlined
 #else
 					HWR_DrawSortList(bVtxbak, nVtx, tpage, drawtype);	//inlined
 #endif
@@ -398,7 +360,7 @@ void DrawSortList()
 					nVtx = 0;
 					drawtype = pSort->drawtype;
 #ifdef USE_BGFX
-					bVtx = &sort_buffer_vertex_buffer[current_sort_vertex_buffer_offset];
+					bVtx = &sort_buffer_vertex_buffer[last_sort_vertex_buffer_offset];
 #else
 					bVtx = bVtxbak;
 #endif
@@ -409,19 +371,21 @@ void DrawSortList()
 
 		if (nVtx)
 #ifdef USE_BGFX
-			HWR_DrawSortList(&sort_buffer_vertex_buffer[current_sort_vertex_buffer_offset], nVtx, tpage, drawtype);	//inlined
+			AddBGFXDrawSortCommand(&sort_buffer_vertex_buffer[last_sort_vertex_buffer_offset], nVtx, tpage, drawtype);	//inlined
 #else
 			HWR_DrawSortList(bVtxbak, nVtx, tpage, drawtype);	//inlined
 #endif
 	}
 
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+	AddBGFXDrawCommand(true);
+#else
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 1);
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHATESTENABLE, 0);
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
-#endif
 
 	InitBuckets();
+#endif
 }
 
 void CreateFogPos(FOGBULB_STRUCT* FogBulb)
@@ -1476,7 +1440,11 @@ void AddTriClippedZBuffer(GFXTLVERTEX* v, short v0, short v1, short v2, TEXTURES
 		else
 		{
 			clip = 0;
+#ifdef USE_BGFX
+			FindBGFXBucket(tex->tpage, &p, &nVtx);
+#else
 			FindBucket(tex->tpage, &p, &nVtx);
+#endif
 			*nVtx += 3;
 		}
 	}
@@ -1569,7 +1537,11 @@ void AddTriClippedZBuffer(GFXTLVERTEX* v, short v0, short v1, short v2, TEXTURES
 
 		if (nPoints)
 		{
+#ifdef USE_BGFX
+			FindBGFXBucket(tex->tpage, &p, &nVtx);
+#else
 			FindBucket(tex->tpage, &p, &nVtx);
+#endif
 			*nVtx += 3 * nPoints - 6;
 			AddClippedPoly(p, nPoints, XYUVClipperBuffer, tex);
 		}
@@ -1664,7 +1636,11 @@ void AddQuadClippedZBuffer(GFXTLVERTEX* v, short v0, short v1, short v2, short v
 		return;
 	}
 
+#ifdef USE_BGFX
+	FindBGFXBucket(tex->tpage, &p, &nVtx);
+#else
 	FindBucket(tex->tpage, &p, &nVtx);
+#endif
 	*nVtx += 6;
 	bp = p;
 

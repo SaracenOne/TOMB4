@@ -5,6 +5,8 @@
 #include "drawroom.h"
 #include "bgfx.h"
 #include "function_stubs.h"
+#include "texture.h"
+#include "polyinsert.h"
 
 #ifdef USE_BGFX
 
@@ -16,15 +18,20 @@ bgfx::ProgramHandle m_outputVTLAlphaProgram = BGFX_INVALID_HANDLE;
 bgfx::UniformHandle s_texColor;
 bgfx::VertexLayout ms_outputBucketVertexLayout;
 
-size_t current_sort_vertex_buffer_idx = 0;
-size_t current_sort_vertex_buffer_offset = 0;
+size_t first_bucket_command_idx = 0;
+size_t last_bucket_command_idx = 0;
+size_t last_sort_command_idx = 0;
+size_t last_sort_vertex_buffer_offset = 0;
 
 extern GFXTLBUMPVERTEX *sort_buffer_vertex_buffer = nullptr;
 const bgfx::Memory *sort_buffer_vertex_buffers_ref = nullptr;
 
 bgfx::DynamicVertexBufferHandle sort_buffer_vertex_handle;
 
-BGFXSortDrawCommand sort_buffer_commands[MAX_SORT_DRAW_COMMANDS];
+BGFXSortDrawCommand sort_draw_commands[MAX_SORT_DRAW_COMMANDS];
+BGFXDrawCommand draw_commands[MAX_DRAW_COMMANDS];
+
+size_t current_draw_commands = 0;
 
 void SetupOutputBucketVertexLayout()
 {
@@ -136,7 +143,7 @@ void InitializeBGFX() {
     init.platformData.ndt = SDLGetNativeDisplayHandle(sdl_window);
     init.resolution.width = App.dx.dwRenderWidth;
     init.resolution.height = App.dx.dwRenderHeight;
-    init.resolution.reset = BGFX_RESET_VSYNC;
+    init.resolution.reset = BGFX_RESET_VSYNC | BGFX_RESET_MSAA_X16;
     if (!bgfx::init(init))
     {
         platform_fatal_error("Could not create BGFX API context!");
@@ -189,9 +196,8 @@ void SetupBGFXOutputPolyList() {
 
 void RenderBGFXDrawLists() {
     // Compatibility for the old D3DTL XYZRWH polygon buffer
-    for (int i = 0; i < current_sort_vertex_buffer_offset; i++) {
-        if (sort_buffer_vertex_buffer[i].rhw != 1.0f && sort_buffer_vertex_buffer[i].rhw != 0.0f)
-        {
+    for (int i = 0; i < last_sort_vertex_buffer_offset; i++) {
+        if (sort_buffer_vertex_buffer[i].rhw != 1.0f && sort_buffer_vertex_buffer[i].rhw != 0.0f) {
             float w = 1.0f / sort_buffer_vertex_buffer[i].rhw;
             sort_buffer_vertex_buffer[i].sx *= w;
             sort_buffer_vertex_buffer[i].sy *= w;
@@ -200,126 +206,254 @@ void RenderBGFXDrawLists() {
         }
     }
 
+    size_t current_bucket_idx = 0;
+    size_t current_sort_idx = 0;
     bgfx::update(sort_buffer_vertex_handle, 0, sort_buffer_vertex_buffers_ref);
 
-    for (int i = 0; i < current_sort_vertex_buffer_idx; i++) {
-    //for (int i = current_sort_vertex_buffer_idx-1; i >= 0; i--) {
-        uint64_t state = UINT64_C(0);
-        bool is_blended = false;
+    for (int i = 0; i < current_draw_commands; i++) {
+        if (draw_commands[i].is_sorted_command) {
+            for (; current_sort_idx < draw_commands[i].last_idx; current_sort_idx++) {
+                uint64_t state = UINT64_C(0);
+                bool is_blended = false;
 
-        switch (sort_buffer_commands[i].draw_type) {
-            case 0: {
-                is_blended = false;
-                state = 0
-                    | BGFX_STATE_WRITE_RGB
-                    | BGFX_STATE_WRITE_A
-                    | BGFX_STATE_WRITE_Z
-                    | BGFX_STATE_DEPTH_TEST_LESS
-                    | UINT64_C(0);
-                break;
-            }
-            case 1: {
-                is_blended = false;
-                state = 0
-                    | BGFX_STATE_WRITE_RGB
-                    | BGFX_STATE_WRITE_A
-                    | BGFX_STATE_WRITE_Z
-                    | BGFX_STATE_DEPTH_TEST_LESS
-                    | BGFX_STATE_BLEND_ALPHA
-                    | UINT64_C(0);
-                break;
-            }
-            case 2: {
-                is_blended = true;
-                state = 0
-                    | BGFX_STATE_WRITE_RGB
-                    | BGFX_STATE_DEPTH_TEST_LEQUAL
-                    | BGFX_STATE_BLEND_ADD
-                    | UINT64_C(0);
-                break;
-            }
-            case 3: {
-                is_blended = true;
-                state = 0
-                    | BGFX_STATE_WRITE_RGB
-                    | BGFX_STATE_DEPTH_TEST_LESS
-                    | BGFX_STATE_BLEND_ALPHA
-                    | UINT64_C(0);
-                break;
-            }
-            case 4: {
-                is_blended = false;
-                state = 0
-                    | BGFX_STATE_WRITE_RGB
-                    | BGFX_STATE_BLEND_ALPHA
-                    | UINT64_C(0);
-                break;
-            }
-            case 5: {
-                is_blended = true;
-                state = 0
-                    | BGFX_STATE_WRITE_RGB
-                    | BGFX_STATE_DEPTH_TEST_LESS
-                    | BGFX_STATE_BLEND_FUNC(BGFX_STATE_BLEND_ZERO, BGFX_STATE_BLEND_INV_SRC_COLOR)
-                    | UINT64_C(0);
-                break;
-            }
-            case 6: {
-                is_blended = true;
-                state = 0
-                    | BGFX_STATE_WRITE_RGB
-                    | BGFX_STATE_WRITE_A
-                    | BGFX_STATE_DEPTH_TEST_LESS
-                    | BGFX_STATE_BLEND_ADD
-                    | BGFX_STATE_PT_LINES
-                    | UINT64_C(0);
-                break;
-            }
-            case 7: {
-                is_blended = true;
-                state = 0
-                    | BGFX_STATE_WRITE_RGB
-                    | BGFX_STATE_WRITE_A
-                    | BGFX_STATE_DEPTH_TEST_LESS
-                    | BGFX_STATE_BLEND_FUNC(BGFX_STATE_BLEND_SRC_ALPHA, BGFX_STATE_BLEND_INV_SRC_ALPHA)
-                    | UINT64_C(0);
-                break;
-            }
-            default: {
-                state = 0
-                    | BGFX_STATE_WRITE_RGB
-                    | BGFX_STATE_DEPTH_TEST_LESS
-                    | BGFX_STATE_BLEND_ALPHA
-                    | UINT64_C(0);
-                break;
-            }
-        }
+                switch (sort_draw_commands[current_sort_idx].draw_type) {
+                    case 0: {
+                        is_blended = false;
+                        state = 0
+                            | BGFX_STATE_WRITE_MASK
+                            | BGFX_STATE_DEPTH_TEST_LESS
+                            | UINT64_C(0);
+                        break;
+                    }
+                    case 1: {
+                        is_blended = false;
+                        state = 0
+                            | BGFX_STATE_WRITE_MASK
+                            | BGFX_STATE_DEPTH_TEST_LESS
+                            | BGFX_STATE_BLEND_ALPHA
+                            | UINT64_C(0);
+                        break;
+                    }
+                    case 2: {
+                        is_blended = true;
+                        state = 0
+                            | BGFX_STATE_WRITE_RGB
+                            | BGFX_STATE_DEPTH_TEST_LEQUAL
+                            | BGFX_STATE_BLEND_ADD
+                            | UINT64_C(0);
+                        break;
+                    }
+                    case 3: {
+                        is_blended = true;
+                        state = 0
+                            | BGFX_STATE_WRITE_RGB
+                            | BGFX_STATE_DEPTH_TEST_LESS
+                            | BGFX_STATE_BLEND_ALPHA
+                            | UINT64_C(0);
+                        break;
+                    }
+                    case 4: {
+                        is_blended = false;
+                        state = 0
+                            | BGFX_STATE_WRITE_RGB
+                            | BGFX_STATE_BLEND_ALPHA
+                            | UINT64_C(0);
+                        break;
+                    }
+                    case 5: {
+                        is_blended = true;
+                        state = 0
+                            | BGFX_STATE_WRITE_RGB
+                            | BGFX_STATE_DEPTH_TEST_LESS
+                            | BGFX_STATE_BLEND_FUNC(BGFX_STATE_BLEND_ZERO, BGFX_STATE_BLEND_INV_SRC_COLOR)
+                            | UINT64_C(0);
+                        break;
+                    }
+                    case 6: {
+                        is_blended = true;
+                        state = 0
+                            | BGFX_STATE_WRITE_RGB
+                            | BGFX_STATE_WRITE_A
+                            | BGFX_STATE_DEPTH_TEST_LESS
+                            | BGFX_STATE_BLEND_ADD
+                            | BGFX_STATE_PT_LINES
+                            | UINT64_C(0);
+                        break;
+                    }
+                    case 7: {
+                        is_blended = true;
+                        state = 0
+                            | BGFX_STATE_WRITE_RGB
+                            | BGFX_STATE_WRITE_A
+                            | BGFX_STATE_DEPTH_TEST_LESS
+                            | BGFX_STATE_BLEND_FUNC(BGFX_STATE_BLEND_SRC_ALPHA, BGFX_STATE_BLEND_INV_SRC_ALPHA)
+                            | UINT64_C(0);
+                        break;
+                    }
+                    default: {
+                        state = 0
+                            | BGFX_STATE_WRITE_RGB
+                            | BGFX_STATE_DEPTH_TEST_LESS
+                            | BGFX_STATE_BLEND_ALPHA
+                            | UINT64_C(0);
+                        break;
+                    }
+                }
 
-        bgfx::setState(state);
-        bgfx::setVertexBuffer(0, sort_buffer_vertex_handle, sort_buffer_commands[i].offset, sort_buffer_commands[i].count);
+                bgfx::setState(state);
+                bgfx::setVertexBuffer(
+                    0,
+                    sort_buffer_vertex_handle,
+                    sort_draw_commands[current_sort_idx].offset,
+                    sort_draw_commands[current_sort_idx].count);
 
-        if (sort_buffer_commands[i].texture.idx != 0xffff) {
-            bgfx::setTexture(0, s_texColor, sort_buffer_commands[i].texture);
-            if (is_blended) {
-                bgfx::submit(0, m_outputVTLTexAlphaBlendedProgram);
-            } else {
-                bgfx::submit(0, m_outputVTLTexAlphaClippedProgram);
+                if (sort_draw_commands[current_sort_idx].texture.idx != 0xffff) {
+                    bgfx::setTexture(0, s_texColor, sort_draw_commands[current_sort_idx].texture);
+                    if (is_blended) {
+                        bgfx::submit(0, m_outputVTLTexAlphaBlendedProgram);
+                    } else {
+                        bgfx::submit(0, m_outputVTLTexAlphaClippedProgram);
+                    }
+                } else {
+                    bgfx::submit(0, m_outputVTLAlphaProgram);
+                }
             }
         } else {
-            bgfx::submit(0, m_outputVTLAlphaProgram);
+            for (; current_bucket_idx < draw_commands[i].last_idx; current_bucket_idx++) {
+                TEXTUREBUCKET *bucket = &Bucket[current_bucket_idx];
+
+                if (bucket->tpage == 1)
+                    bucket->tpage = 1;
+
+                if (!bucket->nVtx)
+                    continue;
+
+                uint64_t state = 0
+                    | BGFX_STATE_WRITE_RGB
+                    | BGFX_STATE_WRITE_Z
+                    | BGFX_STATE_DEPTH_TEST_LESS
+                    | UINT64_C(0);
+
+                bgfx::update(bucket->handle, 0, bgfx::makeRef(bucket->vtx, BUCKET_VERT_COUNT * sizeof(GFXTLBUMPVERTEX)));
+
+                // Compatibility for the old D3DTL XYZRWH polygon buffer
+                for (size_t bucket_vert_idx = 0; bucket_vert_idx < bucket->nVtx; bucket_vert_idx++) {
+                    if (bucket->vtx[bucket_vert_idx].rhw != 1.0f && bucket->vtx[bucket_vert_idx].rhw != 0.0f)
+                    {
+                        float w = 1.0f / bucket->vtx[bucket_vert_idx].rhw;
+                        bucket->vtx[bucket_vert_idx].sx *= w;
+                        bucket->vtx[bucket_vert_idx].sy *= w;
+                        bucket->vtx[bucket_vert_idx].sz *= w;
+                        bucket->vtx[bucket_vert_idx].rhw = w;
+                    }
+                }
+
+                bgfx::setVertexBuffer(0, bucket->handle, 0, bucket->nVtx);
+                bgfx::setTexture(0, s_texColor, Textures[bucket->tpage].tex);
+                bgfx::setState(state);
+
+                bgfx::submit(0, m_outputVTLTexProgram);
+
+                bucket->nVtx = 0;
+                bucket->tpage = -1;
+                DrawPrimitiveCnt++;
+            }
         }
     }
 }
 
 void StartBGFXFrame() {
-    current_sort_vertex_buffer_idx = 0;
-    current_sort_vertex_buffer_offset = 0;
+    last_sort_command_idx = 0;
+    last_sort_vertex_buffer_offset = 0;
+
+    last_bucket_command_idx = 0;
+    first_bucket_command_idx = 0;
+
+    ClearBGFXDrawCommand();
 
     sort_buffer_vertex_buffers_ref = bgfx::makeRef(sort_buffer_vertex_buffer, SORT_BUFFER_VERT_COUNT * sizeof(GFXTLBUMPVERTEX));
     sort_buffer_vertex_buffer = (GFXTLBUMPVERTEX*)sort_buffer_vertex_buffers_ref->data;
 }
 
 void EndBGFXFrame() {
+}
+
+void AddBGFXDrawCommand(bool is_sorted_command) {
+    if (current_draw_commands >= MAX_DRAW_COMMANDS) {
+        platform_fatal_error("Exceeded maximum draw commands.");
+        return;
+    }
+
+    draw_commands[current_draw_commands].is_sorted_command = is_sorted_command;
+
+    if (is_sorted_command) {
+        draw_commands[current_draw_commands].last_idx = last_sort_command_idx;
+    } else {
+        draw_commands[current_draw_commands].last_idx = last_bucket_command_idx;
+        first_bucket_command_idx = last_bucket_command_idx;
+    }
+
+    current_draw_commands++;
+}
+
+void AddBGFXDrawSortCommand(GFXTLBUMPVERTEX* info, short num_verts, short texture, short type)
+{
+    if (last_sort_vertex_buffer_offset + num_verts >= SORT_BUFFER_VERT_COUNT) {
+        platform_fatal_error("Overrun max sort vertex buffer size.");
+        return;
+    }
+
+    if (last_sort_command_idx >= MAX_SORT_DRAW_COMMANDS) {
+        platform_fatal_error("Overrun max sort commands.");
+        return;
+    }
+
+    sort_draw_commands[last_sort_command_idx].count = num_verts;
+    sort_draw_commands[last_sort_command_idx].offset = last_sort_vertex_buffer_offset;
+    sort_draw_commands[last_sort_command_idx].texture = Textures[texture].tex;
+    sort_draw_commands[last_sort_command_idx].draw_type = type;
+
+    last_sort_vertex_buffer_offset += num_verts;
+    last_sort_command_idx++;
+
+    DrawPrimitiveCnt++;
+}
+
+void ClearBGFXDrawCommand() {
+    current_draw_commands = 0;
+}
+
+void FindBGFXBucket(long tpage, GFXTLBUMPVERTEX** Vpp, long** nVtxpp) {
+    TEXTUREBUCKET* bucket;
+
+    for (int i = first_bucket_command_idx; i < last_bucket_command_idx; i++) {
+        bucket = &Bucket[i];
+
+        if (bucket->tpage == tpage && bucket->nVtx < BUCKET_VERT_COUNT - 32) {
+            *Vpp = &bucket->vtx[bucket->nVtx];
+            *nVtxpp = &bucket->nVtx;
+            
+            return;
+        }
+    }
+
+    for (int i = last_bucket_command_idx; i < MAX_BUCKETS; i++) {
+        bucket = &Bucket[i];
+
+        if (bucket->tpage == -1) {
+            bucket->tpage = tpage;
+            *Vpp = bucket->vtx;
+            *nVtxpp = &bucket->nVtx;
+
+            if (i >= last_bucket_command_idx) {
+                last_bucket_command_idx = ++i;
+            }
+
+            return;
+        }
+    }
+
+    platform_fatal_error("Max texture bucket count exceeded.");
 }
 
 #endif

@@ -1469,7 +1469,6 @@ void phd_PutPolygonsPickup(short* objptr, float x, float y, long color)
 
 void phd_PutPolygonSkyMesh(short* objptr, long clipstatus)
 {
-#ifndef USE_BGFX
 	TEXTURESTRUCT* pTex;
 	MESH_DATA* mesh;
 	short* quad;
@@ -1501,7 +1500,11 @@ void phd_PutPolygonSkyMesh(short* objptr, long clipstatus)
 				pTex->drawtype = 2;
 			else
 			{
+#ifdef USE_BGFX
+				if (1)
+#else
 				if (App.dx.lpZBuffer)
+#endif
 				{
 					MyVertexBuffer[quad[0]].color = 0;
 					MyVertexBuffer[quad[1]].color = 0;
@@ -1552,7 +1555,6 @@ void phd_PutPolygonSkyMesh(short* objptr, long clipstatus)
 		AddTriSorted(MyVertexBuffer, tri[0], tri[1], tri[2], pTex, 0);
 		pTex->drawtype = drawbak;
 	}
-#endif
 }
 
 void S_DrawPickup(short object_number)
@@ -1943,10 +1945,12 @@ void S_OutputPolyList()
 
 #ifndef USE_BGFX
 	if (App.dx.lpZBuffer)
-#endif
 	{
 		DrawBuckets();
 	}
+#else
+	AddBGFXDrawCommand(false);
+#endif
 
 	if (!gfCurrentLevel)
 	{
