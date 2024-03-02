@@ -718,9 +718,6 @@ void ProcessTrainMeshVertices(MESH_DATA* mesh)
 
 void ProcessPickupMeshVertices(MESH_DATA* mesh)
 {
-#ifdef USE_BGFX
-	return;
-#else
 	FVECTOR vPos;
 	FVECTOR vtx;
 	float* v;
@@ -730,7 +727,11 @@ void ProcessPickupMeshVertices(MESH_DATA* mesh)
 	short clipFlag;
 
 	clip = clipflags;
+#ifdef USE_BGFX
+	v = (float*)mesh->Buffer;
+#else
 	mesh->SourceVB->Lock(DDLOCK_READONLY, (LPVOID*)&v, 0);
+#endif
 
 	for (int i = 0; i < mesh->nVerts; i++)
 	{
@@ -814,6 +815,7 @@ void ProcessPickupMeshVertices(MESH_DATA* mesh)
 		MyVertexBuffer[i].specular = RGBA(sR, sG, sB, 0xFF);
 	}
 
+#ifndef USE_BGFX
 	mesh->SourceVB->Unlock();
 #endif
 }
@@ -1273,7 +1275,6 @@ void S_InitialisePolyList()
 
 void phd_PutPolygonsPickup(short* objptr, float x, float y, long color)
 {
-#ifndef USE_BGFX
 	MESH_DATA* mesh;
 	SPRITESTRUCT* envmap_sprite;
 	TEXTURESTRUCT* pTex;
@@ -1464,7 +1465,6 @@ void phd_PutPolygonsPickup(short* objptr, float x, float y, long color)
 
 		pTex->drawtype = drawbak;
 	}
-#endif
 }
 
 void phd_PutPolygonSkyMesh(short* objptr, long clipstatus)
