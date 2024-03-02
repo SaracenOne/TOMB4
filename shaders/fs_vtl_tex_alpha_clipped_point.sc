@@ -14,12 +14,7 @@ void main()
 
     vec4 outCol = texColor_var * vCol0;
 
-    // TODO: BGFX idiomatically uses u_alphaRef but we don't know how this is set. 
-    float alphaRef = 0.5;
-    outCol.a = (outCol.a - alphaRef) / max(fwidth(outCol.a), 0.0001) + alphaRef;
-    if (outCol.a < 0.00) clip(-1);
+    if (outCol.a <= 0.00) clip(-1);
 
-    // Blend fog
-    //outCol.rgb = lerp(outCol.rgb, vCol1.rgb, v_color1.a);
     gl_FragColor = outCol;
 }

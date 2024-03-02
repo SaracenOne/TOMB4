@@ -157,7 +157,11 @@ void InitializeBGFX() {
     sort_buffer_vertex_handle = bgfx::createDynamicVertexBuffer(SORT_BUFFER_VERT_COUNT, ms_outputBucketVertexLayout);
 
     m_outputVTLTexProgram = loadProgram("vs_vtl_tex", "fs_vtl_tex");
-    m_outputVTLTexAlphaClippedProgram = loadProgram("vs_vtl_tex_alpha_clipped", "fs_vtl_tex_alpha_clipped");
+    if (App.Filtering) {
+        m_outputVTLTexAlphaClippedProgram = loadProgram("vs_vtl_tex_alpha_clipped_filter", "fs_vtl_tex_alpha_clipped_filter");
+    } else {
+        m_outputVTLTexAlphaClippedProgram = loadProgram("vs_vtl_tex_alpha_clipped_point", "fs_vtl_tex_alpha_clipped_point");
+    }
     m_outputVTLTexAlphaBlendedProgram = loadProgram("vs_vtl_tex_alpha_blended", "fs_vtl_tex_alpha_blended");
     m_outputVTLAlphaProgram = loadProgram("vs_vtl_alpha", "fs_vtl_alpha");
 }
