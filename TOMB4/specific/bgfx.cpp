@@ -18,17 +18,19 @@ bgfx::ProgramHandle m_outputVTLAlphaProgram = BGFX_INVALID_HANDLE;
 bgfx::UniformHandle s_texColor;
 bgfx::VertexLayout ms_outputBucketVertexLayout;
 
+size_t total_sort_verts_in_current_buffer = 0;
 size_t first_bucket_command_idx = 0;
 size_t last_bucket_command_idx = 0;
 size_t last_sort_command_idx = 0;
+size_t last_sort_vertex_buffer_idx = 0;
 size_t last_sort_vertex_buffer_offset = 0;
 
 extern GFXTLBUMPVERTEX *sort_buffer_vertex_buffer = nullptr;
-const bgfx::Memory *sort_buffer_vertex_buffers_ref = nullptr;
 
-bgfx::DynamicVertexBufferHandle sort_buffer_vertex_handle;
+const bgfx::Memory *sort_buffer_vertex_buffers_ref[MAX_SORT_BUFFERS];
+bgfx::DynamicVertexBufferHandle sort_buffer_vertex_handle[MAX_SORT_BUFFERS];
 
-BGFXSortDrawCommand sort_draw_commands[MAX_SORT_DRAW_COMMANDS];
+BGFXSortDrawCommand *sort_draw_commands = nullptr;
 BGFXDrawCommand draw_commands[MAX_DRAW_COMMANDS];
 
 size_t current_draw_commands = 0;
@@ -137,7 +139,7 @@ void InitializeBGFX() {
     bgfx::renderFrame();
 
     bgfx::Init init;
-    init.type = bgfx::RendererType::Vulkan;
+    init.type = bgfx::RendererType::OpenGL;
     init.vendorId = BGFX_PCI_ID_NONE;
     init.platformData.nwh = SDLGetNativeWindowHandle(sdl_window);
     init.platformData.ndt = SDLGetNativeDisplayHandle(sdl_window);
@@ -160,8 +162,12 @@ void InitializeBGFX() {
         bucket->handle = bgfx::createDynamicVertexBuffer(BUCKET_VERT_COUNT, ms_outputBucketVertexLayout);
     }
 
-    sort_buffer_vertex_buffer = (GFXTLBUMPVERTEX*) SYSTEM_MALLOC(SORT_BUFFER_VERT_COUNT * sizeof(GFXTLBUMPVERTEX));
-    sort_buffer_vertex_handle = bgfx::createDynamicVertexBuffer(SORT_BUFFER_VERT_COUNT, ms_outputBucketVertexLayout);
+    sort_draw_commands = (BGFXSortDrawCommand *)SYSTEM_MALLOC(MAX_SORT_DRAW_COMMANDS * sizeof(BGFXSortDrawCommand));
+    sort_buffer_vertex_buffer = (GFXTLBUMPVERTEX*) SYSTEM_MALLOC(SORT_BUFFER_VERT_COUNT * MAX_SORT_BUFFERS * sizeof(GFXTLBUMPVERTEX));
+    
+    for (int i = 0; i < MAX_SORT_BUFFERS; i++) {
+        sort_buffer_vertex_handle[i] = bgfx::createDynamicVertexBuffer(SORT_BUFFER_VERT_COUNT, ms_outputBucketVertexLayout);
+    }
 
     m_outputVTLTexProgram = loadProgram("vs_vtl_tex", "fs_vtl_tex");
     if (App.Filtering) {
@@ -174,6 +180,7 @@ void InitializeBGFX() {
 }
 
 void ShutdownBGFX() {
+    SYSTEM_FREE(sort_draw_commands);
     SYSTEM_FREE(sort_buffer_vertex_buffer);
 }
 
@@ -196,7 +203,7 @@ void SetupBGFXOutputPolyList() {
 
 void RenderBGFXDrawLists() {
     // Compatibility for the old D3DTL XYZRWH polygon buffer
-    for (int i = 0; i < last_sort_vertex_buffer_offset; i++) {
+    for (int i = 0; i < (last_sort_vertex_buffer_idx * SORT_BUFFER_VERT_COUNT) + last_sort_vertex_buffer_offset; i++) {
         if (sort_buffer_vertex_buffer[i].rhw != 1.0f && sort_buffer_vertex_buffer[i].rhw != 0.0f) {
             float w = 1.0f / sort_buffer_vertex_buffer[i].rhw;
             sort_buffer_vertex_buffer[i].sx *= w;
@@ -208,7 +215,9 @@ void RenderBGFXDrawLists() {
 
     size_t current_bucket_idx = 0;
     size_t current_sort_idx = 0;
-    bgfx::update(sort_buffer_vertex_handle, 0, sort_buffer_vertex_buffers_ref);
+    for (int i = 0; i < MAX_SORT_BUFFERS; i++) {
+        bgfx::update(sort_buffer_vertex_handle[i], 0, sort_buffer_vertex_buffers_ref[i]);
+    }
 
     for (int i = 0; i < current_draw_commands; i++) {
         if (draw_commands[i].is_sorted_command) {
@@ -300,22 +309,26 @@ void RenderBGFXDrawLists() {
                     }
                 }
 
-                bgfx::setState(state);
-                bgfx::setVertexBuffer(
-                    0,
-                    sort_buffer_vertex_handle,
-                    sort_draw_commands[current_sort_idx].offset,
-                    sort_draw_commands[current_sort_idx].count);
+                if (1) {
+                    bgfx::setState(state);
+                    bgfx::setVertexBuffer(
+                        0,
+                        sort_buffer_vertex_handle[sort_draw_commands[current_sort_idx].buffer_id],
+                        sort_draw_commands[current_sort_idx].buffer_offset,
+                        sort_draw_commands[current_sort_idx].count);
 
-                if (sort_draw_commands[current_sort_idx].texture.idx != 0xffff) {
-                    bgfx::setTexture(0, s_texColor, sort_draw_commands[current_sort_idx].texture);
-                    if (is_blended) {
-                        bgfx::submit(0, m_outputVTLTexAlphaBlendedProgram);
-                    } else {
-                        bgfx::submit(0, m_outputVTLTexAlphaClippedProgram);
+                    if (sort_draw_commands[current_sort_idx].texture.idx != 0xffff) {
+                        bgfx::setTexture(0, s_texColor, sort_draw_commands[current_sort_idx].texture);
+                        if (is_blended) {
+                            bgfx::submit(0, m_outputVTLTexAlphaBlendedProgram);
+                        }
+                        else {
+                            bgfx::submit(0, m_outputVTLTexAlphaClippedProgram);
+                        }
                     }
-                } else {
-                    bgfx::submit(0, m_outputVTLAlphaProgram);
+                    else {
+                        bgfx::submit(0, m_outputVTLAlphaProgram);
+                    }
                 }
             }
         } else {
@@ -363,7 +376,9 @@ void RenderBGFXDrawLists() {
 }
 
 void StartBGFXFrame() {
+    total_sort_verts_in_current_buffer = 0;
     last_sort_command_idx = 0;
+    last_sort_vertex_buffer_idx = 0;
     last_sort_vertex_buffer_offset = 0;
 
     last_bucket_command_idx = 0;
@@ -371,8 +386,9 @@ void StartBGFXFrame() {
 
     ClearBGFXDrawCommand();
 
-    sort_buffer_vertex_buffers_ref = bgfx::makeRef(sort_buffer_vertex_buffer, SORT_BUFFER_VERT_COUNT * sizeof(GFXTLBUMPVERTEX));
-    sort_buffer_vertex_buffer = (GFXTLBUMPVERTEX*)sort_buffer_vertex_buffers_ref->data;
+    for (int i = 0; i < MAX_SORT_BUFFERS; i++) {
+        sort_buffer_vertex_buffers_ref[i] = bgfx::makeRef((i * SORT_BUFFER_VERT_COUNT) + sort_buffer_vertex_buffer, SORT_BUFFER_VERT_COUNT * sizeof(GFXTLBUMPVERTEX));
+    }
 }
 
 void EndBGFXFrame() {
@@ -398,18 +414,14 @@ void AddBGFXDrawCommand(bool is_sorted_command) {
 
 void AddBGFXDrawSortCommand(GFXTLBUMPVERTEX* info, short num_verts, short texture, short type)
 {
-    if (last_sort_vertex_buffer_offset + num_verts >= SORT_BUFFER_VERT_COUNT) {
-        platform_fatal_error("Overrun max sort vertex buffer size.");
-        return;
-    }
-
     if (last_sort_command_idx >= MAX_SORT_DRAW_COMMANDS) {
         platform_fatal_error("Overrun max sort commands.");
         return;
     }
 
     sort_draw_commands[last_sort_command_idx].count = num_verts;
-    sort_draw_commands[last_sort_command_idx].offset = last_sort_vertex_buffer_offset;
+    sort_draw_commands[last_sort_command_idx].buffer_offset = last_sort_vertex_buffer_offset;
+    sort_draw_commands[last_sort_command_idx].buffer_id = last_sort_vertex_buffer_idx;
     sort_draw_commands[last_sort_command_idx].texture = Textures[texture].tex;
     sort_draw_commands[last_sort_command_idx].draw_type = type;
 
@@ -454,6 +466,154 @@ void FindBGFXBucket(long tpage, GFXTLBUMPVERTEX** Vpp, long** nVtxpp) {
     }
 
     platform_fatal_error("Max texture bucket count exceeded.");
+}
+
+void AddBGFXSortList() {
+    SORTLIST* pSort;
+    GFXTLBUMPVERTEX* vtx;
+    GFXTLBUMPVERTEX* bVtx;
+    long num;
+    short nVtx = 0, tpage, drawtype;
+
+    if (!SortCount)
+        return;
+
+    bgfx::setState(BGFX_STATE_BLEND_ALPHA);
+    bgfx::setState(BGFX_STATE_BLEND_FUNC(BGFX_STATE_BLEND_SRC_ALPHA, BGFX_STATE_BLEND_INV_SRC_ALPHA));
+    {
+        pSort = SortList[0];
+
+        for (num = 0; num < SortCount; num++) {
+            pSort = SortList[num];
+
+            if (pSort->drawtype == 0 || pSort->drawtype == 1 || pSort->drawtype == 4)
+                break;
+        }
+
+        bVtx = &sort_buffer_vertex_buffer[(SORT_BUFFER_VERT_COUNT * last_sort_vertex_buffer_idx) + last_sort_vertex_buffer_offset];
+
+        tpage = pSort->tpage;
+        drawtype = pSort->drawtype;
+
+        for (; num < SortCount; num++) {
+            pSort = SortList[num];
+
+            if (pSort->drawtype == 0 || pSort->drawtype == 1 || pSort->drawtype == 4) {
+                if (pSort->drawtype == drawtype && pSort->tpage == tpage) {
+                    vtx = (GFXTLBUMPVERTEX*)(pSort + 1);
+                    total_sort_verts_in_current_buffer += pSort->nVtx;
+
+                    if (total_sort_verts_in_current_buffer >= SORT_BUFFER_VERT_COUNT) {
+                        AddBGFXDrawSortCommand(&sort_buffer_vertex_buffer[(SORT_BUFFER_VERT_COUNT * last_sort_vertex_buffer_idx) + last_sort_vertex_buffer_offset], nVtx, tpage, drawtype);
+                        nVtx = 0;
+
+                        last_sort_vertex_buffer_offset = 0;
+                        last_sort_vertex_buffer_idx++;
+
+                        bVtx = &sort_buffer_vertex_buffer[(SORT_BUFFER_VERT_COUNT * last_sort_vertex_buffer_idx) + last_sort_vertex_buffer_offset];
+                        total_sort_verts_in_current_buffer = 0;
+                    }
+
+                    for (int i = 0; i < pSort->nVtx; i++, vtx++, bVtx++) {
+                        bVtx->sx = vtx->sx;
+                        bVtx->sy = vtx->sy;
+                        bVtx->sz = vtx->sz;
+                        bVtx->rhw = vtx->rhw;
+                        bVtx->color = vtx->color;
+                        bVtx->specular = vtx->specular;
+                        bVtx->tu = vtx->tu;
+                        bVtx->tv = vtx->tv;
+                        bVtx->tx = vtx->tx;
+                        bVtx->ty = vtx->ty;
+                        nVtx++;
+                    }
+                } else {
+                    AddBGFXDrawSortCommand(&sort_buffer_vertex_buffer[(SORT_BUFFER_VERT_COUNT * last_sort_vertex_buffer_idx) + last_sort_vertex_buffer_offset], nVtx, tpage, drawtype);	//inlined
+                    drawtype = pSort->drawtype;
+                    tpage = pSort->tpage;
+
+                    while (last_sort_vertex_buffer_offset + pSort->nVtx >= SORT_BUFFER_VERT_COUNT - 4) {
+                        last_sort_vertex_buffer_offset = 0;
+                        last_sort_vertex_buffer_idx++;
+
+                        if (last_sort_vertex_buffer_idx >= MAX_SORT_BUFFERS) {
+                            platform_fatal_error("Overlapped max vertex sort buffers.");
+                            return;
+                        }
+                    }
+
+                    bVtx = &sort_buffer_vertex_buffer[(SORT_BUFFER_VERT_COUNT * last_sort_vertex_buffer_idx) + last_sort_vertex_buffer_offset];
+                    nVtx = 0;
+                    num--;
+                }
+            }
+        }
+
+
+        if (nVtx)
+            AddBGFXDrawSortCommand(&sort_buffer_vertex_buffer[(SORT_BUFFER_VERT_COUNT * last_sort_vertex_buffer_idx) + last_sort_vertex_buffer_offset], nVtx, tpage, drawtype);	//inlined
+
+        for (num = SortCount - 1; num >= 0; num--) {
+            pSort = SortList[num];
+
+            if (pSort->drawtype == 2 || pSort->drawtype == 3 || pSort->drawtype == 5 || pSort->drawtype == 6 || pSort->drawtype == 7)
+                break;
+        }
+
+        tpage = pSort->tpage;
+        drawtype = pSort->drawtype;
+        bVtx = &sort_buffer_vertex_buffer[(SORT_BUFFER_VERT_COUNT * last_sort_vertex_buffer_idx) + last_sort_vertex_buffer_offset];
+        nVtx = 0;
+
+        for (; num >= 0; num--) {
+            pSort = SortList[num];
+
+            if (pSort->drawtype == 2 || pSort->drawtype == 3 || pSort->drawtype == 5 || pSort->drawtype == 6 || pSort->drawtype == 7) {
+                if (pSort->tpage == tpage && pSort->drawtype == drawtype) {
+                    vtx = (GFXTLBUMPVERTEX*)(pSort + 1);
+                    total_sort_verts_in_current_buffer += pSort->nVtx;
+
+                    if (total_sort_verts_in_current_buffer >= SORT_BUFFER_VERT_COUNT) {
+                        AddBGFXDrawSortCommand(&sort_buffer_vertex_buffer[(SORT_BUFFER_VERT_COUNT * last_sort_vertex_buffer_idx) + last_sort_vertex_buffer_offset], nVtx, tpage, drawtype);
+                        nVtx = 0;
+
+                        last_sort_vertex_buffer_offset = 0;
+                        last_sort_vertex_buffer_idx++;
+
+                        bVtx = &sort_buffer_vertex_buffer[(SORT_BUFFER_VERT_COUNT * last_sort_vertex_buffer_idx) + last_sort_vertex_buffer_offset];
+                        total_sort_verts_in_current_buffer = 0;
+                    }
+
+                    for (int i = 0; i < pSort->nVtx; i++, vtx++, bVtx++) {
+                        bVtx->sx = vtx->sx;
+                        bVtx->sy = vtx->sy;
+                        bVtx->sz = vtx->sz;
+                        bVtx->rhw = vtx->rhw;
+                        bVtx->color = vtx->color;
+                        bVtx->specular = vtx->specular;
+                        bVtx->tu = vtx->tu;
+                        bVtx->tv = vtx->tv;
+                        bVtx->tx = vtx->tx;
+                        bVtx->ty = vtx->ty;
+                        nVtx++;
+                    }
+                } else {
+                    AddBGFXDrawSortCommand(&sort_buffer_vertex_buffer[(SORT_BUFFER_VERT_COUNT * last_sort_vertex_buffer_idx) + last_sort_vertex_buffer_offset], nVtx, tpage, drawtype);	//inlined
+                    tpage = pSort->tpage;
+                    nVtx = 0;
+                    drawtype = pSort->drawtype;
+
+                    bVtx = &sort_buffer_vertex_buffer[(SORT_BUFFER_VERT_COUNT * last_sort_vertex_buffer_idx) + last_sort_vertex_buffer_offset];
+                    num++;
+                }
+            }
+        }
+
+        if (nVtx)
+            AddBGFXDrawSortCommand(&sort_buffer_vertex_buffer[(SORT_BUFFER_VERT_COUNT * last_sort_vertex_buffer_idx) + last_sort_vertex_buffer_offset], nVtx, tpage, drawtype);	//inlined
+    }
+
+    AddBGFXDrawCommand(true);
 }
 
 #endif

@@ -33,7 +33,7 @@
 #define MAX_SAMPLES	370
 #define MAX_NGLE_SAMPLES	2048
 #define MAX_DYNAMICS	64
-#define MAX_BUCKETS		80 // TRLE: bumped from 20 to 80
+#define MAX_BUCKETS		256 // TRLE: bumped from 20 to 256
 #define BUCKET_VERT_COUNT	8224 // TRLE: increased size (256 * 32 + 32)
 #ifdef LEVEL_EDITOR
 #define MAX_SPARKS 8096 // TRLE: bumped from 256 to 8096 (WARNING: affects RNG)
@@ -44,6 +44,7 @@
 #define PARAMETER_MAX_LENGTH 1024
 
 /********************DX defs********************/
+#ifndef USE_BGFX
 #define LPDIRECTDRAWX			LPDIRECTDRAW4
 #define LPDIRECT3DX				LPDIRECT3D3
 #define LPDIRECT3DDEVICEX		LPDIRECT3DDEVICE3
@@ -61,6 +62,7 @@
 #define DIGUID					IID_IDirectInput8
 #define DIDGUID					IID_IDirectInputDevice8
 #define DSNGUID					IID_IDirectSoundNotify
+#endif
 /***********************************************/
 
 /*typedefs*/

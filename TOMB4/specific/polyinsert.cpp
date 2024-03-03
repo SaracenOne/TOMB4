@@ -166,12 +166,10 @@ void HWR_DrawSortList(GFXTLBUMPVERTEX* info, short num_verts, short texture, sho
 
 void DrawSortList()
 {
+#ifndef USE_BGFX
 	SORTLIST* pSort;
 	GFXTLBUMPVERTEX* vtx;
 	GFXTLBUMPVERTEX* bVtx;
-#ifndef USE_BGFX
-	GFXTLBUMPVERTEX* bVtxbak;
-#endif
 	long num;
 	short nVtx, tpage, drawtype, total_nVtx;
 
@@ -180,17 +178,11 @@ void DrawSortList()
 	if (!SortCount)
 		return;
 
-#ifdef USE_BGFX
-	bgfx::setState(BGFX_STATE_BLEND_ALPHA);
-	bgfx::setState(BGFX_STATE_BLEND_FUNC(BGFX_STATE_BLEND_SRC_ALPHA, BGFX_STATE_BLEND_INV_SRC_ALPHA));
-#else
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHATESTENABLE, 1);
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA);
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA);
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 1);
-#endif
 
-#ifndef USE_BGFX
 	if (!App.dx.lpZBuffer)
 	{
 		for (int i = 0; i < SortCount; i++)
@@ -209,7 +201,6 @@ void DrawSortList()
 		}
 	}
 	else
-#endif
 	{
 		pSort = SortList[0];
 
@@ -221,12 +212,9 @@ void DrawSortList()
 				break;
 		}
 
-#ifdef USE_BGFX
-		bVtx = &sort_buffer_vertex_buffer[last_sort_vertex_buffer_offset];
-#else
 		bVtxbak = Bucket[0].vtx;
 		bVtx = bVtxbak;
-#endif
+
 		tpage = pSort->tpage;
 		drawtype = pSort->drawtype;
 
@@ -257,18 +245,13 @@ void DrawSortList()
 				}
 				else
 				{
-#ifdef USE_BGFX
-					AddBGFXDrawSortCommand(&sort_buffer_vertex_buffer[last_sort_vertex_buffer_offset], nVtx, tpage, drawtype);	//inlined
-#else
 					HWR_DrawSortList(bVtxbak, nVtx, tpage, drawtype);	//inlined
-#endif
+
 					drawtype = pSort->drawtype;
 					tpage = pSort->tpage;
-#ifdef USE_BGFX
-					bVtx = &sort_buffer_vertex_buffer[last_sort_vertex_buffer_offset];
-#else
+
 					bVtx = bVtxbak;
-#endif
+
 					nVtx = 0;
 					num--;
 				}
@@ -277,11 +260,7 @@ void DrawSortList()
 
 
 		if (nVtx)
-#ifdef USE_BGFX
-			AddBGFXDrawSortCommand(&sort_buffer_vertex_buffer[last_sort_vertex_buffer_offset], nVtx, tpage, drawtype);	//inlined
-#else
 			HWR_DrawSortList(bVtxbak, nVtx, tpage, drawtype);	//inlined
-#endif
 
 
 		for (num = SortCount - 1; num >= 0; num--)
@@ -294,11 +273,9 @@ void DrawSortList()
 
 		tpage = pSort->tpage;
 		drawtype = pSort->drawtype;
-#ifdef USE_BGFX
-		bVtx = &sort_buffer_vertex_buffer[last_sort_vertex_buffer_offset];
-#else
+
 		bVtx = bVtxbak;
-#endif
+
 		nVtx = 0;
 		total_nVtx = 0;
 
@@ -314,23 +291,11 @@ void DrawSortList()
 					total_nVtx += pSort->nVtx;
 
 					// TRLE: extra check backported from TR5
-#ifdef USE_BGFX
-					if (total_nVtx >= SORT_BUFFER_VERT_COUNT - 4)
-#else
 					if (total_nVtx >= BUCKET_VERT_COUNT - 4)
-#endif
 					{
-#ifdef USE_BGFX
-						AddBGFXDrawSortCommand(&sort_buffer_vertex_buffer[last_sort_vertex_buffer_offset], nVtx, tpage, drawtype);	//inlined
-#else
 						HWR_DrawSortList(bVtxbak, nVtx, tpage, drawtype);	//inlined
-#endif
 						nVtx = 0;
-#ifdef USE_BGFX
-						bVtx = &sort_buffer_vertex_buffer[last_sort_vertex_buffer_offset];
-#else
 						bVtx = bVtxbak;
-#endif
 						total_nVtx = 0;
 					}
 
@@ -351,35 +316,20 @@ void DrawSortList()
 				}
 				else
 				{
-#ifdef USE_BGFX
-					AddBGFXDrawSortCommand(&sort_buffer_vertex_buffer[last_sort_vertex_buffer_offset], nVtx, tpage, drawtype);	//inlined
-#else
 					HWR_DrawSortList(bVtxbak, nVtx, tpage, drawtype);	//inlined
-#endif
 					tpage = pSort->tpage;
 					nVtx = 0;
 					drawtype = pSort->drawtype;
-#ifdef USE_BGFX
-					bVtx = &sort_buffer_vertex_buffer[last_sort_vertex_buffer_offset];
-#else
 					bVtx = bVtxbak;
-#endif
 					num++;
 				}
 			}
 		}
 
 		if (nVtx)
-#ifdef USE_BGFX
-			AddBGFXDrawSortCommand(&sort_buffer_vertex_buffer[last_sort_vertex_buffer_offset], nVtx, tpage, drawtype);	//inlined
-#else
 			HWR_DrawSortList(bVtxbak, nVtx, tpage, drawtype);	//inlined
-#endif
 	}
 
-#ifdef USE_BGFX
-	AddBGFXDrawCommand(true);
-#else
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 1);
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHATESTENABLE, 0);
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);

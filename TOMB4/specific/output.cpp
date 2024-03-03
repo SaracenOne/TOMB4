@@ -1943,29 +1943,35 @@ void S_OutputPolyList()
 			resChangeCounter = 0;
 	}
 
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+	AddBGFXDrawCommand(false);
+#else
 	if (App.dx.lpZBuffer)
 	{
 		DrawBuckets();
 	}
-#else
-	AddBGFXDrawCommand(false);
 #endif
 
 	if (!gfCurrentLevel)
 	{
 		Fade();
 
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+		AddBGFXSortList();
+#else
 		if (App.dx.lpZBuffer)
-#endif
 		{
 			DrawSortList();
 		}
+#endif
 	}
 
 	SortPolyList(SortCount, SortList);
+#ifdef USE_BGFX
+	AddBGFXSortList();
+#else
 	DrawSortList();
+#endif
 
 #ifndef USE_BGFX
 	if (App.dx.lpZBuffer)
@@ -1982,7 +1988,11 @@ void S_OutputPolyList()
 	{
 		InitialiseSortList();
 		DrawBinoculars();
+#ifdef USE_BGFX
+		AddBGFXSortList();
+#else
 		DrawSortList();
+#endif
 	}
 
 	if (pickups[CurrentPickup].life != -1 && !MonoScreenOn && !GLOBAL_playing_cutseq && !bDisableLaraControl)
@@ -1991,7 +2001,11 @@ void S_OutputPolyList()
 		InitialiseSortList();
 		S_DrawPickup(pickups[CurrentPickup].object_number);
 		SortPolyList(SortCount, SortList);
+#ifdef USE_BGFX
+		AddBGFXSortList();
+#else
 		DrawSortList();
+#endif
 	}
 
 	InitialiseSortList();
@@ -2015,14 +2029,22 @@ void S_OutputPolyList()
 				FlashFader -= 2;
 		}
 
+#ifdef USE_BGFX
+		AddBGFXSortList();
+#else
 		DrawSortList();
+#endif
 	}
 
 	if (DoFade == 1)
 	{
 		InitialiseSortList();
 		DoScreenFade();
+#ifdef USE_BGFX
+		AddBGFXSortList();
+#else
 		DrawSortList();
+#endif
 	}
 
 #ifdef USE_BGFX

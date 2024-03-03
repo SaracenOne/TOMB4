@@ -6,15 +6,15 @@ SAMPLER2D(s_texColor,  0);
 
 void main()
 {
-    vec4 texColor_var = texture2D(s_texColor, v_texcoord0).rgba;
+	vec4 texColor_var = texture2D(s_texColor, v_texcoord0).rgba;
 
-    // Vertex colour is swizzled.
-    vec4 vCol0 = vec4(v_color0.b, v_color0.g, v_color0.r, 1.0);
-    vec4 vCol1 = vec4(v_color1.b, v_color1.g, v_color1.r, v_color1.a);
+	// Vertex colour is swizzled.
+	vec4 vCol0 = vec4(v_color0.b, v_color0.g, v_color0.r, 1.0);
+	vec4 vCol1 = vec4(v_color1.b, v_color1.g, v_color1.r, v_color1.a);
 
-    vec4 outCol = texColor_var * vCol0;
+	vec4 outCol = texColor_var * vCol0;
 
     // Blend fog
-    outCol.rgb = lerp(outCol.rgb, vCol1.rgb, 1.0 - vCol1.a);
-    gl_FragColor = outCol;
+	outCol.rgb = mix(outCol.rgb, vCol1.rgb, 1.0 - vCol1.a);
+	gl_FragColor = outCol;
 }

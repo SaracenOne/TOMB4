@@ -5,12 +5,15 @@
 
 #include <bgfx/bgfx.h>
 
-#define SORT_BUFFER_VERT_COUNT 8192 * 3
-#define MAX_SORT_DRAW_COMMANDS 2048
+#define MAX_SORT_BUFFERS 64
+#define SORT_BUFFER_VERT_COUNT 4096 * 3
+#define MAX_SORT_DRAW_COMMANDS 32768
 
 #define MAX_DRAW_COMMANDS 8
 
+extern size_t total_sort_verts_in_current_buffer;
 extern size_t last_sort_command_idx;
+extern size_t last_sort_vertex_buffer_idx;
 extern size_t last_sort_vertex_buffer_offset;
 
 extern bgfx::ProgramHandle m_outputVTLTexProgram;
@@ -22,11 +25,12 @@ extern bgfx::UniformHandle s_texColor;
 extern bgfx::VertexLayout ms_outputBucketVertexLayout;
 
 extern GFXTLBUMPVERTEX* sort_buffer_vertex_buffer;
-extern bgfx::DynamicVertexBufferHandle sort_buffer_vertex_handle;
+extern bgfx::DynamicVertexBufferHandle sort_buffer_vertex_handle[MAX_SORT_BUFFERS];
 
 struct BGFXSortDrawCommand {
 	size_t draw_type = 0;
-	size_t offset = 0;
+	size_t buffer_offset = 0;
+	size_t buffer_id = 0;
 	size_t count = 0;
 	bgfx::TextureHandle texture;
 };
@@ -36,7 +40,7 @@ struct BGFXDrawCommand {
 	size_t last_idx = 0;
 };
 
-extern BGFXSortDrawCommand sort_draw_commands[MAX_SORT_DRAW_COMMANDS];
+extern BGFXSortDrawCommand *sort_draw_commands;
 
 extern void SetupOutputBucketVertexLayout();
 
@@ -54,5 +58,6 @@ extern void AddBGFXDrawSortCommand(GFXTLBUMPVERTEX* info, short num_verts, short
 extern void ClearBGFXDrawCommand();
 
 extern void FindBGFXBucket(long tpage, GFXTLBUMPVERTEX** Vpp, long** nVtxpp);
+extern void AddBGFXSortList();
 
 #endif

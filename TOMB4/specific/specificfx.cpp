@@ -1497,7 +1497,11 @@ void OutputSky()
 	AddBGFXDrawCommand(false);
 #endif
 	SortPolyList(SortCount, SortList);
+#ifdef USE_BGFX
+	AddBGFXSortList();
+#else
 	DrawSortList();
+#endif
 	InitBuckets();
 	InitialiseSortList();
 }
