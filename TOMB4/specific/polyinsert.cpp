@@ -170,6 +170,7 @@ void DrawSortList()
 	SORTLIST* pSort;
 	GFXTLBUMPVERTEX* vtx;
 	GFXTLBUMPVERTEX* bVtx;
+	GFXTLBUMPVERTEX* bVtxbak;
 	long num;
 	short nVtx, tpage, drawtype, total_nVtx;
 
