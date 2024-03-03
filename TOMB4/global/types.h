@@ -33,7 +33,7 @@
 #define MAX_SAMPLES	370
 #define MAX_NGLE_SAMPLES	2048
 #define MAX_DYNAMICS	64
-#define MAX_BUCKETS		256 // TRLE: bumped from 20 to 256
+#define MAX_BUCKETS		300 // TRLE: bumped from 20 to 300
 #define BUCKET_VERT_COUNT	8224 // TRLE: increased size (256 * 32 + 32)
 #ifdef LEVEL_EDITOR
 #define MAX_SPARKS 8096 // TRLE: bumped from 256 to 8096 (WARNING: affects RNG)
