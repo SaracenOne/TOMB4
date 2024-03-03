@@ -17,16 +17,20 @@ HRESULT(*_BeginScene)();
 HRESULT(*_EndScene)();
 
 GFXTLVERTEX MyVertexBuffer[0x2000];
-long CurrentFog;
 
 void SetFogColor(long r, long g, long b)
 {
 	r &= 0xFF;
 	g &= 0xFF;
 	b &= 0xFF;
-	CurrentFog = RGBA(r, g, b, 0xFF);
 #ifndef USE_BGFX
+	long CurrentFog = RGBA(r, g, b, 0xFF);
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_FOGCOLOR, CurrentFog);
+#else
+	bgfx_fog_color[0] = (float)r / 255.0f;
+	bgfx_fog_color[1] = (float)g / 255.0f;
+	bgfx_fog_color[2] = (float)b / 255.0f;
+	bgfx_fog_color[3] = 1.0f;
 #endif
 }
 

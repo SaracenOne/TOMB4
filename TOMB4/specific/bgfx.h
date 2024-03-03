@@ -1,6 +1,5 @@
 #pragma once
 
-
 #ifdef USE_BGFX
 
 #include <bgfx/bgfx.h>
@@ -10,6 +9,8 @@
 #define MAX_SORT_DRAW_COMMANDS 32768
 
 #define MAX_DRAW_COMMANDS 8
+
+extern float bgfx_fog_color[4];
 
 extern size_t total_sort_verts_in_current_buffer;
 extern size_t last_sort_command_idx;

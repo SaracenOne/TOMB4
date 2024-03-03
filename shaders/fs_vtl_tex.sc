@@ -3,6 +3,7 @@ $input v_color0, v_color1, v_texcoord0, v_texcoord1
 #include "common.sh"
 
 SAMPLER2D(s_texColor,  0);
+uniform vec4 u_fogColor;
 
 void main()
 {
@@ -14,7 +15,7 @@ void main()
 
 	vec4 outCol = texColor_var * vCol0;
 
-    // Blend fog
-	outCol.rgb = mix(outCol.rgb, vCol1.rgb, 1.0 - vCol1.a);
+	// Blend fog
+	outCol.rgb = mix(outCol.rgb, u_fogColor.rgb, 1.0 - vCol1.a);
 	gl_FragColor = outCol;
 }

@@ -10,6 +10,8 @@
 
 #ifdef USE_BGFX
 
+float bgfx_fog_color[4];
+
 bgfx::ProgramHandle m_outputVTLTexProgram = BGFX_INVALID_HANDLE;
 bgfx::ProgramHandle m_outputVTLTexAlphaClippedProgram = BGFX_INVALID_HANDLE;
 bgfx::ProgramHandle m_outputVTLTexAlphaBlendedProgram = BGFX_INVALID_HANDLE;
@@ -17,6 +19,7 @@ bgfx::ProgramHandle m_outputVTLAlphaProgram = BGFX_INVALID_HANDLE;
 
 bgfx::UniformHandle s_texColor;
 bgfx::VertexLayout ms_outputBucketVertexLayout;
+bgfx::UniformHandle u_fogColor;
 
 size_t total_sort_verts_in_current_buffer = 0;
 size_t first_bucket_command_idx = 0;
@@ -169,6 +172,7 @@ void InitializeBGFX() {
         sort_buffer_vertex_handle[i] = bgfx::createDynamicVertexBuffer(SORT_BUFFER_VERT_COUNT, ms_outputBucketVertexLayout);
     }
 
+    u_fogColor = bgfx::createUniform("u_fogColor", bgfx::UniformType::Vec4);
     m_outputVTLTexProgram = loadProgram("vs_vtl_tex", "fs_vtl_tex");
     if (App.Filtering) {
         m_outputVTLTexAlphaClippedProgram = loadProgram("vs_vtl_tex_alpha_clipped_filter", "fs_vtl_tex_alpha_clipped_filter");
@@ -180,6 +184,15 @@ void InitializeBGFX() {
 }
 
 void ShutdownBGFX() {
+    bgfx::destroy(m_outputVTLTexProgram);
+    bgfx::destroy(m_outputVTLTexAlphaClippedProgram);
+    bgfx::destroy(m_outputVTLTexAlphaBlendedProgram);
+    bgfx::destroy(m_outputVTLAlphaProgram);
+
+    bgfx::destroy(u_fogColor);
+
+    bgfx::shutdown();
+
     SYSTEM_FREE(sort_draw_commands);
     SYSTEM_FREE(sort_buffer_vertex_buffer);
 }
@@ -309,26 +322,24 @@ void RenderBGFXDrawLists() {
                     }
                 }
 
-                if (1) {
-                    bgfx::setState(state);
-                    bgfx::setVertexBuffer(
-                        0,
-                        sort_buffer_vertex_handle[sort_draw_commands[current_sort_idx].buffer_id],
-                        sort_draw_commands[current_sort_idx].buffer_offset,
-                        sort_draw_commands[current_sort_idx].count);
+                bgfx::setState(state);
+                bgfx::setVertexBuffer(
+                    0,
+                    sort_buffer_vertex_handle[sort_draw_commands[current_sort_idx].buffer_id],
+                    sort_draw_commands[current_sort_idx].buffer_offset,
+                    sort_draw_commands[current_sort_idx].count);
 
-                    if (sort_draw_commands[current_sort_idx].texture.idx != 0xffff) {
-                        bgfx::setTexture(0, s_texColor, sort_draw_commands[current_sort_idx].texture);
-                        if (is_blended) {
-                            bgfx::submit(0, m_outputVTLTexAlphaBlendedProgram);
-                        }
-                        else {
-                            bgfx::submit(0, m_outputVTLTexAlphaClippedProgram);
-                        }
+                if (sort_draw_commands[current_sort_idx].texture.idx != 0xffff) {
+                    bgfx::setTexture(0, s_texColor, sort_draw_commands[current_sort_idx].texture);
+                    if (is_blended) {
+                        bgfx::submit(0, m_outputVTLTexAlphaBlendedProgram);
+                    } else {
+                        bgfx::setUniform(u_fogColor, bgfx_fog_color);
+                        bgfx::submit(0, m_outputVTLTexAlphaClippedProgram);
                     }
-                    else {
-                        bgfx::submit(0, m_outputVTLAlphaProgram);
-                    }
+                }
+                else {
+                    bgfx::submit(0, m_outputVTLAlphaProgram);
                 }
             }
         } else {
@@ -364,6 +375,7 @@ void RenderBGFXDrawLists() {
                 bgfx::setVertexBuffer(0, bucket->handle, 0, bucket->nVtx);
                 bgfx::setTexture(0, s_texColor, Textures[bucket->tpage].tex);
                 bgfx::setState(state);
+                bgfx::setUniform(u_fogColor, bgfx_fog_color);
 
                 bgfx::submit(0, m_outputVTLTexProgram);
 

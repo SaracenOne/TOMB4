@@ -21,4 +21,3 @@ extern HRESULT (*_BeginScene)();
 extern HRESULT (*_EndScene)();
 
 extern GFXTLVERTEX MyVertexBuffer[0x2000];
-extern long CurrentFog;
