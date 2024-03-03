@@ -61,6 +61,17 @@ static char* CompressedData = nullptr;
 static long num_items = 0;
 static bool file_loading_failed = false;
 
+void RGB_Swizzle(uchar* r, uchar* g, uchar* b)
+{
+	uchar r2 = *r;
+	uchar g2 = *g;
+	uchar b2 = *b;
+
+	*r = b2;
+	*g = g2;
+	*b = r2;
+}
+
 #ifdef USE_SDL
 int LoadLevel(void* name)
 #else
@@ -721,7 +732,13 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 	Textures = (TEXTURE*)AddStruct(Textures, nTextures, sizeof(TEXTURE));
 	nTex = nTextures;
 	nTextures++;
-	tSurf = CreateTexturePage(256, 256, 0, (long*)TextureData, 0, 0);
+
+#ifdef USE_BGFX
+	tSurf = CreateTexturePage(256, 256, 0, (long*)TextureData, RGB_Swizzle, 0);
+#else
+	tSurf = CreateTexturePage(256, 256, 0, (long*)TextureData, nullptr, 0);
+#endif
+
 #ifdef USE_BGFX
 	Textures[nTex].tex = tSurf;
 #else
