@@ -1,26 +1,30 @@
 $input v_color0, v_color1, v_texcoord0, v_texcoord1
 
 #include "common.sh"
+#include "fog.sh"
 
 SAMPLER2D(s_texColor,  0);
 uniform vec4 u_fogColor;
+uniform vec4 u_fogParameters;
 
 void main()
 {
 	vec4 texColor_var = texture2D(s_texColor, v_texcoord0).rgba;
-
-    // Vertex colour is swizzled.
+	
+	// Vertex colour is swizzled.
 	vec4 vCol0 = vec4(v_color0.b, v_color0.g, v_color0.r, 1.0);
-
+	
 	vec4 outCol = texColor_var * vCol0;
-
+	
 	// TODO: BGFX idiomatically uses u_alphaRef but we don't know how this is set. 
 	float alphaRef = 0.5;
 	outCol.a = (outCol.a - alphaRef) / max(fwidth(outCol.a), 0.0001) + alphaRef;
-    if (outCol.a < 0.00)
+	if (outCol.a < 0.00)
 		discard;
 
 	// Blend fog
-	outCol.rgb = mix(outCol.rgb, u_fogColor.rgb, 1.0 - v_color1.a);
+	float depth = (gl_FragCoord.z / gl_FragCoord.w);
+	float fogFactor = CalculateFogFactor(depth, u_fogParameters.x, u_fogParameters.y);
+	outCol.rgb = mix(outCol.rgb, u_fogColor.rgb, fogFactor);
 	gl_FragColor = outCol;
 }

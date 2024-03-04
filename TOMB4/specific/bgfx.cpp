@@ -11,6 +11,7 @@
 #ifdef USE_BGFX
 
 float bgfx_fog_color[4];
+float bgfx_fog_parameters[4];
 
 bgfx::ProgramHandle m_outputVTLTexProgram = BGFX_INVALID_HANDLE;
 bgfx::ProgramHandle m_outputVTLTexAlphaClippedProgram = BGFX_INVALID_HANDLE;
@@ -19,7 +20,9 @@ bgfx::ProgramHandle m_outputVTLAlphaProgram = BGFX_INVALID_HANDLE;
 
 bgfx::UniformHandle s_texColor;
 bgfx::VertexLayout ms_outputBucketVertexLayout;
+
 bgfx::UniformHandle u_fogColor;
+bgfx::UniformHandle u_fogParameters;
 
 size_t total_sort_verts_in_current_buffer = 0;
 size_t first_bucket_command_idx = 0;
@@ -173,6 +176,9 @@ void InitializeBGFX() {
     }
 
     u_fogColor = bgfx::createUniform("u_fogColor", bgfx::UniformType::Vec4);
+    u_fogParameters = bgfx::createUniform("u_fogParameters", bgfx::UniformType::Vec4);
+
+
     m_outputVTLTexProgram = loadProgram("vs_vtl_tex", "fs_vtl_tex");
     if (App.Filtering) {
         m_outputVTLTexAlphaClippedProgram = loadProgram("vs_vtl_tex_alpha_clipped_filter", "fs_vtl_tex_alpha_clipped_filter");
@@ -190,6 +196,7 @@ void ShutdownBGFX() {
     bgfx::destroy(m_outputVTLAlphaProgram);
 
     bgfx::destroy(u_fogColor);
+    bgfx::destroy(u_fogParameters);
 
     bgfx::shutdown();
 
@@ -331,10 +338,11 @@ void RenderBGFXDrawLists() {
 
                 if (sort_draw_commands[current_sort_idx].texture.idx != 0xffff) {
                     bgfx::setTexture(0, s_texColor, sort_draw_commands[current_sort_idx].texture);
+                    bgfx::setUniform(u_fogColor, bgfx_fog_color);
+                    bgfx::setUniform(u_fogParameters, bgfx_fog_parameters);
                     if (is_blended) {
                         bgfx::submit(0, m_outputVTLTexAlphaBlendedProgram);
                     } else {
-                        bgfx::setUniform(u_fogColor, bgfx_fog_color);
                         bgfx::submit(0, m_outputVTLTexAlphaClippedProgram);
                     }
                 }
@@ -376,6 +384,7 @@ void RenderBGFXDrawLists() {
                 bgfx::setTexture(0, s_texColor, Textures[bucket->tpage].tex);
                 bgfx::setState(state);
                 bgfx::setUniform(u_fogColor, bgfx_fog_color);
+                bgfx::setUniform(u_fogParameters, bgfx_fog_parameters);
 
                 bgfx::submit(0, m_outputVTLTexProgram);
 

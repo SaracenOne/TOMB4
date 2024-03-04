@@ -1,9 +1,11 @@
 $input v_color0, v_color1, v_texcoord0, v_texcoord1
 
 #include "common.sh"
+#include "fog.sh"
 
 SAMPLER2D(s_texColor,  0);
 uniform vec4 u_fogColor;
+uniform vec4 u_fogParameters;
 
 void main()
 {
@@ -19,6 +21,8 @@ void main()
 	}
 
 	// Blend fog
-	outCol.rgb = mix(outCol.rgb, u_fogColor.rgb, 1.0 - v_color0.a);
+	float depth = (gl_FragCoord.z / gl_FragCoord.w);
+	float fogFactor = CalculateFogFactor(depth, u_fogParameters.x, u_fogParameters.y);
+	outCol.rgb = mix(outCol.rgb, u_fogColor.rgb, fogFactor);
 	gl_FragColor = outCol;
 }

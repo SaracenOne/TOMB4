@@ -33,6 +33,7 @@
 #include "trng/trng_script_parser.h"
 #include "../tomb4/mod_config.h"
 #include "../specific/platform.h"
+#include "../specific/bgfx.h"
 
 short CreditGroups[18] =
 {
@@ -551,6 +552,11 @@ void DoLevel(uchar Name, uchar Audio)
 
 	FogStart = (float)environment_info->fog_start_range;
 	FogEnd = (float)environment_info->fog_end_range;
+#ifdef USE_BGFX
+	bgfx_fog_parameters[0] = FogStart / 1024.0f;
+	bgfx_fog_parameters[1] = FogEnd / 1024.0f;
+#endif
+
 	ClipRange = (float)environment_info->far_view;
 
 	S_CDPlay(CurrentAtmosphere, 1);
@@ -976,6 +982,10 @@ void DoTitle(uchar Name, uchar Audio)
 
 	FogStart = (float)environment_info->fog_start_range;
 	FogEnd = (float)environment_info->fog_end_range;
+#ifdef USE_BGFX
+	bgfx_fog_parameters[0] = FogStart / 1024.0f;
+	bgfx_fog_parameters[1] = FogEnd / 1024.0f;
+#endif
 	ClipRange = (float)environment_info->far_view;
 
 	MOD_GLOBAL_INFO *global_info  = get_game_mod_global_info();
