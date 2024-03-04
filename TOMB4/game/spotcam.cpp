@@ -526,6 +526,11 @@ void CalculateSpotCams()
 								TestTriggersAtXYZ(camera.pos.x, camera.pos.y, camera.pos.z, camera.pos.room_number, 1, 0);
 							}
 
+							// TRNG - in case we've reset the camera sequence via a trigger.
+							if (current_spline_camera <= last_camera) {
+								return;
+							}
+
 							camera.type = ctype;
 							bCheckTrigger = 0;
 						}
@@ -549,7 +554,7 @@ void CalculateSpotCams()
 							camera.pos.room_number = InitialCameraRoom;
 						}
 
-						AlterFOV(LastFov);
+						SpotcamResetFOV();
 					}
 					else
 					{
@@ -608,8 +613,12 @@ void CalculateSpotCams()
 		bUseSpotCam = 0;
 		bDisableLaraControl = 0;
 		camera.speed = 1;
-		AlterFOV(LastFov);
+		SpotcamResetFOV();
 		CalculateCamera();
 		bCheckTrigger = 0;
 	}
+}
+
+void SpotcamResetFOV() {
+	AlterFOV(LastFov);
 }

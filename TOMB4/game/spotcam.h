@@ -10,6 +10,7 @@ void InitialiseSpotCam(short Sequence);
 void InitSpotCamSequences();
 long Spline(long x, long* knots, long nk);
 void CalculateSpotCams();
+void SpotcamResetFOV();
 
 extern SPOTCAM SpotCam[];
 extern long bTrackCamInit;

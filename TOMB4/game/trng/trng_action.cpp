@@ -591,11 +591,16 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame, bool 
 		}
 		case ACTIVATE_OR_UNTRIGGER_FLYBY_SEQUENCE: {
 			if (first_frame) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ACTIVATE_OR_UNTRIGGER_FLYBY_SEQUENCE may not be implemented correctly!");
+
 				if (action_data == 0) {
 					bUseSpotCam = 1;
 					InitialiseSpotCam(param);
 				} else if (action_data == 1){
-					bUseSpotCam = 0;
+					if (bUseSpotCam) {
+						SpotcamResetFOV();
+						bUseSpotCam = 0;
+					}
 				} else {
 					NGLog(NG_LOG_TYPE_ERROR, "ACTIVATE_OR_UNTRIGGER_FLYBY_SEQUENCE invalid action data!");
 				}

@@ -401,17 +401,17 @@ void NGLog(NGLogType type, const char* s, ...) {
 	va_end(list);
 
 	switch (type) {
-	case NG_LOG_TYPE_PRINT: {
-		Log(0, "NGLogPrint: %s", buf);
-		break;
-	}
-	case NG_LOG_TYPE_UNIMPLEMENTED_FEATURE: {
-		Log(0, "NGLogUnimplementedFeature: %s", buf);
-		break;
-	}
-	case NG_LOG_TYPE_ERROR: {
-		Log(0, "NGLogError: %s", buf);
-		break;
-	}
+		case NG_LOG_TYPE_PRINT: {
+			Log(0, "NGLogPrint: %s", buf);
+			break;
+		}
+		case NG_LOG_TYPE_UNIMPLEMENTED_FEATURE: {
+			Log(0, "NGLogUnimplementedFeature: %s", buf);
+			break;
+		}
+		case NG_LOG_TYPE_ERROR: {
+			Log(0, "NGLogError: %s", buf);
+			break;
+		}
 	}
 }
