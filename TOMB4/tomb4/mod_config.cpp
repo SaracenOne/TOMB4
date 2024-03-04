@@ -921,14 +921,14 @@ bool LoadGameModConfigFirstPass() {
 
                                                             furr_command_count++;
                                                             if (furr_command_count >= MAX_FURR_COMMANDS) {
-                                                                Log(1, "LoadGameModConfigFirstPass: Exceed maximum allowed FURR commands in flipeffect!");
+                                                                platform_fatal_error("LoadGameModConfigFirstPass: Exceed maximum allowed FURR commands in flipeffect!");
                                                                 SYSTEM_FREE(furr_command_list);
                                                                 CLEANUP_JSON_MEMORY
                                                                 return false;
                                                             }
                                                             furr_command_buffer_size += (1 + furr_command_arg_count);
                                                         } else {
-                                                            Log(1, "LoadGameModConfigFirstPass: unknown FURR opcode detected!");
+                                                            platform_fatal_error("LoadGameModConfigFirstPass: unknown FURR opcode detected!");
                                                             SYSTEM_FREE(furr_command_list);
                                                             CLEANUP_JSON_MEMORY
                                                             return false;
