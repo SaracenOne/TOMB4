@@ -222,17 +222,6 @@ void SetupBGFXOutputPolyList() {
 }
 
 void RenderBGFXDrawLists() {
-    // Compatibility for the old D3DTL XYZRWH polygon buffer
-    for (int i = 0; i < (last_sort_vertex_buffer_idx * SORT_BUFFER_VERT_COUNT) + last_sort_vertex_buffer_offset; i++) {
-        if (sort_buffer_vertex_buffer[i].rhw != 1.0f && sort_buffer_vertex_buffer[i].rhw != 0.0f) {
-            float w = 1.0f / sort_buffer_vertex_buffer[i].rhw;
-            sort_buffer_vertex_buffer[i].sx *= w;
-            sort_buffer_vertex_buffer[i].sy *= w;
-            sort_buffer_vertex_buffer[i].sz *= w;
-            sort_buffer_vertex_buffer[i].rhw = w;
-        }
-    }
-
     size_t current_bucket_idx = 0;
     size_t current_sort_idx = 0;
     for (int i = 0; i < MAX_SORT_BUFFERS; i++) {
@@ -344,8 +333,7 @@ void RenderBGFXDrawLists() {
                     } else {
                         bgfx::submit(0, m_outputVTLTexAlphaClippedProgram);
                     }
-                }
-                else {
+                } else {
                     bgfx::submit(0, m_outputVTLAlphaProgram);
                 }
             }
@@ -366,18 +354,6 @@ void RenderBGFXDrawLists() {
                     | UINT64_C(0);
 
                 bgfx::update(bucket->handle, 0, bgfx::makeRef(bucket->vtx, BUCKET_VERT_COUNT * sizeof(GFXTLBUMPVERTEX)));
-
-                // Compatibility for the old D3DTL XYZRWH polygon buffer
-                for (size_t bucket_vert_idx = 0; bucket_vert_idx < bucket->nVtx; bucket_vert_idx++) {
-                    if (bucket->vtx[bucket_vert_idx].rhw != 1.0f && bucket->vtx[bucket_vert_idx].rhw != 0.0f)
-                    {
-                        float w = 1.0f / bucket->vtx[bucket_vert_idx].rhw;
-                        bucket->vtx[bucket_vert_idx].sx *= w;
-                        bucket->vtx[bucket_vert_idx].sy *= w;
-                        bucket->vtx[bucket_vert_idx].sz *= w;
-                        bucket->vtx[bucket_vert_idx].rhw = w;
-                    }
-                }
 
                 bgfx::setVertexBuffer(0, bucket->handle, 0, bucket->nVtx);
                 bgfx::setTexture(0, s_texColor, Textures[bucket->tpage].tex);
