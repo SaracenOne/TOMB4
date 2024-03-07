@@ -9,7 +9,9 @@ void InitialisePickUpDisplay();
 void DrawPickups();
 void AddDisplayPickup(short object_number);
 
-extern DISPLAYPU pickups[8];
+#define MAX_PICKUP_DISPLAYABLE_COUNT 8
+
+extern DISPLAYPU pickups[MAX_PICKUP_DISPLAYABLE_COUNT];
 extern long PickupX;
 extern short CurrentPickup;
 

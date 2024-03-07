@@ -18,7 +18,7 @@
 #include "../tomb4/tomb4.h"
 #include "../tomb4/tomb4plus/t4plus_inventory.h"
 
-DISPLAYPU pickups[8];
+DISPLAYPU pickups[MAX_PICKUP_DISPLAYABLE_COUNT];
 long PickupX;
 short CurrentPickup;
 

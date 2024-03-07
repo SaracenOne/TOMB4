@@ -1,6 +1,5 @@
 #pragma once
 
-#define MAX_PICKUP_DISPLAYABLE_COUNT 8
 #define MAX_PICKUP_DISPLAYABLE_LIFETIME 8
 
 void T4PlusSetValidLaraGunType();
