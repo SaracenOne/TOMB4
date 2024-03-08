@@ -170,6 +170,8 @@ int ng_last_input_number = 0;
 // Inventory
 unsigned char ng_selected_inventory_item_memory = 0;
 int ng_used_inventory_object_for_frame = NO_ITEM;
+bool ng_used_large_medipack = false;
+bool ng_used_small_medipack = false;
 
 enum TRNG_INPUT {
 	TRNG_INPUT_UP,
@@ -1534,6 +1536,8 @@ void NGSetupExtraState() {
 	// Inventory
 	ng_selected_inventory_item_memory = 0;
 	ng_used_inventory_object_for_frame = NO_ITEM;
+	ng_used_large_medipack = false;
+	ng_used_small_medipack = false;
 
 	// Timer Trackers
 	timer_tracker_type = TTT_ONLY_SHOW_SECONDS;
@@ -1653,6 +1657,8 @@ void NGSetupExtraState() {
 
 	// Inventory
 	ng_used_inventory_object_for_frame = NO_ITEM;
+	ng_used_large_medipack = false;
+	ng_used_small_medipack = false;
 }
 
 void NGFrameFinishExtraState() {

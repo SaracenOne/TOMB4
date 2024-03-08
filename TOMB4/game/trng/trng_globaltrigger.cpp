@@ -13,6 +13,7 @@
 #include "trng_globaltrigger.h"
 #include "../../specific/input.h"
 #include "../../specific/dxshell.h"
+#include "../newinv.h"
 
 bool NGExecuteSingleGlobalTrigger(int global_trigger_id, int selected_inventory_object_id) {
 	NG_GLOBAL_TRIGGER* global_trigger = &ng_levels[gfCurrentLevel].records->global_trigger_table[global_trigger_id].record;
@@ -29,6 +30,18 @@ bool NGExecuteSingleGlobalTrigger(int global_trigger_id, int selected_inventory_
 			if (ng_used_inventory_object_for_frame != NO_ITEM) {
 				if (ng_used_inventory_object_for_frame == global_trigger->parameter)
 					global_trigger_condition_passed = true;
+			}
+			break;
+		}
+		case GT_USED_BIG_MEDIPACK: {
+			if (ng_used_large_medipack) {
+				global_trigger_condition_passed = true;
+			}
+			break;
+		}
+		case GT_USED_LITTLE_MEDIPACK: {
+			if (ng_used_small_medipack) {
+				global_trigger_condition_passed = true;
 			}
 			break;
 		}

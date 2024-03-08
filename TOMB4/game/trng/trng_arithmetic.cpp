@@ -650,32 +650,32 @@ int NGNumericGetSavegameValue(unsigned int variable) {
 			break;
 		}
 		case 0x04: {
-			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGNumericGetSavegameValue: Lara Hands: Attached Lara Status untested!");
+			NGLog(NG_LOG_TYPE_POSSIBLE_INACCURACY, "NGNumericGetSavegameValue: Lara Hands: Attached Lara Status untested!");
 			return lara.gun_status;
 			break;
 		}
 		case 0x05: {
-			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGNumericGetSavegameValue: Lara Hands: Item in the hands (current) untested!");
+			NGLog(NG_LOG_TYPE_POSSIBLE_INACCURACY, "NGNumericGetSavegameValue: Lara Hands: Item in the hands (current) untested!");
 			return lara.gun_type;
 			break;
 		}
 		case 0x06: {
-			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGNumericGetSavegameValue: Lara Hands: Item in the hands (following) untested!");
+			NGLog(NG_LOG_TYPE_POSSIBLE_INACCURACY, "NGNumericGetSavegameValue: Lara Hands: Item in the hands (following) untested!");
 			return lara.request_gun_type;
 			break;
 		}
 		case 0x07: {
-			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGNumericGetSavegameValue: Lara Hands: current weapon (not necessarily in the hand) untested!");
+			NGLog(NG_LOG_TYPE_POSSIBLE_INACCURACY, "NGNumericGetSavegameValue: Lara Hands: current weapon (not necessarily in the hand) untested!");
 			return lara.last_gun_type;
 			break;
 		}
 		case 0x08: {
-			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGNumericGetSavegameValue: Lara: Environment where lara is is untested!");
+			NGLog(NG_LOG_TYPE_POSSIBLE_INACCURACY, "NGNumericGetSavegameValue: Lara: Environment where lara is is untested!");
 			return lara.water_status;
 			break;
 		}
 		case 0x09: {
-			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGNumericGetSavegameValue: Lara: Climb sector test is untested!");
+			NGLog(NG_LOG_TYPE_POSSIBLE_INACCURACY, "NGNumericGetSavegameValue: Lara: Climb sector test is untested!");
 			return lara.climb_status;
 			break;
 		}
@@ -688,7 +688,7 @@ int NGNumericGetSavegameValue(unsigned int variable) {
 			break;
 		}
 		case 0x0c: {
-			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGNumericGetSavegameValue: Lara Hands: Remaining time with lighted flare is untested!");
+			NGLog(NG_LOG_TYPE_POSSIBLE_INACCURACY, "NGNumericGetSavegameValue: Lara Hands: Remaining time with lighted flare is untested!");
 			return lara.flare_age;
 			break;
 		}

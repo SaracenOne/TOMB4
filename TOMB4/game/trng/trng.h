@@ -114,12 +114,15 @@ extern bool NGLaraHasInfiniteAir();
 
 extern bool NGTestSelectedInventoryObjectAndManagementReplaced(int inventory_object_id);
 extern void NGSetUsedInventoryObject(int inventory_object_id);
+extern void NGSetUsedSmallMedipack();
+extern void NGSetUsedLargeMedipack();
 
 extern void NGInit();
 extern void NGCleanup();
 
 enum NGLogType {
 	NG_LOG_TYPE_PRINT,
+	NG_LOG_TYPE_POSSIBLE_INACCURACY,
 	NG_LOG_TYPE_UNIMPLEMENTED_FEATURE,
 	NG_LOG_TYPE_ERROR,
 };

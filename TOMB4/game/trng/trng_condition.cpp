@@ -140,8 +140,10 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 				return !is_lara_performing;
 				break;
 			case 3: // Falling
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_IS_PERFORMING_X_ACTION falling not currently implemented!");
-				return !is_lara_performing;
+				if ((lara_item->current_anim_state == AS_FASTFALL) == is_lara_performing) {
+					return true;
+				}
+				return false;
 				break;
 			case 4: // Jumping
 				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_IS_PERFORMING_X_ACTION jumping not currently implemented!");
@@ -602,7 +604,7 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 	}
 	case LARA_IS_LESS_OR_EVEN_CLICKS_DISTANT_TO_MOVEABLE: {
 		// TODO: I'm not sure this is accurate. More testing will be required.
-		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: LARA_IS_LESS_OR_EVEN_CLICKS_DISTANT_TO_MOVEABLE calculation is not accurate!");
+		NGLog(NG_LOG_TYPE_POSSIBLE_INACCURACY, "NGCondition: LARA_IS_LESS_OR_EVEN_CLICKS_DISTANT_TO_MOVEABLE may not be accurate!");
 
 		long dx = (lara_item->pos.x_pos - items[param].pos.x_pos) ;
 		long dy = (lara_item->pos.y_pos - items[param].pos.y_pos);

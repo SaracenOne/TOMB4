@@ -168,8 +168,7 @@ bool keyboard_enable_input(unsigned char input, unsigned char _unused) {
 
 // NGLE - 53
 bool keyboard_simulate_receivement_of_keyboard_command(unsigned char input, unsigned char timer) {
-	NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGFlipEffect: KEYBOARD_SIMULATE_RECEIVEMENT_OF_KEYBOARD_COMMAND calculation is not accurate!");
-
+	NGLog(NG_LOG_TYPE_POSSIBLE_INACCURACY, "NGFlipEffect: KEYBOARD_SIMULATE_RECEIVEMENT_OF_KEYBOARD_COMMAND calculation is not accurate!");
 
 	NGSimulateInputForTime(input, (int)timer * 30);
 

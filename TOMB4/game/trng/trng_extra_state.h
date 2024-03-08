@@ -100,6 +100,8 @@ extern int ng_last_input_number;
 // Inventory
 extern unsigned char ng_selected_inventory_item_memory;
 extern int ng_used_inventory_object_for_frame;
+extern bool ng_used_large_medipack;
+extern bool ng_used_small_medipack;
 
 extern void NGStorePendingRoomNumber(int room_number);
 extern int NGRestorePendingRoomNumber();

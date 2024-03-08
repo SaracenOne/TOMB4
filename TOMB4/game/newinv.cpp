@@ -1868,6 +1868,8 @@ void use_current_item()
 
 		SoundEffect(SFX_MENU_MEDI, 0, SFX_ALWAYS);
 		savegame.Game.HealthUsed++;
+
+		NGSetUsedSmallMedipack();
 	}
 	else  if (invobject == INV_BIGMEDI_ITEM)
 	{
@@ -1888,6 +1890,8 @@ void use_current_item()
 
 		SoundEffect(SFX_MENU_MEDI, 0, SFX_ALWAYS);
 		savegame.Game.HealthUsed++;
+
+		NGSetUsedLargeMedipack();
 	}
 	else
 		GLOBAL_inventoryitemchosen = gmeobject;

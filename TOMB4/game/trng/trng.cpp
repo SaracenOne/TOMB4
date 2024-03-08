@@ -385,6 +385,14 @@ void NGSetUsedInventoryObject(int inventory_object_id) {
 	ng_used_inventory_object_for_frame = inventory_object_id;
 }
 
+void NGSetUsedSmallMedipack() {
+	ng_used_small_medipack = true;
+}
+
+void NGSetUsedLargeMedipack() {
+	ng_used_large_medipack = true;
+}
+
 void NGInit() {
 }
 
@@ -393,6 +401,11 @@ void NGCleanup() {
 }
 
 void NGLog(NGLogType type, const char* s, ...) {
+#ifndef DEBUG
+	if (type == NG_LOG_TYPE_POSSIBLE_INACCURACY)
+		return;
+#endif
+
 	va_list list;
 	char buf[8192];
 
@@ -407,6 +420,10 @@ void NGLog(NGLogType type, const char* s, ...) {
 		}
 		case NG_LOG_TYPE_UNIMPLEMENTED_FEATURE: {
 			Log(0, "NGLogUnimplementedFeature: %s", buf);
+			break;
+		}
+		case NG_LOG_TYPE_POSSIBLE_INACCURACY: {
+			Log(0, "NGLogPossibleInaccuracy: %s", buf);
 			break;
 		}
 		case NG_LOG_TYPE_ERROR: {

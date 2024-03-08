@@ -14,7 +14,9 @@
 #include "../game/spotcam.h"
 #include "../tomb4/tomb4.h"
 
+#include "../game/trng/trng.h"
 #include "../game/trng/trng_extra_state.h"
+
 #include "function_stubs.h"
 
 #ifdef USE_SDL
@@ -1141,6 +1143,7 @@ long S_UpdateInput()
 					lara_item->hit_points += 500;
 					SoundEffect(SFX_MENU_MEDI, 0, SFX_ALWAYS);
 					savegame.Game.HealthUsed++;
+					NGSetUsedSmallMedipack();
 
 					if (lara_item->hit_points > 1000)
 						lara_item->hit_points = 1000;
@@ -1176,6 +1179,8 @@ long S_UpdateInput()
 					lara_item->hit_points = 1000;
 					SoundEffect(SFX_MENU_MEDI, 0, SFX_ALWAYS);
 					savegame.Game.HealthUsed++;
+					NGSetUsedLargeMedipack();
+
 					med_hotkey_timer = 15;
 
 					if (InventoryActive && !lara.num_large_medipack)

@@ -732,7 +732,7 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame, bool 
 			break;
 		}
 		case MOVE_CONTINUOUSLY_FORWARD_BACKWARD_X_ANIMATING_FOR_CLICKS:
-			// Not accurate
+			NGLog(NG_LOG_TYPE_POSSIBLE_INACCURACY, "NGAction: MOVE_CONTINUOUSLY_FORWARD_BACKWARD_X_ANIMATING_FOR_CLICKS may not be accurate.");
 			if (first_frame) {
 				if (!NGGetItemHorizontalMovementRemainingUnits(item_id)) {
 					NGSetItemHorizontalMovementAngle(item_id, items[item_id].pos.y_rot);
