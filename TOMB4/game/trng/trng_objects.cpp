@@ -18,6 +18,8 @@ int NGGetObjectIDForInventoryItemMemoryID(int id) {
 			return SHOTGUN_ITEM;
 		case 3:
 			return SIXSHOOTER_ITEM;
+		default:
+			return NO_ITEM;
 	}
 }
 
