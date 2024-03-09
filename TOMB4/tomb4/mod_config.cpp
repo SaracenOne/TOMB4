@@ -357,6 +357,7 @@ void LoadGameModLevelEnvironmentInfo(const json_t* environment, MOD_LEVEL_ENVIRO
     READ_JSON_UINT32(fog_end_range, environment, environment_info);
     READ_JSON_UINT32(far_view, environment, environment_info);
     READ_JSON_BOOL(force_train_fog, environment, environment_info);
+    READ_JSON_BOOL(disable_distance_limit, environment, environment_info);
 }
 
 void LoadGameModLevelFontInfo(const json_t* font, MOD_LEVEL_FONT_INFO* font_info) {

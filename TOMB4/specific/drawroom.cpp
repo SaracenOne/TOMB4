@@ -91,7 +91,9 @@ void ProcessRoomVertices(ROOM_INFO* r)
 
 	clip = clipflags;
 
-	if (gfLevelFlags & GF_TRAIN || get_game_mod_level_environment_info(gfCurrentLevel)->force_train_fog)
+	MOD_LEVEL_ENVIRONMENT_INFO *environment_info = get_game_mod_level_environment_info(gfCurrentLevel);
+
+	if (gfLevelFlags & GF_TRAIN || environment_info->force_train_fog)
 	{
 		DistanceFogStart = 12.0F * 1024.0F;
 		DistanceFogEnd = 1024.0F * 20.0F;
@@ -104,7 +106,12 @@ void ProcessRoomVertices(ROOM_INFO* r)
 		} else {
 			DistanceFogStart = FogStart;
 			DistanceFogEnd = FogEnd;
-			DistanceClipRange = ClipRange;
+			if (environment_info->disable_distance_limit) {
+				DistanceClipRange = -1.0F;
+			}
+			else {
+				DistanceClipRange = ClipRange;
+			}
 		}
 	};
 

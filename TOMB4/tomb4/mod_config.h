@@ -33,6 +33,7 @@ struct MOD_LEVEL_ENVIRONMENT_INFO {
 	unsigned int fog_end_range = DEFAULT_FOG_END_VALUE;
 	unsigned int far_view = DEFAULT_FAR_VIEW_VALUE;
 	bool force_train_fog = false;
+	bool disable_distance_limit = false;
 };
 
 struct MOD_LEVEL_FONT_INFO {
