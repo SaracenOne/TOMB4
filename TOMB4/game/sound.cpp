@@ -80,7 +80,7 @@ void StopSoundEffect(long sfx)
 	{
 		lut = sample_lut[sfx];
 
-		for (int i = 0; i < 32; i++)
+		for (int i = 0; i < MAX_VOICES; i++)
 		{
 			if (LaSlot[i].nSampleInfo >= lut && LaSlot[i].nSampleInfo < (lut + ((sample_infos[lut].flags >> 2) & 0xF)))
 			{
@@ -95,7 +95,7 @@ void SOUND_Init()
 {
 	//empty func call here
 
-	for (int i = 0; i < 32; i++)
+	for (int i = 0; i < MAX_VOICES; i++)
 		LaSlot[i].nSampleInfo = -1;
 
 	sound_active = true;
@@ -107,7 +107,7 @@ void SOUND_Stop()
 	{
 		S_SoundStopAllSamples();
 
-		for (int i = 0; i < 32; i++)
+		for (int i = 0; i < MAX_VOICES; i++)
 			LaSlot[i].nSampleInfo = -1;
 	}
 }
@@ -237,7 +237,7 @@ long SoundEffect(long sfx, PHD_3DPOS* pos, long flags)
 	{
 	case 1:
 
-		for (int i = 0; i < 32; i++)
+		for (int i = 0; i < MAX_VOICES; i++)
 		{
 			if (LaSlot[i].nSampleInfo == lut)
 			{
@@ -252,7 +252,7 @@ long SoundEffect(long sfx, PHD_3DPOS* pos, long flags)
 
 	case 2:
 
-		for (int i = 0; i < 32; i++)
+		for (int i = 0; i < MAX_VOICES; i++)
 		{
 			if (LaSlot[i].nSampleInfo == lut)
 			{
@@ -266,7 +266,7 @@ long SoundEffect(long sfx, PHD_3DPOS* pos, long flags)
 
 	case 3:
 
-		for (int i = 0; i < 32; i++)
+		for (int i = 0; i < MAX_VOICES; i++)
 		{
 			if (LaSlot[i].nSampleInfo == lut)
 			{
@@ -314,7 +314,7 @@ long SoundEffect(long sfx, PHD_3DPOS* pos, long flags)
 		vol = 0x8000000;
 		slot = -1;
 
-		for (int i = 1; i < 32; i++)
+		for (int i = 1; i < MAX_VOICES; i++)
 		{
 			if ((LaSlot[i].nSampleInfo >= 0) && (LaSlot[i].nVolume <= vol))
 			{
