@@ -324,16 +324,50 @@ void LoadGameModLevelAudioInfo(const json_t* audio, MOD_LEVEL_AUDIO_INFO* audio_
     READ_JSON_SINT16(secret_track, audio, audio_info);
 }
 
+void LoadGameModLevelRectColorInfo(const json_t* rect_color, MOD_LEVEL_RECT_COLOR_INFO *rect_color_info) {
+    READ_JSON_ARGB(upper_left_color, rect_color, rect_color_info);
+    READ_JSON_ARGB(upper_right_color, rect_color, rect_color_info);
+    READ_JSON_ARGB(lower_right_color, rect_color, rect_color_info);
+    READ_JSON_ARGB(lower_left_color, rect_color, rect_color_info);
+}
+
 void LoadGameModLevelBarInfo(const json_t* bar, MOD_LEVEL_BAR_INFO* bar_info) {
-    READ_JSON_ARGB(main_color, bar, bar_info);
-    READ_JSON_ARGB(fade_color, bar, bar_info);
-    READ_JSON_ARGB(alternative_color, bar, bar_info);
+    const json_t* lower_rect = json_getProperty(bar, "lower_rect");
+    if (lower_rect && JSON_OBJ == json_getType(lower_rect)) {
+        LoadGameModLevelRectColorInfo(lower_rect, &bar_info->lower_rect);
+    }
+
+    const json_t* upper_rect = json_getProperty(bar, "upper_rect");
+    if (upper_rect && JSON_OBJ == json_getType(upper_rect)) {
+        LoadGameModLevelRectColorInfo(upper_rect, &bar_info->upper_rect);
+    }
+
+    const json_t* border_rect = json_getProperty(bar, "border_rect");
+    if (border_rect && JSON_OBJ == json_getType(border_rect)) {
+        LoadGameModLevelRectColorInfo(border_rect, &bar_info->border_rect);
+    }
+
+    const json_t* background_rect = json_getProperty(bar, "background_rect");
+    if (background_rect && JSON_OBJ == json_getType(background_rect)) {
+        LoadGameModLevelRectColorInfo(background_rect, &bar_info->background_rect);
+    }
+
+    READ_JSON_UINT32(border_size, bar, bar_info);
+    READ_JSON_UINT32(x, bar, bar_info);
+    READ_JSON_UINT32(y, bar, bar_info);
+    READ_JSON_UINT32(width, bar, bar_info);
+    READ_JSON_UINT32(height, bar, bar_info);
 }
 
 void LoadGameModLevelBarsInfo(const json_t* bars, MOD_LEVEL_BARS_INFO *bars_info) {
     const json_t* health_bar_info = json_getProperty(bars, "health_bar");
     if (health_bar_info && JSON_OBJ == json_getType(health_bar_info)) {
         LoadGameModLevelBarInfo(health_bar_info, &bars_info->health_bar);
+    }
+
+    const json_t* poison_bar_info = json_getProperty(bars, "poison_bar");
+    if (poison_bar_info && JSON_OBJ == json_getType(poison_bar_info)) {
+        LoadGameModLevelBarInfo(poison_bar_info, &bars_info->poison_bar);
     }
 
     const json_t* air_bar_info = json_getProperty(bars, "air_bar");
@@ -349,6 +383,11 @@ void LoadGameModLevelBarsInfo(const json_t* bars, MOD_LEVEL_BARS_INFO *bars_info
     const json_t* loading_bar_info = json_getProperty(bars, "loading_bar");
     if (loading_bar_info && JSON_OBJ == json_getType(loading_bar_info)) {
         LoadGameModLevelBarInfo(loading_bar_info, &bars_info->loading_bar);
+    }
+
+    const json_t* enemy_bar_info = json_getProperty(bars, "enemy_bar");
+    if (enemy_bar_info && JSON_OBJ == json_getType(enemy_bar_info)) {
+        LoadGameModLevelBarInfo(enemy_bar_info, &bars_info->enemy_bar);
     }
 }
 
@@ -783,18 +822,190 @@ void SetupDefaultObjectInfoForLevel(MOD_LEVEL_INFO* level_info) {
 }
 
 void SetupDefaultBarsInfoForLevel(MOD_LEVEL_INFO* level_info) {
-    level_info->bars_info.health_bar.main_color = 0xffff0000;
-    level_info->bars_info.health_bar.fade_color = 0xff000000;
-    level_info->bars_info.health_bar.alternative_color = 0xffffff00;
+    const uint32_t BORDER_COLOR = 0xffffffff;
+    const uint32_t BACKGROUND_COLOR = 0xff000000;
+    const uint32_t BORDER_SIZE = 1;
 
-    level_info->bars_info.air_bar.main_color = 0xff0000ff;
-    level_info->bars_info.air_bar.fade_color = 0xff000000;
+    // Health
+    const uint32_t HEALTH_BAR_COLOR = 0xffff0000;
+    const uint32_t HEALTH_BAR_FADE = 0xff000000;
 
-    level_info->bars_info.sprint_bar.main_color = 0xff00ff00;
-    level_info->bars_info.sprint_bar.fade_color = 0xff000000;
+    level_info->bars_info.health_bar.x = 8;
+    level_info->bars_info.health_bar.y = 8;
+    level_info->bars_info.health_bar.width = 150;
+    level_info->bars_info.health_bar.height = 12;
 
-    level_info->bars_info.loading_bar.main_color = 0xff9f1f80;
-    level_info->bars_info.loading_bar.fade_color = 0xff000000;
+    level_info->bars_info.health_bar.border_rect.upper_left_color = BORDER_COLOR;
+    level_info->bars_info.health_bar.border_rect.upper_right_color = BORDER_COLOR;
+    level_info->bars_info.health_bar.border_rect.lower_right_color = BORDER_COLOR;
+    level_info->bars_info.health_bar.border_rect.lower_left_color = BORDER_COLOR;
+
+    level_info->bars_info.health_bar.background_rect.upper_left_color = BACKGROUND_COLOR;
+    level_info->bars_info.health_bar.background_rect.upper_right_color = BACKGROUND_COLOR;
+    level_info->bars_info.health_bar.background_rect.lower_right_color = BACKGROUND_COLOR;
+    level_info->bars_info.health_bar.background_rect.lower_left_color = BACKGROUND_COLOR;
+
+    level_info->bars_info.health_bar.border_size = BORDER_SIZE;
+
+    level_info->bars_info.health_bar.lower_rect.upper_left_color = HEALTH_BAR_COLOR;
+    level_info->bars_info.health_bar.lower_rect.upper_right_color = HEALTH_BAR_COLOR;
+    level_info->bars_info.health_bar.lower_rect.lower_right_color = HEALTH_BAR_FADE;
+    level_info->bars_info.health_bar.lower_rect.lower_left_color = HEALTH_BAR_FADE;
+
+    level_info->bars_info.health_bar.upper_rect.upper_left_color = HEALTH_BAR_FADE;
+    level_info->bars_info.health_bar.upper_rect.upper_right_color = HEALTH_BAR_FADE;
+    level_info->bars_info.health_bar.upper_rect.lower_right_color = HEALTH_BAR_COLOR;
+    level_info->bars_info.health_bar.upper_rect.lower_left_color = HEALTH_BAR_COLOR;
+
+    // Poisoned
+    const uint32_t POISON_BAR_COLOR = 0xffffff00;
+    const uint32_t POISON_BAR_FADE = 0xff000000;
+
+    level_info->bars_info.poison_bar.x = 8;
+    level_info->bars_info.poison_bar.y = 8;
+    level_info->bars_info.poison_bar.width = 150;
+    level_info->bars_info.poison_bar.height = 12;
+
+    level_info->bars_info.poison_bar.border_rect.upper_left_color = BORDER_COLOR;
+    level_info->bars_info.poison_bar.border_rect.upper_right_color = BORDER_COLOR;
+    level_info->bars_info.poison_bar.border_rect.lower_right_color = BORDER_COLOR;
+    level_info->bars_info.poison_bar.border_rect.lower_left_color = BORDER_COLOR;
+
+    level_info->bars_info.poison_bar.background_rect.upper_left_color = BACKGROUND_COLOR;
+    level_info->bars_info.poison_bar.background_rect.upper_right_color = BACKGROUND_COLOR;
+    level_info->bars_info.poison_bar.background_rect.lower_right_color = BACKGROUND_COLOR;
+    level_info->bars_info.poison_bar.background_rect.lower_left_color = BACKGROUND_COLOR;
+
+    level_info->bars_info.poison_bar.border_size = BORDER_SIZE;
+
+    level_info->bars_info.poison_bar.lower_rect.upper_left_color = POISON_BAR_COLOR;
+    level_info->bars_info.poison_bar.lower_rect.upper_right_color = POISON_BAR_COLOR;
+    level_info->bars_info.poison_bar.lower_rect.lower_right_color = POISON_BAR_FADE;
+    level_info->bars_info.poison_bar.lower_rect.lower_left_color = POISON_BAR_FADE;
+
+    level_info->bars_info.poison_bar.upper_rect.upper_left_color = POISON_BAR_FADE;
+    level_info->bars_info.poison_bar.upper_rect.upper_right_color = POISON_BAR_FADE;
+    level_info->bars_info.poison_bar.upper_rect.lower_right_color = POISON_BAR_COLOR;
+    level_info->bars_info.poison_bar.upper_rect.lower_left_color = POISON_BAR_COLOR;
+
+    // Air
+    const uint32_t AIR_BAR_COLOR = 0xff0000ff;
+    const uint32_t AIR_BAR_FADE = 0xff000000;
+
+    level_info->bars_info.air_bar.x = 8;
+    level_info->bars_info.air_bar.y = 25;
+    level_info->bars_info.air_bar.width = 150;
+    level_info->bars_info.air_bar.height = 12;
+
+    level_info->bars_info.air_bar.border_rect.upper_left_color = BORDER_COLOR;
+    level_info->bars_info.air_bar.border_rect.upper_right_color = BORDER_COLOR;
+    level_info->bars_info.air_bar.border_rect.lower_right_color = BORDER_COLOR;
+    level_info->bars_info.air_bar.border_rect.lower_left_color = BORDER_COLOR;
+
+    level_info->bars_info.air_bar.background_rect.upper_left_color = BACKGROUND_COLOR;
+    level_info->bars_info.air_bar.background_rect.upper_right_color = BACKGROUND_COLOR;
+    level_info->bars_info.air_bar.background_rect.lower_right_color = BACKGROUND_COLOR;
+    level_info->bars_info.air_bar.background_rect.lower_left_color = BACKGROUND_COLOR;
+
+    level_info->bars_info.air_bar.border_size = BORDER_SIZE;
+
+    level_info->bars_info.air_bar.lower_rect.upper_left_color = AIR_BAR_COLOR;
+    level_info->bars_info.air_bar.lower_rect.upper_right_color = AIR_BAR_COLOR;
+    level_info->bars_info.air_bar.lower_rect.lower_right_color = AIR_BAR_FADE;
+    level_info->bars_info.air_bar.lower_rect.lower_left_color = AIR_BAR_FADE;
+
+    level_info->bars_info.air_bar.upper_rect.upper_left_color = AIR_BAR_FADE;
+    level_info->bars_info.air_bar.upper_rect.upper_right_color = AIR_BAR_FADE;
+    level_info->bars_info.air_bar.upper_rect.lower_right_color = AIR_BAR_COLOR;
+    level_info->bars_info.air_bar.upper_rect.lower_left_color = AIR_BAR_COLOR;
+
+    // Sprint
+    const uint32_t SPRINT_BAR_COLOR = 0xff00ff00;
+    const uint32_t SPRINT_BAR_FADE = 0xff000000;
+
+    level_info->bars_info.sprint_bar.x = 8;
+    level_info->bars_info.sprint_bar.y = 8;
+    level_info->bars_info.sprint_bar.width = 150;
+    level_info->bars_info.sprint_bar.height = 12;
+
+    level_info->bars_info.sprint_bar.border_rect.upper_left_color = BORDER_COLOR;
+    level_info->bars_info.sprint_bar.border_rect.upper_right_color = BORDER_COLOR;
+    level_info->bars_info.sprint_bar.border_rect.lower_right_color = BORDER_COLOR;
+    level_info->bars_info.sprint_bar.border_rect.lower_left_color = BORDER_COLOR;
+
+    level_info->bars_info.sprint_bar.background_rect.upper_left_color = BACKGROUND_COLOR;
+    level_info->bars_info.sprint_bar.background_rect.upper_right_color = BACKGROUND_COLOR;
+    level_info->bars_info.sprint_bar.background_rect.lower_right_color = BACKGROUND_COLOR;
+    level_info->bars_info.sprint_bar.background_rect.lower_left_color = BACKGROUND_COLOR;
+
+    level_info->bars_info.sprint_bar.border_size = BORDER_SIZE;
+
+    level_info->bars_info.sprint_bar.lower_rect.upper_left_color = SPRINT_BAR_COLOR;
+    level_info->bars_info.sprint_bar.lower_rect.upper_right_color = SPRINT_BAR_COLOR;
+    level_info->bars_info.sprint_bar.lower_rect.lower_right_color = SPRINT_BAR_FADE;
+    level_info->bars_info.sprint_bar.lower_rect.lower_left_color = SPRINT_BAR_FADE;
+
+    level_info->bars_info.sprint_bar.upper_rect.upper_left_color = SPRINT_BAR_FADE;
+    level_info->bars_info.sprint_bar.upper_rect.upper_right_color = SPRINT_BAR_FADE;
+    level_info->bars_info.sprint_bar.upper_rect.lower_right_color = SPRINT_BAR_COLOR;
+    level_info->bars_info.sprint_bar.upper_rect.lower_left_color = SPRINT_BAR_COLOR;
+
+    // Loading
+    const uint32_t LOADING_BAR_COLOR = 0xff9f1f80;
+    const uint32_t LOADING_BAR_FADE = 0xff000000;
+
+    level_info->bars_info.loading_bar.border_rect.upper_left_color = BORDER_COLOR;
+    level_info->bars_info.loading_bar.border_rect.upper_right_color = BORDER_COLOR;
+    level_info->bars_info.loading_bar.border_rect.lower_right_color = BORDER_COLOR;
+    level_info->bars_info.loading_bar.border_rect.lower_left_color = BORDER_COLOR;
+
+    level_info->bars_info.loading_bar.background_rect.upper_left_color = BACKGROUND_COLOR;
+    level_info->bars_info.loading_bar.background_rect.upper_right_color = BACKGROUND_COLOR;
+    level_info->bars_info.loading_bar.background_rect.lower_right_color = BACKGROUND_COLOR;
+    level_info->bars_info.loading_bar.background_rect.lower_left_color = BACKGROUND_COLOR;
+
+    level_info->bars_info.loading_bar.border_size = BORDER_SIZE;
+
+    level_info->bars_info.loading_bar.lower_rect.upper_left_color = LOADING_BAR_COLOR;
+    level_info->bars_info.loading_bar.lower_rect.upper_right_color = LOADING_BAR_COLOR;
+    level_info->bars_info.loading_bar.lower_rect.lower_right_color = LOADING_BAR_FADE;
+    level_info->bars_info.loading_bar.lower_rect.lower_left_color = LOADING_BAR_FADE;
+
+    level_info->bars_info.loading_bar.upper_rect.upper_left_color = LOADING_BAR_FADE;
+    level_info->bars_info.loading_bar.upper_rect.upper_right_color = LOADING_BAR_FADE;
+    level_info->bars_info.loading_bar.upper_rect.lower_right_color = LOADING_BAR_COLOR;
+    level_info->bars_info.loading_bar.upper_rect.lower_left_color = LOADING_BAR_COLOR;
+
+    // Enemy
+    const uint32_t ENEMY_BAR_COLOR = 0xffffa000;
+    const uint32_t ENEMY_BAR_FADE = 0xff000000;
+
+    level_info->bars_info.enemy_bar.x = 8;
+    level_info->bars_info.enemy_bar.y = 25;
+    level_info->bars_info.enemy_bar.width = 150;
+    level_info->bars_info.enemy_bar.height = 12;
+
+    level_info->bars_info.enemy_bar.border_rect.upper_left_color = BORDER_COLOR;
+    level_info->bars_info.enemy_bar.border_rect.upper_right_color = BORDER_COLOR;
+    level_info->bars_info.enemy_bar.border_rect.lower_right_color = BORDER_COLOR;
+    level_info->bars_info.enemy_bar.border_rect.lower_left_color = BORDER_COLOR;
+
+    level_info->bars_info.enemy_bar.background_rect.upper_left_color = BACKGROUND_COLOR;
+    level_info->bars_info.enemy_bar.background_rect.upper_right_color = BACKGROUND_COLOR;
+    level_info->bars_info.enemy_bar.background_rect.lower_right_color = BACKGROUND_COLOR;
+    level_info->bars_info.enemy_bar.background_rect.lower_left_color = BACKGROUND_COLOR;
+
+    level_info->bars_info.enemy_bar.border_size = BORDER_SIZE;
+
+    level_info->bars_info.enemy_bar.lower_rect.upper_left_color = ENEMY_BAR_COLOR;
+    level_info->bars_info.enemy_bar.lower_rect.upper_right_color = ENEMY_BAR_COLOR;
+    level_info->bars_info.enemy_bar.lower_rect.lower_right_color = ENEMY_BAR_FADE;
+    level_info->bars_info.enemy_bar.lower_rect.lower_left_color = ENEMY_BAR_FADE;
+
+    level_info->bars_info.enemy_bar.upper_rect.upper_left_color = ENEMY_BAR_FADE;
+    level_info->bars_info.enemy_bar.upper_rect.upper_right_color = ENEMY_BAR_FADE;
+    level_info->bars_info.enemy_bar.upper_rect.lower_right_color = ENEMY_BAR_COLOR;
+    level_info->bars_info.enemy_bar.upper_rect.lower_left_color = ENEMY_BAR_COLOR;
 }
 
 void SetupDefaultStatInfoForLevel(MOD_LEVEL_INFO* level_info) {

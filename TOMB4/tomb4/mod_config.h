@@ -145,17 +145,32 @@ struct MOD_LEVEL_AUDIO_INFO {
 	short secret_track = 5;
 };
 
+struct MOD_LEVEL_RECT_COLOR_INFO {
+	uint32_t upper_left_color;
+	uint32_t upper_right_color;
+	uint32_t lower_right_color;
+	uint32_t lower_left_color;
+};
+
 struct MOD_LEVEL_BAR_INFO {
-	int main_color;
-	int fade_color;
-	int alternative_color;
+	MOD_LEVEL_RECT_COLOR_INFO lower_rect;
+	MOD_LEVEL_RECT_COLOR_INFO upper_rect;
+	MOD_LEVEL_RECT_COLOR_INFO border_rect;
+	MOD_LEVEL_RECT_COLOR_INFO background_rect;
+	uint32_t border_size;
+	uint32_t x;
+	uint32_t y;
+	uint32_t width;
+	uint32_t height;
 };
 
 struct MOD_LEVEL_BARS_INFO {
 	MOD_LEVEL_BAR_INFO health_bar;
+	MOD_LEVEL_BAR_INFO poison_bar;
 	MOD_LEVEL_BAR_INFO air_bar;
 	MOD_LEVEL_BAR_INFO sprint_bar;
 	MOD_LEVEL_BAR_INFO loading_bar;
+	MOD_LEVEL_BAR_INFO enemy_bar;
 };
 
 struct MOD_LEVEL_LARA_INFO {
