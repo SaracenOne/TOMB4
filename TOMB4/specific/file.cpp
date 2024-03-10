@@ -713,7 +713,12 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 	Textures = (TEXTURE*)AddStruct(Textures, nTextures, sizeof(TEXTURE));
 	nTex = nTextures;
 	nTextures++;
-	tSurf = CreateTexturePage(256, 256, 0, (long*)TextureData, 0, 0);
+#ifdef USE_BGFX
+	tSurf = CreateTexturePage(256, 256, 0, (long*)TextureData, RGB_Swizzle, 0);
+#else
+	tSurf = CreateTexturePage(256, 256, 0, (long*)TextureData, nullptr, 0);
+#endif
+
 #ifdef USE_BGFX
 	Textures[nTex].tex = tSurf;
 #else
