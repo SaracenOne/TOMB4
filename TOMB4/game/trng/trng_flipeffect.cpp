@@ -194,6 +194,18 @@ bool kill_and_or_set_lara_on_fire(unsigned char death_type, unsigned char action
 	return true;
 }
 
+// NGLE - 65
+bool print_standard_x_string_on_screen_for_e_seconds(unsigned char string_id, unsigned char timer) {
+	gfLegend = string_id;
+	if (timer == 0) {
+		gfLegendTime = -1;
+	} else {
+		gfLegendTime = timer * 30;
+	}
+
+	return true;
+}
+
 // NGLE - 68
 bool play_cd_track_channel_1(unsigned char track_id, unsigned char looping) {
 	S_CDPlayExt(track_id, 0, looping, false);
@@ -1450,7 +1462,7 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 		}
 		case TEXT_PRINT_STANDARD_STRING_ON_SCREEN_FOR_X_SECONDS: {
 			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TEXT_PRINT_STANDARD_STRING_ON_SCREEN_FOR_X_SECONDS unimplemented!");
+				print_standard_x_string_on_screen_for_e_seconds(action_data_1, action_data_2);
 			break;
 		}
 		case TEXT_SET_COLOR_AND_POSITION_FOR_NEXT_PRINT_STRING_FLIPEFFECT: {

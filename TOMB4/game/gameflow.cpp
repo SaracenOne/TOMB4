@@ -150,8 +150,8 @@ char skipped_level = 0;
 char Chris_Menu = 0;
 char title_controls_locked_out;
 
-uchar gfLegend;
-ulong gfLegendTime = 0;
+uint8_t gfLegend;
+int32_t gfLegendTime = 0;
 
 static ushort* gfScriptOffset;
 static uchar* gfScriptWad = 0;
@@ -595,10 +595,12 @@ void DoLevel(uchar Name, uchar Audio)
 
 		S_InitialisePolyList();
 
-		if (gfLegendTime && !cutseq_num && ((!DestFadeScreenHeight && !FadeScreenHeight) || get_game_mod_level_misc_info(gfCurrentLevel)->draw_legend_on_flyby))
+		if (gfLegendTime != 0 && !cutseq_num && ((!DestFadeScreenHeight && !FadeScreenHeight) || get_game_mod_level_misc_info(gfCurrentLevel)->draw_legend_on_flyby))
 		{
 			PrintString(phd_winwidth >> 1, phd_winymax - font_height, 2, GetCustomStringForTextID(gfLegend), FF_CENTER);
-			gfLegendTime--;
+			if (gfLegendTime > 0) {
+				gfLegendTime--;
+			}
 		}
 
 		nFrames = DrawPhaseGame();

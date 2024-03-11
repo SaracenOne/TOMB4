@@ -46,8 +46,8 @@ extern char skipped_level;
 extern char Chris_Menu;
 extern char title_controls_locked_out;
 
-extern uchar gfLegend;
-extern ulong gfLegendTime;
+extern uint8_t gfLegend;
+extern int32_t gfLegendTime;
 
 enum gf_commands
 {
