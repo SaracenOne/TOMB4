@@ -733,6 +733,10 @@ ulong mGetAngle(long x, long z, long x1, long z1)
 
 void AlterFOV(short fov)
 {
+	if (fov == 0) {
+		return;
+	}
+
 	long fov_width;
 
 	CurrentFov = fov;
