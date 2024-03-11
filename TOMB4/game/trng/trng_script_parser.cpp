@@ -1121,7 +1121,7 @@ int NGReadLevelBlock(char* gfScriptFile, unsigned int offset, NG_LEVEL_RECORD_TA
 					break;
 				}
 				case CUST_LOOK_TRANSPARENT: {
-					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_LOOK_TRASPARENT unimplemented! (level %u)", current_level);
+					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_LOOK_TRANSPARENT unimplemented! (level %u)", current_level);
 
 					unsigned short is_enabled = NG_READ_16(gfScriptFile, offset);
 					break;
