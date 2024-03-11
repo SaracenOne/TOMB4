@@ -71,6 +71,8 @@ void GameClose()
 	SYSTEM_FREE(gfScriptFile);
 	SYSTEM_FREE(gfLanguageFile);
 
+	SYSTEM_FREE(mesh_mapping_table);
+
 #ifdef USE_BGFX
 	ShutdownBGFX();
 #endif
@@ -240,7 +242,7 @@ long S_SaveGame(long slot_num)
 		bytes = fwrite(&hours, sizeof(short), 1, file);
 		bytes = fwrite(&minutes, sizeof(short), 1, file);
 		bytes = fwrite(&seconds, sizeof(short), 1, file);
-		bytes = fwrite(&savegame, sizeof(SAVEGAME_INFO), 1, file);
+		bytes = fwrite(&savegame, sizeof(LEGACY_SAVEGAME_INFO), 1, file);
 
 		fclose(file);
 		wsprintf(counter, "%d", SaveCounter);
@@ -289,7 +291,7 @@ long S_LoadGame(long slot_num)
 			fclose(file);
 			return 0;
 		}
-		if (fread(&savegame, sizeof(SAVEGAME_INFO), 1, file) == 0) {
+		if (fread(&savegame, sizeof(LEGACY_SAVEGAME_INFO), 1, file) == 0) {
 			fclose(file);
 			return 0;
 		}

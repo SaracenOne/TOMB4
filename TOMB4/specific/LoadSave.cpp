@@ -40,7 +40,7 @@ long ControlMethod;
 char MonoScreenOn;
 
 static MONOSCREEN_STRUCT MonoScreen;
-static SAVEFILE_INFO SaveGames[MAX_SAVEGAMES] = {};
+static LEGACY_SAVEFILE_INFO SaveGames[MAX_SAVEGAMES] = {};
 
 void DoOptions()
 {
@@ -606,7 +606,7 @@ long DoLoadSave(long LoadSave)
 {
 	// Tomb4Plus: handling for increased savegame count.
 
-	SAVEFILE_INFO* pSave;
+	LEGACY_SAVEFILE_INFO* pSave;
 	static long selection;
 	long txt;
 	size_t l;
@@ -1104,8 +1104,8 @@ long S_PauseMenu(long force_menu)
 long GetSaveLoadFiles()
 {
 	FILE* file;
-	SAVEFILE_INFO* pSave;
-	SAVEGAME_INFO save_info;
+	LEGACY_SAVEFILE_INFO *pSave;
+	LEGACY_SAVEGAME_INFO save_info;
 	static long nSaves;
 	char name[75];
 
@@ -1133,7 +1133,7 @@ long GetSaveLoadFiles()
 		fread(&pSave->hours, sizeof(short), 1, file);
 		fread(&pSave->minutes, sizeof(short), 1, file);
 		fread(&pSave->seconds, sizeof(short), 1, file);
-		fread(&save_info, 1, sizeof(SAVEGAME_INFO), file);
+		fread(&save_info, 1, sizeof(LEGACY_SAVEGAME_INFO), file);
 
 		if (!CheckSumValid((char*)&save_info))
 		{

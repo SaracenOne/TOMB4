@@ -24,7 +24,9 @@
 #include "../specific/file.h"
 #include "../tomb4/mod_config.h"
 
-SAVEGAME_INFO savegame;
+#define MAX_HUB_LEVELS 10
+
+LEGACY_SAVEGAME_INFO savegame;
 
 static char* SGpoint = 0;
 static long SGcount = 0;
@@ -35,7 +37,7 @@ long CheckSumValid(char* buffer)
 
 	checksum = 0;
 
-	for (int i = 0; i < sizeof(SAVEGAME_INFO); i++)
+	for (int i = 0; i < sizeof(LEGACY_SAVEGAME_INFO); i++)
 		checksum += *buffer++;
 
 	return !checksum;
@@ -43,7 +45,7 @@ long CheckSumValid(char* buffer)
 
 void sgInitialiseHub(long dont_save_lara)
 {
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < MAX_HUB_LEVELS; i++)
 	{
 		savegame.HubLevels[i] = 0;
 		savegame.HubOffsets[i] = 0;
@@ -77,18 +79,177 @@ void SaveLaraData()
 {
 	ITEM_INFO* item;
 
-	for (int i = 0; i < LARA_MESH_PTR_COUNT; i++)
-		lara.mesh_ptrs[i] = (short*)((size_t)lara.mesh_ptrs[i] - (size_t)mesh_base);
+	savegame.Lara.item_number = lara.item_number;
+	savegame.Lara.gun_status = lara.gun_status;
+	savegame.Lara.gun_type = lara.gun_type;
+	savegame.Lara.request_gun_type = lara.request_gun_type;
+	savegame.Lara.last_gun_type = lara.last_gun_type;
+	savegame.Lara.calc_fallspeed = lara.calc_fallspeed;
+	savegame.Lara.water_status = lara.water_status;
+	savegame.Lara.climb_status = lara.climb_status;
+	savegame.Lara.pose_count = lara.pose_count;
+	savegame.Lara.hit_frame = lara.hit_frame;
+	savegame.Lara.hit_direction = lara.hit_direction;
+	savegame.Lara.air = lara.air;
+	savegame.Lara.dive_count = lara.dive_count;
+	savegame.Lara.death_count = lara.death_count;
+	savegame.Lara.current_active = lara.current_active;
+	savegame.Lara.current_xvel = lara.current_xvel;
+	savegame.Lara.current_yvel = lara.current_yvel;
+	savegame.Lara.current_zvel = lara.current_zvel;
+	savegame.Lara.spaz_effect_count = lara.spaz_effect_count;
+	savegame.Lara.flare_age = lara.flare_age;
+	savegame.Lara.vehicle = lara.vehicle;
+	savegame.Lara.weapon_item = lara.weapon_item;
+	savegame.Lara.back_gun = lara.back_gun;
+	savegame.Lara.flare_frame = lara.flare_frame;
+	savegame.Lara.poisoned = lara.poisoned;
+	savegame.Lara.dpoisoned = lara.dpoisoned;
+	savegame.Lara.electric = lara.electric;
 
-	lara.left_arm.frame_base = (short*)((size_t)lara.left_arm.frame_base - (size_t)objects[PISTOLS_ANIM].frame_base);
-	lara.right_arm.frame_base = (short*)((size_t)lara.right_arm.frame_base - (size_t)objects[PISTOLS_ANIM].frame_base);
-	memcpy(&savegame.Lara, &lara, sizeof(savegame.Lara));
+	for (int i = 0; i < WET_COUNT; i++) {
+		savegame.Lara.wet[i] = lara.wet[i];
+	}
 
-	for (int i = 0; i < LARA_MESH_PTR_COUNT; i++)
-		lara.mesh_ptrs[i] = (short*)((size_t)lara.mesh_ptrs[i] + (size_t)mesh_base);
+	savegame.Lara.flare_control_left = lara.flare_control_left;
+	savegame.Lara.Unused1 = lara.Unused1;
+	savegame.Lara.look = lara.look;
+	savegame.Lara.burn = lara.burn;
+	savegame.Lara.keep_ducked = lara.keep_ducked;
+	savegame.Lara.IsMoving = lara.IsMoving;
+	savegame.Lara.CanMonkeySwing = lara.CanMonkeySwing;
+	savegame.Lara.Unused2 = lara.Unused2;
+	savegame.Lara.OnBeetleFloor = lara.OnBeetleFloor;
+	savegame.Lara.BurnGreen = lara.BurnGreen;
+	savegame.Lara.IsDucked = lara.IsDucked;
+	savegame.Lara.has_fired = lara.has_fired;
+	savegame.Lara.Busy = lara.Busy;
+	savegame.Lara.LitTorch = lara.LitTorch;
+	savegame.Lara.IsClimbing = lara.IsClimbing;
+	savegame.Lara.Fired = lara.Fired;
+	savegame.Lara.water_surface_dist = lara.water_surface_dist;
+	savegame.Lara.last_pos.x = lara.last_pos.x;
+	savegame.Lara.last_pos.y = lara.last_pos.y;
+	savegame.Lara.last_pos.z = lara.last_pos.z;
+	savegame.Lara.spaz_effect = 0; // Pointer
+	savegame.Lara.mesh_effects = lara.mesh_effects;
 
-	lara.left_arm.frame_base = (short*)((size_t)lara.left_arm.frame_base + (size_t)objects[PISTOLS_ANIM].frame_base);
-	lara.right_arm.frame_base = (short*)((size_t)lara.right_arm.frame_base + (size_t)objects[PISTOLS_ANIM].frame_base);
+	for (int i = 0; i < LARA_MESH_PTR_COUNT; i++) {
+		size_t base = (size_t)mesh_base;
+		size_t offset = ((size_t)lara.mesh_ptrs[i]) - base;
+
+		savegame.Lara.mesh_ptrs[i] = 0;
+		for (int j = 0; j < mesh_mapping_table_count; j++) {
+			if (mesh_mapping_table[j].mesh_native_ptr == offset) {
+				savegame.Lara.mesh_ptrs[i] = (X32_POINTER)(mesh_mapping_table[j].mesh_x32_ptr);
+			}
+		}
+	}
+
+	savegame.Lara.target = 0; // Pointer
+
+	for (int i = 0; i < 2; i++) {
+		savegame.Lara.target_angles[i] = lara.target_angles[i];
+	}
+
+	savegame.Lara.turn_rate = lara.turn_rate;
+	savegame.Lara.move_angle = lara.move_angle;
+	savegame.Lara.head_y_rot = lara.head_y_rot;
+	savegame.Lara.head_x_rot = lara.head_x_rot;
+	savegame.Lara.head_z_rot = lara.head_z_rot;
+	savegame.Lara.torso_y_rot = lara.torso_y_rot;
+	savegame.Lara.torso_x_rot = lara.torso_x_rot;
+	savegame.Lara.torso_z_rot = lara.torso_z_rot;
+
+	// Left Arm
+	savegame.Lara.left_arm.frame_base = (X32_POINTER)((size_t)lara.left_arm.frame_base - (size_t)objects[PISTOLS_ANIM].frame_base);
+	savegame.Lara.left_arm.frame_number = lara.left_arm.frame_number;
+	savegame.Lara.left_arm.anim_number = lara.left_arm.anim_number;
+	savegame.Lara.left_arm.lock = lara.left_arm.lock;
+	savegame.Lara.left_arm.y_rot = lara.left_arm.y_rot;
+	savegame.Lara.left_arm.x_rot = lara.left_arm.x_rot;
+	savegame.Lara.left_arm.z_rot = lara.left_arm.z_rot;
+	savegame.Lara.left_arm.flash_gun = lara.left_arm.flash_gun;
+
+	// Right Arm
+	savegame.Lara.right_arm.frame_base = (X32_POINTER)((size_t)lara.right_arm.frame_base - (size_t)objects[PISTOLS_ANIM].frame_base);
+	savegame.Lara.right_arm.frame_number = lara.right_arm.frame_number;
+	savegame.Lara.right_arm.anim_number = lara.right_arm.anim_number;
+	savegame.Lara.right_arm.lock = lara.right_arm.lock;
+	savegame.Lara.right_arm.y_rot = lara.right_arm.y_rot;
+	savegame.Lara.right_arm.x_rot = lara.right_arm.x_rot;
+	savegame.Lara.right_arm.z_rot = lara.right_arm.z_rot;
+	savegame.Lara.right_arm.flash_gun = lara.right_arm.flash_gun;
+
+	savegame.Lara.holster = lara.holster;
+
+	savegame.Lara.creature = 0; // Pointer
+	savegame.Lara.CornerX = 0; // Pointer
+	savegame.Lara.CornerZ = 0; // Pointer
+
+	savegame.Lara.RopeSegment = lara.RopeSegment;
+	savegame.Lara.RopeDirection = lara.RopeDirection;
+	savegame.Lara.RopeArcFront = lara.RopeArcFront;
+	savegame.Lara.RopeArcBack = lara.RopeArcBack;
+	savegame.Lara.RopeLastX = lara.RopeLastX;
+	savegame.Lara.RopeMaxXForward = lara.RopeMaxXForward;
+	savegame.Lara.RopeMaxXBackward = lara.RopeMaxXBackward;
+	savegame.Lara.RopeDFrame = lara.RopeDFrame;
+	savegame.Lara.RopeFrame = lara.RopeFrame;
+	savegame.Lara.RopeFrameRate = lara.RopeFrameRate;
+	savegame.Lara.RopeY = lara.RopeY;
+	savegame.Lara.RopePtr = lara.RopePtr;
+	savegame.Lara.GeneralPtr = lara.GeneralPtr;
+	savegame.Lara.RopeOffset = lara.RopeOffset;
+	savegame.Lara.RopeDownVel = lara.RopeDownVel;
+	savegame.Lara.RopeFlag = lara.RopeFlag;
+	savegame.Lara.MoveCount = lara.MoveCount;
+	savegame.Lara.RopeCount = lara.RopeCount;
+	savegame.Lara.pistols_type_carried = lara.pistols_type_carried;
+	savegame.Lara.uzis_type_carried = lara.uzis_type_carried;
+	savegame.Lara.shotgun_type_carried = lara.shotgun_type_carried;
+	savegame.Lara.crossbow_type_carried = lara.crossbow_type_carried;
+	savegame.Lara.grenade_type_carried = lara.grenade_type_carried;
+	savegame.Lara.sixshooter_type_carried = lara.sixshooter_type_carried;
+	savegame.Lara.lasersight = lara.lasersight;
+	savegame.Lara.binoculars = lara.binoculars;
+	savegame.Lara.crowbar = lara.crowbar;
+	savegame.Lara.mechanical_scarab = lara.mechanical_scarab;
+	savegame.Lara.small_water_skin = lara.small_water_skin;
+	savegame.Lara.big_water_skin = lara.big_water_skin;
+	savegame.Lara.examine1 = lara.examine1;
+	savegame.Lara.examine2 = lara.examine2;
+	savegame.Lara.examine3 = lara.examine3;
+
+	for (int i = 0; i < 12; i++) {
+		savegame.Lara.puzzleitems[i] = lara.puzzleitems[i];
+	}
+
+	savegame.Lara.puzzleitemscombo = lara.puzzleitemscombo;
+	savegame.Lara.keyitems = lara.keyitems;
+	savegame.Lara.keyitemscombo = lara.keyitemscombo;
+	savegame.Lara.pickupitems = lara.pickupitems;
+	savegame.Lara.pickupitemscombo = lara.pickupitemscombo;
+	savegame.Lara.questitems = lara.questitems;
+	savegame.Lara.num_small_medipack = lara.num_small_medipack;
+	savegame.Lara.num_large_medipack = lara.num_large_medipack;
+	savegame.Lara.num_flares = lara.num_flares;
+	savegame.Lara.num_pistols_ammo = lara.num_pistols_ammo;
+	savegame.Lara.num_uzi_ammo = lara.num_uzi_ammo;
+	savegame.Lara.num_revolver_ammo = lara.num_revolver_ammo;
+	savegame.Lara.num_shotgun_ammo1 = lara.num_shotgun_ammo1;
+	savegame.Lara.num_shotgun_ammo2 = lara.num_shotgun_ammo2;
+	savegame.Lara.num_grenade_ammo1 = lara.num_grenade_ammo1;
+	savegame.Lara.num_grenade_ammo2 = lara.num_grenade_ammo2;
+	savegame.Lara.num_grenade_ammo3 = lara.num_grenade_ammo3;
+	savegame.Lara.num_crossbow_ammo1 = lara.num_crossbow_ammo1;
+	savegame.Lara.num_crossbow_ammo2 = lara.num_crossbow_ammo2;
+	savegame.Lara.num_crossbow_ammo3 = lara.num_crossbow_ammo3;
+	savegame.Lara.beetle_uses = lara.beetle_uses;
+	savegame.Lara.blindTimer = lara.blindTimer;
+	savegame.Lara.location = lara.location;
+	savegame.Lara.highest_location = lara.highest_location;
+	savegame.Lara.locationPad = lara.locationPad;
 
 	if (lara.weapon_item != NO_ITEM)
 	{
@@ -127,8 +288,8 @@ void SaveHubData(long index)
 {
 	savegame.HubSizes[index] = ushort(SGcount - savegame.HubOffsets[index]);
 
-	if (index < 10)
-		savegame.HubSizes[index - 9] = savegame.HubSizes[index] + savegame.HubOffsets[index];
+	if (index < MAX_HUB_LEVELS)
+		savegame.HubSizes[index - (MAX_HUB_LEVELS-1)] = savegame.HubSizes[index] + savegame.HubOffsets[index];
 }
 
 void RestoreLaraData(long FullSave)
@@ -138,11 +299,180 @@ void RestoreLaraData(long FullSave)
 	if (!FullSave)
 		savegame.Lara.item_number = lara.item_number;
 
-	memcpy(&lara, &savegame.Lara, sizeof(lara));
-	lara.target = 0;
-	lara.spaz_effect = 0;
+	lara.item_number = savegame.Lara.item_number;
+	lara.gun_status = savegame.Lara.gun_status;
+	lara.gun_type = savegame.Lara.gun_type;
+	lara.request_gun_type = savegame.Lara.request_gun_type;
+	lara.last_gun_type = savegame.Lara.last_gun_type;
+	lara.calc_fallspeed = savegame.Lara.calc_fallspeed;
+	lara.water_status = savegame.Lara.water_status;
+	lara.climb_status = savegame.Lara.climb_status;
+	lara.pose_count = savegame.Lara.pose_count;
+	lara.hit_frame = savegame.Lara.hit_frame;
+	lara.hit_direction = savegame.Lara.hit_direction;
+	lara.air = savegame.Lara.air;
+	lara.dive_count = savegame.Lara.dive_count;
+	lara.death_count = savegame.Lara.death_count;
+	lara.current_active = savegame.Lara.current_active;
+	lara.current_xvel = savegame.Lara.current_xvel;
+	lara.current_yvel = savegame.Lara.current_yvel;
+	lara.current_zvel = savegame.Lara.current_zvel;
+	lara.spaz_effect_count = savegame.Lara.spaz_effect_count;
+	lara.flare_age = savegame.Lara.flare_age;
+	lara.vehicle = savegame.Lara.vehicle;
+	lara.weapon_item = savegame.Lara.weapon_item;
+	lara.back_gun = savegame.Lara.back_gun;
+	lara.flare_frame = savegame.Lara.flare_frame;
+	lara.poisoned = savegame.Lara.poisoned;
+	lara.dpoisoned = savegame.Lara.dpoisoned;
+	lara.electric = savegame.Lara.electric;
+
+	for (int i = 0; i < WET_COUNT; i++) {
+		lara.wet[i] = savegame.Lara.wet[i];
+	}
+
+	lara.flare_control_left = savegame.Lara.flare_control_left;
+	lara.Unused1 = savegame.Lara.Unused1;
+	lara.look = savegame.Lara.look;
+	lara.burn = savegame.Lara.burn;
+	lara.keep_ducked = savegame.Lara.keep_ducked;
+	lara.IsMoving = savegame.Lara.IsMoving;
+	lara.CanMonkeySwing = savegame.Lara.CanMonkeySwing;
+	lara.Unused2 = savegame.Lara.Unused2;
+	lara.OnBeetleFloor = savegame.Lara.OnBeetleFloor;
+	lara.BurnGreen = savegame.Lara.BurnGreen;
+	lara.IsDucked = savegame.Lara.IsDucked;
+	lara.has_fired = savegame.Lara.has_fired;
+	lara.Busy = savegame.Lara.Busy;
+	lara.LitTorch = savegame.Lara.LitTorch;
+	lara.IsClimbing = savegame.Lara.IsClimbing;
+	lara.Fired = savegame.Lara.Fired;
+	lara.water_surface_dist = savegame.Lara.water_surface_dist;
+	lara.last_pos.x = savegame.Lara.last_pos.x;
+	lara.last_pos.y = savegame.Lara.last_pos.y;
+	lara.last_pos.z = savegame.Lara.last_pos.z;
+	lara.spaz_effect = nullptr; // Pointer
+	lara.mesh_effects = savegame.Lara.mesh_effects;
+
+	if (!savegame.HubSavedLara) {
+		for (int i = 0; i < LARA_MESH_PTR_COUNT; i++) {
+			size_t base = (size_t)mesh_base;
+			size_t offset = (size_t)(savegame.Lara.mesh_ptrs[i]);
+
+			size_t offset_original = (size_t)(lara.mesh_ptrs[i]) - base;
+			for (int j = 0; j < mesh_mapping_table_count; j++) {
+				if (mesh_mapping_table[j].mesh_x32_ptr == offset) {
+					lara.mesh_ptrs[i] = (short*)(base + mesh_mapping_table[j].mesh_native_ptr);
+				}
+			}
+		}
+	}
+
+	lara.target = nullptr; // Pointer
+
+	for (int i = 0; i < 2; i++) {
+		lara.target_angles[i] = savegame.Lara.target_angles[i];
+	}
+
+	lara.turn_rate = savegame.Lara.turn_rate;
+	lara.move_angle = savegame.Lara.move_angle;
+	lara.head_y_rot = savegame.Lara.head_y_rot;
+	lara.head_x_rot = savegame.Lara.head_x_rot;
+	lara.head_z_rot = savegame.Lara.head_z_rot;
+	lara.torso_y_rot = savegame.Lara.torso_y_rot;
+	lara.torso_x_rot = savegame.Lara.torso_x_rot;
+	lara.torso_z_rot = savegame.Lara.torso_z_rot;
+
+	// Left Arm
 	lara.left_arm.frame_base = (short*)((size_t)lara.left_arm.frame_base + (size_t)objects[PISTOLS_ANIM].frame_base);
+	lara.left_arm.frame_number = savegame.Lara.left_arm.frame_number;
+	lara.left_arm.anim_number = savegame.Lara.left_arm.anim_number;
+	lara.left_arm.lock = savegame.Lara.left_arm.lock;
+	lara.left_arm.y_rot = savegame.Lara.left_arm.y_rot;
+	lara.left_arm.x_rot = savegame.Lara.left_arm.x_rot;
+	lara.left_arm.z_rot = savegame.Lara.left_arm.z_rot;
+	lara.left_arm.flash_gun = savegame.Lara.left_arm.flash_gun;
+
+	// Right Arm
 	lara.right_arm.frame_base = (short*)((size_t)lara.right_arm.frame_base + (size_t)objects[PISTOLS_ANIM].frame_base);
+	lara.right_arm.frame_number = savegame.Lara.right_arm.frame_number;
+	lara.right_arm.anim_number = savegame.Lara.right_arm.anim_number;
+	lara.right_arm.lock = savegame.Lara.right_arm.lock;
+	lara.right_arm.y_rot = savegame.Lara.right_arm.y_rot;
+	lara.right_arm.x_rot = savegame.Lara.right_arm.x_rot;
+	lara.right_arm.z_rot = savegame.Lara.right_arm.z_rot;
+	lara.right_arm.flash_gun = savegame.Lara.right_arm.flash_gun;
+
+	lara.holster = savegame.Lara.holster;
+
+	lara.creature = 0; // Pointer
+	lara.CornerX = 0; // Pointer
+	lara.CornerZ = 0; // Pointer
+
+	lara.RopeSegment = savegame.Lara.RopeSegment;
+	lara.RopeDirection = savegame.Lara.RopeDirection;
+	lara.RopeArcFront = savegame.Lara.RopeArcFront;
+	lara.RopeArcBack = savegame.Lara.RopeArcBack;
+	lara.RopeLastX = savegame.Lara.RopeLastX;
+	lara.RopeMaxXForward = savegame.Lara.RopeMaxXForward;
+	lara.RopeMaxXBackward = savegame.Lara.RopeMaxXBackward;
+	lara.RopeDFrame = savegame.Lara.RopeDFrame;
+	lara.RopeFrame = savegame.Lara.RopeFrame;
+	lara.RopeFrameRate = savegame.Lara.RopeFrameRate;
+	lara.RopeY = savegame.Lara.RopeY;
+	lara.RopePtr = savegame.Lara.RopePtr;
+	lara.GeneralPtr = savegame.Lara.GeneralPtr;
+	lara.RopeOffset = savegame.Lara.RopeOffset;
+	lara.RopeDownVel = savegame.Lara.RopeDownVel;
+	lara.RopeFlag = savegame.Lara.RopeFlag;
+	lara.MoveCount = savegame.Lara.MoveCount;
+	lara.RopeCount = savegame.Lara.RopeCount;
+	lara.pistols_type_carried = savegame.Lara.pistols_type_carried;
+	lara.uzis_type_carried = savegame.Lara.uzis_type_carried;
+	lara.shotgun_type_carried = savegame.Lara.shotgun_type_carried;
+	lara.crossbow_type_carried = savegame.Lara.crossbow_type_carried;
+	lara.grenade_type_carried = savegame.Lara.grenade_type_carried;
+	lara.sixshooter_type_carried = savegame.Lara.sixshooter_type_carried;
+	lara.lasersight = savegame.Lara.lasersight;
+	lara.binoculars = savegame.Lara.binoculars;
+	lara.crowbar = savegame.Lara.crowbar;
+	lara.mechanical_scarab = savegame.Lara.mechanical_scarab;
+	lara.small_water_skin = savegame.Lara.small_water_skin;
+	lara.big_water_skin = savegame.Lara.big_water_skin;
+	lara.examine1 = savegame.Lara.examine1;
+	lara.examine2 = savegame.Lara.examine2;
+	lara.examine3 = savegame.Lara.examine3;
+
+	for (int i = 0; i < 12; i++) {
+		lara.puzzleitems[i] = savegame.Lara.puzzleitems[i];
+	}
+
+	lara.puzzleitemscombo = savegame.Lara.puzzleitemscombo;
+	lara.keyitems = savegame.Lara.keyitems;
+	lara.keyitemscombo = savegame.Lara.keyitemscombo;
+	lara.pickupitems = savegame.Lara.pickupitems;
+	lara.pickupitemscombo = savegame.Lara.pickupitemscombo;
+	lara.questitems = savegame.Lara.questitems;
+	lara.num_small_medipack = savegame.Lara.num_small_medipack;
+	lara.num_large_medipack = savegame.Lara.num_large_medipack;
+	lara.num_flares = savegame.Lara.num_flares;
+	lara.num_pistols_ammo = savegame.Lara.num_pistols_ammo;
+	lara.num_uzi_ammo = savegame.Lara.num_uzi_ammo;
+	lara.num_revolver_ammo = savegame.Lara.num_revolver_ammo;
+	lara.num_shotgun_ammo1 = savegame.Lara.num_shotgun_ammo1;
+	lara.num_shotgun_ammo2 = savegame.Lara.num_shotgun_ammo2;
+	lara.num_grenade_ammo1 = savegame.Lara.num_grenade_ammo1;
+	lara.num_grenade_ammo2 = savegame.Lara.num_grenade_ammo2;
+	lara.num_grenade_ammo3 = savegame.Lara.num_grenade_ammo3;
+	lara.num_crossbow_ammo1 = savegame.Lara.num_crossbow_ammo1;
+	lara.num_crossbow_ammo2 = savegame.Lara.num_crossbow_ammo2;
+	lara.num_crossbow_ammo3 = savegame.Lara.num_crossbow_ammo3;
+	lara.beetle_uses = savegame.Lara.beetle_uses;
+	lara.blindTimer = savegame.Lara.blindTimer;
+	lara.location = savegame.Lara.location;
+	lara.highest_location = savegame.Lara.highest_location;
+	lara.locationPad = savegame.Lara.locationPad;
+
 	// Tomb4Plus - we've modified the GeneralPtr to be an index rather than a memory address since it was buggy and barely used as memory address directly.
 	// Added a check to make sure the item is within range to prevent crashing with old savegames.
 	if (lara.GeneralPtr >= ITEM_COUNT) {
@@ -182,11 +512,6 @@ void RestoreLaraData(long FullSave)
 			KillItem(lara.weapon_item);
 			lara.weapon_item = NO_ITEM;
 		}
-	}
-	else
-	{
-		for (int i = 0; i < LARA_MESH_PTR_COUNT; i++)
-			lara.mesh_ptrs[i] = (short*)((size_t)lara.mesh_ptrs[i] + (size_t)mesh_base);
 	}
 
 	CutSceneTriggered = savegame.cutscene_triggered;
@@ -264,7 +589,7 @@ void CreateCheckSum()
 	ptr = (char*)&savegame;
 	checksum = 0;
 
-	for (int i = 0; i < sizeof(SAVEGAME_INFO); i++)
+	for (int i = 0; i < sizeof(LEGACY_SAVEGAME_INFO); i++)
 		checksum += *ptr++;
 
 	savegame.Checksum = -checksum;
@@ -310,7 +635,7 @@ long OpenSaveGame(uchar current_level, long saving)
 
 	index = 0;
 
-	while (index < 10 && savegame.HubLevels[index] != current_level)
+	while (index < MAX_HUB_LEVELS && savegame.HubLevels[index] != current_level)
 		index++;
 
 	if (saving == 1)
@@ -318,9 +643,9 @@ long OpenSaveGame(uchar current_level, long saving)
 		j = index + 1;
 		i = index;
 
-		if (index < 10)
+		if (index < MAX_HUB_LEVELS)
 		{
-			while (j < 10)
+			while (j < MAX_HUB_LEVELS)
 			{
 				curOffset = &savegame.HubOffsets[i];
 				nexOffset = &savegame.HubOffsets[j];
@@ -328,9 +653,9 @@ long OpenSaveGame(uchar current_level, long saving)
 				if (!savegame.HubLevels[j])
 					break;
 
-				memcpy(&savegame.buffer[curOffset[0]], &savegame.buffer[nexOffset[0]], nexOffset[10]);
-				curOffset[10] = nexOffset[10];
-				nexOffset[0] = curOffset[0] + curOffset[10];
+				memcpy(&savegame.buffer[curOffset[0]], &savegame.buffer[nexOffset[0]], nexOffset[MAX_HUB_LEVELS]);
+				curOffset[MAX_HUB_LEVELS] = nexOffset[MAX_HUB_LEVELS];
+				nexOffset[0] = curOffset[0] + curOffset[MAX_HUB_LEVELS];
 				savegame.HubLevels[i] = savegame.HubLevels[j];
 				i++;
 				j++;
@@ -339,7 +664,7 @@ long OpenSaveGame(uchar current_level, long saving)
 			savegame.HubLevels[i] = 0;
 		}
 
-		for (index = 0; index < 10; index++)
+		for (index = 0; index < MAX_HUB_LEVELS; index++)
 		{
 			if (!savegame.HubLevels[index])
 				break;
@@ -351,7 +676,7 @@ long OpenSaveGame(uchar current_level, long saving)
 		return index;
 	}
 
-	if (index < 10)
+	if (index < MAX_HUB_LEVELS)
 	{
 		SGcount = savegame.HubOffsets[index];
 		SGpoint = &savegame.buffer[SGcount];
@@ -379,7 +704,7 @@ void SaveLevelData(long FullSave)
 	WriteSG(&GLOBAL_lastinvitem, sizeof(long));
 	word = 0;
 
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < MAX_HUB_LEVELS; i++)
 	{
 		if (flip_stats[i])
 			word |= (1 << i);
@@ -387,7 +712,7 @@ void SaveLevelData(long FullSave)
 
 	WriteSG(&word, sizeof(short));
 
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < MAX_HUB_LEVELS; i++)
 	{
 		word = short(flipmap[i] >> 8);
 		WriteSG(&word, sizeof(short));
@@ -816,7 +1141,7 @@ void RestoreLevelData(long FullSave)
 	ReadSG(&GLOBAL_lastinvitem, sizeof(long));
 	ReadSG(&sword, sizeof(short));
 
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < MAX_HUB_LEVELS; i++)
 	{
 		if (sword & (1 << i))
 			FlipMap(i);

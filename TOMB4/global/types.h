@@ -70,6 +70,9 @@ typedef unsigned char uchar;
 typedef unsigned short ushort;
 typedef unsigned long ulong;
 
+// For legacy savegame backwards compatibility on 64-bit machines.
+#define X32_POINTER uint32_t
+
 enum DX_FLAGS
 {
 	DXF_NONE = 0x0,
@@ -686,144 +689,145 @@ struct FX_INFO
 
 struct LARA_ARM
 {
-	short* frame_base;
-	short frame_number;
-	short anim_number;
-	short lock;
-	short y_rot;
-	short x_rot;
-	short z_rot;
-	short flash_gun;
+	int16_t* frame_base;
+	int16_t frame_number;
+	int16_t anim_number;
+	int16_t lock;
+	int16_t y_rot;
+	int16_t x_rot;
+	int16_t z_rot;
+	int16_t flash_gun;
 };
 
 #define LARA_MESH_PTR_COUNT 15
+#define WET_COUNT 15
 
 struct LARA_INFO
 {
-	short item_number;
-	short gun_status;
-	short gun_type;
-	short request_gun_type;
-	short last_gun_type;
-	short calc_fallspeed;
-	short water_status;
-	short climb_status;
-	short pose_count;
-	short hit_frame;
-	short hit_direction;
-	short air;
-	short dive_count;
-	short death_count;
-	short current_active;
-	short current_xvel;
-	short current_yvel;
-	short current_zvel;
-	short spaz_effect_count;
-	short flare_age;
-	short vehicle;
-	short weapon_item;
-	short back_gun;
-	short flare_frame;
-	short poisoned;
-	short dpoisoned;
-	uchar electric;
-	uchar wet[15];
-	ushort flare_control_left : 1;
-	ushort Unused1 : 1;
-	ushort look : 1;
-	ushort burn : 1;
-	ushort keep_ducked : 1;
-	ushort IsMoving : 1;
-	ushort CanMonkeySwing : 1;
-	ushort Unused2 : 1;
-	ushort OnBeetleFloor : 1;
-	ushort BurnGreen : 1;
-	ushort IsDucked : 1;
-	ushort has_fired : 1;
-	ushort Busy : 1;
-	ushort LitTorch : 1;
-	ushort IsClimbing : 1;
-	ushort Fired : 1;
-	long water_surface_dist;
+	int16_t item_number;
+	int16_t gun_status;
+	int16_t gun_type;
+	int16_t request_gun_type;
+	int16_t last_gun_type;
+	int16_t calc_fallspeed;
+	int16_t water_status;
+	int16_t climb_status;
+	int16_t pose_count;
+	int16_t hit_frame;
+	int16_t hit_direction;
+	int16_t air;
+	int16_t dive_count;
+	int16_t death_count;
+	int16_t current_active;
+	int16_t current_xvel;
+	int16_t current_yvel;
+	int16_t current_zvel;
+	int16_t spaz_effect_count;
+	int16_t flare_age;
+	int16_t vehicle;
+	int16_t weapon_item;
+	int16_t back_gun;
+	int16_t flare_frame;
+	int16_t poisoned;
+	int16_t dpoisoned;
+	uint8_t electric;
+	uint8_t wet[WET_COUNT];
+	uint16_t flare_control_left : 1;
+	uint16_t Unused1 : 1;
+	uint16_t look : 1;
+	uint16_t burn : 1;
+	uint16_t keep_ducked : 1;
+	uint16_t IsMoving : 1;
+	uint16_t CanMonkeySwing : 1;
+	uint16_t Unused2 : 1;
+	uint16_t OnBeetleFloor : 1;
+	uint16_t BurnGreen : 1;
+	uint16_t IsDucked : 1;
+	uint16_t has_fired : 1;
+	uint16_t Busy : 1;
+	uint16_t LitTorch : 1;
+	uint16_t IsClimbing : 1;
+	uint16_t Fired : 1;
+	int32_t water_surface_dist;
 	PHD_VECTOR last_pos;
 	FX_INFO* spaz_effect;
-	long mesh_effects;
-	short* mesh_ptrs[LARA_MESH_PTR_COUNT];
+	int32_t mesh_effects;
+	int16_t* mesh_ptrs[LARA_MESH_PTR_COUNT];
 	ITEM_INFO* target;
-	short target_angles[2];
-	short turn_rate;
-	short move_angle;
-	short head_y_rot;
-	short head_x_rot;
-	short head_z_rot;
-	short torso_y_rot;
-	short torso_x_rot;
-	short torso_z_rot;
+	int16_t target_angles[2];
+	int16_t turn_rate;
+	int16_t move_angle;
+	int16_t head_y_rot;
+	int16_t head_x_rot;
+	int16_t head_z_rot;
+	int16_t torso_y_rot;
+	int16_t torso_x_rot;
+	int16_t torso_z_rot;
 	LARA_ARM left_arm;
 	LARA_ARM right_arm;
-	ushort holster;
+	uint16_t holster;
 	CREATURE_INFO* creature;
-	long CornerX;
-	long CornerZ;
-	char RopeSegment;
-	char RopeDirection;
-	short RopeArcFront;
-	short RopeArcBack;
-	short RopeLastX;
-	short RopeMaxXForward;
-	short RopeMaxXBackward;
-	long RopeDFrame;
-	long RopeFrame;
-	ushort RopeFrameRate;
-	ushort RopeY;
-	long RopePtr;
-	int GeneralPtr;
-	long RopeOffset;
-	ulong RopeDownVel;
-	char RopeFlag;
-	char MoveCount;
-	long RopeCount;
-	char pistols_type_carried;
-	char uzis_type_carried;
-	char shotgun_type_carried;
-	char crossbow_type_carried;
-	char grenade_type_carried;
-	char sixshooter_type_carried;
-	char lasersight;
-	char binoculars;
-	char crowbar;
-	char mechanical_scarab;
-	uchar small_water_skin;
-	uchar big_water_skin;
-	char examine1;
-	char examine2;
-	char examine3;
-	char puzzleitems[12];
-	ushort puzzleitemscombo;
-	ushort keyitems;
-	ushort keyitemscombo;
-	ushort pickupitems;
-	ushort pickupitemscombo;
-	short questitems;
-	short num_small_medipack;
-	short num_large_medipack;
-	short num_flares;
-	short num_pistols_ammo;
-	short num_uzi_ammo;
-	short num_revolver_ammo;
-	short num_shotgun_ammo1;
-	short num_shotgun_ammo2;
-	short num_grenade_ammo1;
-	short num_grenade_ammo2;
-	short num_grenade_ammo3;
-	short num_crossbow_ammo1;
-	short num_crossbow_ammo2;
-	short num_crossbow_ammo3;
-	char beetle_uses;
-	char blindTimer;
-	char location;
-	char highest_location;
-	char locationPad;
+	size_t CornerX; // 32/64 bit
+	size_t CornerZ; // 32/64 bit
+	int8_t RopeSegment;
+	int8_t RopeDirection;
+	int16_t RopeArcFront;
+	int16_t RopeArcBack;
+	int16_t RopeLastX;
+	int16_t RopeMaxXForward;
+	int16_t RopeMaxXBackward;
+	int32_t RopeDFrame;
+	int32_t RopeFrame;
+	uint16_t RopeFrameRate;
+	uint16_t RopeY;
+	uint32_t RopePtr;
+	uint32_t GeneralPtr;
+	int32_t RopeOffset;
+	uint32_t RopeDownVel;
+	int8_t RopeFlag;
+	int8_t MoveCount;
+	int32_t RopeCount;
+	int8_t pistols_type_carried;
+	int8_t uzis_type_carried;
+	int8_t shotgun_type_carried;
+	int8_t crossbow_type_carried;
+	int8_t grenade_type_carried;
+	int8_t sixshooter_type_carried;
+	int8_t lasersight;
+	int8_t binoculars;
+	int8_t crowbar;
+	int8_t mechanical_scarab;
+	uint8_t small_water_skin;
+	uint8_t big_water_skin;
+	int8_t examine1;
+	int8_t examine2;
+	int8_t examine3;
+	int8_t puzzleitems[12];
+	uint16_t puzzleitemscombo;
+	uint16_t keyitems;
+	uint16_t keyitemscombo;
+	uint16_t pickupitems;
+	uint16_t pickupitemscombo;
+	int16_t questitems;
+	int16_t num_small_medipack;
+	int16_t num_large_medipack;
+	int16_t num_flares;
+	int16_t num_pistols_ammo;
+	int16_t num_uzi_ammo;
+	int16_t num_revolver_ammo;
+	int16_t num_shotgun_ammo1;
+	int16_t num_shotgun_ammo2;
+	int16_t num_grenade_ammo1;
+	int16_t num_grenade_ammo2;
+	int16_t num_grenade_ammo3;
+	int16_t num_crossbow_ammo1;
+	int16_t num_crossbow_ammo2;
+	int16_t num_crossbow_ammo3;
+	int8_t beetle_uses;
+	int8_t blindTimer;
+	int8_t location;
+	int8_t highest_location;
+	int8_t locationPad;
 };
 
 struct GAMEFLOW
@@ -1208,9 +1212,151 @@ struct STATS
 	uchar HealthUsed;
 };
 
-struct SAVEGAME_INFO
+#define SAVEGAME_BUFFER_SIZE 15410
+
+struct LEGACY_SAVEGAME_LARA_ARM
 {
-	LARA_INFO Lara;
+	X32_POINTER frame_base; // Pointer
+	int16_t frame_number;
+	int16_t anim_number;
+	int16_t lock;
+	int16_t y_rot;
+	int16_t x_rot;
+	int16_t z_rot;
+	int16_t flash_gun;
+};
+
+struct LEGACY_SAVEGAME_LARA_INFO
+{
+	int16_t item_number;
+	int16_t gun_status;
+	int16_t gun_type;
+	int16_t request_gun_type;
+	int16_t last_gun_type;
+	int16_t calc_fallspeed;
+	int16_t water_status;
+	int16_t climb_status;
+	int16_t pose_count;
+	int16_t hit_frame;
+	int16_t hit_direction;
+	int16_t air;
+	int16_t dive_count;
+	int16_t death_count;
+	int16_t current_active;
+	int16_t current_xvel;
+	int16_t current_yvel;
+	int16_t current_zvel;
+	int16_t spaz_effect_count;
+	int16_t flare_age;
+	int16_t vehicle;
+	int16_t weapon_item;
+	int16_t back_gun;
+	int16_t flare_frame;
+	int16_t poisoned;
+	int16_t dpoisoned;
+	uint8_t electric;
+	uint8_t wet[WET_COUNT];
+	uint16_t flare_control_left : 1;
+	uint16_t Unused1 : 1;
+	uint16_t look : 1;
+	uint16_t burn : 1;
+	uint16_t keep_ducked : 1;
+	uint16_t IsMoving : 1;
+	uint16_t CanMonkeySwing : 1;
+	uint16_t Unused2 : 1;
+	uint16_t OnBeetleFloor : 1;
+	uint16_t BurnGreen : 1;
+	uint16_t IsDucked : 1;
+	uint16_t has_fired : 1;
+	uint16_t Busy : 1;
+	uint16_t LitTorch : 1;
+	uint16_t IsClimbing : 1;
+	uint16_t Fired : 1;
+	int32_t water_surface_dist;
+	PHD_VECTOR last_pos;
+	X32_POINTER spaz_effect;
+	int32_t mesh_effects;
+	X32_POINTER mesh_ptrs[LARA_MESH_PTR_COUNT];
+	X32_POINTER target;
+	int16_t target_angles[2];
+	int16_t turn_rate;
+	int16_t move_angle;
+	int16_t head_y_rot;
+	int16_t head_x_rot;
+	int16_t head_z_rot;
+	int16_t torso_y_rot;
+	int16_t torso_x_rot;
+	int16_t torso_z_rot;
+	LEGACY_SAVEGAME_LARA_ARM left_arm;
+	LEGACY_SAVEGAME_LARA_ARM right_arm;
+	uint16_t holster;
+	X32_POINTER creature;
+	X32_POINTER CornerX; // 32/64 bit
+	X32_POINTER CornerZ; // 32/64 bit
+	int8_t RopeSegment;
+	int8_t RopeDirection;
+	int16_t RopeArcFront;
+	int16_t RopeArcBack;
+	int16_t RopeLastX;
+	int16_t RopeMaxXForward;
+	int16_t RopeMaxXBackward;
+	int32_t RopeDFrame;
+	int32_t RopeFrame;
+	uint16_t RopeFrameRate;
+	uint16_t RopeY;
+	uint32_t RopePtr;
+	uint32_t GeneralPtr;
+	int32_t RopeOffset;
+	uint32_t RopeDownVel;
+	int8_t RopeFlag;
+	int8_t MoveCount;
+	int32_t RopeCount;
+	int8_t pistols_type_carried;
+	int8_t uzis_type_carried;
+	int8_t shotgun_type_carried;
+	int8_t crossbow_type_carried;
+	int8_t grenade_type_carried;
+	int8_t sixshooter_type_carried;
+	int8_t lasersight;
+	int8_t binoculars;
+	int8_t crowbar;
+	int8_t mechanical_scarab;
+	uint8_t small_water_skin;
+	uint8_t big_water_skin;
+	int8_t examine1;
+	int8_t examine2;
+	int8_t examine3;
+	int8_t puzzleitems[12];
+	uint16_t puzzleitemscombo;
+	uint16_t keyitems;
+	uint16_t keyitemscombo;
+	uint16_t pickupitems;
+	uint16_t pickupitemscombo;
+	int16_t questitems;
+	int16_t num_small_medipack;
+	int16_t num_large_medipack;
+	int16_t num_flares;
+	int16_t num_pistols_ammo;
+	int16_t num_uzi_ammo;
+	int16_t num_revolver_ammo;
+	int16_t num_shotgun_ammo1;
+	int16_t num_shotgun_ammo2;
+	int16_t num_grenade_ammo1;
+	int16_t num_grenade_ammo2;
+	int16_t num_grenade_ammo3;
+	int16_t num_crossbow_ammo1;
+	int16_t num_crossbow_ammo2;
+	int16_t num_crossbow_ammo3;
+	int8_t beetle_uses;
+	int8_t blindTimer;
+	int8_t location;
+	int8_t highest_location;
+	int8_t locationPad;
+};
+
+struct LEGACY_SAVEGAME_INFO
+{
+	LEGACY_SAVEGAME_LARA_INFO Lara;
 	long cutscene_triggered;
 	uchar HubLevels[10];	//saved level indices. highest one that isn't 0 is the one we are currently in
 	ushort HubOffsets[10];	//offset of each level's data inside the savegame buffer
@@ -1228,7 +1374,7 @@ struct SAVEGAME_INFO
 	uchar HubSavedLara : 1;	//flag that we saved Lara's data when we initialised hub, only set to 1 when InitialiseHub is called with 1
 	uchar AutoTarget : 1;
 	uchar HaveBikeBooster : 1;	//have the bike nitro thing
-	char buffer[15410];
+	char buffer[SAVEGAME_BUFFER_SIZE];
 };
 
 struct BIKEINFO
@@ -2041,7 +2187,7 @@ struct BINK_STRUCT
 	long num2;
 };
 
-struct SAVEFILE_INFO
+struct LEGACY_SAVEFILE_INFO
 {
 	char name[75];
 	char valid;
@@ -2406,6 +2552,11 @@ struct POINTLIGHT_STRUCT
 	float g;
 	float b;
 	float rad;
+};
+
+struct MESH_MAP_TABLE_ENTRY {
+	uint32_t mesh_x32_ptr;
+	uint32_t mesh_native_ptr;
 };
 
 struct GouraudBarColourSet

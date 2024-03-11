@@ -696,7 +696,7 @@ void MovableBlockCollision(short item_number, ITEM_INFO* laraitem, COLL_INFO* co
 					laraitem->goal_anim_state = AS_PPREADY;
 					lara.IsMoving = 0;
 					lara.gun_status = LG_HANDS_BUSY;
-					lara.CornerX = (long)item;
+					lara.CornerX = (size_t)item;
 
 					// NGLE: restore it once we can grab it
 					if (climbable_block_height != 0 && item->status == ITEM_ACTIVE)
@@ -724,7 +724,7 @@ void MovableBlockCollision(short item_number, ITEM_INFO* laraitem, COLL_INFO* co
 		pos.y = 0;
 		pos.z = 0;
 		quadrant = (ushort)(laraitem->pos.y_rot + 8192) >> 14;
-
+		 
 		if (input & IN_FORWARD)
 		{
 			// TRNG

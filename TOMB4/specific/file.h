@@ -47,3 +47,7 @@ extern short* mesh_base;
 extern long nAnimUVRanges;
 extern long number_cameras;
 extern short nAIObjects;
+
+// T4Plus: Helper table for mapping mesh_ptrs between 64-bit and 32-bit offsets
+extern size_t mesh_mapping_table_count;
+extern MESH_MAP_TABLE_ENTRY* mesh_mapping_table;

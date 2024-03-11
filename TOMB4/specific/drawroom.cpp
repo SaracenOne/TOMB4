@@ -9,6 +9,7 @@
 #include "../game/camera.h"
 #include "../game/draw.h"
 #include "../game/effect2.h"
+#include "../game/savegame.h"
 #include "gamemain.h"
 #include "texture.h"
 #include "3dmath.h"
@@ -655,6 +656,8 @@ void CalcTriFaceNormal(GFXVECTOR* p1, GFXVECTOR* p2, GFXVECTOR* p3, GFXVECTOR* N
 	N->z = v.y * u.x - v.x * u.y;
 }
 
+#define ACCUMULATE_ORIGINAL_MESH_TABLE_PTR(ptr, size) ptr += ((size + 3) & -4);
+
 void ProcessMeshData(long num_meshes)
 {
 	MESH_DATA* mesh;
@@ -676,9 +679,18 @@ void ProcessMeshData(long num_meshes)
 
 	bool hack_allow_meshes_with_exactly_256_vertices = get_game_mod_global_info()->trng_hack_allow_meshes_with_exactly_256_vertices;
 
+	uint32_t original_mesh_table_ptr_32x = 0;
+	uint32_t original_mesh_table_ptr_native = 0;
+
+	mesh_mapping_table_count = num_meshes;
+	mesh_mapping_table = (MESH_MAP_TABLE_ENTRY *)SYSTEM_REALLOC(mesh_mapping_table, num_meshes * sizeof(MESH_MAP_TABLE_ENTRY));
+
 	for (int i = 0; i < num_meshes; i++)
 	{
 		mesh_ptr = meshes[i];
+
+		mesh_mapping_table[i].mesh_x32_ptr = original_mesh_table_ptr_32x;
+		mesh_mapping_table[i].mesh_native_ptr = original_mesh_table_ptr_native;
 
 		if (mesh_ptr == last_mesh_ptr)
 		{
@@ -689,6 +701,10 @@ void ProcessMeshData(long num_meshes)
 		{
 			last_mesh_ptr = mesh_ptr;
 			mesh = (MESH_DATA*)game_malloc(sizeof(MESH_DATA));
+
+			ACCUMULATE_ORIGINAL_MESH_TABLE_PTR(original_mesh_table_ptr_32x, X32_SAVEGAME_MESH_SIZE);
+			ACCUMULATE_ORIGINAL_MESH_TABLE_PTR(original_mesh_table_ptr_native, INTERNAL_SAVEGAME_MESH_SIZE);
+
 			memset(mesh, 0, sizeof(MESH_DATA));
 			meshes[i] = (short*)mesh;
 			mesh_vtxbuf[i] = mesh;
@@ -745,7 +761,8 @@ void ProcessMeshData(long num_meshes)
 				if (mesh->nNorms > 0)
 				{
 					mesh->Normals = (GFXVECTOR*)game_malloc(mesh->nNorms * sizeof(GFXVECTOR));
-
+					ACCUMULATE_ORIGINAL_MESH_TABLE_PTR(original_mesh_table_ptr_32x, mesh->nNorms * sizeof(GFXVECTOR));
+					ACCUMULATE_ORIGINAL_MESH_TABLE_PTR(original_mesh_table_ptr_native, mesh->nNorms * sizeof(GFXVECTOR));
 
 					for (int j = 0; j < mesh->nVerts; j++)
 					{
@@ -765,6 +782,9 @@ void ProcessMeshData(long num_meshes)
 				{
 					mesh->Normals = 0;
 					mesh->prelight = (long*)game_malloc(sizeof(long *) * mesh->nVerts);
+
+					ACCUMULATE_ORIGINAL_MESH_TABLE_PTR(original_mesh_table_ptr_32x, mesh->nVerts * sizeof(X32_POINTER));
+					ACCUMULATE_ORIGINAL_MESH_TABLE_PTR(original_mesh_table_ptr_native, mesh->nVerts * sizeof(long*));
 
 					for (int j = 0; j < mesh->nVerts; j++)
 					{
@@ -786,6 +806,10 @@ void ProcessMeshData(long num_meshes)
 			if (mesh->ngt4)
 			{
 				mesh->gt4 = (short*)game_malloc(12 * mesh->ngt4);
+
+				ACCUMULATE_ORIGINAL_MESH_TABLE_PTR(original_mesh_table_ptr_32x, 12 * mesh->ngt4);
+				ACCUMULATE_ORIGINAL_MESH_TABLE_PTR(original_mesh_table_ptr_native, 12 * mesh->ngt4);
+
 				lp = 6 * mesh->ngt4;
 
 				for (int j = 0; j < lp; j++)
@@ -800,6 +824,9 @@ void ProcessMeshData(long num_meshes)
 			if (mesh->ngt3)
 			{
 				mesh->gt3 = (short*)game_malloc(10 * mesh->ngt3);
+				ACCUMULATE_ORIGINAL_MESH_TABLE_PTR(original_mesh_table_ptr_32x, 10 * mesh->ngt3);
+				ACCUMULATE_ORIGINAL_MESH_TABLE_PTR(original_mesh_table_ptr_native, 10 * mesh->ngt3);
+
 				lp = 5 * mesh->ngt3;
 
 				for (int j = 0; j < lp; j++)

@@ -54,6 +54,9 @@ long nAnimUVRanges;
 long number_cameras;
 short nAIObjects;
 
+size_t mesh_mapping_table_count = 0;
+MESH_MAP_TABLE_ENTRY* mesh_mapping_table = nullptr;
+
 static FILE* level_fp = nullptr;
 static char* FileData = nullptr;
 static char* UncompressedData = nullptr;
@@ -1014,7 +1017,6 @@ bool LoadObjects()
 
 	for (int i = 0; i < num_anims; i++)
 		anims[i].frame_ptr = (short*)((size_t)anims[i].frame_ptr + (size_t)frames);
-		//anims[i].frame_ptr = (short*)(frames + (long)anims[i].frame_ptr);
 
 	num = *(long*)FileData;
 	FileData += sizeof(long);
