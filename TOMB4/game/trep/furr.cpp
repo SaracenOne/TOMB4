@@ -449,7 +449,10 @@ FURRResult furr_cmd_freeze_inverted_timer(FURRParameters params) {
 // Params:
 // LEVEL_NUM
 FURRResult furr_cmd_load_level(FURRParameters params) {
-	return FURR_RESULT_UNIMPLEMENTED;
+	gfLevelComplete = (uint8_t)params.first_parameter;
+	gfRequiredStartPos = 0;
+
+	return FURR_RESULT_OK;
 }
 
 // The flash colours are likely not accurate. Should investigate.
