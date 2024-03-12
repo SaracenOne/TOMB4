@@ -569,7 +569,7 @@ FURRResult furr_cmd_play_anim(FURRParameters params) {
 // Params:
 // ORIENTATION
 FURRResult furr_cmd_orientate(FURRParameters params) {
-	items[lara.item_number].pos.y_rot = (short)params.first_parameter;
+	items[lara.item_number].pos.y_rot = (int16_t)params.first_parameter;
 
 	return FURR_RESULT_OK;
 }
@@ -577,16 +577,9 @@ FURRResult furr_cmd_orientate(FURRParameters params) {
 // Params:
 // ROTATION
 FURRResult furr_cmd_rotate(FURRParameters params) {
-	items[lara.item_number].pos.y_rot = (short)params.first_parameter;
+	items[lara.item_number].pos.y_rot += (int16_t)params.first_parameter;
 
 	return FURR_RESULT_OK;
-}
-
-// Params:
-// ARG_1
-// ARG_2
-FURRResult furr_cmd_change_position(FURRParameters params) {
-	return FURR_RESULT_UNIMPLEMENTED;
 }
 
 // Params:
@@ -616,13 +609,17 @@ FURRResult furr_cmd_change_position_z(FURRParameters params) {
 // Params:
 // ACCEL
 FURRResult furr_cmd_change_accel(FURRParameters params) {
-	return FURR_RESULT_UNIMPLEMENTED;
+	items[lara.item_number].speed = (int16_t)params.first_parameter;
+
+	return FURR_RESULT_OK;
 }
 
 // Params:
 // VERT_ACCEL
-FURRResult furr_cmd_vert_accel(FURRParameters params) {
-	return FURR_RESULT_UNIMPLEMENTED;
+FURRResult furr_cmd_change_vert_accel(FURRParameters params) {
+	items[lara.item_number].fallspeed = (int16_t)params.first_parameter;
+
+	return FURR_RESULT_OK;
 }
 
 // Params:
@@ -1028,7 +1025,6 @@ FURRNameTableEntry furr_name_table[] = {
 	{"PLAY_ANIM", FURR_PLAY_ANIM},
 	{"ORIENTATE", FURR_ORIENTATE},
 	{"ROTATE", FURR_ROTATE},
-	{"CHANGE_POSITION", FURR_CHANGE_POSITION},
 	{"CHANGE_POSITION_X", FURR_CHANGE_POSITION_X},
 	{"CHANGE_POSITION_Y", FURR_CHANGE_POSITION_Y},
 	{"CHANGE_POSITION_Z", FURR_CHANGE_POSITION_Z},
@@ -1179,12 +1175,11 @@ FURRDataTable furr_data_table[] = {
 	{1, furr_cmd_play_anim}, // FURR_PLAY_ANIM,
 	{1, furr_cmd_orientate}, // FURR_ORIENTATE,
 	{1, furr_cmd_rotate}, // FURR_ROTATE,
-	{2, furr_cmd_change_position}, // FURR_CHANGE_POSITION,
 	{1, furr_cmd_change_position_x}, // FURR_CHANGE_POSITION_X,
 	{1, furr_cmd_change_position_y}, // FURR_CHANGE_POSITION_Y,
 	{1, furr_cmd_change_position_z}, // FURR_CHANGE_POSITION_Z,
 	{1, furr_cmd_change_accel}, // FURR_CHANGE_ACCEL,
-	{1, furr_cmd_vert_accel}, // FURR_CHANGE_VERT_ACCEL,
+	{1, furr_cmd_change_vert_accel}, // FURR_CHANGE_VERT_ACCEL,
 	{1, furr_cmd_change_room}, // FURR_CHANGE_ROOM,
 	{2, furr_cmd_add_position}, // FURR_ADD_POSITION,
 	{1, furr_cmd_uvrotate}, // FURR_UVROTATE,
