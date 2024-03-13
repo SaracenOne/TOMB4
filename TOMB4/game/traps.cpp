@@ -1,17 +1,20 @@
 #include "../tomb4/pch.h"
+
+#include "../specific/function_stubs.h"
+#include "../specific/3dmath.h"
+#include "../specific/output.h"
+#include "../specific/input.h"
+
 #include "gameflow.h"
 #include "traps.h"
 #include "control.h"
 #include "effect2.h"
-#include "../specific/function_stubs.h"
 #include "sound.h"
 #include "tomb4fx.h"
 #include "effects.h"
 #include "items.h"
 #include "draw.h"
 #include "objects.h"
-#include "../specific/3dmath.h"
-#include "../specific/output.h"
 #include "sphere.h"
 #include "lara_states.h"
 #include "collide.h"
@@ -19,12 +22,12 @@
 #include "switch.h"
 #include "deltapak.h"
 #include "camera.h"
-#include "../specific/input.h"
 #include "lara.h"
-
 #include "debris.h"
-#include "../game//trng/trng_action.h"
+
 #include "../tomb4/mod_config.h"
+
+#include "../tomb4/tomb4plus/t4plus_items.h"
 
 short SPxzoffs[8] = { 0, 0, 0x200, 0, 0, 0, -0x200, 0 };
 short SPyoffs[8] = { -0x400, 0, -0x200, 0, 0, 0, -0x200, 0 };
@@ -2330,7 +2333,7 @@ void RollingBallPush(short item_number, ITEM_INFO* l) {
 							lara.gun_status = LG_HANDS_BUSY;
 							lara.GeneralPtr = item_number;
 
-							NGItemActivator(item_number, false);
+							T4PlusActivateItem(item_number, false);
 						} else {
 							l->anim_number = ANIM_PPREADY;
 							l->frame_number = anims[ANIM_PPREADY].frame_base;

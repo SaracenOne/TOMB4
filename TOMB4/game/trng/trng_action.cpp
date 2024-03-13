@@ -1,72 +1,27 @@
 #include "../../tomb4/pch.h"
 
+#include "trng.h"
+#include "trng_action.h"
+#include "trng_extra_state.h"
+
 #include "../../specific/function_stubs.h"
 #include "../../specific/file.h"
+#include "../../tomb4/mod_config.h"
+
+#include "../../tomb4/tomb4plus/t4plus_items.h"
+
 #include "../control.h"
 #include "../effects.h"
 #include "../objects.h"
 #include "../door.h"
 #include "../items.h"
 #include "../lot.h"
-#include "trng.h"
-#include "trng_action.h"
-#include "trng_extra_state.h"
 #include "../effect2.h"
 #include "../lara1gun.h"
 #include "../sound.h"
 #include "../box.h"
-#include "../../tomb4/mod_config.h"
 #include "../camera.h"
 #include "../spotcam.h"
-
-void NGItemActivator(int item_id, bool anti) {
-	ITEM_INFO* item;
-
-	item = &items[item_id];
-
-	if (!item->active) {
-		if (anti) {
-			item->flags &= ~(IFL_CODEBITS | IFL_REVERSE);
-			return;
-		}
-
-		item->flags |= IFL_CODEBITS;
-
-		if (objects[item->object_number].intelligent) {
-			if (item->status == ITEM_INACTIVE) {
-				item->touch_bits = 0;
-				item->status = ITEM_ACTIVE;
-				AddActiveItem(item_id);
-				EnableBaddieAI(item_id, 1);
-			} else if (item->status == ITEM_INVISIBLE) {
-				item->touch_bits = 0;
-
-				if (EnableBaddieAI(item_id, 0))
-					item->status = ITEM_ACTIVE;
-				else
-					item->status = ITEM_INVISIBLE;
-
-				AddActiveItem(item_id);
-			}
-		} else {
-			item->touch_bits = 0;
-			AddActiveItem(item_id);
-			item->status = ITEM_ACTIVE;
-		}
-	} else {
-		if (!anti) {
-			item->flags |= IFL_CODEBITS;
-			return;
-		}
-
-		if (item->object_number == EARTHQUAKE) {
-			item->item_flags[0] = 0;
-			item->item_flags[1] = 100;
-		}
-
-		item->flags &= ~(IFL_CODEBITS | IFL_REVERSE);
-	}
-}
 
 void NGHurtEnemy(unsigned short item_id, unsigned short damage) {
 	if (items[item_id].hit_points > 0) {
@@ -578,14 +533,14 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame, bool 
 		case TRIGGER_MOVEABLE_ACTIVATE_WITH_TIMER: {
 			if (first_frame) {
 				items[param].timer = ((short)(action_data & 0x7f)) * 30;
-				NGItemActivator(item_id, false);
+				T4PlusActivateItem(item_id, false);
 			}
 			break;
 		}
 		case UNTRIGGER_MOVEABLE_ACTIVATE_WITH_TIMER: {
 			if (first_frame) {
 				items[param].timer = ((short)(action_data & 0x7f)) * 30;
-				NGItemActivator(item_id, true);
+				T4PlusActivateItem(item_id, true);
 			}
 			break;
 		}
@@ -712,7 +667,7 @@ int NGAction(unsigned short param, unsigned short extra, bool first_frame, bool 
 		}
 		case OPEN_OR_CLOSE_DOOR_ITEM: {
 			if (first_frame) {
-				NGItemActivator(item_id, false);
+				T4PlusActivateItem(item_id, false);
 				items[item_id].timer = 0;
 
 				bool reverse = (items[item_id].flags & IFL_REVERSE) ? true : false;

@@ -30,6 +30,7 @@
 #include "../../tomb4/mod_config.h"
 #include "../../tomb4/tomb4plus/t4plus_inventory.h"
 #include "../../tomb4/tomb4plus/t4plus_savegame.h"
+#include "../../tomb4/tomb4plus/t4plus_items.h"
 
 void NGAttractLaraInDirection(unsigned char direction, unsigned char speed) {
 	switch (direction) {
@@ -87,7 +88,7 @@ bool NGTriggerItemGroupWithTimer(unsigned char item_group, unsigned char timer, 
 		int current_item = ng_script_id_table[current_script_item].script_index;
 
 		items[current_item].timer = ((short)timer) * 30;
-		NGItemActivator(current_item, anti);
+		T4PlusActivateItem(current_item, anti);
 
 		index++;
 	}
