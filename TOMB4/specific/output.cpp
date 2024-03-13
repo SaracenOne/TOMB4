@@ -60,6 +60,7 @@ __forceinline void CalculateVertexSpecular(
 		if (gfLevelFlags & GF_TRAIN || get_game_mod_level_environment_info(gfCurrentLevel)->force_train_fog)
 		{
 			distance_fog_value = (vPos.z - DistanceFogStart) / 512.0F;
+			overbright_value = 1.0F - (vPos.z - DistanceFogStart) / 512.0F;
 			*sA -= long(distance_fog_value * (255.0F / 8.0F));
 
 			if (*sA < 0)
@@ -72,15 +73,16 @@ __forceinline void CalculateVertexSpecular(
 			float CustomDistanceFogStart = DistanceFogStart;
 			float CustomDistanceFogEnd = DistanceFogEnd;
 
+#ifdef USE_BGFX
+			// T4Plus: Hack to allow volumetric and distance fog to co-exist when using BGFX renderer.
+			CustomDistanceFogStart = DistanceFogEnd - (DistanceFogStart * 0.1F);
+			CustomDistanceFogEnd = DistanceFogEnd;
+#endif
+
 			if (DistanceFogEnd < 0.0F) {
 				distance_fog_value = (vPos.z - DistanceFogStart) * (255.0F / DistanceFogStart);
 				overbright_value = 1.0F - ((vPos.z - DistanceFogStart) * (255.0F / DistanceFogStart));
 			} else {
-#ifdef USE_BGFX
-				// T4Plus: Hack to allow volumetric and distance fog to co-exist when using BGFX renderer.
-				CustomDistanceFogStart = DistanceFogEnd - (DistanceFogStart * 0.1F);
-				CustomDistanceFogEnd = DistanceFogEnd;
-#endif
 #ifdef FORCE_COLOURED_FOG
 				distance_fog_value = ((vPos.z - CustomDistanceFogStart) / (CustomDistanceFogEnd - CustomDistanceFogStart)) * 255.0F;
 #else
@@ -590,7 +592,9 @@ void ProcessTrainMeshVertices(MESH_DATA* mesh)
 			if (gfLevelFlags & GF_TRAIN || get_game_mod_level_environment_info(gfCurrentLevel)->force_train_fog)
 			{
 				val = (zbak - DistanceFogStart) / 512.0F;
-				sA -= long(val * (255.0F / 8.0F));
+				long fade = long(val * (255.0F / 8.0F));
+
+				sA -= fade;
 
 				if (sA < 0)
 					sA = 0;
@@ -609,9 +613,9 @@ void ProcessTrainMeshVertices(MESH_DATA* mesh)
 				fR *= 255;
 				fG *= 255;
 				fB *= 255;
-				sR = (long)fR;
-				sG = (long)fG;
-				sB = (long)fB;
+				sR = (long)fR - fade;
+				sG = (long)fG - fade;
+				sB = (long)fB - fade;
 				
 				if (sR > dR) sR = dR;
 				if (sG > dG) sG = dG;
