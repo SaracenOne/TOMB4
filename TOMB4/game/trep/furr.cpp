@@ -15,6 +15,7 @@
 #include "../traps.h"
 #include "../sound.h"
 #include "../../specific/audio.h"
+#include "../../tomb4/tomb4plus/t4plus_items.h"
 
 char furr_oneshot_buffer[LAST_FURR_FLIPEFFECT];
 FURRFlipeffectTable furr_flipeffect_table[LAST_FURR_FLIPEFFECT - FIRST_FURR_FLIPEFFECT];
@@ -909,7 +910,9 @@ FURRResult furr_cmd_play_fmv(FURRParameters params) {
 // Params:
 // ITEM_ID
 FURRResult furr_cmd_activate_item(FURRParameters params) {
-	return FURR_RESULT_UNIMPLEMENTED;
+	T4PlusActivateItem(params.first_parameter, false);
+
+	return FURR_RESULT_OK;
 }
 
 // Params:
