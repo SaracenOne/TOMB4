@@ -78,10 +78,9 @@ __forceinline void CalculateVertexSpecular(
 			} else {
 #ifdef USE_BGFX
 				// T4Plus: Hack to allow volumetric and distance fog to co-exist when using BGFX renderer.
-				CustomDistanceFogStart = DistanceFogEnd - 0.001F;
+				CustomDistanceFogStart = DistanceFogEnd - (DistanceFogStart * 0.1F);
 				CustomDistanceFogEnd = DistanceFogEnd;
 #endif
-
 #ifdef FORCE_COLOURED_FOG
 				distance_fog_value = ((vPos.z - CustomDistanceFogStart) / (CustomDistanceFogEnd - CustomDistanceFogStart)) * 255.0F;
 #else
