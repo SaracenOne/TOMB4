@@ -10,7 +10,10 @@
 
 #define MAX_DRAW_COMMANDS 8
 
+extern uint32_t bgfx_clear_col;
+
 extern float bgfx_fog_color[4];
+extern float bgfx_volumetric_fog_color[4];
 extern float bgfx_fog_parameters[4];
 
 extern size_t total_sort_verts_in_current_buffer;

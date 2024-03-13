@@ -1357,7 +1357,7 @@ void ClipCheckPoint(GFXTLVERTEX* v, float x, float y, float z, short* clip)
 	{
 		perspz = f_mpersp / v->sz;
 
-		if (v->sz > FogEnd)
+		if (v->sz > LevelFogEnd)
 		{
 			v->sz = f_zfar;
 			clipdistance = 256;
@@ -1669,7 +1669,7 @@ void setXYZ4(GFXTLVERTEX* v, long x1, long y1, long z1, long x2, long y2, long z
 	{
 		zv = f_mpersp / v->sz;
 
-		if (v->sz > FogEnd)
+		if (v->sz > LevelFogEnd)
 		{
 			clip_distance = 256;
 			v->sz = f_zfar;
@@ -1703,7 +1703,7 @@ void setXYZ4(GFXTLVERTEX* v, long x1, long y1, long z1, long x2, long y2, long z
 	{
 		zv = f_mpersp / v->sz;
 
-		if (v->sz > FogEnd)
+		if (v->sz > LevelFogEnd)
 		{
 			clip_distance = 256;
 			v->sz = f_zfar;
@@ -1737,7 +1737,7 @@ void setXYZ4(GFXTLVERTEX* v, long x1, long y1, long z1, long x2, long y2, long z
 	{
 		zv = f_mpersp / v->sz;
 
-		if (v->sz > FogEnd)
+		if (v->sz > LevelFogEnd)
 		{
 			clip_distance = 256;
 			v->sz = f_zfar;
@@ -1771,7 +1771,7 @@ void setXYZ4(GFXTLVERTEX* v, long x1, long y1, long z1, long x2, long y2, long z
 	{
 		zv = f_mpersp / v->sz;
 
-		if (v->sz > FogEnd)
+		if (v->sz > LevelFogEnd)
 		{
 			clip_distance = 256;
 			v->sz = f_zfar;
@@ -1811,7 +1811,7 @@ void setXYZ3(GFXTLVERTEX* v, long x1, long y1, long z1, long x2, long y2, long z
 	{
 		zv = f_mpersp / v->sz;
 
-		if (v->sz > FogEnd)
+		if (v->sz > LevelFogEnd)
 		{
 			clip_distance = 256;
 			v->sz = f_zfar;
@@ -1845,7 +1845,7 @@ void setXYZ3(GFXTLVERTEX* v, long x1, long y1, long z1, long x2, long y2, long z
 	{
 		zv = f_mpersp / v->sz;
 
-		if (v->sz > FogEnd)
+		if (v->sz > LevelFogEnd)
 		{
 			clip_distance = 256;
 			v->sz = f_zfar;
@@ -1879,7 +1879,7 @@ void setXYZ3(GFXTLVERTEX* v, long x1, long y1, long z1, long x2, long y2, long z
 	{
 		zv = f_mpersp / v->sz;
 
-		if (v->sz > FogEnd)
+		if (v->sz > LevelFogEnd)
 		{
 			clip_distance = 256;
 			v->sz = f_zfar;
@@ -2324,20 +2324,20 @@ void InitTarget_2()
 		return;
 
 	targetMeshP = (MESH_DATA*)meshes[obj->mesh_index];
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+	v = (GFXTLVERTEX*)targetMeshP->Buffer;
+#else
 	targetMeshP->SourceVB->Lock(DDLOCK_READONLY, (void**)&v, 0);
 #endif
 
 	for (int i = 0; i < targetMeshP->nVerts; i++)
 	{
-#ifndef USE_BGFX
 		v[i].sx = (v[i].sx * 80) / 96;
 		v[i].sy = (v[i].sy * 60) / 224;
 		v[i].sz = 0;
 		v[i].rhw = f_mpersp / f_mznear * f_moneopersp;
 		v[i].color = 0xFF000000;
 		v[i].specular = 0xFF000000;
-#endif
 	}
 
 #ifndef USE_BGFX
@@ -2356,20 +2356,20 @@ void InitBinoculars()
 		return;
 
 	binocsMeshP = (MESH_DATA*)meshes[obj->mesh_index];
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+	v = (GFXTLVERTEX*)binocsMeshP->Buffer;
+#else
 	binocsMeshP->SourceVB->Lock(DDLOCK_READONLY, (void**)&v, 0);
 #endif
 
 	for (int i = 0; i < binocsMeshP->nVerts; i++)
 	{
-#ifndef USE_BGFX
 		v[i].sx = (v[i].sx * 32) / 96;
 		v[i].sy = (v[i].sy * 30) / 224;
 		v[i].sz = 0;
 		v[i].rhw = f_mpersp / f_mznear * f_moneopersp;
 		v[i].color = 0xFF000000;
 		v[i].specular = 0xFF000000;
-#endif
 	}
 
 #ifndef USE_BGFX
@@ -2396,7 +2396,9 @@ void DrawBinoculars()
 	else
 		mesh = binocsMeshP;
 
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+	v = (GFXTLVERTEX*)mesh->Buffer;
+#else
 	mesh->SourceVB->Lock(DDLOCK_READONLY, (void**)&v, 0);
 #endif
 	clip = clipflags;
@@ -2404,7 +2406,6 @@ void DrawBinoculars()
 	for (int i = 0; i < mesh->nVerts; i++)
 	{
 		clipdistance = 0;
-#ifndef USE_BGFX
 		vtx[i] = v[i];
 		vtx[i].sx = (vtx[i].sx * float(phd_winxmax / 512.0F)) + f_centerx;
 		vtx[i].sy = (vtx[i].sy * float(phd_winymax / 240.0F)) + f_centery;
@@ -2418,7 +2419,6 @@ void DrawBinoculars()
 			clipdistance += 4;
 		else if (vtx[i].sy > f_bottom)
 			clipdistance += 8;
-#endif
 
 		*clip++ = clipdistance;
 	}

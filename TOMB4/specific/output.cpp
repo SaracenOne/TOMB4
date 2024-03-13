@@ -41,6 +41,124 @@ long GlobalAmbient;
 float AnimatingTexturesV[16][8][3];
 static short AnimatingTexturesVOffset;
 
+__forceinline void CalculateVertexSpecular(
+	FVECTOR vPos,
+	float DistanceFogStart,
+	float DistanceFogEnd,
+	long *cR,
+	long *cG,
+	long *cB,
+	long *sR,
+	long *sG,
+	long *sB,
+	long *sA) {
+	float distance_fog_value = 0.0;
+	float overbright_value = 1.0F;
+
+	if (vPos.z > DistanceFogStart) {
+
+		if (gfLevelFlags & GF_TRAIN || get_game_mod_level_environment_info(gfCurrentLevel)->force_train_fog)
+		{
+			distance_fog_value = (vPos.z - DistanceFogStart) / 512.0F;
+			*sA -= long(distance_fog_value * (255.0F / 8.0F));
+
+			if (*sA < 0)
+				*sA = 0;
+			else if (*sA > 255)
+				*sA = 255;
+		}
+		else
+		{
+			float CustomDistanceFogStart = DistanceFogStart;
+			float CustomDistanceFogEnd = DistanceFogEnd;
+
+			if (DistanceFogEnd < 0.0F) {
+				distance_fog_value = (vPos.z - DistanceFogStart) * (255.0F / DistanceFogStart);
+				overbright_value = 1.0F - ((vPos.z - DistanceFogStart) * (255.0F / DistanceFogStart));
+			} else {
+#ifdef USE_BGFX
+				// T4Plus: Hack to allow volumetric and distance fog to co-exist when using BGFX renderer.
+				CustomDistanceFogStart = DistanceFogEnd - 0.001F;
+				CustomDistanceFogEnd = DistanceFogEnd;
+#endif
+
+#ifdef FORCE_COLOURED_FOG
+				distance_fog_value = ((vPos.z - CustomDistanceFogStart) / (CustomDistanceFogEnd - CustomDistanceFogStart)) * 255.0F;
+#else
+				distance_fog_value = (vPos.z - CustomDistanceFogStart) * (255.0F / CustomDistanceFogStart);
+#endif
+
+#ifdef USE_BGFX
+				// Calculate the inverse of the fog value so that the overbrightening fades out with fog.
+				overbright_value = 1.0F - ((vPos.z - DistanceFogStart) / (DistanceFogEnd - DistanceFogStart));
+#else
+				overbright_value = 1.0F;
+#endif
+			}
+
+#ifdef FORCE_COLOURED_FOG
+			if (CustomDistanceFogEnd < 0.0F) {
+				distance_fog_value = (vPos.z - CustomDistanceFogStart) / 512.0F;
+				*sA -= long(distance_fog_value * (255.0F / 8.0F));
+
+				if (*sA < 0)
+					*sA = 0;
+			} else {
+				*sA = 255 - long(distance_fog_value);
+				if (*sA < 0)
+					*sA = 0;
+				else if (*sA > 255)
+					*sA = 255;
+			}
+#else 
+			* cR -= (long)distance_fog_value;
+			if (*cR < 0)
+				*cR = 0;
+			else if (*cR > 255)
+				*cR = 255;
+			*cG -= (long)distance_fog_value;
+			if (*cG < 0)
+				*cG = 0;
+			else if (*cG > 255)
+				*cG = 255;
+			*cB -= (long)distance_fog_value;
+			if (*cB < 0)
+				*cB = 0;
+			else if (*cB > 255)
+				*cB = 255;
+#endif
+		}
+	}
+
+	if (overbright_value < 0.0F) {
+		overbright_value = 0.0F;
+	}
+
+	if (*cR - 128 <= 0)
+		*cR <<= 1;
+	else
+	{
+		*sR = ((*cR - 128) >> 1) * overbright_value;
+		*cR = 255;
+	}
+
+	if (*cG - 128 <= 0)
+		*cG <<= 1;
+	else
+	{
+		*sG = ((*cG - 128) >> 1) * overbright_value;
+		*cG = 255;
+	}
+
+	if (*cB - 128 <= 0)
+		*cB <<= 1;
+	else
+	{
+		*sB = ((*cB - 128) >> 1) * overbright_value;
+		*cB = 255;
+	}
+}
+
 void ProcessObjectMeshVertices(MESH_DATA* mesh)
 {
 	POINTLIGHT_STRUCT* point;
@@ -64,7 +182,7 @@ void ProcessObjectMeshVertices(MESH_DATA* mesh)
 	if (gfLevelFlags & GF_TRAIN || environment_info->force_train_fog)
 	{
 		DistanceFogStart = 12.0F * 1024.0F;
-		DistanceFogEnd = 1024.0F * 20.0F;
+		DistanceFogEnd = 20.0F * 1024.0F;
 		DistanceClipRange = 1024.0F * 20.0F;
 	} else {
 		if (tomb4.distance_fog > 0) {
@@ -72,8 +190,8 @@ void ProcessObjectMeshVertices(MESH_DATA* mesh)
 			DistanceFogEnd = -1.0F;
 			DistanceClipRange = -1.0F;
 		} else {
-			DistanceFogStart = FogStart;
-			DistanceFogEnd = FogEnd;
+			DistanceFogStart = LevelFogStart;
+			DistanceFogEnd = LevelFogEnd;
 			if (environment_info->disable_distance_limit) {
 				DistanceClipRange = -1.0F;
 			} else {
@@ -181,93 +299,7 @@ void ProcessObjectMeshVertices(MESH_DATA* mesh)
 
 		cA = (GlobalAlpha >> 24) & 0xff;
 		
-		if (vPos.z > DistanceFogStart)
-		{
-			if (gfLevelFlags & GF_TRAIN || get_game_mod_level_environment_info(gfCurrentLevel)->force_train_fog)
-			{
-				val = (vPos.z - DistanceFogStart) / 512.0F;
-				sA -= long(val * (255.0F / 8.0F));
-
-				if (sA < 0)
-					sA = 0;
-				else if (sA > 255)
-					sA = 255;
-			} else {
-				if (DistanceFogEnd < 0.0F) {
-					val = (vPos.z - DistanceFogStart) * (255.0F / DistanceFogStart);
-				} else {
-#ifdef FORCE_COLOURED_FOG
-					val = ((vPos.z - DistanceFogStart) / (DistanceFogEnd - DistanceFogStart)) * 255.0F;
-#else
-					val = (vPos.z - DistanceFogStart) * (255.0F / DistanceFogStart);
-#endif
-				}
-
-#ifdef FORCE_COLOURED_FOG
-				if (DistanceFogEnd < 0.0F) {
-					val = (vPos.z - DistanceFogStart) / 512.0F;
-					sA -= long(val * (255.0F / 8.0F));
-					cA -= long(val * (255.0F / 8.0F));
-
-					if (sA < 0)
-						sA = 0;
-					if (cA < 0)
-						cA = 0;
-				} else {
-					sA -= long(val);
-					cA -= long(val);
-					if (sA < 0)
-						sA = 0;
-					else if (sA > 255)
-						sA = 255;
-					if (cA < 0)
-						cA = 0;
-					else if (cA > 255)
-						cA = 255;
-				}
-#else 
-				cR -= (long)val;
-				if (cR < 0)
-					cR = 0;
-				else if (cR > 255)
-					cR = 255;
-				cG -= (long)val;
-				if (cG < 0)
-					cG = 0;
-				else if (cG > 255)
-					cG = 255;
-				cB -= (long)val;
-				if (cB < 0)
-					cB = 0;
-				else if (cB > 255)
-					cB = 255;
-#endif
-			}
-		}
-
-		if (cR - 128 <= 0)
-			cR <<= 1;
-		else
-		{
-			sR = (cR - 128) >> 1;
-			cR = 255;
-		}
-
-		if (cG - 128 <= 0)
-			cG <<= 1;
-		else
-		{
-			sG = (cG - 128) >> 1;
-			cG = 255;
-		}
-
-		if (cB - 128 <= 0)
-			cB <<= 1;
-		else
-		{
-			sB = (cB - 128) >> 1;
-			cB = 255;
-		}
+		CalculateVertexSpecular(vPos, DistanceFogStart, DistanceFogEnd, &cR, &cG, &cB, &sR, &sG, &sB, &sA);
 
 		clipFlag = 0;
 
@@ -360,7 +392,7 @@ void ProcessStaticMeshVertices(MESH_DATA* mesh)
 	if (gfLevelFlags & GF_TRAIN || environment_info->force_train_fog)
 	{
 		DistanceFogStart = 12.0F * 1024.0F;
-		DistanceFogEnd = 1024.0F * 20.0F;
+		DistanceFogEnd = 20.0F * 1024.0F;
 		DistanceClipRange = 1024.0F * 20.0F;
 	} else {
 		if (tomb4.distance_fog > 0) {
@@ -368,8 +400,8 @@ void ProcessStaticMeshVertices(MESH_DATA* mesh)
 			DistanceFogEnd = -1.0F;
 			DistanceClipRange = -1.0F;
 		} else {
-			DistanceFogStart = FogStart;
-			DistanceFogEnd = FogEnd;
+			DistanceFogStart = LevelFogStart;
+			DistanceFogEnd = LevelFogEnd;
 			if (environment_info->disable_distance_limit) {
 				DistanceClipRange = -1.0F;
 			}
@@ -441,95 +473,7 @@ void ProcessStaticMeshVertices(MESH_DATA* mesh)
 			}
 		}
 
-		if (vPos.z > DistanceFogStart)
-		{
-			if (gfLevelFlags & GF_TRAIN || get_game_mod_level_environment_info(gfCurrentLevel)->force_train_fog)
-			{
-				val = (vPos.z - DistanceFogStart) / 512.0F;
-				sA -= long(val * (255.0F / 8.0F));
-
-				if (sA < 0)
-					sA = 0;
-				else if (sA > 255)
-					sA = 255;
-			}
-			else
-			{
-				if (DistanceFogEnd < 0.0F) {
-					val = (vPos.z - DistanceFogStart) * (255.0F / DistanceFogStart);
-				} else {
-#ifdef FORCE_COLOURED_FOG
-					val = ((vPos.z - DistanceFogStart) / (DistanceFogEnd - DistanceFogStart)) * 255.0F;
-#else
-					val = (vPos.z - DistanceFogStart) * (255.0F / DistanceFogStart);
-#endif
-				}
-
-#ifdef FORCE_COLOURED_FOG
-				if (DistanceFogEnd < 0.0F) {
-					val = (vPos.z - DistanceFogStart) / 512.0F;
-					sA -= long(val * (255.0F / 8.0F));
-					cA -= long(val * (255.0F / 8.0F));
-
-					if (sA < 0)
-						sA = 0;
-					if (cA < 0)
-						cA = 0;
-				} else {
-					sA -= long(val);
-					cA -= long(val);
-					if (sA < 0)
-						sA = 0;
-					else if (sA > 255)
-						sA = 255;
-					if (cA < 0)
-						cA = 0;
-					else if (cA > 255)
-						cA = 255;
-				}
-#else 
-				cR -= (long)val;
-				if (cR < 0)
-					cR = 0;
-				else if (cR > 255)
-					cR = 255;
-				cG -= (long)val;
-				if (cG < 0)
-					cG = 0;
-				else if (cG > 255)
-					cG = 255;
-				cB -= (long)val;
-				if (cB < 0)
-					cB = 0;
-				else if (cB > 255)
-					cB = 255;
-#endif
-			}
-		}
-
-		if (cR - 128 <= 0)
-			cR <<= 1;
-		else
-		{
-			sR = (cR - 128) >> 1;
-			cR = 255;
-		}
-
-		if (cG - 128 <= 0)
-			cG <<= 1;
-		else
-		{
-			sG = (cG - 128) >> 1;
-			cG = 255;
-		}
-
-		if (cB - 128 <= 0)
-			cB <<= 1;
-		else
-		{
-			sB = (cB - 128) >> 1;
-			cB = 255;
-		}
+		CalculateVertexSpecular(vPos, DistanceFogStart, DistanceFogEnd, &cR, &cG, &cB, &sR, &sG, &sB, &sA);
 		
 		clipFlag = 0;
 
@@ -1260,11 +1204,14 @@ void S_InitialisePolyList()
 		if (gfLevelFlags & GF_TRAIN)
 		{
 			col = 0xD2B163;
+			SetDistanceFogColor(CLRR(col), CLRG(col), CLRB(col));
+			SetVolumetricFogColor(CLRR(col), CLRG(col), CLRB(col));
 		}
 		else if (gfCurrentLevel == 5 || gfCurrentLevel == 6)
 		{
 			col = FogTableColor[19];
-			SetFogColor(CLRR(col), CLRG(col), CLRB(col));
+			SetDistanceFogColor(CLRR(col), CLRG(col), CLRB(col));
+			SetVolumetricFogColor(CLRR(col), CLRG(col), CLRB(col));
 		}
 		else
 		{
@@ -1275,8 +1222,11 @@ void S_InitialisePolyList()
 	{
 		col = 0;
 	}
-	
-#ifndef USE_BGFX
+
+#ifdef USE_BGFX
+	bgfx_clear_col = ((((CLRB(col) | (CLRG(col) << 8)) << 8)) | (CLRR(col)) << 24);
+	bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, bgfx_clear_col, 1.0f, 0);
+#else
 	if (App.dx.Flags & DXF_HWR)
 		DXAttempt(App.dx.lpViewport->Clear2(1, &rect, D3DCLEAR_TARGET, col, 1.0F, 0));
 #endif

@@ -6,6 +6,7 @@
 #include "3dmath.h"
 #include "winmain.h"
 #include "bgfx.h"
+#include "../game/gameflow.h"
 
 void (*AddQuadSorted)(GFXTLVERTEX* v, short v0, short v1, short v2, short v3, TEXTURESTRUCT* tex, long double_sided);
 void (*AddTriSorted)(GFXTLVERTEX* v, short v0, short v1, short v2, TEXTURESTRUCT* tex, long double_sided);
@@ -18,11 +19,15 @@ HRESULT(*_EndScene)();
 
 GFXTLVERTEX MyVertexBuffer[0x2000];
 
-void SetFogColor(long r, long g, long b)
+void SetDistanceFogColor(long r, long g, long b)
 {
 	r &= 0xFF;
 	g &= 0xFF;
 	b &= 0xFF;
+	gfDistanceFog.r = r;
+	gfDistanceFog.g = g;
+	gfDistanceFog.b = b;
+	gfDistanceFog.a = 0;
 #ifndef USE_BGFX
 	long CurrentFog = RGBA(r, g, b, 0xFF);
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_FOGCOLOR, CurrentFog);
@@ -31,6 +36,28 @@ void SetFogColor(long r, long g, long b)
 	bgfx_fog_color[1] = (float)g / 255.0f;
 	bgfx_fog_color[2] = (float)b / 255.0f;
 	bgfx_fog_color[3] = 1.0f;
+#endif
+}
+
+void SetVolumetricFogColor(long r, long g, long b)
+{
+	r &= 0xFF;
+	g &= 0xFF;
+	b &= 0xFF;
+
+	gfVolumetricFog.r = r;
+	gfVolumetricFog.g = g;
+	gfVolumetricFog.b = b;
+	gfVolumetricFog.a = 0;
+#ifndef USE_BGFX
+	if (IsVolumetric()) {
+		SetDistanceFogColor(r, g, b);
+	}
+#else
+	bgfx_volumetric_fog_color[0] = (float)r / 255.0f;
+	bgfx_volumetric_fog_color[1] = (float)g / 255.0f;
+	bgfx_volumetric_fog_color[2] = (float)b / 255.0f;
+	bgfx_volumetric_fog_color[3] = 1.0f;
 #endif
 }
 
@@ -91,8 +118,8 @@ void HWInitialise()
 	DXAttempt(App.dx.lpD3DDevice->SetLightState(D3DLIGHTSTATE_COLORMODEL, D3DCOLOR_RGB));
 
 	DXAttempt(App.dx.lpD3DDevice->SetLightState(D3DLIGHTSTATE_FOGMODE, D3DFOG_LINEAR));
-	DXAttempt(App.dx.lpD3DDevice->SetLightState(D3DLIGHTSTATE_FOGSTART, *(DWORD*)(&FogStart)));
-	DXAttempt(App.dx.lpD3DDevice->SetLightState(D3DLIGHTSTATE_FOGEND, *(DWORD*)(&FogEnd)));
+	DXAttempt(App.dx.lpD3DDevice->SetLightState(D3DLIGHTSTATE_FOGSTART, *(DWORD*)(&LevelFogStart)));
+	DXAttempt(App.dx.lpD3DDevice->SetLightState(D3DLIGHTSTATE_FOGEND, *(DWORD*)(&LevelFogEnd)));
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_FOGCOLOR, 0xFF000000);
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_FOGENABLE, 1);
 #endif

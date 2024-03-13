@@ -495,7 +495,7 @@ void TriggerFXFogBulb(long x, long y, long z, long FXRad, long density, long r, 
 
 long IsVolumetric()
 {
-	return App.Volumetric;
+	return true;
 }
 
 int DistCompare(const void* a, const void* b)

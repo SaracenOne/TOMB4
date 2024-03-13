@@ -7,10 +7,17 @@
 #include "function_stubs.h"
 #include "texture.h"
 #include "polyinsert.h"
+#include "../game/gameflow.h"
+#include "../tomb4/tomb4.h"
+#include "../tomb4/mod_config.h"
+#include "3dmath.h"
 
 #ifdef USE_BGFX
 
+uint32_t bgfx_clear_col = 0x00000000;
+
 float bgfx_fog_color[4];
+float bgfx_volumetric_fog_color[4];
 float bgfx_fog_parameters[4];
 
 bgfx::ProgramHandle m_outputVTLTexProgram = BGFX_INVALID_HANDLE;
@@ -22,6 +29,7 @@ bgfx::UniformHandle s_texColor;
 bgfx::VertexLayout ms_outputBucketVertexLayout;
 
 bgfx::UniformHandle u_fogColor;
+bgfx::UniformHandle u_volumetricFogColor;
 bgfx::UniformHandle u_fogParameters;
 
 size_t total_sort_verts_in_current_buffer = 0;
@@ -158,7 +166,7 @@ void InitializeBGFX() {
     }
 
     bgfx::setDebug(0);
-    bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x000000ff, 1.0f, 0);
+    bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, bgfx_clear_col, 1.0f, 0);
     bgfx::setViewMode(0, bgfx::ViewMode::Sequential);
 
     SetupOutputBucketVertexLayout();
@@ -176,8 +184,8 @@ void InitializeBGFX() {
     }
 
     u_fogColor = bgfx::createUniform("u_fogColor", bgfx::UniformType::Vec4);
+    u_volumetricFogColor = bgfx::createUniform("u_volumetricFogColor", bgfx::UniformType::Vec4);
     u_fogParameters = bgfx::createUniform("u_fogParameters", bgfx::UniformType::Vec4);
-
 
     m_outputVTLTexProgram = loadProgram("vs_vtl_tex", "fs_vtl_tex");
     if (App.Filtering) {
@@ -196,6 +204,7 @@ void ShutdownBGFX() {
     bgfx::destroy(m_outputVTLAlphaProgram);
 
     bgfx::destroy(u_fogColor);
+    bgfx::destroy(u_volumetricFogColor);
     bgfx::destroy(u_fogParameters);
 
     bgfx::shutdown();
@@ -224,6 +233,22 @@ void SetupBGFXOutputPolyList() {
 void RenderBGFXDrawLists() {
     size_t current_bucket_idx = 0;
     size_t current_sort_idx = 0;
+
+    MOD_LEVEL_ENVIRONMENT_INFO* environment_info = get_game_mod_level_environment_info(gfCurrentLevel);
+    if (gfLevelFlags & GF_TRAIN || environment_info->force_train_fog)
+    {
+        bgfx_fog_parameters[0] = 12.0F;
+        bgfx_fog_parameters[1] = 20.0F;
+    } else {
+        if (tomb4.distance_fog > 0) {
+            bgfx_fog_parameters[0] = 255.0F;
+            bgfx_fog_parameters[1] = 256.0F;
+        } else {
+            bgfx_fog_parameters[0] = LevelFogStart / 1024.0f;
+            bgfx_fog_parameters[1] = LevelFogEnd / 1024.0f;
+        }
+    };
+
     for (int i = 0; i < MAX_SORT_BUFFERS; i++) {
         bgfx::update(sort_buffer_vertex_handle[i], 0, sort_buffer_vertex_buffers_ref[i]);
     }
@@ -327,6 +352,7 @@ void RenderBGFXDrawLists() {
                 if (sort_draw_commands[current_sort_idx].texture.idx != 0xffff) {
                     bgfx::setTexture(0, s_texColor, sort_draw_commands[current_sort_idx].texture);
                     bgfx::setUniform(u_fogColor, bgfx_fog_color);
+                    bgfx::setUniform(u_volumetricFogColor, bgfx_volumetric_fog_color);
                     bgfx::setUniform(u_fogParameters, bgfx_fog_parameters);
                     if (is_blended) {
                         bgfx::submit(0, m_outputVTLTexAlphaBlendedProgram);
@@ -359,6 +385,7 @@ void RenderBGFXDrawLists() {
                 bgfx::setTexture(0, s_texColor, Textures[bucket->tpage].tex);
                 bgfx::setState(state);
                 bgfx::setUniform(u_fogColor, bgfx_fog_color);
+                bgfx::setUniform(u_volumetricFogColor, bgfx_volumetric_fog_color);
                 bgfx::setUniform(u_fogParameters, bgfx_fog_parameters);
 
                 bgfx::submit(0, m_outputVTLTexProgram);

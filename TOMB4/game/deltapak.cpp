@@ -1825,7 +1825,7 @@ void special1_end()
 
 void times_init()
 {
-	SetFogColor(128, 128, 128);
+	SetDistanceFogColor(128, 128, 128);
 }
 
 void times_control()

@@ -1,7 +1,8 @@
 #pragma once
 #include "../global/types.h"
 
-void SetFogColor(long r, long g, long b);
+void SetDistanceFogColor(long r, long g, long b);
+void SetVolumetricFogColor(long r, long g, long b);
 void HWInitialise();
 bool _NVisible(GFXTLVERTEX* v0, GFXTLVERTEX* v1, GFXTLVERTEX* v2);
 bool _Visible(GFXTLVERTEX* v0, GFXTLVERTEX* v1, GFXTLVERTEX* v2);

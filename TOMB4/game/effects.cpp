@@ -18,6 +18,7 @@
 #include "../specific/function_stubs.h"
 #include "../specific/3dmath.h"
 #include "../specific/dxsound.h"
+#include "../specific/bgfx.h"
 #include "camera.h"
 #include "lara.h"
 #include "savegame.h"
@@ -594,13 +595,10 @@ void SetFog(ITEM_INFO* item)
 			GlobalFogOff = 1;
 		else
 		{
-			gfFog.r = CLRR(FogTableColor[TriggerTimer]);
-			gfFog.g = CLRG(FogTableColor[TriggerTimer]);
-			gfFog.b = CLRB(FogTableColor[TriggerTimer]);
-			savegame.fog_colour.r = gfFog.r;
-			savegame.fog_colour.g = gfFog.g;
-			savegame.fog_colour.b = gfFog.b;
-			SetFogColor(gfFog.r, gfFog.g, gfFog.b);
+			SetVolumetricFogColor(CLRR(FogTableColor[TriggerTimer]), CLRG(FogTableColor[TriggerTimer]), CLRB(FogTableColor[TriggerTimer]));
+			savegame.fog_colour.r = gfVolumetricFog.r;
+			savegame.fog_colour.g = gfVolumetricFog.g;
+			savegame.fog_colour.b = gfVolumetricFog.b;
 		}
 	}
 

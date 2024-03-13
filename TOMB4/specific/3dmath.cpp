@@ -8,8 +8,8 @@
 
 float one = 33554432.0F;
 float mone = 2048.0F;
-float FogStart = float(1024 * 12);
-float FogEnd = float(1024 * 20);
+float LevelFogStart = float(1024 * 12);
+float LevelFogEnd = float(1024 * 20);
 float ClipRange = float(1024 * 20);
 
 float* mMXPtr;

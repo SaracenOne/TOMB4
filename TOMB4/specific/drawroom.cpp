@@ -21,6 +21,7 @@
 #include "../tomb4/mod_config.h"
 #include "bgfx.h"
 #include "platform.h"
+#include "output.h"
 
 static ROOM_DYNAMIC RoomDynamics[MAX_DYNAMICS];
 static long nRoomDynamics;
@@ -97,7 +98,7 @@ void ProcessRoomVertices(ROOM_INFO* r)
 	if (gfLevelFlags & GF_TRAIN || environment_info->force_train_fog)
 	{
 		DistanceFogStart = 12.0F * 1024.0F;
-		DistanceFogEnd = 1024.0F * 20.0F;
+		DistanceFogEnd = 20.0F * 1024.0F;
 		DistanceClipRange = 1024.0F * 20.0F;
 	} else {
 		if (tomb4.distance_fog > 0) {
@@ -105,8 +106,8 @@ void ProcessRoomVertices(ROOM_INFO* r)
 			DistanceFogEnd = -1.0F;
 			DistanceClipRange = -1.0F;
 		} else {
-			DistanceFogStart = FogStart;
-			DistanceFogEnd = FogEnd;
+			DistanceFogStart = LevelFogStart;
+			DistanceFogEnd = LevelFogEnd;
 			if (environment_info->disable_distance_limit) {
 				DistanceClipRange = -1.0F;
 			}
@@ -245,87 +246,7 @@ void ProcessRoomVertices(ROOM_INFO* r)
 			cB += col;
 		}
 
-		if (vPos.z > DistanceFogStart)
-		{
-			if (gfLevelFlags & GF_TRAIN || get_game_mod_level_environment_info(gfCurrentLevel)->force_train_fog)
-			{
-				val = (vPos.z - DistanceFogStart) / 512.0F;
-				sA -= long(val * (255.0F / 8.0F));
-
-				if (sA < 0)
-					sA = 0;
-				else if (sA > 255)
-					sA = 255;
-			}
-			else
-			{
-				if (DistanceFogEnd < 0.0F) {
-					val = (vPos.z - DistanceFogStart) * (255.0F / DistanceFogStart);
-				} else {
-#ifdef FORCE_COLOURED_FOG
-					val = ((vPos.z - DistanceFogStart) / (DistanceFogEnd - DistanceFogStart)) * 255.0F;
-#else
-					val = (vPos.z - DistanceFogStart) * (255.0F / DistanceFogStart);
-#endif
-				}
-
-#ifdef FORCE_COLOURED_FOG
-				if (DistanceFogEnd < 0.0F) {
-					val = (vPos.z - DistanceFogStart) / 512.0F;
-					sA -= long(val * (255.0F / 8.0F));
-
-					if (sA < 0)
-						sA = 0;
-				} else {
-					sA = 255 - long(val);
-					if (sA < 0)
-						sA = 0;
-					else if (sA > 255)
-						sA = 255;
-				}
-#else 
-				cR -= (long)val;
-				if (cR < 0)
-					cR = 0;
-				else if (cR > 255)
-					cR = 255;
-				cG -= (long)val;
-				if (cG < 0)
-					cG = 0;
-				else if (cG > 255)
-					cG = 255;
-				cB -= (long)val;
-				if (cB < 0)
-					cB = 0;
-				else if (cB > 255)
-					cB = 255;
-#endif
-			}
-		}
-
-		if (cR - 128 <= 0)
-			cR <<= 1;
-		else
-		{
-			sR = (cR - 128) >> 1;
-			cR = 255;
-		}
-
-		if (cG - 128 <= 0)
-			cG <<= 1;
-		else
-		{
-			sG = (cG - 128) >> 1;
-			cG = 255;
-		}
-
-		if (cB - 128 <= 0)
-			cB <<= 1;
-		else
-		{
-			sB = (cB - 128) >> 1;
-			cB = 255;
-		}
+		CalculateVertexSpecular(vPos, DistanceFogStart, DistanceFogEnd, &cR, &cG, &cB, &sR, &sG, &sB, &sA);
 
 		if (sR > 255) sR = 255; else if (sR < 0) sR = 0;
 		if (sG > 255) sG = 255; else if (sG < 0) sG = 0;

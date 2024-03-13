@@ -24,8 +24,8 @@ void phd_LookAt(long sx, long sy, long sz, long tx, long ty, long tz, short roll
 
 extern float one;
 extern float mone;
-extern float FogStart;
-extern float FogEnd;
+extern float LevelFogStart;
+extern float LevelFogEnd;
 extern float ClipRange;
 
 extern float* mMXPtr;

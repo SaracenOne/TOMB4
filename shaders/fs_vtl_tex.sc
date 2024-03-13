@@ -5,6 +5,7 @@ $input v_color0, v_color1, v_texcoord0, v_texcoord1
 
 SAMPLER2D(s_texColor,  0);
 uniform vec4 u_fogColor;
+uniform vec4 u_volumetricFogColor;
 uniform vec4 u_fogParameters;
 
 void main()
@@ -21,5 +22,12 @@ void main()
 	float depth = (gl_FragCoord.z / gl_FragCoord.w);
 	float fogFactor = CalculateFogFactor(depth, u_fogParameters.x, u_fogParameters.y);
 	outCol.rgb = mix(outCol.rgb, u_fogColor.rgb, fogFactor);
+
+	// Volumetric Fog
+	outCol.rgb = mix(outCol.rgb, u_volumetricFogColor.rgb, 1.0 - vCol1.a);
+    outCol.r += vCol1.r;
+    outCol.g += vCol1.g;
+    outCol.b += vCol1.b;
+
 	gl_FragColor = outCol;
 }

@@ -1,6 +1,18 @@
 #pragma once
 #include "../global/types.h"
 
+__forceinline void CalculateVertexSpecular(
+	FVECTOR vPos,
+	float DistanceFogStart,
+	float DistanceFogEnd,
+	long* cR,
+	long* cG,
+	long* cB,
+	long* sR,
+	long* sG,
+	long* sB,
+	long* sA);
+
 void ProcessObjectMeshVertices(MESH_DATA* mesh);
 void ProcessStaticMeshVertices(MESH_DATA* mesh);
 void ProcessTrainMeshVertices(MESH_DATA* mesh);

@@ -612,6 +612,9 @@ void sgSaveGame()
 	level_index = OpenSaveGame(gfCurrentLevel, 1);
 	savegame.Game.Timer = GameTimer;
 	savegame.CurrentLevel ^= (gfCurrentLevel ^ savegame.CurrentLevel) & 0x7F;
+	savegame.fog_colour.r = gfVolumetricFog.r;
+	savegame.fog_colour.g = gfVolumetricFog.g;
+	savegame.fog_colour.b = gfVolumetricFog.b;
 	SaveLevelData(1);
 	SaveLaraData();
 	SaveHubData(level_index);

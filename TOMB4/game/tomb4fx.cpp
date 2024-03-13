@@ -1412,6 +1412,23 @@ long GetFreeBlood()
 	return min_life_num;
 }
 
+//
+#if 0
+#define BLOOD_SIZE 18
+#define BLOOD_SPEED 3
+#define BLOOD_INTENSITY 56
+#define BLOOD_LIFETIME 24
+#define BLOOD_X_VELOCITY 5
+#define BLOOD_Z_VELOCITY 4
+#else 
+#define BLOOD_SIZE 8
+#define BLOOD_SPEED 5
+#define BLOOD_INTENSITY 48
+#define BLOOD_LIFETIME 24
+#define BLOOD_X_VELOCITY 7
+#define BLOOD_Z_VELOCITY 7
+#endif
+
 void UpdateBlood()
 {
 	BLOOD_STRUCT* bptr;
@@ -1465,7 +1482,7 @@ void UpdateBlood()
 		}
 
 		bptr->x += bptr->Xvel >> 5;
-		bptr->y += bptr->Yvel >> 5;
+		bptr->y += bptr->Yvel >> BLOOD_SPEED; // Modifiable speed?
 		bptr->z += bptr->Zvel >> 5;
 		bptr->Size = uchar(bptr->sSize + ((fade * (bptr->dSize - bptr->sSize)) >> 16));
 	}
@@ -1484,8 +1501,8 @@ void TriggerBlood(long x, long y, long z, long angle, long num)
 		bptr->sShade = 0;
 		bptr->ColFadeSpeed = 4;
 		bptr->FadeToBlack = 8;
-		bptr->dShade = (GetRandomControl() & 0x3F) + 48;
-		bptr->Life = (GetRandomControl() & 7) + 24;
+		bptr->dShade = (GetRandomControl() & 0x3F) + BLOOD_INTENSITY; // Modifiable value?
+		bptr->Life = (GetRandomControl() & 7) + BLOOD_LIFETIME; // Modifiable value?
 		bptr->sLife = bptr->Life;
 		bptr->x = (GetRandomControl() & 0x1F) + x - 16;
 		bptr->y = (GetRandomControl() & 0x1F) + y - 16;
@@ -1498,8 +1515,8 @@ void TriggerBlood(long x, long y, long z, long angle, long num)
 
 		ang &= 0xFFF;
 		speed = GetRandomControl() & 0xF;
-		bptr->Xvel = -(speed * rcossin_tbl[ang << 1]) >> 7;
-		bptr->Zvel = speed * rcossin_tbl[(ang << 1) + 1] >> 7;
+		bptr->Xvel = -(speed * rcossin_tbl[ang << 1]) >> BLOOD_X_VELOCITY; // Modifiable value?
+		bptr->Zvel = speed * rcossin_tbl[(ang << 1) + 1] >> BLOOD_Z_VELOCITY; // Modifiable value?
 		bptr->Friction = 4;
 		bptr->Yvel = -128 - (GetRandomControl() & 0xFF);
 		bptr->RotAng = GetRandomControl() & 0xFFF;
@@ -1510,7 +1527,7 @@ void TriggerBlood(long x, long y, long z, long angle, long num)
 			bptr->RotAdd = (GetRandomControl() & 0x3F) + 64;
 
 		bptr->Gravity = (GetRandomControl() & 0x1F) + 31;
-		size = (GetRandomControl() & 7) + 8;
+		size = (GetRandomControl() & 7) + BLOOD_SIZE; // Modifiable value?
 		bptr->sSize = size;
 		bptr->Size = size;
 		bptr->dSize = size >> 2;

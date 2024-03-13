@@ -119,7 +119,8 @@ PHD_VECTOR gfLoadTarget;
 uchar gfLoadRoom = 255;
 PHD_VECTOR gfLensFlare;
 CVECTOR gfLensFlareColour;
-CVECTOR gfFog = { 0, 0, 0, 0 };
+CVECTOR gfDistanceFog = { 0, 0, 0, 0 };
+CVECTOR gfVolumetricFog = { 0, 0, 0, 0 };
 CVECTOR gfLayer1Col;
 CVECTOR gfLayer2Col;
 ushort* gfStringOffset;
@@ -248,10 +249,8 @@ void DoGameflow()
 			gfUVRotate = 0;
 			gfNumMips = 0;
 			gfMirrorRoom = -1;
-			gfFog.b = 0;
-			gfFog.g = 0;
-			gfFog.r = 0;
-			gfFog.a = 0;
+			SetDistanceFogColor(0, 0, 0);
+			SetVolumetricFogColor(0, 0, 0);
 
 			switch (gfStatus)
 			{
@@ -422,12 +421,9 @@ void DoGameflow()
 			break;
 
 		case CMD_FOG:
-			gfFog.r = gf[0];
-			gfFog.g = gf[1];
-			gfFog.b = gf[2];
-			savegame.fog_colour.r = gfFog.r;
-			savegame.fog_colour.g = gfFog.g;
-			savegame.fog_colour.b = gfFog.b;
+			SetDistanceFogColor(gf[0], gf[1], gf[2]);
+			SetVolumetricFogColor(gf[0], gf[1], gf[2]);
+
 			gf += 3;
 			break;
 
@@ -501,7 +497,7 @@ void DoLevel(uchar Name, uchar Audio)
 	}
 
 	S_LoadLevelFile(Name);
-	SetFogColor(gfFog.r, gfFog.g, gfFog.b);
+	SetDistanceFogColor(gfDistanceFog.r, gfDistanceFog.g, gfDistanceFog.b);
 	InitialiseFXArray(1);
 	InitialiseLOTarray(1);
 	ClearFXFogBulbs();
@@ -516,12 +512,7 @@ void DoLevel(uchar Name, uchar Audio)
 		sgRestoreGame();
 		gfRequiredStartPos = 0;
 		gfInitialiseGame = 0;
-		gfFog.r = savegame.fog_colour.r;
-		gfFog.g = savegame.fog_colour.g;
-		gfFog.b = savegame.fog_colour.b;
-
-		if (IsVolumetric())
-			SetFogColor(gfFog.r, gfFog.g, gfFog.b);
+		SetVolumetricFogColor(savegame.fog_colour.r, savegame.fog_colour.g, savegame.fog_colour.b);
 	}
 	else
 	{
@@ -550,12 +541,8 @@ void DoLevel(uchar Name, uchar Audio)
 
 	MOD_LEVEL_ENVIRONMENT_INFO *environment_info = get_game_mod_level_environment_info(gfCurrentLevel);
 
-	FogStart = (float)environment_info->fog_start_range;
-	FogEnd = (float)environment_info->fog_end_range;
-#ifdef USE_BGFX
-	bgfx_fog_parameters[0] = FogStart / 1024.0f;
-	bgfx_fog_parameters[1] = FogEnd / 1024.0f;
-#endif
+	LevelFogStart = (float)environment_info->fog_start_range;
+	LevelFogEnd = (float)environment_info->fog_end_range;
 
 	ClipRange = (float)environment_info->far_view;
 
@@ -948,7 +935,7 @@ void DoTitle(uchar Name, uchar Audio)
 	title_controls_locked_out = 0;
 	InitialiseFXArray(1);
 	InitialiseLOTarray(1);
-	SetFogColor(gfFog.r, gfFog.g, gfFog.b);
+	SetDistanceFogColor(gfDistanceFog.r, gfDistanceFog.g, gfDistanceFog.b);
 	ClearFXFogBulbs();
 	InitialisePickUpDisplay();
 	//empty func call here
@@ -982,12 +969,9 @@ void DoTitle(uchar Name, uchar Audio)
 
 	MOD_LEVEL_ENVIRONMENT_INFO *environment_info = get_game_mod_level_environment_info(gfCurrentLevel);
 
-	FogStart = (float)environment_info->fog_start_range;
-	FogEnd = (float)environment_info->fog_end_range;
-#ifdef USE_BGFX
-	bgfx_fog_parameters[0] = FogStart / 1024.0f;
-	bgfx_fog_parameters[1] = FogEnd / 1024.0f;
-#endif
+	LevelFogStart = (float)environment_info->fog_start_range;
+	LevelFogEnd = (float)environment_info->fog_end_range;
+
 	ClipRange = (float)environment_info->far_view;
 
 	MOD_GLOBAL_INFO *global_info  = get_game_mod_global_info();
