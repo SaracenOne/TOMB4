@@ -305,12 +305,12 @@ void T4PlusSetInventoryCount(short object_number, int count, bool update_weapon_
 		T4PlusSetValidLaraGunType();
 }
 
-void T4ShowObjectPickup(int object_number) {
+void T4ShowObjectPickup(int object_number, short displayable_lifetime) {
 	for (int i = 0; i < MAX_PICKUP_DISPLAYABLE_COUNT; i++) {
 		DISPLAYPU *pu = &pickups[i];
 
 		if (pu->life < 0) {
-			pu->life = MAX_PICKUP_DISPLAYABLE_LIFETIME;
+			pu->life = displayable_lifetime;
 			pu->object_number = object_number;
 			break;
 		}

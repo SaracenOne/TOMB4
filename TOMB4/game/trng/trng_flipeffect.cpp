@@ -121,7 +121,7 @@ bool inventory_increase_inventory_items_by_one_in_x_way(unsigned char inventory_
 	short object_number = NGGetInventoryObjectIDForByte(inventory_id);
 
 	if (show_popup)
-		T4ShowObjectPickup(object_number);
+		T4ShowObjectPickup(object_number, MAX_PICKUP_DISPLAYABLE_LIFETIME);
 
 	int current_inventory_count = T4PlusGetInventoryCount(object_number);
 	current_inventory_count++;

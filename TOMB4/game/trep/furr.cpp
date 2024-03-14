@@ -1023,14 +1023,17 @@ FURRResult furr_cmd_load_game(FURRParameters params) {
 // PICKUP_ID
 FURRResult furr_cmd_pickup_item(FURRParameters params) {
 	T4PlusSetInventoryCount(params.first_parameter, T4PlusGetInventoryCount(params.first_parameter) + 1, false);
-	T4ShowObjectPickup(params.first_parameter);
+	T4ShowObjectPickup(params.first_parameter, MAX_PICKUP_DISPLAYABLE_LIFETIME);
+
 	return FURR_RESULT_OK;
 }
 
 // Params:
-// DRAW_ID
+// DRAW_ID, TIME_TO_DRAW_IN_FRAMES
 FURRResult furr_cmd_draw_item(FURRParameters params) {
-	return FURR_RESULT_UNIMPLEMENTED;
+	T4ShowObjectPickup(params.first_parameter, params.second_parameter);
+
+	return FURR_RESULT_OK;
 }
 
 // Params:

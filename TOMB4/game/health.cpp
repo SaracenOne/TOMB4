@@ -233,6 +233,6 @@ void DrawPickups()
 
 void AddDisplayPickup(short object_number)
 {
-	T4ShowObjectPickup(object_number); // TRLE
+	T4ShowObjectPickup(object_number, MAX_PICKUP_DISPLAYABLE_LIFETIME); // TRLE
 	DEL_picked_up_object(object_number);
 }
