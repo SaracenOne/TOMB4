@@ -363,6 +363,8 @@ void RestoreLaraData(long FullSave)
 			for (int j = 0; j < mesh_mapping_table_count; j++) {
 				if (mesh_mapping_table[j].mesh_x32_ptr == offset) {
 					lara.mesh_ptrs[i] = (short*)(base + mesh_mapping_table[j].mesh_native_ptr);
+				} else {
+					lara.mesh_ptrs[i] = meshes[objects[LARA].mesh_index + i * 2];
 				}
 			}
 		}
