@@ -16,6 +16,10 @@ void main()
 
     vec4 outCol = texColor_var * vCol0;
 
+	if (outCol.a <= 0.00) {
+		discard;
+	}
+
 	float depth = (gl_FragCoord.z / gl_FragCoord.w);
 	float fogFactor = CalculateFogFactor(depth, u_fogParameters.x, u_fogParameters.y);
 	
