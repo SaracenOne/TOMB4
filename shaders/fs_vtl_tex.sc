@@ -24,10 +24,7 @@ void main()
 	outCol.rgb = mix(outCol.rgb, u_fogColor.rgb, fogFactor);
 
 	// Volumetric Fog
-	outCol.rgb = mix(outCol.rgb, u_volumetricFogColor.rgb, 1.0 - vCol1.a);
-    outCol.r += vCol1.r;
-    outCol.g += vCol1.g;
-    outCol.b += vCol1.b;
+	outCol.rgb = mix(outCol.rgb, u_volumetricFogColor.rgb, 1.0 - vCol1.a) + vCol1.rgb;
 
 	gl_FragColor = outCol;
 }
