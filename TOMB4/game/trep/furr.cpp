@@ -53,7 +53,12 @@ FURRResult furr_cmd_holster_weapons(FURRParameters params) {
 // AMOUNT
 // LIMIT
 FURRResult furr_cmd_inc_hp(FURRParameters params) {
-	return FURR_RESULT_UNIMPLEMENTED;
+	items[lara.item_number].hit_points += params.first_parameter;
+	if (items[lara.item_number].hit_points > params.second_parameter) {
+		items[lara.item_number].hit_points = params.second_parameter;
+	}
+
+	return FURR_RESULT_OK;
 }
 
 // Params:
@@ -68,7 +73,12 @@ FURRResult furr_cmd_dec_hp(FURRParameters params) {
 // AMOUNT
 // LIMIT
 FURRResult furr_cmd_inc_air(FURRParameters params) {
-	return FURR_RESULT_UNIMPLEMENTED;
+	lara.air += params.first_parameter;
+	if (lara.air > params.second_parameter) {
+		lara.air = params.second_parameter;
+	}
+
+	return FURR_RESULT_OK;
 }
 
 // Params:
@@ -97,7 +107,9 @@ FURRResult furr_cmd_dec_sprint(FURRParameters params) {
 // Params:
 // AMOUNT
 FURRResult furr_cmd_set_poison(FURRParameters params) {
-	return FURR_RESULT_UNIMPLEMENTED;
+	lara.poisoned = params.first_parameter;
+
+	return FURR_RESULT_OK;
 }
 
 // Params:
@@ -250,25 +262,39 @@ FURRResult furr_cmd_move_dword(FURRParameters params) {
 // Params:
 // KEYTYPE
 FURRResult furr_cmd_add_key(FURRParameters params) {
-	return FURR_RESULT_UNIMPLEMENTED;
+	lara.keyitems |= params.first_parameter;
+
+	return FURR_RESULT_OK;
 }
 
 // Params:
 // KEYTYPE
 FURRResult furr_cmd_remove_key(FURRParameters params) {
-	return FURR_RESULT_UNIMPLEMENTED;
+	lara.keyitems &= ~params.first_parameter;
+
+	return FURR_RESULT_OK;
 }
 
 // Params:
 // QUEST_ITEM_ID
 FURRResult furr_cmd_add_questitem(FURRParameters params) {
-	return FURR_RESULT_UNIMPLEMENTED;
+	if (params.first_parameter >= QUEST_ITEM1 && params.first_parameter <= QUEST_ITEM6) {
+		T4PlusSetInventoryCount(params.first_parameter, params.second_parameter, false);
+		return FURR_RESULT_OK;
+	}
+	else {
+		return FURR_RESULT_ERROR;
+	}
+
+	return FURR_RESULT_OK;
 }
 
 // Params:
 // QUEST_ITEM_ID
 FURRResult furr_cmd_remove_questitem(FURRParameters params) {
-	return FURR_RESULT_UNIMPLEMENTED;
+	T4PlusSetInventoryCount(params.first_parameter, 0, false);
+
+	return FURR_RESULT_OK;
 }
 
 // Params:
@@ -315,32 +341,51 @@ FURRResult furr_cmd_remove_examine3(FURRParameters params) {
 
 // Params:
 // WATERSKIN_ID
-FURRResult furr_cmd_waterskin1(FURRParameters params) {
-	return FURR_RESULT_UNIMPLEMENTED;
+FURRResult furr_cmd_set_waterskin1(FURRParameters params) {
+	lara.small_water_skin = (uint8_t)params.first_parameter & 0xff;
+
+	return FURR_RESULT_OK;
 }
 
 // Params:
 // WATERSKIN_ID
-FURRResult furr_cmd_waterskin2(FURRParameters params) {
-	return FURR_RESULT_UNIMPLEMENTED;
+FURRResult furr_cmd_set_waterskin2(FURRParameters params) {
+	lara.big_water_skin = (uint8_t)params.first_parameter & 0xff;
+
+	return FURR_RESULT_OK;
 }
 
 // Params:
-// PUZZLEITEM_ID
+// PUZZLEITEM_ID, AMOUNT
 FURRResult furr_cmd_set_puzzleitem(FURRParameters params) {
-	return FURR_RESULT_UNIMPLEMENTED;
+	if (params.first_parameter >= PUZZLE_ITEM1 && params.first_parameter <= PUZZLE_ITEM12) {
+		T4PlusSetInventoryCount(params.first_parameter, params.second_parameter, false);
+		return FURR_RESULT_OK;
+	} else {
+		return FURR_RESULT_ERROR;
+	}
 }
 
 // Params:
-// PUZZLEITEM_ID
+// PUZZLEITEM_ID, AMOUNT
 FURRResult furr_cmd_add_puzzleitem(FURRParameters params) {
-	return FURR_RESULT_UNIMPLEMENTED;
+	if (params.first_parameter >= 175 && params.first_parameter <= 186) {
+		lara.puzzleitems[params.first_parameter - 175] += (int8_t)params.second_parameter & 0xff;
+		return FURR_RESULT_OK;
+	} else {
+		return FURR_RESULT_ERROR;
+	}
 }
 
 // Params:
 // PUZZLECOMBO_ID
 FURRResult furr_cmd_add_puzzlecombo(FURRParameters params) {
-	return FURR_RESULT_UNIMPLEMENTED;
+	if (params.first_parameter >= 0 && params.first_parameter <= 15) {
+		lara.puzzleitemscombo |= (1 << (params.first_parameter));
+		return FURR_RESULT_OK;
+	} else {
+		return FURR_RESULT_ERROR;
+	}
 }
 
 // Params:
@@ -399,19 +444,112 @@ FURRResult furr_cmd_set_supply(FURRParameters params) {
 // Params:
 // SUPPLY_ID
 FURRResult furr_cmd_add_supply(FURRParameters params) {
-	return FURR_RESULT_UNIMPLEMENTED;
+	switch (params.first_parameter) {
+		case 8445951: // (Pistol Ammo)
+			lara.num_pistols_ammo += params.second_parameter;
+			break;
+		case 8445953: // (Uzi Ammo)
+			lara.num_uzi_ammo += params.second_parameter;
+			break;
+		case 8445957: // (Shotgun Normal Ammo)
+			lara.num_shotgun_ammo1 += params.second_parameter;
+			break;
+		case 8445959: // (Shotgun Wideshot Ammo)
+			lara.num_shotgun_ammo1 += params.second_parameter;
+			break;
+		case 8445955: // (Revolver Ammo)
+			lara.num_revolver_ammo += params.second_parameter;
+			break;
+		case 8445961: // (Grenade Normal Ammo)
+			lara.num_grenade_ammo1 += params.second_parameter;
+			break;
+		case 8445963: // (Grenade Super Ammo)
+			lara.num_grenade_ammo2 += params.second_parameter;
+			break;
+		case 8445965: // (Grenade Flash Ammo)
+			lara.num_grenade_ammo3 += params.second_parameter;
+			break;
+		case 8445967: // (Crossbow Normal Ammo)
+			lara.num_crossbow_ammo1 += params.second_parameter;
+			break;
+		case 8445969: // (Crossbow Poison Ammo)
+			lara.num_crossbow_ammo2 += params.second_parameter;
+			break;
+		case 8445971: // (Crossbow Explosive Ammo)
+			lara.num_crossbow_ammo3 += params.second_parameter;
+			break;
+		case 8445945: // (Small Medkit)
+			lara.num_small_medipack += params.second_parameter;
+			break;
+		case 8445947: // (Large Medkit)
+			lara.num_large_medipack += params.second_parameter;
+			break;
+		case 8445949: // (Flares)
+			lara.num_flares += params.second_parameter;
+			break;
+		default:
+			return FURR_RESULT_ERROR;
+	}
+
+	return FURR_RESULT_OK;
 }
 
 // Params:
 // WEAPON_ID
 FURRResult furr_cmd_add_weapon(FURRParameters params) {
-	return FURR_RESULT_UNIMPLEMENTED;
+	switch (params.first_parameter) {
+		case 8445906: // (Pistol)
+			lara.pistols_type_carried |= W_PRESENT;
+			break;
+		case 8445907: // (Uzi)
+			lara.uzis_type_carried |= W_PRESENT;
+			break;
+		case 8445908: // (Shotgun)
+			lara.shotgun_type_carried |= W_PRESENT;
+			break;
+		case 8445909: // (Crossbow)
+			lara.crossbow_type_carried |= W_PRESENT;
+			break;
+		case 8445910: // (Grenade Gun)
+			lara.grenade_type_carried |= W_PRESENT;
+			break;
+		case 8445911: // (Revolver)
+			lara.sixshooter_type_carried |= W_PRESENT;
+			break;
+		default:
+			return FURR_RESULT_ERROR;
+		}
+
+	return FURR_RESULT_OK;
 }
 
 // Params:
 // WEAPON_ID
 FURRResult furr_cmd_remove_weapon(FURRParameters params) {
-	return FURR_RESULT_UNIMPLEMENTED;
+	switch (params.first_parameter) {
+	case 8445906: // (Pistol)
+		lara.pistols_type_carried = W_NONE;
+		break;
+	case 8445907: // (Uzi)
+		lara.uzis_type_carried = W_NONE;
+		break;
+	case 8445908: // (Shotgun)
+		lara.shotgun_type_carried = W_NONE;
+		break;
+	case 8445909: // (Crossbow)
+		lara.crossbow_type_carried = W_NONE;
+		break;
+	case 8445910: // (Grenade Gun)
+		lara.grenade_type_carried = W_NONE;
+		break;
+	case 8445911: // (Revolver)
+		lara.sixshooter_type_carried = W_NONE;
+		break;
+	default:
+		return FURR_RESULT_ERROR;
+	}
+
+	return FURR_RESULT_OK;
 }
 
 // Params:
@@ -689,7 +827,8 @@ FURRResult furr_cmd_kill_item(FURRParameters params) {
 // HP
 // LIMIT
 FURRResult furr_cmd_set_hp(FURRParameters params) {
-	return FURR_RESULT_UNIMPLEMENTED;
+	items[lara.item_number].hit_points = params.first_parameter;
+	return FURR_RESULT_OK;
 }
 
 // Params:
@@ -775,6 +914,9 @@ FURRResult furr_cmd_stop(FURRParameters params) {
 
 // Params:
 FURRResult furr_cmd_reset(FURRParameters params) {
+	// TODO: this is not fully implemented.
+	flipeffect = -1;
+
 	return FURR_RESULT_UNIMPLEMENTED;
 }
 
@@ -1149,8 +1291,8 @@ FURRDataTable furr_data_table[] = {
 	{0, furr_cmd_remove_examine2}, // FURR_REMOVE_EXAMINE2,
 	{0, furr_cmd_add_examine3}, // FURR_ADD_EXAMINE3,
 	{0, furr_cmd_remove_examine3}, // FURR_REMOVE_EXAMINE3,
-	{1, furr_cmd_waterskin1}, // FURR_SET_WATERSKIN1,
-	{1, furr_cmd_waterskin2}, // FURR_SET_WATERSKIN2,
+	{1, furr_cmd_set_waterskin1}, // FURR_SET_WATERSKIN1,
+	{1, furr_cmd_set_waterskin2}, // FURR_SET_WATERSKIN2,
 	{2, furr_cmd_set_puzzleitem}, // FURR_SET_PUZZLEITEM,
 	{2, furr_cmd_add_puzzleitem}, // FURR_ADD_PUZZLEITEM,
 	{1, furr_cmd_add_puzzlecombo}, // FURR_ADD_PUZZLECOMBO,
