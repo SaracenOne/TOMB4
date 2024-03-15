@@ -31,6 +31,9 @@
 #include "../../tomb4/tomb4plus/t4plus_inventory.h"
 #include "../../tomb4/tomb4plus/t4plus_savegame.h"
 #include "../../tomb4/tomb4plus/t4plus_items.h"
+#include "../../tomb4/tomb4plus/t4plus_objects.h"
+
+#include "../../specific/function_table.h"
 
 void NGAttractLaraInDirection(unsigned char direction, unsigned char speed) {
 	switch (direction) {
@@ -460,10 +463,10 @@ bool lara_disarm_lara(unsigned char remove_weapons_only, unsigned char _unusued)
 	lara.weapon_item = NO_ITEM;
 
 	lara.back_gun = 0;
-	lara.holster = lara.holster != LARA ? LARA_HOLSTERS : LARA;
+	lara.holster = lara.holster != T4PlusGetLaraSlotID() ? T4PlusGetLaraHolstersSlotID() : T4PlusGetLaraSlotID();
 
-	lara.mesh_ptrs[LM_RHAND] = meshes[objects[LARA].mesh_index + LM_RHAND * 2];
-	lara.mesh_ptrs[LM_LHAND] = meshes[objects[LARA].mesh_index + LM_LHAND * 2];
+	lara.mesh_ptrs[LM_RHAND] = meshes[objects[T4PlusGetLaraSlotID()].mesh_index + LM_RHAND * 2];
+	lara.mesh_ptrs[LM_LHAND] = meshes[objects[T4PlusGetLaraSlotID()].mesh_index + LM_LHAND * 2];
 
 	lara.left_arm.frame_number = 0;
 	lara.right_arm.frame_number = 0;
@@ -978,7 +981,7 @@ bool lara_force_x_animation_for_lara_preserve_state_id(unsigned char lower_anim_
 	int animation_index = (int)lower_anim_id | ((int)(upper_anim_id) << 8 & 0xff00);
 
 	int original_anim_state = lara_item->current_anim_state;
-	int animation_index_offset = objects[LARA].anim_index + animation_index;
+	int animation_index_offset = objects[T4PlusGetLaraSlotID()].anim_index + animation_index;
 
 	NGForceItemAnimation(lara.item_number, animation_index_offset);
 
@@ -990,7 +993,7 @@ bool lara_force_x_animation_for_lara_preserve_state_id(unsigned char lower_anim_
 // NGLE - 170
 bool lara_force_x_animation_for_lara_set_new_state_id(unsigned char lower_anim_id, unsigned char upper_anim_id) {
 	int animation_index = (int)lower_anim_id | ((int)(upper_anim_id) << 8 & 0xff00);
-	int animation_index_offset = objects[LARA].anim_index + animation_index;
+	int animation_index_offset = objects[T4PlusGetLaraSlotID()].anim_index + animation_index;
 
 	NGForceItemAnimation(lara.item_number, animation_index_offset);
 
@@ -1000,7 +1003,7 @@ bool lara_force_x_animation_for_lara_set_new_state_id(unsigned char lower_anim_i
 // NGLE - 171
 bool lara_force_x_animation_for_lara_set_neutral_state_id(unsigned char lower_anim_id, unsigned char upper_anim_id) {
 	int animation_index = (int)lower_anim_id | ((int)(upper_anim_id) << 8 & 0xff00);
-	int animation_index_offset = objects[LARA].anim_index + animation_index;
+	int animation_index_offset = objects[T4PlusGetLaraSlotID()].anim_index + animation_index;
 
 	NGForceItemAnimation(lara.item_number, animation_index_offset);
 
@@ -1115,7 +1118,7 @@ bool lara_give_or_remove_torch_to_or_from_hand_of_lara(unsigned char give_torch,
 			lara.gun_type = WEAPON_NONE;
 			lara.request_gun_type = WEAPON_NONE;
 			lara.gun_status = LG_NO_ARMS;
-			lara.mesh_ptrs[LM_LHAND] = meshes[objects[LARA].mesh_index + LM_LHAND * 2];
+			lara.mesh_ptrs[LM_LHAND] = meshes[objects[T4PlusGetLaraSlotID()].mesh_index + LM_LHAND * 2];
 		}
 	}
 	return true;
@@ -1337,23 +1340,23 @@ bool trigger_secret(unsigned char secret_number, unsigned char _unused) {
 bool set_lara_holsters(unsigned char holster_type, unsigned char _unused) {
 	switch (holster_type) {
 	case 0x0d: {
-		lara.holster = LARA_HOLSTERS;
+		lara.holster = T4PlusGetLaraHolstersSlotID();
 		break;
 	};
 	case 0x0e: {
-		lara.holster = LARA_HOLSTERS_PISTOLS;
+		lara.holster = T4PlusGetLaraHolstersPistolsSlotID();
 		break;
 	};
 	case 0x10: {
-		lara.holster = LARA_HOLSTERS_SIXSHOOTER;
+		lara.holster = T4PlusGetLaraHolstersRevolverSlotID();
 		break;
 	};
 	case 0x0f: {
-		lara.holster = LARA_HOLSTERS_UZIS;
+		lara.holster = T4PlusGetLaraHolstersUzisSlotID();
 		break;
 	};
 	case 0x00: {
-		lara.holster = LARA;
+		lara.holster = T4PlusGetLaraSlotID();
 		break;
 	};
 	default: {
@@ -1430,7 +1433,7 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 		}
 		case ANIMATED_TEXTURES_RESTART_ANIMATION_RANGE: {
 			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ANIMATED_TEXTURES_RESTART_ANATIMION_RANGE unimplemented!");
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ANIMATED_TEXTURES_RESTART_ANIMATION_RANGE unimplemented!");
 			break;
 		}
 		case ANIMATED_TEXTURES_SET_THE_FRAME_OF_TEXTURE_OF_FIRST_P_RANGE: {
@@ -1449,13 +1452,17 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 			break;
 		}
 		case WEATHER_FOG_ENABLE_VOLUMETRIC_FX: {
-			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "WEATHER_FOG_ENABLE_VOLUMETRIC_FX unimplemented!");
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				t4_override_fog_mode = T4_FOG_FORCE_VOLUMETRIC;
+				UpdateDistanceFogColor();
+			}
 			break;
 		}
 		case WEATHER_FOG_DISABLE_VOLUMETRIC_FX: {
-			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy))
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "WEATHER_FOG_DISABLE_VOLUMETRIC_FX unimplemented!");
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+				t4_override_fog_mode = T4_FOG_FORCE_DISTANT;
+				UpdateDistanceFogColor();
+			}
 			break;
 		}
 		case KILL_AND_OR_SET_LARA_ON_FIRE: {

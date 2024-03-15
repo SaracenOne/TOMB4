@@ -15,11 +15,14 @@
 #include "../../specific/output.h"
 
 #include "t4plus_weather.h"
+#include "t4plus_objects.h"
 
 // T4Plus - weather effects
 
-WeatherType rain_type = WEATHER_DISABLED;
-WeatherType snow_type = WEATHER_DISABLED;
+T4OverrideFogMode t4_override_fog_mode = T4_FOG_DEFAULT;
+
+T4WeatherType t4_rain_type = WEATHER_DISABLED;
+T4WeatherType t4_snow_type = WEATHER_DISABLED;
 
 long rain_outside = 0;
 long snow_outside = 0;
@@ -36,8 +39,8 @@ static short max_snow = 0;
 
 void InitWeatherFX()
 {
-	rain_type = WEATHER_DISABLED;
-	snow_type = WEATHER_DISABLED;
+	t4_rain_type = WEATHER_DISABLED;
+	t4_snow_type = WEATHER_DISABLED;
 
 	rain_outside = 0;
 	snow_outside = 0;
@@ -84,7 +87,7 @@ void DoRain()
 			rptr->y = camera.pos.y + -1024 - (GetRandomDraw() & 0x7FF);
 			rptr->z = camera.pos.z + (rad * rcossin_tbl[angle + 1] >> (W2V_SHIFT - 2));
 
-			if (rain_type == WEATHER_DISABLED) {
+			if (t4_rain_type == WEATHER_DISABLED) {
 				rptr->x = 0;
 				continue;
 			}
@@ -101,7 +104,7 @@ void DoRain()
 				continue;
 			}
 
-			if (!(room[IsRoomOutsideNo].flags & ROOM_RAIN) && rain_type == WEATHER_ENABLED_IN_SPECIFIC_ROOMS)
+			if (!(room[IsRoomOutsideNo].flags & ROOM_RAIN) && t4_rain_type == WEATHER_ENABLED_IN_SPECIFIC_ROOMS)
 			{
 				rptr->x = 0;
 				continue;
@@ -325,7 +328,7 @@ void DoSnow()
 			snow->y = camera.pos.y - 1024 - (GetRandomDraw() & 0x7FF);
 			snow->z = camera.pos.z + (rad * rcossin_tbl[angle + 1] >> (W2V_SHIFT - 2));
 
-			if (snow_type == WEATHER_DISABLED) {
+			if (t4_snow_type == WEATHER_DISABLED) {
 				snow->x = 0;
 				continue;
 			}
@@ -342,7 +345,7 @@ void DoSnow()
 				continue;
 			}
 
-			if (!(room[IsRoomOutsideNo].flags & ROOM_SNOW) && snow_type == WEATHER_ENABLED_IN_SPECIFIC_ROOMS)
+			if (!(room[IsRoomOutsideNo].flags & ROOM_SNOW) && t4_snow_type == WEATHER_ENABLED_IN_SPECIFIC_ROOMS)
 			{
 				snow->x = 0;
 				continue;
@@ -420,7 +423,7 @@ void DoSnow()
 			snow->yv++;
 	}
 
-	sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 10];
+	sprite = &spriteinfo[objects[T4PlusGetDefaultSpritesSlotID()].mesh_index + 10];
 	tex.tpage = sprite->tpage;
 	tex.drawtype = 2;
 	tex.flag = 0;

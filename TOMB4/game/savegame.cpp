@@ -23,6 +23,7 @@
 #include "gameflow.h"
 #include "../specific/file.h"
 #include "../tomb4/mod_config.h"
+#include "../tomb4/tomb4plus/t4plus_objects.h"
 
 #define MAX_HUB_LEVELS 10
 
@@ -162,7 +163,7 @@ void SaveLaraData()
 	savegame.Lara.torso_z_rot = lara.torso_z_rot;
 
 	// Left Arm
-	savegame.Lara.left_arm.frame_base = (X32_POINTER)((size_t)lara.left_arm.frame_base - (size_t)objects[PISTOLS_ANIM].frame_base);
+	savegame.Lara.left_arm.frame_base = (X32_POINTER)((size_t)lara.left_arm.frame_base - (size_t)objects[T4PlusGetPistolsAnimSlotID()].frame_base);
 	savegame.Lara.left_arm.frame_number = lara.left_arm.frame_number;
 	savegame.Lara.left_arm.anim_number = lara.left_arm.anim_number;
 	savegame.Lara.left_arm.lock = lara.left_arm.lock;
@@ -172,7 +173,7 @@ void SaveLaraData()
 	savegame.Lara.left_arm.flash_gun = lara.left_arm.flash_gun;
 
 	// Right Arm
-	savegame.Lara.right_arm.frame_base = (X32_POINTER)((size_t)lara.right_arm.frame_base - (size_t)objects[PISTOLS_ANIM].frame_base);
+	savegame.Lara.right_arm.frame_base = (X32_POINTER)((size_t)lara.right_arm.frame_base - (size_t)objects[T4PlusGetPistolsAnimSlotID()].frame_base);
 	savegame.Lara.right_arm.frame_number = lara.right_arm.frame_number;
 	savegame.Lara.right_arm.anim_number = lara.right_arm.anim_number;
 	savegame.Lara.right_arm.lock = lara.right_arm.lock;
@@ -364,7 +365,7 @@ void RestoreLaraData(long FullSave)
 				if (mesh_mapping_table[j].mesh_x32_ptr == offset) {
 					lara.mesh_ptrs[i] = (short*)(base + mesh_mapping_table[j].mesh_native_ptr);
 				} else {
-					lara.mesh_ptrs[i] = meshes[objects[LARA].mesh_index + i * 2];
+					lara.mesh_ptrs[i] = meshes[objects[T4PlusGetLaraSlotID()].mesh_index + i * 2];
 				}
 			}
 		}
@@ -386,7 +387,7 @@ void RestoreLaraData(long FullSave)
 	lara.torso_z_rot = savegame.Lara.torso_z_rot;
 
 	// Left Arm
-	lara.left_arm.frame_base = (short*)((size_t)lara.left_arm.frame_base + (size_t)objects[PISTOLS_ANIM].frame_base);
+	lara.left_arm.frame_base = (short*)((size_t)lara.left_arm.frame_base + (size_t)objects[T4PlusGetPistolsAnimSlotID()].frame_base);
 	lara.left_arm.frame_number = savegame.Lara.left_arm.frame_number;
 	lara.left_arm.anim_number = savegame.Lara.left_arm.anim_number;
 	lara.left_arm.lock = savegame.Lara.left_arm.lock;
@@ -396,7 +397,7 @@ void RestoreLaraData(long FullSave)
 	lara.left_arm.flash_gun = savegame.Lara.left_arm.flash_gun;
 
 	// Right Arm
-	lara.right_arm.frame_base = (short*)((size_t)lara.right_arm.frame_base + (size_t)objects[PISTOLS_ANIM].frame_base);
+	lara.right_arm.frame_base = (short*)((size_t)lara.right_arm.frame_base + (size_t)objects[T4PlusGetPistolsAnimSlotID()].frame_base);
 	lara.right_arm.frame_number = savegame.Lara.right_arm.frame_number;
 	lara.right_arm.anim_number = savegame.Lara.right_arm.anim_number;
 	lara.right_arm.lock = savegame.Lara.right_arm.lock;
@@ -557,7 +558,7 @@ void sgRestoreLevel()
 		{
 			item = &items[i];
 
-			if (item->object_number == MOTORBIKE || item->object_number == JEEP)
+			if (item->object_number == T4PlusGetMotorbikeSlotID() || item->object_number == T4PlusGetJeepSlotID())
 			{
 				item->pos.x_pos = lara_item->pos.x_pos;
 				item->pos.y_pos = lara_item->pos.y_pos;
@@ -571,9 +572,9 @@ void sgRestoreLevel()
 				item->floor = GetHeight(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
 				lara.vehicle = i;
 
-				if (item->object_number == MOTORBIKE)
+				if (item->object_number == T4PlusGetMotorbikeSlotID())
 					BikeStart(item, lara_item);
-				else
+				else if (item->object_number == T4PlusGetJeepSlotID())
 					JeepStart(item, lara_item);
 
 				break;
@@ -791,7 +792,7 @@ void SaveLevelData(long FullSave)
 		}
 		else
 		{
-			if (item->flags & (IFL_CODEBITS | IFL_INVISIBLE | IFL_TRIGGERED) || item->object_number == LARA && FullSave)
+			if (item->flags & (IFL_CODEBITS | IFL_INVISIBLE | IFL_TRIGGERED) || item->object_number == T4PlusGetLaraSlotID() && FullSave)
 			{
 				packed = 0x8000;
 
@@ -879,7 +880,7 @@ void SaveLevelData(long FullSave)
 					byte = (uchar)item->required_anim_state;
 					WriteSG(&byte, sizeof(uchar));
 
-					if (item->object_number != LARA)
+					if (item->object_number != T4PlusGetLaraSlotID())
 					{
 						byte = item->anim_number - obj->anim_index;
 						WriteSG(&byte, sizeof(uchar));
@@ -963,10 +964,9 @@ void SaveLevelData(long FullSave)
 					WriteSG(&item->meshswap_meshbits, sizeof(ulong));
 				}
 
-				if (item->object_number == MOTORBIKE)
+				if (item->object_number == T4PlusGetMotorbikeSlotID())
 					WriteSG(item->data, sizeof(BIKEINFO));
-
-				if (item->object_number == JEEP)
+				else if (item->object_number == T4PlusGetJeepSlotID())
 					WriteSG(item->data, sizeof(JEEPINFO));
 			}
 			else
@@ -1284,7 +1284,7 @@ void RestoreLevelData(long FullSave)
 				item->goal_anim_state = goal;
 				item->required_anim_state = req;
 
-				if (item->object_number != LARA)
+				if (item->object_number != T4PlusGetLaraSlotID())
 				{
 					ReadSG(&anim, sizeof(char));
 					item->anim_number = obj->anim_index + anim;
@@ -1375,10 +1375,9 @@ void RestoreLevelData(long FullSave)
 				ReadSG(&item->meshswap_meshbits, sizeof(ulong));
 			}
 
-			if (item->object_number == MOTORBIKE)
+			if (item->object_number == T4PlusGetMotorbikeSlotID())
 				ReadSG(item->data, sizeof(BIKEINFO));
-
-			if (item->object_number == JEEP)
+			else if (item->object_number == T4PlusGetJeepSlotID())
 				ReadSG(item->data, sizeof(JEEPINFO));
 
 			if (obj->collision == PuzzleHoleCollision)

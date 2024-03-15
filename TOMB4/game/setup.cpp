@@ -69,6 +69,7 @@
 #include "../tomb4/mod_config.h"
 #include "../tomb4//tomb4plus/t4plus_teleporter.h"
 #include "trng/trng_objects.h"
+#include "../tomb4/tomb4plus/t4plus_objects.h"
 
 void ObjectObjects()
 {
@@ -916,18 +917,18 @@ void BaddyObjects()
 		bones[obj->bone_index + 24] |= 8;
 		bones[obj->bone_index + 80] |= 4;
 		bones[obj->bone_index + 80] |= 8;
-		meshes[obj->mesh_index + 15] = meshes[objects[MESHSWAP1].mesh_index + 14];
-		meshes[obj->mesh_index + 31] = meshes[objects[MESHSWAP1].mesh_index + 30];
-		meshes[obj->mesh_index + 37] = meshes[objects[MESHSWAP1].mesh_index + 36];
+		meshes[obj->mesh_index + 15] = meshes[objects[T4PlusGetMeshSwap1SlotID()].mesh_index + 14];
+		meshes[obj->mesh_index + 31] = meshes[objects[T4PlusGetMeshSwap1SlotID()].mesh_index + 30];
+		meshes[obj->mesh_index + 37] = meshes[objects[T4PlusGetMeshSwap1SlotID()].mesh_index + 36];
 	}
 
 	obj = &objects[VON_CROY_MIP];
 
 	if (obj->loaded)
 	{
-		meshes[obj->mesh_index + 15] = meshes[objects[MESHSWAP1].mesh_index + 14];
-		meshes[obj->mesh_index + 31] = meshes[objects[MESHSWAP1].mesh_index + 30];
-		meshes[obj->mesh_index + 37] = meshes[objects[MESHSWAP1].mesh_index + 36];
+		meshes[obj->mesh_index + 15] = meshes[objects[T4PlusGetMeshSwap1SlotID()].mesh_index + 14];
+		meshes[obj->mesh_index + 31] = meshes[objects[T4PlusGetMeshSwap1SlotID()].mesh_index + 30];
+		meshes[obj->mesh_index + 37] = meshes[objects[T4PlusGetMeshSwap1SlotID()].mesh_index + 36];
 	}
 
 	obj = &objects[GUIDE];
@@ -954,18 +955,18 @@ void BaddyObjects()
 		bones[obj->bone_index + 24] |= 8;
 		bones[obj->bone_index + 80] |= 4;
 		bones[obj->bone_index + 80] |= 8;
-		meshes[obj->mesh_index + 31] = meshes[objects[MESHSWAP2].mesh_index + 30];
-		meshes[obj->mesh_index + 37] = meshes[objects[MESHSWAP2].mesh_index + 36];
-		meshes[obj->mesh_index + 43] = meshes[objects[MESHSWAP2].mesh_index + 42];
+		meshes[obj->mesh_index + 31] = meshes[objects[T4PlusGetMeshSwap2SlotID()].mesh_index + 30];
+		meshes[obj->mesh_index + 37] = meshes[objects[T4PlusGetMeshSwap2SlotID()].mesh_index + 36];
+		meshes[obj->mesh_index + 43] = meshes[objects[T4PlusGetMeshSwap2SlotID()].mesh_index + 42];
 	}
 
 	obj = &objects[GUIDE_MIP];
 
 	if (obj->loaded)
 	{
-		meshes[obj->mesh_index + 31] = meshes[objects[MESHSWAP2].mesh_index + 30];
-		meshes[obj->mesh_index + 37] = meshes[objects[MESHSWAP2].mesh_index + 36];
-		meshes[obj->mesh_index + 43] = meshes[objects[MESHSWAP2].mesh_index + 42];
+		meshes[obj->mesh_index + 31] = meshes[objects[T4PlusGetMeshSwap2SlotID()].mesh_index + 30];
+		meshes[obj->mesh_index + 37] = meshes[objects[T4PlusGetMeshSwap2SlotID()].mesh_index + 36];
+		meshes[obj->mesh_index + 43] = meshes[objects[T4PlusGetMeshSwap2SlotID()].mesh_index + 42];
 	}
 
 	obj = &objects[RAGHEAD];
@@ -992,11 +993,11 @@ void BaddyObjects()
 		bones[obj->bone_index + 28] |= 8;
 		bones[obj->bone_index + 88] |= 4;
 		bones[obj->bone_index + 88] |= 8;
-		meshes[obj->mesh_index + 9] = meshes[objects[MESHSWAP3].mesh_index + 8];
-		meshes[obj->mesh_index + 15] = meshes[objects[MESHSWAP3].mesh_index + 14];
+		meshes[obj->mesh_index + 9] = meshes[objects[T4PlusGetMeshSwap3SlotID()].mesh_index + 8];
+		meshes[obj->mesh_index + 15] = meshes[objects[T4PlusGetMeshSwap3SlotID()].mesh_index + 14];
 
 		for (int i = 0; i < 12; i++)
-			meshes[obj->mesh_index + 2 * i + 23] = meshes[objects[MESHSWAP3].mesh_index + 2 * i + 22];
+			meshes[obj->mesh_index + 2 * i + 23] = meshes[objects[T4PlusGetMeshSwap3SlotID()].mesh_index + 2 * i + 22];
 
 		if (objects[SUPER_RAGHEAD].loaded)
 			obj->anim_index = objects[SUPER_RAGHEAD].anim_index;
@@ -1006,11 +1007,11 @@ void BaddyObjects()
 
 	if (obj->loaded)
 	{
-		meshes[obj->mesh_index + 9] = meshes[objects[MESHSWAP3].mesh_index + 8];
-		meshes[obj->mesh_index + 15] = meshes[objects[MESHSWAP3].mesh_index + 14];
+		meshes[obj->mesh_index + 9] = meshes[objects[T4PlusGetMeshSwap3SlotID()].mesh_index + 8];
+		meshes[obj->mesh_index + 15] = meshes[objects[T4PlusGetMeshSwap3SlotID()].mesh_index + 14];
 
 		for (int i = 0; i < 12; i++)
-			meshes[obj->mesh_index + 2 * i + 23] = meshes[objects[MESHSWAP3].mesh_index + 2 * i + 22];
+			meshes[obj->mesh_index + 2 * i + 23] = meshes[objects[T4PlusGetMeshSwap3SlotID()].mesh_index + 2 * i + 22];
 	}
 
 	obj = &objects[SUPER_RAGHEAD];
@@ -1037,22 +1038,22 @@ void BaddyObjects()
 		bones[obj->bone_index + 28] |= 8;
 		bones[obj->bone_index + 88] |= 4;
 		bones[obj->bone_index + 88] |= 8;
-		meshes[obj->mesh_index + 9] = meshes[objects[MESHSWAP2].mesh_index + 8];
-		meshes[obj->mesh_index + 15] = meshes[objects[MESHSWAP2].mesh_index + 14];
+		meshes[obj->mesh_index + 9] = meshes[objects[T4PlusGetMeshSwap2SlotID()].mesh_index + 8];
+		meshes[obj->mesh_index + 15] = meshes[objects[T4PlusGetMeshSwap2SlotID()].mesh_index + 14];
 
 		for (int i = 0; i < 12; i++)
-			meshes[obj->mesh_index + 2 * i + 23] = meshes[objects[MESHSWAP2].mesh_index + 2 * i + 22];
+			meshes[obj->mesh_index + 2 * i + 23] = meshes[objects[T4PlusGetMeshSwap2SlotID()].mesh_index + 2 * i + 22];
 	}
 
 	obj = &objects[SUPER_RAGHEAD_MIP];
 
 	if (obj->loaded)
 	{
-		meshes[obj->mesh_index + 9] = meshes[objects[MESHSWAP2].mesh_index + 8];
-		meshes[obj->mesh_index + 15] = meshes[objects[MESHSWAP2].mesh_index + 14];
+		meshes[obj->mesh_index + 9] = meshes[objects[T4PlusGetMeshSwap2SlotID()].mesh_index + 8];
+		meshes[obj->mesh_index + 15] = meshes[objects[T4PlusGetMeshSwap2SlotID()].mesh_index + 14];
 
 		for (int i = 0; i < 12; i++)
-			meshes[obj->mesh_index + 2 * i + 23] = meshes[objects[MESHSWAP3].mesh_index + 2 * i + 22];
+			meshes[obj->mesh_index + 2 * i + 23] = meshes[objects[T4PlusGetMeshSwap3SlotID()].mesh_index + 2 * i + 22];
 	}
 
 	obj = &objects[SCORPION];
@@ -1917,7 +1918,7 @@ void InitialiseLara()
 	lara.vehicle = NO_ITEM;
 	lara.weapon_item = NO_ITEM;
 	lara.water_surface_dist = 100;
-	lara.holster = LARA_HOLSTERS_PISTOLS;
+	lara.holster = T4PlusGetLaraHolstersPistolsSlotID();
 	lara.location = -1;
 	lara.highest_location = -1;
 	lara.RopePtr = -1;

@@ -13,6 +13,7 @@
 #include "gameflow.h"
 
 #include "../tomb4/mod_config.h"
+#include "../tomb4/tomb4plus/t4plus_objects.h"
 
 HAIR_STRUCT hairs[2][7];
 static long hair_wind = 0;
@@ -28,7 +29,7 @@ void InitialiseHair()
 	
 	for (int i = 0; i < 2; i++)
 	{
-		obj = &objects[HAIR];
+		obj = &objects[T4PlusGetLaraHairSlotID()];
 		bone = &bones[obj->bone_index];
 		bone += 4;
 		hptr = &hairs[i][0];
@@ -67,7 +68,7 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 	long frac, rate, water, height, size, dist, x, y, z, dx, dy, dz;
 	short room_num, spaz;
 
-	obj = &objects[LARA];
+	obj = &objects[T4PlusGetLaraSlotID()];
 
 	MOD_LEVEL_LARA_INFO *mod_lara_info = get_game_mod_level_lara_info(gfCurrentLevel);
 
@@ -303,7 +304,7 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 	}
 
 	phd_PopMatrix();
-	obj = &objects[HAIR];
+	obj = &objects[T4PlusGetLaraHairSlotID()];
 	bone = &bones[obj->bone_index];
 	hair = &hairs[pigtail][0];
 
@@ -493,7 +494,7 @@ void DrawHair()
 	for (int i = 0; i < 2; i++)
 	{
 		ii = i * 6;
-		meshpp = &meshes[objects[HAIR].mesh_index];
+		meshpp = &meshes[objects[T4PlusGetLaraHairSlotID()].mesh_index];
 		meshpp += 2;
 
 		hair = &hairs[i][1];
@@ -517,7 +518,7 @@ void DrawHair()
 			phd_PopMatrix();
 		}
 
-		meshpp = &meshes[objects[HAIR].mesh_index];
+		meshpp = &meshes[objects[T4PlusGetLaraHairSlotID()].mesh_index];
 
 		for (int j = 0; j < 6; j += 2, meshpp += 4)
 		{

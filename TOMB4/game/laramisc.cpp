@@ -26,6 +26,7 @@
 #include "trng/trng.h"
 #include "trng/trng_flipeffect.h"
 #include "../tomb4/mod_config.h"
+#include "../tomb4/tomb4plus/t4plus_objects.h"
 
 COLL_INFO mycoll;
 
@@ -182,8 +183,8 @@ void LaraInitialiseMeshes()
 {
 	for (int i = 0; i < LARA_MESH_PTR_COUNT; i++)
 	{
-		meshes[objects[LARA].mesh_index + i * 2] = meshes[objects[LARA_SKIN].mesh_index + i * 2];
-		lara.mesh_ptrs[i] = meshes[objects[LARA].mesh_index + i * 2];
+		meshes[objects[T4PlusGetLaraSlotID()].mesh_index + i * 2] = meshes[objects[T4PlusGetLaraSkinSlotID()].mesh_index + i * 2];
+		lara.mesh_ptrs[i] = meshes[objects[T4PlusGetLaraSlotID()].mesh_index + i * 2];
 	}
 
 	if (lara.gun_type == WEAPON_GRENADE)

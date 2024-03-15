@@ -24,6 +24,7 @@
 #include "gameflow.h"
 #include "../specific/function_table.h"
 #include "../tomb4/mod_config.h"
+#include "../tomb4/tomb4plus/t4plus_objects.h"
 
 static short frig_shadow_bbox[6] = { -165, 150, -777, 1, -87, 78 };
 static short frig_jeep_shadow_bbox[6] = { -600, 600, -777, 1, -600, 600 };
@@ -709,7 +710,7 @@ void third_cutseq_control()
 void fourth_cutseq_init()
 {
 	old_lara_holster = lara.holster;
-	lara.holster = LARA_HOLSTERS;
+	lara.holster = T4PlusGetLaraHolstersSlotID();
 	draw_pistol_meshes(1);
 }
 
@@ -756,8 +757,8 @@ void do_backpack_meshswap()	//optimized out, in Mac symbols.
 	short* temp;
 
 	temp = lara.mesh_ptrs[LM_TORSO];
-	lara.mesh_ptrs[LM_TORSO] = meshes[objects[PISTOLS_ANIM].mesh_index + LM_TORSO * 2];
-	meshes[objects[PISTOLS_ANIM].mesh_index + LM_TORSO * 2] = temp;
+	lara.mesh_ptrs[LM_TORSO] = meshes[objects[T4PlusGetPistolsAnimSlotID()].mesh_index + LM_TORSO * 2];
+	meshes[objects[T4PlusGetPistolsAnimSlotID()].mesh_index + LM_TORSO * 2] = temp;
 }
 
 void fifth_cutseq_control()
@@ -916,7 +917,7 @@ void eleventh_cutseq_init()
 	item->flags &= ~IFL_CODEBITS;
 	numnailed++;
 	KillActiveBaddies(0);
-	cutseq_kill_item(MOTORBIKE);
+	cutseq_kill_item(T4PlusGetMotorbikeSlotID());
 	cutseq_kill_item(ANIMATING4);
 	cutseq_kill_item(ANIMATING1);
 	cutseq_meshbits[3] &= ~0x80000000;
@@ -1277,7 +1278,7 @@ void twentyfour_init()
 {
 	cutseq_kill_item(ANIMATING13);
 	old_lara_holster = lara.holster;
-	lara.holster = LARA_HOLSTERS;
+	lara.holster = T4PlusGetLaraHolstersSlotID();
 	draw_pistol_meshes(1);
 }
 
@@ -1381,8 +1382,8 @@ void do_spade_meshswap()
 	short* temp;
 
 	temp = lara.mesh_ptrs[LM_LHAND];
-	lara.mesh_ptrs[LM_LHAND] = meshes[objects[MESHSWAP1].mesh_index + LM_LHAND * 2];
-	meshes[objects[MESHSWAP1].mesh_index + LM_LHAND * 2] = temp;
+	lara.mesh_ptrs[LM_LHAND] = meshes[objects[T4PlusGetMeshSwap1SlotID()].mesh_index + LM_LHAND * 2];
+	meshes[objects[T4PlusGetMeshSwap1SlotID()].mesh_index + LM_LHAND * 2] = temp;
 }
 
 void do_key_meshswap()
@@ -1390,8 +1391,8 @@ void do_key_meshswap()
 	short* temp;
 
 	temp = lara.mesh_ptrs[LM_RHAND];
-	lara.mesh_ptrs[LM_RHAND] = meshes[objects[MESHSWAP1].mesh_index + LM_RHAND * 2];
-	meshes[objects[MESHSWAP1].mesh_index + LM_RHAND * 2] = temp;
+	lara.mesh_ptrs[LM_RHAND] = meshes[objects[T4PlusGetMeshSwap1SlotID()].mesh_index + LM_RHAND * 2];
+	meshes[objects[T4PlusGetMeshSwap1SlotID()].mesh_index + LM_RHAND * 2] = temp;
 }
 
 void cutseq_shoot_pistols(long left_or_right)
@@ -1652,7 +1653,7 @@ void handle_lara_chatting(short* _ranges)
 
 		if (r1 == -1)
 		{
-			lara.mesh_ptrs[LM_HEAD] = meshes[objects[LARA_SKIN].mesh_index + 2 * LM_HEAD];
+			lara.mesh_ptrs[LM_HEAD] = meshes[objects[T4PlusGetLaraSkinSlotID()].mesh_index + 2 * LM_HEAD];
 			return;
 		}
 

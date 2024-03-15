@@ -18,6 +18,7 @@
 #include "tomb4fx.h"
 
 #include "../tomb4/mod_config.h"
+#include "../tomb4/tomb4plus/t4plus_objects.h"
 
 void DrawFlareInAir(ITEM_INFO* item)
 {
@@ -51,7 +52,7 @@ void draw_flare_meshes()
 
 void undraw_flare_meshes()
 {
-	lara.mesh_ptrs[LM_LHAND] = meshes[objects[LARA].mesh_index + LM_LHAND * 2];
+	lara.mesh_ptrs[LM_LHAND] = meshes[objects[T4PlusGetLaraSlotID()].mesh_index + LM_LHAND * 2];
 }
 
 long DoFlareLight(PHD_VECTOR* pos, long flare_age)
@@ -165,7 +166,7 @@ long DoFlareLight(PHD_VECTOR* pos, long flare_age)
 		sptr->Flags = 10;
 		sptr->Scalar = 3;
 		sptr->MaxYvel = 0;
-		sptr->Def = objects[DEFAULT_SPRITES].mesh_index + 11;
+		sptr->Def = objects[T4PlusGetDefaultSpritesSlotID()].mesh_index + 11;
 		sptr->Gravity = 0;
 		sptr->Size = 64;
 		sptr->dSize = sptr->Size;

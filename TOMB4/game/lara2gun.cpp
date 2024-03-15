@@ -14,12 +14,14 @@
 #include "gameflow.h"
 #include "control.h"
 
+#include "../tomb4/tomb4plus/t4plus_objects.h"
+
 static PISTOL_DEF PistolTable[4] =
 {
-	{ LARA, 0, 0, 0, 0 },
-	{ PISTOLS_ANIM, 4, 5, 13, 24 },
-	{ SIXSHOOTER_ANIM , 7, 8, 15, 29 },
-	{ UZI_ANIM, 4, 5, 13, 24 }
+	{ T4PlusGetLaraSlotID, 0, 0, 0, 0 },
+	{ T4PlusGetPistolsAnimSlotID, 4, 5, 13, 24 },
+	{ T4PlusGetRevolverAnimSlotID , 7, 8, 15, 29 },
+	{ T4PlusGetUziAnimSlotID, 4, 5, 13, 24 }
 };
 
 void undraw_pistol_mesh_left(long weapon_type)
@@ -27,28 +29,28 @@ void undraw_pistol_mesh_left(long weapon_type)
 	if (weapon_type != WEAPON_REVOLVER)
 	{
 		WeaponObject(weapon_type);
-		lara.mesh_ptrs[LM_LHAND] = meshes[objects[LARA].mesh_index + LM_LHAND * 2];
+		lara.mesh_ptrs[LM_LHAND] = meshes[objects[T4PlusGetLaraSlotID()].mesh_index + LM_LHAND * 2];
 
 		// TRLE: prevent switching if we have removed the holsters
 		if (weapon_type == WEAPON_PISTOLS)
-			lara.holster = lara.holster != LARA ? LARA_HOLSTERS_PISTOLS : LARA;
+			lara.holster = lara.holster != T4PlusGetLaraSlotID() ? T4PlusGetLaraHolstersPistolsSlotID() : T4PlusGetLaraSlotID();
 		else if (weapon_type == WEAPON_UZI)
-			lara.holster = lara.holster != LARA ? LARA_HOLSTERS_UZIS : LARA;
+			lara.holster = lara.holster != T4PlusGetLaraSlotID() ? T4PlusGetLaraHolstersUzisSlotID() : T4PlusGetLaraSlotID();
 	}
 }
 
 void undraw_pistol_mesh_right(long weapon_type)
 {
 	WeaponObject(weapon_type);
-	lara.mesh_ptrs[LM_RHAND] = meshes[objects[LARA].mesh_index + LM_RHAND * 2];
+	lara.mesh_ptrs[LM_RHAND] = meshes[objects[T4PlusGetLaraSlotID()].mesh_index + LM_RHAND * 2];
 
 	// TRLE: prevent switching if we have removed the holsters
 	if (weapon_type == WEAPON_PISTOLS)
-		lara.holster = lara.holster != LARA ? LARA_HOLSTERS_PISTOLS : LARA;
+		lara.holster = lara.holster != T4PlusGetLaraSlotID() ? T4PlusGetLaraHolstersPistolsSlotID() : T4PlusGetLaraSlotID();
 	else if (weapon_type == WEAPON_UZI)
-		lara.holster = lara.holster != LARA ? LARA_HOLSTERS_UZIS : LARA;
+		lara.holster = lara.holster != T4PlusGetLaraSlotID() ? T4PlusGetLaraHolstersUzisSlotID () : T4PlusGetLaraSlotID();
 	else if (weapon_type == WEAPON_REVOLVER)
-		lara.holster = lara.holster != LARA ? LARA_HOLSTERS_SIXSHOOTER : LARA;
+		lara.holster = lara.holster != T4PlusGetLaraSlotID() ? T4PlusGetLaraHolstersRevolverSlotID() : T4PlusGetLaraSlotID();
 }
 
 static void set_arm_info(LARA_ARM* arm, long frame)
@@ -57,7 +59,7 @@ static void set_arm_info(LARA_ARM* arm, long frame)
 	long anim_base;
 
 	p = &PistolTable[lara.gun_type];
-	anim_base = objects[p->ObjectNum].anim_index;
+	anim_base = objects[p->ObjectFunc()].anim_index;
 
 	if (frame >= p->Draw1Anim)
 	{
@@ -101,7 +103,7 @@ void draw_pistol_meshes(long weapon_type)
 
 	mesh_index = objects[WeaponObjectMesh(weapon_type)].mesh_index;
 	// TRLE: check if we have removed the holsters.
-	lara.holster = lara.holster != LARA ? LARA_HOLSTERS : LARA;
+	lara.holster = lara.holster != T4PlusGetLaraSlotID() ? T4PlusGetLaraHolstersSlotID() : T4PlusGetLaraSlotID();
 	lara.mesh_ptrs[LM_RHAND] = meshes[mesh_index + LM_RHAND * 2];
 
 	if (weapon_type != WEAPON_REVOLVER)

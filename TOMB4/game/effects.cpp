@@ -29,6 +29,7 @@
 #include "../tomb4/mod_config.h"
 #include "../tomb4/tomb4plus/t4plus_weather.h"
 #include "trep/furr.h"
+#include "../tomb4/tomb4plus/t4plus_objects.h"
 
 FX_INFO* effects;
 OBJECT_VECTOR* sound_effects;
@@ -589,17 +590,14 @@ void SetFog(ITEM_INFO* item)
 {
 	GlobalFogOff = 0;
 
-	if (IsVolumetric())
+	if (TriggerTimer == 100)
+		GlobalFogOff = 1;
+	else
 	{
-		if (TriggerTimer == 100)
-			GlobalFogOff = 1;
-		else
-		{
-			SetVolumetricFogColor(CLRR(FogTableColor[TriggerTimer]), CLRG(FogTableColor[TriggerTimer]), CLRB(FogTableColor[TriggerTimer]));
-			savegame.fog_colour.r = gfVolumetricFog.r;
-			savegame.fog_colour.g = gfVolumetricFog.g;
-			savegame.fog_colour.b = gfVolumetricFog.b;
-		}
+		SetVolumetricFogColor(CLRR(FogTableColor[TriggerTimer]), CLRG(FogTableColor[TriggerTimer]), CLRB(FogTableColor[TriggerTimer]));
+		savegame.fog_colour.r = gfVolumetricFog.r;
+		savegame.fog_colour.g = gfVolumetricFog.g;
+		savegame.fog_colour.b = gfVolumetricFog.b;
 	}
 
 	flipeffect = -1;
@@ -683,7 +681,7 @@ void SwapCrowbar(ITEM_INFO* item)
 {
 	short* tmp;
 
-	tmp = meshes[objects[LARA].mesh_index + 2 * LM_RHAND];
+	tmp = meshes[objects[T4PlusGetLaraSlotID()].mesh_index + 2 * LM_RHAND];
 
 	if (lara.mesh_ptrs[LM_RHAND] == tmp)
 		lara.mesh_ptrs[LM_RHAND] = meshes[objects[CROWBAR_ANIM].mesh_index + (2 * LM_RHAND)];
@@ -776,12 +774,12 @@ void draw_right_gun(ITEM_INFO* item)
 	short* tmp;
 
 	tmp = lara.mesh_ptrs[LM_RTHIGH];
-	lara.mesh_ptrs[LM_RTHIGH] = meshes[objects[PISTOLS_ANIM].mesh_index + LM_RTHIGH * 2];
-	meshes[objects[PISTOLS_ANIM].mesh_index + LM_RTHIGH * 2] = tmp;
+	lara.mesh_ptrs[LM_RTHIGH] = meshes[objects[T4PlusGetPistolsAnimSlotID()].mesh_index + LM_RTHIGH * 2];
+	meshes[objects[T4PlusGetPistolsAnimSlotID()].mesh_index + LM_RTHIGH * 2] = tmp;
 
 	tmp = lara.mesh_ptrs[LM_RHAND];
-	lara.mesh_ptrs[LM_RHAND] = meshes[objects[PISTOLS_ANIM].mesh_index + LM_RHAND * 2];
-	meshes[objects[PISTOLS_ANIM].mesh_index + LM_RHAND * 2] = tmp;
+	lara.mesh_ptrs[LM_RHAND] = meshes[objects[T4PlusGetPistolsAnimSlotID()].mesh_index + LM_RHAND * 2];
+	meshes[objects[T4PlusGetPistolsAnimSlotID()].mesh_index + LM_RHAND * 2] = tmp;
 }
 
 void draw_left_gun(ITEM_INFO* item)
@@ -789,12 +787,12 @@ void draw_left_gun(ITEM_INFO* item)
 	short* tmp;
 
 	tmp = lara.mesh_ptrs[LM_LTHIGH];
-	lara.mesh_ptrs[LM_LTHIGH] = meshes[objects[PISTOLS_ANIM].mesh_index + LM_LTHIGH * 2];
-	meshes[objects[PISTOLS_ANIM].mesh_index + LM_LTHIGH * 2] = tmp;
+	lara.mesh_ptrs[LM_LTHIGH] = meshes[objects[T4PlusGetPistolsAnimSlotID()].mesh_index + LM_LTHIGH * 2];
+	meshes[objects[T4PlusGetPistolsAnimSlotID()].mesh_index + LM_LTHIGH * 2] = tmp;
 
 	tmp = lara.mesh_ptrs[LM_LHAND];
-	lara.mesh_ptrs[LM_LHAND] = meshes[objects[PISTOLS_ANIM].mesh_index + LM_LHAND * 2];
-	meshes[objects[PISTOLS_ANIM].mesh_index + LM_LHAND * 2] = tmp;
+	lara.mesh_ptrs[LM_LHAND] = meshes[objects[T4PlusGetPistolsAnimSlotID()].mesh_index + LM_LHAND * 2];
+	meshes[objects[T4PlusGetPistolsAnimSlotID()].mesh_index + LM_LHAND * 2] = tmp;
 }
 
 void shoot_right_gun(ITEM_INFO* item)
@@ -824,8 +822,8 @@ void swap_meshes_with_meshswap1(ITEM_INFO* item)
 		// Seems to be more compatible with TRLE, but may
 		// require more extensive testing.
 		tmp = meshes[obj->mesh_index + i];
-		meshes[obj->mesh_index + i] = meshes[objects[MESHSWAP1].mesh_index + i];
-		meshes[objects[MESHSWAP1].mesh_index + i] = tmp;
+		meshes[obj->mesh_index + i] = meshes[objects[T4PlusGetMeshSwap1SlotID()].mesh_index + i];
+		meshes[objects[T4PlusGetMeshSwap1SlotID()].mesh_index + i] = tmp;
 	}
 }
 
@@ -846,8 +844,8 @@ void swap_meshes_with_meshswap2(ITEM_INFO* item)
 		// Seems to be more compatible with TRLE, but may
 		// require more extensive testing.
 		tmp = meshes[obj->mesh_index + i];
-		meshes[obj->mesh_index + i] = meshes[objects[MESHSWAP2].mesh_index + i];
-		meshes[objects[MESHSWAP2].mesh_index + i] = tmp;
+		meshes[obj->mesh_index + i] = meshes[objects[T4PlusGetMeshSwap2SlotID()].mesh_index + i];
+		meshes[objects[T4PlusGetMeshSwap2SlotID()].mesh_index + i] = tmp;
 	}
 }
 
@@ -865,12 +863,12 @@ void swap_meshes_with_meshswap3(ITEM_INFO* item)
 	for (int i = 0; i < obj->nmeshes; i++)
 	{
 		tmp = meshes[obj->mesh_index + i * 2];
-		meshes[obj->mesh_index + i] = meshes[objects[MESHSWAP3].mesh_index + i * 2];
+		meshes[obj->mesh_index + i] = meshes[objects[T4PlusGetMeshSwap3SlotID()].mesh_index + i * 2];
 
 		if (item == lara_item)
-			lara.mesh_ptrs[i] = meshes[objects[MESHSWAP3].mesh_index + i * 2];
+			lara.mesh_ptrs[i] = meshes[objects[T4PlusGetMeshSwap3SlotID()].mesh_index + i * 2];
 
-		meshes[objects[MESHSWAP3].mesh_index + i * 2] = tmp;
+		meshes[objects[T4PlusGetMeshSwap3SlotID()].mesh_index + i * 2] = tmp;
 	}
 }
 
@@ -888,16 +886,16 @@ void invisibility_off(ITEM_INFO* item)
 	if (game_mod_config.global_info.tomo_enable_weather_flipeffect) {
 		switch (TriggerTimer) {
 			case 1: // Rain
-				rain_type = WEATHER_ENABLED_ALL_OUTSIDE;
-				snow_type = WEATHER_DISABLED;
+				t4_rain_type = WEATHER_ENABLED_ALL_OUTSIDE;
+				t4_snow_type = WEATHER_DISABLED;
 				break;
 			case 2: // Snow
-				rain_type = WEATHER_DISABLED;
-				snow_type = WEATHER_ENABLED_ALL_OUTSIDE;
+				t4_rain_type = WEATHER_DISABLED;
+				t4_snow_type = WEATHER_ENABLED_ALL_OUTSIDE;
 				break;
 			case 3: // No weather
-				rain_type = WEATHER_DISABLED;
-				snow_type = WEATHER_DISABLED;
+				t4_rain_type = WEATHER_DISABLED;
+				t4_snow_type = WEATHER_DISABLED;
 				break;
 		}
 	} else {
@@ -926,7 +924,7 @@ void MeshSwapToPour(ITEM_INFO* item)
 
 void MeshSwapFromPour(ITEM_INFO* item)
 {
-	lara.mesh_ptrs[LM_LHAND] = meshes[objects[LARA_SKIN].mesh_index + LM_LHAND * 2];
+	lara.mesh_ptrs[LM_LHAND] = meshes[objects[T4PlusGetLaraSkinSlotID()].mesh_index + LM_LHAND * 2];
 }
 
 void void_effect(ITEM_INFO* item)

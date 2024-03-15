@@ -18,6 +18,7 @@
 #include "lara.h"
 #include "control.h"
 #include "tomb4fx.h"
+#include "../tomb4/tomb4plus/t4plus_objects.h"
 
 static short FireBounds[12] = { 0, 0, 0, 0, 0, 0, -1820, 1820, -5460, 5460, -1820, 1820 };
 static ITEM_INFO* TorchItem = 0;
@@ -196,7 +197,7 @@ void DoFlameTorch()
 			}
 			else if (lara.left_arm.frame_number == 12)
 			{
-				lara.mesh_ptrs[LM_LHAND] = meshes[objects[LARA].mesh_index + LM_LHAND * 2];
+				lara.mesh_ptrs[LM_LHAND] = meshes[objects[T4PlusGetLaraSlotID()].mesh_index + LM_LHAND * 2];
 				CreateFlare(BURNING_TORCH_ITEM, 1);
 			}
 		}
@@ -218,7 +219,7 @@ void DoFlameTorch()
 		}
 		else if (lara.left_arm.frame_number == 36)
 		{
-			lara.mesh_ptrs[LM_LHAND] = meshes[objects[LARA].mesh_index + LM_LHAND * 2];
+			lara.mesh_ptrs[LM_LHAND] = meshes[objects[T4PlusGetLaraSlotID()].mesh_index + LM_LHAND * 2];
 			CreateFlare(BURNING_TORCH_ITEM, 0);
 		}
 

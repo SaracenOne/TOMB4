@@ -17,6 +17,7 @@
 #include "lara.h"
 #include "gameflow.h"
 #include "../tomb4/mod_config.h"
+#include "../tomb4/tomb4plus/t4plus_objects.h"
 
 LOCUST_STRUCT Locusts[64];
 
@@ -600,9 +601,9 @@ void TriggerCrocgodMissile(PHD_3DPOS* pos, short room_number, short num)
 		fx->room_number = room_number;
 		fx->counter = 15 + (num << 4);
 		fx->flag1 = 6;
-		fx->object_number = BUBBLES;
+		fx->object_number = T4PlusGetBubblesSlotID();
 		fx->speed = (GetRandomControl() & 0x1F) + 96;
-		fx->frame_number = objects[BUBBLES].mesh_index + 10;
+		fx->frame_number = objects[T4PlusGetBubblesSlotID()].mesh_index + 10;
 	}
 }
 

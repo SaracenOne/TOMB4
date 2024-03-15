@@ -12,6 +12,7 @@
 #include "deltapak.h"
 #include "gameflow.h"
 #include "../tomb4/mod_config.h"
+#include "../tomb4/tomb4plus/t4plus_objects.h"
 
 static BITE_INFO stinger{ 0, 0, 0, 8 };		//for the big one
 static BITE_INFO pincer{ 0, 0, 0, 23 };
@@ -178,7 +179,7 @@ void ScorpionControl(short item_number)
 					{
 						enemy = &items[target_num];
 
-						if (enemy->object_number != LARA && enemy->object_number != SCORPION && (enemy != lara_item || scorpion->hurt_by_lara))
+						if (enemy->object_number != T4PlusGetLaraSlotID() && enemy->object_number != SCORPION && (enemy != lara_item || scorpion->hurt_by_lara))
 						{
 							s = enemy->pos.x_pos - item->pos.x_pos;
 							c = enemy->pos.z_pos - item->pos.z_pos;

@@ -25,6 +25,8 @@
 #include "trng_triggergroup.h"
 
 #include "../../tomb4/tomb4plus/t4plus_inventory.h"
+#include "../../tomb4/tomb4plus/t4plus_objects.h"
+
 #include "../../specific/input.h"
 #include "../../specific/dxsound.h"
 
@@ -446,7 +448,7 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 		return false;
 	}
 	case LARA_IS_PERFORMING_ANIMATION: {
-		if (lara_item->anim_number - objects[LARA].anim_index == param) {
+		if (lara_item->anim_number - objects[T4PlusGetLaraSlotID()].anim_index == param) {
 			return true;
 		} else {
 			return false;
@@ -506,22 +508,22 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 			}
 			case 10: {
 				if (lara.vehicle != NO_ITEM)
-					return items[lara.vehicle].object_number == JEEP;
+					return items[lara.vehicle].object_number == T4PlusGetJeepSlotID();
 				break;
 			}
 			case 11: {
 				if (lara.vehicle != NO_ITEM)
-					return items[lara.vehicle].object_number == MOTORBIKE;
+					return items[lara.vehicle].object_number == T4PlusGetMotorbikeSlotID();
 				break;
 			}
 			case 12: {
 				if (lara.vehicle != NO_ITEM)
-					return items[lara.vehicle].object_number == RUBBER_BOAT;
+					return items[lara.vehicle].object_number == T4PlusGetRubberBoatSlotID();
 				break;
 			}
 			case 13: {
 				if (lara.vehicle != NO_ITEM)
-					return items[lara.vehicle].object_number == MOTOR_BOAT;
+					return items[lara.vehicle].object_number == T4PlusGetMotorBoatSlotID();
 				break;
 			}
 			case 14: {

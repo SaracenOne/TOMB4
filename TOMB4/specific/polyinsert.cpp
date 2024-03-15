@@ -19,6 +19,7 @@
 #include "../tomb4/mod_config.h"
 #include "bgfx.h"
 #include "platform.h"
+#include "../game/trng/trng_extra_state.h"
 
 GFXTLBUMPVERTEX XYUVClipperBuffer[20];
 GFXTLBUMPVERTEX zClipperBuffer[20];
@@ -495,7 +496,18 @@ void TriggerFXFogBulb(long x, long y, long z, long FXRad, long density, long r, 
 
 long IsVolumetric()
 {
-	return App.Volumetric;
+	if (t4_override_fog_mode == T4_FOG_DEFAULT)
+	{
+		return App.Volumetric;
+	}
+	else if (t4_override_fog_mode == T4_FOG_FORCE_VOLUMETRIC)
+	{
+		return true;
+	}
+	else if (t4_override_fog_mode == T4_FOG_FORCE_DISTANT)
+	{
+		return false;
+	}
 }
 
 int DistCompare(const void* a, const void* b)

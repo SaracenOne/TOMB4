@@ -17,6 +17,7 @@
 #include "gameflow.h"
 
 #include "../tomb4/mod_config.h"
+#include "../tomb4/tomb4plus/t4plus_objects.h"
 
 float SnowSizes[MAX_SNOW_SIZES]
 {
@@ -677,11 +678,11 @@ void UpdateFireSparks()
 			sptr->RotAng = (sptr->RotAng + sptr->RotAdd) & 0xFFF;
 
 		if (sptr->R < 24 && sptr->G < 24 && sptr->B < 24)
-			sptr->Def = uchar(objects[DEFAULT_SPRITES].mesh_index + 2);
+			sptr->Def = uchar(objects[T4PlusGetDefaultSpritesSlotID()].mesh_index + 2);
 		else if (sptr->R < 80 && sptr->G < 80 && sptr->B < 80)
-			sptr->Def = uchar(objects[DEFAULT_SPRITES].mesh_index + 1);
+			sptr->Def = uchar(objects[T4PlusGetDefaultSpritesSlotID()].mesh_index + 1);
 		else
-			sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
+			sptr->Def = (uchar)objects[T4PlusGetDefaultSpritesSlotID()].mesh_index;
 
 		fade = ((sptr->sLife - sptr->Life) << 16) / sptr->sLife;
 		sptr->Yvel += sptr->Gravity;
@@ -876,11 +877,11 @@ void UpdateSmokeSparks()
 			sptr->Shade = sptr->dShade;
 
 		if (sptr->Shade < 24)
-			sptr->Def = uchar(objects[DEFAULT_SPRITES].mesh_index + 2);
+			sptr->Def = uchar(objects[T4PlusGetDefaultSpritesSlotID()].mesh_index + 2);
 		else if (sptr->Shade < 80)
-			sptr->Def = uchar(objects[DEFAULT_SPRITES].mesh_index + 1);
+			sptr->Def = uchar(objects[T4PlusGetDefaultSpritesSlotID()].mesh_index + 1);
 		else
-			sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
+			sptr->Def = (uchar)objects[T4PlusGetDefaultSpritesSlotID()].mesh_index;
 
 		if (sptr->Flags & 0x10)
 			sptr->RotAng = (sptr->RotAng + sptr->RotAdd) & 0xFFF;
@@ -1823,7 +1824,7 @@ void TriggerShockwaveHitEffect(long x, long y, long z, long rgb, short dir, long
 		sptr->RotAdd = (GetRandomControl() & 0xF) + 16;
 
 	sptr->Scalar = 1;
-	sptr->Def = uchar(objects[DEFAULT_SPRITES].mesh_index + 14);
+	sptr->Def = uchar(objects[T4PlusGetDefaultSpritesSlotID()].mesh_index + 14);
 	sptr->MaxYvel = 0;
 	sptr->Gravity = (GetRandomControl() & 0x3F) + 64;
 	sptr->Size = (GetRandomControl() & 0x1F) + 32;
@@ -2009,7 +2010,7 @@ void TriggerLightningGlow(long x, long y, long z, long rgb)
 	sptr->Flags = 10;
 	sptr->Scalar = 3;
 	sptr->MaxYvel = 0;
-	sptr->Def = objects[DEFAULT_SPRITES].mesh_index + 11;
+	sptr->Def = objects[T4PlusGetDefaultSpritesSlotID()].mesh_index + 11;
 	sptr->Gravity = 0;
 	sptr->Size = (rgb >> 24) + (GetRandomControl() & 3);
 	sptr->dSize = sptr->Size;

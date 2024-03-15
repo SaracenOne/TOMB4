@@ -32,6 +32,7 @@
 #include "../tomb4/tomb4.h"
 #include "../tomb4/mod_config.h"
 #include "bgfx.h"
+#include "../tomb4/tomb4plus/t4plus_objects.h"
 
 GFXTLVERTEX SkinVerts[40][12];
 short SkinClip[40][12];
@@ -98,18 +99,20 @@ __forceinline void CalculateVertexSpecular(
 			}
 
 #ifdef FORCE_COLOURED_FOG
-			if (CustomDistanceFogEnd < 0.0F) {
-				distance_fog_value = (vPos.z - CustomDistanceFogStart) / 512.0F;
-				*sA -= long(distance_fog_value * (255.0F / 8.0F));
+			if (IsVolumetric()) {
+				if (CustomDistanceFogEnd < 0.0F) {
+					distance_fog_value = (vPos.z - CustomDistanceFogStart) / 512.0F;
+					*sA -= long(distance_fog_value * (255.0F / 8.0F));
 
-				if (*sA < 0)
-					*sA = 0;
-			} else {
-				*sA = 255 - long(distance_fog_value);
-				if (*sA < 0)
-					*sA = 0;
-				else if (*sA > 255)
-					*sA = 255;
+					if (*sA < 0)
+						*sA = 0;
+				} else {
+					*sA = 255 - long(distance_fog_value);
+					if (*sA < 0)
+						*sA = 0;
+					else if (*sA > 255)
+						*sA = 255;
+				}
 			}
 #else 
 			* cR -= (long)distance_fog_value;
@@ -815,9 +818,9 @@ void phd_PutPolygons(short* objptr, long clip)
 		return;
 
 	if (objptr == meshes[objects[LARA_DOUBLE].mesh_index] || objptr == meshes[objects[LARA_DOUBLE].mesh_index + 2])
-		envmap_sprite = &spriteinfo[objects[SKY_GRAPHICS].mesh_index];
+		envmap_sprite = &spriteinfo[objects[T4PlusGetSkyGraphicsSlotID()].mesh_index];
 	else
-		envmap_sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 11];
+		envmap_sprite = &spriteinfo[objects[T4PlusGetDefaultSpritesSlotID()].mesh_index + 11];
 
 	ResetLighting();
 
@@ -1258,7 +1261,7 @@ void phd_PutPolygonsPickup(short* objptr, float x, float y, long color)
 	bWaterEffect = 0;
 	SetD3DViewMatrix();
 	mesh = (MESH_DATA*)objptr;
-	envmap_sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 11];
+	envmap_sprite = &spriteinfo[objects[T4PlusGetDefaultSpritesSlotID()].mesh_index + 11];
 
 	ResetLighting();
 	ambientR = CLRR(color);

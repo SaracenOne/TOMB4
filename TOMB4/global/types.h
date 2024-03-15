@@ -2172,7 +2172,7 @@ struct JEEPINFO
 
 struct PISTOL_DEF
 {
-	short ObjectNum;
+	int16_t (*ObjectFunc)();
 	char Draw1Anim2;
 	char Draw1Anim;
 	char Draw2Anim;

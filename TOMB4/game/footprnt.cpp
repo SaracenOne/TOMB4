@@ -12,6 +12,7 @@
 #include "../specific/file.h"
 #include "lara.h"
 #include "../tomb4/tomb4.h"
+#include "../tomb4/tomb4plus/t4plus_objects.h"
 
 #define PRINT_HEIGHT_CORRECTION 128 // The maximum difference between the footprint and the floor
 
@@ -131,7 +132,7 @@ void S_DrawFootPrints()
 				v[j].specular = 0xFF000000;
 			}
 
-			sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 10];
+			sprite = &spriteinfo[objects[T4PlusGetDefaultSpritesSlotID()].mesh_index + 10];
 			tex.drawtype = 5;
 			tex.flag = 0;
 			tex.tpage = sprite->tpage;

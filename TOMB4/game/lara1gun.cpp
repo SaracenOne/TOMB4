@@ -24,6 +24,7 @@
 #include "savegame.h"
 #include "gameflow.h"
 #include "../tomb4/mod_config.h"
+#include "../tomb4/tomb4plus/t4plus_objects.h"
 
 void DoGrenadeDamageOnBaddie(ITEM_INFO* baddie, ITEM_INFO* item)
 {
@@ -159,7 +160,7 @@ void draw_shotgun_meshes(long weapon_type)
 void undraw_shotgun_meshes(long weapon_type)
 {
 	lara.back_gun = (short)WeaponObject(weapon_type);
-	lara.mesh_ptrs[LM_RHAND] = meshes[objects[LARA].mesh_index + 2 * LM_RHAND];
+	lara.mesh_ptrs[LM_RHAND] = meshes[objects[T4PlusGetLaraSlotID()].mesh_index + 2 * LM_RHAND];
 }
 
 void ready_shotgun(long weapon_type)
@@ -1206,7 +1207,7 @@ void ControlGrenade(short item_number)
 						target->status = ITEM_ACTIVE;
 						target->flags |= IFL_SWITCH_ONESHOT | IFL_CODEBITS;
 					}
-					else if (objects[target->object_number].intelligent || (target->object_number == LARA && get_game_mod_global_info()->grenades_damage_lara))
+					else if (objects[target->object_number].intelligent || (target->object_number == T4PlusGetLaraSlotID() && get_game_mod_global_info()->grenades_damage_lara))
 						DoGrenadeDamageOnBaddie(target, item);
 
 					j++;

@@ -28,6 +28,7 @@
 #include "../tomb4/mod_config.h"
 
 #include "bgfx.h"
+#include "../tomb4/tomb4plus/t4plus_objects.h"
 
 #define CIRCUMFERENCE_POINTS 32 // Number of points in the circumference
 #define LINE_POINTS	4	//number of points in each grid line
@@ -319,7 +320,7 @@ static void S_PrintSpriteShadow(short size, short* box, ITEM_INFO* item)
 	short s;
 
 	v = MyVertexBuffer;
-	sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 14];
+	sprite = &spriteinfo[objects[T4PlusGetDefaultSpritesSlotID()].mesh_index + 14];
 	uStep = (sprite->x2 - sprite->x1) / (LINE_POINTS - 1);
 	vStep = (sprite->y2 - sprite->y1) / (LINE_POINTS - 1);
 
@@ -899,7 +900,7 @@ void Draw2DSprite(long x, long y, long slot, long unused, long unused2)
 	v = MyVertexBuffer;
 
 	p = GetFixedScale(1);
-	sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + slot];
+	sprite = &spriteinfo[objects[T4PlusGetDefaultSpritesSlotID()].mesh_index + slot];
 	x0 = long(x + (sprite->width >> 8) * p);
 	y0 = long(y + 1 + (sprite->height >> 8) * p);
 	setXY4(v, x, y, x0, y, x0, y0, x, y0, (long)f_mznear, clipflags);
@@ -1942,7 +1943,7 @@ void DrawLaserSightSprite()
 	Z[0] = (long)vec.z;
 	phd_PopMatrix();
 
-	sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 14];
+	sprite = &spriteinfo[objects[T4PlusGetDefaultSpritesSlotID()].mesh_index + 14];
 	s = GetFixedScale(3);
 	setXY4(v, XY[0] - s, XY[1] - s, XY[0] + s, XY[1] - s, XY[0] + s, XY[1] + s, XY[0] - s, XY[1] + s, (long)f_mznear, clipflags);
 	v[0].color = 0xFFFF0000;
@@ -1984,7 +1985,7 @@ void DrawSprite(long x, long y, long slot, long col, long size, long z)
 	else
 		setXY4(v, x - s, y - s, x + s, y - s, x - s, y + s, x + s, y + s, (long)f_mzfar, clipflags);
 
-	sprite = &spriteinfo[slot + objects[DEFAULT_SPRITES].mesh_index];
+	sprite = &spriteinfo[slot + objects[T4PlusGetDefaultSpritesSlotID()].mesh_index];
 	v[0].specular = 0xFF000000;
 	v[1].specular = 0xFF000000;
 	v[2].specular = 0xFF000000;
@@ -2318,7 +2319,7 @@ void InitTarget_2()
 	OBJECT_INFO* obj = nullptr;
 	GFXTLVERTEX* v = nullptr;
 
-	obj = &objects[TARGET_GRAPHICS];
+	obj = &objects[T4PlusGetTargetGraphicsSlotID()];
 
 	if (!obj->loaded)
 		return;
@@ -2350,7 +2351,7 @@ void InitBinoculars()
 	OBJECT_INFO* obj = nullptr;
 	GFXTLVERTEX* v = nullptr;
 
-	obj = &objects[BINOCULAR_GRAPHICS];
+	obj = &objects[T4PlusGetBinocularGraphicsSlotID()];
 
 	if (!obj->loaded)
 		return;
@@ -2815,7 +2816,7 @@ void DrawBubbles()
 			continue;
 		}
 
-		sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 13];
+		sprite = &spriteinfo[objects[T4PlusGetDefaultSpritesSlotID()].mesh_index + 13];
 		setXY4(v, x1, y1, x2, y1, x2, y2, x1, y2, Z[0], clipflags);
 		v[0].color = RGBA(bubble->shade, bubble->shade, bubble->shade, 0xFF);
 		v[1].color = RGBA(bubble->shade, bubble->shade, bubble->shade, 0xFF);
@@ -2858,7 +2859,7 @@ void DrawShockwaves()
 
 	vtx = MyVertexBuffer;
 
-	sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 8];
+	sprite = &spriteinfo[objects[T4PlusGetDefaultSpritesSlotID()].mesh_index + 8];
 	offsets = (long*)&tsv_buffer[1024];
 
 	for (int i = 0; i < 16; i++)
@@ -3172,9 +3173,9 @@ void S_DrawSplashes()	//	(also draws ripples and underwater blood (which is a ri
 		for (int j = 0; j < 3; j++)
 		{
 			if (j == 2 || (!j && splash->flags & 4) || (j == 1 && splash->flags & 8))
-				sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 4 + ((wibble >> 4) & 3)];
+				sprite = &spriteinfo[objects[T4PlusGetDefaultSpritesSlotID()].mesh_index + 4 + ((wibble >> 4) & 3)];
 			else
-				sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 8];
+				sprite = &spriteinfo[objects[T4PlusGetDefaultSpritesSlotID()].mesh_index + 8];
 
 			links = SplashLinks;
 			linkNum = j << 5;
@@ -3308,9 +3309,9 @@ void S_DrawSplashes()	//	(also draws ripples and underwater blood (which is a ri
 		Z = (long*)&tsv_buffer[512];
 
 		if (ripple->flags & 0x20)
-			sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index];
+			sprite = &spriteinfo[objects[T4PlusGetDefaultSpritesSlotID()].mesh_index];
 		else
-			sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 9];
+			sprite = &spriteinfo[objects[T4PlusGetDefaultSpritesSlotID()].mesh_index + 9];
 
 		x1 = *XY++;
 		y1 = *XY++;
@@ -3725,7 +3726,7 @@ void DrawRope(ROPE_STRUCT* rope)
 			v[1].specular = spec << 24;
 			v[2].specular = spec << 24;
 			v[3].specular = spec << 24;
-			sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 16];
+			sprite = &spriteinfo[objects[T4PlusGetDefaultSpritesSlotID()].mesh_index + 16];
 			tex.drawtype = 1;
 			tex.flag = 0;
 			tex.tpage = sprite->tpage;
@@ -3768,7 +3769,7 @@ void DrawBlood()
 
 	phd_PushMatrix();
 	phd_TranslateAbs(lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos);
-	sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 15];
+	sprite = &spriteinfo[objects[T4PlusGetDefaultSpritesSlotID()].mesh_index + 15];
 	XY = (long*)&tsv_buffer[0];
 	Z = (long*)&tsv_buffer[512];
 	offsets = (long*)&tsv_buffer[1024];
@@ -4076,7 +4077,7 @@ void DoUwEffect()
 			p->yvel++;
 	}
 
-	sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 10];
+	sprite = &spriteinfo[objects[T4PlusGetDefaultSpritesSlotID()].mesh_index + 10];
 	XY = (long*)&tsv_buffer[0];
 	Z = (long*)&tsv_buffer[512];
 	offsets = (long*)&tsv_buffer[1024];
@@ -4181,7 +4182,7 @@ void DrawLightning()
 
 	phd_PushMatrix();
 	phd_TranslateAbs(lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos);
-	sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 28];
+	sprite = &spriteinfo[objects[T4PlusGetDefaultSpritesSlotID()].mesh_index + 28];
 
 	for (int i = 0; i < MAX_LIGHTNING; i++)
 	{

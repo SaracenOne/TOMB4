@@ -18,6 +18,7 @@
 #include "lara.h"
 #include "savegame.h"
 #include "../specific/file.h"
+#include "../tomb4/tomb4plus/t4plus_objects.h"
 
 static BITE_INFO voncroy_hit = { 0, 35, 130, 18 };
 
@@ -481,12 +482,12 @@ void VoncroyRaceControl(short item_number)
 		if (talk > 580 && talk < 693)
 			lara.mesh_ptrs[LM_HEAD] = meshes[objects[(GetRandomControl() & 3) + LARA_SPEECH_HEAD1].mesh_index + 2 * LM_HEAD];
 		else
-			lara.mesh_ptrs[LM_HEAD] = meshes[objects[LARA_SKIN].mesh_index + 2 * LM_HEAD];
+			lara.mesh_ptrs[LM_HEAD] = meshes[objects[T4PlusGetLaraSkinSlotID()].mesh_index + 2 * LM_HEAD];
 	}
 	else
 	{
 		talk = 0;
-		lara.mesh_ptrs[LM_HEAD] = meshes[objects[LARA_SKIN].mesh_index + 2 * LM_HEAD];
+		lara.mesh_ptrs[LM_HEAD] = meshes[objects[T4PlusGetLaraSkinSlotID()].mesh_index + 2 * LM_HEAD];
 		meshes[objects[VON_CROY].mesh_index + 42] = meshpp;
 	}
 
@@ -1093,7 +1094,7 @@ void VoncroyControl(short item_number)
 	if ((lara.locationPad == 9 || lara.locationPad == 10) && item->item_flags[3] == 11)
 		lara.locationPad = 11;
 	else if (lara.locationPad == 10 && item->item_flags[3] == 12 &&
-		(item->item_flags[0] || lara_item->anim_number == objects[LARA].anim_index + 90 && lara_item->frame_number == anims[lara_item->anim_number].frame_end))
+		(item->item_flags[0] || lara_item->anim_number == objects[T4PlusGetLaraSlotID()].anim_index + 90 && lara_item->frame_number == anims[lara_item->anim_number].frame_end))
 	{
 		lara.locationPad = (char)item->item_flags[3];
 		item->item_flags[0] = 1;

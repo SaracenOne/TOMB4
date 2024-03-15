@@ -30,6 +30,7 @@
 #include "trng/trng_extra_state.h"
 #include "trng/trng.h"
 #include "../tomb4/tomb4plus/t4plus_weather.h"
+#include "../tomb4/tomb4plus/t4plus_objects.h"
 
 static BITE_INFO EnemyBites[2] =
 {
@@ -622,7 +623,7 @@ static void DoMirrorStuff()
 		{
 			lara_item->anim_number = ANIM_BINOCS;
 			lara_item->frame_number = anims[ANIM_BINOCS].frame_base;
-			lara.mesh_ptrs[LM_RHAND] = meshes[objects[MESHSWAP2].mesh_index + 2 * LM_RHAND];
+			lara.mesh_ptrs[LM_RHAND] = meshes[objects[T4PlusGetMeshSwap2SlotID()].mesh_index + 2 * LM_RHAND];
 		}
 	}
 	
@@ -637,7 +638,7 @@ static void DoMirrorStuff()
 		{
 			lara_item->anim_number = old_anim;
 			lara_item->frame_number = old_frame;
-			lara.mesh_ptrs[LM_RHAND] = meshes[objects[LARA_SKIN].mesh_index + 2 * LM_RHAND];
+			lara.mesh_ptrs[LM_RHAND] = meshes[objects[T4PlusGetLaraSkinSlotID()].mesh_index + 2 * LM_RHAND];
 		}
 	}
 }
@@ -659,8 +660,8 @@ void DrawRooms(short CurrentRoom)
 	r->test_right = phd_winxmax;
 	r->test_bottom = phd_winymax;
 	outside = r->flags & ROOM_OUTSIDE;
-	rain_outside = ((rain_type == WEATHER_ENABLED_IN_SPECIFIC_ROOMS && (r->flags & ROOM_RAIN) || rain_type == WEATHER_ENABLED_ALL_OUTSIDE) && outside > 0); // T4Plus
-	snow_outside = ((snow_type == WEATHER_ENABLED_IN_SPECIFIC_ROOMS && (r->flags & ROOM_SNOW) || snow_type == WEATHER_ENABLED_ALL_OUTSIDE) && outside > 0); // T4Plus
+	rain_outside = ((t4_rain_type == WEATHER_ENABLED_IN_SPECIFIC_ROOMS && (r->flags & ROOM_RAIN) || t4_rain_type == WEATHER_ENABLED_ALL_OUTSIDE) && outside > 0); // T4Plus
+	snow_outside = ((t4_snow_type == WEATHER_ENABLED_IN_SPECIFIC_ROOMS && (r->flags & ROOM_SNOW) || t4_snow_type == WEATHER_ENABLED_ALL_OUTSIDE) && outside > 0); // T4Plus
 	camera_underwater = r->flags & ROOM_UNDERWATER;
 	r->bound_active = 2;
 	draw_room_list[0] = CurrentRoom;
@@ -689,7 +690,9 @@ void DrawRooms(short CurrentRoom)
 
 	if (outside)	//inlined SkyDrawPhase? did it exist?
 	{
-		if (!objects[HORIZON].loaded)
+		int16_t horizon_slot = T4PlusGetHorizonSlotID();
+
+		if (horizon_slot < 0 || !objects[horizon_slot].loaded)
 			outside = -1;
 		else
 		{
@@ -745,7 +748,7 @@ void DrawRooms(short CurrentRoom)
 
 			if (gfLevelFlags & GF_HORIZON)
 			{
-				phd_PutPolygonSkyMesh(meshes[objects[HORIZON].mesh_index], -1);
+				phd_PutPolygonSkyMesh(meshes[objects[horizon_slot].mesh_index], -1);
 				OutputSky();
 			}
 
@@ -756,7 +759,7 @@ void DrawRooms(short CurrentRoom)
 		}
 	}
 
-	if (objects[LARA].loaded)
+	if (objects[T4PlusGetLaraSlotID()].loaded)
 	{
 		if (!(lara_item->flags & IFL_INVISIBLE))
 		{
@@ -892,7 +895,7 @@ void RenderIt(short CurrentRoom)
 	r->test_right = phd_winxmax;
 	r->test_bottom = phd_winymax;
 	outside = r->flags & ROOM_OUTSIDE;
-	rain_outside = ((rain_type == WEATHER_ENABLED_IN_SPECIFIC_ROOMS && (r->flags & ROOM_RAIN) || rain_type == WEATHER_ENABLED_ALL_OUTSIDE) & outside); // T4Plus
+	rain_outside = ((t4_rain_type == WEATHER_ENABLED_IN_SPECIFIC_ROOMS && (r->flags & ROOM_RAIN) || t4_rain_type == WEATHER_ENABLED_ALL_OUTSIDE) & outside); // T4Plus
 	camera_underwater = r->flags & ROOM_UNDERWATER;
 	r->bound_active = 2;
 	draw_room_list[0] = CurrentRoom;
@@ -921,7 +924,9 @@ void RenderIt(short CurrentRoom)
 
 	if (outside)
 	{
-		if (!objects[HORIZON].loaded)
+		int16_t horizon_slot = T4PlusGetHorizonSlotID();
+
+		if (horizon_slot < 0 || !objects[horizon_slot].loaded)
 			outside = -1;
 		else
 		{
@@ -953,7 +958,7 @@ void RenderIt(short CurrentRoom)
 
 			if (gfLevelFlags & GF_HORIZON)
 			{
-				phd_PutPolygonSkyMesh(meshes[objects[HORIZON].mesh_index], -1);
+				phd_PutPolygonSkyMesh(meshes[objects[horizon_slot].mesh_index], -1);
 				OutputSky();
 			}
 
@@ -1029,7 +1034,7 @@ void GetRoomBounds()
 			if (r->flags & ROOM_OUTSIDE)
 				outside = ROOM_OUTSIDE;
 			// T4Plus
-			if ((rain_type == WEATHER_ENABLED_IN_SPECIFIC_ROOMS && (r->flags & ROOM_RAIN) || rain_type == WEATHER_ENABLED_ALL_OUTSIDE) && outside) // T4Plus
+			if ((t4_rain_type == WEATHER_ENABLED_IN_SPECIFIC_ROOMS && (r->flags & ROOM_RAIN) || t4_rain_type == WEATHER_ENABLED_ALL_OUTSIDE) && outside) // T4Plus
 				rain_outside = 1;
 		}
 
@@ -1059,7 +1064,7 @@ void GetRoomBounds()
 				rn = *door++;
 
 				// T4Plus
-				if ((snow_type == WEATHER_ENABLED_IN_SPECIFIC_ROOMS && (r->flags & ROOM_SNOW) || snow_type == WEATHER_ENABLED_ALL_OUTSIDE) && room[rn].flags & ROOM_OUTSIDE) // T4Plus
+				if ((t4_snow_type == WEATHER_ENABLED_IN_SPECIFIC_ROOMS && (r->flags & ROOM_SNOW) || t4_snow_type == WEATHER_ENABLED_ALL_OUTSIDE) && room[rn].flags & ROOM_OUTSIDE) // T4Plus
 					snow_outside = 1; // T4Plus
 
 				if (door[0] * long(r->x + door[3] - mW2V[M03]) +

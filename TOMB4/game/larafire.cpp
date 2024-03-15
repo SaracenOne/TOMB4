@@ -23,6 +23,7 @@
 #include "lot.h"
 #include "gameflow.h"
 #include "../tomb4/mod_config.h"
+#include "../tomb4/tomb4plus/t4plus_objects.h"
 
 WEAPON_INFO weapons[9] =
 {
@@ -223,8 +224,8 @@ void InitialiseNewWeapon()
 	{
 	case WEAPON_PISTOLS:
 	case WEAPON_UZI:
-		lara.left_arm.frame_base = objects[PISTOLS_ANIM].frame_base;
-		lara.right_arm.frame_base = objects[PISTOLS_ANIM].frame_base;
+		lara.left_arm.frame_base = objects[T4PlusGetPistolsAnimSlotID()].frame_base;
+		lara.right_arm.frame_base = objects[T4PlusGetPistolsAnimSlotID()].frame_base;
 
 		if (lara.gun_status != LG_NO_ARMS)
 			draw_pistol_meshes(lara.gun_type);
@@ -702,22 +703,22 @@ long WeaponObject(long weapon_type)
 	switch (weapon_type)
 	{
 	case WEAPON_REVOLVER:
-		return SIXSHOOTER_ANIM;
+		return T4PlusGetRevolverAnimSlotID();
 
 	case WEAPON_UZI:
-		return UZI_ANIM;
+		return T4PlusGetUziAnimSlotID();
 
 	case WEAPON_SHOTGUN:
-		return SHOTGUN_ANIM;
+		return T4PlusGetShotgunAnimSlotID();
 
 	case WEAPON_GRENADE:
-		return GRENADE_GUN_ANIM;
+		return T4PlusGetGrenadeGunAnimSlotID();
 
 	case WEAPON_CROSSBOW:
-		return CROSSBOW_ANIM;
+		return T4PlusGetCrossbowAnimSlotID();
 
 	default:
-		return PISTOLS_ANIM;
+		return T4PlusGetPistolsAnimSlotID();
 	}
 }
 
@@ -726,30 +727,29 @@ long WeaponObjectMesh(long weapon_type)
 	switch (weapon_type)
 	{
 	case WEAPON_REVOLVER:
-
 		if (lara.sixshooter_type_carried & W_LASERSIGHT)
-			return LARA_REVOLVER_LASER;
+			return T4PlusGetLaraRevolverLaserSlotID();
 		else
-			return SIXSHOOTER_ANIM;
+			return T4PlusGetRevolverAnimSlotID();
 
 	case WEAPON_UZI:
-		return UZI_ANIM;
+		return T4PlusGetUziAnimSlotID();
 
 	case WEAPON_SHOTGUN:
-		return SHOTGUN_ANIM;
+		return T4PlusGetShotgunAnimSlotID();
 
 	case WEAPON_GRENADE:
-		return GRENADE_GUN_ANIM;
+		return T4PlusGetGrenadeGunAnimSlotID();
 
 	case WEAPON_CROSSBOW:
 
 		if (lara.crossbow_type_carried & W_LASERSIGHT)
-			return LARA_CROSSBOW_LASER;
+			return T4PlusGetLaraCrossbowLaserSlotID();
 		else
-			return CROSSBOW_ANIM;
+			return T4PlusGetCrossbowAnimSlotID();
 
 	default:
-		return PISTOLS_ANIM;
+		return T4PlusGetPistolsAnimSlotID();
 	}
 }
 
@@ -1364,7 +1364,7 @@ void LaraGun()
 		break;
 
 	case LG_UNDRAW_GUNS:
-		lara.mesh_ptrs[LM_HEAD] = meshes[objects[LARA].mesh_index + LM_HEAD * 2];
+		lara.mesh_ptrs[LM_HEAD] = meshes[objects[T4PlusGetLaraSlotID()].mesh_index + LM_HEAD * 2];
 
 		switch (lara.gun_type)
 		{
@@ -1388,11 +1388,10 @@ void LaraGun()
 		break;
 
 	case LG_READY:
-
-		if (input & IN_ACTION && !get_game_mod_level_lara_info(gfCurrentLevel)->disable_angry_face_meshswap_when_shooting)
-			lara.mesh_ptrs[LM_HEAD] = meshes[objects[LARA_SCREAM].mesh_index + LM_HEAD * 2];
+		if (input & IN_ACTION && T4PlusGetLaraScreamSlotID() >= 0)
+			lara.mesh_ptrs[LM_HEAD] = meshes[objects[T4PlusGetLaraScreamSlotID()].mesh_index + LM_HEAD * 2];
 		else
-			lara.mesh_ptrs[LM_HEAD] = meshes[objects[LARA].mesh_index + LM_HEAD * 2];
+			lara.mesh_ptrs[LM_HEAD] = meshes[objects[T4PlusGetLaraSlotID()].mesh_index + LM_HEAD * 2];
 
 		if (camera.type != CINEMATIC_CAMERA && camera.type != LOOK_CAMERA && camera.type != HEAVY_CAMERA)
 			camera.type = COMBAT_CAMERA;

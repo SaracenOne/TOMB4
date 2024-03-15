@@ -4,6 +4,7 @@
 #include "delstuff.h"
 #include "gameflow.h"
 #include "control.h"
+#include "../tomb4/tomb4plus/t4plus_objects.h"
 
 static uchar SkinJoints[14][4] =
 {
@@ -83,7 +84,7 @@ void CreateSkinningData()
 		SkinXYZPtr->x = 0;
 		SkinXYZPtr->y = 0;
 		SkinXYZPtr->z = 0;
-		obj = &objects[LARA_SKIN];
+		obj = &objects[T4PlusGetLaraSkinSlotID()];
 		meshpp = &meshes[obj->mesh_index];
 		bone = &bones[obj->bone_index];
 		aboveMeshNum = SkinJoints[i][0];
@@ -171,7 +172,7 @@ void CreateSkinningData()
 		SkinXYZPtr->x = 0;
 		SkinXYZPtr->y = 0;
 		SkinXYZPtr->z = 0;
-		obj = &objects[LARA_SKIN_JOINTS];
+		obj = &objects[T4PlusGetLaraSkinJointsSlotID()];
 		meshpp = &meshes[obj->mesh_index + 1];
 		bone = &bones[obj->bone_index];
 		jointMeshNum = i + 1;
@@ -329,7 +330,7 @@ void CreateSkinningData()
 		}
 	}
 
-	obj = &objects[HAIR];
+	obj = &objects[T4PlusGetLaraHairSlotID()];
 	meshpp = &meshes[obj->mesh_index];
 
 	for (int i = 0; i < 3; i++, meshpp += 2)
@@ -352,7 +353,7 @@ void OptomiseSkinningData()
 	uchar RemapTable[32];
 
 
-	object = &objects[LARA_SKIN_JOINTS];
+	object = &objects[T4PlusGetLaraSkinJointsSlotID()];
 	meshpp = &meshes[object->mesh_index + 1];
 
 	for (c = 0; c < 14; ++c)

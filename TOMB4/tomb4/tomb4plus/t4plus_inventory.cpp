@@ -6,6 +6,7 @@
 #include "../../game/health.h"
 #include "t4plus_inventory.h"
 #include "../../game/control.h"
+#include "t4plus_objects.h"
 
 void T4PlusSetValidLaraGunType() {
 	bool clear_current_weapon = false;
@@ -15,8 +16,8 @@ void T4PlusSetValidLaraGunType() {
 	case WEAPON_PISTOLS:
 		if (!lara.pistols_type_carried) {
 			lara.last_gun_type = lara.request_gun_type = lara.gun_type = WEAPON_NONE;
-			if (lara.holster == LARA_HOLSTERS_PISTOLS) {
-				lara.holster = LARA;
+			if (lara.holster == T4PlusGetLaraHolstersPistolsSlotID()) {
+				lara.holster = T4PlusGetLaraSlotID();
 			}
 
 			clear_current_weapon = true;
@@ -26,8 +27,8 @@ void T4PlusSetValidLaraGunType() {
 		if (!lara.sixshooter_type_carried) {
 			lara.last_gun_type = lara.request_gun_type = lara.gun_type = WEAPON_NONE;
 			lara.weapon_item = NO_ITEM;
-			if (lara.holster == LARA_HOLSTERS_SIXSHOOTER) {
-				lara.holster = LARA;
+			if (lara.holster == T4PlusGetLaraHolstersRevolverSlotID()) {
+				lara.holster = T4PlusGetLaraSlotID();
 			}
 
 			clear_current_weapon = true;
@@ -36,8 +37,8 @@ void T4PlusSetValidLaraGunType() {
 	case WEAPON_UZI:
 		if (!lara.uzis_type_carried) {
 			lara.last_gun_type = lara.request_gun_type = lara.gun_type = WEAPON_NONE;
-			if (lara.holster == LARA_HOLSTERS_UZIS) {
-				lara.holster = LARA;
+			if (lara.holster == T4PlusGetLaraHolstersUzisSlotID()) {
+				lara.holster = T4PlusGetLaraSlotID();
 			}
 
 			clear_current_weapon = true;
@@ -46,7 +47,7 @@ void T4PlusSetValidLaraGunType() {
 	case WEAPON_SHOTGUN:
 		if (!lara.shotgun_type_carried) {
 			lara.last_gun_type = lara.request_gun_type = lara.gun_type = WEAPON_NONE;
-			if (lara.back_gun == SHOTGUN_ANIM) {
+			if (lara.back_gun == T4PlusGetShotgunAnimSlotID()) {
 				lara.back_gun = 0;
 			}
 
@@ -56,7 +57,7 @@ void T4PlusSetValidLaraGunType() {
 	case WEAPON_GRENADE:
 		if (!lara.grenade_type_carried) {
 			lara.last_gun_type = lara.request_gun_type = lara.gun_type = WEAPON_NONE;
-			if (lara.back_gun == GRENADE_GUN_ANIM) {
+			if (lara.back_gun == T4PlusGetGrenadeGunAnimSlotID()) {
 				lara.back_gun = 0;
 			}
 
@@ -66,7 +67,7 @@ void T4PlusSetValidLaraGunType() {
 	case WEAPON_CROSSBOW:
 		if (!lara.crossbow_type_carried) {
 			lara.last_gun_type = lara.request_gun_type = lara.gun_type = WEAPON_NONE;
-			if (lara.back_gun == CROSSBOW_ANIM) {
+			if (lara.back_gun == T4PlusGetCrossbowAnimSlotID()) {
 				lara.back_gun = 0;
 			}
 
@@ -84,8 +85,8 @@ void T4PlusSetValidLaraGunType() {
 
 		lara.weapon_item = NO_ITEM;
 
-		lara.mesh_ptrs[LM_RHAND] = meshes[objects[LARA].mesh_index + LM_RHAND * 2];
-		lara.mesh_ptrs[LM_LHAND] = meshes[objects[LARA].mesh_index + LM_LHAND * 2];
+		lara.mesh_ptrs[LM_RHAND] = meshes[objects[T4PlusGetLaraSlotID()].mesh_index + LM_RHAND * 2];
+		lara.mesh_ptrs[LM_LHAND] = meshes[objects[T4PlusGetLaraSlotID()].mesh_index + LM_LHAND * 2];
 
 		lara.left_arm.frame_number = 0;
 		lara.right_arm.frame_number = 0;

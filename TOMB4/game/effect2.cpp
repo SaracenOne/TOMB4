@@ -19,6 +19,7 @@
 #include "gameflow.h"
 
 #include "../tomb4/mod_config.h"
+#include "../tomb4/tomb4plus/t4plus_objects.h"
 
 DYNAMIC dynamics[MAX_DYNAMICS * 2];
 SPLASH_STRUCT splashes[4];
@@ -976,7 +977,7 @@ void TriggerExplosionBubble(long x, long y, long z, short room_number)
 	sptr->Friction = 0;
 	sptr->Flags = 2058;
 	sptr->Scalar = 3;
-	sptr->Def = objects[DEFAULT_SPRITES].mesh_index + 13;
+	sptr->Def = objects[T4PlusGetDefaultSpritesSlotID()].mesh_index + 13;
 	sptr->Gravity = 0;
 	sptr->MaxYvel = 0;
 	size = (GetRandomControl() & 7) + 63;
@@ -1077,7 +1078,7 @@ long GetFreeSpark()
 			next_spark = (free + 1) & (max_sparks - 1);
 			spark[free].extras = 0;
 			spark[free].Dynamic = -1;
-			spark[free].Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
+			spark[free].Def = (uchar)objects[T4PlusGetDefaultSpritesSlotID()].mesh_index;
 			return free;
 		}
 	}
@@ -1099,7 +1100,7 @@ long GetFreeSpark()
 	next_spark = (free + 1) & 0xFF;
 	spark[free].extras = 0;
 	spark[free].Dynamic = -1;
-	spark[free].Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
+	spark[free].Def = (uchar)objects[T4PlusGetDefaultSpritesSlotID()].mesh_index;
 	return free;
 }
 
@@ -1359,7 +1360,7 @@ void TriggerRicochetSpark(GAME_VECTOR* pos, long ang, long num, long smoke_only)
 			sptr->RotAdd = ((rnd >> 1) & 0x3F) + 64;
 
 		sptr->Scalar = 3;
-		sptr->Def = objects[DEFAULT_SPRITES].mesh_index + 12;
+		sptr->Def = objects[T4PlusGetDefaultSpritesSlotID()].mesh_index + 12;
 		sptr->Size = ((rnd >> 10) & 7) + 8;
 		sptr->sSize = sptr->Size;
 		sptr->dSize = 1;
@@ -2066,7 +2067,7 @@ void TriggerBreath(long x, long y, long z, long xv, long yv, long zv)
 		sptr->Flags = 522;
 
 	sptr->Scalar = 3;
-	sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
+	sptr->Def = (uchar)objects[T4PlusGetDefaultSpritesSlotID()].mesh_index;
 	sptr->Gravity = 0;
 	sptr->MaxYvel = 0;
 	sptr->dSize = (GetRandomControl() & 7) << 1;

@@ -2,6 +2,7 @@
 #include "../global/types.h"
 
 void SetDistanceFogColor(long r, long g, long b);
+void UpdateDistanceFogColor();
 void SetVolumetricFogColor(long r, long g, long b);
 void HWInitialise();
 bool _NVisible(GFXTLVERTEX* v0, GFXTLVERTEX* v1, GFXTLVERTEX* v2);

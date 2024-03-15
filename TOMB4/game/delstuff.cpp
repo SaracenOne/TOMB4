@@ -13,6 +13,7 @@
 #include "lara.h"
 #include "gameflow.h"
 #include "../tomb4/tomb4.h"
+#include "../tomb4/tomb4plus/t4plus_objects.h"
 
 short* GLaraShadowframe;
 float lara_matrices[180];
@@ -191,7 +192,7 @@ void DrawLara(ITEM_INFO* item, long mirror)
 	bLaraUnderWater = LaraNodeUnderwater[8] != 0 ? 8 : -1;
 	DrawHair();
 	phd_PushMatrix();
-	obj = &objects[LARA_SKIN_JOINTS];
+	obj = &objects[T4PlusGetLaraSkinJointsSlotID()];
 	meshpp = &meshes[obj->mesh_index];
 	meshpp += 2;
 
@@ -243,7 +244,7 @@ void DrawLara(ITEM_INFO* item, long mirror)
 	if (!(gfLevelFlags & GF_YOUNGLARA))
 	{
 		// TRLE: If the holster value is 0, skip drawing it.
-		if (lara.holster != LARA)
+		if (lara.holster != T4PlusGetLaraSlotID())
 		{
 			obj = &objects[lara.holster];
 			meshpp = &meshes[obj->mesh_index];

@@ -71,6 +71,7 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 			bool current_result = false;
 
 			if (trigger_group.data[index].plugin_id != 0) {
+				int t4_plugin_id = NGGetT4PluginID(trigger_group.data[index].plugin_id);
 				char *plugin_string = NGGetPluginString(trigger_group.data[index].plugin_id);
 
 				if ((trigger_group.data[index].first_field & 0xF000) == 0x8000 || (trigger_group.data[index].first_field & 0xF000) == 0x9000) {
@@ -79,23 +80,39 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 					current_result = true;
 				}
 
-#ifndef SILENCE_EXCESSIVE_LOGS
-				if (plugin_string) {
-					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Plugin triggers are not yet supported (trigger_id: %u, plugin:%s, first_field:0x%x, second_field:%u, third_field:0x%x)",
-						trigger_group_id,
-						plugin_string,
-						trigger_group.data[index].first_field,
-						((int)trigger_group.data[index].second_field_upper << 16 | (int)trigger_group.data[index].second_field_lower),
-						((int)trigger_group.data[index].third_field_upper << 16 | (int)trigger_group.data[index].third_field_lower));
+				if (t4_plugin_id != -1) {
+					// Flipeffect
+					if ((trigger_group.data[index].first_field & 0xF000) == 0x2000) {
+						if (trigger_group.data[index].first_field & TGROUP_USE_FOUND_ITEM_INDEX) {
+							NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TGROUP_USE_FOUND_ITEM_INDEX used on flipeffect");
+						} else {
+							current_result = NGFlipEffect(trigger_group.data[index].second_field_lower, trigger_group.data[index].third_field_lower & 0x7fff, false, true);
+						}
+
+						if (!current_result) {
+							NGLog(NG_LOG_TYPE_ERROR, "Flipeffect returned false!");
+							current_result = true;
+						}
+					} else {
+						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Plugin callback is unsupported!");
+					}
 				} else {
-					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Plugin triggers are not yet supported (trigger_id: %u, plugin_id:%u, first_field:0x%x, second_field:%u, third_field:0x%x)",
-						trigger_group_id,
-						trigger_group.data[index].plugin_id,
-						trigger_group.data[index].first_field,
-						((int)trigger_group.data[index].second_field_upper << 16 | (int)trigger_group.data[index].second_field_lower),
-						((int)trigger_group.data[index].third_field_upper << 16 | (int)trigger_group.data[index].third_field_lower));
+					if (plugin_string) {
+						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Plugin triggers are not yet supported (trigger_id: %u, plugin:%s, first_field:0x%x, second_field:%u, third_field:0x%x)",
+							trigger_group_id,
+							plugin_string,
+							trigger_group.data[index].first_field,
+							((int)trigger_group.data[index].second_field_upper << 16 | (int)trigger_group.data[index].second_field_lower),
+							((int)trigger_group.data[index].third_field_upper << 16 | (int)trigger_group.data[index].third_field_lower));
+					} else {
+						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Plugin triggers are not yet supported (trigger_id: %u, plugin_id:%u, first_field:0x%x, second_field:%u, third_field:0x%x)",
+							trigger_group_id,
+							trigger_group.data[index].plugin_id,
+							trigger_group.data[index].first_field,
+							((int)trigger_group.data[index].second_field_upper << 16 | (int)trigger_group.data[index].second_field_lower),
+							((int)trigger_group.data[index].third_field_upper << 16 | (int)trigger_group.data[index].third_field_lower));
+					}
 				}
-#endif
 			} else {
 				// ActionNG (statics)
 				if ((trigger_group.data[index].first_field & 0xF000) == 0x4000) {

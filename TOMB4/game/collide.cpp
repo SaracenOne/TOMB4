@@ -17,6 +17,7 @@
 #include "trng/trng.h"
 #include "trng/trng_extra_state.h"
 #include "../tomb4/mod_config.h"
+#include "../tomb4/tomb4plus/t4plus_objects.h"
 
 static short StarGateBounds[24] =
 {
@@ -145,13 +146,13 @@ long GetCollidedObjects(ITEM_INFO* item, long rad, long noInvisible, ITEM_INFO**
 				continue;
 			}
 
-			if (item2->object_number == BURNING_FLOOR || !objects[item2->object_number].collision && item2->object_number != LARA)	//don't get objects without collision
+			if (item2->object_number == BURNING_FLOOR || !objects[item2->object_number].collision && item2->object_number != T4PlusGetLaraSlotID())	//don't get objects without collision
 			{
 				item_number = next_item;
 				continue;
 			}
 
-			if (!objects[item2->object_number].draw_routine && item2->object_number != LARA || !item2->mesh_bits)	//don't get objects that are not drawn
+			if (!objects[item2->object_number].draw_routine && item2->object_number != T4PlusGetLaraSlotID() || !item2->mesh_bits)	//don't get objects that are not drawn
 			{
 				item_number = next_item;
 				continue;

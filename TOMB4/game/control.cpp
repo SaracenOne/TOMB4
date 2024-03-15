@@ -51,6 +51,7 @@
 #include "trng/trng_extra_state.h"
 #include "trng/trng_condition.h"
 #include "trng/trng_action.h"
+#include "../tomb4/tomb4plus/t4plus_objects.h"
 
 ITEM_INFO* items;
 ANIM_STRUCT* anims;
@@ -2784,7 +2785,7 @@ long ObjectOnLOS2(GAME_VECTOR* start, GAME_VECTOR* target, PHD_VECTOR* Coord, ME
 		{
 			item = &items[item_number];
 
-			if (item->status != ITEM_DEACTIVATED && item->status != ITEM_INVISIBLE && item->object_number != LARA)
+			if (item->status != ITEM_DEACTIVATED && item->status != ITEM_INVISIBLE && item->object_number != T4PlusGetLaraSlotID())
 			{
 				bounds = GetBoundsAccurate(item);
 				ItemPos.x_pos = item->pos.x_pos;

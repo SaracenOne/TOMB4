@@ -94,7 +94,47 @@ struct MOD_LEVEL_OBJECT_CUSTOMIZATION {
 };
 
 struct MOD_LEVEL_OBJECTS_INFO {
-	short slot_override[NUMBER_OBJECTS];
+	// Metadata slots
+	int16_t lara_slot = LARA;
+
+	int16_t pistols_anim = PISTOLS_ANIM;
+	int16_t uzi_anim = UZI_ANIM;
+	int16_t shotgun_anim = SHOTGUN_ANIM;
+	int16_t crossbow_anim = CROSSBOW_ANIM;
+	int16_t grenade_gun_anim = GRENADE_GUN_ANIM;
+	int16_t revolver_anim = SIXSHOOTER_ANIM;
+	int16_t flare_anim = FLARE_ANIM;
+
+	int16_t lara_skin_slot = LARA_SKIN;
+	int16_t lara_skin_joints_slot = LARA_SKIN_JOINTS;
+	int16_t lara_scream_slot = LARA_SCREAM;
+	int16_t lara_crossbow_laser = LARA_CROSSBOW_LASER;
+	int16_t lara_revolver_laser = LARA_REVOLVER_LASER;
+
+	int16_t lara_holsters = LARA_HOLSTERS;
+	int16_t lara_holsters_pistols = LARA_HOLSTERS_PISTOLS;
+	int16_t lara_holsters_uzis = LARA_HOLSTERS_UZIS;
+	int16_t lara_holsters_revolver = LARA_HOLSTERS_SIXSHOOTER;
+
+	int16_t lara_hair_slot = HAIR;
+
+	int16_t motorbike_slot = MOTORBIKE;
+	int16_t jeep_slot = JEEP;
+	int16_t motorbike_extra_slot = VEHICLE_EXTRA;
+	int16_t jeep_extra_slot = VEHICLE_EXTRA;
+
+	int16_t meshswap_1_slot = MESHSWAP1;
+	int16_t meshswap_2_slot = MESHSWAP2;
+	int16_t meshswap_3_slot = MESHSWAP3;
+	int16_t bubbles_slot = BUBBLES;
+	int16_t default_sprites_slot = DEFAULT_SPRITES;
+
+	int16_t horizon_slot = HORIZON;
+	int16_t sky_graphics_slot = SKY_GRAPHICS;
+	int16_t binocular_graphics_slot = BINOCULAR_GRAPHICS;
+	int16_t target_graphics_slot = TARGET_GRAPHICS;
+
+	int16_t slot_override[NUMBER_OBJECTS];
 	MOD_LEVEL_OBJECT_CUSTOMIZATION object_customization[NUMBER_OBJECTS];
 };
 
@@ -196,8 +236,6 @@ struct MOD_LEVEL_LARA_INFO {
 
 	int ledge_to_jump_state = -1;
 	int ledge_to_down_state = -1;
-
-	bool disable_angry_face_meshswap_when_shooting = false;
 };
 
 struct TRNG_ENGINE_VERSION {
@@ -330,8 +368,10 @@ struct MOD_LEVEL_WEAPON_INFO {
 };
 
 struct MOD_LEVEL_MISC_INFO {
-	WeatherType rain_type = WEATHER_DISABLED;
-	WeatherType snow_type = WEATHER_DISABLED;
+	T4OverrideFogMode override_fog_mode = T4_FOG_DEFAULT;
+
+	T4WeatherType rain_type = WEATHER_DISABLED;
+	T4WeatherType snow_type = WEATHER_DISABLED;
 
 	bool draw_legend_on_flyby = false;
 	unsigned int legend_timer = 150;
@@ -400,6 +440,7 @@ extern MOD_LEVEL_CAMERA_INFO *get_game_mod_level_camera_info(int level);
 extern MOD_LEVEL_CREATURE_INFO *get_game_mod_level_creature_info(int level);
 extern MOD_LEVEL_GFX_INFO *get_game_mod_level_gfx_info(int level);
 extern MOD_LEVEL_LARA_INFO *get_game_mod_level_lara_info(int level);
+extern MOD_LEVEL_OBJECTS_INFO *get_game_mod_level_objects_info(int level);
 extern MOD_LEVEL_STAT_INFO *get_game_mod_level_stat_info(int level);
 extern MOD_LEVEL_FLARE_INFO *get_game_mod_level_flare_info(int level);
 extern MOD_LEVEL_WEAPON_INFO *get_game_mod_level_weapon_info(int level);

@@ -14,6 +14,7 @@
 #include "../specific/cmdline.h"
 #include <string>
 #include "../specific/registry.h"
+#include "../specific/function_table.h"
 
 int global_string_table_size = 0;
 char** global_string_table;
@@ -298,9 +299,14 @@ MOD_LEVEL_AMMO_INFO *get_game_mod_current_lara_ammo_info(MOD_LEVEL_WEAPON_INFO *
         return &weapon_info->pistol_ammo_info;
     }
 }
+
+MOD_LEVEL_OBJECTS_INFO *get_game_mod_level_objects_info(int level) {
+    return &game_mod_config.level_info[level].objects_info;
+}
+
 MOD_LEVEL_OBJECT_CUSTOMIZATION *get_game_mod_level_object_customization_for_slot(int level, int slot) {
     if (slot < NUMBER_OBJECTS) {
-        return &game_mod_config.level_info[level].objects_info.object_customization[slot];
+        return &get_game_mod_level_objects_info(level)->object_customization[slot];
     } else {
         return nullptr;
     }
@@ -463,8 +469,6 @@ void LoadGameModLevelLaraInfo(const json_t* level, MOD_LEVEL_LARA_INFO *lara_inf
 
     READ_JSON_SINT32(ledge_to_jump_state, level, lara_info);
     READ_JSON_SINT32(ledge_to_down_state, level, lara_info);
-
-    READ_JSON_BOOL(disable_angry_face_meshswap_when_shooting, level, lara_info);
 }
 
 void LoadGameModLevelCreatureInfo(const json_t* creature, MOD_LEVEL_CREATURE_INFO *creature_info) {
@@ -481,6 +485,45 @@ void LoadGameModLevelCreatureInfo(const json_t* creature, MOD_LEVEL_CREATURE_INF
 }
 
 void LoadGameModLevelObjectsInfo(const json_t* objects, MOD_LEVEL_OBJECTS_INFO* objects_info) {
+    READ_JSON_SINT16(lara_slot, objects, objects_info);
+
+    READ_JSON_SINT16(pistols_anim, objects, objects_info);
+    READ_JSON_SINT16(uzi_anim, objects, objects_info);
+    READ_JSON_SINT16(shotgun_anim, objects, objects_info);
+    READ_JSON_SINT16(crossbow_anim, objects, objects_info);
+    READ_JSON_SINT16(grenade_gun_anim, objects, objects_info);
+    READ_JSON_SINT16(revolver_anim, objects, objects_info);
+    READ_JSON_SINT16(flare_anim, objects, objects_info);
+
+    READ_JSON_SINT16(lara_skin_slot, objects, objects_info);
+    READ_JSON_SINT16(lara_skin_joints_slot, objects, objects_info);
+    READ_JSON_SINT16(lara_scream_slot, objects, objects_info);
+    READ_JSON_SINT16(lara_crossbow_laser, objects, objects_info);
+    READ_JSON_SINT16(lara_revolver_laser, objects, objects_info);
+
+    READ_JSON_SINT16(lara_holsters, objects, objects_info);
+    READ_JSON_SINT16(lara_holsters_pistols, objects, objects_info);
+    READ_JSON_SINT16(lara_holsters_uzis, objects, objects_info);
+    READ_JSON_SINT16(lara_holsters_revolver, objects, objects_info);
+
+    READ_JSON_SINT16(lara_hair_slot, objects, objects_info);
+
+    READ_JSON_SINT16(motorbike_slot, objects, objects_info);
+    READ_JSON_SINT16(jeep_slot, objects, objects_info);
+    READ_JSON_SINT16(motorbike_extra_slot, objects, objects_info);
+    READ_JSON_SINT16(jeep_extra_slot, objects, objects_info);
+
+    READ_JSON_SINT16(meshswap_1_slot, objects, objects_info);
+    READ_JSON_SINT16(meshswap_2_slot, objects, objects_info);
+    READ_JSON_SINT16(meshswap_3_slot, objects, objects_info);
+    READ_JSON_SINT16(bubbles_slot, objects, objects_info);
+    READ_JSON_SINT16(default_sprites_slot, objects, objects_info);
+
+    READ_JSON_SINT16(horizon_slot, objects, objects_info);
+    READ_JSON_SINT16(sky_graphics_slot, objects, objects_info);
+    READ_JSON_SINT16(binocular_graphics_slot, objects, objects_info);
+    READ_JSON_SINT16(target_graphics_slot, objects, objects_info);
+
     const json_t *object_customization = json_getProperty(objects, "object_customization");
     if (object_customization && JSON_ARRAY == json_getType(object_customization)) {
         json_t const* object_customization_json;
@@ -504,8 +547,9 @@ void LoadGameModLevelObjectsInfo(const json_t* objects, MOD_LEVEL_OBJECTS_INFO* 
 }
 
 void LoadGameModLevelMiscInfo(const json_t *misc, MOD_LEVEL_MISC_INFO *misc_info) {
-    READ_JSON_INTEGER_CAST(rain_type, misc, misc_info, WeatherType);
-    READ_JSON_INTEGER_CAST(snow_type, misc, misc_info, WeatherType);
+    READ_JSON_INTEGER_CAST(override_fog_mode, misc, misc_info, T4OverrideFogMode);
+    READ_JSON_INTEGER_CAST(rain_type, misc, misc_info, T4WeatherType);
+    READ_JSON_INTEGER_CAST(snow_type, misc, misc_info, T4WeatherType);
 
     READ_JSON_BOOL(draw_legend_on_flyby, misc, misc_info);
     READ_JSON_UINT32(legend_timer, misc, misc_info);
@@ -1367,8 +1411,11 @@ void T4PlusLevelSetup(int current_level) {
 // TODO: check if the equipment commands are valid on hub re-entry.
 void T4PlusEnterLevel(int current_level, bool initial_entry) {
     if (initial_entry) {
-        rain_type = get_game_mod_level_misc_info(current_level)->rain_type;
-        snow_type = get_game_mod_level_misc_info(current_level)->snow_type;
+        t4_override_fog_mode = get_game_mod_level_misc_info(current_level)->override_fog_mode;
+        UpdateDistanceFogColor();
+
+        t4_rain_type = get_game_mod_level_misc_info(current_level)->rain_type;
+        t4_snow_type = get_game_mod_level_misc_info(current_level)->snow_type;
 
         MOD_EQUIPMENT_MODIFIER *equipment_modifiers = get_game_mod_level_stat_info(current_level)->equipment_modifiers;
         for (int i = 0; i < MAX_EQUIPMENT_MODIFIERS; i++) {

@@ -14,6 +14,7 @@
 #include "lot.h"
 #include "gameflow.h"
 #include "../tomb4/mod_config.h"
+#include "../tomb4/tomb4plus/t4plus_objects.h"
 
 static BITE_INFO right_hand = { 0, 128, 0, 2 };
 static BITE_INFO left_hand = { 0, 128, 0, 4 };
@@ -87,10 +88,10 @@ void TriggerHarpyMissile(PHD_3DPOS* pos, short room_number, short mesh)
 		fx->pos.z_rot = 0;
 		fx->room_number = room_number;
 		fx->counter = short(2 * GetRandomControl() + 0x8000);
-		fx->object_number = BUBBLES;
+		fx->object_number = T4PlusGetBubblesSlotID();
 		fx->speed = (GetRandomControl() & 0x1F) + 96;
 		fx->flag1 = mesh;
-		fx->frame_number = objects[BUBBLES].mesh_index + mesh * 2;
+		fx->frame_number = objects[T4PlusGetBubblesSlotID()].mesh_index + mesh * 2;
 	}
 }
 

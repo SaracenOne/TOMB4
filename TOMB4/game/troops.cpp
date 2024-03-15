@@ -12,6 +12,7 @@
 #include "lot.h"
 #include "gameflow.h"
 #include "../tomb4/mod_config.h"
+#include "../tomb4/tomb4plus/t4plus_objects.h"
 
 static BITE_INFO troop_gun = { 0, 300, 64, 7 };
 
@@ -122,7 +123,7 @@ void TroopControl(short item_number)
 				{
 					enemy = &items[baddie->item_num];
 
-					if (enemy->object_number != LARA && enemy->object_number != TROOPS && (enemy != lara_item || troop->hurt_by_lara))
+					if (enemy->object_number != T4PlusGetLaraSlotID() && enemy->object_number != TROOPS && (enemy != lara_item || troop->hurt_by_lara))
 					{
 						dx = enemy->pos.x_pos - item->pos.x_pos;
 						dz = enemy->pos.z_pos - item->pos.z_pos;

@@ -16,6 +16,7 @@
 #include "../sound.h"
 #include "../../specific/audio.h"
 #include "../../tomb4/tomb4plus/t4plus_items.h"
+#include "../../tomb4/tomb4plus/t4plus_objects.h"
 
 char furr_oneshot_buffer[LAST_FURR_FLIPEFFECT];
 FURRFlipeffectTable furr_flipeffect_table[LAST_FURR_FLIPEFFECT - FIRST_FURR_FLIPEFFECT];
@@ -197,7 +198,7 @@ FURRResult furr_cmd_activate_crossbow(FURRParameters params) {
 
 // Params:
 FURRResult furr_cmd_empty_holsters(FURRParameters params) {
-	lara.holster = LARA_HOLSTERS;
+	lara.holster = T4PlusGetLaraHolstersSlotID();
 
 	return FURR_RESULT_OK;
 }
@@ -881,14 +882,14 @@ FURRResult furr_cmd_swap_inventory(FURRParameters params) {
 // WEATHER
 FURRResult furr_cmd_change_weather(FURRParameters params) {
 	if (params.first_parameter == 0) {
-		rain_type = WEATHER_DISABLED;
-		snow_type = WEATHER_DISABLED;
+		t4_rain_type = WEATHER_DISABLED;
+		t4_snow_type = WEATHER_DISABLED;
 	} else if (params.first_parameter == 1) {
-		rain_type = WEATHER_ENABLED_ALL_OUTSIDE;
-		snow_type = WEATHER_DISABLED;
+		t4_rain_type = WEATHER_ENABLED_ALL_OUTSIDE;
+		t4_snow_type = WEATHER_DISABLED;
 	} else if (params.first_parameter == 2) {
-		rain_type = WEATHER_DISABLED;
-		snow_type = WEATHER_ENABLED_ALL_OUTSIDE;
+		t4_rain_type = WEATHER_DISABLED;
+		t4_snow_type = WEATHER_ENABLED_ALL_OUTSIDE;
 	}
 
 	return FURR_RESULT_OK;

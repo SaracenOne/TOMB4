@@ -15,6 +15,7 @@
 #include "effects.h"
 #include "lara.h"
 #include "gameflow.h"
+#include "../tomb4/tomb4plus/t4plus_objects.h"
 
 void TriggerDemigodMissile(PHD_3DPOS* pos, short room_number, short type)
 {
@@ -42,12 +43,12 @@ void TriggerDemigodMissile(PHD_3DPOS* pos, short room_number, short type)
 		fx->counter = short(2 * GetRandomControl() + 0x8000);
 		fx->flag1 = type;
 		fx->speed = (GetRandomControl() & 0x1F) + 96;
-		fx->object_number = BUBBLES;
+		fx->object_number = T4PlusGetBubblesSlotID();
 
 		if (type >= 4)
 			type--;
 
-		fx->frame_number = objects[BUBBLES].mesh_index + type * 2;
+		fx->frame_number = objects[T4PlusGetBubblesSlotID()].mesh_index + type * 2;
 	}
 }
 

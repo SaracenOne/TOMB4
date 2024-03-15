@@ -15,6 +15,7 @@
 #include "lara.h"
 #include "gameflow.h"
 #include "../tomb4/mod_config.h"
+#include "../tomb4/tomb4plus/t4plus_objects.h"
 
 static BITE_INFO left_hand = { 0, 220, 50, 17 };
 static BITE_INFO right_hand = { 0, 220, 50, 13 };
@@ -91,9 +92,9 @@ void TriggerSethMissile(PHD_3DPOS* pos, short room_number, short type)
 		fx->room_number = room_number;
 		fx->counter = short(2 * GetRandomControl() + 0x8000);
 		fx->flag1 = type;
-		fx->object_number = BUBBLES;
+		fx->object_number = T4PlusGetBubblesSlotID();
 		fx->speed = (GetRandomControl() & 0x1F) - (type == 1 ? 64 : 0) + 96;
-		fx->frame_number = objects[BUBBLES].mesh_index + 2 * type;
+		fx->frame_number = objects[T4PlusGetBubblesSlotID()].mesh_index + 2 * type;
 	}
 }
 
@@ -547,7 +548,7 @@ void SethControl(short item_number)
 
 			if (can_jump)
 			{
-				if (item->anim_number == objects[45].anim_index + 15 && item->frame_number == anims[item->anim_number].frame_base)
+				if (item->anim_number == objects[SETHA].anim_index + 15 && item->frame_number == anims[item->anim_number].frame_base)
 				{
 					seth->LOT.is_jumping = 1;
 					seth->maximum_turn = 0;
