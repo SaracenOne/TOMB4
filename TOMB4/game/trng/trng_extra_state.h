@@ -115,8 +115,8 @@ extern void NGSetupExtraState();
 extern void NGFrameStartExtraState();
 extern void NGFrameFinishExtraState();
 
-extern int NGValidateInputAgainstLockTimers(int input);
-extern int NGApplySimulatedInput(int input);
+extern int NGValidateInputAgainstLockTimers(int32_t input);
+extern int NGApplySimulatedInput(int32_t input);
 extern bool NGValidateInputSavegame();
 extern bool NGValidateInputLoadgame();
 extern bool NGValidateInputWeaponHotkeys();

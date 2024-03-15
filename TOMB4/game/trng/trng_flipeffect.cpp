@@ -172,9 +172,36 @@ bool keyboard_enable_input(unsigned char input, unsigned char _unused) {
 
 // NGLE - 53
 bool keyboard_simulate_receivement_of_keyboard_command(unsigned char input, unsigned char timer) {
-	NGLog(NG_LOG_TYPE_POSSIBLE_INACCURACY, "NGFlipEffect: KEYBOARD_SIMULATE_RECEIVEMENT_OF_KEYBOARD_COMMAND calculation is not accurate!");
+	const int SIMULATION_TIMES[] = {
+		0,
+		100,
+		200,
+		300,
+		400,
+		500,
+		700,
+		1000,
+		2000,
+		3000,
+		4000,
+		5000,
+		6000,
+		7000,
+		8000,
+		9000,
+		10000,
+		15000,
+		20000,
+		25000,
+		30000,
+		35000
+	};
 
-	NGSimulateInputForTime(input, (int)timer * 30);
+	if (timer < (sizeof(SIMULATION_TIMES) / sizeof(int))) {
+		NGSimulateInputForTime(input, SIMULATION_TIMES[timer]);
+	} else {
+		NGLog(NG_LOG_TYPE_ERROR, "Invalid simulation time for simulated keyboard command!");
+	}
 
 	return true;
 }

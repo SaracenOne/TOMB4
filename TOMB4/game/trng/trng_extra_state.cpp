@@ -201,6 +201,7 @@ int ng_looped_sound_state[NumSamples];
 
 #define NG_INPUT_TIMER_COUNT TRNG_INPUT_COUNT
 int ng_input_lock_timers[NG_INPUT_TIMER_COUNT];
+int ng_input_simulate_oneshot = -1;
 int ng_input_simulate_timers[NG_INPUT_TIMER_COUNT];
 
 void NGStorePendingRoomNumber(int room_number) {
@@ -302,7 +303,7 @@ extern bool NGCheckActionFloorStatePressedThisFrameOrLastFrame(bool is_heavy_tri
 	return false;
 }
 
-int NGValidateInputAgainstLockTimers(int input) {
+int NGValidateInputAgainstLockTimers(int32_t input) {
 	for (int i = 0; i < TRNG_SAVE_GAME; i++) {
 		if (ng_input_lock_timers[i] != 0) {
 			switch (i) {
@@ -367,66 +368,75 @@ int NGValidateInputAgainstLockTimers(int input) {
 	return input;
 }
 
-int NGApplySimulatedInput(int input) {
+void NGApplyNGInputEnumToMask(uint32_t ng_input_type, int32_t *input_mask) {
+	switch (ng_input_type) {
+		case TRNG_INPUT_UP:
+			*input_mask |= IN_FORWARD;
+			break;
+		case TRNG_INPUT_DOWN:
+			*input_mask |= IN_BACK;
+			break;
+		case TRNG_INPUT_LEFT:
+			*input_mask |= IN_LEFT;
+			break;
+		case TRNG_INPUT_RIGHT:
+			*input_mask |= IN_RIGHT;
+			break;
+		case TRNG_INPUT_DUCK:
+			*input_mask |= IN_DUCK;
+			break;
+		case TRNG_INPUT_DASH:
+			*input_mask |= IN_SPRINT;
+			break;
+		case TRNG_INPUT_WALK:
+			*input_mask |= IN_WALK;
+			break;
+		case TRNG_INPUT_JUMP:
+			*input_mask |= IN_JUMP;
+			break;
+		case TRNG_INPUT_ACTION:
+			*input_mask |= IN_ACTION;
+			break;
+		case TRNG_INPUT_DRAW_WEAPON:
+			*input_mask |= IN_DRAW;
+			break;
+		case TRNG_INPUT_USE_FLARE:
+			*input_mask |= IN_FLARE;
+			break;
+		case TRNG_INPUT_LOOK:
+			*input_mask |= IN_LOOK;
+			break;
+		case TRNG_INPUT_ROLL:
+			*input_mask |= IN_ROLL;
+			break;
+		case TRNG_INVENTORY_AND_DESELECT:
+			*input_mask |= (IN_OPTION | IN_DESELECT);
+			break;
+		case TRNG_STEP_LEFT:
+			*input_mask |= IN_LSTEP;
+			break;
+		case TRNG_STEP_RIGHT:
+			*input_mask |= IN_LSTEP;
+			break;
+		case TRNG_PAUSE:
+			*input_mask |= IN_PAUSE;
+			break;
+		default:
+			NGLog(NG_LOG_TYPE_ERROR, "Invalid NG input type %u!", ng_input_type);
+			break;
+	}
+}
+
+int NGApplySimulatedInput(int32_t input) {
 	for (int i = 0; i < TRNG_SAVE_GAME; i++) {
 		if (ng_input_simulate_timers[i] != 0) {
-			switch (i) {
-			case TRNG_INPUT_UP:
-				input |= IN_FORWARD;
-				break;
-			case TRNG_INPUT_DOWN:
-				input |= IN_BACK;
-				break;
-			case TRNG_INPUT_LEFT:
-				input |= IN_LEFT;
-				break;
-			case TRNG_INPUT_RIGHT:
-				input |= IN_RIGHT;
-				break;
-			case TRNG_INPUT_DUCK:
-				input |= IN_DUCK;
-				break;
-			case TRNG_INPUT_DASH:
-				input |= IN_SPRINT;
-				break;
-			case TRNG_INPUT_WALK:
-				input |= IN_WALK;
-				break;
-			case TRNG_INPUT_JUMP:
-				input |= IN_JUMP;
-				break;
-			case TRNG_INPUT_ACTION:
-				input |= IN_ACTION;
-				break;
-			case TRNG_INPUT_DRAW_WEAPON:
-				input |= IN_DRAW;
-				break;
-			case TRNG_INPUT_USE_FLARE:
-				input |= IN_FLARE;
-				break;
-			case TRNG_INPUT_LOOK:
-				input |= IN_LOOK;
-				break;
-			case TRNG_INPUT_ROLL:
-				input |= IN_ROLL;
-				break;
-			case TRNG_INVENTORY_AND_DESELECT:
-				input |= (IN_OPTION | IN_DESELECT);
-				break;
-			case TRNG_STEP_LEFT:
-				input |= IN_LSTEP;
-				break;
-			case TRNG_STEP_RIGHT:
-				input |= IN_LSTEP;
-				break;
-			case TRNG_PAUSE:
-				input |= IN_PAUSE;
-				break;
-			default:
-				NGLog(NG_LOG_TYPE_ERROR, "Invalid input type %u!", i);
-				break;
-			}
+			NGApplyNGInputEnumToMask(i, &input);
 		}
+	}
+
+	if (ng_input_simulate_oneshot >= 0) {
+		NGApplyNGInputEnumToMask(ng_input_simulate_oneshot, &input);
+		ng_input_simulate_oneshot = -1;
 	}
 
 	return input;
@@ -470,17 +480,20 @@ void NGSimulateInputForTime(unsigned char input, int ticks) {
 		return;
 	}
 
-	int final_ticks = -1;
 	if (ticks > 0) {
-		final_ticks = ticks;
-	}
-
-	if (input == 0) {
-		for (int i = 0; i < NG_INPUT_TIMER_COUNT; i++) {
-			ng_input_simulate_timers[i] = final_ticks;
+		if (input == 0) {
+			for (int i = 0; i < NG_INPUT_TIMER_COUNT; i++) {
+				if (ng_input_simulate_timers[i] < ticks) {
+					ng_input_simulate_timers[i] = ticks / 30;
+				}
+			}
+		} else {
+			if (ng_input_simulate_timers[input - 1] < ticks) {
+				ng_input_simulate_timers[input - 1] = ticks / 30;
+			}
 		}
 	} else {
-		ng_input_simulate_timers[input - 1] = final_ticks;
+		ng_input_simulate_oneshot = input;
 	}
 }
 
