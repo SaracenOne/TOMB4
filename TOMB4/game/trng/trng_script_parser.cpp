@@ -490,6 +490,8 @@ int NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLES *
 			// FogRange
 			// Negative font values appear to control the intensity, but that is currently unsupported
 			short fog_start = NG_READ_16(gfScriptFile, offset);
+			short fog_end = NG_READ_16(gfScriptFile, offset);
+
 			if (fog_start < 0) {
 				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "FogRange: negative fog range values currently unsupported!");
 			} else {
@@ -498,11 +500,10 @@ int NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLES *
 				}
 			}
 
-			short fog_end = NG_READ_16(gfScriptFile, offset);
 			if (fog_end < 0) {
 				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "FogRange: negative fog range values currently unsupported!");
 			} else {
-				if (fog_start > 0) {
+				if (fog_end > 0) {
 					get_game_mod_level_environment_info(current_level)->fog_end_range = (unsigned int)fog_end * 1024;
 				}
 			}
