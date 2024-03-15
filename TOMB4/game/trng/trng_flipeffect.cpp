@@ -650,6 +650,13 @@ bool sound_stop_cd_track_on_channel(unsigned char channel_id, unsigned char _unu
 
 // NGLE - 133
 bool sound_set_x_volume_for_audio_track_on_channel(unsigned char volume, unsigned char channel) {
+	// Not sure how accurate this behaviour is.
+	if (!is_mod_trng_version_equal_or_greater_than_target(1, 1, 8, 7)) {
+		if (volume == 0) {
+			volume = 100;
+		}
+	}
+
 	S_CDSetChannelVolume(volume, channel);
 	return true;
 }
