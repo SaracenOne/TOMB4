@@ -13,6 +13,7 @@
 #include "lara.h"
 #include "savegame.h"
 #include "../tomb4/tomb4.h"
+#include "../tomb4/tomb4plus/t4plus_environment.h"
 
 CAMERA_INFO camera;
 
@@ -148,6 +149,15 @@ void MoveCamera(GAME_VECTOR* ideal, long speed)
 	wy = camera.pos.y;
 	wx = camera.pos.x;
 	room_number = camera.pos.room_number;
+
+	// T4Plus - swamps
+	floor = GetFloor(wx, wy + 256, wz, &room_number);
+	if (T4PlusIsRoomSwamp(&room[room_number]))
+	{
+		wy = room[room_number].maxceiling - 256;
+		floor = GetFloor(wx, wy, wz, &camera.pos.room_number);
+	}
+	
 	floor = GetFloor(wx, wy, wz, &room_number);
 	height = GetHeight(floor, wx, wy, wz);
 	ceiling = GetCeiling(floor, wx, wy, wz);
@@ -253,6 +263,14 @@ long mgLOS(GAME_VECTOR* start, GAME_VECTOR* target, long push)
 	{
 		room_number = room_number2;
 		floor = GetFloor(x, y, z, &room_number2);
+
+		// T4Plus - swamps
+		if (T4PlusIsRoomSwamp(&room[room_number2]))
+		{
+			clipped = 1;
+			break;
+		}
+
 		h = GetHeight(floor, x, y, z);
 		c = GetCeiling(floor, x, y, z);
 
@@ -517,6 +535,15 @@ void ChaseCamera(ITEM_INFO* item)
 		camera.target_elevation = -15470;
 
 	distance = camera.target_distance * phd_cos(camera.target_elevation) >> W2V_SHIFT;
+
+	room_number = camera.target.room_number;
+	floor = GetFloor(camera.target.x, camera.target.y + 256, camera.target.z, &room_number);
+
+	if (T4PlusIsRoomSwamp(&room[room_number]))
+	{
+		camera.target.y = room[room_number].maxceiling - 256;
+	}
+
 	wx = camera.target.x;
 	wy = camera.target.y;
 	wz = camera.target.z;
@@ -663,6 +690,14 @@ void CombatCamera(ITEM_INFO* item)
 			camera.target_elevation = lara.torso_x_rot + item->pos.x_rot + lara.head_x_rot - 1820;
 		else
 			camera.target_elevation = lara.torso_x_rot + item->pos.x_rot + lara.head_x_rot - 2730;
+	}
+
+
+	room_number = camera.target.room_number;
+	floor = GetFloor(camera.target.x, camera.target.y + 256, camera.target.z, &room_number);
+
+	if (T4PlusIsRoomSwamp(&room[room_number])) {
+		camera.target.y = room[room_number].maxceiling - 256;
 	}
 
 	wx = camera.target.x;
@@ -839,6 +874,13 @@ void LookCamera(ITEM_INFO* item)
 		pos1.y = 16;
 		pos1.z = 0;
 		GetLaraJointPos(&pos1, 8);
+
+		// T4Plus - swamp
+		room_number = lara_item->room_number;
+		floor = GetFloor(pos1.x, pos1.y + 256, pos1.z, &room_number);
+		if (T4PlusIsRoomSwamp(&room[room_number]))
+			pos1.y = room[room_number].maxceiling - 256;
+
 		floor = GetFloor(pos1.x, pos1.y, pos1.z, &room_number);
 		h = GetHeight(floor, pos1.x, pos1.y, pos1.z);
 		c = GetCeiling(floor, pos1.x, pos1.y, pos1.z);
@@ -849,6 +891,24 @@ void LookCamera(ITEM_INFO* item)
 			pos1.y = 16;
 			pos1.z = -64;
 			GetLaraJointPos(&pos1, 8);
+
+			room_number = lara_item->room_number;
+			floor = GetFloor(pos1.x, pos1.y + 256, pos1.z, &room_number);
+
+			if (T4PlusIsRoomSwamp(&room[room_number]))
+				pos1.y = room[room_number].maxceiling - 256;
+
+			floor = GetFloor(pos1.x, pos1.y, pos1.z, &room_number);
+			h = GetHeight(floor, pos1.x, pos1.y, pos1.z);
+			c = GetCeiling(floor, pos1.x, pos1.y, pos1.z);
+
+			if (h == NO_HEIGHT || c == NO_HEIGHT || c >= h || pos1.y > h || pos1.y < c)
+			{
+				pos1.x = 0;
+				pos1.y = 16;
+				pos1.z = -64;
+				GetLaraJointPos(&pos1, 8);
+			}
 		}
 	}
 
@@ -871,6 +931,15 @@ void LookCamera(ITEM_INFO* item)
 	for (lp = 0; lp < 8; lp++)
 	{
 		room_number = room_number2;
+
+		// T4Plus - swamp
+		floor = GetFloor(wx, wy + 256, wz, &room_number2);
+		if (T4PlusIsRoomSwamp(&room[room_number]))
+		{
+			wy = room[room_number2].maxceiling - 256;
+			break;
+		}
+
 		floor = GetFloor(wx, wy, wz, &room_number2);
 		h = GetHeight(floor, wx, wy, wz);
 		c = GetCeiling(floor, wx, wy, wz);
@@ -992,7 +1061,12 @@ void LookCamera(ITEM_INFO* item)
 	h = GetHeight(floor, wx, wy, wz);
 	c = GetCeiling(floor, wx, wy, wz);
 
-	if (wy < c || wy > h || c >= h || h == NO_HEIGHT || c == NO_HEIGHT)
+	// T4Plus - swamp
+	if (T4PlusIsRoomSwamp(&room[room_number]))
+	{
+		camera.pos.y = room[room_number].y - 256;
+	}
+	else if (wy < c || wy > h || c >= h || h == NO_HEIGHT || c == NO_HEIGHT)
 		mgLOS(&camera.target, &camera.pos, 0);
 
 	wx = camera.pos.x;
@@ -1002,8 +1076,8 @@ void LookCamera(ITEM_INFO* item)
 	floor = GetFloor(wx, wy, wz, &room_number);
 	h = GetHeight(floor, wx, wy, wz);
 	c = GetCeiling(floor, wx, wy, wz);
-
-	if (wy < c || wy > h || c >= h || h == NO_HEIGHT || c == NO_HEIGHT)
+	
+	if (wy < c || wy > h || c >= h || h == NO_HEIGHT || c == NO_HEIGHT || T4PlusIsRoomSwamp(&room[room_number]))
 	{
 		camera.pos.x = pos1.x;
 		camera.pos.y = pos1.y;

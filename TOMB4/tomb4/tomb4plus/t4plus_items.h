@@ -1,3 +1,3 @@
 #pragma once
 
-extern void T4PlusActivateItem(int item_id, bool anti);
+extern void T4PlusActivateItem(size_t item_id, bool anti);

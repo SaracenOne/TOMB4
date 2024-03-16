@@ -52,6 +52,7 @@
 #include "trng/trng_condition.h"
 #include "trng/trng_action.h"
 #include "../tomb4/tomb4plus/t4plus_objects.h"
+#include "../tomb4/tomb4plus/t4plus_environment.h"
 
 ITEM_INFO* items;
 ANIM_STRUCT* anims;
@@ -1515,7 +1516,7 @@ long GetWaterHeight(long x, long y, long z, short room_number)
 
 	} while (data != 255);
 
-	if (r->flags & ROOM_UNDERWATER)
+	if (r->flags & ROOM_UNDERWATER || T4PlusIsRoomSwamp(r))
 	{
 		while (floor->sky_room != 255)
 		{
@@ -1524,7 +1525,7 @@ long GetWaterHeight(long x, long y, long z, short room_number)
 
 			r = &room[floor->sky_room];
 
-			if (!(r->flags & ROOM_UNDERWATER))
+			if (!(r->flags & ROOM_UNDERWATER || T4PlusIsRoomSwamp(r)))
 				break;
 
 			floor = &r->floor[((z - r->z) >> 10) + r->x_size * ((x - r->x) >> 10)];
@@ -1541,7 +1542,7 @@ long GetWaterHeight(long x, long y, long z, short room_number)
 
 			r = &room[floor->pit_room];
 
-			if (r->flags & ROOM_UNDERWATER)
+			if (r->flags & ROOM_UNDERWATER || T4PlusIsRoomSwamp(r))
 				return GetMaximumFloor(floor, x, z);
 
 			floor = &r->floor[((z - r->z) >> 10) + r->x_size * ((x - r->x) >> 10)];

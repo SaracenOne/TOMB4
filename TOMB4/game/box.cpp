@@ -14,6 +14,7 @@
 #include "effect2.h"
 #include "lara.h"
 #include "../specific/file.h"
+#include "../tomb4/tomb4plus/t4plus_environment.h"
 
 BOX_INFO* boxes;
 ushort* overlap;
@@ -1136,7 +1137,7 @@ long CreatureAnimation(short item_number, short angle, short tilt)
 		{
 			GetFloor(item->pos.x_pos, y + 256, item->pos.z_pos, &room_number);
 
-			if (room[room_number].flags & ROOM_UNDERWATER)
+			if (room[room_number].flags & ROOM_UNDERWATER || T4PlusIsRoomSwamp(&room[room_number]))
 				dy = -LOT->fly;
 		}
 

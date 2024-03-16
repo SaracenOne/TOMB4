@@ -1914,7 +1914,7 @@ void InitialiseLara()
 	lara.look = 1;
 	lara.item_number = item_num;
 	lara.hit_direction = -1;
-	lara.air = 1800;
+	lara.air = DEFAULT_LARA_MAX_AIR;
 	lara.vehicle = NO_ITEM;
 	lara.weapon_item = NO_ITEM;
 	lara.water_surface_dist = 100;

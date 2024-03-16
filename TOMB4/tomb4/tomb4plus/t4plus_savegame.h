@@ -1,3 +1,3 @@
 #pragma once
 
-void T4TriggerSecret(int secret_number);
+extern void T4TriggerSecret(int secret_number);

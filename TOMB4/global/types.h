@@ -139,7 +139,7 @@ enum font_flags
 enum room_flags
 {
 	ROOM_UNDERWATER =	0x1,
-	ROOM_SKYBOX =		0x4,
+	ROOM_SWAMP =		0x4,
 	ROOM_OUTSIDE =		0x8,
 	ROOM_DYNAMIC_LIT =	0x10,
 	ROOM_NOT_INSIDE =	0x20,

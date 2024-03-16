@@ -19,6 +19,7 @@
 
 #include "../tomb4/mod_config.h"
 #include "../tomb4/tomb4plus/t4plus_objects.h"
+#include "../tomb4/tomb4plus/t4plus_environment.h"
 
 void DrawFlareInAir(ITEM_INFO* item)
 {
@@ -472,6 +473,13 @@ void FlareControl(short item_number)
 	long x, y, z, xv, yv, zv, flare_age;
 
 	flare = &items[item_number];
+
+	// T4Plus - swamp
+	if (T4PlusIsRoomSwamp(&room[flare->room_number]))
+	{
+		KillItem(item_number);
+		return;
+	}
 
 	if (flare->fallspeed)
 	{

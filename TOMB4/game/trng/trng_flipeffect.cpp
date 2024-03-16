@@ -34,6 +34,7 @@
 #include "../../tomb4/tomb4plus/t4plus_objects.h"
 
 #include "../../specific/function_table.h"
+#include "../../specific/3dmath.h"
 
 void NGAttractLaraInDirection(unsigned char direction, unsigned char speed) {
 	switch (direction) {
@@ -82,16 +83,15 @@ void NGAttractLaraInDirection(unsigned char direction, unsigned char speed) {
 bool NGTriggerItemGroupWithTimer(unsigned char item_group, unsigned char timer, bool anti) {
 	NG_ITEM_GROUP current_item_group = current_item_groups[item_group];
 	int index = 0;
-	for (int i = 0; i < NG_ITEM_GROUP_MAX_LIST; i++) {
+	for (int i = 0; i < current_item_group.item_count; i++) {
 		int current_script_item = current_item_group.item_list[i];
 		if (current_script_item < 0) {
 			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Negative item group IDs (statics) not yet supported!");
 			break;
 		}
-		int current_item = ng_script_id_table[current_script_item].script_index;
 
-		items[current_item].timer = ((short)timer) * 30;
-		T4PlusActivateItem(current_item, anti);
+		items[current_script_item].timer = ((short)timer) * 30;
+		T4PlusActivateItem(current_script_item, anti);
 
 		index++;
 	}
@@ -540,7 +540,7 @@ bool set_room_type(unsigned char room_number, unsigned char room_type) {
 				break;
 			}
 			case 2: {
-				r->flags |= ROOM_SKYBOX;
+				r->flags |= ROOM_SWAMP;
 				break;
 			}
 			case 4: {
@@ -583,7 +583,7 @@ bool remove_room_type(unsigned char room_number, unsigned char room_type) {
 				break;
 			}
 			case 2: {
-				r->flags &= ~ROOM_SKYBOX;
+				r->flags &= ~ROOM_SWAMP;
 				break;
 			}
 			case 4: {
@@ -720,6 +720,13 @@ bool itemgroup_untrigger_item_group_with_timer(unsigned char item_group, unsigne
 // NGLE - 158
 bool lara_attract_lara_in_direction_on_ground_and_in_air_with_speed(unsigned char direction, unsigned char speed) {
 	NGAttractLaraInDirection(direction, speed);
+
+	return true;
+}
+
+// NGLE - 159
+bool distance_set_level_far_view_distance_to_x_number_of_sectors(unsigned char sectors, unsigned char _unused) {
+	ClipRange = (float)sectors * 1024.0;
 
 	return true;
 }
@@ -2181,8 +2188,7 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 		}
 		case DISTANCE_SET_LEVEL_FAR_VIEW_DISTANCE_TO_X_NUMBER_OF_SECTORS: {
 			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "DISTANCE_SET_LEVEL_FAR_VIEW_DISTANCE_TO_X_NUMBER_OF_SECTORS unimplemented!");
-				return true;
+				return distance_set_level_far_view_distance_to_x_number_of_sectors(action_data_1, action_data_2);
 			}
 			break;
 		}

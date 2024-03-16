@@ -17,6 +17,7 @@
 #include "../specific/output.h"
 #include "../tomb4/tomb4.h"
 #include "../tomb4/tomb4plus/t4plus_inventory.h"
+#include "../tomb4/tomb4plus/t4plus_environment.h"
 
 DISPLAYPU pickups[MAX_PICKUP_DISPLAYABLE_COUNT];
 long PickupX;
@@ -154,24 +155,25 @@ void DrawAirBar(long flash_state)
 {
 	long air;
 
-	if (lara.vehicle == NO_ITEM && (lara.water_status == LW_UNDERWATER || lara.water_status == LW_SURFACE))
+	if (lara.vehicle == NO_ITEM && (lara.water_status == LW_UNDERWATER || lara.water_status == LW_SURFACE
+		|| (T4PlusIsRoomSwamp(&room[lara_item->room_number]) && lara.air < DEFAULT_LARA_MAX_AIR)))
 	{
 		air = lara.air;
 
 		if (air < 0)
 			air = 0;
-		else if (air > 1800)
-			air = 1800;
+		else if (air > DEFAULT_LARA_MAX_AIR)
+			air = DEFAULT_LARA_MAX_AIR;
 
 		if (air <= 450)
 		{
 			if (flash_state)
-				S_DrawAirBar(100 * air / 1800);
+				S_DrawAirBar(100 * air / DEFAULT_LARA_MAX_AIR);
 			else
 				S_DrawAirBar(0);
 		}
 		else
-			S_DrawAirBar(100 * air / 1800);
+			S_DrawAirBar(100 * air / DEFAULT_LARA_MAX_AIR);
 	}
 }
 

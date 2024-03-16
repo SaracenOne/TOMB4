@@ -1667,6 +1667,7 @@ int NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLES *
 						return 0;
 					}
 				}
+				tables->level_item_group_table[tables->level_item_group_count].record.item_count = index;
 				tables->level_item_group_count++;
 				// Broken
 			} else {
@@ -2256,6 +2257,9 @@ void NGReadNGGameflowInfo(char *gfScriptFile, size_t offset, size_t len) {
 				// WorldFarView
 				case 0x05: {
 					world_far_view = NG_READ_16(gfScriptFile, offset);
+					if (world_far_view == 0xffff) {
+						world_far_view = 127;
+					}
 					for (int i = 0; i < MOD_LEVEL_COUNT; i++) {
 						get_game_mod_level_environment_info(i)->far_view = (unsigned int)world_far_view * 1024;
 					}

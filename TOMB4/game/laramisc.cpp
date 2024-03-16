@@ -27,6 +27,7 @@
 #include "trng/trng_flipeffect.h"
 #include "../tomb4/mod_config.h"
 #include "../tomb4/tomb4plus/t4plus_objects.h"
+#include "../tomb4/tomb4plus/t4plus_environment.h"
 
 COLL_INFO mycoll;
 
@@ -103,7 +104,7 @@ void LaraCheatyBits()
 			lara_item->goal_anim_state = AS_SWIM;
 			lara_item->gravity_status = 0;
 			lara_item->pos.x_rot = 0;
-			lara.air = 1800;
+			lara.air = DEFAULT_LARA_MAX_AIR;
 			lara.death_count = 0;
 			lara.torso_y_rot = 0;
 			lara.torso_x_rot = 0;
@@ -404,6 +405,9 @@ void LaraControl(short item_number)
 
 	lara.IsDucked = 0;
 	room_water_state = room[l->room_number].flags & ROOM_UNDERWATER;
+	if (T4PlusIsRoomSwamp(&room[l->room_number]))
+		room_water_state |= ROOM_SWAMP;
+
 	wd = GetWaterDepth(l->pos.x_pos, l->pos.y_pos, l->pos.z_pos, l->room_number);
 	wh = GetWaterHeight(l->pos.x_pos, l->pos.y_pos, l->pos.z_pos, l->room_number);
 
@@ -424,7 +428,7 @@ void LaraControl(short item_number)
 
 			if (hfw != NO_HEIGHT && hfw >= 265)
 			{
-				if (wd <= 474)
+				if (wd <= 474 || room_water_state & ROOM_SWAMP)
 				{
 					if (hfw > 256)
 					{
@@ -432,11 +436,20 @@ void LaraControl(short item_number)
 
 						if (!l->gravity_status)
 							l->goal_anim_state = AS_STOP;
+						else if (room_water_state & ROOM_SWAMP) {
+							if (lara_item->current_anim_state == AS_SWANDIVE || lara_item->current_anim_state == AS_FASTDIVE)
+								lara_item->pos.y_pos = wh + 1000;
+
+							lara_item->anim_number = ANIM_WADE;
+							lara_item->frame_number = anims[ANIM_WADE].frame_base;
+							lara_item->current_anim_state = AS_WADE;
+							lara_item->goal_anim_state = AS_WADE;
+						}
 					}
 				}
 				else if (room_water_state)
 				{
-					lara.air = 1800;
+					lara.air = DEFAULT_LARA_MAX_AIR;
 					lara.water_status = LW_UNDERWATER;
 					l->gravity_status = 0;
 					l->pos.y_pos += 100;
@@ -485,7 +498,7 @@ void LaraControl(short item_number)
 				if (l->current_anim_state == AS_WADE)
 					l->goal_anim_state = AS_RUN;
 			}
-			else if (hfw > 730)
+			else if (hfw > 730 && !(room_water_state & ROOM_SWAMP))
 			{
 				lara.water_status = LW_SURFACE;
 				l->pos.y_pos += 1 - hfw;
@@ -643,8 +656,23 @@ void LaraControl(short item_number)
 	case LW_ABOVE_WATER:
 	case LW_WADE:
 
-		if (lara.vehicle == NO_ITEM)
-			lara.air = 1800;
+		if (room[lara_item->room_number].flags & ROOM_SWAMP && lara.water_surface_dist < -775)
+		{
+			if (lara_item->hit_points >= 0)
+			{
+				lara.air -= 6;
+
+				if (lara.air < 0)
+				{
+					lara.air = -1;
+					lara_item->hit_points -= 10;
+				}
+			}
+		}
+		else if (lara.vehicle == NO_ITEM)
+		{
+			lara.air = DEFAULT_LARA_MAX_AIR;
+		}
 
 		LaraAboveWater(l, lara_coll);
 		break;
@@ -674,8 +702,8 @@ void LaraControl(short item_number)
 		{
 			lara.air += 10;
 
-			if (lara.air > 1800)
-				lara.air = 1800;
+			if (lara.air > DEFAULT_LARA_MAX_AIR)
+				lara.air = DEFAULT_LARA_MAX_AIR;
 		}
 
 		LaraSurface(l, lara_coll);

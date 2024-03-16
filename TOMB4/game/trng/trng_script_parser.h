@@ -221,6 +221,7 @@ struct NG_ORGANIZER {
 
 #define NG_ITEM_GROUP_MAX_LIST 4096
 struct NG_ITEM_GROUP {
+	short item_count = 0;
 	short item_list[NG_ITEM_GROUP_MAX_LIST];
 };
 

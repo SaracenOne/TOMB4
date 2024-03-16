@@ -7,9 +7,15 @@
 #include "../../game/lot.h"
 #include "../../game/items.h"
 #include "../../game/objects.h"
+#include "../../specific/platform.h"
 
-void T4PlusActivateItem(int item_id, bool anti) {
+void T4PlusActivateItem(size_t item_id, bool anti) {
 	ITEM_INFO* item;
+
+	if (item_id >= ITEM_COUNT) {
+		platform_fatal_error("T4PlusActivateItem: item_num out of range!");
+		return;
+	}
 
 	item = &items[item_id];
 

@@ -14,6 +14,7 @@
 
 #include "trng/trng.h"
 #include "../tomb4/mod_config.h"
+#include "../tomb4/tomb4plus/t4plus_environment.h"
 
 void lara_as_swimcheat(ITEM_INFO* item, COLL_INFO* coll)
 {
@@ -358,13 +359,13 @@ long GetWaterDepth(long x, long y, long z, short room_number)
 
 	} while (door != 255);
 
-	if (r->flags & ROOM_UNDERWATER)
+	if (r->flags & ROOM_UNDERWATER || T4PlusIsRoomSwamp(r))
 	{
 		while (floor->sky_room != 255)
 		{
 			r = &room[floor->sky_room];
 
-			if (!(r->flags & ROOM_UNDERWATER))
+			if (!(r->flags & ROOM_UNDERWATER || T4PlusIsRoomSwamp(r)))
 			{
 				h = GetMinimumCeiling(floor, x, z);
 				floor = GetFloor(x, y, z, &room_number);
@@ -382,7 +383,7 @@ long GetWaterDepth(long x, long y, long z, short room_number)
 		{
 			r = &room[floor->pit_room];
 
-			if (r->flags & ROOM_UNDERWATER)
+			if (r->flags & ROOM_UNDERWATER || T4PlusIsRoomSwamp(r))
 			{
 				h = GetMaximumFloor(floor, x, z);
 				floor = GetFloor(x, y, z, &room_number);

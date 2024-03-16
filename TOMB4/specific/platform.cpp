@@ -157,7 +157,12 @@ bool platform_create_directory(const char* path) {
 #ifdef _WIN32
 			DWORD attr = GetFileAttributes(tmp);
 			if (attr == INVALID_FILE_ATTRIBUTES) {
-				return false;
+				int res = _mkdir(tmp);
+				int er = errno;
+
+				if (res != 0 && er != EEXIST) {
+					return false;
+				}
 			}
 
 			if (!(attr & FILE_ATTRIBUTE_DIRECTORY)) {

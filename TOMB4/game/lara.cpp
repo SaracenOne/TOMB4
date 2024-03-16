@@ -30,6 +30,7 @@
 #include "trng/objects/trng_parallel_bars.h"
 #include "../tomb4/mod_config.h"
 #include "../tomb4/tomb4plus/t4plus_objects.h"
+#include "../tomb4/tomb4plus/t4plus_environment.h"
 
 void(*lara_control_routines[NUM_LARA_STATES + 1])(ITEM_INFO* item, COLL_INFO* coll) =
 {
@@ -2236,6 +2237,8 @@ void lara_col_back(ITEM_INFO* item, COLL_INFO* coll)
 		item->pos.y_pos += 50;
 	else if (coll->mid_floor != NO_HEIGHT)
 		item->pos.y_pos += coll->mid_floor;
+	else if (coll->mid_floor >= 0 && T4PlusIsRoomSwamp(&room[item->room_number]))
+		item->pos.y_pos += 2;
 }
 
 void lara_as_null(ITEM_INFO* item, COLL_INFO* coll)
@@ -2738,29 +2741,64 @@ void lara_as_wade(ITEM_INFO* item, COLL_INFO* coll)
 
 	camera.target_elevation = -4004;
 
-	if (input & IN_LEFT)
+	if (T4PlusIsRoomSwamp(&room[item->room_number])) 
 	{
-		lara.turn_rate -= 409;
+		if (input & IN_LEFT)
+		{
+			lara.turn_rate -= 409;
 
-		if (lara.turn_rate < -1456)
-			lara.turn_rate = -1456;
+			if (lara.turn_rate < -728)
+				lara.turn_rate = -728;
 
-		item->pos.z_rot -= 273;
+			item->pos.z_rot -= 273;
 
-		if (item->pos.z_rot < -2002)
-			item->pos.z_rot = -2002;
+			if (item->pos.z_rot < -1001)
+				item->pos.z_rot = -1001;
+		}
+		else if (input & IN_RIGHT)
+		{
+			lara.turn_rate += 409;
+
+			if (lara.turn_rate > 728)
+				lara.turn_rate = 728;
+
+			item->pos.z_rot += 273;
+
+			if (item->pos.z_rot > 1001)
+				item->pos.z_rot = 1001;
+		}
+
+		if (input & IN_FORWARD)
+			item->goal_anim_state = AS_WADE;
+		else
+			item->goal_anim_state = AS_STOP;
 	}
-	else if (input & IN_RIGHT)
+	else
 	{
-		lara.turn_rate += 409;
+		if (input & IN_LEFT)
+		{
+			lara.turn_rate -= 409;
 
-		if (lara.turn_rate > 1456)
-			lara.turn_rate = 1456;
+			if (lara.turn_rate < -1456)
+				lara.turn_rate = -1456;
 
-		item->pos.z_rot += 273;
+			item->pos.z_rot -= 273;
 
-		if (item->pos.z_rot > 2002)
-			item->pos.z_rot = 2002;
+			if (item->pos.z_rot < -2002)
+				item->pos.z_rot = -2002;
+		}
+		else if (input & IN_RIGHT)
+		{
+			lara.turn_rate += 409;
+
+			if (lara.turn_rate > 1456)
+				lara.turn_rate = 1456;
+
+			item->pos.z_rot += 273;
+
+			if (item->pos.z_rot > 2002)
+				item->pos.z_rot = 2002;
+		}
 	}
 
 	if (input & IN_FORWARD)
@@ -2793,7 +2831,7 @@ void lara_col_wade(ITEM_INFO* item, COLL_INFO* coll)
 	{
 		item->pos.z_rot = 0;
 
-		if ((coll->front_type == WALL || coll->front_type == SPLIT_TRI) && coll->front_floor < -640)
+		if ((coll->front_type == WALL || coll->front_type == SPLIT_TRI) && coll->front_floor < -640 && !T4PlusIsRoomSwamp(&room[item->room_number]))
 		{
 			item->current_anim_state = AS_SPLAT;
 
@@ -2815,7 +2853,7 @@ void lara_col_wade(ITEM_INFO* item, COLL_INFO* coll)
 		LaraCollideStop(item, coll);
 	}
 
-	if (coll->mid_floor >= -384 && coll->mid_floor < -128)
+	if (coll->mid_floor >= -384 && coll->mid_floor < -128 && !T4PlusIsRoomSwamp(&room[item->room_number]))
 	{
 		if (item->frame_number >= 3 && item->frame_number <= 14)
 		{
@@ -2829,10 +2867,25 @@ void lara_col_wade(ITEM_INFO* item, COLL_INFO* coll)
 		}
 	}
 
-	if (coll->mid_floor >= 50)
-		item->pos.y_pos += 50;
-	else if (coll->mid_floor != NO_HEIGHT)
-		item->pos.y_pos += coll->mid_floor;
+	if (T4PlusIsRoomSwamp(&room[item->room_number])) {
+		if (coll->mid_floor >= 50)
+		{
+			item->pos.y_pos += 50;
+		}
+		else if (coll->mid_floor < 0)
+		{
+			item->pos.y_pos += coll->mid_floor;
+		}
+		else if (coll->mid_floor)
+		{
+			item->pos.y_pos += 2;
+		}
+	} else {
+		if (coll->mid_floor >= 50)
+			item->pos.y_pos += 50;
+		else if (coll->mid_floor != NO_HEIGHT)
+			item->pos.y_pos += coll->mid_floor;
+	}
 }
 
 void lara_default_col(ITEM_INFO* item, COLL_INFO* coll)
@@ -3358,13 +3411,24 @@ void lara_col_turn_r(ITEM_INFO* item, COLL_INFO* coll)
 	coll->bad_ceiling = 0;
 	GetLaraCollisionInfo(item, coll);
 
-	if (coll->mid_floor <= 100)
+	if (coll->mid_floor <= 100 || T4PlusIsRoomSwamp(&room[item->room_number]))
 	{
 		if (TestLaraSlide(item, coll))
 			return;
 
-		if (coll->mid_floor != NO_HEIGHT)
-			item->pos.y_pos += coll->mid_floor;
+		if (T4PlusIsRoomSwamp(&room[item->room_number]))
+		{
+			if (coll->mid_floor >= 0)
+			{
+				if (coll->mid_floor)
+					item->pos.y_pos += 2;
+			}
+		}
+		else
+		{
+			if (coll->mid_floor != NO_HEIGHT)
+				item->pos.y_pos += coll->mid_floor;
+		}
 	}
 	else
 	{
@@ -3541,35 +3605,62 @@ void lara_as_stop(ITEM_INFO* item, COLL_INFO* coll)
 	else if (input & IN_BACK)
 		rheight = LaraFloorFront(item, item->pos.y_rot + 32768, 104);
 
-	if (input & IN_LSTEP)
-	{
-		height = LaraFloorFront(item, item->pos.y_rot - 16384, 116);
-		ceiling = LaraCeilingFront(item, item->pos.y_rot - 16384, 116, 762);
 
-		if (height < 128 && height > -128 && height_type != BIG_SLOPE && ceiling <= 0)
-			item->goal_anim_state = AS_STEPLEFT;
-	}
-	else if (input & IN_RSTEP)
+	if (T4PlusIsRoomSwamp(&room[item->room_number]))
 	{
-		height = LaraFloorFront(item, item->pos.y_rot + 16384, 116);
-		ceiling = LaraCeilingFront(item, item->pos.y_rot + 16384, 116, 762);
-
-		if (height < 128 && height > -128 && height_type != BIG_SLOPE && ceiling <= 0)
-			item->goal_anim_state = AS_STEPRIGHT;
+		if (input & IN_LEFT)
+			item->goal_anim_state = AS_TURN_L;
+		else if (input & IN_RIGHT)
+			item->goal_anim_state = AS_TURN_R;
 	}
-	else if (input & IN_LEFT)
-		item->goal_anim_state = AS_TURN_L;
-	else if (input & IN_RIGHT)
-		item->goal_anim_state = AS_TURN_R;
+	else
+	{
+		if (input & IN_LSTEP)
+		{
+			height = LaraFloorFront(item, item->pos.y_rot - 16384, 116);
+			ceiling = LaraCeilingFront(item, item->pos.y_rot - 16384, 116, 762);
+
+			if (height < 128 && height > -128 && height_type != BIG_SLOPE && ceiling <= 0)
+				item->goal_anim_state = AS_STEPLEFT;
+		}
+		else if (input & IN_RSTEP)
+		{
+			height = LaraFloorFront(item, item->pos.y_rot + 16384, 116);
+			ceiling = LaraCeilingFront(item, item->pos.y_rot + 16384, 116, 762);
+
+			if (height < 128 && height > -128 && height_type != BIG_SLOPE && ceiling <= 0)
+				item->goal_anim_state = AS_STEPRIGHT;
+		}
+		else if (input & IN_LEFT)
+			item->goal_anim_state = AS_TURN_L;
+		else if (input & IN_RIGHT)
+			item->goal_anim_state = AS_TURN_R;
+	}
 
 	if (lara.water_status == LW_WADE)
 	{
-		if (input & IN_JUMP)
+		if (input & IN_JUMP && !(T4PlusIsRoomSwamp(&room[item->room_number])))
 			item->goal_anim_state = AS_COMPRESS;
 
 		if (input & IN_FORWARD)
 		{
-			if (fheight >= 383 || fheight <= -383)
+			bool goin = false;
+
+			if (!T4PlusIsRoomSwamp(&room[item->room_number])) {
+				if (fheight >= 383 || fheight <= -383)
+					goin = true;
+				else
+					lara_as_wade(item, coll);
+			}
+			else
+			{
+				if (fheight <= -383)
+					goin = true;
+				else
+					lara_as_wade(item, coll);
+			}
+
+			if (goin)
 			{
 				lara.move_angle = item->pos.y_rot;
 				coll->bad_pos = -NO_HEIGHT;
@@ -3582,8 +3673,6 @@ void lara_as_stop(ITEM_INFO* item, COLL_INFO* coll)
 				if (!TestLaraVault(item, coll))
 					coll->radius = 100;
 			}
-			else
-				lara_as_wade(item, coll);
 		}
 		else if (input & IN_BACK && rheight < 383 && rheight > -383)
 			lara_as_back(item, coll);
@@ -3660,8 +3749,15 @@ void lara_col_stop(ITEM_INFO* item, COLL_INFO* coll)
 
 	ShiftItem(item, coll);
 
-	if (coll->mid_floor != NO_HEIGHT)
-		item->pos.y_pos += coll->mid_floor;
+	if (T4PlusIsRoomSwamp(&room[item->room_number]) && coll->mid_floor >= 0)
+	{
+		item->pos.y_pos += 2;
+	}
+	else
+	{
+		if (coll->mid_floor != NO_HEIGHT)
+			item->pos.y_pos += coll->mid_floor;
+	}
 }
 
 void lara_col_pose(ITEM_INFO* item, COLL_INFO* coll)
@@ -5440,7 +5536,7 @@ long TestLaraVault(ITEM_INFO* item, COLL_INFO* coll)
 
 	if (hdif >= -640 && hdif <= -384)
 	{
-		if (!slope && hdif - coll->front_ceiling >= 0 && coll->left_floor2 - coll->left_ceiling2 >= 0 && coll->right_floor2 - coll->right_ceiling2 >= 0)
+		if (!slope && hdif - coll->front_ceiling >= 0 && coll->left_floor2 - coll->left_ceiling2 >= 0 && coll->right_floor2 - coll->right_ceiling2 >= 0 && !(T4PlusIsRoomSwamp(&room[item->room_number]) && lara.water_surface_dist < -768))
 		{
 			item->anim_number = ANIM_VAULT2;
 			item->frame_number = anims[ANIM_VAULT2].frame_base;
@@ -5454,7 +5550,7 @@ long TestLaraVault(ITEM_INFO* item, COLL_INFO* coll)
 	}
 	else if (hdif >= -896 && hdif <= -640)
 	{
-		if (!slope && hdif - coll->front_ceiling >= 0 && coll->left_floor2 - coll->left_ceiling2 >= 0 && coll->right_floor2 - coll->right_ceiling2 >= 0)
+		if (!slope && hdif - coll->front_ceiling >= 0 && coll->left_floor2 - coll->left_ceiling2 >= 0 && coll->right_floor2 - coll->right_ceiling2 >= 0 && !(T4PlusIsRoomSwamp(&room[item->room_number]) && lara.water_surface_dist < -768))
 		{
 			item->anim_number = ANIM_VAULT3;
 			item->frame_number = anims[ANIM_VAULT3].frame_base;
@@ -5468,6 +5564,11 @@ long TestLaraVault(ITEM_INFO* item, COLL_INFO* coll)
 	}
 	else if (!slope && hdif >= -1920 && hdif <= -896)
 	{
+		if (T4PlusIsRoomSwamp(&room[item->room_number]) && lara.water_surface_dist < -768)
+		{
+			return 0;
+		}
+
 		item->anim_number = ANIM_STOP;
 		item->frame_number = anims[ANIM_STOP].frame_base;
 		item->current_anim_state = AS_STOP;

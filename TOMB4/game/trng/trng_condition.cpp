@@ -636,7 +636,7 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 					return room_flags & ROOM_UNDERWATER;
 				}
 				case 2: {
-					return room_flags & ROOM_SKYBOX;
+					return room_flags & ROOM_SWAMP;
 				}
 				case 4: {
 					return room_flags & 0x10;
