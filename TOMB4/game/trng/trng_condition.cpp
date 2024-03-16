@@ -604,6 +604,24 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 		else
 			return false;
 	}
+	case VARIABLES_THE_CURRENT_VALUE_VARIABLE_IS_GREATER_OR_EQUAL_THAN_X_VALUE: {
+		if (ng_current_value >= param)
+			return true;
+		else
+			return false;
+	}
+	case VARIABLES_THE_CURRENT_VALUE_VARIABLE_IS_LESS_THAN_X_VALUE: {
+		if (ng_current_value < param)
+			return true;
+		else
+			return false;
+	}
+	case VARIABLES_THE_CURRENT_VALUE_VARIABLE_IS_EQUAL_THAN_X_VALUE: {
+		if (ng_current_value == param)
+			return true;
+		else
+			return false;
+	}
 	case LARA_IS_LESS_OR_EVEN_CLICKS_DISTANT_TO_MOVEABLE: {
 		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: LARA_IS_LESS_OR_EVEN_CLICKS_DISTANT_TO_MOVEABLE unimplemented!");
 		return false;
