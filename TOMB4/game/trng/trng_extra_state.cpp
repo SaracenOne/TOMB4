@@ -200,8 +200,9 @@ enum TRNG_INPUT {
 int ng_looped_sound_state[NumSamples];
 
 #define NG_INPUT_TIMER_COUNT TRNG_INPUT_COUNT
-int ng_input_lock_timers[NG_INPUT_TIMER_COUNT];
+
 int ng_input_simulate_oneshot = -1;
+int ng_input_lock_timers[NG_INPUT_TIMER_COUNT];
 int ng_input_simulate_timers[NG_INPUT_TIMER_COUNT];
 
 void NGStorePendingRoomNumber(int room_number) {
@@ -974,6 +975,7 @@ void NGFrameStartExtraState() {
 	}
 
 	// Input Locks and Input Simulators
+	ng_input_simulate_oneshot = -1;
 	for (int i = 0; i < NG_INPUT_TIMER_COUNT; i++) {
 		if (ng_input_lock_timers[i] > 0) {
 			ng_input_lock_timers[i] -= 1;
