@@ -324,7 +324,7 @@ void AnimateLara(ITEM_INFO* item)
 					type = cmd[1] & 0xC000;
 
 					if (type == SFX_LANDANDWATER || (type == SFX_LANDONLY && (lara.water_surface_dist >= 0 || lara.water_surface_dist == NO_HEIGHT)) ||
-						(type == SFX_WATERONLY && lara.water_surface_dist < 0 && lara.water_surface_dist != NO_HEIGHT))
+						(type == SFX_WATERONLY && lara.water_surface_dist < 0 && lara.water_surface_dist != NO_HEIGHT && !T4PlusIsRoomSwamp(&room[item->room_number])))
 						SoundEffect(cmd[1] & 0x3FFF, &item->pos, SFX_ALWAYS);
 				}
 
@@ -347,20 +347,50 @@ void AnimateLara(ITEM_INFO* item)
 
 	if (item->gravity_status)
 	{
-		speed = anim->velocity + anim->acceleration * (item->frame_number - anim->frame_base - 1);
-		item->speed -= speed >> 16;
-		speed += anim->acceleration;
-		item->speed += speed >> 16;
-		item->fallspeed += item->fallspeed < 128 ? 6 : 1;
+		if (lara.water_status == LW_WADE && T4PlusIsRoomSwamp(&room[item->room_number]))
+		{
+			item->speed -= item->speed >> 3;
+
+			if (abs(item->speed) < 8)
+			{
+				item->speed = 0;
+				item->gravity_status = 0;
+			}
+
+			if (item->fallspeed > 128)
+				item->fallspeed >>= 1;
+
+			item->fallspeed -= item->fallspeed >> 2;
+
+			if (item->fallspeed < 4)
+				item->fallspeed = 4;
+		}
+		else
+		{
+			speed = anim->velocity + anim->acceleration * (item->frame_number - anim->frame_base - 1);
+			item->speed -= speed >> 16;
+			speed += anim->acceleration;
+			item->speed += speed >> 16;
+			item->fallspeed += item->fallspeed < 128 ? 6 : 1;
+		}
 		item->pos.y_pos += item->fallspeed;
 	}
 	else
 	{
-		speed = anim->velocity;
+		if (lara.water_status == LW_WADE && T4PlusIsRoomSwamp(&room[item->room_number]))
+		{
+			speed = anim->velocity >> 1;
 
-		if (anim->acceleration)
-			speed += anim->acceleration * (item->frame_number - anim->frame_base);
+			if (anim->acceleration)
+				speed += (anim->acceleration * (item->frame_number - anim->frame_base)) >> 2;
+		}
+		else
+		{
+			speed = anim->velocity;
 
+			if (anim->acceleration)
+				speed += anim->acceleration * (item->frame_number - anim->frame_base);
+		}
 		item->speed = speed >> 16;
 	}
 

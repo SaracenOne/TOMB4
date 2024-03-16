@@ -2231,6 +2231,7 @@ void NGReadNGGameflowInfo(char *gfScriptFile, size_t offset, size_t len) {
 		get_game_mod_global_info()->trng_hack_allow_meshes_with_exactly_256_vertices = true;
 		get_game_mod_global_info()->trng_advanced_block_raising_behaviour = true;
 		get_game_mod_global_info()->trng_pushables_have_gravity = true;
+		get_game_mod_global_info()->trng_swamp_room_type_enabled = true;
 
 		size_t options_header_block_start_position = offset;
 
