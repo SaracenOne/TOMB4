@@ -178,7 +178,7 @@ struct MOD_LEVEL_AUDIO_INFO {
 	int sample_rate = 22050;
 
 	short first_looped_audio_track = 105;
-	short last_looped_audio_track = 127;
+	short last_looped_audio_track = 111;
 
 	short inside_jeep_track = 98;
 	short outside_jeep_track = 110;
