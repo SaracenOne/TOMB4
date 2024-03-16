@@ -1310,6 +1310,99 @@ bool variables_set_the_x_inventory_item_as_selected_inventory_memory(unsigned ch
 	return true;
 }
 
+// NGLE - 355
+bool screen_flash_screen_with_light_color_for_duration(unsigned char flash_color, unsigned char duration) {
+	switch (flash_color) {
+		case 0:{
+			// Red Light
+			FlashFadeR = 0xff;
+			FlashFadeG = 0x40;
+			FlashFadeB = 0x00;
+			break;
+		}
+		case 1: {
+			// Orange
+			FlashFadeR = 0xff;
+			FlashFadeG = 0x80;
+			FlashFadeB = 0x00;
+			break;
+		}
+		case 2: {
+			// Yellow
+			FlashFadeR = 0xff;
+			FlashFadeG = 0xc0;
+			FlashFadeB = 0x40;
+			break;
+		}
+		case 3: {
+			// White
+			FlashFadeR = 0xff;
+			FlashFadeG = 0xff;
+			FlashFadeB = 0xff;
+			break;
+		}
+		case 4: {
+			// Green
+			FlashFadeR = 0x0a;
+			FlashFadeG = 0xe5;
+			FlashFadeB = 0x0a;
+			break;
+		}
+		case 5: {
+			// Purple
+			FlashFadeR = 0xf0;
+			FlashFadeG = 0x1d;
+			FlashFadeB = 0xd5;
+			break;
+		}
+		case 6: {
+			// Light Green
+			FlashFadeR = 0x55;
+			FlashFadeG = 0xea;
+			FlashFadeB = 0x59;
+			break;
+		}
+		case 7: {
+			// Blue
+			FlashFadeR = 0x23;
+			FlashFadeG = 0x27;
+			FlashFadeB = 0xe8;
+			break;
+		}
+		case 8: {
+			// Azure
+			FlashFadeR = 0x4e;
+			FlashFadeG = 0xd5;
+			FlashFadeB = 0xe1;
+			break;
+		}
+		case 9: {
+			// Grey
+			FlashFadeR = 0x8c;
+			FlashFadeG = 0x8c;
+			FlashFadeB = 0x8c;
+			break;
+		}
+		case 10: {
+			// Brown
+			FlashFadeR = 0x71;
+			FlashFadeG = 0x28;
+			FlashFadeB = 0x32;
+			break;
+		}
+		default:
+			FlashFadeR = 0x00;
+			FlashFadeG = 0x00;
+			FlashFadeB = 0x00;
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "screen_flash_screen_with_light_color_for_duration: flash colour is out of range!");
+			break;
+	}
+
+	FlashFader = duration;
+	return true;
+}
+
+
 // NGLE - 367
 bool camera_show_black_screen_for_seconds_with_final_curtain_effect(unsigned char timer, unsigned char _unused) {
 	NGSetCurtainTimer(timer * 30);
@@ -3255,8 +3348,7 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 		}
 		case SCREEN_FLASH_SCREEN_WITH_LIGHT_COLOR_FOR_DURATION: {
 			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "SCREEN_FLASH_SCREEN_WITH_LIGHT_COLOR_FOR_DURATION unimplemented!");
-				return true;
+				return screen_flash_screen_with_light_color_for_duration(action_data_1, action_data_2);
 			}
 			break;		
 		}
