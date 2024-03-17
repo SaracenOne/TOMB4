@@ -28,6 +28,7 @@
 #include "../tomb4/mod_config.h"
 
 #include "../tomb4/tomb4plus/t4plus_items.h"
+#include "../specific/file.h"
 
 short SPxzoffs[8] = { 0, 0, 0x200, 0, 0, 0, -0x200, 0 };
 short SPyoffs[8] = { -0x400, 0, -0x200, 0, 0, 0, -0x200, 0 };
@@ -304,6 +305,11 @@ void ControlJobySpike(short item_number)
 
 	item = &items[item_number];
 
+	// T4Plus: Animation safety check
+	if (item->anim_number < 0 || item->anim_number >= num_anims) {
+		return;
+	}
+
 	if (TriggerActive(item))
 	{
 		SoundEffect(SFX_METAL_SCRAPE_LOOP, &item->pos, SFX_DEFAULT);
@@ -339,6 +345,11 @@ void DrawScaledSpike(ITEM_INFO* item)
 	short** meshpp;
 	short* frm[2];
 	long rate, clip, lp;
+
+	// T4Plus: Animation safety check
+	if (item->anim_number < 0 || item->anim_number >= num_anims) {
+		return;
+	}
 
 	if (item->object_number != TEETH_SPIKES || item->item_flags[1])
 	{

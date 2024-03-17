@@ -5,6 +5,8 @@
 #include "lara.h"
 #include "objects.h"
 #include "control.h"
+#include "../specific/file.h"
+#include "../specific/platform.h"
 
 SPHERE Slist[34];
 char GotLaraSpheres;
@@ -197,6 +199,12 @@ void GetJointAbsPosition(ITEM_INFO* item, PHD_VECTOR* pos, long joint)
 	short* rot;
 	short* rot2;
 	long frac, rate, poppush;
+
+	// T4Plus: Animation safety check
+	if (item->anim_number < 0 || item->anim_number >= num_anims) {
+		platform_fatal_error("GetJointAbsPosition: invalid animation data!");
+		return;
+	}
 
 	mMx = mMXPtr;
 	mIMx = mIMptr;

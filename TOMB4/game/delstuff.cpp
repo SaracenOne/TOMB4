@@ -14,6 +14,8 @@
 #include "gameflow.h"
 #include "../tomb4/tomb4.h"
 #include "../tomb4/tomb4plus/t4plus_objects.h"
+#include "../specific/file.h"
+#include "../specific/platform.h"
 
 short* GLaraShadowframe;
 float lara_matrices[180];
@@ -1053,6 +1055,13 @@ void CalcLaraMatrices(long flag)
 	short* frmptr[2];
 	long rate, frac;
 	short spaz;
+
+	// T4Plus: Animation safety check
+	if (lara_item->anim_number < 0 || lara_item->anim_number >= num_anims) {
+		platform_fatal_error("CalcLaraMatrices: Invalid Lara animation data.");
+		return;
+	}
+
 
 	bone = &bones[objects[lara_item->object_number].bone_index];
 	frac = GetFrames(lara_item, frmptr, &rate);

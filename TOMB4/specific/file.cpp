@@ -42,6 +42,9 @@ THREAD LevelLoadingThread;
 TEXTURESTRUCT* AnimatingWaterfalls[3];
 long AnimatingWaterfallsV[3];
 
+size_t num_meshes = 0;
+size_t num_anims = 0;
+
 CHANGE_STRUCT* changes;
 RANGE_STRUCT* ranges;
 AIOBJECT* AIObjects;
@@ -914,7 +917,6 @@ bool LoadObjects()
 	short** mesh;
 	short** mesh_size;
 	long size, num, slot;
-	static long num_meshes, num_anims;
 
 	Log(2, "LoadObjects");
 	memset(objects, 0, sizeof(objects));

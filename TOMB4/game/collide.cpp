@@ -140,6 +140,12 @@ long GetCollidedObjects(ITEM_INFO* item, long rad, long noInvisible, ITEM_INFO**
 				continue;
 			}
 
+			// T4Plus: Animation safety check
+			if (item2->anim_number < 0 || item2->anim_number >= num_anims) {
+				item_number = next_item;
+				continue;
+			}
+
 			if (item2->flags & IFL_CLEARBODY)	//don't get clearbodies
 			{
 				item_number = next_item;
@@ -873,6 +879,11 @@ long TestBoundsCollide(ITEM_INFO* item, ITEM_INFO* l, long rad)
 	short* bounds;
 	short* lbounds;
 	long s, c, dx, dz, x, z;
+
+	// T4Plus: Animation safety check
+	if (item->anim_number < 0 || item->anim_number >= num_anims) {
+		return 0;
+	}
 
 	bounds = GetBestFrame(item);
 	lbounds = GetBestFrame(l);

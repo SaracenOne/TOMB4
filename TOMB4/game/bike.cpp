@@ -28,6 +28,7 @@
 #include "gameflow.h"
 #include "../tomb4/mod_config.h"
 #include "../tomb4/tomb4plus/t4plus_objects.h"
+#include "../specific/file.h"
 
 static ITEM_INFO* GlobalBikeItem;
 static long bikefspeed = 0;
@@ -140,6 +141,11 @@ void DrawBikeBeam(ITEM_INFO* item)
 	short* rot;
 	long frac, rate, bounds, r, g, b;
 	short* rot2;
+
+	// T4Plus: Animation safety check
+	if (item->anim_number < 0 || item->anim_number >= num_anims) {
+		return;
+	}
 
 	bike = (BIKEINFO*)item->data;
 

@@ -14,6 +14,7 @@
 #include "../specific/output.h"
 #include "../specific/input.h"
 #include "lara.h"
+#include "../specific/file.h"
 
 long SenetTargetX;
 long SenetTargetZ;
@@ -520,6 +521,11 @@ void DrawGodHead(ITEM_INFO* item)
 	short** meshpp;
 	short* frm[2];
 	long rate, oldAlpha, alpha;
+
+	// T4Plus: Animation safety check
+	if (item->anim_number < 0 || item->anim_number >= num_anims) {
+		return;
+	}
 
 	r = &room[item->room_number];
 	phd_left = r->left;

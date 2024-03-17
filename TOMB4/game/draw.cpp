@@ -31,6 +31,8 @@
 #include "trng/trng.h"
 #include "../tomb4/tomb4plus/t4plus_weather.h"
 #include "../tomb4/tomb4plus/t4plus_objects.h"
+#include "../specific/file.h"
+#include "../specific/platform.h"
 
 static BITE_INFO EnemyBites[2] =
 {
@@ -395,6 +397,11 @@ void DrawAnimatingItem(ITEM_INFO* item)
 	short* rot;
 	short* rot2;
 	long frac, rate, clip, bit, rnd;
+
+	// T4Plus: Animation safety check
+	if (item->anim_number < 0 || item->anim_number >= num_anims) {
+		return;
+	}
 
 	// NGLE
 	unsigned int mesh_visibility_mask = NGGetItemMeshVisibilityMask(NGGetCurrentDrawItemNumber());
@@ -1375,6 +1382,12 @@ long GetFrames(ITEM_INFO* item, short* frm[], long* rate)
 	ANIM_STRUCT* anim;
 	long frame, size, frac, num;
 
+	// T4Plus: Animation safety check
+	if (item->anim_number < 0 || item->anim_number >= num_anims) {
+		platform_fatal_error("GetBoundsAccurate: item animation data is invalid.");
+		return 0;
+	}
+
 	anim = &anims[item->anim_number];
 	frm[0] = anim->frame_ptr;
 	frm[1] = anim->frame_ptr;
@@ -1402,6 +1415,12 @@ short* GetBoundsAccurate(ITEM_INFO* item)
 	short* frmptr[2];
 	long rate, frac;
 	static short interpolated_bounds[6];
+
+	// T4Plus: Animation safety check
+	if (item->anim_number < 0 || item->anim_number >= num_anims) {
+		platform_fatal_error("GetBoundsAccurate: item animation data is invalid.");
+		return nullptr;
+	}
 
 	frac = GetFrames(item, frmptr, &rate);
 

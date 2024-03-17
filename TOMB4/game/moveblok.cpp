@@ -22,6 +22,7 @@
 #include "trng/trng_extra_state.h"
 
 #include "../tomb4/mod_config.h"
+#include "../specific/file.h"
 
 static short MovingBlockBounds[12] = { 0, 0, -256, 0, 0, 0, -1820, 1820, -5460, 5460, -1820, 1820 };
 
@@ -906,6 +907,11 @@ void DrawPlanetEffect(ITEM_INFO* item)
 	short* frm[2];
 	short* rot;
 	long poppush;
+
+	// T4Plus: Animation safety check
+	if (item->anim_number < 0 || item->anim_number >= num_anims) {
+		return;
+	}
 
 	if (!item->mesh_bits)
 		return;

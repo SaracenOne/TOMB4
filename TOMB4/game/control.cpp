@@ -2788,6 +2788,11 @@ long ObjectOnLOS2(GAME_VECTOR* start, GAME_VECTOR* target, PHD_VECTOR* Coord, ME
 
 			if (item->status != ITEM_DEACTIVATED && item->status != ITEM_INVISIBLE && item->object_number != T4PlusGetLaraSlotID())
 			{
+				// T4Plus: Animation safety check
+				if (item->anim_number < 0 || item->anim_number >= num_anims) {
+					continue;
+				}
+
 				bounds = GetBoundsAccurate(item);
 				ItemPos.x_pos = item->pos.x_pos;
 				ItemPos.y_pos = item->pos.y_pos;

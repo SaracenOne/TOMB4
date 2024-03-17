@@ -32,7 +32,7 @@ void SetDistanceFogColor(long r, long g, long b)
 ;
 #ifndef USE_BGFX
 	long CurrentFog = 0;
-	if (t4_override_fog_mode == NG_FOG_FORCE_VOLUMETRIC) {
+	if (t4_override_fog_mode == T4_FOG_FORCE_VOLUMETRIC) {
 		CurrentFog = RGBA(0, 0, 0, 0xFF);
 	} else {
 		CurrentFog = RGBA(r, g, b, 0xFF);
