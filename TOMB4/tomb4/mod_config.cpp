@@ -194,7 +194,19 @@ void setup_custom_slots_for_level(int level, OBJECT_INFO* current_object_info_ar
 
         for (int i = 0; i < NUMBER_OBJECTS; i++) {
             if (game_mod_config.level_info[level].objects_info.slot_override[i] != i) {
+                short original_nmeshes = current_object_info_array[i].nmeshes;
+                short original_mesh_index = current_object_info_array[i].mesh_index;
+                short original_bone_index = current_object_info_array[i].bone_index;
+                short* original_frame_base = current_object_info_array[i].frame_base;
+                short original_anim_index = current_object_info_array[i].anim_index;
+
                 memcpy(&current_object_info_array[i], &backup_object_info_array[game_mod_config.level_info[level].objects_info.slot_override[i]], sizeof(OBJECT_INFO));
+
+                current_object_info_array[i].nmeshes = original_nmeshes;
+                current_object_info_array[i].mesh_index = original_mesh_index;
+                current_object_info_array[i].bone_index = original_bone_index;
+                current_object_info_array[i].frame_base = original_frame_base;
+                current_object_info_array[i].anim_index = original_anim_index;
             }
         }
         SYSTEM_FREE(backup_object_info_array);
@@ -1351,6 +1363,8 @@ void LoadGameModConfigSecondPass() {
                     READ_JSON_BOOL(trng_switch_extended_ocb, global, mod_global_info);
                     READ_JSON_BOOL(trng_hack_allow_meshes_with_exactly_256_vertices, global, mod_global_info);
                     READ_JSON_BOOL(trng_advanced_block_raising_behaviour, global, mod_global_info);
+                    READ_JSON_BOOL(trng_pushables_have_gravity, global, mod_global_info);
+                    READ_JSON_BOOL(trng_swamp_room_type_enabled, global, mod_global_info);
 
                     READ_JSON_BOOL(trep_using_extended_saves, global, mod_global_info);
 

@@ -134,6 +134,11 @@ struct MOD_LEVEL_OBJECTS_INFO {
 	int16_t binocular_graphics_slot = BINOCULAR_GRAPHICS;
 	int16_t target_graphics_slot = TARGET_GRAPHICS;
 
+	int16_t rubber_boat_slot = RUBBER_BOAT;
+	int16_t rubber_boat_extra_slot = RUBBER_BOAT_LARA;
+	int16_t motor_boat_slot = MOTOR_BOAT;
+	int16_t motor_boat_extra_slot = MOTOR_BOAT_LARA;
+
 	int16_t slot_override[NUMBER_OBJECTS];
 	MOD_LEVEL_OBJECT_CUSTOMIZATION object_customization[NUMBER_OBJECTS];
 };
@@ -273,6 +278,7 @@ struct MOD_GLOBAL_INFO {
 	bool trng_hack_allow_meshes_with_exactly_256_vertices = false; // TRNG seems to have a special hack which allows meshes of 256 verticies
 	bool trng_advanced_block_raising_behaviour = false;
 	bool trng_pushables_have_gravity = false;
+	bool trng_swamp_room_type_enabled = false;
 
 	bool trep_using_extended_saves = false;
 
