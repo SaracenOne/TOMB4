@@ -748,6 +748,13 @@ void fourth_cutseq_control()
 
 void fourth_cutseq_end()
 {
+	if (GLOBAL_cutseq_frame <= 309)
+	{
+		undraw_pistol_mesh_left(1);
+		undraw_pistol_mesh_right(1);
+		lara.holster = old_lara_holster;
+	}
+
 	trigger_item_in_room(101, ANIMATING9);
 	lara.keyitems |= 0xC00;
 }
@@ -769,6 +776,8 @@ void fifth_cutseq_control()
 
 void fifth_cutseq_end()
 {
+	if (GLOBAL_cutseq_frame <= 1350)
+		do_backpack_meshswap();
 	DelsHandyTeleportLara(100938, 768, 58040, -32552);
 }
 
@@ -1298,6 +1307,13 @@ void twentyfour_control()
 
 void twentyfour_end()
 {
+	if (GLOBAL_cutseq_frame <= 552)
+	{
+		undraw_pistol_mesh_left(1);
+		undraw_pistol_mesh_right(1);
+		lara.holster = old_lara_holster;
+	}
+
 	cutseq_restore_item(ANIMATING13);
 	trigger_item_in_room(107, PUZZLE_ITEM8_COMBO1);
 }
