@@ -360,12 +360,12 @@ void RestoreLaraData(long FullSave)
 			size_t base = (size_t)mesh_base;
 			size_t offset = (size_t)(savegame.Lara.mesh_ptrs[i]);
 
+			lara.mesh_ptrs[i] = meshes[objects[T4PlusGetLaraSlotID()].mesh_index + i * 2];
+
 			size_t offset_original = (size_t)(lara.mesh_ptrs[i]) - base;
 			for (int j = 0; j < mesh_mapping_table_count; j++) {
 				if (mesh_mapping_table[j].mesh_x32_ptr == offset) {
 					lara.mesh_ptrs[i] = (short*)(base + mesh_mapping_table[j].mesh_native_ptr);
-				} else {
-					lara.mesh_ptrs[i] = meshes[objects[T4PlusGetLaraSlotID()].mesh_index + i * 2];
 				}
 			}
 		}
