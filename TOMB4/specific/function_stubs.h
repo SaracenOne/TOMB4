@@ -32,5 +32,5 @@ extern PHD_VECTOR CamRot;
 extern long nPolyType;
 extern char* malloc_buffer;
 extern char* malloc_ptr;
-extern long malloc_size;
-extern long malloc_free;
+extern size_t malloc_size;
+extern size_t malloc_free;

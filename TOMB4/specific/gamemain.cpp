@@ -220,7 +220,7 @@ long S_SaveGame(long slot_num)
 	char buffer[80], counter[16];
 
 	memset(buffer, 0, sizeof(buffer));
-	wsprintf(buffer, "savegame.%d", slot_num);
+	sprintf(buffer, "savegame.%d", slot_num);
 
 	std::string full_path = savegame_dir_path + buffer;
 
@@ -229,7 +229,7 @@ long S_SaveGame(long slot_num)
 	if (file)
 	{
 		memset(buffer, 0, sizeof(buffer));
-		wsprintf(buffer, "%s", GetCustomStringForTextID(gfLevelNames[gfCurrentLevel]));
+		sprintf(buffer, "%s", GetCustomStringForTextID(gfLevelNames[gfCurrentLevel]));
 
 		bytes = fwrite(buffer, sizeof(char), 75, file);
 		bytes = fwrite(&SaveCounter, sizeof(long), 1, file);
@@ -245,7 +245,7 @@ long S_SaveGame(long slot_num)
 		bytes = fwrite(&savegame, sizeof(LEGACY_SAVEGAME_INFO), 1, file);
 
 		fclose(file);
-		wsprintf(counter, "%d", SaveCounter);
+		sprintf(counter, "%d", SaveCounter);
 		SaveCounter++;
 
 		MOD_GLOBAL_INFO* mod_global_info = get_game_mod_global_info();
@@ -265,11 +265,11 @@ long S_LoadGame(long slot_num)
 	long value;
 	char buffer[80];
 
-	wsprintf(buffer, "savegame.%d", slot_num);
+	sprintf(buffer, "savegame.%d", slot_num);
 
 	std::string full_path = savegame_dir_path + buffer;
 
-	FILE* file = fopen(full_path.c_str(), "rb");
+	FILE* file = platform_fopen(full_path.c_str(), "rb");
 
 	T4PlusLevelReset();
 

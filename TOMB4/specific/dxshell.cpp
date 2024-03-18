@@ -675,10 +675,9 @@ void DXSaveScreen(LPDIRECTDRAWSURFACEX surf, const char* name)
 	memcpy(full_path, working_dir_path, strlen(working_dir_path));
 	strcat(full_path, buf);
 
-	FILE* file = fopen(full_path, "wb");
+	FILE* file = platform_fopen(full_path, "wb");
 
-	if (file)
-	{
+	if (file) {
 		*(short*)&tga_header[12] = (short)desc.dwWidth;
 		*(short*)&tga_header[14] = (short)desc.dwHeight;
 		fwrite(tga_header, sizeof(tga_header), 1, file);

@@ -376,7 +376,7 @@ FILE* FileOpen(const char* name)
 	full_path += name;
 
 	Log(5, "FileOpen - %s", full_path.c_str());
-	FILE *file = fopen(full_path.c_str(), "rb");
+	FILE *file = platform_fopen(full_path.c_str(), "rb");
 
 	if (!file)
 		Log(1, "Unable To Open %s", full_path);

@@ -1271,7 +1271,13 @@ void stop_track_on_stream_channel(int channel_id) {
 bool load_and_play_track(const char* path, StreamMode mode, int channel_id) {
 	stop_track_on_stream_channel(channel_id);
 
+#ifdef _WIN32 && UNICODE
+	wchar_t wide_path[MAX_PATH];
+	MultiByteToWideChar(CP_UTF8, 0, path, -1, wide_path, sizeof(wide_path) / sizeof(wchar_t));
+	ma_result result = ma_decoder_init_file_w(wide_path, &channels[channel_id].decoder_config, &channels[channel_id].decoder);
+#else
 	ma_result result = ma_decoder_init_file(path, &channels[channel_id].decoder_config, &channels[channel_id].decoder);
+#endif
 	if (result != MA_SUCCESS) {
 		return false;
 	}
@@ -1325,11 +1331,11 @@ bool play_track_on_stream_channel(int channel_id, long track, StreamMode mode) {
 		// May need to investigate the spec further.
 		char* ext = strrchr(name, '.');
 		if (ext) {
-			if (strcicmp(ext, "wav") == 0) {
+			if (platform_strcicmp(ext, "wav") == 0) {
 				channels[channel_id].decoder_config.encodingFormat = ma_encoding_format_wav;
-			} else if (strcicmp(ext, "mp3") == 0) {
+			} else if (platform_strcicmp(ext, "mp3") == 0) {
 				channels[channel_id].decoder_config.encodingFormat = ma_encoding_format_mp3;
-			} else if (strcicmp(ext, "flac") == 0) {
+			} else if (platform_strcicmp(ext, "flac") == 0) {
 				channels[channel_id].decoder_config.encodingFormat = ma_encoding_format_flac;
 			} else {
 				channels[channel_id].decoder_config.encodingFormat = ma_encoding_format_unknown;

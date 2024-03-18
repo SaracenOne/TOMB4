@@ -1134,7 +1134,7 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
 
 	if (!DXCreate(dm->w, dm->h, dm->bpp, App.StartFlags, &App.dx, App.hWnd, WS_OVERLAPPEDWINDOW))
 	{
-		MessageBox(0, GetFixedStringForTextID(TXT_Failed_To_Setup_DirectX), "Tomb Raider IV", 0);
+		platform_message_box(GetFixedStringForTextID(TXT_Failed_To_Setup_DirectX));
 		return 0;
 	}
 

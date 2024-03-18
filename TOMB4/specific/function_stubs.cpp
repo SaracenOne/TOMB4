@@ -120,10 +120,10 @@ long nPolyType;
 
 char* malloc_buffer;
 char* malloc_ptr;
-long malloc_size;
-long malloc_free;
+size_t malloc_size;
+size_t malloc_free;
 
-static long malloc_used;
+static size_t malloc_used;
 
 static long rand_1 = 0xD371F947;
 static long rand_2 = 0xD371F947;
@@ -194,7 +194,7 @@ void GlobalLog(const char* s, ...)
 	std::string full_path = platform_get_userdata_path() + "log.txt";
 
 	if (!global_logF)
-		global_logF = fopen(full_path.c_str(), "w+");
+		global_logF = platform_fopen(full_path.c_str(), "w+");
 
 	strcat(log_bufffer, "\n");
 	fwrite(log_bufffer, strlen(log_bufffer), 1, global_logF);
@@ -215,7 +215,7 @@ void Log(ulong type, const char* s, ...)
 		std::string full_path = game_user_dir_path + "log.txt";
 
 		if (!logF)
-			logF = fopen(full_path.c_str(), "w+");
+			logF = platform_fopen(full_path.c_str(), "w+");
 
 		strcat(log_buffer, "\n");
 		fwrite(log_buffer, strlen(log_buffer), 1, logF);

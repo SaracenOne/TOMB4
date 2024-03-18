@@ -507,7 +507,7 @@ bool DXSetupDialog()
 
 	if (ret == -1)
 	{
-		MessageBox(0, "Unable To Initialise Dialog", "", 0);
+		platform_message_box("Unable To Initialise Dialog");
 		return 0;
 	}
 

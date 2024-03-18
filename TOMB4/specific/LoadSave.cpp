@@ -644,15 +644,15 @@ long DoLoadSave(long LoadSave)
 
 		if (pSave->valid)
 		{
-			wsprintf(string, "%03d", pSave->num);
+			sprintf(string, "%03d", pSave->num);
 			PrintStringScaled(phd_centerx - long((float)phd_winwidth / 640.0F * 310.0), font_height + scaled_font_height * (i + 2), color, string, 0, 1.0F, font_scale);
 			PrintStringScaled(phd_centerx - long((float)phd_winwidth / 640.0F * 270.0), font_height + scaled_font_height * (i + 2), color, name, 0, 1.0F, font_scale);
-			wsprintf(string, "%d %s %02d:%02d:%02d", pSave->days, GetFixedStringForTextID(TXT_days), pSave->hours, pSave->minutes, pSave->seconds);
+			sprintf(string, "%d %s %02d:%02d:%02d", pSave->days, GetFixedStringForTextID(TXT_days), pSave->hours, pSave->minutes, pSave->seconds);
 			PrintStringScaled(phd_centerx - long((float)phd_winwidth / 640.0F * -135.0), font_height + scaled_font_height * (i + 2), color, string, 0, 1.0F, font_scale);
 		}
 		else
 		{
-			wsprintf(string, "%s", pSave->name);
+			sprintf(string, "%s", pSave->name);
 			PrintStringScaled(phd_centerx, font_height + scaled_font_height * (i + 2), color, string, FF_CENTER, 1.0F, font_scale);
 		}
 
@@ -1114,11 +1114,11 @@ long GetSaveLoadFiles()
 	for (int i = 0; i < MAX_SAVEGAMES; i++)
 	{
 		pSave = &SaveGames[i];
-		wsprintf(name, "savegame.%d", i);
+		sprintf(name, "savegame.%d", i);
 
 		std::string full_path = savegame_dir_path + name;
 
-		file = fopen(full_path.c_str(), "rb");
+		file = platform_fopen(full_path.c_str(), "rb");
 
 		if (!file)
 		{

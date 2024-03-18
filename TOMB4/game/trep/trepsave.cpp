@@ -13,11 +13,11 @@ void S_TREPLoadgame(long slot_num) {
 	char buffer[TREPSAVE_BUFFER_SIZE];
 	memset(buffer, 0x00, TREPSAVE_BUFFER_SIZE);
 
-	wsprintf(buffer, "trepsave.%d", slot_num);
+	sprintf(buffer, "trepsave.%d", slot_num);
 
 	std::string full_path = savegame_dir_path + buffer;
 
-	FILE* file = fopen(full_path.c_str(), "rb");
+	FILE* file = platform_fopen(full_path.c_str(), "rb");
 
 	furr_clear_oneshot_buffer();
 	t4_rain_type = WEATHER_DISABLED;
@@ -58,11 +58,11 @@ void S_TREPSavegame(long slot_num) {
 	char buffer[TREPSAVE_BUFFER_SIZE];
 	memset(buffer, 0x00, TREPSAVE_BUFFER_SIZE);
 
-	wsprintf(buffer, "trepsave.%d", slot_num);
+	sprintf(buffer, "trepsave.%d", slot_num);
 
 	std::string full_path = savegame_dir_path + buffer;
 
-	FILE* file = fopen(full_path.c_str(), "wb");
+	FILE* file = platform_fopen(full_path.c_str(), "wb");
 	if (file)
 	{
 		memcpy(buffer, furr_oneshot_buffer, LAST_FURR_FLIPEFFECT);

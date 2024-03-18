@@ -11,6 +11,7 @@
 #include "../tomb4/tomb4.h"
 #include "../tomb4/mod_config.h"
 #include "3dmath.h"
+#include "file.h"
 
 #ifdef USE_BGFX
 
@@ -61,12 +62,10 @@ void SetupOutputBucketVertexLayout()
         .end();
 }
 
-static const bgfx::Memory* loadMem(const char* _filePath)
-{
-    FILE* fin = fopen(_filePath, "rb");
+static const bgfx::Memory* loadMem(const char* _filePath) {
+    FILE* fin = platform_fopen(_filePath, "rb");
 
-    if (fin == nullptr)
-    {
+    if (fin == nullptr) {
         printf("%s not found\n", _filePath);
         fflush(stdout);
         return NULL;
