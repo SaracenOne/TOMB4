@@ -307,7 +307,12 @@ void SwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 						l->current_anim_state = AS_SWITCHON;
 					}
 					else if (item->trigger_flags == 3)
+					{
 						l->anim_number = ANIM_SMALLSWITCH;
+						if (get_game_mod_global_info()->fix_lara_small_switch_rotation) {
+							l->current_anim_state = AS_SWITCHON;
+						}
+					}
 					else
 					{
 						// TREP switch maker

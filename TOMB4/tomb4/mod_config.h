@@ -290,6 +290,7 @@ struct MOD_GLOBAL_INFO {
 	bool grenades_damage_lara = true;
 	bool spinning_debris = true;
 	bool fix_rope_glitch = true;
+	bool fix_lara_small_switch_rotation = true;
 
 	bool show_logo_in_title = true;
 	bool show_lara_in_title = false;

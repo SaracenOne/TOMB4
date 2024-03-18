@@ -197,7 +197,7 @@ void setup_custom_slots_for_level(int level, OBJECT_INFO* current_object_info_ar
                 short original_nmeshes = current_object_info_array[i].nmeshes;
                 short original_mesh_index = current_object_info_array[i].mesh_index;
                 short original_bone_index = current_object_info_array[i].bone_index;
-                short* original_frame_base = current_object_info_array[i].frame_base;
+                short *original_frame_base = current_object_info_array[i].frame_base;
                 short original_anim_index = current_object_info_array[i].anim_index;
 
                 memcpy(&current_object_info_array[i], &backup_object_info_array[game_mod_config.level_info[level].objects_info.slot_override[i]], sizeof(OBJECT_INFO));
@@ -1376,6 +1376,7 @@ void LoadGameModConfigSecondPass() {
                     READ_JSON_BOOL(grenades_damage_lara, global, mod_global_info);
                     READ_JSON_BOOL(spinning_debris, global, mod_global_info);
                     READ_JSON_BOOL(fix_rope_glitch, global, mod_global_info);
+                    READ_JSON_BOOL(fix_lara_small_switch_rotation, global, mod_global_info);
 
                     // Misc
                     READ_JSON_BOOL(show_logo_in_title, global, mod_global_info);
