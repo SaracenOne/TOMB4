@@ -42,6 +42,59 @@ enum GRID_FRAGMENT_TYPE {
 	FRAGMENT_TYPE_TWO_CROSS_DIAGONALS_PASSING_LINE
 };
 
+int NGFloat2Int(float x) {
+	return (int)(x > 0.0 ? x + 0.5 : x - 0.5);
+}
+
+bool NGIsSourcePositionNearTargetPos(PHD_3DPOS source_pos, PHD_3DPOS target_pos, int distance, bool ignore_y) {
+	int diff;
+
+	diff = target_pos.x_pos - source_pos.x_pos;
+	if (diff < -distance || diff > distance)
+		return false;
+
+	if (!ignore_y) {
+		diff = target_pos.y_pos - source_pos.y_pos;
+		if (diff < -distance || diff > distance)
+			return false;
+	}
+
+	diff = target_pos.z_pos - source_pos.z_pos;
+	if (diff < -distance || diff > distance)
+		return false;
+
+	return true;
+
+}
+
+bool NGIsSourcePositionLessThanDistanceToTargetPosition(PHD_3DPOS source_pos, PHD_3DPOS target_pos, int distance, bool ignore_y) {
+	int32_t diffX, diffY, diffZ;
+
+	if (!NGIsSourcePositionNearTargetPos(source_pos, target_pos, distance, ignore_y))
+		return false;
+
+	diffX = (int)target_pos.x_pos - (int)source_pos.x_pos;
+	if (ignore_y) {
+		diffY = 0;
+	} else {
+		diffY = (int)target_pos.y_pos - (int)source_pos.y_pos;
+	}
+	diffZ = (int)target_pos.z_pos - (int)source_pos.z_pos;
+
+	diffX *= diffX;
+	diffY *= diffY;
+	diffZ *= diffZ;
+
+	if (diffX < 0 || diffY < 0 || diffZ < 0)
+		return false;
+
+	uint32_t total = (unsigned int)NGFloat2Int((float)sqrt(diffX + diffY +diffZ));
+	if (total <= distance)
+		return true;
+
+	return false;
+}
+
 bool NGGridFragmentCondition(int x_pos, int y_pos, int grid_size, int x_target_coordinate, int y_target_coordinate, GRID_FRAGMENT_TYPE grid_fragment_type, bool inverted) {
 	int fragment_size = SECTOR_SIZE / grid_size;
 	// Flipped these around to match
@@ -623,8 +676,11 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 			return false;
 	}
 	case LARA_IS_LESS_OR_EVEN_CLICKS_DISTANT_TO_MOVEABLE: {
-		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: LARA_IS_LESS_OR_EVEN_CLICKS_DISTANT_TO_MOVEABLE unimplemented!");
-		return false;
+		return NGIsSourcePositionLessThanDistanceToTargetPosition(lara_item->pos, items[param].pos, extra * 256, false);
+		break;
+	}
+	case LARA_IS_LESS_OR_EVEN_UNITS_DISTANT_TO_MOVEABLE: {
+		return NGIsSourcePositionLessThanDistanceToTargetPosition(lara_item->pos, items[param].pos, extra, false);
 		break;
 	}
 	case LARA_IS_IN_ROOM_TYPE: {

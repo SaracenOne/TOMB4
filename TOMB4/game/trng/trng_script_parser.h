@@ -160,6 +160,12 @@ enum NG_TGROUP_FLAGS {
 	TGROUP_USE_EXECUTOR_ITEM_INDEX = 0x100,
 	TGROUP_SINGLE_SHOT = 0x400,
 	TGROUP_USE_ITEM_USED_BY_LARA_INDEX = 0x800,
+
+	TGROUP_MOVEABLE = 0x1000,
+	TGROUP_FLIPEFFECT = 0x2000,
+	TGROUP_ACTION = 0x4000,
+	TGROUP_CONDITION_TRIGGER = 0x8000,
+
 };
 
 enum NG_AMMO_FLAGS {
@@ -200,7 +206,7 @@ struct NG_TRIGGER_GROUP_DATA {
 #define NG_TRIGGER_GROUP_DATA_SIZE 0xff
 struct NG_TRIGGER_GROUP {
 	int data_size = 0;
-	NG_TRIGGER_GROUP_DATA data[NG_TRIGGER_GROUP_DATA_SIZE];
+	NG_TRIGGER_GROUP_DATA data[NG_TRIGGER_GROUP_DATA_SIZE] = {};
 
 	bool oneshot_triggered = false;
 	bool was_executed = false;
@@ -216,13 +222,13 @@ struct NG_ORGANIZER {
 	short flags = 0;
 	short parameters = 0; // Unused
 	unsigned int appointment_count = 0;
-	NG_ORGANIZER_APPOINTMENT appointments[NG_ORGANIZER_MAX_APPOINTMENTS];
+	NG_ORGANIZER_APPOINTMENT appointments[NG_ORGANIZER_MAX_APPOINTMENTS] = {};
 };
 
 #define NG_ITEM_GROUP_MAX_LIST 4096
 struct NG_ITEM_GROUP {
 	short item_count = 0;
-	short item_list[NG_ITEM_GROUP_MAX_LIST];
+	short item_list[NG_ITEM_GROUP_MAX_LIST] = {};
 };
 
 #define NG_ANIMATION_CONDTION_MAX_SIZE 4096
