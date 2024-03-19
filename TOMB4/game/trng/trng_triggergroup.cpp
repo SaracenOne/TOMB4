@@ -9,6 +9,9 @@
 #include "trng_triggergroup.h"
 
 #include "../../tomb4/mod_config.h"
+#include "../../specific/file.h"
+#include "../control.h"
+#include "../camera.h"
 
 // There is some ambiguity if the implementation of SINGLE_SHOT_RESUMED is implemented correctly for secondary data blocks
 bool NGISTriggerGroupDataResumed(NG_TRIGGER_GROUP_DATA* data) {
@@ -23,6 +26,10 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Unknown TriggerGroup execution type not implemented yet!");
 		return false;
 	}
+
+	// Workaround for hack which allows the camera and camera target to be selected out of order when called from a TriggerGroup.
+	short selected_camera = -1;
+	short selected_target = -1;
 
 	NG_TRIGGER_GROUP& trigger_group = current_trigger_groups[trigger_group_id];
 	int index = 0;
@@ -114,44 +121,72 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 					}
 				}
 			} else {
-				// ActionNG (statics)
-				if ((trigger_group.data[index].first_field & 0xF000) == 0x4000) {
-					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ActionNG (statics) unsupported!");
-					if (!current_result) {
-						current_result = true;
-					}
-				}
 				// ActionNG
-				else if ((trigger_group.data[index].first_field & 0xF000) == 0x5000) {
-					if (trigger_group.data[index].first_field & TGROUP_USE_FOUND_ITEM_INDEX) {
-						NGAction(ng_found_item_index, trigger_group.data[index].third_field_lower & 0x7fff, NG_TRIGGER_FLAG_SCRIPT_TRIGGERED) != -1;
-					} else {
-						NGAction(ng_script_id_table[trigger_group.data[index].second_field_lower].script_index, trigger_group.data[index].third_field_lower & 0x7fff, NG_TRIGGER_FLAG_SCRIPT_TRIGGERED) != -1;
-					}
+				if (trigger_group.data[index].first_field & TGROUP_ACTION) {
+					if (trigger_group.data[index].first_field & TGROUP_MOVEABLE) {
 
-					if (!current_result) {
-						current_result = true;
-					}
-				}
-				// ConditionNG
-				else if ((trigger_group.data[index].first_field & 0xF000) == 0x8000) {
-					if (trigger_group.data[index].first_field & TGROUP_USE_FOUND_ITEM_INDEX) {
-						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TGROUP_USE_FOUND_ITEM_INDEX used on condition");
-					} else {
-						current_result = NGCondition(trigger_group.data[index].second_field_lower, (trigger_group.data[index].third_field_lower >> 8) & 0xff, trigger_group.data[index].third_field_lower & 0xff);
-					}
-				}
-				// ConditionNG (item id)
-				else if ((trigger_group.data[index].first_field & 0xF000) == 0x9000) {
-					if (trigger_group.data[index].first_field & TGROUP_USE_FOUND_ITEM_INDEX) {
-						current_result = NGCondition(ng_found_item_index, (trigger_group.data[index].third_field_lower >> 8) & 0xff, trigger_group.data[index].third_field_lower & 0xff);
-					} else {
-						current_result = NGCondition(ng_script_id_table[trigger_group.data[index].second_field_lower].script_index, (trigger_group.data[index].third_field_lower >> 8) & 0xff, trigger_group.data[index].third_field_lower & 0xff);
+						short item_id = NO_ITEM;
+						if (trigger_group.data[index].first_field & TGROUP_USE_FOUND_ITEM_INDEX) {
+							item_id = ng_found_item_index;
+						} else {
+							item_id = ng_script_id_table[trigger_group.data[index].second_field_lower].script_index;
+						}
 
+						NGAction(item_id, trigger_group.data[index].third_field_lower & 0x7fff, NG_TRIGGER_FLAG_HEAVY | NG_TRIGGER_FLAG_SCRIPT_TRIGGERED) != -1;
+
+						// Workaround to some weird behaviour which allows cameras and targets to be assigned out of order from a script trigger.
+						unsigned char action_type = (unsigned char)(trigger_group.data[index].third_field_lower & 0x7fff) & 0xff;
+						switch (action_type) {
+							case ACTIVATE_CAMERA_WITH_TIMER: {
+								if (item_id >= number_cameras) {
+									NGLog(NG_LOG_TYPE_ERROR, "Invalid camera number.");
+									break;
+								}
+
+								if (camera.fixed[item_id].flags & 0x100)
+									break;
+
+								selected_camera = item_id;
+								break;
+							}
+							case SET_MOVEABLE_AS_TARGET_FOR_CAMERA: {
+								if (item_id >= ITEM_COUNT) {
+									NGLog(NG_LOG_TYPE_ERROR, "Invalid camera target.");
+									break;
+								}
+
+								selected_target = item_id;
+								break;
+							}
+						}
+
+						if (!current_result) {
+							current_result = true;
+						}
+					} else {
+						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ActionNG (statics) unsupported!");
+						if (!current_result) {
+							current_result = true;
+						}
 					}
-				}
-				// Flipeffect
-				else if ((trigger_group.data[index].first_field & 0xF000) == 0x2000) {
+				} else if (trigger_group.data[index].first_field & TGROUP_CONDITION_TRIGGER) {
+					// ConditionNG (item id)
+					if (trigger_group.data[index].first_field & TGROUP_MOVEABLE) {
+						if (trigger_group.data[index].first_field & TGROUP_USE_FOUND_ITEM_INDEX) {
+							current_result = NGCondition(ng_found_item_index, (trigger_group.data[index].third_field_lower >> 8) & 0xff, trigger_group.data[index].third_field_lower & 0xff);
+						}
+						else {
+							current_result = NGCondition(ng_script_id_table[trigger_group.data[index].second_field_lower].script_index, (trigger_group.data[index].third_field_lower >> 8) & 0xff, trigger_group.data[index].third_field_lower & 0xff);
+
+						}
+					} else {
+						if (trigger_group.data[index].first_field & TGROUP_USE_FOUND_ITEM_INDEX) {
+							NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TGROUP_USE_FOUND_ITEM_INDEX used on condition");
+						} else {
+							current_result = NGCondition(trigger_group.data[index].second_field_lower, (trigger_group.data[index].third_field_lower >> 8) & 0xff, trigger_group.data[index].third_field_lower & 0xff);
+						}
+					}
+				} else if (trigger_group.data[index].first_field & TGROUP_FLIPEFFECT) {
 					if (trigger_group.data[index].first_field & TGROUP_USE_FOUND_ITEM_INDEX) {
 						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TGROUP_USE_FOUND_ITEM_INDEX used on flipeffect");
 					} else {
@@ -162,9 +197,7 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 						NGLog(NG_LOG_TYPE_ERROR, "Flipeffect returned false!");
 						current_result = true;
 					}
-				}
-				// End
-				else if (trigger_group.data[index].first_field == 0x0000) {
+				} else if (trigger_group.data[index].first_field == 0x0000) {
 					break;
 				} else {
 					NGLog(NG_LOG_TYPE_ERROR, "Unknown triggergroup command!");
@@ -196,6 +229,10 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 
 	if (operation_result == true) {
 		trigger_group.was_executed = true;
+	}
+
+	if (selected_camera != NO_ITEM && selected_target != NO_ITEM) {
+		camera.item = &items[selected_target];
 	}
 
 	return operation_result;

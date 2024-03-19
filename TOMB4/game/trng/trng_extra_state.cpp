@@ -26,6 +26,8 @@
 int ng_triggered_items_for_timerfield[NG_MAX_TRIGGERED_ITEMS] = {};
 int ng_triggered_items_for_timerfield_count = 0;
 
+short ng_camera_target_id = NO_ITEM;
+
 // Includes tightrope state variables
 NG_LARA_EXTRASTATE ng_lara_extrastate;
 
@@ -1552,7 +1554,10 @@ void NGUpdateActionOneshot() {
 	ng_action_oneshot_floorstate[index] = true;
 }
 
-void NGSetupExtraState() {
+void
+NGSetupExtraState() {
+	ng_camera_target_id = NO_ITEM;
+
 	ng_lara_extrastate.TightRopeFall = 0;
 	ng_lara_extrastate.TightRopeOff = 0;
 	ng_lara_extrastate.TightRopeOnCount = 0;

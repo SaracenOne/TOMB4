@@ -8,6 +8,8 @@
 extern int ng_triggered_items_for_timerfield[NG_MAX_TRIGGERED_ITEMS];
 extern int ng_triggered_items_for_timerfield_count;
 
+extern short ng_camera_target_id;
+
 struct NG_LARA_EXTRASTATE {
 	uchar TightRopeOnCount;
 	uchar TightRopeOff;

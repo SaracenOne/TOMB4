@@ -22,6 +22,7 @@
 #include "../box.h"
 #include "../camera.h"
 #include "../spotcam.h"
+#include "../lara.h"
 
 void NGHurtEnemy(unsigned short item_id, unsigned short damage) {
 	if (items[item_id].hit_points > 0) {
@@ -191,6 +192,11 @@ NGActionRepeatType NGAction(unsigned short item_id, unsigned short extra, int fl
 
 	if (item_id < 0) {
 		NGLog(NG_LOG_TYPE_ERROR, "ActionNG: Negative item ID!");
+		return NG_ACTION_REPEAT_TYPE_ALWAYS;
+	}
+
+	if (item_id >= ITEM_COUNT) {
+		NGLog(NG_LOG_TYPE_ERROR, "Invalid item number overflow.");
 		return NG_ACTION_REPEAT_TYPE_ALWAYS;
 	}
 
@@ -474,28 +480,49 @@ NGActionRepeatType NGAction(unsigned short item_id, unsigned short extra, int fl
 			break;
 		}
 		case ACTIVATE_CAMERA_WITH_TIMER: {
-			camera.number = item_id;
+			if (item_id >= number_cameras) {
+				NGLog(NG_LOG_TYPE_ERROR, "Invalid camera number.");
+				break;
+			}
 
-			if ((camera.type == LOOK_CAMERA || camera.type == COMBAT_CAMERA) && !(camera.fixed[camera.number].flags & 1))
+			if (camera.fixed[item_id].flags & 0x100)
 				break;
 
-			if (camera.number != camera.last) {
-				camera.timer = action_data * 30;
+			camera.number = item_id;
 
-				camera.speed = 0;
-				if (flags & NG_TRIGGER_FLAG_HEAVY) {
-					camera.type = HEAVY_CAMERA;
-				} else {
-					camera.type = FIXED_CAMERA;
+			if (camera.type == LOOK_CAMERA || camera.type == COMBAT_CAMERA) {
+				if (!(camera.fixed[item_id].flags & 0x01)) {
+					break;
 				}
 			}
 
-			camera.number = item_id;
 			camera.timer = action_data * 30;
+			camera.speed = 1;
+			if (ng_camera_target_id == NO_ITEM) {
+				ng_camera_target_id = lara.item_number;
+			}
+			
+			camera.item = &items[ng_camera_target_id];
+
+			if (flags & NG_TRIGGER_FLAG_BUTTON_ONESHOT) {
+				camera.flags |= 0x100;
+			}
+			if (flags & NG_TRIGGER_FLAG_HEAVY) {
+				camera.type = HEAVY_CAMERA;
+			}
+			else {
+				camera.type = FIXED_CAMERA;
+			}
+
 			break;
 		}
 		case SET_MOVEABLE_AS_TARGET_FOR_CAMERA: {
-			camera.item = &items[item_id];
+			if (item_id >= ITEM_COUNT) {
+				NGLog(NG_LOG_TYPE_ERROR, "Invalid camera target.");
+				break;
+			}
+
+			ng_camera_target_id = item_id;
 			break;
 		}
 		case TRIGGER_MOVEABLE_ACTIVATE_WITH_TIMER: {
