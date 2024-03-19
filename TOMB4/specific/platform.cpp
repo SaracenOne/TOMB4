@@ -48,7 +48,7 @@ int platform_strcicmp(char const* a, char const* b) {
 }
 
 FILE *platform_fopen(const char *filename, const char *mode) {
-#ifdef _WIN32 && UNICODE
+#if defined(_WIN32) && defined(UNICODE)
 	int len = MultiByteToWideChar(CP_UTF8, 0, filename, -1, NULL, 0);
 	wchar_t* wpath = (wchar_t*)SYSTEM_MALLOC(len * sizeof(wchar_t));
 	MultiByteToWideChar(CP_UTF8, 0, filename, -1, wpath, len);
