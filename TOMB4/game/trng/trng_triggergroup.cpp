@@ -170,6 +170,10 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 						}
 					}
 				} else if (trigger_group.data[index].first_field & TGROUP_CONDITION_TRIGGER) {
+					if (trigger_group_id == 34) {
+						printf("");
+					}
+
 					// ConditionNG (item id)
 					if (trigger_group.data[index].first_field & TGROUP_MOVEABLE) {
 						if (trigger_group.data[index].first_field & TGROUP_USE_FOUND_ITEM_INDEX) {

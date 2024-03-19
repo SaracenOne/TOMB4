@@ -23,6 +23,10 @@ bool NGExecuteSingleGlobalTrigger(int global_trigger_id, int selected_inventory_
 
 	unsigned short condition_trigger_group_id = global_trigger->condition_trigger_group;
 
+	if (global_trigger_id == 7) {
+		printf("");
+	}
+
 	if (selected_inventory_object_id == NO_ITEM) {
 		// What the difference between GT_CONDITION_GROUP and GT_ALWAYS?
 		switch (global_trigger->type) {

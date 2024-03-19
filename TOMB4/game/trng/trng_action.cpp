@@ -588,15 +588,15 @@ NGActionRepeatType NGAction(unsigned short item_id, unsigned short extra, int fl
 			break;
 		}
 		case FORCE_ANIMATION_0_TO_31_ON_ITEM: {
-			NGForceItemAnimation(item_id, action_data & 0x1f);
+			NGSetItemAnimation(item_id, action_data & 0x1f, true, false, false, true);
 			break;
 		}
 		case FORCE_ANIMATION_32_TO_63_ON_ITEM: {
-			NGForceItemAnimation(item_id, (action_data & 0x1f) + 32);
+			NGSetItemAnimation(item_id, (action_data & 0x1f) + 32, true, false, false, true);
 			break;
 		}
 		case FORCE_ANIMATION_64_TO_95_ON_ITEM: {
-			NGForceItemAnimation(item_id, (action_data & 0x1f) + 64);
+			NGSetItemAnimation(item_id, (action_data & 0x1f) + 64, true, false, false, true);
 			break;
 		}
 		case TURN_X_ANIMATION_MOVING_SLOWLY_IN_CLOCKWISE_UNTIL_FACING: {

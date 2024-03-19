@@ -323,9 +323,7 @@ bool stop_all_sound_samples(unsigned char _unused_1, unsigned char _unused_2) {
 bool force_lara_animation_0_255_of_slot_animation(unsigned char animation_index, unsigned char object_id) {
 	int animation_index_offset = objects[object_id].anim_index + animation_index;
 
-	if (lara_item->anim_number != animation_index_offset) {
-		NGForceItemAnimation(lara.item_number, animation_index_offset);
-	}
+	NGSetItemAnimation(lara.item_number, animation_index_offset, true, false, false, true);
 
 	return true;
 }
@@ -383,9 +381,7 @@ bool move_lara_to_lara_start_pos_in_x_way(unsigned char ocb, unsigned char telep
 bool force_lara_animation_256_512_of_slot_animation(unsigned char animation_index, unsigned char object_id) {
 	int animation_index_offset = objects[object_id].anim_index + animation_index + 256;
 
-	if (lara_item->anim_number != animation_index_offset) {
-		NGForceItemAnimation(lara.item_number, animation_index_offset);
-	}
+	NGSetItemAnimation(lara.item_number, animation_index_offset, true, false, false, true);
 
 	return true;
 }
@@ -1014,12 +1010,9 @@ bool sound_play_sound_single_playback_of_global_sound_map(unsigned char lower_sa
 bool lara_force_x_animation_for_lara_preserve_state_id(unsigned char lower_anim_id, unsigned char upper_anim_id) {
 	int animation_index = (int)lower_anim_id | ((int)(upper_anim_id) << 8 & 0xff00);
 
-	int original_anim_state = lara_item->current_anim_state;
 	int animation_index_offset = objects[T4PlusGetLaraSlotID()].anim_index + animation_index;
 
-	NGForceItemAnimation(lara.item_number, animation_index_offset);
-
-	lara_item->current_anim_state = original_anim_state;
+	NGSetItemAnimation(lara.item_number, animation_index_offset, false, false, true, false);
 
 	return true;
 }
@@ -1029,7 +1022,7 @@ bool lara_force_x_animation_for_lara_set_new_state_id(unsigned char lower_anim_i
 	int animation_index = (int)lower_anim_id | ((int)(upper_anim_id) << 8 & 0xff00);
 	int animation_index_offset = objects[T4PlusGetLaraSlotID()].anim_index + animation_index;
 
-	NGForceItemAnimation(lara.item_number, animation_index_offset);
+	NGSetItemAnimation(lara.item_number, animation_index_offset, true, false, true, false);
 
 	return true;
 }
@@ -1039,11 +1032,8 @@ bool lara_force_x_animation_for_lara_set_neutral_state_id(unsigned char lower_an
 	int animation_index = (int)lower_anim_id | ((int)(upper_anim_id) << 8 & 0xff00);
 	int animation_index_offset = objects[T4PlusGetLaraSlotID()].anim_index + animation_index;
 
-	NGForceItemAnimation(lara.item_number, animation_index_offset);
-
-	// Do we set the goal state ID too?
+	NGSetItemAnimation(lara.item_number, animation_index_offset, false, false, true, false);
 	items[lara.item_number].current_anim_state = 69;
-	items[lara.item_number].goal_anim_state = 69;
 
 	return true;
 }

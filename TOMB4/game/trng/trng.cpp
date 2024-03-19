@@ -304,20 +304,86 @@ void NGRotateStaticY(unsigned short static_id, short rotation) {
 	}
 }
 
-void NGForceItemAnimation(unsigned short item_id, unsigned int animation) {
-	items[item_id].anim_number = objects[items[item_id].object_number].anim_index + animation;
-	items[item_id].frame_number = anims[items[item_id].anim_number].frame_base;
+int NGFloat2Int(float x) {
+	return (int)(x > 0.0 ? x + 0.5 : x - 0.5);
+}
 
-	if (items[item_id].current_anim_state != anims[items[item_id].anim_number].current_anim_state)
-	{
+bool NGIsSourcePositionNearTargetPos(PHD_3DPOS source_pos, PHD_3DPOS target_pos, int distance, bool ignore_y) {
+	int diff;
+
+	diff = target_pos.x_pos - source_pos.x_pos;
+	if (diff < -distance || diff > distance)
+		return false;
+
+	if (!ignore_y) {
+		diff = target_pos.y_pos - source_pos.y_pos;
+		if (diff < -distance || diff > distance)
+			return false;
+	}
+
+	diff = target_pos.z_pos - source_pos.z_pos;
+	if (diff < -distance || diff > distance)
+		return false;
+
+	return true;
+
+}
+
+bool NGIsSourcePositionLessThanDistanceToTargetPosition(PHD_3DPOS source_pos, PHD_3DPOS target_pos, int distance, bool ignore_y) {
+	int32_t diffX, diffY, diffZ;
+
+	if (!NGIsSourcePositionNearTargetPos(source_pos, target_pos, distance, ignore_y))
+		return false;
+
+	diffX = (int)target_pos.x_pos - (int)source_pos.x_pos;
+	if (ignore_y) {
+		diffY = 0;
+	}
+	else {
+		diffY = (int)target_pos.y_pos - (int)source_pos.y_pos;
+	}
+	diffZ = (int)target_pos.z_pos - (int)source_pos.z_pos;
+
+	diffX *= diffX;
+	diffY *= diffY;
+	diffZ *= diffZ;
+
+	if (diffX < 0 || diffY < 0 || diffZ < 0)
+		return false;
+
+	uint32_t total = (unsigned int)NGFloat2Int((float)sqrt(diffX + diffY + diffZ));
+	if (total <= distance)
+		return true;
+
+	return false;
+}
+
+void NGSetItemAnimation(uint16_t item_id,
+	uint32_t animation,
+	bool update_state_id,
+	bool update_next_state_id,
+	bool update_speed,
+	bool force_reset) {
+	int16_t new_animation = objects[items[item_id].object_number].anim_index + animation;
+
+	if (!force_reset && items[item_id].anim_number == new_animation) {
+		return;
+	}
+
+	items[item_id].anim_number = new_animation;
+	items[item_id].frame_number = anims[new_animation].frame_base;
+
+	if (update_state_id) {
 		items[item_id].current_anim_state = anims[items[item_id].anim_number].current_anim_state;
-		// Do we want to force the goal anim state too?
+	}
+
+	if (update_state_id) {
 		items[item_id].goal_anim_state = anims[items[item_id].anim_number].current_anim_state;
 	}
 
-	// Is required_anim_state_relevant?
-	if (items[item_id].required_anim_state == anims[items[item_id].anim_number].current_anim_state)
-		items[item_id].required_anim_state = 0;
+	if (update_speed) {
+		items[item_id].speed = anims[items[item_id].anim_number].velocity;
+	}
 }
 
 void NGSetup() {	

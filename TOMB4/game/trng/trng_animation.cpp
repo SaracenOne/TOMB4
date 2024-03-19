@@ -162,25 +162,15 @@ void NGTestAnimation(NG_ANIMATION *animation) {
 					if (animation->fan_flags & FAN_PERFORM_TRIGGER_GROUP) {
 						NGTriggerGroupFunction(animation->animation_index, 0);
 					} else {
-						int original_goal_anim_state = lara_item->goal_anim_state;
-
-						NGForceItemAnimation(lara.item_number, animation->animation_index);
-
-						if (!(animation->fan_flags & FAN_KEEP_NEXT_STATEID)) {
-							lara_item->goal_anim_state = original_goal_anim_state;
-						}
+						NGSetItemAnimation(lara.item_number, animation->animation_index, true, !(animation->fan_flags & FAN_KEEP_NEXT_STATEID), true, false);
 
 						if (animation->fan_flags & FAN_START_FROM_EXTRA_FRAME) {
 							lara_item->frame_number += animation->environment.extra;
 						}
 					}
 
-					// This is likely not correct behaviour, needs further investigation.
 					if (animation->fan_flags & FAN_SET_NEUTRAL_STATE_ID) {
 						lara_item->current_anim_state = 69;
-						if (!(animation->fan_flags & FAN_KEEP_NEXT_STATEID)) {
-							lara_item->goal_anim_state = 69;
-						}
 					}
 
 					if ((animation->fan_flags & FAN_DISABLE_GRAVITY) && (animation->fan_flags & FAN_ENABLE_GRAVITY)) {
