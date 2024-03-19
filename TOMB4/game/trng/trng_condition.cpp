@@ -183,42 +183,81 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 		bool is_lara_performing = !extra;
 		switch (param) {
 			case 0: // Climbing
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_IS_PERFORMING_X_ACTION climbing not currently implemented!");
-				return !is_lara_performing;
+				if ((
+					lara_item->current_anim_state >= AS_CLIMBSTNC &&
+					lara_item->current_anim_state <= AS_CLIMBDOWN) == is_lara_performing) {
+					return true;
+				}
+				return false;
 				break;
 			case 1: // Swimming underwater
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_IS_PERFORMING_X_ACTION swimming underwater not currently implemented!");
-				return !is_lara_performing;
+				if ((
+					lara_item->current_anim_state == AS_TREAD ||
+					lara_item->current_anim_state == AS_SWIM ||
+					lara_item->current_anim_state == AS_GLIDE) == is_lara_performing) {
+					return true;
+				}
+				return false;
 				break;
 			case 2: // Floating on water
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_IS_PERFORMING_X_ACTION floating on water not currently implemented!");
-				return !is_lara_performing;
+				if ((
+					lara_item->current_anim_state == AS_SURFTREAD ||
+					lara_item->current_anim_state == AS_SURFSWIM ||
+					lara_item->current_anim_state == AS_SURFBACK ||
+					lara_item->current_anim_state == AS_SURFLEFT ||
+					lara_item->current_anim_state == AS_SURFRIGHT) == is_lara_performing) {
+					return true;
+				}
+				return false;
 				break;
 			case 3: // Falling
-				if ((lara_item->current_anim_state == AS_FASTFALL) == is_lara_performing) {
+				if ((lara_item->current_anim_state == AS_FASTFALL ||
+					lara_item->current_anim_state == AS_FALLBACK) == is_lara_performing) {
 					return true;
 				}
 				return false;
 				break;
 			case 4: // Jumping
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_IS_PERFORMING_X_ACTION jumping not currently implemented!");
-				return !is_lara_performing;
+				if ((
+					lara_item->current_anim_state == AS_BACKJUMP ||
+					lara_item->current_anim_state == AS_UPJUMP ||
+					lara_item->current_anim_state == AS_FORWARDJUMP) == is_lara_performing) {
+					return true;
+				}
+				return false;
 				break;
 			case 5: // Moving on all fours
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_IS_PERFORMING_X_ACTION moving on all fours not currently implemented!");
-				return !is_lara_performing;
+				if ((
+					lara_item->current_anim_state == AS_ALL4S ||
+					lara_item->current_anim_state == AS_CRAWL ||
+					lara_item->current_anim_state == AS_ALL4TURNL ||
+					lara_item->current_anim_state == AS_ALL4TURNR ||
+					lara_item->current_anim_state == AS_CRAWLBACK ||
+					lara_item->current_anim_state == AS_DUCK ||
+					lara_item->current_anim_state == AS_DUCKROLL ||
+					lara_item->current_anim_state == AS_DUCKROTL ||
+					lara_item->current_anim_state == AS_DUCKROTR) == is_lara_performing) {
+					return true;
+				}
+				return false;
 				break;
 			case 6: // Sliding
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_IS_PERFORMING_X_ACTION sliding not currently implemented!");
-				return !is_lara_performing;
+				if ((lara_item->current_anim_state == AS_SLIDE ||
+					lara_item->current_anim_state == AS_SLIDEBACK) == is_lara_performing) {
+					return true;
+				}
+				return false;
 				break;
 			case 7: // Rolling
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_IS_PERFORMING_X_ACTION rolling not currently implemented!");
-				return !is_lara_performing;
+				if ((lara_item->current_anim_state == AS_FASTBACK) == is_lara_performing) {
+					return true;
+				}
 				break;
 			case 8: // Running
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_IS_PERFORMING_X_ACTION running not currently implemented!");
-				return !is_lara_performing;
+				if ((lara_item->current_anim_state == AS_RUN) == is_lara_performing) {
+					return true;
+				}
+				return false;
 				break;
 			case 9: // Walking
 				if ((lara_item->current_anim_state == AS_WALK) == is_lara_performing) {
@@ -233,8 +272,10 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 				return false;
 				break;
 			case 11: // Stopping
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_IS_PERFORMING_X_ACTION stopping not currently implemented!");
-				return !is_lara_performing;
+				if ((lara_item->current_anim_state == AS_STOP) == is_lara_performing) {
+					return true;
+				}
+				return false;
 				break;
 			case 12: // Monkeying
 				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_IS_PERFORMING_X_ACTION monkeying not currently implemented!");
