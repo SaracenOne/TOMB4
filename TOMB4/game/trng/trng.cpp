@@ -308,20 +308,20 @@ int NGFloat2Int(float x) {
 	return (int)(x > 0.0 ? x + 0.5 : x - 0.5);
 }
 
-bool NGIsSourcePositionNearTargetPos(PHD_3DPOS source_pos, PHD_3DPOS target_pos, int distance, bool ignore_y) {
+bool NGIsSourcePositionNearTargetPos(PHD_3DPOS *source_pos, PHD_3DPOS *target_pos, int32_t distance, bool ignore_y) {
 	int diff;
 
-	diff = target_pos.x_pos - source_pos.x_pos;
+	diff = target_pos->x_pos - source_pos->x_pos;
 	if (diff < -distance || diff > distance)
 		return false;
 
 	if (!ignore_y) {
-		diff = target_pos.y_pos - source_pos.y_pos;
+		diff = target_pos->y_pos - source_pos->y_pos;
 		if (diff < -distance || diff > distance)
 			return false;
 	}
 
-	diff = target_pos.z_pos - source_pos.z_pos;
+	diff = target_pos->z_pos - source_pos->z_pos;
 	if (diff < -distance || diff > distance)
 		return false;
 
@@ -329,20 +329,20 @@ bool NGIsSourcePositionNearTargetPos(PHD_3DPOS source_pos, PHD_3DPOS target_pos,
 
 }
 
-bool NGIsSourcePositionLessThanDistanceToTargetPosition(PHD_3DPOS source_pos, PHD_3DPOS target_pos, int distance, bool ignore_y) {
+bool NGIsSourcePositionLessThanDistanceToTargetPosition(PHD_3DPOS *source_pos, PHD_3DPOS *target_pos, int32_t distance, bool ignore_y) {
 	int32_t diffX, diffY, diffZ;
 
 	if (!NGIsSourcePositionNearTargetPos(source_pos, target_pos, distance, ignore_y))
 		return false;
 
-	diffX = (int)target_pos.x_pos - (int)source_pos.x_pos;
+	diffX = (int)target_pos->x_pos - (int)source_pos->x_pos;
 	if (ignore_y) {
 		diffY = 0;
 	}
 	else {
-		diffY = (int)target_pos.y_pos - (int)source_pos.y_pos;
+		diffY = (int)target_pos->y_pos - (int)source_pos->y_pos;
 	}
-	diffZ = (int)target_pos.z_pos - (int)source_pos.z_pos;
+	diffZ = (int)target_pos->z_pos - (int)source_pos->z_pos;
 
 	diffX *= diffX;
 	diffY *= diffY;

@@ -664,11 +664,11 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 			return false;
 	}
 	case LARA_IS_LESS_OR_EVEN_CLICKS_DISTANT_TO_MOVEABLE: {
-		return NGIsSourcePositionLessThanDistanceToTargetPosition(lara_item->pos, items[param].pos, extra * 256, false);
+		return NGIsSourcePositionLessThanDistanceToTargetPosition(&lara_item->pos, &items[param].pos, extra * 256, false);
 		break;
 	}
 	case LARA_IS_LESS_OR_EVEN_UNITS_DISTANT_TO_MOVEABLE: {
-		return NGIsSourcePositionLessThanDistanceToTargetPosition(lara_item->pos, items[param].pos, extra, false);
+		return NGIsSourcePositionLessThanDistanceToTargetPosition(&lara_item->pos, &items[param].pos, extra, false);
 		break;
 	}
 	case LARA_IS_IN_ROOM_TYPE: {

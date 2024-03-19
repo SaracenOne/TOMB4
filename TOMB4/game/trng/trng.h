@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../../global/types.h"
+
 #define SILENCE_EXCESSIVE_LOGS // Debug macro to silence log commands which are commonly called every frame.
 
 #define NG_DEGREE(i) (i * 182)
@@ -81,12 +83,9 @@ extern void NGMoveStaticVerticalByUnits(unsigned short static_id, int units);
 extern void NGRotateStaticX(unsigned short static_id, short rotation);
 extern void NGRotateStaticY(unsigned short static_id, short rotation);
 
-int NGFloat2Int(float x) {
-	return (int)(x > 0.0 ? x + 0.5 : x - 0.5);
-}
-
-extern bool NGIsSourcePositionNearTargetPos(PHD_3DPOS source_pos, PHD_3DPOS target_pos, int distance, bool ignore_y);
-extern bool NGIsSourcePositionLessThanDistanceToTargetPosition(PHD_3DPOS source_pos, PHD_3DPOS target_pos, int distance, bool ignore_y);
+extern int NGFloat2Int(float x);
+extern bool NGIsSourcePositionNearTargetPos(PHD_3DPOS *source_pos, PHD_3DPOS *target_pos, int32_t distance, bool ignore_y);
+extern bool NGIsSourcePositionLessThanDistanceToTargetPosition(PHD_3DPOS *source_pos, PHD_3DPOS *target_pos, int32_t distance, bool ignore_y);
 
 extern void NGSetItemAnimation(uint16_t item_id, uint32_t animation, bool update_state_id, bool update_next_state_id, bool update_speed, bool force_reset);
 
