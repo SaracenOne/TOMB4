@@ -680,7 +680,7 @@ void DoLevel(uchar Name, uchar Audio)
 		}
 
 		if (gfLevelComplete == 25 && skipped_level)
-			lara.vehicle = -1;
+			lara.vehicle = NO_ITEM;
 	}
 
 	input = 0;

@@ -337,7 +337,7 @@ enum trigobj_types
 	TO_CD,
 	TO_FLIPEFFECT,
 	TO_SECRET,
-	TO_BODYBAG,
+	TO_ACTION,
 	TO_FLYBY,
 	TO_CUTSCENE,
 	TO_FMV,

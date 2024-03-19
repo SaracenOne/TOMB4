@@ -124,13 +124,12 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 				// ActionNG
 				else if ((trigger_group.data[index].first_field & 0xF000) == 0x5000) {
 					if (trigger_group.data[index].first_field & TGROUP_USE_FOUND_ITEM_INDEX) {
-						current_result = NGAction(ng_found_item_index, trigger_group.data[index].third_field_lower & 0x7fff, true, true) != -1;
+						NGAction(ng_found_item_index, trigger_group.data[index].third_field_lower & 0x7fff, NG_TRIGGER_FLAG_SCRIPT_TRIGGERED) != -1;
 					} else {
-						current_result = NGAction(ng_script_id_table[trigger_group.data[index].second_field_lower].script_index, trigger_group.data[index].third_field_lower & 0x7fff, true, true) != -1;
+						NGAction(ng_script_id_table[trigger_group.data[index].second_field_lower].script_index, trigger_group.data[index].third_field_lower & 0x7fff, NG_TRIGGER_FLAG_SCRIPT_TRIGGERED) != -1;
 					}
 
 					if (!current_result) {
-						NGLog(NG_LOG_TYPE_ERROR, "ActionNG returned false!");
 						current_result = true;
 					}
 				}

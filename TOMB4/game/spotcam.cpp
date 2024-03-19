@@ -100,6 +100,11 @@ void InitialiseSpotCam(short Sequence)
 	SPOTCAM* s;
 	long next_spline_camera, cunt;
 
+	if (Sequence >= CAMERA_COUNT) {
+		// Invalid spotcam!
+		return;
+	}
+
 	if (bTrackCamInit && Sequence == LastSequence)
 	{
 		bTrackCamInit = 0;

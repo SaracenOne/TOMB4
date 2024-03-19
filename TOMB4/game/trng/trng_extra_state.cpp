@@ -23,6 +23,9 @@
 #include "trng_globaltrigger.h"
 #include "../../specific/file.h"
 
+int ng_triggered_items_for_timerfield[NG_MAX_TRIGGERED_ITEMS] = {};
+int ng_triggered_items_for_timerfield_count = 0;
+
 // Includes tightrope state variables
 NG_LARA_EXTRASTATE ng_lara_extrastate;
 
@@ -135,8 +138,10 @@ int ng_current_action_floor_trigger = -1;
 int ng_heavy_last_flipeffect_floor_trigger = -1;
 int ng_heavy_current_flipeffect_floor_trigger = -1;
 
-int ng_heavy_last_action_floor_trigger = -1;
-int ng_heavy_current_action_floor_trigger = -1;
+int ng_heavy_last_action_floor_trigger_count = 0;
+int ng_heavy_last_action_floor_trigger[NG_MAX_FLOORSTATE_ACTIONS] = {};
+int ng_heavy_current_action_floor_trigger_count = 0;
+int ng_heavy_current_action_floor_trigger[NG_MAX_FLOORSTATE_ACTIONS] = {};
 
 int lara_damage_resistence = 1000;
 
@@ -297,8 +302,14 @@ extern bool NGCheckActionFloorStatePressedThisFrameOrLastFrame(bool is_heavy_tri
 		if (ng_current_action_floor_trigger == index || ng_last_action_floor_trigger == index)
 			return true;
 	} else {
-		if (ng_heavy_current_action_floor_trigger == index || ng_heavy_last_action_floor_trigger == index)
+		for (int i = 0; i < ng_heavy_current_action_floor_trigger_count; i++) {
+			ng_heavy_current_action_floor_trigger[i] == index;
 			return true;
+		}
+		for (int i = 0; i < ng_heavy_last_action_floor_trigger_count; i++) {
+			ng_heavy_last_action_floor_trigger[i] == index;
+			return true;
+		}
 	}
 
 	return false;
@@ -927,6 +938,8 @@ bool NGProcessGlobalTriggers(int selected_inventory_object_id) {
 }
 
 void NGFrameStartExtraState() {
+	ng_triggered_items_for_timerfield_count = 0;
+
 	if (pending_level_load_timer >= 0) {
 		if (pending_level_load_timer == 0) {
 			gfLevelComplete = pending_level_load_id;
@@ -1491,8 +1504,38 @@ void NGUpdateActionFloorstateData(bool heavy) {
 	int index = ng_room_offset_table[ng_current_trigger_state.room] + ng_current_trigger_state.index;
 
 	if (heavy) {
-		ng_heavy_current_action_floor_trigger = index;
-		ng_heavy_last_action_floor_trigger = index;
+		{
+			bool already_exists = false;
+			for (int i = 0; i < ng_heavy_current_action_floor_trigger_count; i++) {
+				if (ng_heavy_current_action_floor_trigger[i] == index)
+					already_exists = true;
+					break;
+			}
+			if (!already_exists) {
+				if (ng_heavy_current_action_floor_trigger_count < NG_MAX_FLOORSTATE_ACTIONS) {
+					ng_heavy_current_action_floor_trigger[ng_heavy_current_action_floor_trigger_count] = index;
+					ng_heavy_current_action_floor_trigger_count++;
+				}else {
+					NGLog(NG_LOG_TYPE_POSSIBLE_INACCURACY, "Overflow of active heavy floorstate actions!");
+				}
+			}
+		}
+		{
+			bool already_exists = false;
+			for (int i = 0; i < ng_heavy_last_action_floor_trigger_count; i++) {
+				if (ng_heavy_last_action_floor_trigger[i] == index)
+					already_exists = true;
+				break;
+			}
+			if (!already_exists) {
+				if (ng_heavy_last_action_floor_trigger_count < NG_MAX_FLOORSTATE_ACTIONS) {
+					ng_heavy_last_action_floor_trigger[ng_heavy_last_action_floor_trigger_count] = index;
+					ng_heavy_last_action_floor_trigger_count++;
+				} else {
+					NGLog(NG_LOG_TYPE_POSSIBLE_INACCURACY, "Overflow of active heavy floorstate actions!");
+				}
+			}
+		}
 	} else {
 		ng_current_action_floor_trigger = index;
 		ng_last_action_floor_trigger = index;
@@ -1637,8 +1680,8 @@ void NGSetupExtraState() {
 	ng_current_action_floor_trigger = -1;
 	ng_heavy_last_flipeffect_floor_trigger = -1;
 	ng_heavy_current_flipeffect_floor_trigger = -1;
-	ng_heavy_last_action_floor_trigger = -1;
-	ng_heavy_current_action_floor_trigger = -1;
+	ng_heavy_last_action_floor_trigger_count = 0;
+	ng_heavy_current_action_floor_trigger_count = 0;
 
 	ng_floorstate_data_size = 0;
 	for (int i = 0; i < number_rooms; i++) {
@@ -1688,6 +1731,19 @@ void NGFrameFinishExtraState() {
 	ng_heavy_last_flipeffect_floor_trigger = ng_heavy_current_flipeffect_floor_trigger;
 	ng_heavy_current_flipeffect_floor_trigger = -1;
 
-	ng_heavy_last_action_floor_trigger = ng_heavy_current_action_floor_trigger;
-	ng_heavy_current_action_floor_trigger = -1;
+	if (ng_heavy_current_action_floor_trigger_count > 0) {
+		memcpy(ng_heavy_last_action_floor_trigger, ng_heavy_current_action_floor_trigger, ng_heavy_current_action_floor_trigger_count * sizeof(int));
+	}
+	ng_heavy_last_action_floor_trigger_count = ng_heavy_current_action_floor_trigger_count;
+	ng_heavy_current_action_floor_trigger_count = 0;
+}
+
+void NGRegisterTriggeredItemForTimerfield(short item_id) {
+	if (ng_triggered_items_for_timerfield_count >= NG_MAX_TRIGGERED_ITEMS) {
+		NGLog(NG_LOG_TYPE_ERROR, "Maximum triggered item overflow!");
+		return;
+	}
+
+	ng_triggered_items_for_timerfield[ng_triggered_items_for_timerfield_count] = item_id;
+	ng_triggered_items_for_timerfield_count++;
 }

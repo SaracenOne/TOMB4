@@ -853,15 +853,7 @@ void TestTriggers(short* data, long heavy, long HeavyFlags, int room_number, int
 	}
 
 	camera_item = 0;
-	
-	// TRNG, for retroactively using the timerfield.
-	const int MAX_TRIGGERED_ITEMS = 128;
-	int triggered_items[MAX_TRIGGERED_ITEMS] = {};
-	int trigger_items_count = 0;
-	for (int i = 0; i < MAX_TRIGGERED_ITEMS; i++) {
-		triggered_items[i] = -1;
-	}
-	
+
 	do
 	{
 		trigger = *data++;
@@ -873,10 +865,7 @@ void TestTriggers(short* data, long heavy, long HeavyFlags, int room_number, int
 			item = &items[value];
 
 			// For TRNG timerfields
-			triggered_items[trigger_items_count] = value;
-			trigger_items_count++;
-			if (trigger_items_count > MAX_TRIGGERED_ITEMS)
-				trigger_items_count = MAX_TRIGGERED_ITEMS;
+			NGRegisterTriggeredItemForTimerfield(value);
 
 			if (key >= 2 || ((type == ANTIPAD || type == ANTITRIGGER || type == HEAVYANTITRIGGER) && item->flags & IFL_ANTITRIGGER_ONESHOT) ||
 				(type == SWITCH && item->flags & IFL_SWITCH_ONESHOT) ||
@@ -1084,19 +1073,17 @@ void TestTriggers(short* data, long heavy, long HeavyFlags, int room_number, int
 		case TO_SECRET:
 			T4TriggerSecret(value); // TRLE
 			break;
-		case TO_BODYBAG:
+		case TO_ACTION:
 			if (NGUseNGActions()) {
 				trigger = *data++;
 				int plugin_id = NGGetPluginIDForFloorData(data);
 				if (plugin_id == 0) {
-					int last_item = NGActionTrigger(value, (trigger & 0x7fff), timer, heavy);
-					triggered_items[trigger_items_count] = last_item;
-					trigger_items_count++;
-					if (trigger_items_count > MAX_TRIGGERED_ITEMS)
-						trigger_items_count = MAX_TRIGGERED_ITEMS;
-					should_update_action_floorstate = true;
-					if (!should_update_ng_action_oneshot) {
-						if (!is_mod_trng_version_equal_or_greater_than_target(1, 3, 0, 0)) {
+					NGActionRepeatType  repeat_type = NGActionTrigger(value, (trigger & 0x7fff), timer, heavy);
+
+					if (repeat_type == NG_ACTION_REPEAT_TYPE_NEVER || repeat_type == NG_ACTION_REPEAT_TYPE_ON_REENTRY) {
+						should_update_action_floorstate = true;
+						// Do heavy actiosn always act as oneshot triggers?
+						if (repeat_type == NG_ACTION_REPEAT_TYPE_NEVER) {
 							should_update_ng_action_oneshot = true;
 						}
 					}
@@ -1180,10 +1167,10 @@ void TestTriggers(short* data, long heavy, long HeavyFlags, int room_number, int
 			printf("FMV support is unimplemented!");
 			break;
 		case TO_TIMERFIELD:
-			for (int i = 0; i < trigger_items_count; i++) {
-				if (triggered_items[i] >= 0) {
+			for (int i = 0; i < ng_triggered_items_for_timerfield_count; i++) {
+				if (ng_triggered_items_for_timerfield[i] >= 0) {
 					timer = (char)(value & 0xff);
-					item = &items[triggered_items[i]];
+					item = &items[ng_triggered_items_for_timerfield[i]];
 					item->timer = timer * 30;
 				}
 			}
@@ -1688,7 +1675,7 @@ long GetHeight(FLOOR_INFO* floor, long x, long y, long z)
 							}
 						}
 
-						if ((trigger & 0x3C00) == (TO_BODYBAG << 10)) {
+						if ((trigger & 0x3C00) == (TO_ACTION << 10)) {
 							if (NGUseNGActions()) {
 								trigger = *data++;
 							}
@@ -2037,7 +2024,7 @@ long GetCeiling(FLOOR_INFO* floor, long x, long y, long z)
 								}
 							}
 
-							if ((trigger & 0x3C00) == (TO_BODYBAG << 10)) {
+							if ((trigger & 0x3C00) == (TO_ACTION << 10)) {
 								if (NGUseNGActions()) {
 									trigger = *data++;
 								}

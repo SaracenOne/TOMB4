@@ -63,5 +63,18 @@ enum NG_ACTION_TYPE {
 	TRIGGER_SET_X_MOVEABLE_AS_ACTIVE_ITEM = 94,
 };
 
-extern int NGActionTrigger(unsigned short param, unsigned short extra, short timer, bool is_heavy_triggered);
-extern int NGAction(unsigned short param, unsigned short extra, bool first_frame, bool is_heavy_triggered);
+enum NGActionRepeatType {
+	NG_ACTION_REPEAT_TYPE_NEVER,
+	NG_ACTION_REPEAT_TYPE_ON_REENTRY,
+	NG_ACTION_REPEAT_TYPE_ALWAYS
+};
+
+#define NG_TRIGGER_FLAG_HEAVY (1 << 0)
+#define NG_TRIGGER_FLAG_BUTTON_ONESHOT (1 << 2)
+#define NG_TRIGGER_FLAG_SCRIPT_TRIGGERED (1 << 4)
+#define NG_TRIGGER_FLAG_DIRECT_CALL (1 << 5)
+#define NG_TRIGGER_FLAG_ANIM_COMMAND (1 << 7)
+
+
+extern NGActionRepeatType NGActionTrigger(unsigned short param, unsigned short extra, short timer, bool is_heavy_triggered);
+extern NGActionRepeatType NGAction(unsigned short item_id, unsigned short timer, int flags);

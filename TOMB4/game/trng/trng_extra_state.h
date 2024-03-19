@@ -2,6 +2,12 @@
 
 #include "../sound.h"
 
+#define NG_MAX_FLOORSTATE_ACTIONS 128
+
+#define NG_MAX_TRIGGERED_ITEMS 128
+extern int ng_triggered_items_for_timerfield[NG_MAX_TRIGGERED_ITEMS];
+extern int ng_triggered_items_for_timerfield_count;
+
 struct NG_LARA_EXTRASTATE {
 	uchar TightRopeOnCount;
 	uchar TightRopeOff;
@@ -261,3 +267,5 @@ extern bool NGIsActionOneShotTriggeredForTile();
 extern bool NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(bool is_heavy_triggered);
 
 extern bool NGCheckActionFloorStatePressedThisFrameOrLastFrame(bool is_heavy_triggered);
+
+extern void NGRegisterTriggeredItemForTimerfield(short item_id);
