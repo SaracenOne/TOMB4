@@ -123,6 +123,9 @@ char* malloc_ptr;
 size_t malloc_size;
 size_t malloc_free;
 
+// For 32bit backwards compatibility.
+size_t virtual_malloc_offset = 0;
+
 static size_t malloc_used;
 
 static long rand_1 = 0xD371F947;
@@ -179,6 +182,19 @@ void* game_malloc(size_t size)
 		memset(ptr, 0, size);
 		return ptr;
 	}
+}
+
+void reset_virtual_game_malloc_offset() {
+	virtual_malloc_offset = 0;
+}
+
+void increment_virtual_game_malloc_offset(size_t virtual_size) {
+	virtual_size = (virtual_size + 3) & -4;
+	virtual_malloc_offset += virtual_size;
+}
+
+size_t get_virtual_game_malloc_offset() {
+	return virtual_malloc_offset;
 }
 
 void GlobalLog(const char* s, ...)

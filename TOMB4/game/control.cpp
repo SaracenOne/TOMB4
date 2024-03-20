@@ -54,6 +54,8 @@
 #include "../tomb4/tomb4plus/t4plus_objects.h"
 #include "../tomb4/tomb4plus/t4plus_environment.h"
 
+uint32_t vanilla_item_malloc_offset = 0;
+
 ITEM_INFO* items;
 ANIM_STRUCT* anims;
 ROOM_INFO* room;
@@ -856,6 +858,8 @@ void TestTriggers(short* data, long heavy, long HeavyFlags, int room_number, int
 
 	do
 	{
+		size_t trigger_floordata_offset = (data - floor_data) * sizeof(uint16_t);
+
 		trigger = *data++;
 		value = trigger & 0x3FF;
 

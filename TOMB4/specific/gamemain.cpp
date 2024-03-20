@@ -207,6 +207,7 @@ bool GameInitialise()
 	DXAttempt(App.dx.lpD3D->CreateVertexBuffer(&desc, &DestVB, D3DDP_DONOTCLIP, 0));
 #endif
 	init_game_malloc();
+	reset_virtual_game_malloc_offset();
 	clipflags = (short*)SYSTEM_MALLOC(0x4000);
 	init_water_table();
 	InitWeatherFX(); // TRLE

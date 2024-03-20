@@ -8,6 +8,11 @@ void SeedRandomDraw(long seed);
 void init_game_malloc();
 void* game_malloc(size_t size);
 
+// For 32-bit backwards compatibility.
+void reset_virtual_game_malloc_offset();
+void increment_virtual_game_malloc_offset(size_t virtual_size);
+size_t get_virtual_game_malloc_offset();
+
 #ifndef DEBUG
 #define SYSTEM_MALLOC(size) malloc(size)
 #define SYSTEM_REALLOC(ptr, size) realloc(ptr, size)

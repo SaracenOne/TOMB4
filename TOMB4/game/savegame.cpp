@@ -293,11 +293,11 @@ void SaveHubData(long index)
 		savegame.HubSizes[index - (MAX_HUB_LEVELS-1)] = savegame.HubSizes[index] + savegame.HubOffsets[index];
 }
 
-void RestoreLaraData(long FullSave)
+void RestoreLaraData(bool full_save)
 {
 	ITEM_INFO* item;
 
-	if (!FullSave)
+	if (!full_save)
 		savegame.Lara.item_number = lara.item_number;
 
 	lara.item_number = savegame.Lara.item_number;
@@ -478,7 +478,7 @@ void RestoreLaraData(long FullSave)
 
 	// Tomb4Plus - we've modified the GeneralPtr to be an index rather than a memory address since it was buggy and barely used as memory address directly.
 	// Added a check to make sure the item is within range to prevent crashing with old savegames.
-	if (lara.GeneralPtr >= ITEM_COUNT) {
+	if (lara.GeneralPtr >= VANILLA_ITEM_COUNT) {
 		Log(0, "RestoreLaraData: GeneralPtr overflow!");
 		lara.GeneralPtr = 0;
 	}
@@ -527,7 +527,7 @@ void sgRestoreLevel()
 	FLOOR_INFO* floor;
 
 	if (OpenSaveGame(gfCurrentLevel, 0) >= 0) {
-		RestoreLevelData(0);
+		RestoreLevelData(0, false);
 
 		// T4Plus
 		T4PlusEnterLevel(gfCurrentLevel, false);
@@ -603,7 +603,7 @@ void sgSaveLevel()
 	long level_index;
 
 	level_index = OpenSaveGame(gfCurrentLevel, 1);
-	SaveLevelData(0);
+	SaveLevelData(0, false);
 	SaveLaraData();
 	SaveHubData(level_index);
 }
@@ -618,7 +618,7 @@ void sgSaveGame()
 	savegame.fog_colour.r = gfVolumetricFog.r;
 	savegame.fog_colour.g = gfVolumetricFog.g;
 	savegame.fog_colour.b = gfVolumetricFog.b;
-	SaveLevelData(1);
+	SaveLevelData(1, false);
 	SaveLaraData();
 	SaveHubData(level_index);
 	CreateCheckSum();
@@ -629,7 +629,7 @@ void sgRestoreGame()
 	OpenSaveGame(savegame.CurrentLevel & 0x7F, 0);
 	GameTimer = savegame.Game.Timer;
 	gfCurrentLevel = savegame.CurrentLevel & 0x7F;
-	RestoreLevelData(1);
+	RestoreLevelData(1, false);
 	RestoreLaraData(1);
 }
 
@@ -692,7 +692,7 @@ long OpenSaveGame(uchar current_level, long saving)
 	return -1;
 }
 
-void SaveLevelData(long FullSave)
+void SaveLevelData(bool full_save, bool use_full_flipmask)
 {
 	ITEM_INFO* item;
 	ROOM_INFO* r;
@@ -705,20 +705,33 @@ void SaveLevelData(long FullSave)
 	short pos, word;
 	uchar byte;
 	char lflags;
+	uint32_t flipmap_mask = 0;
+	uint32_t flipmap_bitcount = 0;
 
 	WriteSG(&FmvSceneTriggered, sizeof(long));
 	WriteSG(&GLOBAL_lastinvitem, sizeof(long));
 	word = 0;
 
-	for (int i = 0; i < MAX_HUB_LEVELS; i++)
-	{
-		if (flip_stats[i])
-			word |= (1 << i);
+	if (use_full_flipmask) {
+		flipmap_bitcount = 32;
+	} else {
+		flipmap_bitcount = 10;
 	}
 
-	WriteSG(&word, sizeof(short));
+	for (int i = 0; i < flipmap_bitcount; i++)
+	{
+		if (flip_stats[i])
+			flipmap_mask |= (1 << i);
+	}
 
-	for (int i = 0; i < MAX_HUB_LEVELS; i++)
+	if (use_full_flipmask) {
+		WriteSG(&flipmap_mask, sizeof(uint32_t));
+	} else {
+		uint16_t flipmap_mask_16 = (uint16_t)(flipmap_mask & 0xffff);
+		WriteSG(&flipmap_mask_16, sizeof(uint16_t));
+	}
+
+	for (int i = 0; i < flipmap_bitcount; i++)
 	{
 		word = short(flipmap[i] >> 8);
 		WriteSG(&word, sizeof(short));
@@ -792,7 +805,7 @@ void SaveLevelData(long FullSave)
 		}
 		else
 		{
-			if (item->flags & (IFL_CODEBITS | IFL_INVISIBLE | IFL_TRIGGERED) || item->object_number == T4PlusGetLaraSlotID() && FullSave)
+			if (item->flags & (IFL_CODEBITS | IFL_INVISIBLE | IFL_TRIGGERED) || item->object_number == T4PlusGetLaraSlotID() && full_save)
 			{
 				packed = 0x8000;
 
@@ -938,9 +951,18 @@ void SaveLevelData(long FullSave)
 					{
 						creature = (CREATURE_INFO*)item->data;
 
-						creature->enemy = (ITEM_INFO*)((size_t)creature->enemy - (size_t)malloc_buffer);
-						WriteSG(item->data, 22);
-						creature->enemy = (ITEM_INFO*)((size_t)creature->enemy + (size_t)malloc_buffer);
+						WriteSG(item->data, 18);
+						int32_t enemy_ptr = -1;
+						if (creature->enemy) {
+							for (int j = 0; j < VANILLA_ITEM_COUNT; j++) {
+								if (creature->enemy == &items[j]) {
+									enemy_ptr = vanilla_item_malloc_offset + (j * TR4_VANILLA_ITEM_STRUCT_SIZE);
+									break;
+								}
+							}
+						}
+
+						WriteSG(&enemy_ptr, sizeof(enemy_ptr));
 
 						WriteSG(&creature->ai_target.object_number, sizeof(short));
 						WriteSG(&creature->ai_target.room_number, sizeof(short));
@@ -985,12 +1007,12 @@ void SaveLevelData(long FullSave)
 		WriteSG(&piece_moving, sizeof(char));
 	}
 
-	if (FullSave)
+	if (full_save)
 	{
 		byte = 0;
 		item = &items[level_items];
 
-		for (int i = level_items; i < ITEM_COUNT; i++)
+		for (int i = level_items; i < VANILLA_ITEM_COUNT; i++)
 		{
 			if (item->active && (item->object_number == FLARE_ITEM || item->object_number == BURNING_TORCH_ITEM))
 				byte++;
@@ -1001,7 +1023,7 @@ void SaveLevelData(long FullSave)
 		WriteSG(&byte, sizeof(uchar));
 		item = &items[level_items];
 
-		for (int i = level_items; i < ITEM_COUNT; i++)
+		for (int i = level_items; i < VANILLA_ITEM_COUNT; i++)
 		{
 			if (item->active && (item->object_number == FLARE_ITEM || item->object_number == BURNING_TORCH_ITEM))
 			{
@@ -1127,7 +1149,7 @@ void SaveLevelData(long FullSave)
 	}
 }
 
-void RestoreLevelData(long FullSave)
+void RestoreLevelData(bool full_save, bool use_full_flipmask)
 {
 	ROOM_INFO* r;
 	ITEM_INFO* item;
@@ -1141,14 +1163,23 @@ void RestoreLevelData(long FullSave)
 	short sword, item_number, room_number, req, goal, current;
 	uchar numberof;
 	char byte, anim, lflags;
+	uint32_t flipmap_mask = 0;
+	uint32_t flipmap_bitcount = 0;
 
 	ReadSG(&FmvSceneTriggered, sizeof(long));
 	ReadSG(&GLOBAL_lastinvitem, sizeof(long));
-	ReadSG(&sword, sizeof(short));
 
-	for (int i = 0; i < MAX_HUB_LEVELS; i++)
+	if (use_full_flipmask) {
+		ReadSG(&flipmap_mask, sizeof(uint32_t));
+		flipmap_bitcount = 32;
+	} else {
+		ReadSG(&flipmap_mask, sizeof(uint16_t));
+		flipmap_bitcount = 10;
+	}
+
+	for (int i = 0; i < flipmap_bitcount; i++)
 	{
-		if (sword & (1 << i))
+		if (flipmap_mask & (1 << i))
 			FlipMap(i);
 
 		ReadSG(&uword, sizeof(ushort));
@@ -1345,11 +1376,20 @@ void RestoreLevelData(long FullSave)
 
 					if (creature)
 					{
-						ReadSG(creature, 22);
-						creature->enemy = (ITEM_INFO*)((size_t)creature->enemy + (size_t)malloc_buffer);
-
-						if ((int)creature->enemy < 0)
-							creature->enemy = 0;
+						ReadSG(creature, 18);
+						int32_t enemy_ptr = 0;
+						ReadSG(&enemy_ptr, sizeof(enemy_ptr));
+						creature->enemy = nullptr;
+						if (enemy_ptr >= 0) {
+							size_t base_item_ptr = ((size_t)enemy_ptr - (size_t)vanilla_item_malloc_offset);
+							int32_t enemy_id = (int32_t)(base_item_ptr / TR4_VANILLA_ITEM_STRUCT_SIZE);
+							int32_t remainder = base_item_ptr % TR4_VANILLA_ITEM_STRUCT_SIZE;
+							if (remainder == 0) {
+								if (enemy_id >= 0 && enemy_id < VANILLA_ITEM_COUNT) {
+									creature->enemy = &items[enemy_id];
+								}
+							}
+						}
 
 						ReadSG(&creature->ai_target.object_number, sizeof(short));
 						ReadSG(&creature->ai_target.room_number, sizeof(short));
@@ -1412,7 +1452,7 @@ void RestoreLevelData(long FullSave)
 		ReadSG(&piece_moving, sizeof(char));
 	}
 
-	if (FullSave)
+	if (full_save)
 	{
 		ReadSG(&numberof, sizeof(uchar));
 

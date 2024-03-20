@@ -575,6 +575,8 @@ struct ITEM_LIGHT
 	void* pPrevLights;
 };
 
+#define TR4_VANILLA_ITEM_STRUCT_SIZE 5622
+
 struct ITEM_INFO
 {
 	long floor;
@@ -649,9 +651,11 @@ struct LOT_INFO
 	zone_type zone;
 };
 
+#define CREATURE_JOINT_ROTATION_COUNT 4
+
 struct CREATURE_INFO
 {
-	short joint_rotation[4];
+	short joint_rotation[CREATURE_JOINT_ROTATION_COUNT];
 	short maximum_turn;
 	short flags;
 	ushort alerted : 1;
@@ -2657,10 +2661,12 @@ struct tomb4_options	//keep this at the bottom of the file, please
 	bool hang_game_thread;
 };
 
+#define VANILLA_ITEM_COUNT 256
+
 #ifdef LEVEL_EDITOR
 #define ITEM_COUNT 6000 // TRLE: bumped from 256
 #else
-#define ITEM_COUNT 256
+#define ITEM_COUNT VANILLA_ITEM_COUNT
 #endif
 
 #pragma pack(pop)

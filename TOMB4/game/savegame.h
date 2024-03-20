@@ -12,14 +12,14 @@ void SaveLaraData();
 void WriteSG(void* pointer, long size);
 void ReadSG(void* pointer, long size);
 void SaveHubData(long index);
-void RestoreLaraData(long FullSave);
+void RestoreLaraData(bool full_save);
 void sgRestoreLevel();
 void CreateCheckSum();
 void sgSaveLevel();
 void sgSaveGame();
 void sgRestoreGame();
 long OpenSaveGame(uchar current_level, long saving);
-void SaveLevelData(long FullSave);
-void RestoreLevelData(long FullSave);
+void SaveLevelData(bool full_save, bool use_full_flipmask);
+void RestoreLevelData(bool full_save, bool use_full_flipmask);
 
 extern LEGACY_SAVEGAME_INFO savegame;
