@@ -53,7 +53,7 @@ void InitialiseHair()
 	}
 }
 
-void HairControl(long in_cutscene, long pigtail, short* cutscenething)
+void HairControl(bool in_cutscene, LaraHairUpdateType lara_hair_update_type, short* cutscenething)
 {
 	OBJECT_INFO* obj;
 	HAIR_STRUCT* hair;
@@ -67,6 +67,8 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 	short* frame;
 	long frac, rate, water, height, size, dist, x, y, z, dx, dy, dz;
 	short room_num, spaz;
+
+	bool pigtail_update = lara_hair_update_type == LARA_HAIR_UPDATE_TYPE_PIGTAILS_LEFT || lara_hair_update_type == LARA_HAIR_UPDATE_TYPE_PIGTAILS_RIGHT;
 
 	obj = &objects[T4PlusGetLaraSlotID()];
 
@@ -140,7 +142,7 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 		sphere[1].z = (long)mMXPtr[M23];
 		sphere[1].r = objptr[3];
 
-		if (gfLevelFlags & GF_YOUNGLARA)
+		if (pigtail_update)
 			sphere[1].r -= (sphere[1].r >> 2) + (sphere[1].r >> 3);
 
 		phd_PopMatrix_I();
@@ -182,7 +184,7 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 		sphere[2].r = objptr[3];
 		phd_PopMatrix_I();
 
-		if (gfLevelFlags & GF_YOUNGLARA)
+		if (pigtail_update)
 		{
 			sphere[1].x = (sphere[1].x + sphere[2].x) >> 1;
 			sphere[1].y = (sphere[1].y + sphere[2].y) >> 1;
@@ -192,16 +194,21 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 		sphere[5].x = (2 * sphere[2].x + sphere[1].x) / 3;//sphere[5] is an extra sphere added between the head and torso sphere to simulate a neck sphere
 		sphere[5].y = (2 * sphere[2].y + sphere[1].y) / 3;
 		sphere[5].z = (2 * sphere[2].z + sphere[1].z) / 3;
-		sphere[5].r = gfLevelFlags & GF_YOUNGLARA ? 0 : 5 * sphere[2].r / 4;
+		sphere[5].r = pigtail_update ? 0 : 5 * sphere[2].r / 4;
 
-		if (pigtail)
-			phd_TranslateRel_I(mod_lara_info->pigtail_right_x, mod_lara_info->pigtail_right_y, mod_lara_info->pigtail_right_z);
-		else
-		{
-			if (gfLevelFlags & GF_YOUNGLARA)
-				phd_TranslateRel_I(mod_lara_info->pigtail_left_x, mod_lara_info->pigtail_left_y, mod_lara_info->pigtail_left_z);
-			else
+		switch (lara_hair_update_type) {
+			case LARA_HAIR_UPDATE_TYPE_BRAID: {
 				phd_TranslateRel_I(mod_lara_info->braid_x, mod_lara_info->braid_y, mod_lara_info->braid_z);
+				break;
+			}
+			case LARA_HAIR_UPDATE_TYPE_PIGTAILS_LEFT: {
+				phd_TranslateRel_I(mod_lara_info->pigtail_left_x, mod_lara_info->pigtail_left_y, mod_lara_info->pigtail_left_z);
+				break;
+			}
+			case LARA_HAIR_UPDATE_TYPE_PIGTAILS_RIGHT: {
+				phd_TranslateRel_I(mod_lara_info->pigtail_right_x, mod_lara_info->pigtail_right_y, mod_lara_info->pigtail_right_z);
+				break;
+			}
 		}
 
 		mInterpolateMatrix();
@@ -237,7 +244,7 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 		sphere[1].z = (long)mMXPtr[M23];
 		sphere[1].r = objptr[3];
 
-		if (gfLevelFlags & GF_YOUNGLARA)
+		if (pigtail_update)
 			sphere[1].r -= (sphere[1].r >> 2) + (sphere[1].r >> 3);
 
 		phd_PopMatrix();
@@ -276,7 +283,7 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 		sphere[2].r = objptr[3];
 		phd_PopMatrix();
 
-		if (gfLevelFlags & GF_YOUNGLARA)
+		if (pigtail_update)
 		{
 			sphere[1].x = (sphere[1].x + sphere[2].x) >> 1;
 			sphere[1].y = (sphere[1].y + sphere[2].y) >> 1;
@@ -286,16 +293,21 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 		sphere[5].x = (2 * sphere[2].x + sphere[1].x) / 3;//sphere[5] is an extra sphere added between the head and torso sphere to simulate a neck sphere
 		sphere[5].y = (2 * sphere[2].y + sphere[1].y) / 3;
 		sphere[5].z = (2 * sphere[2].z + sphere[1].z) / 3;
-		sphere[5].r = gfLevelFlags & GF_YOUNGLARA ? 0 : 5 * sphere[2].r / 4;
+		sphere[5].r = pigtail_update ? 0 : 5 * sphere[2].r / 4;
 
-		if (pigtail)
-			phd_TranslateRel(44, -48, -50);
-		else
-		{
-			if (gfLevelFlags & GF_YOUNGLARA)
-				phd_TranslateRel(-52, -48, -50);
-			else
-				phd_TranslateRel(-4, -4, -48);
+		switch (lara_hair_update_type) {
+			case LARA_HAIR_UPDATE_TYPE_BRAID: {
+				phd_TranslateRel(mod_lara_info->braid_x, mod_lara_info->braid_y, mod_lara_info->braid_z);
+				break;
+			}
+			case LARA_HAIR_UPDATE_TYPE_PIGTAILS_LEFT: {
+				phd_TranslateRel(mod_lara_info->pigtail_left_x, mod_lara_info->pigtail_left_y, mod_lara_info->pigtail_left_z);
+				break;
+			}
+			case LARA_HAIR_UPDATE_TYPE_PIGTAILS_RIGHT: {
+				phd_TranslateRel(mod_lara_info->pigtail_right_x, mod_lara_info->pigtail_right_y, mod_lara_info->pigtail_right_z);
+				break;
+			}
 		}
 
 		pos.x = (long)mMXPtr[M03];
@@ -306,11 +318,11 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 	phd_PopMatrix();
 	obj = &objects[T4PlusGetLaraHairSlotID()];
 	bone = &bones[obj->bone_index];
-	hair = &hairs[pigtail][0];
+	hair = &hairs[lara_hair_update_type == LARA_HAIR_UPDATE_TYPE_PIGTAILS_RIGHT][0];
 
-	if (first_hair[pigtail])
+	if (first_hair[lara_hair_update_type == LARA_HAIR_UPDATE_TYPE_PIGTAILS_RIGHT])
 	{
-		first_hair[pigtail] = 0;
+		first_hair[lara_hair_update_type == LARA_HAIR_UPDATE_TYPE_PIGTAILS_RIGHT] = 0;
 		hair->pos.x_pos = pos.x;
 		hair->pos.y_pos = pos.y;
 		hair->pos.z_pos = pos.z;
@@ -491,7 +503,30 @@ void DrawHair()
 	short** meshpp;
 	long ii;
 
-	for (int i = 0; i < 2; i++)
+	size_t hair_count = 0;
+	switch (get_game_mod_level_lara_info(gfCurrentLevel)->hair_type) {
+		case LARA_HAIR_TYPE_DEFAULT: {
+			if (!(gfLevelFlags & GF_YOUNGLARA))
+				hair_count = 1;
+			else
+				hair_count = 2;
+			break;
+		}
+		case LARA_HAIR_TYPE_BRAID: {
+			hair_count = 1;
+			break;
+		}
+		case LARA_HAIR_TYPE_PIGTAILS: {
+			hair_count = 2;
+			break;
+		}
+		case LARA_HAIR_TYPE_NONE: {
+			hair_count = 0;
+			break;
+		}
+	}
+
+	for (int i = 0; i < hair_count; i++)
 	{
 		ii = i * 6;
 		meshpp = &meshes[objects[T4PlusGetLaraHairSlotID()].mesh_index];

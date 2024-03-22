@@ -528,10 +528,27 @@ void frigup_lara()
 	phd_PushUnitMatrix();
 	Rich_CalcLaraMatrices_Normal(temp_rotation_buffer, bone, 1);
 	phd_PopMatrix();
-	HairControl(0, 0, temp_rotation_buffer);
 
-	if (gfLevelFlags & GF_YOUNGLARA)
-		HairControl(0, 1, temp_rotation_buffer);
+	switch (get_game_mod_level_lara_info(gfCurrentLevel)->hair_type) {
+		case LARA_HAIR_TYPE_DEFAULT: {
+			if (gfLevelFlags & GF_YOUNGLARA) {
+				HairControl(false, LARA_HAIR_UPDATE_TYPE_PIGTAILS_LEFT, temp_rotation_buffer);
+				HairControl(false, LARA_HAIR_UPDATE_TYPE_PIGTAILS_RIGHT, temp_rotation_buffer);
+			} else {
+				HairControl(false, LARA_HAIR_UPDATE_TYPE_BRAID, temp_rotation_buffer);
+			}
+			break;
+		}
+		case LARA_HAIR_TYPE_BRAID: {
+			HairControl(false, LARA_HAIR_UPDATE_TYPE_BRAID, temp_rotation_buffer);
+			break;
+		}
+		case LARA_HAIR_TYPE_PIGTAILS: {
+			HairControl(false, LARA_HAIR_UPDATE_TYPE_PIGTAILS_LEFT, temp_rotation_buffer);
+			HairControl(false, LARA_HAIR_UPDATE_TYPE_PIGTAILS_RIGHT, temp_rotation_buffer);
+			break;
+		}
+	}
 
 	if (cutseq_num == 12)
 		GLaraShadowframe = frig_jeep_shadow_bbox;

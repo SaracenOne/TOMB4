@@ -198,7 +198,11 @@ long DXSetCooperativeLevel(LPDIRECTDRAWX pDD4, HWND hwnd, long flags)
 	return 1;
 }
 
+#ifdef UNICODE
+BOOL __stdcall DXEnumDirectDraw(GUID FAR* lpGUID, LPWSTR lpDriverDescription, LPWSTR lpDriverName, LPVOID lpContext)
+#else
 BOOL __stdcall DXEnumDirectDraw(GUID FAR* lpGUID, LPSTR lpDriverDescription, LPSTR lpDriverName, LPVOID lpContext)
+#endif
 {
 	DXINFO* dxinfo;
 	DXDIRECTDRAWINFO* DDInfo;
@@ -218,9 +222,15 @@ BOOL __stdcall DXEnumDirectDraw(GUID FAR* lpGUID, LPSTR lpDriverDescription, LPS
 	else
 		DDInfo->lpGuid = 0;
 
-	lstrcpy(DDInfo->About, lpDriverDescription);
-	lstrcpy(DDInfo->Name, lpDriverName);
+#ifdef UNICODE
+	lstrcpyW(DDInfo->About, lpDriverDescription);
+	lstrcpyW(DDInfo->Name, lpDriverName);
 	Log(5, "Obtaining Information For %s", lpDriverDescription);
+#else
+	strcpy(DDInfo->About, lpDriverDescription);
+	strcpy(DDInfo->Name, lpDriverName);
+	Log(5, "Obtaining Information For %s", lpDriverDescription);
+#endif
 
 	if (DXDDCreate(lpGUID, (void**)&G_ddraw))
 	{
@@ -1080,8 +1090,8 @@ HRESULT __stdcall DXEnumDirect3D(LPGUID lpGuid, LPSTR lpDeviceDescription, LPSTR
 	else
 		device->lpGuid = 0;
 
-	lstrcpy(device->About, lpDeviceDescription);
-	lstrcpy(device->Name, lpDeviceName);
+	strcpy(device->About, lpDeviceDescription);
+	strcpy(device->Name, lpDeviceName);
 	Log(5, "Found - %s", lpDeviceDescription);
 
 	if (lpHWDesc->dwFlags)

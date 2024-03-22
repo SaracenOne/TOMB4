@@ -990,7 +990,7 @@ int NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLES *
 						id_trigger_group_at_end = NG_READ_16(gfScriptFile, offset);
 					}
 
-					MOD_LEVEL_WEAPON_INFO *weapon_info = get_game_mod_level_weapon_info(gfCurrentLevel);
+					MOD_LEVEL_WEAPON_INFO *weapon_info = get_game_mod_level_weapon_info(current_level);
 					MOD_LEVEL_AMMO_INFO *ammo_info = nullptr;
 
 					switch (ammo_slot) {
@@ -1132,9 +1132,25 @@ int NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLES *
 					break;
 				}
 				case CUST_HAIR_TYPE: {
-					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_HAIR_TYPE unimplemented! (level %u)", current_level);
-
-					offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+					unsigned short hair_type = NG_READ_16(gfScriptFile, offset);
+					switch (hair_type) {
+					case 0x00:
+						break;
+					case 0x01:
+						get_game_mod_level_lara_info(current_level)->hair_type = LARA_HAIR_TYPE_NONE;
+						break;
+					case 0x02:
+						get_game_mod_level_lara_info(current_level)->hair_type = LARA_HAIR_TYPE_PIGTAILS;
+						break;
+					case 0x03:
+						get_game_mod_level_lara_info(current_level)->hair_type = LARA_HAIR_TYPE_BRAID;
+						break;
+					case 0x04:
+						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_HAIR_TYPE hair type 04 unimplemented! (level %u)", current_level);
+						break;
+					case 0xffff:
+						break;
+					}
 					break;
 				}
 				case CUST_KEEP_DEAD_ENEMIES: {
@@ -1180,7 +1196,6 @@ int NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLES *
 				case CUST_BAR: {
 					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_BAR unimplemented! (level %u)", current_level);
 
-					printf("CUST_BAR unimplemented!\n");
 					offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 					break;
 				}

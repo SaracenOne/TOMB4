@@ -114,7 +114,7 @@ void InitTFormats(HWND dlg, HWND hwnd)
 		b = tex->bbpp;
 		a = tex->abpp;
 
-		wsprintf(buffer, "%d %s RGBA %d%d%d%d", bpp, GetFixedStringForTextID(TXT_Bit), r, g, b, a);
+		sprintf(buffer, "%d %s RGBA %d%d%d%d", bpp, GetFixedStringForTextID(TXT_Bit), r, g, b, a);
 		SendMessage(hwnd, CB_ADDSTRING, 0, (LPARAM)buffer);
 
 		if (software)
@@ -163,7 +163,7 @@ void InitResolution(HWND dlg, HWND hwnd, bool resetvms)
 
 			if (bpp > 8)
 			{
-				wsprintf(buffer, "%dx%d %d %s", w, h, bpp, GetFixedStringForTextID(TXT_Bit));
+				sprintf(buffer, "%dx%d %d %s", w, h, bpp, GetFixedStringForTextID(TXT_Bit));
 				SendMessage(hwnd, CB_ADDSTRING, 0, (LPARAM)buffer);
 				SendMessage(hwnd, CB_SETITEMDATA, n, i);
 
@@ -268,7 +268,7 @@ void InitDDDevice(HWND dlg, HWND hwnd)
 	for (int i = 0; i < App.DXInfo.nDDInfo; i++)
 	{
 		id = &App.DXInfo.DDInfo[i].DDIdentifier;
-		wsprintf(buffer, "%s - %s (%d.%d.%02d.%04d)", id->szDescription, id->szDriver,
+		sprintf(buffer, "%s - %s (%d.%d.%02d.%04d)", id->szDescription, id->szDriver,
 			(id->liDriverVersion.HighPart >> 16) & 0xFFFF, id->liDriverVersion.HighPart & 0xFFFF,
 			(id->liDriverVersion.LowPart >> 16) & 0xFFFF, id->liDriverVersion.LowPart & 0xFFFF);
 		SendMessage(hwnd, CB_ADDSTRING, 0, (LPARAM)buffer);

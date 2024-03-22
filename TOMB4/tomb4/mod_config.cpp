@@ -110,7 +110,13 @@ char** global_string_table;
             (my_struct)->value_name = nullptr; \
         } \
     } \
-    };
+};
+
+#define READ_JSON_STRING_TEMP(value_name, json, ptr) { const json_t* value_name = json_getProperty(json, #value_name); \
+    if (value_name && JSON_TEXT == json_getType(value_name)) { \
+        ptr = (char *)json_getValue(value_name); \
+    } \
+};
 
 bool SetupUserDirectories() {
     if (game_mod_config.global_info.game_user_dir_name) {
@@ -459,6 +465,20 @@ void LoadGameModLevelCameraInfo(const json_t* camera, MOD_LEVEL_CAMERA_INFO* cam
 }
 
 void LoadGameModLevelLaraInfo(const json_t* level, MOD_LEVEL_LARA_INFO *lara_info) {
+    char *hair_type_temp_ptr = nullptr;
+    READ_JSON_STRING_TEMP(hair_type, level, hair_type_temp_ptr)
+        if (hair_type_temp_ptr) {
+            if (strcmp("braid", hair_type_temp_ptr) == 0) {
+                lara_info->hair_type = LARA_HAIR_TYPE_BRAID;
+            } else if (strcmp("pigtails", hair_type_temp_ptr) == 0) {
+                lara_info->hair_type = LARA_HAIR_TYPE_PIGTAILS;
+            } else if (strcmp("none", hair_type_temp_ptr) == 0) {
+                lara_info->hair_type = LARA_HAIR_TYPE_NONE;
+            } else {
+                lara_info->hair_type = LARA_HAIR_TYPE_DEFAULT;
+            }
+        }
+
     READ_JSON_SINT32(hair_gravity, level, lara_info);
 
     READ_JSON_SINT32(braid_x, level, lara_info);

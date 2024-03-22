@@ -1652,8 +1652,14 @@ HRESULT DDCopyBitmap(LPDIRECTDRAWSURFACEX surf, HBITMAP hbm, long x, long y, lon
 	surf->Restore();
 	hdc = CreateCompatibleDC(0);
 
+#ifdef UNICODE
+	if (!hdc)
+		OutputDebugString(L"createcompatible dc failed\n");
+#else
 	if (!hdc)
 		OutputDebugString("createcompatible dc failed\n");
+
+#endif
 
 	SelectObject(hdc, hbm);
 	GetObject(hbm, sizeof(BITMAP), &bitmap);
@@ -1698,24 +1704,26 @@ HRESULT _LoadBitmap(LPDIRECTDRAWSURFACEX surf, LPCSTR name)
 	HBITMAP hBitmap;
 	HRESULT result;
 
+#ifdef UNICODE
+	return -1;
+#else
 	hBitmap = (HBITMAP)LoadImage(GetModuleHandle(0), name, IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION);
 
 	if (!hBitmap)
 		hBitmap = (HBITMAP)LoadImage(0, name, IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION | LR_LOADFROMFILE);
-
 	if (!hBitmap)
-	{
 		OutputDebugString("handle is null\n");
 		return E_FAIL;
-	}
 
 	result = DDCopyBitmap(surf, hBitmap, 0, 0, 0, 0);
 
-	if (result != DD_OK)
+	if (result != DD_OK) {
 		OutputDebugString("ddcopybitmap failed\n");
+	}
 
 	DeleteObject(hBitmap);
 	return result;
+#endif
 }
 #endif
 

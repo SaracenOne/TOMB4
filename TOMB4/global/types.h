@@ -1554,8 +1554,13 @@ struct DXD3DDEVICE
 
 struct DXDIRECTDRAWINFO
 {
+#ifdef UNICODE
+	wchar_t Name[30];
+	wchar_t About[80];
+#else
 	char Name[30];
 	char About[80];
+#endif
 	LPGUID lpGuid;
 	GUID Guid;
 #ifndef USE_BGFX

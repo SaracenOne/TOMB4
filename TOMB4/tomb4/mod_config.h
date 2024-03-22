@@ -218,7 +218,15 @@ struct MOD_LEVEL_BARS_INFO {
 	MOD_LEVEL_BAR_INFO enemy_bar;
 };
 
+enum LARA_HAIR_TYPE {
+	LARA_HAIR_TYPE_DEFAULT = 0,
+	LARA_HAIR_TYPE_BRAID,
+	LARA_HAIR_TYPE_PIGTAILS,
+	LARA_HAIR_TYPE_NONE,
+};
+
 struct MOD_LEVEL_LARA_INFO {
+	LARA_HAIR_TYPE hair_type = LARA_HAIR_TYPE_DEFAULT;
 	long hair_gravity = 10;
 
 	long braid_x = -4;
