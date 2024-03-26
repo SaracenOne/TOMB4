@@ -689,7 +689,7 @@ bool sound_set_x_volume_for_audio_track_on_channel(unsigned char volume, unsigne
 
 // NGLE - 134
 bool lara_attract_lara_in_direction_on_ground_with_speed(unsigned char direction, unsigned char speed) {
-	if (lara_item->pos.y_pos == lara_item->floor)
+	if (lara_item->pos.y_pos >= lara_item->floor)
 		NGAttractLaraInDirection(direction, speed);
 
 	return true;
@@ -697,7 +697,7 @@ bool lara_attract_lara_in_direction_on_ground_with_speed(unsigned char direction
 
 // NGLE - 135
 bool lara_attract_lara_in_direction_in_air_with_speed(unsigned char direction, unsigned char speed) {
-	if (lara_item->pos.y_pos != lara_item->floor)
+	if (lara_item->pos.y_pos < lara_item->floor)
 		NGAttractLaraInDirection(direction, speed);
 
 	return true;
@@ -2009,13 +2009,13 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 			break;
 		}
 		case LARA_ATTRACT_LARA_IN_DIRECTION_ON_GROUND_WITH_SPEED: {
-			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile()) {
 				return lara_attract_lara_in_direction_on_ground_with_speed(action_data_1, action_data_2);
 			}
 			break;
 		}
 		case LARA_ATTRACT_LARA_IN_DIRECTION_IN_AIR_WITH_SPEED: {
-			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
+			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile()) {
 				return lara_attract_lara_in_direction_in_air_with_speed(action_data_1, action_data_2);
 			}
 			break;
