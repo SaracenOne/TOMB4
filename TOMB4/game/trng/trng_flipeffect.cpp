@@ -84,14 +84,25 @@ bool NGTriggerItemGroupWithTimer(unsigned char item_group, unsigned char timer, 
 	NG_ITEM_GROUP current_item_group = current_item_groups[item_group];
 	int index = 0;
 	for (int i = 0; i < current_item_group.item_count; i++) {
-		int current_script_item = current_item_group.item_list[i];
-		if (current_script_item < 0) {
-			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Negative item group IDs (statics) not yet supported!");
-			break;
+		short current_script_item = current_item_group.item_list[i];
+
+		if (current_script_item >= NG_SCRIPT_ID_TABLE_SIZE || current_script_item < 0) {
+			NGLog(NG_LOG_TYPE_ERROR, "Item group IDs (%u) contains and invalid script item index (%s).", i, current_script_item);
+			continue;
 		}
 
-		items[current_script_item].timer = ((short)timer) * 30;
-		T4PlusActivateItem(current_script_item, anti);
+		short current_item_id = ng_script_id_table[current_script_item].script_index;
+		if (current_item_id < 0) {
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Negative item group IDs (statics) not yet supported!");
+			continue;
+		}
+		if (current_item_id >= ITEM_COUNT) {
+			NGLog(NG_LOG_TYPE_ERROR, "Item group IDs (%u) contains and invalid item id (%s).", i, current_item_id);
+			continue;
+		}
+
+		items[current_item_id].timer = ((short)timer) * 30;
+		T4PlusActivateItem(current_item_id, anti);
 
 		index++;
 	}
