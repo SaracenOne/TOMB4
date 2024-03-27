@@ -908,7 +908,7 @@ bool LoadRooms()
 		r->bottom = 0;
 		r->item_number = NO_ITEM;
 		r->fx_number = NO_ITEM;
-		ProcessRoomData(r);
+		ProcessRoomData(r, using_multi_color_fog_bulbs);
 	}
 
 	BuildOutsideTable();

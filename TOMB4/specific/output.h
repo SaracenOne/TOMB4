@@ -1,6 +1,8 @@
 #pragma once
 #include "../global/types.h"
 
+extern bool using_multi_color_fog_bulbs;
+
 __forceinline void CalculateVertexSpecular(
 	FVECTOR vPos,
 	float DistanceFogStart,

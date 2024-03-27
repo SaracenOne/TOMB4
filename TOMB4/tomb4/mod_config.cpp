@@ -5,16 +5,19 @@
 #include "libs/tiny-json/tiny-json.h"
 #include "../specific/function_stubs.h"
 #include "../game/trng/trng.h"
-#include "../specific/audio.h"
 #include "tomb4plus/t4plus_inventory.h"
 #include "../game/lara.h"
 
 #include "../game/trep/furr.h"
-#include "../specific/platform.h"
+
+#include "../specific/audio.h"
 #include "../specific/cmdline.h"
-#include <string>
-#include "../specific/registry.h"
 #include "../specific/function_table.h"
+#include "../specific/output.h"
+#include "../specific/platform.h"
+#include "../specific/registry.h"
+
+#include <string>
 
 int global_string_table_size = 0;
 char** global_string_table;
@@ -421,6 +424,7 @@ void LoadGameModLevelEnvironmentInfo(const json_t* environment, MOD_LEVEL_ENVIRO
     READ_JSON_UINT32(far_view, environment, environment_info);
     READ_JSON_BOOL(force_train_fog, environment, environment_info);
     READ_JSON_BOOL(disable_distance_limit, environment, environment_info);
+    READ_JSON_BOOL(enable_multi_color_fog_bulbs, environment, environment_info);
 }
 
 void LoadGameModLevelFontInfo(const json_t* font, MOD_LEVEL_FONT_INFO* font_info) {
@@ -1439,6 +1443,10 @@ void T4PlusLevelSetup(int current_level) {
 
     SetUsingNewAudioSystem(audio_info->new_audio_system);
     SetUsingOldTriggerMode(audio_info->old_cd_trigger_system);
+
+    MOD_LEVEL_ENVIRONMENT_INFO *environment_info = get_game_mod_level_environment_info(current_level);
+
+    using_multi_color_fog_bulbs = environment_info->enable_multi_color_fog_bulbs;
 
     NGSetup();
 }

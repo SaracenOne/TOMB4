@@ -34,6 +34,8 @@
 #include "bgfx.h"
 #include "../tomb4/tomb4plus/t4plus_objects.h"
 
+bool using_multi_color_fog_bulbs = false;
+
 GFXTLVERTEX SkinVerts[40][12];
 short SkinClip[40][12];
 long GlobalAlpha = 0xFF000000;
@@ -685,10 +687,13 @@ void ProcessPickupMeshVertices(MESH_DATA* mesh)
 {
 	FVECTOR vPos;
 	FVECTOR vtx;
+	SUNLIGHT_STRUCT* sun;
+	FVECTOR n;
 	float* v;
 	short* clip;
 	float zv;
-	long cR, cG, cB, sR, sG, sB;
+	float fR, fG, fB, val;
+	long lp, cR, cG, cB, cA, sA, sR, sG, sB;
 	short clipFlag;
 
 	clip = clipflags;
@@ -703,6 +708,17 @@ void ProcessPickupMeshVertices(MESH_DATA* mesh)
 		vtx.x = *v++;
 		vtx.y = *v++;
 		vtx.z = *v++;
+		if (mesh->Normals) {
+			n.x = mesh->Normals[i].x;
+			n.y = mesh->Normals[i].y;
+			n.z = mesh->Normals[i].z;
+		}
+		else
+		{
+			n.x = 0;
+			n.y = 0;
+			n.z = 0;
+		}
 		v += 5;
 
 		vPos.x = vtx.x * D3DMView._11 + vtx.y * D3DMView._21 + vtx.z * D3DMView._31 + D3DMView._41;
@@ -717,6 +733,36 @@ void ProcessPickupMeshVertices(MESH_DATA* mesh)
 		cR = ambientR;
 		cG = ambientG;
 		cB = ambientB;
+
+		if (tomb4.pickup_lighting == PICKUP_LIGHTING_ON)
+		{
+			if (nTotalLights) {
+				fR = (float)ambientR;
+				fG = (float)ambientG;
+				fB = (float)ambientB;
+
+				for (lp = 0; lp < nSunLights; lp++)
+				{
+					sun = &SunLights[lp];
+					val = sun->vec.x * n.x + sun->vec.y * n.y + sun->vec.z * n.z;
+
+					if (val > 0)
+					{
+						if (!InventoryActive)
+							val *= 0.75F;
+						else
+							val += val;
+
+						fR += val * sun->r;
+						fG += val * sun->g;
+						fB += val * sun->b;
+					}
+				}
+				cR = (long)fR;
+				cG = (long)fG;
+				cB = (long)fB;
+			}
+		}
 
 		if (cR - 128 <= 0)
 			cR <<= 1;
@@ -1252,6 +1298,7 @@ void phd_PutPolygonsPickup(short* objptr, float x, float y, long color)
 	short* quad;
 	short* tri;
 	float fcx, fcy;
+	float val;
 	long clrbak[4];
 	long spcbak[4];
 	long num;
@@ -1264,9 +1311,27 @@ void phd_PutPolygonsPickup(short* objptr, float x, float y, long color)
 	envmap_sprite = &spriteinfo[objects[T4PlusGetDefaultSpritesSlotID()].mesh_index + 11];
 
 	ResetLighting();
-	ambientR = CLRR(color);
-	ambientG = CLRG(color);
-	ambientB = CLRB(color);
+	if (tomb4.pickup_lighting == PICKUP_LIGHTING_ON)
+	{
+		SunLights[0].r = (float)CLRR(color);
+		SunLights[0].g = (float)CLRG(color);
+		SunLights[0].b = (float)CLRB(color);
+		val = 1.0F / sqrt(12500.0F);
+		SunLights[0].vec.x = (D3DMView._12 * -50.0F + D3DMView._13 * -100.0F) * val;
+		SunLights[0].vec.y = (D3DMView._22 * -50.0F + D3DMView._23 * -100.0F) * val;
+		SunLights[0].vec.z = (D3DMView._32 * -50.0F + D3DMView._33 * -100.0F) * val;
+		nSunLights = 1;
+		nTotalLights = 1;
+		ambientR = 8;
+		ambientG = 8;
+		ambientB = 8;
+	}
+	else
+	{
+		ambientR = CLRR(color);
+		ambientG = CLRG(color);
+		ambientB = CLRB(color);
+	}
 	clip_left = f_left;
 	clip_top = f_top;
 	clip_right = f_right;

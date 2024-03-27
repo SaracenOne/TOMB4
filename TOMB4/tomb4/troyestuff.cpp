@@ -7,7 +7,7 @@
 #include "../specific/3dmath.h"
 
 #define PAGE0_NUM	14
-#define PAGE1_NUM	10
+#define PAGE1_NUM	11
 #define YPOS	textY + y++ * font_height
 #define CHECK_SEL(c)	selection & (1 << s++) ? 1 : c
 
@@ -408,11 +408,12 @@ bool Page1(long& num, long textY, ulong selection)
 	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Ammotype Hotkeys", 0);
 	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Combat Cam Tilt", 0);
 	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Show Healthbar in Inventory", 0);
-	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Static Lighting", 0);
+	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Light Static Objects", 0);
 	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Reverb", 0);
 	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Distance Fog", 0);
 	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Bars Scale", 0);
 	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Freeze When Game Unfocused", 0);
+	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Shade Inventory Items", 0);
 
 	y = 2;
 	s = 0;
@@ -450,6 +451,22 @@ bool Page1(long& num, long textY, ulong selection)
 	PrintString(phd_centerx + (phd_centerx >> 1), YPOS, CHECK_SEL(6), buffer, 0);
 
 	strcpy(buffer, tomb4.hang_game_thread ? "on" : "off");
+	PrintString(phd_centerx + (phd_centerx >> 1), YPOS, CHECK_SEL(6), buffer, 0);
+
+	switch (tomb4.pickup_lighting) {
+		case PICKUP_LIGHTING_DEFAULT:
+			strcpy(buffer, "default");
+			break;
+		case PICKUP_LIGHTING_OFF:
+			strcpy(buffer, "off");
+			break;
+		case PICKUP_LIGHTING_ON:
+			strcpy(buffer, "on");
+			break;
+		default:
+			strcpy(buffer, "???");
+			break;
+	}
 	PrintString(phd_centerx + (phd_centerx >> 1), YPOS, CHECK_SEL(6), buffer, 0);
 
 	switch (selection)
@@ -601,6 +618,31 @@ bool Page1(long& num, long textY, ulong selection)
 		{
 			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 			tomb4.hang_game_thread = !tomb4.hang_game_thread;
+			changed = 1;
+		}
+
+		break;
+	case 1 << 10:
+
+		if (dbinput & IN_RIGHT)
+		{
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+			tomb4.pickup_lighting = (pickup_lighting_enum)((int)tomb4.pickup_lighting + 1);
+
+			if (tomb4.pickup_lighting >= PICKUP_LIGHTING_ENUM_SIZE)
+				tomb4.pickup_lighting = (pickup_lighting_enum)((int)PICKUP_LIGHTING_NULL + 1);
+
+			changed = 1;
+		}
+
+		if (dbinput & IN_LEFT)
+		{
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+			tomb4.pickup_lighting = (pickup_lighting_enum)((int)tomb4.pickup_lighting - 1);
+
+			if (tomb4.pickup_lighting == PICKUP_LIGHTING_NULL)
+				tomb4.pickup_lighting = (pickup_lighting_enum)((int)PICKUP_LIGHTING_ENUM_SIZE - 1);
+
 			changed = 1;
 		}
 

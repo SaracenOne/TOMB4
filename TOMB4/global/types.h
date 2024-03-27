@@ -1358,13 +1358,15 @@ struct LEGACY_SAVEGAME_LARA_INFO
 	int8_t locationPad;
 };
 
+#define MAX_HUB_LEVELS 10
+
 struct LEGACY_SAVEGAME_INFO
 {
 	LEGACY_SAVEGAME_LARA_INFO Lara;
 	long cutscene_triggered;
-	uchar HubLevels[10];	//saved level indices. highest one that isn't 0 is the one we are currently in
-	ushort HubOffsets[10];	//offset of each level's data inside the savegame buffer
-	ushort HubSizes[10];	//size of each level's data inside the savegame buffer
+	uchar HubLevels[MAX_HUB_LEVELS];	//saved level indices. highest one that isn't 0 is the one we are currently in
+	ushort HubOffsets[MAX_HUB_LEVELS];	//offset of each level's data inside the savegame buffer
+	ushort HubSizes[MAX_HUB_LEVELS];	//size of each level's data inside the savegame buffer
 	char CurrentLevel;
 	char Checksum;
 	STATS Game;
@@ -2638,6 +2640,14 @@ enum reverb_enum {
 	REVERB_ENUM_SIZE
 };
 
+enum pickup_lighting_enum {
+	PICKUP_LIGHTING_NULL,
+	PICKUP_LIGHTING_DEFAULT,
+	PICKUP_LIGHTING_OFF,
+	PICKUP_LIGHTING_ON,
+	PICKUP_LIGHTING_ENUM_SIZE
+};
+
 struct tomb4_options	//keep this at the bottom of the file, please
 {
 	bool footprints;
@@ -2664,6 +2674,7 @@ struct tomb4_options	//keep this at the bottom of the file, please
 	ulong distance_fog;			//value in blocks
 	float GUI_Scale;
 	bool hang_game_thread;
+	pickup_lighting_enum pickup_lighting;		// Chronicles-style shading for inventory objects.
 };
 
 #define VANILLA_ITEM_COUNT 256

@@ -1,6 +1,11 @@
 #pragma once
 #include "../global/types.h"
 
+#define MAXIMUM_LEVEL_FOGBULBS 64 // Original was 20
+
+#define MAXIMUM_ACTIVE_FOGBULBS 32 // Original was 5
+#define MAXIMUM_ACTIVE_FXBULBS 32 // Original was 5
+
 void HWR_DrawSortList(GFXTLBUMPVERTEX *info, short num_verts, short texture, short type);
 void DrawSortList();
 void CreateFogPos(FOGBULB_STRUCT* FogBulb);
@@ -12,7 +17,7 @@ long IsVolumetric();
 int DistCompare(const void* a, const void* b);
 void InitialiseFogBulbs();
 void OmniEffect(GFXTLVERTEX* v);
-void OmniFog(GFXTLVERTEX* v);
+void OmniFog(GFXTLVERTEX* v, bool multi_colour_fog);
 void AddTriClippedSorted(GFXTLVERTEX* v, short v0, short v1, short v2, TEXTURESTRUCT* tex, long double_sided);
 void AddQuadClippedSorted(GFXTLVERTEX* v, short v0, short v1, short v2, short v3, TEXTURESTRUCT* tex, long double_sided);
 void AddLineClippedSorted(GFXTLVERTEX* v0, GFXTLVERTEX* v1, short drawtype);
@@ -33,7 +38,7 @@ void CalcColorSplit(GFXCOLOR s, GFXCOLOR* r);
 extern GFXTLBUMPVERTEX XYUVClipperBuffer[20];
 extern GFXTLBUMPVERTEX zClipperBuffer[20];
 
-extern FOGBULB_STRUCT FogBulbs[20];
+extern FOGBULB_STRUCT FogBulbs[MAXIMUM_LEVEL_FOGBULBS];
 extern long NumLevelFogBulbs;
 
 extern long nPolys;

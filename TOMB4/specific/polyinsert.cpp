@@ -24,11 +24,11 @@
 GFXTLBUMPVERTEX XYUVClipperBuffer[20];
 GFXTLBUMPVERTEX zClipperBuffer[20];
 
-FOGBULB_STRUCT FogBulbs[20];
+FOGBULB_STRUCT FogBulbs[MAXIMUM_LEVEL_FOGBULBS];
 long NumLevelFogBulbs;
 
-static FOGBULB_STRUCT* ActiveFogBulbs[5];
-static FOGBULB_STRUCT FXFogBulbs[5];
+static FOGBULB_STRUCT* ActiveFogBulbs[MAXIMUM_ACTIVE_FOGBULBS];
+static FOGBULB_STRUCT FXFogBulbs[MAXIMUM_ACTIVE_FXBULBS];
 static long NumFXFogBulbs;
 static long NumActiveFogBulbs;
 static long NumFogBulbsInRange;
@@ -438,7 +438,7 @@ void CreateFXBulbs()
 
 	NumFXFogBulbs = 0;
 
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < MAXIMUM_ACTIVE_FXBULBS; i++)
 	{
 		FogBulb = &FXFogBulbs[i];
 
@@ -453,7 +453,7 @@ void CreateFXBulbs()
 
 void ClearFXFogBulbs()
 {
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < MAXIMUM_ACTIVE_FXBULBS; i++)
 		FXFogBulbs[i].active = 0;
 
 	NumFXFogBulbs = 0;
@@ -555,7 +555,7 @@ void InitialiseFogBulbs()
 			ActiveFogBulbs[NumActiveFogBulbs] = FogBulb;
 			NumActiveFogBulbs++;
 
-			if (NumActiveFogBulbs >= 5)
+			if (NumActiveFogBulbs >= MAXIMUM_ACTIVE_FOGBULBS)
 				return;
 		}
 	}
@@ -570,7 +570,7 @@ void OmniEffect(GFXTLVERTEX* v)
 	float val, val2;
 	long r, g, b, lVal;
 
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < MAXIMUM_ACTIVE_FXBULBS; i++)
 	{
 		FogBulb = &FXFogBulbs[i];
 
@@ -635,7 +635,7 @@ void OmniEffect(GFXTLVERTEX* v)
 	}
 }
 
-void OmniFog(GFXTLVERTEX* v)
+void OmniFog(GFXTLVERTEX* v, bool multi_colour_fog)
 {
 	FOGBULB_STRUCT* FogBulb;
 	FVECTOR pos;
@@ -707,13 +707,42 @@ void OmniFog(GFXTLVERTEX* v)
 
 						if (val && val < FogBulb->sqrad)
 						{
-							val *= FogBulb->inv_sqrad * FogBulb->density;
-							lVal = (long)val + (v->specular >> 24) - FogBulb->density;
+							if (multi_colour_fog)
+							{
+								long density = (FogBulb->density >> 4) * (FogBulb->rad / (8192.0f));
 
-							if (lVal < 0)
-								lVal = 0;
+								val *= FogBulb->inv_sqrad * density;
+								lVal = (long)val;
 
-							v->specular = (lVal << 24) | v->specular & 0xFFFFFF;
+								float fade = (v->sz / FogBulb->rad);
+								if (fade > 1.0f)
+									fade = 1.0f;
+
+								r = CLRR(v->specular) + (((density - lVal) * FogBulb->r) >> 8) * fade;
+								g = CLRG(v->specular) + (((density - lVal) * FogBulb->g) >> 8) * fade;
+								b = CLRB(v->specular) + (((density - lVal) * FogBulb->b) >> 8) * fade;
+
+								if (r > 255)
+									r = 255;
+
+								if (g > 255)
+									g = 255;
+
+								if (b > 255)
+									b = 255;
+
+								v->specular = b | v->specular & 0xFF000000 | ((g | ((r | (r << 8)) << 8)) << 8);
+							}
+							else
+							{
+								val *= FogBulb->inv_sqrad * FogBulb->density;
+								lVal = (long)val + (v->specular >> 24) - FogBulb->density;
+
+								if (lVal < 0)
+									lVal = 0;
+
+								v->specular = (lVal << 24) | v->specular & 0xFFFFFF;
+							}
 						}
 					}
 				}
@@ -825,9 +854,9 @@ void AddTriClippedSorted(GFXTLVERTEX* v, short v0, short v1, short v2, TEXTUREST
 	{
 		if (tex->drawtype != 2 && tex->drawtype != 5)
 		{
-			OmniFog(&v[v0]);
-			OmniFog(&v[v1]);
-			OmniFog(&v[v2]);
+			OmniFog(&v[v0], using_multi_color_fog_bulbs);
+			OmniFog(&v[v1], using_multi_color_fog_bulbs);
+			OmniFog(&v[v2], using_multi_color_fog_bulbs);
 		}
 		else
 		{
@@ -1059,10 +1088,10 @@ void AddQuadClippedSorted(GFXTLVERTEX* v, short v0, short v1, short v2, short v3
 	{
 		if (tex->drawtype != 2 && tex->drawtype != 5)
 		{
-			OmniFog(&v[v0]);
-			OmniFog(&v[v1]);
-			OmniFog(&v[v2]);
-			OmniFog(&v[v3]);
+			OmniFog(&v[v0], using_multi_color_fog_bulbs);
+			OmniFog(&v[v1], using_multi_color_fog_bulbs);
+			OmniFog(&v[v2], using_multi_color_fog_bulbs);
+			OmniFog(&v[v3], using_multi_color_fog_bulbs);
 		}
 		else
 		{
@@ -1421,9 +1450,9 @@ void AddTriClippedZBuffer(GFXTLVERTEX* v, short v0, short v1, short v2, TEXTURES
 
 	if (IsVolumetric())
 	{
-		OmniFog(&v[v0]);
-		OmniFog(&v[v1]);
-		OmniFog(&v[v2]);
+		OmniFog(&v[v0], using_multi_color_fog_bulbs);
+		OmniFog(&v[v1], using_multi_color_fog_bulbs);
+		OmniFog(&v[v2], using_multi_color_fog_bulbs);
 	}
 
 	bp = p;
@@ -1618,10 +1647,10 @@ void AddQuadClippedZBuffer(GFXTLVERTEX* v, short v0, short v1, short v2, short v
 
 	if (IsVolumetric())
 	{
-		OmniFog(&v[v0]);
-		OmniFog(&v[v1]);
-		OmniFog(&v[v2]);
-		OmniFog(&v[v3]);
+		OmniFog(&v[v0], using_multi_color_fog_bulbs);
+		OmniFog(&v[v1], using_multi_color_fog_bulbs);
+		OmniFog(&v[v2], using_multi_color_fog_bulbs);
+		OmniFog(&v[v3], using_multi_color_fog_bulbs);
 	}
 
 	vtx = &v[v0];

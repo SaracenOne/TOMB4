@@ -20,100 +20,104 @@ void init_tomb4_stuff()
 	if (first)	//key was created = no settings found, write defaults
 	{
 		sprintf(buf, "footprints");
-		tomb4.footprints = 1;							//footprints on
+		tomb4.footprints = 1;								//footprints on
 		REG_WriteBool(buf, tomb4.footprints);
 
 		sprintf(buf, "shadow");
-		tomb4.shadow_mode = SHADOW_MODE_PSX_CIRCLE;		//PSX like shadow
+		tomb4.shadow_mode = SHADOW_MODE_PSX_CIRCLE;			//PSX like shadow
 		REG_WriteLong(buf, tomb4.shadow_mode);
 
 		sprintf(buf, "crawltilt");
-		tomb4.crawltilt = 1;							//crawl tilt on
+		tomb4.crawltilt = 1;								//crawl tilt on
 		REG_WriteBool(buf, tomb4.crawltilt);
 
 		sprintf(buf, "flex_crawl");
-		tomb4.flexible_crawling = 1;					//on
+		tomb4.flexible_crawling = 1;						//on
 		REG_WriteBool(buf, tomb4.flexible_crawling);
 
 		sprintf(buf, "climbup");
-		tomb4.fix_climb_up_delay = 1;					//no delay
+		tomb4.fix_climb_up_delay = 1;						//no delay
 		REG_WriteBool(buf, tomb4.fix_climb_up_delay);
 
 		sprintf(buf, "gameover");
-		tomb4.gameover = 1;								//on
+		tomb4.gameover = 1;									//on
 		REG_WriteBool(buf, tomb4.gameover);
 
 		sprintf(buf, "barMode");
-		tomb4.bar_mode = BAR_MODE_CUSTOM;				//custom
+		tomb4.bar_mode = BAR_MODE_CUSTOM;					//custom
 		REG_WriteLong(buf, tomb4.bar_mode);
 
 		sprintf(buf, "bar_pos");
-		tomb4.bars_pos = BARS_POS_CUSTOM;				//custom
+		tomb4.bars_pos = BARS_POS_CUSTOM;					//custom
 		REG_WriteLong(buf, tomb4.bars_pos);
 
 		sprintf(buf, "enemy_bar");
-		tomb4.enemy_bars = 0;							//off
+		tomb4.enemy_bars = 0;								//off
 		REG_WriteBool(buf, tomb4.enemy_bars);
 
 		sprintf(buf, "cutseq_skipper");
-		tomb4.cutseq_skipper = 0;						//off
+		tomb4.cutseq_skipper = 0;							//off
 		REG_WriteBool(buf, tomb4.cutseq_skipper);
 
 		sprintf(buf, "cheats");
-		tomb4.cheats = 0;								//off
+		tomb4.cheats = 0;									//off
 		REG_WriteBool(buf, tomb4.cheats);
 
 		sprintf(buf, "loadtxt");
-		tomb4.loadingtxt = 1;							//on
+		tomb4.loadingtxt = 1;								//on
 		REG_WriteBool(buf, tomb4.loadingtxt);
 
 		sprintf(buf, "inv_bgM");
-		tomb4.inv_bg_mode = INV_BG_MODE_ORIGINAL;		//original
+		tomb4.inv_bg_mode = INV_BG_MODE_ORIGINAL;			//original
 		REG_WriteLong(buf, tomb4.inv_bg_mode);
 
 		sprintf(buf, "tr5LB");
-		tomb4.tr5_loadbar = 0;							//off
+		tomb4.tr5_loadbar = 0;								//off
 		REG_WriteBool(buf, tomb4.tr5_loadbar);
 
 		sprintf(buf, "ltransparency");
-		tomb4.look_transparency = 0;					//off
+		tomb4.look_transparency = 0;						//off
 		REG_WriteBool(buf, tomb4.look_transparency);
 
 		sprintf(buf, "ammo_counter");
-		tomb4.ammo_counter = 0;							//off
+		tomb4.ammo_counter = 0;								//off
 		REG_WriteBool(buf, tomb4.ammo_counter);
 
 		sprintf(buf, "ammotype_hotkeys");
-		tomb4.ammotype_hotkeys = 1;						//on
+		tomb4.ammotype_hotkeys = 1;							//on
 		REG_WriteBool(buf, tomb4.ammotype_hotkeys);
 
 		sprintf(buf, "combat_tilt");
-		tomb4.combat_cam_tilt = 1;						//on
+		tomb4.combat_cam_tilt = 1;							//on
 		REG_WriteBool(buf, tomb4.combat_cam_tilt);
 
 		sprintf(buf, "inv_hpbar");
-		tomb4.hpbar_inv = 0;							//off
+		tomb4.hpbar_inv = 0;								//off
 		REG_WriteBool(buf, tomb4.hpbar_inv);
 
 		sprintf(buf, "static_lighting");
-		tomb4.static_lighting = 1;						//on
+		tomb4.static_lighting = 1;							//on
 		REG_WriteBool(buf, tomb4.static_lighting);
 
 		sprintf(buf, "reverb");
-		tomb4.reverb = REVERB_LARA_ROOM;				//Lara room
+		tomb4.reverb = REVERB_LARA_ROOM;					//Lara room
 		REG_WriteLong(buf, tomb4.reverb);
 
 		sprintf(buf, "distance_fog");
-		tomb4.distance_fog = 0;							//default is 0
+		tomb4.distance_fog = 0;								//default is 0
 		REG_WriteLong(buf, tomb4.distance_fog);
 
 		sprintf(buf, "UIScale");
-		tomb4.GUI_Scale = 1.0F;							//default is 1.0F
+		tomb4.GUI_Scale = 1.0F;								//default is 1.0F
 		REG_WriteFloat(buf, tomb4.GUI_Scale);
 
 		sprintf(buf, "hang_game_thread");
-		tomb4.hang_game_thread = 1;						//on
+		tomb4.hang_game_thread = 1;							//on
 		REG_WriteBool(buf, tomb4.hang_game_thread);
+
+		sprintf(buf, "pickup_lighting");
+		tomb4.pickup_lighting = PICKUP_LIGHTING_DEFAULT;	// default
+		REG_WriteLong(buf, tomb4.pickup_lighting);
 	}
 	else	//Key already exists, settings already written, read them. also falls back to default if any of them missing
 	{
@@ -199,6 +203,10 @@ void init_tomb4_stuff()
 		sprintf(buf, "hang_game_thread");
 		REG_ReadBool(buf, tomb4.hang_game_thread, 1);
 
+		ulong pickup_lighting;
+		sprintf(buf, "pickup_lighting");
+		REG_ReadLong(buf, pickup_lighting, PICKUP_LIGHTING_DEFAULT);
+		tomb4.pickup_lighting = (pickup_lighting_enum)pickup_lighting;
 	}
 
 	CloseRegistry();
@@ -281,6 +289,9 @@ void save_new_tomb4_settings()
 
 	sprintf(buf, "hang_game_thread");
 	REG_WriteBool(buf, tomb4.hang_game_thread);
+
+	sprintf(buf, "pickup_lighting");
+	REG_WriteLong(buf, tomb4.pickup_lighting);
 
 	CloseRegistry();
 }

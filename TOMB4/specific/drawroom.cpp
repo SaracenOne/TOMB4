@@ -260,7 +260,7 @@ void ProcessRoomVertices(ROOM_INFO* r)
 	}
 }
 
-void ProcessRoomData(ROOM_INFO* r)
+void ProcessRoomData(ROOM_INFO* r, bool multi_colour_fog)
 {
 	GFXVERTEX* vptr;
 #ifndef USE_BGFX
@@ -442,19 +442,33 @@ void ProcessRoomData(ROOM_INFO* r)
 
 			if (light->Type == LIGHT_FOG)
 			{
-				if (NumLevelFogBulbs >= 20)
+				if (NumLevelFogBulbs >= MAXIMUM_LEVEL_FOGBULBS)
 				{
-					Log(1, "Fog Bulb Discarded - More Than %d", 20);
+					Log(1, "Fog Bulb Discarded - More Than %d", MAXIMUM_LEVEL_FOGBULBS);
 					continue;
 				}
 
 				bulb = &FogBulbs[nBulbs];
 				bulb->inRange = 0;
-				bulb->density = light->r;
+				if (multi_colour_fog)
+					bulb->density = light->Intensity;
+				else
+					bulb->density = (float)light->r;
+
 				bulb->WorldPos.x = (float)light->x;
 				bulb->WorldPos.y = (float)light->y;
 				bulb->WorldPos.z = (float)light->z;
-				bulb->rad = light->Outer;
+				if (multi_colour_fog)
+				{
+					bulb->r = (float)light->r;
+					bulb->g = (float)light->g;
+					bulb->b = (float)light->b;
+					bulb->rad = light->Outer * 1.25;
+				}
+				else
+				{
+					bulb->rad = light->Outer;
+				}
 				bulb->sqrad = SQUARE(bulb->rad);
 				bulb->inv_sqrad = 1 / bulb->sqrad;
 				nBulbs++;

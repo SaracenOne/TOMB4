@@ -3,7 +3,7 @@
 
 void ProcessRoomDynamics(ROOM_INFO* r);
 void ProcessRoomVertices(ROOM_INFO* r);
-void ProcessRoomData(ROOM_INFO* r);
+void ProcessRoomData(ROOM_INFO* r, bool multi_colour_fog);
 void InsertRoom(ROOM_INFO* r);
 void CalcTriFaceNormal(GFXVECTOR* p1, GFXVECTOR* p2, GFXVECTOR* p3, GFXVECTOR* N);
 void ProcessMeshData(long num_meshes);

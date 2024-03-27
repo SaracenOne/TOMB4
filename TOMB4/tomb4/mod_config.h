@@ -34,6 +34,7 @@ struct MOD_LEVEL_ENVIRONMENT_INFO {
 	unsigned int far_view = DEFAULT_FAR_VIEW_VALUE;
 	bool force_train_fog = false;
 	bool disable_distance_limit = false;
+	bool enable_multi_color_fog_bulbs = false;
 };
 
 struct MOD_LEVEL_FONT_INFO {
@@ -187,8 +188,7 @@ struct MOD_LEVEL_AUDIO_INFO {
 
 	short inside_jeep_track = 98;
 	short outside_jeep_track = 110;
-	short secret_track = 5;
-};
+	short secret_track = 5;};
 
 struct MOD_LEVEL_RECT_COLOR_INFO {
 	uint32_t upper_left_color;

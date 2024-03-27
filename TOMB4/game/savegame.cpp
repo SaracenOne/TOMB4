@@ -25,8 +25,6 @@
 #include "../tomb4/mod_config.h"
 #include "../tomb4/tomb4plus/t4plus_objects.h"
 
-#define MAX_HUB_LEVELS 10
-
 LEGACY_SAVEGAME_INFO savegame;
 
 static char* SGpoint = 0;
