@@ -4,7 +4,7 @@
 void S_CalculateStaticMeshLight(long x, long y, long z, long shade, ROOM_INFO* r);
 void InitItemDynamicLighting(ITEM_INFO* item);
 void SetupDynamicLight(DYNAMIC* light, ITEM_INFO* item);
-void SetupLight(PCLIGHT* light, ITEM_INFO* item, long* ambient);
+void SetupLight(PCLIGHT* light, ITEM_INFO* item, bool point_lights_affect_ambience, bool use_alt_attenuation_calculation, long* ambient);
 void mApplyMatrix(float* matrix, FVECTOR* start, FVECTOR* dest);
 void mApplyTransposeMatrix(float* matrix, FVECTOR* start, FVECTOR* dest);
 void CreateLightList(ITEM_INFO* item);

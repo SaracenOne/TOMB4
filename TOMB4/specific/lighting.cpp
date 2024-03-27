@@ -25,7 +25,6 @@ POINTLIGHT_STRUCT SpotLights[64];
 long nSunLights, nPointLights, nSpotLights, nShadowLights, nTotalLights;
 
 static ITEM_INFO StaticMeshLightItem;
-static long SetupLight_thing;
 
 void S_CalculateStaticMeshLight(long x, long y, long z, long shade, ROOM_INFO* r)
 {
@@ -85,7 +84,7 @@ void SetupDynamicLight(DYNAMIC* light, ITEM_INFO* item)
 	}
 }
 
-void SetupLight(PCLIGHT* light, ITEM_INFO* item, long* ambient)
+void SetupLight(PCLIGHT* light, ITEM_INFO* item, bool point_lights_affect_ambience, bool use_alt_attenuation_calculation, long* ambient)
 {
 	SUNLIGHT_STRUCT* sun;
 	POINTLIGHT_STRUCT* point;
@@ -138,11 +137,14 @@ void SetupLight(PCLIGHT* light, ITEM_INFO* item, long* ambient)
 		if (point->rad < 0)
 			point->rad = 0;
 
-		if (SetupLight_thing && point->rad < 1)
+		if (point_lights_affect_ambience && point->rad < 1)
 		{
-			r = CLRR(*ambient) + long(point->rad * point->r);
-			g = CLRG(*ambient) + long(point->rad * point->g);
-			b = CLRB(*ambient) + long(point->rad * point->b);
+			// T4Plus: this form of ambience calculation may be more accurate to the original.
+			float ambience = (light->Outer - sqrt(light->Range)) / light->Outer;
+
+			r = CLRR(*ambient) + long(ambience * point->r);
+			g = CLRG(*ambient) + long(ambience * point->g);
+			b = CLRB(*ambient) + long(ambience * point->b);
 
 			if (r > 255)
 				r = 255;
@@ -176,7 +178,7 @@ void SetupLight(PCLIGHT* light, ITEM_INFO* item, long* ambient)
 		point = &SpotLights[nSpotLights];
 		num2 = sqrt(SQUARE(x) + SQUARE(y) + SQUARE(z));
 
-		if (SetupLight_thing)
+		if (use_alt_attenuation_calculation)
 			num = 2.0F / num2;
 		else
 			num = 1.0F / num2;
@@ -454,14 +456,20 @@ void InitObjectLighting(ITEM_INFO* item)
 	if (!item)
 		return;
 
+	bool point_lights_affect_ambience = false;
+	bool use_alt_attenuation_calculation = false;
+
+	if (item->object_number >= GAME_PIECE1) {
+		point_lights_affect_ambience = use_alt_attenuation_calculation = true;
+	}
+
 	node_ambient = item->il.ambient;
-	SetupLight_thing = item->object_number >= GAME_PIECE1;
 	light = (PCLIGHT*)item->il.pCurrentLights;
 
 	for (int i = 0; i < item->il.nCurrentLights; i++)
 	{
 		if (light[i].Active)
-			SetupLight(&light[i], item, &node_ambient);
+			SetupLight(&light[i], item, point_lights_affect_ambience, use_alt_attenuation_calculation, &node_ambient);
 	}
 
 	light = (PCLIGHT*)item->il.pPrevLights;
@@ -469,7 +477,7 @@ void InitObjectLighting(ITEM_INFO* item)
 	for (int i = 0; i < item->il.nPrevLights; i++)
 	{
 		if (light[i].Active)
-			SetupLight(&light[i], item, &node_ambient);
+			SetupLight(&light[i], item, point_lights_affect_ambience, use_alt_attenuation_calculation, &node_ambient);
 	}
 
 	InitItemDynamicLighting(item);
