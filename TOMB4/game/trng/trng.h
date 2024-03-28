@@ -2,6 +2,15 @@
 
 #include "../../global/types.h"
 
+#define NG_READ_8(scr_buffer, scr_offset) scr_buffer[scr_offset]; \
+offset += sizeof(char)
+
+#define NG_READ_16(scr_buffer, scr_offset) (unsigned short)((unsigned char)scr_buffer[scr_offset]) | ((unsigned short)(scr_buffer[scr_offset + 1])) << 8; \
+scr_offset += sizeof(short)
+
+#define NG_READ_32(scr_buffer, scr_offset) (unsigned int)(((unsigned char)scr_buffer[scr_offset]) | (((unsigned int)(unsigned char)scr_buffer[scr_offset + 1]) << 8) | (((unsigned int)(unsigned char)scr_buffer[scr_offset + 2]) << 16) | (((unsigned int)(unsigned char)scr_buffer[scr_offset + 3]) << 24)); \
+scr_offset += sizeof(int)
+
 #define SILENCE_EXCESSIVE_LOGS // Debug macro to silence log commands which are commonly called every frame.
 
 #define NG_DEGREE(i) (i * 182)

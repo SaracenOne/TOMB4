@@ -179,7 +179,7 @@ enum NG_AMMO_FLAGS {
 
 struct NG_MULTI_ENV_TRIPLET {
 	unsigned short env_condition;
-	unsigned short distance_for_env;
+	short distance_for_env;
 	unsigned short extra;
 };
 

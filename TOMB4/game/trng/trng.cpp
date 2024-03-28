@@ -377,7 +377,7 @@ void NGSetItemAnimation(uint16_t item_id,
 		items[item_id].current_anim_state = anims[items[item_id].anim_number].current_anim_state;
 	}
 
-	if (update_state_id) {
+	if (update_next_state_id) {
 		items[item_id].goal_anim_state = anims[items[item_id].anim_number].current_anim_state;
 	}
 

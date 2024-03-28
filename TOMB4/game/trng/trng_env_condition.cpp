@@ -7,6 +7,37 @@
 #include "trng_test_position.h"
 #include "trng_triggergroup.h"
 
+int NGProportionDistance(int increment, int distance) {
+	return (int)((float)increment * ((float)distance / 1024.0f));
+}
+
+void NGCalculateIncrement(short orientation, int* inc_x_out, int* inc_z_out, int distance) {
+	int inc_x, inc_z;
+	int Indice;
+
+	if (distance == 0) {
+		*inc_x_out = 0;
+		*inc_z_out = 0;
+		return;
+	}
+
+	Indice = orientation >> 3;
+	Indice &= 0x1FFE;
+
+	inc_x = rcossin_tbl[Indice] << 12;
+	inc_z = rcossin_tbl[Indice + 1] << 12;
+	inc_x = inc_x >> 14;
+	inc_z = inc_z >> 14;
+	if (distance != 1024) {
+		inc_x = NGProportionDistance(inc_x, distance);
+		inc_z = NGProportionDistance(inc_z, distance);
+	}
+
+	*inc_x_out = inc_x;
+	*inc_z_out = inc_z;
+}
+
+
 TestEnvConditionTripletResult TestEnvConditionTriplet(NG_MULTI_ENV_TRIPLET* triplet, bool set_alignment_variables) {
 	TestEnvConditionTripletResult result;
 
@@ -59,9 +90,118 @@ TestEnvConditionTripletResult TestEnvConditionTriplet(NG_MULTI_ENV_TRIPLET* trip
 			result.is_valid = true;
 			break;
 		}
-		case ENV_NO_BLOCK_IN_FRONT: {
-			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TestEnvConditionTriplet: ENV_NO_BLOCK_IN_FRONT is unimplemented!");
-			result.is_valid = false;
+		case ENV_NO_BLOCK_IN_FRONT:
+		case ENV_NO_BLOCK_AT_RIGHT:
+		case ENV_NO_BLOCK_AT_LEFT:
+		case ENV_NO_BLOCK_BACK: {
+			short orientation = lara_item->pos.y_rot;
+			long coord_x = lara_item->pos.x_pos;
+			long coord_y = lara_item->pos.y_pos;
+			long coord_z = lara_item->pos.z_pos;
+			short distance_test = 768;
+			if (triplet->distance_for_env != -1) {
+				distance_test = triplet->distance_for_env;
+			}
+
+			short room_num = lara_item->room_number;
+			FLOOR_INFO *floor_info = GetFloor(coord_x, coord_y, coord_z, &room_num);
+			int height = GetHeight(floor_info, coord_x, coord_y, coord_z);
+
+			switch (env_condition_switch_value) {
+				case ENV_NO_BLOCK_AT_RIGHT:
+					orientation += 0x4000;
+					break;
+				case ENV_NO_BLOCK_AT_LEFT:
+					orientation -= 0x4000;
+					break;
+				case ENV_NO_BLOCK_BACK:
+					orientation += 0x8000;
+					break;
+			}
+
+			int inc_x;
+			int inc_z;
+			NGCalculateIncrement(orientation, &inc_x, &inc_z, 1024);
+
+			coord_x += inc_x;
+			coord_z += inc_z;
+
+			floor_info = GetFloor(coord_x, coord_y, coord_z, &room_num);
+			height = GetHeight(floor_info, coord_x, coord_y, coord_z);
+
+			if (height == NO_HEIGHT) {
+				result.is_valid = false;
+				break;
+			}
+
+			if ((lara_item->pos.y_pos - height) >= distance_test) {
+				result.is_valid = false;
+				break;
+			}
+
+			int ceiling = GetCeiling(floor_info, coord_x, coord_y, coord_z);
+			if ((lara_item->pos.y_pos - distance_test) < ceiling) {
+				result.is_valid = false;
+				break;
+			}
+
+			result.is_valid = true;
+			break;
+		}
+		case ENV_HOLE_FLOOR_IN_FRONT:
+		case ENV_HOLE_FLOOR_AT_RIGHT:
+		case ENV_HOLE_FLOOR_AT_LEFT:
+		case ENV_HOLE_FLOOR_BACK: {
+			short orientation = lara_item->pos.y_rot;
+			long coord_x = lara_item->pos.x_pos;
+			long coord_y = lara_item->pos.y_pos;
+			long coord_z = lara_item->pos.z_pos;
+			short distance_test = 768;
+			if (triplet->distance_for_env != -1) {
+				distance_test = triplet->distance_for_env;
+			}
+
+			switch (env_condition_switch_value) {
+				case ENV_HOLE_FLOOR_AT_RIGHT:
+					orientation += 0x4000;
+					break;
+				case ENV_HOLE_FLOOR_AT_LEFT:
+					orientation -= 0x4000;
+					break;
+				case ENV_HOLE_FLOOR_BACK:
+					orientation += 0x8000;
+					break;
+			}
+
+			int inc_x;
+			int inc_z;
+			NGCalculateIncrement(orientation, &inc_x, &inc_z, 1024);
+
+			coord_x += inc_x;
+			coord_z += inc_z;
+
+			short room_num = lara_item->room_number;
+
+			FLOOR_INFO* floor_info = GetFloor(coord_x, coord_y, coord_z, &room_num);
+			int height = GetHeight(floor_info, coord_x, coord_y, coord_z);
+
+			if (height == NO_HEIGHT) {
+				result.is_valid = false;
+				break;
+			}
+
+			if ((height - lara_item->pos.y_pos) < distance_test) {
+				result.is_valid = false;
+				break;
+			}
+
+			int ceiling = GetCeiling(floor_info, coord_x, coord_y, coord_z);
+			if ((lara_item->pos.y_pos - distance_test) < ceiling) {
+				result.is_valid = false;
+				break;
+			}
+
+			result.is_valid = true;
 			break;
 		}
 		case ENV_MULT_CONDITION: {
