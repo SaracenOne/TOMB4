@@ -958,26 +958,31 @@ void NGFrameStartExtraState() {
 
 	NGClearLaraCollisions();
 
-	if (ng_cinema_timer > 0 || ng_cinema_type > 0) {
+	if (ng_cinema_timer > 0 || ng_cinema_type != 0) {
 		switch (ng_cinema_type) {
-			case 0: { // None / curtain effect
+			case -1: { // Fullscreen
 				SetFadeClipImmediate(150);
 				break;
-			// TODO: these are not accurate
+			} case 0: {
+				SetFadeClipImmediate(10);
+				break;
 			} case 1: { // Tiny
-				SetFadeClipImmediate(8);
+				SetFadeClipImmediate(20);
 				break;
 			} case 2: { // Middle
-				SetFadeClipImmediate(16);
+				SetFadeClipImmediate(30);
 				break;
 			} case 3: { // Big
-				SetFadeClipImmediate(32);
+				SetFadeClipImmediate(40);
 				break;
 			} case 4: { // Huge
-				SetFadeClipImmediate(64);
+				SetFadeClipImmediate(60);
 				break;
 			} case 5: { // Fissure
-				SetFadeClipImmediate(128);
+				SetFadeClipImmediate(90);
+				break;
+			} default: {
+				SetFadeClipImmediate(10);
 				break;
 			}
 		}
@@ -1429,8 +1434,9 @@ unsigned int NGGetItemMeshVisibilityMask(unsigned int item_num) {
 	return ng_items_extradata[item_num].mesh_visibility_mask;
 }
 
-void NGSetCurtainTimer(int ticks) {
-	if (ng_cinema_type == 0) {
+void NGSetFullscreenCurtainTimer(int ticks) {
+	if (ng_cinema_timer <= 0) {
+		ng_cinema_type = -1;
 		ng_cinema_timer = ticks;
 	}
 }
@@ -1438,6 +1444,9 @@ void NGSetCurtainTimer(int ticks) {
 void NGSetCinemaTypeAndTimer(int type, int ticks) {
 	ng_cinema_type = type;
 	ng_cinema_timer = ticks;
+	if (ng_cinema_type == 0 && ng_cinema_timer == 0) {
+		SetFadeClip(0, 1);
+	}
 }
 
 void NGToggleOrganizer(int organizer_id, bool is_enabled) {

@@ -247,7 +247,7 @@ extern unsigned int NGGetItemMeshVisibilityMask(unsigned int item_num);
 extern void NGSetAfterDeathOverride(int item_id, short after_death);
 extern short NGGetAfterDeathOverride(int item_id);
 
-extern void NGSetCurtainTimer(int ticks);
+extern void NGSetFullscreenCurtainTimer(int ticks);
 extern void NGSetCinemaTypeAndTimer(int type, int ticks);
 
 extern bool NGIsTriggerGroupContinuous(int trigger_group_id);

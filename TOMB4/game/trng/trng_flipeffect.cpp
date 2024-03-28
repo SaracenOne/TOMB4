@@ -1413,7 +1413,7 @@ bool screen_flash_screen_with_light_color_for_duration(unsigned char flash_color
 
 // NGLE - 367
 bool camera_show_black_screen_for_seconds_with_final_curtain_effect(unsigned char timer, unsigned char _unused) {
-	NGSetCurtainTimer(timer * 30);
+	NGSetFullscreenCurtainTimer(timer * 30);
 
 	return true;
 }
