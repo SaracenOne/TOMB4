@@ -94,6 +94,13 @@ bool NGExecuteSingleGlobalTrigger(int global_trigger_id, int selected_inventory_
 			}
 			break;
 		}
+		case GT_LOADED_SAVEGAME: {
+			int result = ng_loaded_savegame == true;
+			if (result >= 0) {
+				global_trigger_condition_passed = true;
+			}
+			break;
+		}
 		case GT_COLLIDE_STATIC_SLOT: {
 			int result = NGIsLaraCollidingWithStaticSlot(global_trigger->parameter);
 			if (result >= 0) {

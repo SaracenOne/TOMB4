@@ -389,6 +389,13 @@ void NGSetItemAnimation(uint16_t item_id,
 void NGSetup() {	
 	NGLoadTablesForLevel(gfCurrentLevel);
 	NGSetupExtraState();
+
+	// Loaded from a savegame
+	if (gfGameMode == 4) {
+		ng_loaded_savegame = true;
+	} else {
+		ng_loaded_savegame = false;
+	}
 }
 
 void NGFrameStart() {

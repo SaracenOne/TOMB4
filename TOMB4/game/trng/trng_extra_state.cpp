@@ -23,6 +23,8 @@
 #include "trng_globaltrigger.h"
 #include "../../specific/file.h"
 
+bool ng_loaded_savegame = false;
+
 int ng_triggered_items_for_timerfield[NG_MAX_TRIGGERED_ITEMS] = {};
 int ng_triggered_items_for_timerfield_count = 0;
 
@@ -1750,6 +1752,9 @@ void NGFrameFinishExtraState() {
 	}
 	ng_heavy_last_action_floor_trigger_count = ng_heavy_current_action_floor_trigger_count;
 	ng_heavy_current_action_floor_trigger_count = 0;
+
+	// Savegame
+	ng_loaded_savegame = false;
 }
 
 void NGRegisterTriggeredItemForTimerfield(short item_id) {

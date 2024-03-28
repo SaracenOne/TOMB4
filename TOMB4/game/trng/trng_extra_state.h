@@ -5,6 +5,7 @@
 #define NG_MAX_FLOORSTATE_ACTIONS 128
 
 #define NG_MAX_TRIGGERED_ITEMS 128
+extern bool ng_loaded_savegame;
 extern int ng_triggered_items_for_timerfield[NG_MAX_TRIGGERED_ITEMS];
 extern int ng_triggered_items_for_timerfield_count;
 
