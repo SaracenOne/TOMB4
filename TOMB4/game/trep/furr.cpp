@@ -609,7 +609,7 @@ FURRResult furr_cmd_flash_red(FURRParameters params) {
 // Params:
 FURRResult furr_cmd_flash_orange(FURRParameters params) {
 	FlashFadeR = 0xff;
-	FlashFadeG = 0xa5;
+	FlashFadeG = 0xbe;
 	FlashFadeB = 0x00;
 	FlashFader = 32;
 
@@ -638,9 +638,9 @@ FURRResult furr_cmd_flash_green(FURRParameters params) {
 
 // Params:
 FURRResult furr_cmd_flash_lightgreen(FURRParameters params) {
-	FlashFadeR = 0x00;
+	FlashFadeR = 0xbe;
 	FlashFadeG = 0xff;
-	FlashFadeB = 0xa5;
+	FlashFadeB = 0x00;
 	FlashFader = 32;
 
 	return FURR_RESULT_OK;
@@ -898,7 +898,11 @@ FURRResult furr_cmd_change_weather(FURRParameters params) {
 // Params:
 // LARA_MESH
 FURRResult furr_cmd_swap_lara_mesh(FURRParameters params) {
-	return FURR_RESULT_UNIMPLEMENTED;
+	short *temp = lara.mesh_ptrs[params.second_parameter];
+	lara.mesh_ptrs[params.second_parameter] = meshes[objects[params.first_parameter].mesh_index + params.second_parameter * 2];
+	meshes[objects[params.first_parameter].mesh_index + params.second_parameter * 2] = temp;
+
+	return FURR_RESULT_OK;
 }
 
 // Params:
