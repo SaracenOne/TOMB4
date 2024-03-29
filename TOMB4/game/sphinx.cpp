@@ -60,10 +60,14 @@ void SphinxControl(short item_number)
 		{
 			mesh = &r->mesh[i];
 
-			if (mesh->z >> 10 == z >> 10 && mesh->x >> 10 == x >> 10 && mesh->static_number >= SHATTER0)
+			MOD_LEVEL_STATIC_INFO* static_info = &get_game_mod_level_statics_info(gfCurrentLevel)->static_info[mesh->static_number];
+			if (mesh->z >> 10 == z >> 10 && mesh->x >> 10 == x >> 10 && static_info->creatures_can_shatter)
 			{
 				ShatterObject(0, mesh, -64, item->room_number, 0);
-				SoundEffect(SFX_HIT_ROCK, &item->pos, SFX_DEFAULT);
+				if (static_info->shatter_sound_id >= 0)
+				{
+					SoundEffect(static_info->shatter_sound_id, &item->pos, SFX_DEFAULT);
+				}
 				mesh->Flags &= ~1;
 				floor->stopper = 0;
 				TestTriggers(trigger_data, 1, 0, trigger_index_room, trigger_index_floor);

@@ -1489,7 +1489,7 @@ bool LoadSamples()
 
 	// Still not sure if this flag consistently determines the size of the sample buffer, but lets try it...
 	int max_samples = MAX_SAMPLES;
-	if (is_ngle_level)
+	if (is_using_global_sound_map)
 	{
 		max_samples = MAX_NGLE_SAMPLES;
 	}

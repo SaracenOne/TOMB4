@@ -36,6 +36,8 @@ enum NG_DIRECTIONS {
 };
 
 extern bool is_ngle_level;
+extern bool is_using_ngle_triggers;
+extern bool is_using_global_sound_map;
 
 extern int ng_floor_id_size;
 extern char *ng_floor_id_table;
@@ -109,10 +111,10 @@ extern bool NGIsItemFrozen(unsigned int item_num);
 extern void NGFrameStart();
 extern void NGFrameFinish();
 
-extern bool NGUseNGConditionals();
-extern bool NGUseNGFlipEffects();
-extern bool NGUseNGActions();
-extern bool NGUseNGAnimCommands();
+extern bool NGIsUsingNGConditionals();
+extern bool NGIsUsingNGFlipEffects();
+extern bool NGIsUsingNGActions();
+extern bool NGIsUsingNGAnimCommands();
 
 extern void NGSetCurrentDrawItemNumber(int item_num);
 extern int NGGetCurrentDrawItemNumber();

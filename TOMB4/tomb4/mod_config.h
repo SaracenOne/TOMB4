@@ -145,9 +145,12 @@ struct MOD_LEVEL_OBJECTS_INFO {
 };
 
 struct MOD_LEVEL_STATIC_INFO {
-	bool can_shatter = false;
-	bool shatter_sound_id = 0;
+	bool lara_guns_can_shatter = false;
+	bool large_objects_can_shatter = false;
+	bool creatures_can_shatter = false;
+	bool record_shatter_state_in_savegames = false;
 	bool hard_collision = false;
+	int16_t shatter_sound_id = 0;
 };
 
 struct MOD_LEVEL_STATICS_INFO {
@@ -460,6 +463,7 @@ extern MOD_LEVEL_STAT_INFO *get_game_mod_level_stat_info(int level);
 extern MOD_LEVEL_FLARE_INFO *get_game_mod_level_flare_info(int level);
 extern MOD_LEVEL_WEAPON_INFO *get_game_mod_level_weapon_info(int level);
 extern MOD_LEVEL_MISC_INFO *get_game_mod_level_misc_info(int level);
+extern MOD_LEVEL_STATICS_INFO* get_game_mod_level_statics_info(int level);
 
 extern MOD_LEVEL_AMMO_INFO *get_game_mod_current_lara_ammo_info(MOD_LEVEL_WEAPON_INFO *weapon_info);
 

@@ -20,6 +20,8 @@
 
 bool ngle_footer_found = false;
 bool is_ngle_level = false;
+bool is_using_ngle_triggers = false;
+bool is_using_global_sound_map = false;
 
 int ng_floor_id_size = 0;
 char *ng_floor_id_table = NULL;
@@ -38,6 +40,8 @@ NGStaticTableEntry ng_static_id_table[NG_STATIC_ID_TABLE_SIZE];
 
 void NGLoadInfo(FILE* level_fp) {
 	is_ngle_level = false;
+	is_using_ngle_triggers = false;
+	is_using_global_sound_map = false;
 	ngle_footer_found = false;
 
 	memset(&ng_script_id_table, 0x00, NG_SCRIPT_ID_TABLE_SIZE * sizeof(short));
@@ -67,6 +71,7 @@ void NGLoadInfo(FILE* level_fp) {
 		unsigned short start_ident = 0;
 		fread(&start_ident, 1, sizeof(short), level_fp);
 		if (start_ident == NGLE_START_SIGNATURE) {
+			is_ngle_level = true;
 			while (1) {
 				unsigned short chunk_size = 0;
 				fread(&chunk_size, 1, sizeof(unsigned short), level_fp);
@@ -106,14 +111,22 @@ void NGLoadInfo(FILE* level_fp) {
 				case 0x800d: {
 					unsigned int flags;
 					fread(&flags, 1, sizeof(unsigned int), level_fp);
+					if (flags & 0x01) {
+						is_using_ngle_triggers = true;
+					}
 					if (flags & 0x02) {
-						is_ngle_level = true;
+						is_using_global_sound_map = true;
 					}
 
 					break;
 				}
-				// Tex Partial (?)
+				// Tex Partial
 				case 0x8017: {
+					fseek(level_fp, (chunk_size * sizeof(short)) - (sizeof(short) * 2), SEEK_CUR);
+					break;
+				}
+				// Remap Tails
+				case 0x8018: {
 					fseek(level_fp, (chunk_size * sizeof(short)) - (sizeof(short) * 2), SEEK_CUR);
 					break;
 				}
@@ -161,6 +174,11 @@ void NGLoadInfo(FILE* level_fp) {
 					} else {
 						fseek(level_fp, (chunk_size * sizeof(short)) - (sizeof(short) * 2), SEEK_CUR);
 					}
+					break;
+				}
+				// Remap Plugin IDs
+				case 0x804e: {
+					fseek(level_fp, (chunk_size * sizeof(short)) - (sizeof(short) * 2), SEEK_CUR);
 					break;
 				}
 				default: {
@@ -412,28 +430,28 @@ void NGFrameFinish() {
 	NGFrameFinishExtraState();
 }
 
-bool NGUseNGConditionals() {
+bool NGIsUsingNGConditionals() {
 	MOD_GLOBAL_INFO *global_info = get_game_mod_global_info();
 
-	return global_info->trng_conditionals_enabled && ngle_footer_found;
+	return global_info->trng_conditionals_enabled && is_using_ngle_triggers;
 }
 
-bool NGUseNGFlipEffects() {
+bool NGIsUsingNGFlipEffects() {
 	MOD_GLOBAL_INFO *global_info = get_game_mod_global_info();
 
-	return global_info->trng_flipeffects_enabled && ngle_footer_found;
+	return global_info->trng_flipeffects_enabled && is_using_ngle_triggers;
 }
 
-bool NGUseNGActions() {
+bool NGIsUsingNGActions() {
 	MOD_GLOBAL_INFO *global_info = get_game_mod_global_info();
 
-	return global_info->trng_actions_enabled && ngle_footer_found;
+	return global_info->trng_actions_enabled && is_using_ngle_triggers;
 }
 
-bool NGUseNGAnimCommands() {
+bool NGIsUsingNGAnimCommands() {
 	MOD_GLOBAL_INFO *global_info = get_game_mod_global_info();
 
-	return global_info->trng_ng_anim_commands_enabled && ngle_footer_found;
+	return global_info->trng_ng_anim_commands_enabled && is_using_ngle_triggers;
 }
 
 int NGFindIndexForLaraStartPosWithMatchingOCB(unsigned int ocb) {

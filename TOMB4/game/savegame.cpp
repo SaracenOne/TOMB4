@@ -751,7 +751,7 @@ void SaveLevelData(bool full_save, bool use_full_flipmask)
 		{
 			mesh = &r->mesh[j];
 
-			if (mesh->static_number >= SHATTER0)
+			if (get_game_mod_level_statics_info(gfCurrentLevel)->static_info[mesh->static_number].record_shatter_state_in_savegames)
 			{
 				word |= ((mesh->Flags & 1) << k);
 				k++;
@@ -1199,7 +1199,7 @@ void RestoreLevelData(bool full_save, bool use_full_flipmask)
 		{
 			mesh = &r->mesh[j];
 
-			if (mesh->static_number >= SHATTER0)
+			if (get_game_mod_level_statics_info(gfCurrentLevel)->static_info[mesh->static_number].record_shatter_state_in_savegames)
 			{
 				if (k == 16)
 				{

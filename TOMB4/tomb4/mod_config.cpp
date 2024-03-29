@@ -18,9 +18,10 @@
 #include "../specific/registry.h"
 
 #include <string>
+#include "../game/sound.h"
 
 int global_string_table_size = 0;
-char** global_string_table;
+char** global_string_table = nullptr;
 
 #define READ_JSON_INTEGER_CAST(value_name, json, my_struct, my_type) { const json_t* value_name = json_getProperty(json, #value_name); \
     if (value_name && JSON_INTEGER == json_getType(value_name)) { \
@@ -335,6 +336,10 @@ MOD_LEVEL_OBJECT_CUSTOMIZATION *get_game_mod_level_object_customization_for_slot
 
 MOD_LEVEL_MISC_INFO *get_game_mod_level_misc_info(int level) {
     return &game_mod_config.level_info[level].misc_info;
+}
+
+MOD_LEVEL_STATICS_INFO* get_game_mod_level_statics_info(int level) {
+    return &game_mod_config.level_info[level].statics_info;
 }
 
 void LoadGameModLevelAudioInfo(const json_t* audio, MOD_LEVEL_AUDIO_INFO* audio_info) {
@@ -702,6 +707,24 @@ void SetupDefaultFontInfoForLevel(MOD_LEVEL_INFO* level_info) {
 void SetupDefaultSlotInfoForLevel(MOD_LEVEL_INFO* level_info) {
     for (int i = 0; i < NUMBER_OBJECTS; i++) {
         level_info->objects_info.slot_override[i] = i;
+    }
+}
+
+void SetupDefaultStaticsInfoForLevel(MOD_LEVEL_INFO* level_info) {
+    for (int i = 0; i < NUMBER_STATIC_OBJECTS; i++) {
+        if (i >= SHATTER0) {
+            if (i <= SHATTER9) {
+                level_info->statics_info.static_info[i].large_objects_can_shatter = true;
+            }
+            if (i < SHATTER8) {
+                level_info->statics_info.static_info[i].lara_guns_can_shatter = true;
+            }
+
+            level_info->statics_info.static_info[i].creatures_can_shatter = true;
+            level_info->statics_info.static_info[i].record_shatter_state_in_savegames = true;
+            level_info->statics_info.static_info[i].hard_collision = false;
+            level_info->statics_info.static_info[i].shatter_sound_id = SFX_HIT_ROCK;
+        }
     }
 }
 
@@ -1319,6 +1342,7 @@ bool LoadGameModConfigFirstPass() {
 
     SetupDefaultFontInfoForLevel(&global_level_info);
     SetupDefaultSlotInfoForLevel(&global_level_info);
+    SetupDefaultStaticsInfoForLevel(&global_level_info);
     SetupDefaultObjectInfoForLevel(&global_level_info);
     SetupDefaultBarsInfoForLevel(&global_level_info);
     SetupDefaultStatInfoForLevel(&global_level_info);

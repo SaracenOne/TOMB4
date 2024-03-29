@@ -841,7 +841,7 @@ void TestTriggers(short* data, long heavy, long HeavyFlags, int room_number, int
 			return;
 
 		case MONKEY:
-			if (NGUseNGConditionals()) {
+			if (NGIsUsingNGConditionals()) {
 				value = *data++ & 0x3FF;
 				char extra = (flags >> 9);
 				short ng_timer = flags & 0xff;
@@ -1071,7 +1071,7 @@ void TestTriggers(short* data, long heavy, long HeavyFlags, int room_number, int
 			break;
 
 		case TO_FLIPEFFECT:
-			if (NGUseNGFlipEffects()) {
+			if (NGIsUsingNGFlipEffects()) {
 				trigger = *data++;
 				timer = 0; // Does the flipeffect reset this?
 				int plugin_id = NGGetPluginIDForFloorData(data);
@@ -1094,7 +1094,7 @@ void TestTriggers(short* data, long heavy, long HeavyFlags, int room_number, int
 			T4TriggerSecret(value); // TRLE
 			break;
 		case TO_ACTION:
-			if (NGUseNGActions()) {
+			if (NGIsUsingNGActions()) {
 				trigger = *data++;
 				int plugin_id = NGGetPluginIDForFloorData(data);
 				if (plugin_id == 0) {
@@ -1663,7 +1663,7 @@ long GetHeight(FLOOR_INFO* floor, long x, long y, long z)
 			unsigned char timer = flags & 0xff;
 			if (trigger_type == MONKEY)
 			{
-				if (NGUseNGConditionals())
+				if (NGIsUsingNGConditionals())
 				{
 					unsigned char value = *data++ & 0x3FF;
 					char extra = (flags >> 9);
@@ -1690,13 +1690,13 @@ long GetHeight(FLOOR_INFO* floor, long x, long y, long z)
 					{
 						// NGLE skips
 						if ((trigger & 0x3C00) == (TO_FLIPEFFECT << 10)) {
-							if (NGUseNGFlipEffects()) {
+							if (NGIsUsingNGFlipEffects()) {
 								trigger = *data++;
 							}
 						}
 
 						if ((trigger & 0x3C00) == (TO_ACTION << 10)) {
-							if (NGUseNGActions()) {
+							if (NGIsUsingNGActions()) {
 								trigger = *data++;
 							}
 						}
@@ -2012,7 +2012,7 @@ long GetCeiling(FLOOR_INFO* floor, long x, long y, long z)
 				unsigned char timer = flags & 0xff;
 				if (trigger_type == MONKEY)
 				{
-					if (NGUseNGConditionals())
+					if (NGIsUsingNGConditionals())
 					{
 						unsigned char value = *data++ & 0x3FF;
 						char extra = (flags >> 9);
@@ -2039,13 +2039,13 @@ long GetCeiling(FLOOR_INFO* floor, long x, long y, long z)
 						{
 							// NGLE skips
 							if ((trigger & 0x3C00) == (TO_FLIPEFFECT << 10)) {
-								if (NGUseNGFlipEffects()) {
+								if (NGIsUsingNGFlipEffects()) {
 									trigger = *data++;
 								}
 							}
 
 							if ((trigger & 0x3C00) == (TO_ACTION << 10)) {
-								if (NGUseNGActions()) {
+								if (NGIsUsingNGActions()) {
 									trigger = *data++;
 								}
 							}
@@ -2875,14 +2875,18 @@ long GetTargetOnLOS(GAME_VECTOR* src, GAME_VECTOR* dest, long DrawTarget, long f
 			{
 				if (item_no < 0)
 				{
-					if (Mesh->static_number >= SHATTER0 && Mesh->static_number < SHATTER8)
+					MOD_LEVEL_STATIC_INFO* static_info = &get_game_mod_level_statics_info(gfCurrentLevel)->static_info[Mesh->static_number];
+					if (static_info->lara_guns_can_shatter)
 					{
 						ShatterObject(0, Mesh, 128, target.room_number, 0);
 						SmashedMeshRoom[SmashedMeshCount] = target.room_number;
 						SmashedMesh[SmashedMeshCount] = Mesh;
 						SmashedMeshCount++;
 						Mesh->Flags &= ~1;
-						SoundEffect(SFX_HIT_ROCK, (PHD_3DPOS*)Mesh, SFX_DEFAULT);
+						if (static_info->shatter_sound_id >= 0)
+						{
+							SoundEffect(static_info->shatter_sound_id, (PHD_3DPOS*)Mesh, SFX_DEFAULT);
+						}
 					}
 
 					// TRLE - added gun ricochet sound effect
@@ -3056,7 +3060,7 @@ void AnimateItem(ITEM_INFO* item)
 				{
 				case ACMD_SETPOS:
 					// TRNG
-					if (NGUseNGAnimCommands()) {
+					if (NGIsUsingNGAnimCommands()) {
 						unsigned char command_id = (cmd[0] & 0xff00) >> 8;
 						if (command_id == 0xa0) {
 							cmd += 3;
@@ -3117,7 +3121,7 @@ void AnimateItem(ITEM_INFO* item)
 				int offset_frame = item->frame_number - anim->frame_base;
 
 				// TRNG
-				if (NGUseNGAnimCommands()) {
+				if (NGIsUsingNGAnimCommands()) {
 					unsigned char command_frame = (cmd[0] & 0xff);
 					unsigned char command_id = (cmd[0] & 0xff00) >> 8;
 					if (command_id == 0xa0 && (offset_frame == command_frame || command_frame == 0xff)) {

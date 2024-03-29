@@ -175,6 +175,7 @@ void NGTestAnimation(NG_ANIMATION *animation) {
 
 					if ((animation->fan_flags & FAN_DISABLE_GRAVITY) && (animation->fan_flags & FAN_ENABLE_GRAVITY)) {
 						NGLog(NG_LOG_TYPE_ERROR, "NGTestAnimation: contradictory gravity flags!");
+						lara_item->gravity_status = 0;
 					} else {
 						if (animation->fan_flags & FAN_DISABLE_GRAVITY) {
 							lara_item->gravity_status = 0;

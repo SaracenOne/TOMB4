@@ -1208,7 +1208,8 @@ void JeepCollideStaticObjects(long x, long y, long z, short room_number, long he
 
 			if (mesh->Flags & 1)
 			{
-				if (mesh->static_number >= SHATTER0 && mesh->static_number <= SHATTER9)
+				MOD_LEVEL_STATIC_INFO* static_info = &get_game_mod_level_statics_info(gfCurrentLevel)->static_info[mesh->static_number];
+				if (static_info->large_objects_can_shatter)
 				{
 					CollidedStaticBounds[2] = mesh->y + sinfo->y_maxc;
 					CollidedStaticBounds[3] = mesh->y + sinfo->y_minc;
@@ -1250,7 +1251,10 @@ void JeepCollideStaticObjects(long x, long y, long z, short room_number, long he
 						JeepBounds[5] < CollidedStaticBounds[4])
 					{
 						ShatterObject(0, mesh, -128, rn, 0);
-						SoundEffect(SFX_HIT_ROCK, (PHD_3DPOS*)&pos, SFX_DEFAULT);
+						if (static_info->shatter_sound_id >= 0)
+						{
+							SoundEffect(static_info->shatter_sound_id, (PHD_3DPOS*)&pos, SFX_DEFAULT);
+						}
 						SmashedMeshRoom[SmashedMeshCount] = rn;
 						SmashedMesh[SmashedMeshCount] = mesh;
 						SmashedMeshCount++;

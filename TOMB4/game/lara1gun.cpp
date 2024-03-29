@@ -891,7 +891,8 @@ void ControlCrossbow(short item_number)
 
 			while (mesh)
 			{
-				if (mesh->static_number >= SHATTER0 && mesh->static_number < SHATTER8)
+				MOD_LEVEL_STATIC_INFO* static_info = &get_game_mod_level_statics_info(gfCurrentLevel)->static_info[mesh->static_number];
+				if (static_info->lara_guns_can_shatter)
 				{
 					if (exploded)
 					{
@@ -1219,7 +1220,7 @@ void ControlGrenade(short item_number)
 
 				while (mesh)
 				{
-					if (mesh->static_number >= SHATTER0 && mesh->static_number < SHATTER8)
+					if (get_game_mod_level_statics_info(gfCurrentLevel)->static_info[mesh->static_number].lara_guns_can_shatter)
 					{
 						Log(0, "Shatter");
 						TriggerExplosionSparks(mesh->x, mesh->y, mesh->z, 3, -2, 0, item->room_number);
