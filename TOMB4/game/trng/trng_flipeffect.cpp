@@ -758,7 +758,11 @@ bool static_shatter(unsigned char static_id_lower, unsigned char static_id_upper
 			SmashedMesh[SmashedMeshCount] = mesh;
 			SmashedMeshCount++;
 			mesh->Flags &= ~1;
-			SoundEffect(SFX_HIT_ROCK, &pos, SFX_DEFAULT);
+
+			MOD_LEVEL_STATIC_INFO* static_info = &get_game_mod_level_statics_info(gfCurrentLevel)->static_info[mesh->static_number];
+			if (static_info->shatter_sound_id >= 0) {
+				SoundEffect(static_info->shatter_sound_id, &pos, SFX_DEFAULT);
+			}
 		}
 	}
 
