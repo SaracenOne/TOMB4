@@ -23,6 +23,8 @@
 #include "../camera.h"
 #include "../spotcam.h"
 #include "../lara.h"
+#include "../baboon.h"
+#include "../traps.h"
 
 void NGHurtEnemy(unsigned short item_id, unsigned short damage) {
 	if (items[item_id].hit_points > 0) {
@@ -536,7 +538,7 @@ NGActionRepeatType NGAction(unsigned short item_id, unsigned short extra, int fl
 			break;
 		}
 		case ACTIVATE_OR_UNTRIGGER_FLYBY_SEQUENCE: {
-			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ACTIVATE_OR_UNTRIGGER_FLYBY_SEQUENCE may not be implemented correctly!");
+			NGLog(NG_LOG_TYPE_POSSIBLE_INACCURACY, "ACTIVATE_OR_UNTRIGGER_FLYBY_SEQUENCE may not be implemented correctly!");
 
 			if (item_id >= MAXIMUM_SPOTCAMS) {
 				NGLog(NG_LOG_TYPE_ERROR, "Invalid spotcam!");
@@ -786,6 +788,22 @@ NGActionRepeatType NGAction(unsigned short item_id, unsigned short extra, int fl
 		}
 		case TURN_STOP_CIRCULAR_TURNING_FOR_X_ANIMATION_ITEM_IN_WAY: {
 			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TURN_STOP_CIRCULAR_TURNING_FOR_X_ANIMATION_ITEM_IN_WAY unimplemented!");
+			break;
+		}
+		case ENEMY_EFFECTS_APPLY_ON_X_MOVEABLE_THE_E_EFFECT: {
+			switch (action_data) {
+				case 0:
+					items[item_id].after_death = 100;
+					ExplodeBaboon(&items[item_id]);
+					break;
+				case 1:
+					items[item_id].item_flags[0] = 150;
+					ControlMineHelicopter(item_id);
+					CreatureDie(item_id, false);
+					break;
+				default:
+					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ENEMY_EFFECTS_APPLY_ON_X_MOVEABLE_THE_E_EFFECT unsupported mode (%u)!", action_data);
+			}
 			break;
 		}
 		case CREATURE_FORCE_FRAME_OF_CURRENT_ANIMATION: {
