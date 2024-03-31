@@ -1819,7 +1819,10 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 		}
 		case ANIMCOMMAND_ACTIVATE_HEAVY_TRIGGERS_IN_SECTOR_WHERE_LARA_IS: {
 			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ANIMCOMMAND_ACTIVATE_HEAVY_TRIGGERS_IN_SECTOR_WHERE_LARA_IS unimplemented!");
+				short room_num = lara_item->room_number;
+				FLOOR_INFO* floor_info = GetFloor(lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos, &room_num);
+				GetHeight(floor_info, lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos);
+				TestTriggers(trigger_data, 1, 0, trigger_index_room, trigger_index_floor);
 				return true;
 			}
 			break;
