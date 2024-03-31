@@ -822,7 +822,11 @@ NGActionRepeatType NGAction(unsigned short item_id, unsigned short extra, int fl
 			break;
 		}
 		case TRIGGER_SET_X_MOVEABLE_AS_ACTIVE_ITEM: {
-			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TRIGGER_SET_X_MOVEABLE_AS_ACTIVE_ITEM unimplemented!");
+			AddActiveItem(item_id);
+			break;
+		}
+		case TRIGGER_REMOVE_X_MOVEABLE_AS_ACTIVE_ITEM: {
+			RemoveActiveItem(item_id);
 			break;
 		}
 		default:
