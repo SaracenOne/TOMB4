@@ -232,6 +232,9 @@ bool kill_and_or_set_lara_on_fire(unsigned char death_type, unsigned char action
 		case 0x02: // Just set Lara on fire (With the original executable, it sometimes doesn't execute. TRNG bug?)
 			LaraBurn();
 			break;
+		default:
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "kill_and_or_set_lara_on_fire: Unsupported death type.");
+			break;
 	}
 	return true;
 }
@@ -435,24 +438,28 @@ bool cutscene_set_fade_out_for_x_time_in_way(unsigned char fade_time, unsigned c
 // NGLE - 89
 bool damage_lara_life_by_percentage(unsigned char action_data_1, unsigned char _unused2) {
 	const int MAX_LARA_HEALTH = 1000; // May need this to be customizable.
-	int new_hit_points = lara_item->hit_points;
-	if (action_data_1 <= 9) {
-		int health_multiple = (MAX_LARA_HEALTH / 1000);
-		new_hit_points -= (int)(health_multiple * (action_data_1 + 1));
-	}
-	else if (action_data_1 <= 18) {
-		int health_multiple = (MAX_LARA_HEALTH / 100);
-		new_hit_points -= (int)(health_multiple * (action_data_1 - 8));
-	}
-	else {
-		int health_multiple = (MAX_LARA_HEALTH / 10);
-		new_hit_points -= (int)(health_multiple * (action_data_1 - 17));
-	}
 
-	if (new_hit_points < 0)
-		new_hit_points = 0;
+	if (lara_item->hit_points > 0) {
+		int new_hit_points = lara_item->hit_points;
+		if (action_data_1 <= 9) {
+			int health_multiple = (MAX_LARA_HEALTH / 1000);
+			new_hit_points -= (int)(health_multiple * (action_data_1 + 1));
+		}
+		else if (action_data_1 <= 18) {
+			int health_multiple = (MAX_LARA_HEALTH / 100);
+			new_hit_points -= (int)(health_multiple * (action_data_1 - 8));
+		}
+		else {
+			int health_multiple = (MAX_LARA_HEALTH / 10);
+			new_hit_points -= (int)(health_multiple * (action_data_1 - 17));
+		}
 
-	lara_item->hit_points = new_hit_points;
+		if (new_hit_points < 0)
+			new_hit_points = 0;
+
+		lara_item->hit_points = new_hit_points;
+		lara_item->hit_status = true;
+	}
 
 	return true;
 }
@@ -461,22 +468,27 @@ bool damage_lara_life_by_percentage(unsigned char action_data_1, unsigned char _
 bool recharge_lara_life_by_percentage(unsigned char action_data_1, unsigned char _unused2) {
 	const int MAX_LARA_HEALTH = 1000; // May need this to be customizable.
 
-	int new_hit_points = lara_item->hit_points;
-	if (action_data_1 <= 9) {
-		int health_multiple = (MAX_LARA_HEALTH / 1000);
-		new_hit_points += (int)(health_multiple * (action_data_1 + 1));
-	} else if (action_data_1 <= 18) {
-		int health_multiple = (MAX_LARA_HEALTH / 100);
-		new_hit_points += (int)(health_multiple * (action_data_1 - 8));
-	} else {
-		int health_multiple = (MAX_LARA_HEALTH / 10);
-		new_hit_points += (int)(health_multiple * (action_data_1 - 17));
+	if (lara_item->hit_points > 0) {
+		int new_hit_points = lara_item->hit_points;
+		if (action_data_1 <= 9) {
+			int health_multiple = (MAX_LARA_HEALTH / 1000);
+			new_hit_points += (int)(health_multiple * (action_data_1 + 1));
+		}
+		else if (action_data_1 <= 18) {
+			int health_multiple = (MAX_LARA_HEALTH / 100);
+			new_hit_points += (int)(health_multiple * (action_data_1 - 8));
+		}
+		else {
+			int health_multiple = (MAX_LARA_HEALTH / 10);
+			new_hit_points += (int)(health_multiple * (action_data_1 - 17));
+		}
+
+		if (new_hit_points > MAX_LARA_HEALTH)
+			new_hit_points = MAX_LARA_HEALTH;
+
+		lara_item->hit_points = new_hit_points;
+		lara_item->hit_status = true;
 	}
-
-	if (new_hit_points > MAX_LARA_HEALTH)
-		new_hit_points = MAX_LARA_HEALTH;
-
-	lara_item->hit_points = new_hit_points;
 
 	return true;
 }
@@ -546,16 +558,40 @@ bool set_room_type(unsigned char room_number, unsigned char room_type) {
 				r->flags |= ROOM_UNDERWATER;
 				break;
 			}
+			case 1: {
+				r->flags |= 0x02;
+				break;
+			}
 			case 2: {
 				r->flags |= ROOM_SWAMP;
 				break;
 			}
+			case 3: {
+				r->flags |= ROOM_OUTSIDE;
+				break;
+			}
 			case 4: {
-				r->flags |= 0x10;
+				r->flags |= ROOM_DYNAMIC_LIT;
 				break;
 			}
 			case 5: {
-				r->flags |= ROOM_NOT_INSIDE; // TODO: check this
+				r->flags |= ROOM_NOT_INSIDE;
+				break;
+			}
+			case 6: {
+				r->flags |= ROOM_INSIDE;
+				break;
+			}
+			case 7: {
+				r->flags |= ROOM_NO_LENSFLARE;
+				break;
+			}
+			case 8: {
+				r->flags |= ROOM_CAUSTICS;
+				break;
+			}
+			case 9: {
+				r->flags |= ROOM_REFLECTIONS;
 				break;
 			}
 			case 10: {
@@ -589,16 +625,40 @@ bool remove_room_type(unsigned char room_number, unsigned char room_type) {
 				r->flags &= ~ROOM_UNDERWATER;
 				break;
 			}
+			case 1: {
+				r->flags &= ~0x02;
+				break;
+			}
 			case 2: {
 				r->flags &= ~ROOM_SWAMP;
 				break;
 			}
+			case 3: {
+				r->flags &= ~ROOM_OUTSIDE;
+				break;
+			}
 			case 4: {
-				r->flags &= ~0x10;
+				r->flags &= ~ROOM_DYNAMIC_LIT;
 				break;
 			}
 			case 5: {
-				r->flags &= ~ROOM_NOT_INSIDE; // TODO: check this
+				r->flags &= ~ROOM_NOT_INSIDE;
+				break;
+			}
+			case 6: {
+				r->flags &= ~ROOM_INSIDE;
+				break;
+			}
+			case 7: {
+				r->flags &= ~ROOM_NO_LENSFLARE;
+				break;
+			}
+			case 8: {
+				r->flags &= ~ROOM_CAUSTICS;
+				break;
+			}
+			case 9: {
+				r->flags &= ~ROOM_REFLECTIONS;
 				break;
 			}
 			case 10: {
