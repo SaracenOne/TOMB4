@@ -18,6 +18,8 @@
 #include "trng/trng_extra_state.h"
 #include "../tomb4/mod_config.h"
 #include "../tomb4/tomb4plus/t4plus_objects.h"
+#include "gameflow.h"
+#include "traps.h"
 
 static short StarGateBounds[24] =
 {
@@ -687,12 +689,15 @@ void LaraBaddieCollision(ITEM_INFO* l, COLL_INFO* coll)
 							if (!(mesh->Flags & 4096)) {
 								// Damage Lara on collision
 								if ((mesh->Flags & 32)) {
-									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LaraBaddieCollision: Damage Lara on collision is unimplemented!");
+									lara_item->hit_points -= get_game_mod_level_misc_info(gfCurrentLevel)->damage_static_interaction;
+									lara_item->hit_status = true;
 								}
 
 								// Burn Lara on collision
 								if ((mesh->Flags & 64)) {
-									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LaraBaddieCollision: Burn Lara on collision is unimplemented!");
+									if (!lara.burn) {
+										LaraBurn();
+									}
 								}
 
 								// Explode killing on collision
@@ -702,7 +707,10 @@ void LaraBaddieCollision(ITEM_INFO* l, COLL_INFO* coll)
 
 								// Poison Lara on collision
 								if ((mesh->Flags & 256)) {
-									NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LaraBaddieCollision: Poison Lara on collision is unimplemented!");
+									if (lara.poisoned == 0 && lara.dpoisoned == 0) {
+										lara.poisoned = 0;
+										lara.dpoisoned = get_game_mod_level_misc_info(gfCurrentLevel)->posion_static_interaction;
+									}
 								}
 
 								// Activate heavy trigger on collision

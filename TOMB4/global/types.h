@@ -606,16 +606,16 @@ struct ITEM_INFO
 	void* data;
 	PHD_3DPOS pos;
 	ITEM_LIGHT il;
-	ulong active : 1;
-	ulong status : 2;
-	ulong gravity_status : 1;
-	ulong hit_status : 1;
-	ulong collidable : 1;
-	ulong looked_at : 1;
-	ulong dynamic_light : 1;
-	ulong poisoned : 1;
-	ulong ai_bits : 5;
-	ulong really_active : 1;
+	ulong active : 1; // 0x01
+	ulong status : 2; // 0x02, 0x04
+	ulong gravity_status : 1; // 0x08
+	ulong hit_status : 1; // 0x10
+	ulong collidable : 1; // 0x20
+	ulong looked_at : 1; // 0x40
+	ulong dynamic_light : 1; // 0x80
+	ulong poisoned : 1; // 0x100
+	ulong ai_bits : 5; // 0x200, 0x400, 0x800, 0x1000, 0x2000
+	ulong really_active : 1; // 0x4000
 	ulong meshswap_meshbits;
 	short draw_room;
 	short TOSSPAD;
@@ -736,22 +736,22 @@ struct LARA_INFO
 	int16_t dpoisoned;
 	uint8_t electric;
 	uint8_t wet[WET_COUNT];
-	uint16_t flare_control_left : 1;
-	uint16_t Unused1 : 1;
-	uint16_t look : 1;
-	uint16_t burn : 1;
-	uint16_t keep_ducked : 1;
-	uint16_t IsMoving : 1;
-	uint16_t CanMonkeySwing : 1;
-	uint16_t Unused2 : 1;
-	uint16_t OnBeetleFloor : 1;
-	uint16_t BurnGreen : 1;
-	uint16_t IsDucked : 1;
-	uint16_t has_fired : 1;
-	uint16_t Busy : 1;
-	uint16_t LitTorch : 1;
-	uint16_t IsClimbing : 1;
-	uint16_t Fired : 1;
+	uint16_t flare_control_left : 1; // 0x01
+	uint16_t Unused1 : 1; // 0x02
+	uint16_t look : 1; // 0x04
+	uint16_t burn : 1; // 0x08
+	uint16_t keep_ducked : 1; // 0x10
+	uint16_t IsMoving : 1; // 0x20
+	uint16_t CanMonkeySwing : 1; // 0x40
+	uint16_t Unused2 : 1; // 0x80
+	uint16_t OnBeetleFloor : 1; // 0x100
+	uint16_t BurnGreen : 1; // 0x200
+	uint16_t IsDucked : 1; // 0x400
+	uint16_t has_fired : 1; // 0x800
+	uint16_t Busy : 1; // 0x1000
+	uint16_t LitTorch : 1; // 0x2000
+	uint16_t IsClimbing : 1; // 0x4000
+	uint16_t Fired : 1; // 0x8000
 	int32_t water_surface_dist;
 	PHD_VECTOR last_pos;
 	FX_INFO* spaz_effect;

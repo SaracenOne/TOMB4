@@ -2,6 +2,7 @@
 
 #include "../game/objects.h"
 #include "../game/text.h"
+#include "../game/sound.h"
 
 #include "tomb4plus/t4plus_plugin.h"
 #include "tomb4plus/t4plus_weather.h"
@@ -414,6 +415,11 @@ struct MOD_LEVEL_MISC_INFO {
 	int trep_switch_off_ocb_5_anim = 0;
 	int trep_switch_on_ocb_6_anim = 0;
 	int trep_switch_off_ocb_6_anim = 0;
+
+	short static_transparency_glass = 128;
+	short static_transparency_ice = 208;
+	short damage_static_interaction = 10;
+	short posion_static_interaction = 256;
 };
 
 struct MOD_LEVEL_INFO {

@@ -879,7 +879,14 @@ int NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLES *
 			if (plugin_id == 0) {
 				switch (customization_category) {
 				case CUST_DISABLE_SCREAMING_HEAD: {
-					get_game_mod_level_objects_info(current_level)->lara_scream_slot = -1;
+
+					if (current_level == 0) {
+						for (int i = 0; i < MOD_LEVEL_COUNT; i++) {
+							get_game_mod_level_objects_info(i)->lara_scream_slot = -1;
+						}
+					} else {
+						get_game_mod_level_objects_info(current_level)->lara_scream_slot = -1;
+					}
 					break;
 				}
 				case CUST_SET_SECRET_NUMBER: {
@@ -1111,9 +1118,26 @@ int NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLES *
 					break;
 				}
 				case CUST_SET_STATIC_DAMAGE: {
-					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_SET_STATIC_DAMAGE unimplemented! (level %u)", current_level);
+					short damage = NG_READ_16(gfScriptFile, offset);
+					short poison_intensity = NG_READ_16(gfScriptFile, offset);
 
-					offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+					if (current_level == 0) {
+						for (int i = 0; i < MOD_LEVEL_COUNT; i++) {
+							if (damage != 0xffff) {
+								get_game_mod_level_misc_info(i)->damage_static_interaction = damage;
+							}
+							if (poison_intensity != 0xffff) {
+								get_game_mod_level_misc_info(i)->posion_static_interaction = poison_intensity;
+							}
+						}
+					} else {
+						if (damage != 0xffff) {
+							get_game_mod_level_misc_info(current_level)->damage_static_interaction = damage;
+						}
+						if (poison_intensity != 0xffff) {
+							get_game_mod_level_misc_info(current_level)->posion_static_interaction = poison_intensity;
+						}
+					}
 					break;
 				}
 				case CUST_LOOK_TRANSPARENT: {
@@ -1124,23 +1148,47 @@ int NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLES *
 				}
 				case CUST_HAIR_TYPE: {
 					unsigned short hair_type = NG_READ_16(gfScriptFile, offset);
-					switch (hair_type) {
-					case 0x00:
-						break;
-					case 0x01:
-						get_game_mod_level_lara_info(current_level)->hair_type = LARA_HAIR_TYPE_NONE;
-						break;
-					case 0x02:
-						get_game_mod_level_lara_info(current_level)->hair_type = LARA_HAIR_TYPE_PIGTAILS;
-						break;
-					case 0x03:
-						get_game_mod_level_lara_info(current_level)->hair_type = LARA_HAIR_TYPE_BRAID;
-						break;
-					case 0x04:
-						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_HAIR_TYPE hair type 04 unimplemented! (level %u)", current_level);
-						break;
-					case 0xffff:
-						break;
+
+					if (current_level == 0) {
+						for (int i = 0; i < MOD_LEVEL_COUNT; i++) {
+							switch (hair_type) {
+							case 0x00:
+								break;
+							case 0x01:
+								get_game_mod_level_lara_info(current_level)->hair_type = LARA_HAIR_TYPE_NONE;
+								break;
+							case 0x02:
+								get_game_mod_level_lara_info(current_level)->hair_type = LARA_HAIR_TYPE_PIGTAILS;
+								break;
+							case 0x03:
+								get_game_mod_level_lara_info(current_level)->hair_type = LARA_HAIR_TYPE_BRAID;
+								break;
+							case 0x04:
+								NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_HAIR_TYPE hair type 04 unimplemented! (level %u)", current_level);
+								break;
+							case 0xffff:
+								break;
+							}
+						}
+					} else {
+						switch (hair_type) {
+						case 0x00:
+							break;
+						case 0x01:
+							get_game_mod_level_lara_info(current_level)->hair_type = LARA_HAIR_TYPE_NONE;
+							break;
+						case 0x02:
+							get_game_mod_level_lara_info(current_level)->hair_type = LARA_HAIR_TYPE_PIGTAILS;
+							break;
+						case 0x03:
+							get_game_mod_level_lara_info(current_level)->hair_type = LARA_HAIR_TYPE_BRAID;
+							break;
+						case 0x04:
+							NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_HAIR_TYPE hair type 04 unimplemented! (level %u)", current_level);
+							break;
+						case 0xffff:
+							break;
+						}
 					}
 					break;
 				}
