@@ -1382,6 +1382,19 @@ bool variables_set_the_x_inventory_item_as_selected_inventory_memory(unsigned ch
 	return true;
 }
 
+// NGLE - 345
+bool triggergroup_enable_newly_the_oneshot_x_triggergroup_already_performed(unsigned char trigger_group_id_upper, unsigned char trigger_group_id_lower) {
+	unsigned short trigger_group_id = (trigger_group_id_upper << 8) | trigger_group_id_lower;
+	if (trigger_group_id >= MAX_NG_TRIGGER_GROUPS) {
+		NGLog(NG_LOG_TYPE_ERROR, "Invalid trigger group.");
+		return false;
+	}
+
+	current_trigger_groups[trigger_group_id].oneshot_triggered = false;
+
+	return true;
+}
+
 // NGLE - 355
 bool screen_flash_screen_with_light_color_for_duration(unsigned char flash_color, unsigned char duration) {
 	switch (flash_color) {
@@ -3352,7 +3365,7 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 		}
 		case TRIGGERGROUP_ENABLE_NEWLY_THE_ONESHOT_X_TRIGGERGROUP_ALREADY_PERFORMED: {
 			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TRIGGERGROUP_ENABLE_NEWLY_THE_ONESHOT_X_TRIGGERGROUP_ALREADY_PERFORMED unimplemented!");
+				triggergroup_enable_newly_the_oneshot_x_triggergroup_already_performed(action_data_1, action_data_2);
 				return true;
 			}
 			break;
