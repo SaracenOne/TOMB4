@@ -7,6 +7,8 @@
 #include "tomb4plus/t4plus_plugin.h"
 #include "tomb4plus/t4plus_weather.h"
 
+#define MOD_LEVEL_COUNT 64
+
 #define ENGINE_MANIFEST_VERSION 0
 
 #define DEFAULT_FOG_START_VALUE 12288
@@ -192,7 +194,36 @@ struct MOD_LEVEL_AUDIO_INFO {
 
 	short inside_jeep_track = 98;
 	short outside_jeep_track = 110;
-	short secret_track = 5;};
+	short secret_track = 5;
+
+	// SFX
+	short pour_sfx_id = SFX_POUR;
+	short loop_for_small_fires_sfx_id = SFX_LOOP_FOR_SMALL_FIRES;
+	short flame_emitter_sfx_id = SFX_FLAME_EMITTER;
+	short underwater_sfx_id = SFX_UNDERWATER;
+	short explosion_1_sfx_id = SFX_EXPLOSION1;
+	short explosion_2_sfx_id = SFX_EXPLOSION2;
+	short lara_bubbles_sfx_id = SFX_LARA_BUBBLES;
+
+	short lara_no_sfx_id = SFX_LARA_NO;
+	short lara_richochet_sfx_id = SFX_LARA_RICOCHET;
+	short lara_pistols_overlay_sfx_id = SFX_EXPLOSION1;
+
+	short lara_pistol_shell_sfx_id = SFX_LARA_SHOTGUN_SHELL; 
+	short lara_shotgun_shell_sfx_id = SFX_LARA_SHOTGUN_SHELL;
+	short lara_rope_creak_sfx_id = SFX_LARA_ROPE_CREAK;
+	short sample_test_sfx_id = SFX_LARA_BREATH;
+	short menu_select_sfx_id = SFX_MENU_SELECT;
+	short menu_choose_sfx_id = SFX_MENU_CHOOSE;
+	short menu_combine_sfx_id = SFX_MENU_COMBINE;
+	short menu_large_medipack_sfx_id = SFX_MENU_MEDI;
+	short menu_small_medipack_sfx_id = SFX_MENU_MEDI;
+
+	short bike_idle_sfx_id = SFX_BIKE_IDLE;
+	short bike_moving_sfx_id = SFX_BIKE_MOVING;
+	short jeep_idle_sfx_id = SFX_JEEP_IDLE;
+	short jeep_moving_sfx_id = SFX_JEEP_MOVE;
+};
 
 struct MOD_LEVEL_RECT_COLOR_INFO {
 	uint32_t upper_left_color;
@@ -438,8 +469,6 @@ struct MOD_LEVEL_INFO {
 	MOD_LEVEL_OBJECTS_INFO objects_info;
 	MOD_LEVEL_STATICS_INFO statics_info;
 };
-
-#define MOD_LEVEL_COUNT 64
 
 struct GAME_MOD_CONFIG {
 	MOD_GLOBAL_INFO global_info;

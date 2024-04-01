@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../global/types.h"
+#include "../../tomb4/mod_config.h"
 
 #define NG_READ_8(scr_buffer, scr_offset) scr_buffer[scr_offset]; \
 offset += sizeof(char)
@@ -35,9 +36,14 @@ enum NG_DIRECTIONS {
 	NG_DOWN
 };
 
-extern bool is_ngle_level;
-extern bool is_using_ngle_triggers;
-extern bool is_using_global_sound_map;
+struct NGLevelInfo {
+	bool ngle_footer_found = false;
+	bool is_ngle_level = false;
+	bool is_using_ngle_triggers = false;
+	bool is_using_global_sound_map = false;
+};
+
+extern NGLevelInfo ng_level_info[MOD_LEVEL_COUNT];
 
 extern int ng_floor_id_size;
 extern char *ng_floor_id_table;
@@ -65,7 +71,8 @@ struct NGStaticTableEntry {
 };
 extern NGStaticTableEntry ng_static_id_table[NG_STATIC_ID_TABLE_SIZE];
 
-extern void NGLoadInfo(FILE* level_fp);
+extern void NGPreloadAllLevelInfo();
+extern void NGLoadLevelInfo(FILE* level_fp);
 
 extern void NGStorePendingRoomNumber(int room_number);
 extern int NGRestorePendingRoomNumber();

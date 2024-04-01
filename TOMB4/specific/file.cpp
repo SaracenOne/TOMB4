@@ -118,7 +118,7 @@ unsigned int __stdcall LoadLevel(void* name)
 
 	if (level_fp)
 	{
-		NGLoadInfo(level_fp);
+		NGLoadLevelInfo(level_fp);
 
 		fseek(level_fp, 0, SEEK_SET);
 
@@ -875,7 +875,7 @@ bool LoadRooms()
 			memcpy(r->mesh, FileData, size);
 			FileData += size;
 
-			if (is_ngle_level) {
+			if (ng_level_info[gfCurrentLevel].is_ngle_level) {
 				for (int j = 0; j < r->num_meshes; j++)
 					r->mesh[j].Flags |= 1;
 			} else {
@@ -1487,9 +1487,8 @@ bool LoadSamples()
 	uint32_t num_samples, uncomp_size, comp_size;
 	static long num_sample_infos;
 
-	// Still not sure if this flag consistently determines the size of the sample buffer, but lets try it...
 	int max_samples = MAX_SAMPLES;
-	if (is_using_global_sound_map)
+	if (ng_level_info[gfCurrentLevel].is_using_global_sound_map)
 	{
 		max_samples = MAX_NGLE_SAMPLES;
 	}
