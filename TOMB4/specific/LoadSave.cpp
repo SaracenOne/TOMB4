@@ -870,8 +870,8 @@ void FreeMonoScreen()
 	else
 		Log(1, "%s Attempt To Release NULL Ptr", "Mono Screen Texture");
 
-	MonoScreenOn = 0;
 #endif
+	MonoScreenOn = 0;
 }
 
 void RGBM_Mono(uchar * r, uchar * g, uchar * b)

@@ -253,6 +253,11 @@ void RenderBGFXDrawLists() {
     }
 
     for (int i = 0; i < current_draw_commands; i++) {
+        if (draw_commands[i].clear_depth_buffer) {
+            bgfx::setViewClear(0, BGFX_CLEAR_DEPTH, bgfx_clear_col, 1.0f, 0);
+            bgfx::frame();
+        }
+
         if (draw_commands[i].is_sorted_command) {
             for (; current_sort_idx < draw_commands[i].last_idx; current_sort_idx++) {
                 uint64_t state = UINT64_C(0);
@@ -393,6 +398,7 @@ void RenderBGFXDrawLists() {
                 bucket->tpage = -1;
                 DrawPrimitiveCnt++;
             }
+            bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, bgfx_clear_col, 1.0f, 0);
         }
     }
 }
@@ -416,13 +422,14 @@ void StartBGFXFrame() {
 void EndBGFXFrame() {
 }
 
-void AddBGFXDrawCommand(bool is_sorted_command) {
+void AddBGFXDrawCommand(bool is_sorted_command, bool clear_depth_buffer) {
     if (current_draw_commands >= MAX_DRAW_COMMANDS) {
         platform_fatal_error("Exceeded maximum draw commands.");
         return;
     }
 
     draw_commands[current_draw_commands].is_sorted_command = is_sorted_command;
+    draw_commands[current_draw_commands].clear_depth_buffer = clear_depth_buffer;
 
     if (is_sorted_command) {
         draw_commands[current_draw_commands].last_idx = last_sort_command_idx;
@@ -490,7 +497,7 @@ void FindBGFXBucket(long tpage, GFXTLBUMPVERTEX** Vpp, long** nVtxpp) {
     platform_fatal_error("Max texture bucket count exceeded.");
 }
 
-void AddBGFXSortList() {
+void AddBGFXSortList(bool clear_depth_buffer) {
     SORTLIST* pSort;
     GFXTLBUMPVERTEX* vtx;
     GFXTLBUMPVERTEX* bVtx;
@@ -635,7 +642,7 @@ void AddBGFXSortList() {
             AddBGFXDrawSortCommand(&sort_buffer_vertex_buffer[(SORT_BUFFER_VERT_COUNT * last_sort_vertex_buffer_idx) + last_sort_vertex_buffer_offset], nVtx, tpage, drawtype);	//inlined
     }
 
-    AddBGFXDrawCommand(true);
+    AddBGFXDrawCommand(true, clear_depth_buffer);
 }
 
 #endif

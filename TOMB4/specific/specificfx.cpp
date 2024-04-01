@@ -1495,11 +1495,11 @@ void OutputSky()
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ZENABLE, 1);
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 1);
 #else
-	AddBGFXDrawCommand(false);
+	AddBGFXDrawCommand(false, false);
 #endif
 	SortPolyList(SortCount, SortList);
 #ifdef USE_BGFX
-	AddBGFXSortList();
+	AddBGFXSortList(false);
 #else
 	DrawSortList();
 #endif

@@ -1986,7 +1986,7 @@ void S_OutputPolyList()
 	}
 
 #ifdef USE_BGFX
-	AddBGFXDrawCommand(false);
+	AddBGFXDrawCommand(false, false);
 #else
 	if (App.dx.lpZBuffer)
 	{
@@ -1999,7 +1999,7 @@ void S_OutputPolyList()
 		Fade();
 
 #ifdef USE_BGFX
-		AddBGFXSortList();
+		AddBGFXSortList(false);
 #else
 		if (App.dx.lpZBuffer)
 		{
@@ -2010,7 +2010,7 @@ void S_OutputPolyList()
 
 	SortPolyList(SortCount, SortList);
 #ifdef USE_BGFX
-	AddBGFXSortList();
+	AddBGFXSortList(false);
 #else
 	DrawSortList();
 #endif
@@ -2031,7 +2031,7 @@ void S_OutputPolyList()
 		InitialiseSortList();
 		DrawBinoculars();
 #ifdef USE_BGFX
-		AddBGFXSortList();
+		AddBGFXSortList(false);
 #else
 		DrawSortList();
 #endif
@@ -2044,7 +2044,7 @@ void S_OutputPolyList()
 		S_DrawPickup(pickups[CurrentPickup].object_number);
 		SortPolyList(SortCount, SortList);
 #ifdef USE_BGFX
-		AddBGFXSortList();
+		AddBGFXSortList(true);
 #else
 		DrawSortList();
 #endif
@@ -2072,7 +2072,7 @@ void S_OutputPolyList()
 		}
 
 #ifdef USE_BGFX
-		AddBGFXSortList();
+		AddBGFXSortList(false);
 #else
 		DrawSortList();
 #endif
@@ -2083,7 +2083,7 @@ void S_OutputPolyList()
 		InitialiseSortList();
 		DoScreenFade();
 #ifdef USE_BGFX
-		AddBGFXSortList();
+		AddBGFXSortList(false);
 #else
 		DrawSortList();
 #endif

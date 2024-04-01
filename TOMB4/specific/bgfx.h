@@ -42,6 +42,7 @@ struct BGFXSortDrawCommand {
 
 struct BGFXDrawCommand {
 	bool is_sorted_command = false;
+	bool clear_depth_buffer = false;
 	size_t last_idx = 0;
 };
 
@@ -58,11 +59,11 @@ extern void RenderBGFXDrawLists();
 extern void StartBGFXFrame();
 extern void EndBGFXFrame();
 
-extern void AddBGFXDrawCommand(bool is_sorted_command);
+extern void AddBGFXDrawCommand(bool is_sorted_command, bool clear_depth_buffer);
 extern void AddBGFXDrawSortCommand(GFXTLBUMPVERTEX* info, short num_verts, short texture, short type);
 extern void ClearBGFXDrawCommand();
 
 extern void FindBGFXBucket(long tpage, GFXTLBUMPVERTEX** Vpp, long** nVtxpp);
-extern void AddBGFXSortList();
+extern void AddBGFXSortList(bool clear_depth_buffer);
 
 #endif
