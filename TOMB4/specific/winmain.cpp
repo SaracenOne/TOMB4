@@ -22,6 +22,12 @@
 #include "../tomb4/mod_config.h"
 #include "../tomb4/tomb4.h"
 
+#ifdef USE_BGFX
+#ifndef USE_SDL
+#error "BGFX requires SDL."
+#endif
+#endif
+
 static COMMANDLINES commandlines[] =
 {
 	{ "SETUP", 0, &CLSetup },
@@ -294,10 +300,12 @@ void ClearSurfaces()
 
 bool SDLCreateWindow()
 {
+	Uint32 sdl_window_flags = SDL_WINDOW_HIDDEN;
+
 #if INTPTR_MAX == INT64_MAX
-	sdl_window = SDL_CreateWindow("Tomb4Plus (64-bit)", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_DEFAULT_WIDTH, WINDOW_DEFAULT_HEIGHT, SDL_WINDOW_HIDDEN);
+	sdl_window = SDL_CreateWindow("Tomb4Plus (64-bit)", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_DEFAULT_WIDTH, WINDOW_DEFAULT_HEIGHT, sdl_window_flags);
 #elif INTPTR_MAX == INT32_MAX
-	sdl_window = SDL_CreateWindow("Tomb4Plus (32-bit)", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_DEFAULT_WIDTH, WINDOW_DEFAULT_HEIGHT, SDL_WINDOW_HIDDEN);
+	sdl_window = SDL_CreateWindow("Tomb4Plus (32-bit)", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_DEFAULT_WIDTH, WINDOW_DEFAULT_HEIGHT, sdl_window_flags);
 #else
 #error Unknown pointer size or missing size macros!
 #endif
@@ -455,7 +463,6 @@ void SDLClose()
 }
 
 int main(int argc, char* argv[]) {
-	DXDISPLAYMODE* dm;
 	char* buf;
 	size_t size;
 
@@ -518,25 +525,46 @@ int main(int argc, char* argv[]) {
 	App.dx.InScene = 0;
 	App.fmv = 0;
 
+	int window_width;
+	int window_height;
+	int window_bpp;
 #ifdef USE_BGFX
-	DXDISPLAYMODE display_mode;
-	dm = &display_mode;
-
-	dm->w = WINDOW_DEFAULT_WIDTH;
-	dm->h = WINDOW_DEFAULT_HEIGHT;
-	dm->bpp = 32;
+	window_width = App.VideoWidth;
+	window_height = App.VideoHeight;
+	window_bpp = 32;
 #else
+	DXDISPLAYMODE* dm;
 	dm = &G_dxinfo->DDInfo[G_dxinfo->nDD].D3DDevices[G_dxinfo->nD3D].DisplayModes[G_dxinfo->nDisplayMode];
+	window_width = dm->w;
+	window_height = dm->h;
+	window_bpp = dm->bpp;
 #endif
-	SDL_SetWindowSize(sdl_window, dm->w, dm->h);
+	int rendererWidth = 0;
+	int rendererHeight = 0;
 
-	if (!DXCreate(dm->w, dm->h, dm->bpp, App.StartFlags, &App.dx, App.hWnd, WS_OVERLAPPEDWINDOW))
+	SDL_SetWindowSize(sdl_window, window_width, window_height);
+	uint32_t window_flags = 0;
+	if (App.StartFlags & DXF_FULLSCREEN)
+	{
+		window_flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+		SDL_DisplayMode sdl_dm;
+		SDL_GetCurrentDisplayMode(SDL_GetWindowDisplayIndex(sdl_window), &sdl_dm);
+		rendererWidth = sdl_dm.w;
+		rendererHeight = sdl_dm.h;
+	}
+	else
+	{
+		rendererWidth = window_width;
+		rendererHeight = window_height;
+	}
+
+	SDL_SetWindowFullscreen(sdl_window, window_flags);
+
+	if (!DXCreate(rendererWidth, rendererHeight, window_bpp, App.StartFlags, &App.dx, App.hWnd, WS_OVERLAPPEDWINDOW))
 	{
 		platform_fatal_error(GetFixedStringForTextID(TXT_Failed_To_Setup_DirectX));
 		return -1;
 	}
-
-	// TODO: add fullscreen support here.
 
 	SDL_ShowWindow(sdl_window);
 

@@ -280,10 +280,15 @@ bool LoadSettings()
 		App.BumpMapSize = 256;
 		App.StartFlags = DXF_FPUSETUP;
 
+#ifdef USE_BGFX
+		REG_ReadLong((char*)"VideoWidth", (ulong&)App.VideoWidth, WINDOW_DEFAULT_WIDTH);
+		REG_ReadLong((char*)"VideoHeight", (ulong&)App.VideoHeight, WINDOW_DEFAULT_HEIGHT);
+#else
 		REG_ReadLong((char*)"DD", (ulong&)App.DXInfo.nDD, 0);
 		REG_ReadLong((char*)"D3D", (ulong&)App.DXInfo.nD3D, 0);
 		REG_ReadLong((char*)"VMode", (ulong&)App.DXInfo.nDisplayMode, 0);
 		REG_ReadLong((char*)"TFormat", (ulong&)App.DXInfo.nTexture, 0);
+#endif
 		REG_ReadLong((char*)"DS", (ulong&)App.DXInfo.nDS, 0);
 		REG_ReadBool((char*)"BumpMap", App.BumpMapping, 1);
 		REG_ReadBool((char*)"Filter", App.Filtering, 1);
@@ -419,7 +424,12 @@ void SaveSettings()
 	CloseRegistry();
 
 	OpenRegistry("System");
+#ifdef USE_BGFX
+	REG_WriteLong((char*)"VideoWidth", App.VideoWidth);
+	REG_WriteLong((char*)"VideoHeight", App.VideoHeight);
+#else
 	REG_WriteLong((char*)"VMode", App.DXInfo.nDisplayMode);
+#endif
 	REG_WriteBool((char*)"Window", (App.dx.Flags & DXF_WINDOWED) != 0);
 	CloseRegistry();
 }
@@ -428,9 +438,31 @@ bool SaveSetup(HWND hDlg)
 {
 	OpenRegistry("System");
 
+	long vmode_id = SendMessage(GetDlgItem(hDlg, 1004), CB_GETITEMDATA, SendMessage(GetDlgItem(hDlg, 1004), CB_GETCURSEL, 0, 0), 0);
+#ifdef USE_BGFX
+	SDL_DisplayMode mode;
+	int display_mode_count = SDL_GetNumDisplayModes(0);
+	if (display_mode_count < 1)
+	{
+		mode.w = WINDOW_DEFAULT_WIDTH;
+		mode.h = WINDOW_DEFAULT_HEIGHT;
+	}
+	else
+	{
+		if (SDL_GetDisplayMode(0, vmode_id, &mode) != 0)
+		{
+			mode.w = WINDOW_DEFAULT_WIDTH;
+			mode.h = WINDOW_DEFAULT_HEIGHT;
+		}
+	}
+
+	REG_WriteLong((char*)"VideoWidth", mode.w);
+	REG_WriteLong((char*)"VideoHeight", mode.h);
+#else
 	REG_WriteLong((char*)"DD", SendMessage(GetDlgItem(hDlg, 1000), CB_GETCURSEL, 0, 0));
 	REG_WriteLong((char*)"D3D", SendMessage(GetDlgItem(hDlg, 1003), CB_GETCURSEL, 0, 0) + 1); // Tomb4Plus: +1 due to us skipping the software emulation device.
-	REG_WriteLong((char*)"VMode", SendMessage(GetDlgItem(hDlg, 1004), CB_GETITEMDATA, SendMessage(GetDlgItem(hDlg, 1004), CB_GETCURSEL, 0, 0), 0));
+	REG_WriteLong((char*)"VMode", vmode_id);
+#endif
 	REG_WriteLong((char*)"DS", SendMessage(GetDlgItem(hDlg, 1005), CB_GETCURSEL, 0, 0));
 	REG_WriteLong((char*)"TFormat", SendMessage(GetDlgItem(hDlg, 1006), CB_GETCURSEL, 0, 0));
 

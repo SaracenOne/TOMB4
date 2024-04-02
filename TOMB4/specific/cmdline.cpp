@@ -22,8 +22,8 @@ bool fmvs_disabled = false;
 
 static long nDDDevice = 0;
 static long nD3DDevice = 1;
-static bool Filter = true;
-static bool VolumetricFx = false;
+static bool Filter = false;
+static bool VolumetricFx = true;
 static bool BumpMap = false;
 static bool TextLow = false;
 
@@ -77,12 +77,25 @@ void InitDSDevice(HWND dlg, HWND hwnd)
 {
 	SendMessage(hwnd, CB_RESETCONTENT, 0, 0);
 
-	for (int i = 0; i < App.DXInfo.nDSInfo; i++)
+	for (int i = 0; i < App.DXInfo.nDSInfo; i++) {
+#ifdef UNICODE
+		wchar_t wide_string[80];
+		MultiByteToWideChar(CP_UTF8, 0, App.DXInfo.DSInfo[i].About, -1, wide_string, sizeof(wide_string) / sizeof(wchar_t));
+		SendMessage(hwnd, CB_ADDSTRING, 0, (LPARAM)wide_string);
+#else
 		SendMessage(hwnd, CB_ADDSTRING, 0, (LPARAM)App.DXInfo.DSInfo[i].About);
+#endif
+	}
 
 	if (!App.DXInfo.nDSInfo)
 	{
+#ifdef UNICODE
+		wchar_t wide_string[80];
+		MultiByteToWideChar(CP_UTF8, 0, GetFixedStringForTextID(TXT_No_Sound_Card_Installed), -1, wide_string, sizeof(wide_string) / sizeof(wchar_t));
+		SendMessage(hwnd, CB_ADDSTRING, 0, (LPARAM)wide_string);
+#else
 		SendMessage(hwnd, CB_ADDSTRING, 0, (LPARAM)GetFixedStringForTextID(TXT_No_Sound_Card_Installed));
+#endif
 		EnableWindow(GetDlgItem(dlg, 1018), 0);
 		SendMessage(GetDlgItem(dlg, 1018), BM_SETCHECK, 1, 0);
 		EnableWindow(hwnd, 0);
@@ -93,11 +106,25 @@ void InitDSDevice(HWND dlg, HWND hwnd)
 
 void InitTFormats(HWND dlg, HWND hwnd)
 {
-#ifndef USE_BGFX
+	char buffer[40];
+
+#ifdef USE_BGFX
+	SendMessage(hwnd, CB_RESETCONTENT, 0, 0);
+	EnableWindow(GetDlgItem(dlg, 1006), 1);
+	sprintf(buffer, "%d %s RGBA %d%d%d%d", 32, GetFixedStringForTextID(TXT_Bit), 8, 8, 8, 8);
+
+#ifdef UNICODE
+	wchar_t wide_string[40];
+	MultiByteToWideChar(CP_UTF8, 0, buffer, -1, wide_string, sizeof(wide_string) / sizeof(wchar_t));
+	SendMessage(hwnd, CB_ADDSTRING, 0, (LPARAM)wide_string);
+#else
+	SendMessage(hwnd, CB_ADDSTRING, 0, (LPARAM)buffer);
+#endif
+	SendMessage(hwnd, CB_SETCURSEL, 0, 0);
+#else
 	DXD3DDEVICE* device;
 	DXTEXTUREINFO* tex;
 	long bpp, r, g, b, a;
-	char buffer[40];
 	bool software;
 
 	SendMessage(hwnd, CB_RESETCONTENT, 0, 0);
@@ -135,7 +162,134 @@ void InitTFormats(HWND dlg, HWND hwnd)
 
 void InitResolution(HWND dlg, HWND hwnd, bool resetvms)
 {
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+	long bpp, w, h, n;
+	char buffer[40];
+	bool software;
+
+	n = 0;
+
+	SendMessage(GetDlgItem(dlg, 1010), BM_SETCHECK, 1, 0);
+	SendMessage(GetDlgItem(dlg, 1011), BM_SETCHECK, 0, 0);
+	EnableWindow(GetDlgItem(dlg, 1011), 0);
+	software = SendMessage(GetDlgItem(dlg, 1011), BM_GETCHECK, 0, 0);
+
+	if (resetvms)
+	{
+		SendMessage(hwnd, CB_RESETCONTENT, 0, 0);
+
+		int display_mode_count = SDL_GetNumDisplayModes(0);
+		if (display_mode_count < 1) {
+			platform_fatal_error("SDL_GetNumDisplayModes failed: %s", SDL_GetError());
+			return;
+		}
+
+		SDL_DisplayMode previous_mode;
+		previous_mode.w = -1;
+		previous_mode.h = -1;
+
+		for (int i = display_mode_count-1; i > 0; i--)
+		{
+			SDL_DisplayMode mode;
+			if (SDL_GetDisplayMode(0, i, &mode) != 0) {
+				platform_fatal_error("SDL_GetDisplayMode failed: %s", SDL_GetError());
+				return;
+			}
+
+			if (mode.w == previous_mode.w && mode.h == previous_mode.h) {
+				continue;
+			}
+
+			w = mode.w;
+			h = mode.h;
+			bpp = 32;
+
+			{
+				sprintf(buffer, "%dx%d %d %s", w, h, bpp, GetFixedStringForTextID(TXT_Bit));
+#ifdef UNICODE
+				wchar_t wide_string[40];
+				MultiByteToWideChar(CP_UTF8, 0, buffer, -1, wide_string, sizeof(wide_string) / sizeof(wchar_t));
+				SendMessage(hwnd, CB_ADDSTRING, 0, (LPARAM)wide_string);
+#else
+				SendMessage(hwnd, CB_ADDSTRING, 0, (LPARAM)buffer);
+#endif
+				SendMessage(hwnd, CB_SETITEMDATA, n, i);
+
+				if (w == 640 && h == 480)
+					SendMessage(hwnd, CB_SETCURSEL, n, 0);
+
+				n++;
+			}
+			previous_mode = mode;
+		}
+	}
+
+#ifndef USE_SDL
+	if (App.DXInfo.DDInfo[nDDDevice].DDCaps.dwCaps2 & DDCAPS2_CANRENDERWINDOWED)
+		EnableWindow(GetDlgItem(dlg, 1025), 1);
+	else
+	{
+		EnableWindow(GetDlgItem(dlg, 1025), 0);
+		SendMessage(GetDlgItem(dlg, 1025), BM_SETCHECK, 0, 0);
+	}
+#else
+	EnableWindow(GetDlgItem(dlg, 1025), 1);
+	SendMessage(GetDlgItem(dlg, 1025), BM_SETCHECK, 1, 0);
+#endif
+
+	if (software)
+	{
+		EnableWindow(GetDlgItem(dlg, 1029), 0);
+		VolumetricFx = 0;
+	}
+	else
+	{
+		EnableWindow(GetDlgItem(dlg, 1029), 1);
+	}
+
+	SendMessage(GetDlgItem(dlg, 1029), BM_SETCHECK, VolumetricFx, 0);
+	SendMessage(GetDlgItem(dlg, 1012), BM_SETCHECK, Filter, 0);
+
+	if (software)
+	{
+		EnableWindow(GetDlgItem(dlg, 1016), 0);
+		BumpMap = 0;
+	}
+	else
+		EnableWindow(GetDlgItem(dlg, 1016), 1);
+
+	SendMessage(GetDlgItem(dlg, 1016), BM_SETCHECK, BumpMap, 0);
+
+	if (software)
+	{
+		EnableWindow(GetDlgItem(dlg, 1014), 0);
+		TextLow = 0;
+	}
+	else
+		EnableWindow(GetDlgItem(dlg, 1014), 1);
+
+	SendMessage(GetDlgItem(dlg, 1014), BM_SETCHECK, TextLow, 0);
+
+	if (TextLow)
+	{
+		SendMessage(GetDlgItem(dlg, 1015), BM_SETCHECK, 1, 0);
+		EnableWindow(GetDlgItem(dlg, 1015), 0);
+	}
+	else
+	{
+		EnableWindow(GetDlgItem(dlg, 1015), 1);
+		SendMessage(GetDlgItem(dlg, 1015), BM_SETCHECK, 0, 0);
+	}
+
+	if (!BumpMap)
+	{
+		SendMessage(GetDlgItem(dlg, 1015), BM_SETCHECK, 0, 0);
+		EnableWindow(GetDlgItem(dlg, 1015), 0);
+	}
+
+	if (resetvms)
+		InitTFormats(dlg, GetDlgItem(dlg, 1006));
+#else
 	DXD3DDEVICE* device;
 	DXDISPLAYMODE* dm;
 	long bpp, w, h, n;
@@ -242,6 +396,16 @@ void InitResolution(HWND dlg, HWND hwnd, bool resetvms)
 
 void InitD3DDevice(HWND dlg, HWND hwnd)
 {
+#ifdef USE_BGFX
+	SendMessage(hwnd, CB_RESETCONTENT, 0, 0);
+	// Tomb4Plus - skip first device (software emulation) since we have no support for it.
+	SendMessage(hwnd, CB_ADDSTRING, 0, (LPARAM)L"OpenGL");
+	SendMessage(hwnd, CB_SETCURSEL, 0, 0);
+	//
+
+	nD3DDevice = 1;
+	InitResolution(dlg, GetDlgItem(dlg, 1004), 1);
+#else
 	DXDIRECTDRAWINFO* ddraw;
 
 	SendMessage(hwnd, CB_RESETCONTENT, 0, 0);
@@ -255,11 +419,20 @@ void InitD3DDevice(HWND dlg, HWND hwnd)
 
 	nD3DDevice = 1;
 	InitResolution(dlg, GetDlgItem(dlg, 1004), 1);
+#endif
 }
 
 void InitDDDevice(HWND dlg, HWND hwnd)
 {
-#ifndef USE_BGFX
+#ifdef USE_BGFX
+	char buffer[256];
+
+	SendMessage(hwnd, CB_RESETCONTENT, 0, 0);
+	SendMessage(hwnd, CB_ADDSTRING, 0, (LPARAM)L"BGFX");
+	SendMessage(hwnd, CB_SETCURSEL, 0, 0);
+
+	InitD3DDevice(dlg, GetDlgItem(dlg, 1003));
+#else
 	DDDEVICEIDENTIFIER* id;
 	char buffer[256];
 
@@ -277,6 +450,22 @@ void InitDDDevice(HWND dlg, HWND hwnd)
 	nDDDevice = App.DXInfo.nDDInfo - 1;
 	SendMessage(hwnd, CB_SETCURSEL, nDDDevice, 0);
 	InitD3DDevice(dlg, GetDlgItem(dlg, 1003));
+#endif
+}
+
+LPARAM ConvertToWin32DialogString(char* s)
+{
+#ifdef UNICODE
+	int l = strlen(s);
+	if (l >= 128) {
+		platform_fatal_error("ConvertToWin32DialogString: Invalid String Length.");
+	}
+	wchar_t wide_string[128];
+	MultiByteToWideChar(CP_UTF8, 0, s, -1, wide_string, sizeof(wide_string) / sizeof(wchar_t));
+
+	return (LPARAM)wide_string;
+#else
+	return (LPARM)s;
 #endif
 }
 
@@ -338,24 +527,24 @@ BOOL CALLBACK DXSetupDlgProc(HWND dlg, UINT message, WPARAM wParam, LPARAM lPara
 			SendMessage(GetDlgItem(dlg, 1005), WM_SETFONT, 0, (LPARAM)hfont);
 		}
 
-		SendMessage(GetDlgItem(dlg, 1001), WM_SETTEXT, 0, (LPARAM)MapASCIIToANSI(GetFixedStringForTextID(TXT_Graphics_Adapter), d));
-		SendMessage(GetDlgItem(dlg, 1002), WM_SETTEXT, 0, (LPARAM)MapASCIIToANSI(GetFixedStringForTextID(TXT_Output_Settings), d));
-		SendMessage(GetDlgItem(dlg, 1), WM_SETTEXT, 0, (LPARAM)MapASCIIToANSI(GetFixedStringForTextID(TXT_OK), d));
-		SendMessage(GetDlgItem(dlg, 2), WM_SETTEXT, 0, (LPARAM)MapASCIIToANSI(GetFixedStringForTextID(TXT_Cancel), d));
-		SendMessage(GetDlgItem(dlg, 1009), WM_SETTEXT, 0, (LPARAM)MapASCIIToANSI(GetFixedStringForTextID(TXT_Output_Resolution), d));
-		SendMessage(GetDlgItem(dlg, 1012), WM_SETTEXT, 0, (LPARAM)MapASCIIToANSI(GetFixedStringForTextID(TXT_Bilinear_Filtering), d));
-		SendMessage(GetDlgItem(dlg, 1016), WM_SETTEXT, 0, (LPARAM)MapASCIIToANSI(GetFixedStringForTextID(TXT_Bump_Mapping), d));
-		SendMessage(GetDlgItem(dlg, 1010), WM_SETTEXT, 0, (LPARAM)MapASCIIToANSI(GetFixedStringForTextID(TXT_Hardware_Acceleration), d));
-		SendMessage(GetDlgItem(dlg, 1011), WM_SETTEXT, 0, (LPARAM)MapASCIIToANSI(GetFixedStringForTextID(TXT_Software_Mode), d));
-		SendMessage(GetDlgItem(dlg, 1017), WM_SETTEXT, 0, (LPARAM)MapASCIIToANSI(GetFixedStringForTextID(TXT_Sound_Device), d));
-		SendMessage(GetDlgItem(dlg, 1018), WM_SETTEXT, 0, (LPARAM)MapASCIIToANSI(GetFixedStringForTextID(TXT_Disable), d));
-		SendMessage(GetDlgItem(dlg, 1014), WM_SETTEXT, 0, (LPARAM)MapASCIIToANSI(GetFixedStringForTextID(TXT_Low_Resolution_Textures), d));
-		SendMessage(GetDlgItem(dlg, 1015), WM_SETTEXT, 0, (LPARAM)MapASCIIToANSI(GetFixedStringForTextID(TXT_Low_Resolution_Bump_Maps), d));
-		SendMessage(GetDlgItem(dlg, 1013), WM_SETTEXT, 0, (LPARAM)MapASCIIToANSI(GetFixedStringForTextID(TXT_Texture_Bit_Depth), d));
-		SendMessage(GetDlgItem(dlg, 1025), WM_SETTEXT, 0, (LPARAM)MapASCIIToANSI(GetFixedStringForTextID(TXT_Windowed), d));
-		SendMessage(GetDlgItem(dlg, 1023), WM_SETTEXT, 0, (LPARAM)MapASCIIToANSI(GetFixedStringForTextID(TXT_Render_Options), d));
-		SendMessage(GetDlgItem(dlg, 1029), WM_SETTEXT, 0, (LPARAM)MapASCIIToANSI(GetFixedStringForTextID(TXT_Volumetric_FX), d));
-		SendMessage(GetDlgItem(dlg, 1030), WM_SETTEXT, 0, (LPARAM)MapASCIIToANSI(GetFixedStringForTextID(TXT_No_FMV), d));
+		SendMessage(GetDlgItem(dlg, 1001), WM_SETTEXT, 0, ConvertToWin32DialogString(MapASCIIToANSI(GetFixedStringForTextID(TXT_Graphics_Adapter), d)));
+		SendMessage(GetDlgItem(dlg, 1002), WM_SETTEXT, 0, ConvertToWin32DialogString(MapASCIIToANSI(GetFixedStringForTextID(TXT_Output_Settings), d)));
+		SendMessage(GetDlgItem(dlg, 1), WM_SETTEXT, 0, ConvertToWin32DialogString(MapASCIIToANSI(GetFixedStringForTextID(TXT_OK), d)));
+		SendMessage(GetDlgItem(dlg, 2), WM_SETTEXT, 0, ConvertToWin32DialogString(MapASCIIToANSI(GetFixedStringForTextID(TXT_Cancel), d)));
+		SendMessage(GetDlgItem(dlg, 1009), WM_SETTEXT, 0, ConvertToWin32DialogString(MapASCIIToANSI(GetFixedStringForTextID(TXT_Output_Resolution), d)));
+		SendMessage(GetDlgItem(dlg, 1012), WM_SETTEXT, 0, ConvertToWin32DialogString(MapASCIIToANSI(GetFixedStringForTextID(TXT_Bilinear_Filtering), d)));
+		SendMessage(GetDlgItem(dlg, 1016), WM_SETTEXT, 0, ConvertToWin32DialogString(MapASCIIToANSI(GetFixedStringForTextID(TXT_Bump_Mapping), d)));
+		SendMessage(GetDlgItem(dlg, 1010), WM_SETTEXT, 0, ConvertToWin32DialogString(MapASCIIToANSI(GetFixedStringForTextID(TXT_Hardware_Acceleration), d)));
+		SendMessage(GetDlgItem(dlg, 1011), WM_SETTEXT, 0, ConvertToWin32DialogString(MapASCIIToANSI(GetFixedStringForTextID(TXT_Software_Mode), d)));
+		SendMessage(GetDlgItem(dlg, 1017), WM_SETTEXT, 0, ConvertToWin32DialogString(MapASCIIToANSI(GetFixedStringForTextID(TXT_Sound_Device), d)));
+		SendMessage(GetDlgItem(dlg, 1018), WM_SETTEXT, 0, ConvertToWin32DialogString(MapASCIIToANSI(GetFixedStringForTextID(TXT_Disable), d)));
+		SendMessage(GetDlgItem(dlg, 1014), WM_SETTEXT, 0, ConvertToWin32DialogString(MapASCIIToANSI(GetFixedStringForTextID(TXT_Low_Resolution_Textures), d)));
+		SendMessage(GetDlgItem(dlg, 1015), WM_SETTEXT, 0, ConvertToWin32DialogString(MapASCIIToANSI(GetFixedStringForTextID(TXT_Low_Resolution_Bump_Maps), d)));
+		SendMessage(GetDlgItem(dlg, 1013), WM_SETTEXT, 0, ConvertToWin32DialogString(MapASCIIToANSI(GetFixedStringForTextID(TXT_Texture_Bit_Depth), d)));
+		SendMessage(GetDlgItem(dlg, 1025), WM_SETTEXT, 0, ConvertToWin32DialogString(MapASCIIToANSI(GetFixedStringForTextID(TXT_Windowed), d)));
+		SendMessage(GetDlgItem(dlg, 1023), WM_SETTEXT, 0, ConvertToWin32DialogString(MapASCIIToANSI(GetFixedStringForTextID(TXT_Render_Options), d)));
+		SendMessage(GetDlgItem(dlg, 1029), WM_SETTEXT, 0, ConvertToWin32DialogString(MapASCIIToANSI(GetFixedStringForTextID(TXT_Volumetric_FX), d)));
+		SendMessage(GetDlgItem(dlg, 1030), WM_SETTEXT, 0, ConvertToWin32DialogString(MapASCIIToANSI(GetFixedStringForTextID(TXT_No_FMV), d)));
 		InitDDDevice(dlg, GetDlgItem(dlg, 1000));
 		InitDSDevice(dlg, GetDlgItem(dlg, 1005));
 		return 1;

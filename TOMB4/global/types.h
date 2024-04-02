@@ -1591,7 +1591,12 @@ struct DXINFO
 	DXDIRECTSOUNDINFO* DSInfo;
 	long nDD;
 	long nD3D;
+#ifdef USE_BGFX
 	long nDisplayMode;
+#else
+	long screenW;
+	long screenH;
+#endif
 	long nTexture;
 	long nZBuffer;
 	long nDS;
@@ -1624,6 +1629,10 @@ struct WINAPP
 	volatile bool fmv;
 	long Desktopbpp;
 	long AutoTarget;
+#ifdef USE_SDL
+	long VideoWidth;
+	long VideoHeight;
+#endif
 };
 
 struct SPRITESTRUCT
