@@ -96,12 +96,15 @@ void NGPreloadAllLevelInfo(uint32_t valid_level_count) {
 
 	for (int i = 0; i < valid_level_count; i++) {
 		memset(name, 0x00, 80);
-		strcpy(name, &gfFilenameWad[gfFilenameOffset[i]]);
-		strcat(name, ".TR4");
+		int16_t level_filename_id = gfLevelFilenames[i];
+		if (level_filename_id >= 0) {
+			strcpy(name, &gfFilenameWad[gfFilenameOffset[level_filename_id]]);
+			strcat(name, ".TR4");
 
-		FILE *level_fp = FileOpen((const char*)name);
-		if (level_fp) {
-			NGPreloadLevelInfo(i, level_fp);
+			FILE *level_fp = FileOpen((const char*)name);
+			if (level_fp) {
+				NGPreloadLevelInfo(i, level_fp);
+			}
 		}
 	}
 }

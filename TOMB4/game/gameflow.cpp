@@ -140,6 +140,7 @@ uchar gfNumMips = 0;
 uchar gfRequiredStartPos;
 uchar gfMips[8];
 uchar gfLevelNames[255];
+int16_t gfLevelFilenames[255];
 char gfUVRotate;
 char gfLayer1Vel;
 char gfLayer2Vel;
@@ -1102,7 +1103,7 @@ void LoadGameflow()
 			s[j] ^= 0xA5;
 	}
 
-	uint32_t valid_level_count = 0;
+	uint32_t detected_level_count = 0;
 
 	for (int i = 0; i < Gameflow->nLevels; i++)
 	{
@@ -1131,6 +1132,10 @@ void LoadGameflow()
 				break;
 
 			case CMD_TITLE:
+				gfLevelFilenames[i] = *(n + 2);
+				detected_level_count++;
+				n += 4;
+				break;
 			case CMD_LAYER1:
 			case CMD_LAYER2:
 				n += 4;
@@ -1148,12 +1153,19 @@ void LoadGameflow()
 				n += 25;
 				break;
 
-			case CMD_LEVEL:
+			case CMD_LEVEL: {
+				ushort level_flags = *(n + 1) | (*(n + 2) << 8);
+				
 				gfLevelNames[i] = *n;
-				valid_level_count++;
+				if (!(level_flags & GF_NOLEVEL))
+					gfLevelFilenames[i] = *(n + 3);
+				else
+					gfLevelFilenames[i] = -1;
+
+				detected_level_count++;
 				n += 5;
 				break;
-
+			}
 			case CMD_ENDSEQ:
 				end = 1;
 				break;
@@ -1166,7 +1178,7 @@ void LoadGameflow()
 		s = (char *)n;
 	}
 
-	NGPreloadAllLevelInfo(valid_level_count);
+	NGPreloadAllLevelInfo(detected_level_count);
 	NGReadNGExtraStrings(d, language_len - (sizeof(unsigned int) * 2), language_len);
 	NGReadNGGameflowInfo((char*)gfScriptFile, gameflow_len - (sizeof(unsigned int) * 2), gameflow_len);
 }
