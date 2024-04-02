@@ -562,8 +562,5 @@ void DrawHair()
 			SkinVerticesToScratch(29 + ii + j);
 			phd_PutPolygons(meshpp[0], -1);
 		}
-
-		if (!(gfLevelFlags & GF_YOUNGLARA))
-			break;
 	}
 }
