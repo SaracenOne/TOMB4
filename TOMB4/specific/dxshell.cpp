@@ -582,11 +582,10 @@ long DXCreateViewport(LPDIRECT3DX d3d, LPDIRECT3DDEVICEX device, long w, long h,
 }
 
 #endif
+
+#ifndef USE_BGFX
 HRESULT DXShowFrame()
 {
-#ifdef USE_BGFX
-	bgfx::frame();
-#else
 	if (G_dxptr->lpPrimaryBuffer->IsLost())
 	{
 		Log(3, "Restored Primary Buffer");
@@ -606,10 +605,10 @@ HRESULT DXShowFrame()
 		return DXAttempt(G_dxptr->lpPrimaryBuffer->Blt(&G_dxptr->rScreen, G_dxptr->lpBackBuffer, &G_dxptr->rViewport, DDBLT_WAIT, 0));
 	else
 		return DXAttempt(G_dxptr->lpPrimaryBuffer->Flip(0, DDFLIP_WAIT));
-#endif
 
 	return 1;
 }
+#endif
 
 #ifdef USE_BGFX
 	// Put BGFX code here...

@@ -251,11 +251,15 @@ void RenderBGFXDrawLists() {
     for (int i = 0; i < MAX_SORT_BUFFERS; i++) {
         bgfx::update(sort_buffer_vertex_handle[i], 0, sort_buffer_vertex_buffers_ref[i]);
     }
+    
+    // Hack to prevent pickup display flickering.
+    bool multipass_frame = false;
 
     for (int i = 0; i < current_draw_commands; i++) {
         if (draw_commands[i].clear_depth_buffer) {
-            bgfx::setViewClear(0, BGFX_CLEAR_DEPTH, bgfx_clear_col, 1.0f, 0);
+            bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, bgfx_clear_col, 1.0f, 0);
             bgfx::frame();
+            multipass_frame = true;
         }
 
         if (draw_commands[i].is_sorted_command) {
@@ -398,8 +402,16 @@ void RenderBGFXDrawLists() {
                 bucket->tpage = -1;
                 DrawPrimitiveCnt++;
             }
-            bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, bgfx_clear_col, 1.0f, 0);
         }
+    }
+
+    if (multipass_frame) {
+        bgfx::setViewClear(0, BGFX_CLEAR_DEPTH, bgfx_clear_col, 1.0f, 0);
+        bgfx::frame();
+        bgfx::frame();
+    } else {
+        bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, bgfx_clear_col, 1.0f, 0);
+        bgfx::frame();
     }
 }
 

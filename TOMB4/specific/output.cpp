@@ -1942,7 +1942,9 @@ long S_DumpScreen()
 
 	GnFrameCounter++;
 	_EndScene();
+#ifndef USE_BGFX
 	DXShowFrame();
+#endif
 	App.dx.DoneBlit = 1;
 	return n;
 }
