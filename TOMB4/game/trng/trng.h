@@ -71,7 +71,7 @@ struct NGStaticTableEntry {
 };
 extern NGStaticTableEntry ng_static_id_table[NG_STATIC_ID_TABLE_SIZE];
 
-extern void NGPreloadAllLevelInfo();
+extern void NGPreloadAllLevelInfo(uint32_t valid_level_count);
 extern void NGLoadLevelInfo(FILE* level_fp);
 
 extern void NGStorePendingRoomNumber(int room_number);

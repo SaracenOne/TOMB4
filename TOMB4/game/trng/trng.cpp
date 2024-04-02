@@ -91,10 +91,11 @@ void NGPreloadLevelInfo(int current_level, FILE *level_fp) {
 	}
 }
 
-void NGPreloadAllLevelInfo() {
+void NGPreloadAllLevelInfo(uint32_t valid_level_count) {
 	char name[80];
 
-	for (int i = 0; i < Gameflow->nLevels; i++) {
+	for (int i = 0; i < valid_level_count; i++) {
+		memset(name, 0x00, 80);
 		strcpy(name, &gfFilenameWad[gfFilenameOffset[i]]);
 		strcat(name, ".TR4");
 

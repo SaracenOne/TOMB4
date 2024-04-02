@@ -1102,6 +1102,8 @@ void LoadGameflow()
 			s[j] ^= 0xA5;
 	}
 
+	uint32_t valid_level_count = 0;
+
 	for (int i = 0; i < Gameflow->nLevels; i++)
 	{
 		end = 0;
@@ -1148,6 +1150,7 @@ void LoadGameflow()
 
 			case CMD_LEVEL:
 				gfLevelNames[i] = *n;
+				valid_level_count++;
 				n += 5;
 				break;
 
@@ -1163,7 +1166,7 @@ void LoadGameflow()
 		s = (char *)n;
 	}
 
-	NGPreloadAllLevelInfo();
+	NGPreloadAllLevelInfo(valid_level_count);
 	NGReadNGExtraStrings(d, language_len - (sizeof(unsigned int) * 2), language_len);
 	NGReadNGGameflowInfo((char*)gfScriptFile, gameflow_len - (sizeof(unsigned int) * 2), gameflow_len);
 }
