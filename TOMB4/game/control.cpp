@@ -130,6 +130,7 @@ static short cdtrack = -1;
 static long S_Death()
 {
 	long selection, menu, ret;
+	bool skip_render_frame = false;
 
 	CreateMonoScreen();
 	selection = 0;
@@ -139,6 +140,8 @@ static long S_Death()
 
 	while (!ret)
 	{
+		skip_render_frame = false;
+
 		S_InitialisePolyList();
 		SetDebounce = 1;
 		S_UpdateInput();
@@ -202,6 +205,7 @@ static long S_Death()
 						ret = 0;
 					}
 				}
+				skip_render_frame = true;
 			}
 		}
 		else
@@ -212,8 +216,11 @@ static long S_Death()
 				return 1;
 		}
 
-		S_OutputPolyList();
-		camera.number_frames = S_DumpScreen();
+		if (!skip_render_frame)
+		{
+			S_OutputPolyList();
+			camera.number_frames = S_DumpScreen();
+		}
 	}
 
 	DeathMenuActive = 0;
