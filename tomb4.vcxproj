@@ -31,7 +31,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -120,7 +120,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>USE_SDL;USE_INI;MA_AUDIO_ENGINE;MA_AUDIO_SAMPLES;LEVEL_EDITOR;SKIP_TIMES_DELAY;FLYCHEAT_NOCLIP;DO_LOG;FORCE_COLOURED_FOG;USE_HIGHEST_BIT_DEPTH_ZBUFFER;WIN32;_CRT_SECURE_NO_WARNINGS;DEBUG;_DEBUG;TOMB4_EXPORTS;_WINDOWS;_USRDLL;__STDC_LIMIT_MACROS;__STDC_FORMAT_MACROS;__STDC_CONSTANT_MACROS;_HAS_EXCEPTIONS=0;_SCL_SECURE=0;_SECURE_SCL=0;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;ENTRY_CONFIG_IMPLEMENT_MAIN=1;BX_CONFIG_DEBUG=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USE_SDL;USE_INI;USE_BGFX;MA_AUDIO_ENGINE;MA_AUDIO_SAMPLES;LEVEL_EDITOR;SKIP_TIMES_DELAY;FLYCHEAT_NOCLIP;DO_LOG;FORCE_COLOURED_FOG;USE_HIGHEST_BIT_DEPTH_ZBUFFER;WIN32;_CRT_SECURE_NO_WARNINGS;DEBUG;_DEBUG;TOMB4_EXPORTS;_WINDOWS;_USRDLL;__STDC_LIMIT_MACROS;__STDC_FORMAT_MACROS;__STDC_CONSTANT_MACROS;_HAS_EXCEPTIONS=0;_SCL_SECURE=0;_SECURE_SCL=0;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;ENTRY_CONFIG_IMPLEMENT_MAIN=1;BX_CONFIG_DEBUG=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>../tomb4/pch.h</PrecompiledHeaderFile>
@@ -193,7 +193,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>USE_SDL;USE_INI;USE_BGFX;MA_AUDIO_ENGINE;LEVEL_EDITOR;SKIP_TIMES_DELAY;FLYCHEAT_NOCLIP;FORCE_COLOURED_FOG;USE_HIGHEST_BIT_DEPTH_ZBUFFER;WIN32;_CRT_SECURE_NO_WARNINGS;TOMB4_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USE_SDL;USE_INI;USE_BGFX;MA_AUDIO_ENGINE;MA_AUDIO_SAMPLES;LEVEL_EDITOR;SKIP_TIMES_DELAY;FLYCHEAT_NOCLIP;DO_LOG;FORCE_COLOURED_FOG;USE_HIGHEST_BIT_DEPTH_ZBUFFER;WIN32;_CRT_SECURE_NO_WARNINGS;TOMB4_EXPORTS;_WINDOWS;_USRDLL;__STDC_LIMIT_MACROS;__STDC_FORMAT_MACROS;__STDC_CONSTANT_MACROS;_HAS_EXCEPTIONS=0;_SCL_SECURE=0;_SECURE_SCL=0;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;ENTRY_CONFIG_IMPLEMENT_MAIN=1;BX_CONFIG_DEBUG=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>../tomb4/pch.h</PrecompiledHeaderFile>
@@ -201,6 +201,7 @@
       <DisableSpecificWarnings>%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -209,7 +210,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalOptions>/IGNORE:4099 /pdbaltpath:%_PDB% %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>SDL2.lib;SDL2Main.lib;winmm.lib;dxguid.lib;ddraw.lib;Dsound.lib;Msacm32.lib;dinput8.lib;xaudio2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2Main.lib;winmm.lib;dxguid.lib;ddraw.lib;Dsound.lib;Msacm32.lib;dinput8.lib;xaudio2.lib;bgfxRelease.lib;bxRelease.lib;bimgRelease.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -293,6 +294,7 @@
     <ClInclude Include="TOMB4\game\traps.h" />
     <ClInclude Include="TOMB4\game\trep\furr.h" />
     <ClInclude Include="TOMB4\game\trep\trepsave.h" />
+    <ClInclude Include="TOMB4\game\trng\objects\trng_boat.h" />
     <ClInclude Include="TOMB4\game\trng\objects\trng_parallel_bars.h" />
     <ClInclude Include="TOMB4\game\trng\objects\trng_tightrope.h" />
     <ClInclude Include="TOMB4\game\trng\trng.h" />
@@ -307,6 +309,7 @@
     <ClInclude Include="TOMB4\game\trng\trng_objects.h" />
     <ClInclude Include="TOMB4\game\trng\trng_organizer.h" />
     <ClInclude Include="TOMB4\game\trng\trng_plugin_interface.h" />
+    <ClInclude Include="TOMB4\game\trng\trng_savegame.h" />
     <ClInclude Include="TOMB4\game\trng\trng_script_parser.h" />
     <ClInclude Include="TOMB4\game\trng\trng_test_position.h" />
     <ClInclude Include="TOMB4\game\trng\trng_triggergroup.h" />
