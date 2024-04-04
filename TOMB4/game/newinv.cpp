@@ -1557,7 +1557,10 @@ void setup_objectlist_startposition(short newobj)
 	for (int i = 0; i < NUM_INVOBJ; i++)
 	{
 		if (rings[RING_INVENTORY]->current_object_list[i].invitem == newobj)
+		{
 			rings[RING_INVENTORY]->curobjinlist = i;
+			return;
+		}
 	}
 }
 
@@ -1566,7 +1569,10 @@ void setup_objectlist_startposition2(short newobj)
 	for (int i = 0; i < NUM_INVOBJ; i++)
 	{
 		if (inventry_objects_list[rings[RING_INVENTORY]->current_object_list[i].invitem].object_number == newobj)
+		{
 			rings[RING_INVENTORY]->curobjinlist = i;
+			return;
+		}
 	}
 }
 
