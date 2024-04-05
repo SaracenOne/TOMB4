@@ -259,7 +259,7 @@ void DoVonCroyCutscene(ITEM_INFO* item, CREATURE_INFO* info)
 		IsRoomOutside(item->pos.x_pos, item->pos.y_pos - 64, item->pos.z_pos);
 
 		if (IsRoomOutsideNo != item->room_number && IsRoomOutsideNo != -1)
-			ItemNewRoom(item - items, IsRoomOutsideNo);
+			ItemNewRoom(short(item - items), IsRoomOutsideNo);
 
 		lara_item->pos.y_rot = ang + 0x8000;
 

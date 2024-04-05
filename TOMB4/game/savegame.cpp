@@ -138,7 +138,7 @@ void SaveLaraData()
 		size_t offset = ((size_t)lara.mesh_ptrs[i]) - base;
 
 		savegame.Lara.mesh_ptrs[i] = 0;
-		for (int j = 0; j < mesh_mapping_table_count; j++) {
+		for (size_t j = 0; j < mesh_mapping_table_count; j++) {
 			if (mesh_mapping_table[j].mesh_native_ptr == offset) {
 				savegame.Lara.mesh_ptrs[i] = (X32_POINTER)(mesh_mapping_table[j].mesh_x32_ptr);
 			}
@@ -361,7 +361,7 @@ void RestoreLaraData(bool full_save)
 			lara.mesh_ptrs[i] = meshes[objects[T4PlusGetLaraSlotID()].mesh_index + i * 2];
 
 			size_t offset_original = (size_t)(lara.mesh_ptrs[i]) - base;
-			for (int j = 0; j < mesh_mapping_table_count; j++) {
+			for (size_t j = 0; j < mesh_mapping_table_count; j++) {
 				if (mesh_mapping_table[j].mesh_x32_ptr == offset) {
 					lara.mesh_ptrs[i] = (short*)(base + mesh_mapping_table[j].mesh_native_ptr);
 				}
@@ -704,7 +704,7 @@ void SaveLevelData(bool full_save, bool use_full_flipmask)
 	uchar byte;
 	char lflags;
 	uint32_t flipmap_mask = 0;
-	uint32_t flipmap_bitcount = 0;
+	size_t flipmap_bitcount = 0;
 
 	WriteSG(&FmvSceneTriggered, sizeof(long));
 	WriteSG(&GLOBAL_lastinvitem, sizeof(long));
@@ -716,7 +716,7 @@ void SaveLevelData(bool full_save, bool use_full_flipmask)
 		flipmap_bitcount = 10;
 	}
 
-	for (int i = 0; i < flipmap_bitcount; i++)
+	for (size_t i = 0; i < flipmap_bitcount; i++)
 	{
 		if (flip_stats[i])
 			flipmap_mask |= (1 << i);
@@ -729,7 +729,7 @@ void SaveLevelData(bool full_save, bool use_full_flipmask)
 		WriteSG(&flipmap_mask_16, sizeof(uint16_t));
 	}
 
-	for (int i = 0; i < flipmap_bitcount; i++)
+	for (size_t i = 0; i < flipmap_bitcount; i++)
 	{
 		word = short(flipmap[i] >> 8);
 		WriteSG(&word, sizeof(short));
@@ -954,7 +954,7 @@ void SaveLevelData(bool full_save, bool use_full_flipmask)
 						if (creature->enemy) {
 							for (int j = 0; j < VANILLA_ITEM_COUNT; j++) {
 								if (creature->enemy == &items[j]) {
-									enemy_ptr = vanilla_item_malloc_offset + (j * TR4_VANILLA_ITEM_STRUCT_SIZE);
+									enemy_ptr = int32_t((vanilla_item_malloc_offset + (j * TR4_VANILLA_ITEM_STRUCT_SIZE)) & 0xffffffff);
 									break;
 								}
 							}
@@ -1038,7 +1038,7 @@ void SaveLevelData(bool full_save, bool use_full_flipmask)
 
 				if (item->object_number == FLARE_ITEM)
 				{
-					flare_age = (long)item->data;
+					flare_age = long(size_t(item->data) & 0x7fff);
 					WriteSG(&flare_age, sizeof(long));
 				}
 				else
@@ -1139,10 +1139,10 @@ void SaveLevelData(bool full_save, bool use_full_flipmask)
 		if (lara.RopePtr != -1)
 		{
 			WriteSG(&RopeList[lara.RopePtr], sizeof(ROPE_STRUCT));
-			CurrentPendulum.Rope = (ROPE_STRUCT*)((char*)CurrentPendulum.Rope - (char*)RopeList);
+			CurrentPendulum.Rope = (ROPE_STRUCT*)((char*)CurrentPendulum.Rope - (size_t)RopeList);
 
 			WriteSG(&CurrentPendulum, sizeof(PENDULUM));
-			CurrentPendulum.Rope = (ROPE_STRUCT*)((char*)CurrentPendulum.Rope + (long)RopeList);
+			CurrentPendulum.Rope = (ROPE_STRUCT*)((char*)CurrentPendulum.Rope + (size_t)RopeList);
 		}
 	}
 }
@@ -1162,7 +1162,7 @@ void RestoreLevelData(bool full_save, bool use_full_flipmask)
 	uchar numberof;
 	char byte, anim, lflags;
 	uint32_t flipmap_mask = 0;
-	uint32_t flipmap_bitcount = 0;
+	int32_t flipmap_bitcount = 0;
 
 	ReadSG(&FmvSceneTriggered, sizeof(long));
 	ReadSG(&GLOBAL_lastinvitem, sizeof(long));
@@ -1480,7 +1480,7 @@ void RestoreLevelData(bool full_save, bool use_full_flipmask)
 
 			case FLARE_ITEM:
 				ReadSG(&flare_age, sizeof(long));
-				item->data = (void*)flare_age;
+				item->data = (void*)size_t(flare_age);
 				break;
 			}
 		}
@@ -1540,7 +1540,7 @@ void RestoreLevelData(bool full_save, bool use_full_flipmask)
 		{
 			ReadSG(&RopeList[lara.RopePtr], sizeof(ROPE_STRUCT));
 			ReadSG(&CurrentPendulum, sizeof(PENDULUM));
-			CurrentPendulum.Rope = (ROPE_STRUCT*)((char*)CurrentPendulum.Rope + (long)RopeList);
+			CurrentPendulum.Rope = (ROPE_STRUCT*)((char*)CurrentPendulum.Rope + (size_t)RopeList);
 		}
 	}
 }

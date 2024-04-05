@@ -365,7 +365,7 @@ void DrawScaledSpike(ITEM_INFO* item)
 			{
 				item->item_flags[0] = 1;
 				item->touch_bits = 0;
-				AddActiveItem(item - items);
+				AddActiveItem(short(item - items));
 				item->flags |= IFL_CODEBITS;
 				item->status = ITEM_ACTIVE;
 			}

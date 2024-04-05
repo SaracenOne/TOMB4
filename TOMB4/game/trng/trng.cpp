@@ -94,7 +94,7 @@ void NGPreloadLevelInfo(int current_level, FILE *level_fp) {
 void NGPreloadAllLevelInfo(uint32_t valid_level_count) {
 	char name[80];
 
-	for (int i = 0; i < valid_level_count; i++) {
+	for (uint32_t i = 0; i < valid_level_count; i++) {
 		memset(name, 0x00, 80);
 		int16_t level_filename_id = gfLevelFilenames[i];
 		if (level_filename_id >= 0) {
@@ -425,7 +425,7 @@ bool NGIsSourcePositionLessThanDistanceToTargetPosition(PHD_3DPOS *source_pos, P
 	if (diffX < 0 || diffY < 0 || diffZ < 0)
 		return false;
 
-	uint32_t total = (unsigned int)NGFloat2Int((float)sqrt(diffX + diffY + diffZ));
+	int32_t total = NGFloat2Int((float)sqrt(diffX + diffY + diffZ));
 	if (total <= distance)
 		return true;
 
@@ -456,7 +456,7 @@ void NGSetItemAnimation(uint16_t item_id,
 	}
 
 	if (update_speed) {
-		items[item_id].speed = anims[items[item_id].anim_number].velocity;
+		items[item_id].speed = short(anims[items[item_id].anim_number].velocity & 0xffff);
 	}
 }
 

@@ -1023,7 +1023,7 @@ void LoadGameflow()
 	uchar* n;
 	char* s;
 	char* d;
-	size_t l;
+	int l;
 	long end;
 
 	s = 0;
@@ -1097,7 +1097,7 @@ void LoadGameflow()
 	{
 		s = &gfStringWad[gfStringOffset[i]];
 		d = &gfStringWad[gfStringOffset[i + 1]];
-		l = d - s - 1;
+		l = int(d - s - 1);
 
 		for (int j = 0; j < l; j++)
 			s[j] ^= 0xA5;

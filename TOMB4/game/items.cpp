@@ -14,7 +14,7 @@ short next_item_active;
 static short next_fx_free;
 static short next_item_free;
 
-void InitialiseItemArray(size_t num)
+void InitialiseItemArray(short num)
 {
 	ITEM_INFO* item;
 
@@ -32,7 +32,7 @@ void InitialiseItemArray(size_t num)
 	item->next_item = NO_ITEM;
 }
 
-void KillItem(size_t item_num)
+void KillItem(short item_num)
 {
 	if (item_num >= ITEM_COUNT) {
 		platform_fatal_error("KillItem: item_num out of range!");
@@ -114,7 +114,7 @@ short CreateItem()
 	return item_num;
 }
 
-void InitialiseItem(size_t item_num)
+void InitialiseItem(short item_num)
 {
 	if (item_num >= ITEM_COUNT) {
 		platform_fatal_error("InitialiseItem: item_num out of range!");
@@ -202,7 +202,7 @@ void InitialiseItem(size_t item_num)
 	item->il.pPrevLights = item->il.PrevLights;
 }
 
-void RemoveActiveItem(size_t item_num)
+void RemoveActiveItem(short item_num)
 {
 	if (item_num >= ITEM_COUNT) {
 		platform_fatal_error("RemoveActiveItem: item_num out of range!");
@@ -231,7 +231,7 @@ void RemoveActiveItem(size_t item_num)
 	}
 }
 
-void RemoveDrawnItem(size_t item_num)
+void RemoveDrawnItem(short item_num)
 {
 	if (item_num >= ITEM_COUNT) {
 		platform_fatal_error("RemoveDrawnItem: item_num out of range!");
@@ -259,7 +259,7 @@ void RemoveDrawnItem(size_t item_num)
 	}
 }
 
-void AddActiveItem(size_t item_num)
+void AddActiveItem(short item_num)
 {
 	if (item_num >= ITEM_COUNT) {
 		platform_fatal_error("AddActiveItem: item_num out of range!");
@@ -284,7 +284,7 @@ void AddActiveItem(size_t item_num)
 		item->status = ITEM_INACTIVE;
 }
 
-void ItemNewRoom(size_t item_num, short room_num)
+void ItemNewRoom(short item_num, short room_num)
 {
 	if (item_num >= ITEM_COUNT) {
 		platform_fatal_error("ItemNewRoom: item_num out of range!");
@@ -330,7 +330,7 @@ void ItemNewRoom(size_t item_num, short room_num)
 	room[room_num].item_number = item_num;
 }
 
-void InitialiseFXArray(size_t allocmem)
+void InitialiseFXArray(long allocmem)
 {
 	FX_INFO* fx;
 

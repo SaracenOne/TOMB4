@@ -774,7 +774,7 @@ void SmashObjectControl(short item_number)
 	}
 }
 
-void SmashObject(size_t item_number)
+void SmashObject(short item_number)
 {
 	if (item_number >= ITEM_COUNT) {
 		platform_fatal_error("SmashObject: item_number out of range!");

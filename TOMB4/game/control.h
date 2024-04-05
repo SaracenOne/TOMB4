@@ -40,7 +40,7 @@ long DoRayBox(GAME_VECTOR* start, GAME_VECTOR* target, short* bounds, PHD_3DPOS*
 long GetMaximumFloor(FLOOR_INFO* floor, long x, long z);
 long GetMinimumCeiling(FLOOR_INFO* floor, long x, long z);
 
-extern uint32_t vanilla_item_malloc_offset;
+extern size_t vanilla_item_malloc_offset;
 
 extern ITEM_INFO* items;
 extern ANIM_STRUCT* anims;

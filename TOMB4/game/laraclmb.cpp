@@ -654,8 +654,8 @@ long LaraClimbLeftCornerTest(ITEM_INFO* item, COLL_INFO* coll)
 	{
 		item->pos.x_pos = x;
 		item->pos.z_pos = z;
-		lara.CornerX = x;
-		lara.CornerZ = z;
+		lara.CornerX = (void*)(size_t(x) & 0xffffffff);
+		lara.CornerZ = (void*)(size_t(z) & 0xffffffff);
 		item->pos.y_rot -= 0x4000;
 		lara.move_angle = item->pos.y_rot;
 		flag = LaraTestClimbPos(item, coll->radius, -120 - coll->radius, -512, 512, &shift);
@@ -699,8 +699,8 @@ long LaraClimbLeftCornerTest(ITEM_INFO* item, COLL_INFO* coll)
 		{
 			item->pos.x_pos = x;
 			item->pos.z_pos = z;
-			lara.CornerX = x;
-			lara.CornerZ = z;
+			lara.CornerX = (void*)(size_t(x) & 0xffffffff);
+			lara.CornerX = (void*)(size_t(z) & 0xffffffff);
 			item->pos.y_rot += 0x4000;
 			lara.move_angle = item->pos.y_rot;
 			flag = LaraTestClimbPos(item, coll->radius, -120 - coll->radius, -512, 512, &shift);
@@ -751,8 +751,8 @@ long LaraClimbRightCornerTest(ITEM_INFO* item, COLL_INFO* coll)
 	{
 		item->pos.x_pos = x;
 		item->pos.z_pos = z;
-		lara.CornerX = x;
-		lara.CornerZ = z;
+		lara.CornerX = (void*)(size_t(x) & 0xffffffff);
+		lara.CornerX = (void*)(size_t(z) & 0xffffffff);
 		item->pos.y_rot += 0x4000;
 		lara.move_angle = item->pos.y_rot;
 		flag = LaraTestClimbPos(item, coll->radius, coll->radius+120, -512, 512, &shift);
@@ -795,8 +795,8 @@ long LaraClimbRightCornerTest(ITEM_INFO* item, COLL_INFO* coll)
 		{
 			item->pos.x_pos = x;
 			item->pos.z_pos = z;
-			lara.CornerX = x;
-			lara.CornerZ = z;
+			lara.CornerX = (void*)(size_t(x) & 0xffffffff);
+			lara.CornerZ = (void*)(size_t(z) & 0xffffffff);
 			item->pos.y_rot -= 0x4000;
 			lara.move_angle = item->pos.y_rot;
 			flag = LaraTestClimbPos(item, coll->radius, coll->radius + 120, -512, 512, &shift);

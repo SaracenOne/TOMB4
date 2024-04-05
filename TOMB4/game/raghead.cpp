@@ -778,7 +778,7 @@ void RagheadControl(short item_number)
 				else
 					item->item_flags[2] += 24;
 
-				KillItem(raghead->enemy - items);
+				KillItem(short(raghead->enemy - items));
 
 				for (int i = 0; i < MAXIMUM_BADDIES; i++)
 				{

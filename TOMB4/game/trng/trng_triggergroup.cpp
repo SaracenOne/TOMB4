@@ -132,7 +132,7 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 							item_id = ng_script_id_table[trigger_group.data[index].second_field_lower].script_index;
 						}
 
-						NGAction(item_id, trigger_group.data[index].third_field_lower & 0x7fff, NG_TRIGGER_FLAG_HEAVY | NG_TRIGGER_FLAG_SCRIPT_TRIGGERED) != -1;
+						NGAction(item_id, trigger_group.data[index].third_field_lower & 0x7fff, NG_TRIGGER_FLAG_HEAVY | NG_TRIGGER_FLAG_SCRIPT_TRIGGERED);
 
 						// Workaround to some weird behaviour which allows cameras and targets to be assigned out of order from a script trigger.
 						unsigned char action_type = (unsigned char)(trigger_group.data[index].third_field_lower & 0x7fff) & 0xff;

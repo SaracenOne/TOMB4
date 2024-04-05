@@ -70,6 +70,7 @@
 #include "../tomb4//tomb4plus/t4plus_teleporter.h"
 #include "trng/trng_objects.h"
 #include "../tomb4/tomb4plus/t4plus_objects.h"
+#include "../specific/platform.h"
 
 void ObjectObjects()
 {
@@ -1760,7 +1761,19 @@ void BuildOutsideTable()
 
 	max_slots = 0;
 	OutsideRoomOffsets = (short*)SYSTEM_MALLOC(0x5B2);
+	if (!OutsideRoomOffsets)
+	{
+		platform_fatal_error("Could not allocate memory for OutsideRoomOffsets.");
+		return;
+	}
+
 	OutsideRoomTable = (char*)SYSTEM_MALLOC(0xB640);
+	if (!OutsideRoomTable)
+	{
+		platform_fatal_error("Could not allocate memory for OutsieRoomTable.");
+		return;
+	}
+	
 	memset(OutsideRoomTable, 0xFF, 0xB640);
 	memset(flipped, 0, 255);
 
@@ -1869,7 +1882,8 @@ void BuildOutsideTable()
 		}
 	}
 
-	printf("Ouside room table = %d bytes, max_slots = %d\n", oTable - (uchar*)OutsideRoomTable, max_slots);
+	uint32_t offset_table_entry = uint32_t(size_t(oTable - (uchar*)OutsideRoomTable) & 0xffffffff);
+	printf("Ouside room table = %d bytes, max_slots = %d\n", offset_table_entry, max_slots);
 }
 
 void reset_cutseq_vars()
@@ -1978,7 +1992,7 @@ void InitialiseObjects()
 		obj->hit_points = -16384;
 		obj->explodable_meshbits = 0;
 		obj->draw_routine_extra = 0;
-		obj->frame_base = (short*)((long)obj->frame_base + (char*)frames);
+		obj->frame_base = (short*)((long)(size_t(obj->frame_base) & 0xffffffff) + (char*)frames);
 		obj->object_mip = 0;
 	}
 

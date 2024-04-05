@@ -274,9 +274,9 @@ void CreateFlare(short object, long thrown)
 		if (object == FLARE_ITEM)
 		{
 			if (DoFlareLight((PHD_VECTOR*)&flare->pos, lara.flare_age))
-				flare->data = (void*)(lara.flare_age | 0x8000);
+				flare->data = (void*)size_t((lara.flare_age | (int16_t)0x8000));
 			else
-				flare->data = (void*)(lara.flare_age & 0x7FFF);
+				flare->data = (void*)size_t((lara.flare_age & (int16_t)0x7FFF));
 		}
 		else
 			flare->item_flags[3] = lara.LitTorch;
@@ -511,7 +511,7 @@ void FlareControl(short item_number)
 	yv = flare->fallspeed;
 	flare->pos.y_pos += yv;
 	DoProperDetection(item_number, x, y, z, xv, yv, zv);
-	flare_age = (long)flare->data & 0x7FFF;
+	flare_age = long(size_t(flare->data) & 0x7FFF);
 
 	if (flare_age >= 900)
 	{
@@ -536,5 +536,5 @@ void FlareControl(short item_number)
 		flare_age |= 0x8000;
 	}
 
-	flare->data = (void*)flare_age;
+	flare->data = (void*)(size_t(flare_age) & 0xffffffff);
 }

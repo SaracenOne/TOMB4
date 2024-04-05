@@ -8,7 +8,7 @@
 #define TREPSAVE_BUFFER_SIZE 0x2ff0
 
 void S_TREPLoadgame(long slot_num) {
-	ulong bytes_read = 0;
+	size_t bytes_read = 0;
 
 	char buffer[TREPSAVE_BUFFER_SIZE];
 	memset(buffer, 0x00, TREPSAVE_BUFFER_SIZE);
@@ -53,7 +53,7 @@ void S_TREPLoadgame(long slot_num) {
 }
 
 void S_TREPSavegame(long slot_num) {
-	ulong bytes_written = 0;
+	size_t bytes_written = 0;
 
 	char buffer[TREPSAVE_BUFFER_SIZE];
 	memset(buffer, 0x00, TREPSAVE_BUFFER_SIZE);

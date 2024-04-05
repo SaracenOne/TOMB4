@@ -54,7 +54,7 @@
 #include "../tomb4/tomb4plus/t4plus_objects.h"
 #include "../tomb4/tomb4plus/t4plus_environment.h"
 
-uint32_t vanilla_item_malloc_offset = 0;
+size_t vanilla_item_malloc_offset = 0;
 
 ITEM_INFO* items;
 ANIM_STRUCT* anims;

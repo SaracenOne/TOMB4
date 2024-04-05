@@ -544,10 +544,10 @@ void SetCornerAnim(ITEM_INFO* item, COLL_INFO* coll, short rot, short flip)
 				item->current_anim_state = AS_HANG;
 			}
 
-			coll->old.x = lara.CornerX;
-			item->pos.x_pos = lara.CornerX;
-			coll->old.z = lara.CornerZ;
-			item->pos.z_pos = lara.CornerZ;
+			coll->old.x = long(size_t(lara.CornerX) & 0xffffffff);
+			item->pos.x_pos = long(size_t(lara.CornerX) & 0xffffffff);
+			coll->old.z = long(size_t(lara.CornerZ) & 0xffffffff);
+			item->pos.z_pos = long(size_t(lara.CornerZ) & 0xffffffff);
 			item->pos.y_rot += rot;
 		}
 	}
@@ -568,12 +568,10 @@ void SetCornerAnim(ITEM_INFO* item, COLL_INFO* coll, short rot, short flip)
 
 long CanLaraHangSideways(ITEM_INFO* item, COLL_INFO* coll, short angle)
 {
-	long oldx, oldz, x, z, res;
-
-	oldx = item->pos.x_pos;
-	oldz = item->pos.z_pos;
-	x = item->pos.x_pos;
-	z = item->pos.z_pos;
+	long oldx = item->pos.x_pos;
+	long oldz = item->pos.z_pos;
+	long x = item->pos.x_pos;
+	long z = item->pos.z_pos;
 	lara.move_angle = angle + item->pos.y_rot;
 
 	switch (ushort(lara.move_angle + 0x2000) / 0x4000)
@@ -598,7 +596,7 @@ long CanLaraHangSideways(ITEM_INFO* item, COLL_INFO* coll, short angle)
 	item->pos.x_pos = x;
 	item->pos.z_pos = z;
 	coll->old.y = item->pos.y_pos;
-	res = LaraHangTest(item, coll);
+	bool res = LaraHangTest(item, coll);
 	item->pos.x_pos = oldx;
 	item->pos.z_pos = oldz;
 	lara.move_angle = angle + item->pos.y_rot;
@@ -4916,8 +4914,8 @@ long LaraHangRightCornerTest(ITEM_INFO* item, COLL_INFO* coll)
 	item->pos.x_pos = x;
 	item->pos.z_pos = z;
 	item->pos.y_rot += 0x4000;
-	lara.CornerX = x;
-	lara.CornerZ = z;
+	lara.CornerX = (void*)(size_t(x) & 0xffffffff);
+	lara.CornerX = (void*)(size_t(z) & 0xffffffff);
 	flag = -IsValidHangPos(item, coll);
 
 	if (flag)
@@ -4967,8 +4965,8 @@ long LaraHangRightCornerTest(ITEM_INFO* item, COLL_INFO* coll)
 		item->pos.x_pos = x;
 		item->pos.z_pos = z;
 		item->pos.y_rot -= 0x4000;
-		lara.CornerX = x;
-		lara.CornerZ = z;
+		lara.CornerX = (void*)(size_t(x) & 0xffffffff);
+		lara.CornerZ = (void*)(size_t(z) & 0xffffffff);
 		flag = IsValidHangPos(item, coll);
 
 		if (flag)
@@ -5069,8 +5067,8 @@ long LaraHangLeftCornerTest(ITEM_INFO* item, COLL_INFO* coll)
 	item->pos.x_pos = x;
 	item->pos.z_pos = z;
 	item->pos.y_rot -= 0x4000;
-	lara.CornerX = x;
-	lara.CornerZ = z;
+	lara.CornerX = (void*)(size_t(x) & 0xffffffff);
+	lara.CornerZ = (void*)(size_t(z) & 0xffffffff);
 	flag = -IsValidHangPos(item, coll);
 
 	if (flag)
@@ -5120,8 +5118,8 @@ long LaraHangLeftCornerTest(ITEM_INFO* item, COLL_INFO* coll)
 		item->pos.x_pos = x;
 		item->pos.z_pos = z;
 		item->pos.y_rot += 0x4000;
-		lara.CornerX = x;
-		lara.CornerZ = z;
+		lara.CornerX = (void*)(size_t(x) & 0xffffffff);
+		lara.CornerZ = (void*)(size_t(z) & 0xffffffff);
 		flag = IsValidHangPos(item, coll);
 
 		if (flag)
@@ -5809,7 +5807,7 @@ void SnapLaraToEdgeOfBlock(ITEM_INFO* item, COLL_INFO* coll, short angle)
 	}
 }
 
-long LaraHangTest(ITEM_INFO* item, COLL_INFO* coll)
+bool LaraHangTest(ITEM_INFO* item, COLL_INFO* coll)
 {
 	short* bounds;
 	long x, z, oldfloor, hdif, flag;
@@ -5875,7 +5873,7 @@ long LaraHangTest(ITEM_INFO* item, COLL_INFO* coll)
 					item->goal_anim_state = AS_HANG;
 				}
 
-				return 1;
+				return true;
 			}
 
 			if (item->anim_number == ANIM_GRABLEDGE && item->frame_number == anims[ANIM_GRABLEDGE].frame_base + 21 && LaraTestClimbStance(item, coll))
@@ -5968,7 +5966,7 @@ long LaraHangTest(ITEM_INFO* item, COLL_INFO* coll)
 				item->goal_anim_state = AS_HANG;
 			}
 
-			return 1;
+			return true;
 		}
 	}
 	else
@@ -5987,5 +5985,5 @@ long LaraHangTest(ITEM_INFO* item, COLL_INFO* coll)
 		lara.gun_status = LG_NO_ARMS;
 	}
 
-	return 0;
+	return false;
 }

@@ -357,7 +357,7 @@ void NGSetupBugfixCustomization(int current_level, unsigned short bug_fix_flags)
 	}
 }
 
-int NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLES *tables, int current_level, int world_far_view) {
+size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLES *tables, int current_level, int world_far_view) {
 	memset(tables->level_global_triggers_table, 0x00, sizeof(NG_GLOBAL_TRIGGER_RECORD) * MAX_NG_GLOBAL_TRIGGERS);
 	memset(tables->level_trigger_group_table, 0x00, sizeof(NG_TRIGGER_GROUP_RECORD) * MAX_NG_TRIGGER_GROUPS);
 	memset(tables->level_organizer_table, 0x00, sizeof(NG_ORGANIZER_RECORD) * MAX_NG_ORGANIZERS);
@@ -426,24 +426,60 @@ int NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLES *
 		case 0x01: {
 			// AssignSlot
 			unsigned int plugin_id = 0;
-			unsigned short slot_a = NG_READ_16(gfScriptFile, offset);
-			unsigned short slot_b = 0;
+			unsigned short dest_slot = NG_READ_16(gfScriptFile, offset);
+			unsigned short src_slot = 0;
 			if (!is_mod_trng_version_equal_or_greater_than_target(1, 3, 0, 0)) {
-				slot_b = NG_READ_16(gfScriptFile, offset);
+				src_slot = NG_READ_16(gfScriptFile, offset);
 			} else {
-				slot_b = NG_READ_16(gfScriptFile, offset);
+				src_slot = NG_READ_16(gfScriptFile, offset);
 				plugin_id = NG_READ_16(gfScriptFile, offset);
 			}
 #
 			if (plugin_id != 0) {
 				char* plugin_string = NGGetPluginString(plugin_id);
 				if (plugin_string) {
-					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Plugin (%s) AssignSlot(%u, %u) commands are not currently supported (level %u)", plugin_string, slot_a, slot_b, current_level);
+					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Plugin (%s) AssignSlot(%u, %u) commands are not currently supported (level %u)", plugin_string, dest_slot, src_slot, current_level);
 				} else {
-					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Plugin (%u) AssignSlot(%u, %u) are not currently supported (level %u)", plugin_id, slot_a, slot_b, current_level);
+					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Plugin (%u) AssignSlot(%u, %u) are not currently supported (level %u)", plugin_id, dest_slot, src_slot, current_level);
 				}
 			} else {
-				assign_slot_for_level(current_level, slot_a, slot_b);
+				switch (src_slot) {
+					case 1:
+						game_mod_config.level_info[current_level].objects_info.rubber_boat_slot = dest_slot;
+						assign_slot_for_level(current_level, dest_slot, RUBBER_BOAT);
+						break;
+					case 2:
+						game_mod_config.level_info[current_level].objects_info.motor_boat_slot = dest_slot;
+						assign_slot_for_level(current_level, dest_slot, MOTOR_BOAT);
+						break;
+					case 5:
+						game_mod_config.level_info[current_level].objects_info.rubber_boat_extra_slot = dest_slot;
+						//assign_slot_for_level(current_level, dest_slot, RUBBER_BOAT_LARA);
+						break;
+					case 6:
+						game_mod_config.level_info[current_level].objects_info.motor_boat_extra_slot = dest_slot;
+						//assign_slot_for_level(current_level, dest_slot, MOTOR_BOAT_LARA);
+						break;
+					case 501:
+						game_mod_config.level_info[current_level].objects_info.rubber_boat_slot = dest_slot;
+						assign_slot_for_level(current_level, dest_slot, RUBBER_BOAT);
+						break;
+					case 502:
+						game_mod_config.level_info[current_level].objects_info.motor_boat_slot = dest_slot;
+						assign_slot_for_level(current_level, dest_slot, MOTOR_BOAT);
+						break;
+					case 505:
+						game_mod_config.level_info[current_level].objects_info.rubber_boat_extra_slot = dest_slot;
+						//assign_slot_for_level(current_level, dest_slot, RUBBER_BOAT_LARA);
+						break;
+					case 506:
+						game_mod_config.level_info[current_level].objects_info.motor_boat_extra_slot = dest_slot;
+						//assign_slot_for_level(current_level, dest_slot, MOTOR_BOAT_LARA);
+						break;
+					default:
+						assign_slot_for_level(current_level, dest_slot, src_slot);
+						break;
+				}
 			}
 
 			break;

@@ -651,7 +651,7 @@ void RubbleFX(ITEM_INFO* item)
 
 	if (eq)
 	{
-		AddActiveItem(eq - items);
+		AddActiveItem(short(eq - items));
 		eq->status = ITEM_ACTIVE;
 		eq->flags |= IFL_CODEBITS;
 	}

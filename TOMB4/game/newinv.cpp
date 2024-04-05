@@ -323,12 +323,15 @@ long GLOBAL_inventoryitemchosen = NO_ITEM;
 long GLOBAL_lastinvitem = NO_ITEM;
 long InventoryActive = 0;
 
-static RINGME* rings[2];
+static RINGME* rings[RING_COUNT];
 static RINGME pcring1;
 static RINGME pcring2;
 
-static AMMOLIST ammo_object_list[3];
-static MENUTHANG current_options[3];
+#define MAX_AMMO_LIST_SIZE 3
+#define MAX_MENU_OPTIONS 3
+
+static AMMOLIST ammo_object_list[MAX_AMMO_LIST_SIZE];
+static MENUTHANG current_options[MAX_MENU_OPTIONS];
 
 static long compass_settle_thang;
 static short examine_mode = 0;
@@ -1181,12 +1184,18 @@ void handle_object_changeover(long ringnum)
 			ammo_object_list[num].invitem = INV_CROSSBOW_AMMO1_ITEM;
 			ammo_object_list[num].amount = AmountCrossBowAmmo1;
 			num++;
+			if (num >= MAX_AMMO_LIST_SIZE)
+				num = MAX_AMMO_LIST_SIZE - 1;
 			ammo_object_list[num].invitem = INV_CROSSBOW_AMMO2_ITEM;
 			ammo_object_list[num].amount = AmountCrossBowAmmo2;
 			num++;
+			if (num >= MAX_AMMO_LIST_SIZE)
+				num = MAX_AMMO_LIST_SIZE - 1;
 			ammo_object_list[num].invitem = INV_CROSSBOW_AMMO3_ITEM;
 			ammo_object_list[num].amount = AmountCrossBowAmmo3;
 			num++;
+			if (num >= MAX_AMMO_LIST_SIZE)
+				num = MAX_AMMO_LIST_SIZE - 1;
 			num_ammo_slots = num;
 		}
 
@@ -1196,12 +1205,18 @@ void handle_object_changeover(long ringnum)
 			ammo_object_list[num].invitem = INV_GRENADEGUN_AMMO1_ITEM;
 			ammo_object_list[num].amount = AmountGrenadeAmmo1;
 			num++;
+			if (num >= MAX_AMMO_LIST_SIZE)
+				num = MAX_AMMO_LIST_SIZE - 1;
 			ammo_object_list[num].invitem = INV_GRENADEGUN_AMMO2_ITEM;
 			ammo_object_list[num].amount = AmountGrenadeAmmo2;
 			num++;
+			if (num >= MAX_AMMO_LIST_SIZE)
+				num = MAX_AMMO_LIST_SIZE - 1;
 			ammo_object_list[num].invitem = INV_GRENADEGUN_AMMO3_ITEM;
 			ammo_object_list[num].amount = AmountGrenadeAmmo3;
 			num++;
+			if (num >= MAX_AMMO_LIST_SIZE)
+				num = MAX_AMMO_LIST_SIZE - 1;
 			num_ammo_slots = num;
 		}
 
@@ -1211,9 +1226,13 @@ void handle_object_changeover(long ringnum)
 			ammo_object_list[num].invitem = INV_SHOTGUN_AMMO1_ITEM;
 			ammo_object_list[num].amount = AmountShotGunAmmo1;
 			num++;
+			if (num >= MAX_AMMO_LIST_SIZE)
+				num = MAX_AMMO_LIST_SIZE - 1;
 			ammo_object_list[num].invitem = INV_SHOTGUN_AMMO2_ITEM;
 			ammo_object_list[num].amount = AmountShotGunAmmo2;
 			num++;
+			if (num >= MAX_AMMO_LIST_SIZE)
+				num = MAX_AMMO_LIST_SIZE - 1;
 			num_ammo_slots = num;
 		}
 	}
@@ -2430,6 +2449,11 @@ void handle_inventry_menu()
 			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 		}
 
+		if (current_selected_option < 0)
+			current_selected_option = 0;
+		if (current_selected_option >= MAX_MENU_OPTIONS)
+			current_selected_option = MAX_MENU_OPTIONS - 1;
+
 		if (ammo_active)
 		{
 			if (go_left && current_selected_option > 0)
@@ -2443,6 +2467,11 @@ void handle_inventry_menu()
 				current_selected_option++;
 				SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 			}
+
+			if (current_selected_option < 0)
+				current_selected_option = 0;
+			if (current_selected_option >= MAX_MENU_OPTIONS)
+				current_selected_option = MAX_MENU_OPTIONS - 1;
 
 			*current_ammo_type = current_selected_option;
 		}

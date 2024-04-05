@@ -793,7 +793,7 @@ bool lara_attract_lara_in_direction_on_ground_and_in_air_with_speed(unsigned cha
 
 // NGLE - 159
 bool distance_set_level_far_view_distance_to_x_number_of_sectors(unsigned char sectors, unsigned char _unused) {
-	ClipRange = (float)sectors * 1024.0;
+	ClipRange = (float)sectors * 1024.0f;
 
 	return true;
 }

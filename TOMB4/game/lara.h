@@ -168,7 +168,7 @@ long LaraTestClimbStance(ITEM_INFO* item, COLL_INFO* coll);
 long TestWall(ITEM_INFO* item, long front, long right, long down);
 void LaraCollideStop(ITEM_INFO* item, COLL_INFO* coll);
 void SnapLaraToEdgeOfBlock(ITEM_INFO* item, COLL_INFO* coll, short angle);
-long LaraHangTest(ITEM_INFO* item, COLL_INFO* coll);
+bool LaraHangTest(ITEM_INFO* item, COLL_INFO* coll);
 
 extern void (*lara_control_routines[])(ITEM_INFO* item, COLL_INFO* coll);
 extern void (*lara_collision_routines[])(ITEM_INFO* item, COLL_INFO* coll);

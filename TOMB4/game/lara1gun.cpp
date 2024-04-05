@@ -56,7 +56,7 @@ void DoGrenadeDamageOnBaddie(ITEM_INFO* baddie, ITEM_INFO* item)
 					savegame.Level.Kills++;
 
 					if (baddie->object_number != BABOON_NORMAL && baddie->object_number != BABOON_INV && baddie->object_number != BABOON_SILENT)
-						CreatureDie(baddie - items, 1);
+						CreatureDie(short(baddie - items), 1);
 				}
 			}
 		}
@@ -626,7 +626,7 @@ void CrossbowHitSwitchType78(ITEM_INFO* item, ITEM_INFO* target, long MustHitLas
 			if (target->object_number == SWITCH_TYPE7)
 				ExplodeItemNode(target, objects[SWITCH_TYPE7].nmeshes - 1, 0, 64);
 
-			AddActiveItem(target - items);
+			AddActiveItem(short(target - items));
 			target->flags |= IFL_CODEBITS | IFL_SWITCH_ONESHOT;
 			target->status = ITEM_ACTIVE;
 		}
@@ -864,8 +864,8 @@ void ControlCrossbow(short item_number)
 						TriggerShockwave((PHD_VECTOR*)&target->pos, 0x1300030, 96, 0x18806000, 0);
 						target->pos.y_pos += 128;
 						ExplodeItemNode(target, 0, 0, 128);
-						SmashObject(target - items);
-						KillItem(target - items);
+						SmashObject(short(target - items));
+						KillItem(short(target - items));
 					}
 					else if (target->object_number == SWITCH_TYPE7 || target->object_number == SWITCH_TYPE8)
 						CrossbowHitSwitchType78(item, target, 0);
@@ -1177,8 +1177,8 @@ void ControlGrenade(short item_number)
 						TriggerShockwave((PHD_VECTOR*)&target->pos, 0x1300030, 96, 0x18806000, 0);
 						target->pos.y_pos += 128;
 						ExplodeItemNode(target, 0, 0, 128);
-						SmashObject(target - items);
-						KillItem(target - items);
+						SmashObject(short(target - items));
+						KillItem(short(target - items));
 					}
 					else if ((target->object_number == SWITCH_TYPE7 || target->object_number == SWITCH_TYPE8) && !(target->flags & IFL_SWITCH_ONESHOT))
 					{
@@ -1204,7 +1204,7 @@ void ControlGrenade(short item_number)
 						if (target->object_number == SWITCH_TYPE7)
 							ExplodeItemNode(target, objects[SWITCH_TYPE7].nmeshes - 1, 0, 64);
 
-						AddActiveItem(target - items);
+						AddActiveItem(short(target - items));
 						target->status = ITEM_ACTIVE;
 						target->flags |= IFL_SWITCH_ONESHOT | IFL_CODEBITS;
 					}

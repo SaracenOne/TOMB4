@@ -233,7 +233,7 @@ void NGClearCurrentTriggerRoomAndIndex() {
 }
 
 int NGGetPluginIDForFloorData(short *floor_data_ptr) {
-	size_t index = floor_data_ptr - floor_data;
+	int index = int(floor_data_ptr - floor_data);
 	if (ng_floor_id_table) {
 		if (index < ng_floor_id_size) {
 			int plugin_id = ng_floor_id_table[index];
@@ -307,12 +307,12 @@ extern bool NGCheckActionFloorStatePressedThisFrameOrLastFrame(bool is_heavy_tri
 			return true;
 	} else {
 		for (int i = 0; i < ng_heavy_current_action_floor_trigger_count; i++) {
-			ng_heavy_current_action_floor_trigger[i] == index;
-			return true;
+			if (ng_heavy_current_action_floor_trigger[i] == index)
+				return true;
 		}
 		for (int i = 0; i < ng_heavy_last_action_floor_trigger_count; i++) {
-			ng_heavy_last_action_floor_trigger[i] == index;
-			return true;
+			if (ng_heavy_last_action_floor_trigger[i] == index)
+				return true;
 		}
 	}
 
@@ -1066,13 +1066,13 @@ void NGDrawTimer(int timer, NGTimerPosition timer_position, int timer_time_until
 			// TODO: the scaling of the text is not correct at all
 			switch (timer_position) {
 			case NG_TIMER_POSITION_BOTTOM_CENTER:
-				PrintString(phd_centerx, phd_winymax - font_height * 0.25, 0, format_buffer, FF_CENTER);
+				PrintString(phd_centerx, long(phd_winymax - font_height * 0.25), 0, format_buffer, FF_CENTER);
 				break;
 			case NG_TIMER_POSITION_TOP_CENTER:
 				PrintString(phd_centerx, font_height, 0, format_buffer, FF_CENTER);
 				break;
 			case NG_TIMER_POSITION_CENTER_CENTER:
-				PrintString(phd_centerx, phd_centery - font_height * 0.5, 0, format_buffer, FF_CENTER);
+				PrintString(phd_centerx, long(phd_centery - font_height * 0.5), 0, format_buffer, FF_CENTER);
 				break;
 			case NG_TIMER_POSITION_TOP_LEFT:
 				PrintString(0, font_height, 0, format_buffer, 0);
@@ -1081,14 +1081,14 @@ void NGDrawTimer(int timer, NGTimerPosition timer_position, int timer_time_until
 				PrintString(phd_winxmax, font_height, 0, format_buffer, FF_RJUSTIFY);
 				break;
 			case NG_TIMER_POSITION_BOTTOM_LEFT:
-				PrintString(0, phd_winymax - font_height * 0.25, 0, format_buffer, 0);
+				PrintString(0, long(phd_winymax - font_height * 0.25), 0, format_buffer, 0);
 				break;
 			case NG_TIMER_POSITION_BOTTOM_RIGHT:
-				PrintString(phd_winxmax, phd_winymax - font_height * 0.25, 0, format_buffer, FF_RJUSTIFY);
+				PrintString(phd_winxmax, long(phd_winymax - font_height * 0.25), 0, format_buffer, FF_RJUSTIFY);
 				break;
 			case NG_TIMER_POSITION_DOWN_DAMAGE_BAR:
 			case NG_TIMER_POSITION_DOWN_COLD_BAR:
-				PrintString(phd_centerx, phd_winymax - font_height * 0.25, 0, format_buffer, FF_CENTER);
+				PrintString(phd_centerx, long(phd_winymax - font_height * 0.25), 0, format_buffer, FF_CENTER);
 				break;
 			case NG_TIMER_POSITION_DOWN_LEFT_BARS:
 				PrintString(0, font_height, 0, format_buffer, 0);
@@ -1142,7 +1142,7 @@ void NGDrawPhase() {
 					sprintf(format_buffer, "%d", items[timer_tracker].timer);
 					break;
 			}
-			PrintString(phd_centerx, (long)phd_winymax - font_height * 0.25, 0, format_buffer, FF_CENTER);
+			PrintString(phd_centerx, long(phd_winymax - font_height * 0.25), 0, format_buffer, FF_CENTER);
 		}
 	}
 

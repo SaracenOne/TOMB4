@@ -70,7 +70,8 @@ extern long InventoryActive;
 enum ring_types
 {
 	RING_INVENTORY,
-	RING_AMMO
+	RING_AMMO,
+	RING_COUNT
 };
 
 enum option_types
