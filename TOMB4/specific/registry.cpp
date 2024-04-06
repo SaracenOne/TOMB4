@@ -461,7 +461,7 @@ bool SaveSetup(HWND hDlg)
 #else
 	REG_WriteLong((char*)"DD", SendMessage(GetDlgItem(hDlg, 1000), CB_GETCURSEL, 0, 0));
 	REG_WriteLong((char*)"D3D", SendMessage(GetDlgItem(hDlg, 1003), CB_GETCURSEL, 0, 0) + 1); // Tomb4Plus: +1 due to us skipping the software emulation device.
-	REG_WriteLong((char*)"VMode", vmode_id);
+	REG_WriteLong((char*)"VMode", video_mode_id);
 #endif
 	REG_WriteLong((char*)"DS", ulong(SendMessage(GetDlgItem(hDlg, 1005), CB_GETCURSEL, 0, 0)));
 	REG_WriteLong((char*)"TFormat", ulong(SendMessage(GetDlgItem(hDlg, 1006), CB_GETCURSEL, 0, 0)));

@@ -986,7 +986,7 @@ long S_UpdateInput()
 
 	debounce = SetDebounce;
 #ifdef USE_SDL
-	keymap = DXReadKeyboard(keymap);
+	keymap = SDLReadKeyboard(keymap);
 	if (!keymap) {
 		return 0;
 	}

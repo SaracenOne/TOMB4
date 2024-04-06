@@ -69,7 +69,7 @@ int keymap_count = 256;
 char keymap[256];
 #endif
 
-#ifndef USE_SDL
+#ifndef USE_BGFX
 void DXBitMask2ShiftCnt(ulong mask, uchar* shift, uchar* count)
 {
 	uchar i;
@@ -87,7 +87,7 @@ void DXBitMask2ShiftCnt(ulong mask, uchar* shift, uchar* count)
 #endif
 
 #ifdef USE_SDL
-const Uint8 *DXReadKeyboard(const Uint8* KeyMap)
+const Uint8 *SDLReadKeyboard(const Uint8* KeyMap)
 {
 	SDL_PumpEvents();
 
@@ -626,6 +626,7 @@ void DXMove(long x, long y)
 		SetRect(&G_dxptr->rScreen, x, y, x + G_dxptr->dwRenderWidth, y + G_dxptr->dwRenderHeight);
 }
 
+#ifndef USE_SDL
 void DXInitKeyboard(HWND hwnd, HINSTANCE hinstance)
 {
 	IDirectInput* dinput;
@@ -659,6 +660,7 @@ void DXInitKeyboard(HWND hwnd, HINSTANCE hinstance)
 
 	memset(keymap, 0, sizeof(keymap));
 }
+#endif
 
 #if 0
 void DXSaveScreen(LPDIRECTDRAWSURFACEX surf, const char* name)

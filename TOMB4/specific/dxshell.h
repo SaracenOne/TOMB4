@@ -3,7 +3,7 @@
 
 void DXBitMask2ShiftCnt(ulong mask, uchar* shift, uchar* count);
 #ifdef USE_SDL
-const Uint8 *DXReadKeyboard(const Uint8* KeyMap);
+const Uint8 *SDLReadKeyboard(const Uint8* KeyMap);
 #else
 void DXReadKeyboard(char* KeyMap);
 #endif
