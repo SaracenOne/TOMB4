@@ -403,6 +403,8 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 
 	NGLog(NG_LOG_TYPE_PRINT, "NGReadNGGameflowInfo: === Parsing Level %u ===", current_level);
 
+	short far_view = -1;
+
 	// Do the commands
 	while (1) {
 		size_t data_block_start_start_position = offset;
@@ -505,12 +507,14 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 		}
 		case 0x03: {
 			// LevelFarView
-			unsigned short far_view = NG_READ_16(gfScriptFile, offset);
+			far_view = NG_READ_16(gfScriptFile, offset);
 
-			if (far_view > world_far_view)
-				far_view = world_far_view;
+			if (far_view != -1) {
+				if (far_view > world_far_view)
+					far_view = world_far_view;
 
-			get_game_mod_level_environment_info(current_level)->far_view = (unsigned int)far_view * 1024;
+				get_game_mod_level_environment_info(current_level)->far_view = (unsigned int)far_view * 1024;
+			}
 			break;
 		}
 		case 0x04: {
@@ -519,19 +523,21 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 			short fog_start = NG_READ_16(gfScriptFile, offset);
 			short fog_end = NG_READ_16(gfScriptFile, offset);
 
-			if (fog_start < 0) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "FogRange: negative fog range values currently unsupported!");
+			if (fog_start != -1) {
+				get_game_mod_level_environment_info(current_level)->fog_start_range = fog_start * 1024;
 			} else {
-				if (fog_start > 0) {
-					get_game_mod_level_environment_info(current_level)->fog_start_range = (unsigned int)fog_start * 1024;
-				}
+				get_game_mod_level_environment_info(current_level)->fog_start_range = 12 * 1024;
 			}
 
-			if (fog_end < 0) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "FogRange: negative fog range values currently unsupported!");
+			if (fog_end != -1) {
+				get_game_mod_level_environment_info(current_level)->fog_end_range = fog_end * 1024;
 			} else {
-				if (fog_end > 0) {
-					get_game_mod_level_environment_info(current_level)->fog_end_range = (unsigned int)fog_end * 1024;
+				if (far_view != -1) {
+					get_game_mod_level_environment_info(current_level)->fog_end_range = far_view * 1024;
+				} else {
+					if (world_far_view != -1) {
+						get_game_mod_level_environment_info(current_level)->fog_end_range = world_far_view * 1024;
+					}
 				}
 			}
 			break;
