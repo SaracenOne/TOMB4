@@ -143,10 +143,12 @@ bool NGExecuteSingleGlobalTrigger(int global_trigger_id, int selected_inventory_
 		}
 	} else {
 		switch (global_trigger->type) {
-		case GT_SELECTED_INVENTORY_ITEM:
-			if (selected_inventory_object_id == global_trigger->parameter)
-				global_trigger_condition_passed = true;
-			break;
+			case GT_SELECTED_INVENTORY_ITEM:
+				if (selected_inventory_object_id == global_trigger->parameter)
+					global_trigger_condition_passed = true;
+				break;
+			default:
+				return false;
 		}
 	}
 
