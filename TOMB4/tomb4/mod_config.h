@@ -32,9 +32,9 @@ struct MOD_GLOBAL_PLUGIN {
 };
 
 struct MOD_LEVEL_ENVIRONMENT_INFO {
-	unsigned int fog_start_range = DEFAULT_FOG_START_VALUE;
-	unsigned int fog_end_range = DEFAULT_FOG_END_VALUE;
-	unsigned int far_view = DEFAULT_FAR_VIEW_VALUE;
+	int fog_start_range = DEFAULT_FOG_START_VALUE;
+	int fog_end_range = DEFAULT_FOG_END_VALUE;
+	int far_view = DEFAULT_FAR_VIEW_VALUE;
 	bool force_train_fog = false;
 	bool disable_distance_limit = false;
 	bool enable_multi_color_fog_bulbs = false;
@@ -223,6 +223,11 @@ struct MOD_LEVEL_AUDIO_INFO {
 	short bike_moving_sfx_id = SFX_BIKE_MOVING;
 	short jeep_idle_sfx_id = SFX_JEEP_IDLE;
 	short jeep_moving_sfx_id = SFX_JEEP_MOVE;
+
+	short motorboat_idle_sfx_id = 308;
+	short motorboat_moving_sfx_id = 307;
+	short rubber_boat_idle_sfx_id = 308;
+	short rubber_boat_moving_sfx_id = 307;
 };
 
 struct MOD_LEVEL_RECT_COLOR_INFO {

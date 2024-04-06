@@ -42,8 +42,8 @@ THREAD LevelLoadingThread;
 TEXTURESTRUCT* AnimatingWaterfalls[3];
 long AnimatingWaterfallsV[3];
 
-size_t num_meshes = 0;
-size_t num_anims = 0;
+int32_t num_meshes = 0;
+int32_t num_anims = 0;
 
 CHANGE_STRUCT* changes;
 RANGE_STRUCT* ranges;
@@ -447,8 +447,9 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 	char* pData;
 	char* pComp;
 	char* s;
-	long format, skip, compressedSize, nTex, c;
-	uint32_t size;
+	long format, skip, nTex, c;
+	size_t compressedSize = 0;
+	size_t size = 0;
 	uchar r, g, b, a;
 
 	Log(2, "LoadTextures");
@@ -471,8 +472,9 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 
 	if (format <= 1)
 	{
-		fread(&size, 1, 4, level_fp);
-		fread(&compressedSize, 1, 4, level_fp);
+		compressedSize = size = 0;
+		fread(&size, sizeof(uint32_t), 1, level_fp);
+		fread(&compressedSize, sizeof(uint32_t), 1, level_fp);
 
 		CompressedData = (char*)SYSTEM_MALLOC(compressedSize);
 		if (!CompressedData) {
@@ -486,26 +488,29 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 		}
 
 		fread(CompressedData, compressedSize, 1, level_fp);
-		Decompress(FileData, CompressedData, compressedSize, size);
+		Decompress(FileData, CompressedData, uint32_t(compressedSize), uint32_t(size));
 
-		fread(&size, 1, 4, level_fp);
-		fread(&compressedSize, 1, 4, level_fp);
-		fseek(level_fp, compressedSize, SEEK_CUR);
+		compressedSize = size = 0;
+		fread(&size, sizeof(uint32_t), 1, level_fp);
+		fread(&compressedSize, sizeof(uint32_t), 1, level_fp);
+		fseek(level_fp, uint32_t(compressedSize), SEEK_CUR);
 		SYSTEM_FREE(CompressedData);
 	}
 	else
 	{
-		fread(&size, 1, 4, level_fp);
-		fread(&compressedSize, 1, 4, level_fp);
-		fseek(level_fp, compressedSize, SEEK_CUR);
+		compressedSize = size = 0;
+		fread(&size, sizeof(uint32_t), 1, level_fp);
+		fread(&compressedSize, sizeof(uint32_t), 1, level_fp);
+		fseek(level_fp, uint32_t(compressedSize), SEEK_CUR);
 
-		fread(&size, 1, 4, level_fp);
-		fread(&compressedSize, 1, 4, level_fp);
+		compressedSize = size = 0;
+		fread(&size, sizeof(uint32_t), 1, level_fp);
+		fread(&compressedSize, sizeof(uint32_t), 1, level_fp);
 
 		CompressedData = (char*)SYSTEM_MALLOC(compressedSize);
 		FileData = (char*)SYSTEM_MALLOC(size);
 		fread(CompressedData, compressedSize, 1, level_fp);
-		Decompress(FileData, CompressedData, compressedSize, size);
+		Decompress(FileData, CompressedData, uint32_t(compressedSize), uint32_t(size));
 		SYSTEM_FREE(CompressedData);
 	}
 
@@ -622,12 +627,14 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 
 	SYSTEM_FREE(pData);
 
-	fread(&size, 1, 4, level_fp);
-	fread(&compressedSize, 1, 4, level_fp);
+	compressedSize = size = 0;
+	fread(&size, sizeof(uint32_t), 1, level_fp);
+	fread(&compressedSize, sizeof(uint32_t), 1, level_fp);
+
 	CompressedData = (char*)SYSTEM_MALLOC(compressedSize);
 	FileData = (char*)SYSTEM_MALLOC(size);
 	fread(CompressedData, compressedSize, 1, level_fp);
-	Decompress(FileData, CompressedData, compressedSize, size);
+	Decompress(FileData, CompressedData, uint32_t(compressedSize), uint32_t(size));
 	SYSTEM_FREE(CompressedData);
 
 	pData = FileData;
@@ -650,11 +657,11 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 			logo_pak_path = "data\\uklogo.pak";
 
 		size = LoadFile(logo_pak_path, &CompressedData);
-		if (size == 0) {
+		if (size == 0 || size >= UINT32_MAX) {
 			logo_pak_path = "data\\uklogo.pak";
 			// Fallback to uklogo.pak if the corresponding logo failed to load.
 			size = LoadFile(logo_pak_path, &CompressedData);
-			if (size == 0)
+			if (size == 0 || size >= UINT32_MAX)
 			{
 				platform_fatal_error("Failed to load %s", logo_pak_path);
 				return false;
@@ -662,7 +669,7 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 		}
 
 		pComp = (char*)SYSTEM_MALLOC(*(long*)CompressedData);
-		Decompress(pComp, CompressedData + 4, size - 4, *(long*)CompressedData);
+		Decompress(pComp, CompressedData + 4, uint32_t((size - 4) & 0xffffffff), *(long*)CompressedData);
 		SYSTEM_FREE(CompressedData);
 
 		for (int i = 0; i < 2; i++)
@@ -989,7 +996,7 @@ bool LoadObjects()
 	size_t remaining_struct_size = sizeof(ANIM_STRUCT) - sizeof(size_t);
 
 	for (int i = 0; i < num_anims; i++) {
-		anims[i].frame_ptr = (short *)(*(uint32_t*)FileData);
+		anims[i].frame_ptr = (short *)size_t(*(uint32_t*)FileData);
 		FileData += sizeof(uint32_t);
 
 		void *offset_ptr = &anims[i].interpolation;
@@ -1065,8 +1072,7 @@ bool LoadObjects()
 		obj->bone_index = *(long*)FileData;
 		FileData += sizeof(long);
 
-		uint32_t frame_base = *(uint32_t*)FileData;
-		obj->frame_base = (short*)frame_base;
+		obj->frame_base = (short*)(*(size_t*)FileData);
 		FileData += sizeof(uint32_t);
 
 		obj->anim_index = *(short*)FileData;
@@ -1484,7 +1490,7 @@ struct  T4PLUS_WAV_FORMAT {
 
 bool LoadSamples()
 {
-	uint32_t num_samples, uncomp_size, comp_size;
+	long num_samples, uncomp_size, comp_size;
 	static long num_sample_infos;
 
 	int max_samples = MAX_SAMPLES;

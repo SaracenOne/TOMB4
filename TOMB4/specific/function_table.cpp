@@ -25,9 +25,9 @@ void SetDistanceFogColor(long r, long g, long b)
 	r &= 0xFF;
 	g &= 0xFF;
 	b &= 0xFF;
-	gfDistanceFog.r = r;
-	gfDistanceFog.g = g;
-	gfDistanceFog.b = b;
+	gfDistanceFog.r = char(r & 0xff);
+	gfDistanceFog.g = char(g & 0xff);
+	gfDistanceFog.b = char(b & 0xff);
 	gfDistanceFog.a = 0
 ;
 #ifndef USE_BGFX
@@ -63,9 +63,9 @@ void SetVolumetricFogColor(long r, long g, long b)
 	g &= 0xFF;
 	b &= 0xFF;
 
-	gfVolumetricFog.r = r;
-	gfVolumetricFog.g = g;
-	gfVolumetricFog.b = b;
+	gfVolumetricFog.r = char(r & 0xff);
+	gfVolumetricFog.g = char(g & 0xff);
+	gfVolumetricFog.b = char(b & 0xff);
 	gfVolumetricFog.a = 0;
 #ifndef USE_BGFX
 	if (IsVolumetric()) {

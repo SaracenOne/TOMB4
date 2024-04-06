@@ -140,7 +140,7 @@ void SetupLight(PCLIGHT* light, ITEM_INFO* item, bool point_lights_affect_ambien
 		if (point_lights_affect_ambience && point->rad < 1)
 		{
 			// T4Plus: this form of ambience calculation may be more accurate to the original.
-			float ambience = (light->Outer - sqrt(light->Range)) / light->Outer;
+			float ambience = float((light->Outer - sqrt(light->Range)) / light->Outer);
 
 			r = CLRR(*ambient) + long(ambience * point->r);
 			g = CLRG(*ambient) + long(ambience * point->g);

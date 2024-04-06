@@ -494,19 +494,19 @@ void TriggerFXFogBulb(long x, long y, long z, long FXRad, long density, long r, 
 	NumFXFogBulbs++;
 }
 
-long IsVolumetric()
+bool IsVolumetric()
 {
-	if (t4_override_fog_mode == T4_FOG_DEFAULT)
-	{
-		return App.Volumetric;
-	}
-	else if (t4_override_fog_mode == T4_FOG_FORCE_VOLUMETRIC)
+	if (t4_override_fog_mode == T4_FOG_FORCE_VOLUMETRIC)
 	{
 		return true;
 	}
 	else if (t4_override_fog_mode == T4_FOG_FORCE_DISTANT)
 	{
 		return false;
+	}
+	else
+	{
+		return App.Volumetric;
 	}
 }
 
@@ -709,7 +709,7 @@ void OmniFog(GFXTLVERTEX* v, bool multi_colour_fog)
 						{
 							if (multi_colour_fog)
 							{
-								long density = (FogBulb->density >> 4) * (FogBulb->rad / (8192.0f));
+								long density = (long)((FogBulb->density >> 4) * (FogBulb->rad / (8192.0f)));
 
 								val *= FogBulb->inv_sqrad * density;
 								lVal = (long)val;
@@ -718,9 +718,9 @@ void OmniFog(GFXTLVERTEX* v, bool multi_colour_fog)
 								if (fade > 1.0f)
 									fade = 1.0f;
 
-								r = CLRR(v->specular) + (((density - lVal) * FogBulb->r) >> 8) * fade;
-								g = CLRG(v->specular) + (((density - lVal) * FogBulb->g) >> 8) * fade;
-								b = CLRB(v->specular) + (((density - lVal) * FogBulb->b) >> 8) * fade;
+								r = long(CLRR(v->specular) + (((density - lVal) * FogBulb->r) >> 8) * fade);
+								g = long(CLRG(v->specular) + (((density - lVal) * FogBulb->g) >> 8) * fade);
+								b = long(CLRB(v->specular) + (((density - lVal) * FogBulb->b) >> 8) * fade);
 
 								if (r > 255)
 									r = 255;

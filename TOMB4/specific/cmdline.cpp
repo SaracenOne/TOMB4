@@ -17,11 +17,15 @@ char ASCIIToANSITable[7][2] =
 	{'¢', 'ó'}
 };
 
+#ifdef UNICODE
+wchar_t wide_string_temp_buffer[128];
+#endif
+
 bool start_setup = false;
 bool fmvs_disabled = false;
 
-static long nDDDevice = 0;
-static long nD3DDevice = 1;
+static LRESULT nDDDevice = 0;
+static LRESULT nD3DDevice = 1;
 static bool Filter = false;
 static bool VolumetricFx = true;
 static bool BumpMap = false;
@@ -142,7 +146,14 @@ void InitTFormats(HWND dlg, HWND hwnd)
 		a = tex->abpp;
 
 		sprintf(buffer, "%d %s RGBA %d%d%d%d", bpp, GetFixedStringForTextID(TXT_Bit), r, g, b, a);
+
+#ifdef UNICODE
+		wchar_t wide_string[40];
+		MultiByteToWideChar(CP_UTF8, 0, buffer, -1, wide_string, sizeof(wide_string) / sizeof(wchar_t));
+		SendMessage(hwnd, CB_ADDSTRING, 0, (LPARAM)wide_string);
+#else
 		SendMessage(hwnd, CB_ADDSTRING, 0, (LPARAM)buffer);
+#endif
 
 		if (software)
 		{
@@ -318,7 +329,13 @@ void InitResolution(HWND dlg, HWND hwnd, bool resetvms)
 			if (bpp > 8)
 			{
 				sprintf(buffer, "%dx%d %d %s", w, h, bpp, GetFixedStringForTextID(TXT_Bit));
+#ifdef UNICODE
+				wchar_t wide_string[40];
+				MultiByteToWideChar(CP_UTF8, 0, buffer, -1, wide_string, sizeof(wide_string) / sizeof(wchar_t));
+				SendMessage(hwnd, CB_ADDSTRING, 0, (LPARAM)wide_string);
+#else
 				SendMessage(hwnd, CB_ADDSTRING, 0, (LPARAM)buffer);
+#endif
 				SendMessage(hwnd, CB_SETITEMDATA, n, i);
 
 				if (w == 640 && h == 480)
@@ -399,21 +416,37 @@ void InitD3DDevice(HWND dlg, HWND hwnd)
 #ifdef USE_BGFX
 	SendMessage(hwnd, CB_RESETCONTENT, 0, 0);
 	// Tomb4Plus - skip first device (software emulation) since we have no support for it.
+
+#ifdef UNICODE
 	SendMessage(hwnd, CB_ADDSTRING, 0, (LPARAM)L"OpenGL");
+#else
+	SendMessage(hwnd, CB_ADDSTRING, 0, (LPARAM)"OpenGL");
+#endif
+
 	SendMessage(hwnd, CB_SETCURSEL, 0, 0);
 	//
 
 	nD3DDevice = 1;
 	InitResolution(dlg, GetDlgItem(dlg, 1004), 1);
 #else
-	DXDIRECTDRAWINFO* ddraw;
+	if (App.DXInfo.nDDInfo <= 0) {
+		platform_fatal_error("Not DirectDraw infos found.");
+		return;
+	}
+
+	if (nDDDevice >= App.DXInfo.nDDInfo) {
+		nDDDevice = App.DXInfo.nDDInfo - 1;
+	} else if (nDDDevice < 0) {
+		nDDDevice = 0;
+	}
 
 	SendMessage(hwnd, CB_RESETCONTENT, 0, 0);
-	ddraw = &App.DXInfo.DDInfo[nDDDevice];
+	DXDIRECTDRAWINFO *ddraw = &App.DXInfo.DDInfo[nDDDevice];
 
 	// Tomb4Plus - skip first device (software emulation) since we have no support for it.
-	for (int i = 1; i < ddraw->nD3DDevices; i++)
+	for (int i = 1; i < ddraw->nD3DDevices; i++) {
 		SendMessage(hwnd, CB_ADDSTRING, 0, (LPARAM)ddraw->D3DDevices[i].About);
+	}
 	SendMessage(hwnd, CB_SETCURSEL, 0, 0);
 	//
 
@@ -425,10 +458,14 @@ void InitD3DDevice(HWND dlg, HWND hwnd)
 void InitDDDevice(HWND dlg, HWND hwnd)
 {
 #ifdef USE_BGFX
-	char buffer[256];
-
 	SendMessage(hwnd, CB_RESETCONTENT, 0, 0);
+
+#ifdef UNICODE
 	SendMessage(hwnd, CB_ADDSTRING, 0, (LPARAM)L"BGFX");
+#else
+	SendMessage(hwnd, CB_ADDSTRING, 0, (LPARAM)"BGFX");
+#endif
+
 	SendMessage(hwnd, CB_SETCURSEL, 0, 0);
 
 	InitD3DDevice(dlg, GetDlgItem(dlg, 1003));
@@ -444,7 +481,14 @@ void InitDDDevice(HWND dlg, HWND hwnd)
 		sprintf(buffer, "%s - %s (%d.%d.%02d.%04d)", id->szDescription, id->szDriver,
 			(id->liDriverVersion.HighPart >> 16) & 0xFFFF, id->liDriverVersion.HighPart & 0xFFFF,
 			(id->liDriverVersion.LowPart >> 16) & 0xFFFF, id->liDriverVersion.LowPart & 0xFFFF);
+		
+#ifdef UNICODE
+		wchar_t wide_string[40];
+		MultiByteToWideChar(CP_UTF8, 0, buffer, -1, wide_string, sizeof(wide_string) / sizeof(wchar_t));
+		SendMessage(hwnd, CB_ADDSTRING, 0, (LPARAM)wide_string);
+#else
 		SendMessage(hwnd, CB_ADDSTRING, 0, (LPARAM)buffer);
+#endif
 	}
 
 	nDDDevice = App.DXInfo.nDDInfo - 1;
@@ -456,23 +500,22 @@ void InitDDDevice(HWND dlg, HWND hwnd)
 LPARAM ConvertToWin32DialogString(char* s)
 {
 #ifdef UNICODE
-	int l = strlen(s);
+	size_t l = strlen(s);
 	if (l >= 128) {
 		platform_fatal_error("ConvertToWin32DialogString: Invalid String Length.");
 	}
-	wchar_t wide_string[128];
-	MultiByteToWideChar(CP_UTF8, 0, s, -1, wide_string, sizeof(wide_string) / sizeof(wchar_t));
+	MultiByteToWideChar(CP_UTF8, 0, s, -1, wide_string_temp_buffer, sizeof(wide_string_temp_buffer) / sizeof(wchar_t));
 
-	return (LPARAM)wide_string;
+	return (LPARAM)wide_string_temp_buffer;
 #else
-	return (LPARM)s;
+	return (LPARAM)s;
 #endif
 }
 
 char* MapASCIIToANSI(char* s, char* d)
 {
 	char* p;
-	long l;
+	size_t l;
 	char c;
 	bool found;
 
@@ -688,7 +731,7 @@ BOOL CALLBACK DXSetupDlgProc(HWND dlg, UINT message, WPARAM wParam, LPARAM lPara
 
 bool DXSetupDialog()
 {
-	long ret;
+	INT_PTR ret;
 
 	ShowCursor(1);
 	ret = DialogBox(App.hInstance, MAKEINTRESOURCE(109), 0, (DLGPROC)DXSetupDlgProc);

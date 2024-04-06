@@ -325,7 +325,10 @@ static void DoBarCustom(
 
 static void S_DrawHealthBar2(long pos)
 {
-	long x, y, w, h;
+	long x = 0;
+	long y = 0;
+	long w = 0;
+	long h = 0;
 
 	w = GetFixedScale(150);
 	h = GetFixedScale(6);
@@ -353,7 +356,10 @@ static void S_DrawHealthBar2(long pos)
 
 static void S_DrawEnemyBar2(long pos)
 {
-	long x, y, w, h;
+	long x = 0;
+	long y = 0;
+	long w = 0;
+	long h = 0;
 
 	w = GetFixedScale(150);
 	h = GetFixedScale(6);
@@ -377,7 +383,10 @@ static void S_DrawEnemyBar2(long pos)
 
 void S_DrawHealthBar(long pos)
 {
-	long x, y, w, h;
+	long x = 0;
+	long y = 0;
+	long w = 0;
+	long h = 0;
 
 	if (!gfCurrentLevel)
 		return;
@@ -432,7 +441,10 @@ void S_DrawHealthBar(long pos)
 
 void S_DrawAirBar(long pos)
 {
-	long x, y, w, h;
+	long x = 0;
+	long y = 0;
+	long w = 0;
+	long h = 0;
 
 	if (!gfCurrentLevel)
 		return;
@@ -480,7 +492,10 @@ void S_DrawAirBar(long pos)
 
 void S_DrawDashBar(long pos)
 {
-	long x, y, w, h;
+	long x = 0;
+	long y = 0;
+	long w = 0;
+	long h = 0;
 
 	if (!gfCurrentLevel)
 		return;
@@ -529,7 +544,10 @@ void S_DrawDashBar(long pos)
 
 void S_DrawEnemyBar(long pos)
 {
-	long x, y, w, h;
+	long x = 0;
+	long y = 0;
+	long w = 0;
+	long h = 0;
 
 	if (BinocularRange)
 	{
@@ -650,7 +668,7 @@ void S_LoadBar()
 			if (tomb4.bar_mode == BAR_MODE_CUSTOM)
 			{
 				MOD_LEVEL_BAR_INFO* bar_info = &get_game_mod_level_bars_info(gfCurrentLevel)->loading_bar;
-				DoBarCustom(x, y, w, h, loadbar_pos, bar_info, 0);
+				DoBarCustom(x, y, w, h, (long)loadbar_pos, bar_info, 0);
 			}
 			else if (tomb4.bar_mode == BAR_MODE_PSX)
 				S_DrawGouraudBar(x, y, w, h, (long)loadbar_pos, &loadBarColourSet, 0);
@@ -669,7 +687,7 @@ void S_LoadBar()
 			if (tomb4.bar_mode == BAR_MODE_CUSTOM)
 			{
 				MOD_LEVEL_BAR_INFO* bar_info = &get_game_mod_level_bars_info(gfCurrentLevel)->loading_bar;
-				DoBarCustom(x, y, w, h, loadbar_pos, bar_info, 0);
+				DoBarCustom(x, y, w, h, (long)loadbar_pos, bar_info, 0);
 			}
 			else if (tomb4.bar_mode == BAR_MODE_PSX)
 				S_DrawGouraudBar(x, y, w, h, (long)loadbar_pos, &loadBarColourSet, 0);

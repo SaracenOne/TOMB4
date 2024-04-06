@@ -34,8 +34,8 @@ bgfx::TextureHandle CreateTexturePage(long w, long h, long MipMapCount, long* pS
 	desc.dwWidth = w;
 	desc.dwHeight = h;
 #endif
-	uint16_t buffer_width = w;
-	uint16_t buffer_height = h;
+	uint16_t buffer_width = uint16_t(w);
+	uint16_t buffer_height = uint16_t(h);
 
 	if (w < 32 || h < 32)
 		MipMapCount = 0;

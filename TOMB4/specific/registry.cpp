@@ -208,7 +208,7 @@ bool REG_ReadString(char* SubKeyName, char* value, long length, char* defaultVal
 	const char* loaded_string = ini.GetValue(current_section, SubKeyName, defaultValue);
 	if (loaded_string) {
 		size_t loaded_str_length = strlen(loaded_string);
-		if (loaded_str_length <= length) {
+		if (loaded_str_length <= size_t(length)) {
 			memcpy(value, loaded_string, loaded_str_length);
 		}
 	}
@@ -438,7 +438,7 @@ bool SaveSetup(HWND hDlg)
 {
 	OpenRegistry("System");
 
-	long vmode_id = SendMessage(GetDlgItem(hDlg, 1004), CB_GETITEMDATA, SendMessage(GetDlgItem(hDlg, 1004), CB_GETCURSEL, 0, 0), 0);
+	LRESULT video_mode_id = SendMessage(GetDlgItem(hDlg, 1004), CB_GETITEMDATA, SendMessage(GetDlgItem(hDlg, 1004), CB_GETCURSEL, 0, 0), 0);
 #ifdef USE_BGFX
 	SDL_DisplayMode mode;
 	int display_mode_count = SDL_GetNumDisplayModes(0);
@@ -449,7 +449,7 @@ bool SaveSetup(HWND hDlg)
 	}
 	else
 	{
-		if (SDL_GetDisplayMode(0, vmode_id, &mode) != 0)
+		if (SDL_GetDisplayMode(0, int(video_mode_id), &mode) != 0)
 		{
 			mode.w = WINDOW_DEFAULT_WIDTH;
 			mode.h = WINDOW_DEFAULT_HEIGHT;
@@ -463,8 +463,8 @@ bool SaveSetup(HWND hDlg)
 	REG_WriteLong((char*)"D3D", SendMessage(GetDlgItem(hDlg, 1003), CB_GETCURSEL, 0, 0) + 1); // Tomb4Plus: +1 due to us skipping the software emulation device.
 	REG_WriteLong((char*)"VMode", vmode_id);
 #endif
-	REG_WriteLong((char*)"DS", SendMessage(GetDlgItem(hDlg, 1005), CB_GETCURSEL, 0, 0));
-	REG_WriteLong((char*)"TFormat", SendMessage(GetDlgItem(hDlg, 1006), CB_GETCURSEL, 0, 0));
+	REG_WriteLong((char*)"DS", ulong(SendMessage(GetDlgItem(hDlg, 1005), CB_GETCURSEL, 0, 0)));
+	REG_WriteLong((char*)"TFormat", ulong(SendMessage(GetDlgItem(hDlg, 1006), CB_GETCURSEL, 0, 0)));
 
 	REG_WriteBool((char*)"Filter", SendMessage(GetDlgItem(hDlg, 1012), BM_GETCHECK, 0, 0));
 	REG_WriteBool((char*)"BumpMap", SendMessage(GetDlgItem(hDlg, 1016), BM_GETCHECK, 0, 0));

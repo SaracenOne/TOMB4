@@ -144,7 +144,7 @@ __forceinline void CalculateVertexSpecular(
 		*cR <<= 1;
 	else
 	{
-		*sR = ((*cR - 128) >> 1) * overbright_value;
+		*sR = (long)((float)((*cR - 128) >> 1) * overbright_value);
 		*cR = 255;
 	}
 
@@ -152,7 +152,7 @@ __forceinline void CalculateVertexSpecular(
 		*cG <<= 1;
 	else
 	{
-		*sG = ((*cG - 128) >> 1) * overbright_value;
+		*sG = (long)((float)((*cG - 128) >> 1) * overbright_value);
 		*cG = 255;
 	}
 
@@ -160,7 +160,7 @@ __forceinline void CalculateVertexSpecular(
 		*cB <<= 1;
 	else
 	{
-		*sB = ((*cB - 128) >> 1) * overbright_value;
+		*sB = (long)((float)((*cB - 128) >> 1) * overbright_value);
 		*cB = 255;
 	}
 }
@@ -693,7 +693,7 @@ void ProcessPickupMeshVertices(MESH_DATA* mesh)
 	short* clip;
 	float zv;
 	float fR, fG, fB, val;
-	long lp, cR, cG, cB, cA, sA, sR, sG, sB;
+	long lp, cR, cG, cB, sR, sG, sB;
 	short clipFlag;
 
 	clip = clipflags;

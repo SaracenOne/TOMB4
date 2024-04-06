@@ -15,7 +15,13 @@ void* AddStruct(void* p, long num, long size);
 long DXDDCreate(LPGUID pGuid, void** pDD4);
 long DXD3DCreate(LPDIRECTDRAWX pDD4, void** pD3D);
 long DXSetCooperativeLevel(LPDIRECTDRAWX pDD4, HWND hwnd, long flags);
+
+#ifdef UNICODE
+BOOL __stdcall DXEnumDirectDraw(GUID FAR* lpGUID, LPWSTR lpDriverDescription, LPWSTR lpDriverName, LPVOID lpContext);
+#else
 BOOL __stdcall DXEnumDirectDraw(GUID FAR* lpGUID, LPSTR lpDriverDescription, LPSTR lpDriverName, LPVOID lpContext);
+#endif
+
 #endif
 #if !defined(MA_AUDIO_SAMPLES) || !defined(MA_AUDIO_ENGINE)
 BOOL __stdcall DXEnumDirectSound(LPGUID lpGuid, LPCSTR lpcstrDescription, LPCSTR lpcstrModule, LPVOID lpContext);
@@ -56,8 +62,8 @@ extern DXINFO* G_dxinfo;
 #ifndef USE_BGFX
 extern LPDIRECTDRAWX G_ddraw;
 extern LPDIRECT3DX G_d3d;
-#endif
 extern HWND G_hwnd;
+#endif
 
 extern int keymap_count;
 #ifdef USE_SDL

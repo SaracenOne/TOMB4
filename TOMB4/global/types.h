@@ -771,8 +771,8 @@ struct LARA_INFO
 	LARA_ARM right_arm;
 	uint16_t holster;
 	CREATURE_INFO* creature;
-	size_t CornerX; // 32/64 bit
-	size_t CornerZ; // 32/64 bit
+	void *CornerX; // 32/64 bit
+	void *CornerZ; // 32/64 bit
 	int8_t RopeSegment;
 	int8_t RopeDirection;
 	int16_t RopeArcFront;
@@ -1592,10 +1592,10 @@ struct DXINFO
 	long nDD;
 	long nD3D;
 #ifdef USE_BGFX
-	long nDisplayMode;
-#else
 	long screenW;
 	long screenH;
+#else
+	long nDisplayMode;
 #endif
 	long nTexture;
 	long nZBuffer;

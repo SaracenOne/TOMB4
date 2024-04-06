@@ -4,6 +4,16 @@
 #include "winmain.h"
 #include "cmdline.h"
 
+#ifdef USE_SDL
+#include <SDL.h>
+#endif
+
+#ifndef USE_BGFX
+#ifdef UNICODE
+#error "Unicode is currently unsupported for DirectX mode."
+#endif
+#endif
+
 #ifndef USE_BGFX
 long DDSCL_FLAGS[11] =	// for DXSetCooperativeLevel logging
 {
@@ -36,19 +46,21 @@ const char* DDSCL_TEXT[11] =
 };
 #endif
 
+#ifndef USE_BGFX
 char tga_header[18] = { 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 64, 1, 0, 1, 16, 0 };
+#endif
 
 DXPTR* G_dxptr;
 DXINFO* G_dxinfo;
 #ifndef USE_BGFX
 LPDIRECTDRAWX G_ddraw;
 LPDIRECT3DX G_d3d;
-#endif
 HWND G_hwnd;
+#endif
+
 #ifdef USE_SDL
 int keymap_count = 0;
 const Uint8 *keymap;
-
 SDL_GameController *controller = nullptr;
 const char* controller_name = nullptr;
 SDL_GameControllerType controller_type = SDL_CONTROLLER_TYPE_UNKNOWN;
@@ -57,6 +69,7 @@ int keymap_count = 256;
 char keymap[256];
 #endif
 
+#ifndef USE_SDL
 void DXBitMask2ShiftCnt(ulong mask, uchar* shift, uchar* count)
 {
 	uchar i;
@@ -71,9 +84,6 @@ void DXBitMask2ShiftCnt(ulong mask, uchar* shift, uchar* count)
 
 	*count = i;
 }
-
-#ifdef USE_SDL
-#include <SDL.h>
 #endif
 
 #ifdef USE_SDL
@@ -204,15 +214,15 @@ BOOL __stdcall DXEnumDirectDraw(GUID FAR* lpGUID, LPWSTR lpDriverDescription, LP
 BOOL __stdcall DXEnumDirectDraw(GUID FAR* lpGUID, LPSTR lpDriverDescription, LPSTR lpDriverName, LPVOID lpContext)
 #endif
 {
-	DXINFO* dxinfo;
 	DXDIRECTDRAWINFO* DDInfo;
 	long nDDInfo;
 
 	Log(2, "DXEnumDirectDraw");
-	dxinfo = (DXINFO*)lpContext;
-	nDDInfo = dxinfo->nDDInfo;
-	dxinfo->DDInfo = (DXDIRECTDRAWINFO*)AddStruct(dxinfo->DDInfo, dxinfo->nDDInfo, sizeof(DXDIRECTDRAWINFO));
-	DDInfo = &dxinfo->DDInfo[nDDInfo];
+	DXINFO* dxInfo = (DXINFO*)lpContext;
+
+	nDDInfo = dxInfo->nDDInfo;
+	dxInfo->DDInfo = (DXDIRECTDRAWINFO*)AddStruct(dxInfo->DDInfo, dxInfo->nDDInfo, sizeof(DXDIRECTDRAWINFO));
+	DDInfo = &dxInfo->DDInfo[nDDInfo];
 
 	if (lpGUID)
 	{
@@ -281,7 +291,7 @@ BOOL __stdcall DXEnumDirectDraw(GUID FAR* lpGUID, LPSTR lpDriverDescription, LPS
 			Log(1, "%s Attempt To Release NULL Ptr", "DirectDraw");
 	}
 
-	dxinfo->nDDInfo++;
+	dxInfo->nDDInfo++;
 	return DDENUMRET_OK;
 }
 #endif
@@ -318,7 +328,9 @@ BOOL __stdcall DXEnumDirectSound(LPGUID lpGuid, LPCSTR lpcstrDescription, LPCSTR
 long DXGetInfo(DXINFO* dxinfo, HWND hwnd)
 {
 	Log(2, "DXInitialise");
+#ifndef USE_BGFX
 	G_hwnd = hwnd;
+#endif
 	Log(5, "Enumerating DirectDraw Devices");
 #ifndef USE_BGFX
 	DXAttempt(DirectDrawEnumerate(DXEnumDirectDraw, dxinfo));
@@ -367,9 +379,7 @@ void DXFreeInfo(DXINFO* dxinfo)
 #endif
 }
 
-#ifdef USE_BGFX
-	// Put BGFX code here...
-#else
+#ifndef USE_BGFX
 HRESULT __stdcall DXEnumDisplayModes(LPDDSURFACEDESCX lpDDSurfaceDesc2, LPVOID lpContext)
 {
 	DXDIRECTDRAWINFO* DDInfo;
@@ -608,11 +618,6 @@ HRESULT DXShowFrame()
 
 	return 1;
 }
-#endif
-
-#ifdef USE_BGFX
-	// Put BGFX code here...
-#else
 void DXMove(long x, long y)
 {
 	Log(2, "DXMove : x %d y %d", x, y);
@@ -620,11 +625,9 @@ void DXMove(long x, long y)
 	if (G_dxptr && !(G_dxptr->Flags & DXF_FULLSCREEN))
 		SetRect(&G_dxptr->rScreen, x, y, x + G_dxptr->dwRenderWidth, y + G_dxptr->dwRenderHeight);
 }
-#endif
 
 void DXInitKeyboard(HWND hwnd, HINSTANCE hinstance)
 {
-#ifndef USE_SDL
 	IDirectInput* dinput;
 	IDirectInputDevice* Keyboard;
 
@@ -655,10 +658,8 @@ void DXInitKeyboard(HWND hwnd, HINSTANCE hinstance)
 	DXAttempt(G_dxptr->Keyboard->Acquire());
 
 	memset(keymap, 0, sizeof(keymap));
-#endif
 }
 
-#ifndef USE_BGFX
 #if 0
 void DXSaveScreen(LPDIRECTDRAWSURFACEX surf, const char* name)
 {
@@ -729,11 +730,9 @@ void DXSaveScreen(LPDIRECTDRAWSURFACEX surf, const char* name)
 	DXAttempt(surf->Unlock(0));
 }
 #endif
-#endif
 
 void DXClose()
 {
-#ifndef USE_BGFX
 	Log(2, "CloseDirectX");
 
 	if (G_dxptr)
@@ -797,8 +796,8 @@ void DXClose()
 				Log(1, "%s Attempt To Release NULL Ptr", "Direct3D");
 		}
 	}
-#endif
 }
+#endif
 
 long DXCreate(long w, long h, long bpp, long Flags, DXPTR* dxptr, HWND hWnd, long WindowStyle)
 {
@@ -824,7 +823,9 @@ long DXCreate(long w, long h, long bpp, long Flags, DXPTR* dxptr, HWND hWnd, lon
 	if (Flags & 64)
 		flag = 1;
 
+#ifndef USE_BGFX
 	DXClose();
+#endif
 
 #ifdef USE_BGFX
 	G_dxptr->dwRenderWidth = w;

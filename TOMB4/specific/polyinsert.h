@@ -13,7 +13,7 @@ void ControlFXBulb(FOGBULB_STRUCT* FogBulb);
 void CreateFXBulbs();
 void ClearFXFogBulbs();
 void TriggerFXFogBulb(long x, long y, long z, long FXRad, long density, long r, long g, long b, long room_number);
-long IsVolumetric();
+bool IsVolumetric();
 int DistCompare(const void* a, const void* b);
 void InitialiseFogBulbs();
 void OmniEffect(GFXTLVERTEX* v);

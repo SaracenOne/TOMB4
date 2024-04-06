@@ -36,8 +36,8 @@ extern THREAD LevelLoadingThread;
 extern TEXTURESTRUCT* AnimatingWaterfalls[3];
 extern long AnimatingWaterfallsV[3];
 
-extern size_t num_meshes;
-extern size_t num_anims;
+extern int32_t num_meshes;
+extern int32_t num_anims;
 
 extern CHANGE_STRUCT* changes;
 extern RANGE_STRUCT* ranges;

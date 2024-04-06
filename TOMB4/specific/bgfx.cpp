@@ -33,12 +33,12 @@ bgfx::UniformHandle u_fogColor;
 bgfx::UniformHandle u_volumetricFogColor;
 bgfx::UniformHandle u_fogParameters;
 
-size_t total_sort_verts_in_current_buffer = 0;
-size_t first_bucket_command_idx = 0;
-size_t last_bucket_command_idx = 0;
-size_t last_sort_command_idx = 0;
-size_t last_sort_vertex_buffer_idx = 0;
-size_t last_sort_vertex_buffer_offset = 0;
+uint32_t total_sort_verts_in_current_buffer = 0;
+uint32_t first_bucket_command_idx = 0;
+uint32_t last_bucket_command_idx = 0;
+uint32_t last_sort_command_idx = 0;
+uint32_t last_sort_vertex_buffer_idx = 0;
+uint32_t last_sort_vertex_buffer_offset = 0;
 
 extern GFXTLBUMPVERTEX *sort_buffer_vertex_buffer = nullptr;
 
@@ -221,7 +221,7 @@ void SetupBGFXOutputPolyList() {
 
     bx::mtxLookAt(view, eye, at);
 
-    bx::mtxOrtho(ortho, 0.0f, App.dx.dwRenderWidth, App.dx.dwRenderHeight, 0.0f, 0.0f, 2.0f, 0.0f, bgfx::getCaps()->homogeneousDepth);
+    bx::mtxOrtho(ortho, 0.0f, (float)App.dx.dwRenderWidth, (float)App.dx.dwRenderHeight, 0.0f, 0.0f, 2.0f, 0.0f, bgfx::getCaps()->homogeneousDepth);
 
     bgfx::setViewTransform(0, view, ortho);
 
@@ -248,14 +248,14 @@ void RenderBGFXDrawLists() {
         }
     };
 
-    for (int i = 0; i < MAX_SORT_BUFFERS; i++) {
+    for (size_t i = 0; i < MAX_SORT_BUFFERS; i++) {
         bgfx::update(sort_buffer_vertex_handle[i], 0, sort_buffer_vertex_buffers_ref[i]);
     }
     
     // Hack to prevent pickup display flickering.
     bool multipass_frame = false;
 
-    for (int i = 0; i < current_draw_commands; i++) {
+    for (size_t i = 0; i < current_draw_commands; i++) {
         if (draw_commands[i].clear_depth_buffer) {
             bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, bgfx_clear_col, 1.0f, 0);
             bgfx::frame();
@@ -479,7 +479,7 @@ void ClearBGFXDrawCommand() {
 void FindBGFXBucket(long tpage, GFXTLBUMPVERTEX** Vpp, long** nVtxpp) {
     TEXTUREBUCKET* bucket;
 
-    for (int i = first_bucket_command_idx; i < last_bucket_command_idx; i++) {
+    for (size_t i = first_bucket_command_idx; i < last_bucket_command_idx; i++) {
         bucket = &Bucket[i];
 
         if (bucket->tpage == tpage && bucket->nVtx < BUCKET_VERT_COUNT - 32) {
@@ -490,7 +490,7 @@ void FindBGFXBucket(long tpage, GFXTLBUMPVERTEX** Vpp, long** nVtxpp) {
         }
     }
 
-    for (int i = last_bucket_command_idx; i < MAX_BUCKETS; i++) {
+    for (uint32_t i = last_bucket_command_idx; i < MAX_BUCKETS; i++) {
         bucket = &Bucket[i];
 
         if (bucket->tpage == -1) {

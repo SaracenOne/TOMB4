@@ -16,10 +16,10 @@ extern float bgfx_fog_color[4];
 extern float bgfx_volumetric_fog_color[4];
 extern float bgfx_fog_parameters[4];
 
-extern size_t total_sort_verts_in_current_buffer;
-extern size_t last_sort_command_idx;
-extern size_t last_sort_vertex_buffer_idx;
-extern size_t last_sort_vertex_buffer_offset;
+extern uint32_t total_sort_verts_in_current_buffer;
+extern uint32_t last_sort_command_idx;
+extern uint32_t last_sort_vertex_buffer_idx;
+extern uint32_t last_sort_vertex_buffer_offset;
 
 extern bgfx::ProgramHandle m_outputVTLTexProgram;
 extern bgfx::ProgramHandle m_outputVTLTexAlphaClippedProgram;
@@ -33,10 +33,10 @@ extern GFXTLBUMPVERTEX* sort_buffer_vertex_buffer;
 extern bgfx::DynamicVertexBufferHandle sort_buffer_vertex_handle[MAX_SORT_BUFFERS];
 
 struct BGFXSortDrawCommand {
-	size_t draw_type = 0;
-	size_t buffer_offset = 0;
-	size_t buffer_id = 0;
-	size_t count = 0;
+	uint32_t draw_type = 0;
+	uint32_t buffer_offset = 0;
+	uint32_t buffer_id = 0;
+	uint32_t count = 0;
 	bgfx::TextureHandle texture;
 };
 

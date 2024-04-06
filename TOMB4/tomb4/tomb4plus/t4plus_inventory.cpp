@@ -17,7 +17,7 @@ void T4PlusSetValidLaraGunType() {
 		if (!lara.pistols_type_carried) {
 			lara.last_gun_type = lara.request_gun_type = lara.gun_type = WEAPON_NONE;
 			if (lara.holster == T4PlusGetLaraHolstersPistolsSlotID()) {
-				lara.holster = T4PlusGetLaraSlotID();
+				lara.holster = T4PlusGetLaraHolstersSlotID();
 			}
 
 			clear_current_weapon = true;
@@ -28,7 +28,7 @@ void T4PlusSetValidLaraGunType() {
 			lara.last_gun_type = lara.request_gun_type = lara.gun_type = WEAPON_NONE;
 			lara.weapon_item = NO_ITEM;
 			if (lara.holster == T4PlusGetLaraHolstersRevolverSlotID()) {
-				lara.holster = T4PlusGetLaraSlotID();
+				lara.holster = T4PlusGetLaraHolstersSlotID();
 			}
 
 			clear_current_weapon = true;
@@ -38,7 +38,7 @@ void T4PlusSetValidLaraGunType() {
 		if (!lara.uzis_type_carried) {
 			lara.last_gun_type = lara.request_gun_type = lara.gun_type = WEAPON_NONE;
 			if (lara.holster == T4PlusGetLaraHolstersUzisSlotID()) {
-				lara.holster = T4PlusGetLaraSlotID();
+				lara.holster = T4PlusGetLaraHolstersSlotID();
 			}
 
 			clear_current_weapon = true;

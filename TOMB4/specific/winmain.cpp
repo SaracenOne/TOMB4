@@ -77,7 +77,7 @@ void SDLProcessCommandLine(int argc, char* argv[])
 	char* pCommand;
 	char* p;
 	char* last;
-	ulong l;
+	size_t l;
 	long num;
 	char parameter[PARAMETER_MAX_LENGTH];
 
@@ -533,6 +533,41 @@ int main(int argc, char* argv[]) {
 	window_height = App.VideoHeight;
 	window_bpp = 32;
 #else
+	int dd_info_count = G_dxinfo->nDDInfo;
+	if (dd_info_count <= 0) {
+		platform_fatal_error("No DirectDraw infos found!");
+	}
+	
+	if (G_dxinfo->nDD >= dd_info_count) {
+		G_dxinfo->nDD = dd_info_count-1;
+	}
+	else if (G_dxinfo->nDD < 0) {
+		G_dxinfo->nDD = 0;
+	}
+
+	int d3d_devices_count = G_dxinfo->DDInfo[G_dxinfo->nDD].nD3DDevices;
+	if (d3d_devices_count <= 0) {
+		platform_fatal_error("No D3DDevices found!");
+	}
+	
+	if (G_dxinfo->nD3D >= d3d_devices_count) {
+		G_dxinfo->nD3D = d3d_devices_count-1;
+	} else if (G_dxinfo->nD3D < 0) {
+		G_dxinfo->nD3D = 0;
+	}
+
+	int display_mode_count_count = G_dxinfo->DDInfo[G_dxinfo->nDD].D3DDevices[G_dxinfo->nD3D].nDisplayModes;
+	if (display_mode_count_count <= 0) {
+		platform_fatal_error("No DisplayModes found!");
+	}
+	
+	if (G_dxinfo->nDisplayMode >= display_mode_count_count) {
+		G_dxinfo->nDisplayMode = d3d_devices_count-1;
+	}
+	else if (G_dxinfo->nDisplayMode < 0) {
+		G_dxinfo->nDisplayMode = 0;
+	}
+
 	DXDISPLAYMODE* dm;
 	dm = &G_dxinfo->DDInfo[G_dxinfo->nDD].D3DDevices[G_dxinfo->nD3D].DisplayModes[G_dxinfo->nDisplayMode];
 	window_width = dm->w;
@@ -578,10 +613,10 @@ int main(int argc, char* argv[]) {
 	buf = 0;
 	size = LoadFile("data\\cutseq.pak", &buf);
 
-	if (size)
+	if (size && size < UINT32_MAX)
 	{
 		cutseqpakPtr = (char*)SYSTEM_MALLOC(*(long*)buf);
-		Decompress(cutseqpakPtr, buf + 4, size - 4, *(long*)buf);
+		Decompress(cutseqpakPtr, buf + 4, uint32_t(size_t(size - 4) & 0xffffffff), *(long*)buf);
 		SYSTEM_FREE(buf);
 	}
 

@@ -453,17 +453,17 @@ void ProcessRoomData(ROOM_INFO* r, bool multi_colour_fog)
 				if (multi_colour_fog)
 					bulb->density = light->Intensity;
 				else
-					bulb->density = (float)light->r;
+					bulb->density = (long)light->r;
 
 				bulb->WorldPos.x = (float)light->x;
 				bulb->WorldPos.y = (float)light->y;
 				bulb->WorldPos.z = (float)light->z;
 				if (multi_colour_fog)
 				{
-					bulb->r = (float)light->r;
-					bulb->g = (float)light->g;
-					bulb->b = (float)light->b;
-					bulb->rad = light->Outer * 1.25;
+					bulb->r = (long)light->r;
+					bulb->g = (long)light->g;
+					bulb->b = (long)light->b;
+					bulb->rad = light->Outer * 1.25f;
 				}
 				else
 				{

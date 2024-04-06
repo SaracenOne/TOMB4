@@ -9,7 +9,7 @@
 #include "../../game/objects.h"
 #include "../../specific/platform.h"
 
-void T4PlusActivateItem(size_t item_id, bool anti) {
+void T4PlusActivateItem(short item_id, bool anti) {
 	ITEM_INFO* item;
 
 	if (item_id >= ITEM_COUNT) {
@@ -50,8 +50,7 @@ void T4PlusActivateItem(size_t item_id, bool anti) {
 			AddActiveItem(item_id);
 			item->status = ITEM_ACTIVE;
 		}
-	}
-	else {
+	} else {
 		if (!anti) {
 			item->flags |= IFL_CODEBITS;
 			return;

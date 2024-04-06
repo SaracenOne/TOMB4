@@ -109,8 +109,8 @@ bool DXChangeOutputFormat(long nSamplesPerSec, bool force)
 void DSChangeVolume(long num, long volume)
 {
 #if defined(MA_AUDIO_SAMPLES) && defined(MA_AUDIO_ENGINE)
-	double miniaudio_volume = (ma_volume_db_to_linear((float)volume / 100.0));
-	miniaudio_volume = ((miniaudio_volume * (10 * (miniaudio_volume * 10))) / 10) * 0.1;
+	float miniaudio_volume = ma_volume_db_to_linear(volume / 100.0f);
+	miniaudio_volume = ((miniaudio_volume * (10.0f * (miniaudio_volume * 10.0f))) / 10.0f) * 0.1f;
 
 	ma_sound_set_volume(&ma_voices[num], miniaudio_volume);
 #else
@@ -165,7 +165,7 @@ void DSAdjustPan(long num, long pan)
 	pan >>= 4;
 
 	ma_sound_set_pan_mode(&ma_voices[num], ma_pan_mode_pan);
-	ma_sound_set_pan(&ma_voices[num], (float)pan / 10000.0);
+	ma_sound_set_pan(&ma_voices[num], float(pan) / 10000.0f);
 #else
 	float matrix[2] = {0.0f, 0.0f};
 
