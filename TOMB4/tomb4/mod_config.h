@@ -437,6 +437,10 @@ struct MOD_LEVEL_MISC_INFO {
 	bool darts_poison_fix = false;
 	bool disable_motorbike_headlights = false;
 	bool always_exit_from_statistics_screen = false;
+	// Fix for a fallthrough bug which will vertically warp Lara to the top of a water room
+	// if she jumps into it from below. Disabled by default here since certain custom levels
+	// depend on this bug to be able to functional correctly.
+	bool fix_vertical_water_warp = false;
 	// TREP
 	bool trep_switch_maker = false;
 	int trep_switch_on_ocb_1_anim = 0;

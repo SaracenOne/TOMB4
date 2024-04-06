@@ -517,7 +517,13 @@ void LaraControl(short item_number)
 					Splash(l);
 				}
 			}
-			break;
+			else
+				break;
+			// OG bug, needed for certain custom levels.
+			if (get_game_mod_level_misc_info(gfCurrentLevel)->fix_vertical_water_warp) {
+				break;
+			}
+			[[fallthrough]];
 		case LW_WADE:
 			camera.target_elevation = -4004;
 
