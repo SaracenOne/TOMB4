@@ -50,6 +50,9 @@ void DrawGameInfo(long timed)
 	short ammo;
 	char buf[80];
 
+	if (camera_frozen)
+		return;
+
 	if (!GLOBAL_playing_cutseq && !bDisableLaraControl && gfGameMode != 1)
 	{
 		flash_state = FlashIt();

@@ -129,6 +129,27 @@ void LaraCheatyBits()
 		gfRequiredStartPos = 0;
 		gfLevelComplete = gfCurrentLevel + 1;
 	}
+
+#ifdef DEBUG
+	if (keymap[convert_tomb_keycode_to_sdl_scancode(T4P_KEY_F7)])
+#else
+	if (
+		keymap[convert_tomb_keycode_to_sdl_scancode(T4P_KEY_F)] &&
+		keymap[convert_tomb_keycode_to_sdl_scancode(T4P_KEY_R)] &&
+		keymap[convert_tomb_keycode_to_sdl_scancode(T4P_KEY_E)] &&
+		keymap[convert_tomb_keycode_to_sdl_scancode(T4P_KEY_Z)])
+#endif
+	{
+		if (!freeze_camera_button_pressed)
+		{
+			camera_frozen = !camera_frozen;
+		}
+		freeze_camera_button_pressed = true;
+	}
+	else
+	{
+		freeze_camera_button_pressed = false;
+	}
 }
 
 void LaraCheat(ITEM_INFO* item, COLL_INFO* coll)

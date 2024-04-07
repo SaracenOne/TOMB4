@@ -13,6 +13,8 @@ void FixedCamera();
 void BinocularCamera(ITEM_INFO* item);
 void CalculateCamera();
 
+extern bool freeze_camera_button_pressed;
+extern bool camera_frozen;
 extern CAMERA_INFO camera;
 
 extern GAME_VECTOR ForcedFixedCamera;

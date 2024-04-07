@@ -423,7 +423,11 @@ long FireWeapon(long weapon_type, ITEM_INFO* target, ITEM_INFO* src, short* angl
 	bum_view.x_rot = short(winfo->shot_accuracy * (GetRandomControl() - 0x4000) / 0x10000 + angles[1]);
 	bum_view.y_rot = short(winfo->shot_accuracy * (GetRandomControl() - 0x4000) / 0x10000 + angles[0]);
 	bum_view.z_rot = 0;
-	phd_GenerateW2V(&bum_view);
+	
+	// TODO: implement this properly!
+	if (!camera_frozen) {
+		phd_GenerateW2V(&bum_view);
+	}
 
 	nSpheres = GetSpheres(target, Slist, 0);
 	best = -1;

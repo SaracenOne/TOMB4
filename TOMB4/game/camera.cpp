@@ -15,6 +15,10 @@
 #include "../tomb4/tomb4.h"
 #include "../tomb4/tomb4plus/t4plus_environment.h"
 
+// T4Plus
+bool freeze_camera_button_pressed = false;
+bool camera_frozen = false;
+
 CAMERA_INFO camera;
 
 GAME_VECTOR ForcedFixedCamera;
@@ -44,6 +48,8 @@ static GAME_VECTOR static_lookcamt;
 
 void InitialiseCamera()
 {
+	camera_frozen = false;
+
 	last_target.x = lara_item->pos.x_pos;
 	camera.target.x = last_target.x;
 	camera.shift = lara_item->pos.y_pos - 1024;
@@ -85,7 +91,11 @@ void MoveCamera(GAME_VECTOR* ideal, long speed)
 		BinocularOn++;
 	}
 
-	if (old_cam.pos.x_rot == lara_item->pos.x_rot && old_cam.pos.y_rot == lara_item->pos.y_rot && old_cam.pos.z_rot == lara_item->pos.z_rot &&
+	// T4Plus
+	bool force_camera_update = false;
+
+	if (!force_camera_update &&
+		old_cam.pos.x_rot == lara_item->pos.x_rot && old_cam.pos.y_rot == lara_item->pos.y_rot && old_cam.pos.z_rot == lara_item->pos.z_rot &&
 		old_cam.pos2.x_rot == lara.head_x_rot && old_cam.pos2.y_rot == lara.head_y_rot && old_cam.pos2.x_pos == lara.torso_x_rot &&
 		old_cam.pos2.y_pos == lara.torso_y_rot && old_cam.pos.x_pos == lara_item->pos.x_pos && old_cam.pos.y_pos == lara_item->pos.y_pos &&
 		old_cam.pos.z_pos == lara_item->pos.z_pos && old_cam.current_anim_state == lara_item->current_anim_state &&
@@ -1330,6 +1340,9 @@ void CalculateCamera()
 	short* bounds;
 	long shift, fixed_camera, y, dx, dz;
 	short gotit, change, tilt;
+
+	if (camera_frozen)
+		return;
 
 	if (BinocularRange)
 	{
