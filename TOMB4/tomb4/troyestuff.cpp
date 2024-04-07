@@ -410,7 +410,7 @@ bool Page1(long& num, long textY, ulong selection)
 	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Show Healthbar in Inventory", 0);
 	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Light Static Objects", 0);
 	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Reverb", 0);
-	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Distance Fog", 0);
+	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Minimum Clip Range", 0);
 	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Bars Scale", 0);
 	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Freeze When Game Unfocused", 0);
 	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Shade Inventory Items", 0);
@@ -440,11 +440,7 @@ bool Page1(long& num, long textY, ulong selection)
 		"off" : tomb4.reverb == REVERB_LARA_ROOM ? "Lara room" : "Camera room");
 	PrintString(phd_centerx + (phd_centerx >> 1), YPOS, CHECK_SEL(6), buffer, 0);
 
-	if (tomb4.distance_fog == 0)
-		sprintf(buffer, "default");
-	else
-		sprintf(buffer, "%i", tomb4.distance_fog);
-
+	sprintf(buffer, "%i", tomb4.minimum_clip_range);
 	PrintString(phd_centerx + (phd_centerx >> 1), YPOS, CHECK_SEL(6), buffer, 0);
 
 	sprintf(buffer, "%.1f", tomb4.GUI_Scale);
@@ -568,10 +564,10 @@ bool Page1(long& num, long textY, ulong selection)
 		if (dbinput & IN_RIGHT)
 		{
 			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
-			tomb4.distance_fog++;
+			tomb4.minimum_clip_range++;
 
-			if (tomb4.distance_fog > 30)
-				tomb4.distance_fog = 30;
+			if (tomb4.minimum_clip_range > 64)
+				tomb4.minimum_clip_range = 64;
 
 			changed = 1;
 		}
@@ -579,8 +575,8 @@ bool Page1(long& num, long textY, ulong selection)
 		if (dbinput & IN_LEFT)
 		{
 			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
-			if (tomb4.distance_fog > 0)
-				tomb4.distance_fog--;
+			if (tomb4.minimum_clip_range > 0)
+				tomb4.minimum_clip_range--;
 
 			changed = 1;
 		}

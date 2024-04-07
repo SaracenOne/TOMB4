@@ -103,9 +103,9 @@ void init_tomb4_stuff()
 		tomb4.reverb = REVERB_LARA_ROOM;					//Lara room
 		REG_WriteLong(buf, tomb4.reverb);
 
-		sprintf(buf, "distance_fog");
-		tomb4.distance_fog = 0;								//default is 0
-		REG_WriteLong(buf, tomb4.distance_fog);
+		sprintf(buf, "minimum_clip_range");
+		tomb4.minimum_clip_range = 0;					//default is 0
+		REG_WriteLong(buf, tomb4.minimum_clip_range);
 
 		sprintf(buf, "UIScale");
 		tomb4.GUI_Scale = 1.0F;								//default is 1.0F
@@ -194,8 +194,8 @@ void init_tomb4_stuff()
 		REG_ReadLong(buf, reverb, REVERB_LARA_ROOM);
 		tomb4.reverb = (reverb_enum)reverb;
 
-		sprintf(buf, "distance_fog");
-		REG_ReadLong(buf, tomb4.distance_fog, 0);
+		sprintf(buf, "minimum_clip_range");
+		REG_ReadLong(buf, tomb4.minimum_clip_range, 0);
 
 		sprintf(buf, "UIScale");
 		REG_ReadFloat(buf, tomb4.GUI_Scale, 1.0F);
@@ -281,8 +281,8 @@ void save_new_tomb4_settings()
 	sprintf(buf, "reverb");
 	REG_WriteLong(buf, tomb4.reverb);
 
-	sprintf(buf, "distance_fog");
-	REG_WriteLong(buf, tomb4.distance_fog);
+	sprintf(buf, "minimum_clip_range");
+	REG_WriteLong(buf, tomb4.minimum_clip_range);
 
 	sprintf(buf, "UIScale");
 	REG_WriteFloat(buf, tomb4.GUI_Scale);

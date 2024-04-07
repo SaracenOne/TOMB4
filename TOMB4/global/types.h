@@ -2680,7 +2680,7 @@ struct tomb4_options	//keep this at the bottom of the file, please
 	bool hpbar_inv;
 	bool static_lighting;
 	reverb_enum reverb;				//1-> off, 2-> Lara room, 3->camera room
-	ulong distance_fog;			//value in blocks
+	ulong minimum_clip_range;	//value in blocks
 	float GUI_Scale;
 	bool hang_game_thread;
 	pickup_lighting_enum pickup_lighting;		// Chronicles-style shading for inventory objects.
