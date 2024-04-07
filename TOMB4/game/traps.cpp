@@ -2226,31 +2226,34 @@ void ControlRollingBall(short item_number)
 	GetHeight(GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number), item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
 	TestTriggers(trigger_data, 1, 0, trigger_index_room, trigger_index_floor);
 
-	// NGLE: can activate regular triggers with this OCB code.
-	if (global_info->trng_rollingball_extended_ocb) {
-		if (item->trigger_flags & 0x02 || item->trigger_flags & 0x10) {
+	// T4Plus: test for either NGLE extended OCB or TREP smash and kill setting.
+	bool always_smash_and_kill = get_game_mod_level_misc_info(gfCurrentLevel)->enable_smashing_and_killing_rolling_balls;
+	if (global_info->trng_rollingball_extended_ocb || always_smash_and_kill) {
+		if (item->trigger_flags & 0x02 || item->trigger_flags & 0x10 || always_smash_and_kill) {
 			short valid_rooms[MAX_ROLLING_BALL_VALID_ROOMS];
 			int valid_room_count = GetRollingBallRooms(item, valid_rooms);
 
 			// Enemy collision
-			if (item->trigger_flags & 0x02) {
+			if (item->trigger_flags & 0x02 || always_smash_and_kill) {
 				RollingBallBaddieCollision(item, valid_rooms, valid_room_count);
 			}
 
 			// Shatter object collision
-			if (item->trigger_flags & 0x10) {
+			if (item->trigger_flags & 0x10 || always_smash_and_kill) {
 				RollingBallCollideStaticObjects(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, 512, valid_rooms, valid_room_count);
 			}
 		}
 
-		// Water Splash (TODO)
-		if (item->trigger_flags & 0x20) {
+		if (global_info->trng_rollingball_extended_ocb) {
+			// Water Splash (TODO)
+			if (item->trigger_flags & 0x20) {
 
-		}
+			}
 
-		// Triggers
-		if (item->trigger_flags & 0x40) {
-			TestTriggers(trigger_data, 0, 0, trigger_index_room, trigger_index_floor);
+			// NGLE: can activate regular triggers with this OCB code.
+			if (item->trigger_flags & 0x40) {
+				TestTriggers(trigger_data, 0, 0, trigger_index_room, trigger_index_floor);
+			}
 		}
 	}
 }

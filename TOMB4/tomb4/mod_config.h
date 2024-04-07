@@ -432,6 +432,7 @@ struct MOD_LEVEL_MISC_INFO {
 	unsigned int legend_timer = 150;
 	bool lara_impales_on_spikes = false;
 	bool enable_ricochet_sound_effect = false;
+	bool enable_smashing_and_killing_rolling_balls = false;
 	bool enable_standing_pushables = false;
 	bool enemy_gun_hit_underwater_sfx_fix = false;
 	bool darts_poison_fix = false;

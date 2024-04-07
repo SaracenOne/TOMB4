@@ -596,6 +596,7 @@ void LoadGameModLevelMiscInfo(const json_t *misc, MOD_LEVEL_MISC_INFO *misc_info
     READ_JSON_UINT32(legend_timer, misc, misc_info);
     READ_JSON_BOOL(lara_impales_on_spikes, misc, misc_info);
     READ_JSON_BOOL(enable_ricochet_sound_effect, misc, misc_info);
+    READ_JSON_BOOL(enable_smashing_and_killing_rolling_balls, misc, misc_info);
     READ_JSON_BOOL(enable_standing_pushables, misc, misc_info);
     READ_JSON_BOOL(enemy_gun_hit_underwater_sfx_fix, misc, misc_info);
     READ_JSON_BOOL(darts_poison_fix, misc, misc_info);
