@@ -76,6 +76,12 @@ void NGPreloadLevelInfo(int current_level, FILE *level_fp) {
 						}
 						if (flags & 0x02) {
 							ng_level_info[current_level].is_using_global_sound_map = true;
+
+							get_game_mod_level_audio_info(current_level)->motorboat_idle_sfx_id = 1053;
+							get_game_mod_level_audio_info(current_level)->motorboat_moving_sfx_id = 1055;
+
+							get_game_mod_level_audio_info(current_level)->rubber_boat_idle_sfx_id = 1423;
+							get_game_mod_level_audio_info(current_level)->rubber_boat_moving_sfx_id = 1425;
 						}
 						break;
 					default: {

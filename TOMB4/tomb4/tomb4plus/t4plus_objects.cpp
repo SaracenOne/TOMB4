@@ -129,17 +129,17 @@ int16_t T4PlusGetTargetGraphicsSlotID() {
 }
 
 int16_t T4PlusGetRubberBoatSlotID() {
-	return -1;
+	return get_game_mod_level_objects_info(gfCurrentLevel)->rubber_boat_slot;
 }
 
 int16_t T4PlusGetMotorBoatSlotID() {
-	return -1;
+	return get_game_mod_level_objects_info(gfCurrentLevel)->motor_boat_slot;
 }
 
 int16_t T4PlusGetRubberBoatExtraSlotID() {
-	return -1;
+	return get_game_mod_level_objects_info(gfCurrentLevel)->rubber_boat_extra_slot;
 }
 
 int16_t T4PlusGetMotorBoatExtraSlotID() {
-	return -1;
+	return get_game_mod_level_objects_info(gfCurrentLevel)->motor_boat_extra_slot;
 }
