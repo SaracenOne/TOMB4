@@ -953,12 +953,12 @@ long CreatureAnimation(short item_number, short angle, short tilt)
 
 		if (wx < oldPos.x >> 10)
 			item->pos.x_pos = oldPos.x & ~0x3FF;
-		else
+		else if (wx > oldPos.x >> 10) // T4Plus: converted from else to else if to better replicate OG behaviour.
 			item->pos.x_pos = oldPos.x | 0x3FF;
 
 		if (wz < oldPos.z >> 10)
 			item->pos.z_pos = oldPos.z & ~0x3FF;
-		else
+		else if (wz > oldPos.z >> 10) // T4Plus: converted from else to else if to better replicate OG behaviour.
 			item->pos.z_pos = oldPos.z | 0x3FF;
 
 		floor = GetFloor(item->pos.x_pos, y, item->pos.z_pos, &room_number);
