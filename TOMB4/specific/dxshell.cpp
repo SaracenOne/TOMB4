@@ -113,7 +113,8 @@ void DXReadKeyboard(char* KeyMap)
 #endif
 }
 
-#ifndef USE_BGFX
+
+#ifdef ENABLE_MINIMUM_DX_FUNCTIONS
 long DXAttempt(HRESULT r)
 {
 	if (SUCCEEDED(r))
@@ -233,14 +234,16 @@ BOOL __stdcall DXEnumDirectDraw(GUID FAR* lpGUID, LPSTR lpDriverDescription, LPS
 		DDInfo->lpGuid = 0;
 
 #ifdef UNICODE
-	lstrcpyW(DDInfo->About, lpDriverDescription);
-	lstrcpyW(DDInfo->Name, lpDriverName);
-	Log(5, "Obtaining Information For %s", lpDriverDescription);
+	wchar_t wide_string[260];
+	MultiByteToWideChar(CP_UTF8, 0, DSInfo->About, -1, wide_string, sizeof(wide_string) / sizeof(wchar_t));
+	lstrcpy(wide_string, lpcstrDescription);
+	MultiByteToWideChar(CP_UTF8, 0, DSInfo->Name, -1, wide_string, sizeof(wide_string) / sizeof(wchar_t));
+	lstrcpy(wide_string, lpDriverName);
 #else
 	strcpy(DDInfo->About, lpDriverDescription);
 	strcpy(DDInfo->Name, lpDriverName);
-	Log(5, "Obtaining Information For %s", lpDriverDescription);
 #endif
+	Log(5, "Obtaining Information For %s", DDInfo->About);
 
 	if (DXDDCreate(lpGUID, (void**)&G_ddraw))
 	{
@@ -297,7 +300,12 @@ BOOL __stdcall DXEnumDirectDraw(GUID FAR* lpGUID, LPSTR lpDriverDescription, LPS
 #endif
 
 #if !defined(MA_AUDIO_SAMPLES) || !defined(MA_AUDIO_ENGINE)
+
+#ifdef UNICODE
+BOOL __stdcall DXEnumDirectSound(LPGUID lpGuid, LPCWSTR lpcstrDescription, LPCWSTR lpcstrModule, LPVOID lpContext)
+#else
 BOOL __stdcall DXEnumDirectSound(LPGUID lpGuid, LPCSTR lpcstrDescription, LPCSTR lpcstrModule, LPVOID lpContext)
+#endif
 {
 	DXINFO* dxinfo;
 	DXDIRECTSOUNDINFO* DSInfo;
@@ -317,9 +325,17 @@ BOOL __stdcall DXEnumDirectSound(LPGUID lpGuid, LPCSTR lpcstrDescription, LPCSTR
 	else
 		DSInfo->lpGuid = 0;
 
+#ifdef UNICODE
+	wchar_t wide_string[260];
+	MultiByteToWideChar(CP_UTF8, 0, DSInfo->About, -1, wide_string, sizeof(wide_string) / sizeof(wchar_t));
+	lstrcpy(wide_string, lpcstrDescription);
+	MultiByteToWideChar(CP_UTF8, 0, DSInfo->Name, -1, wide_string, sizeof(wide_string) / sizeof(wchar_t));
+	lstrcpy(wide_string, lpcstrModule);
+#else
 	lstrcpy(DSInfo->About, lpcstrDescription);
 	lstrcpy(DSInfo->Name, lpcstrModule);
-	Log(5, "Found - %s %s", lpcstrDescription, lpcstrModule);
+#endif
+	Log(5, "Found - %s %s", DSInfo->About, DSInfo->Name);
 	dxinfo->nDSInfo++;
 	return DDENUMRET_OK;
 }
@@ -1196,8 +1212,9 @@ HRESULT __stdcall DXEnumDirect3D(LPGUID lpGuid, LPSTR lpDeviceDescription, LPSTR
 	ddi->nD3DDevices++;
 	return D3DENUMRET_OK;
 }
+#endif
 
-
+#ifdef ENABLE_MINIMUM_DX_FUNCTIONS
 const char* DXGetErrorString(HRESULT hr)
 {
 	switch (hr)

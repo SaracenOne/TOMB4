@@ -7,13 +7,20 @@
 #ifndef PCH_H
 #define PCH_H
 
+#ifndef USE_BGFX
+#define ENABLE_DX_FUNTIONS
+#endif
+#ifndef MA_AUDIO_SAMPLES
+#define ENABLE_MINIMUM_DX_FUNCTIONS
+#endif
+
 // add headers that you want to pre-compile here
 #define DIRECTINPUT_VERSION 0x0800
 #define _USE_MATH_DEFINES
 #define NOMINMAX 
 #include <windows.h>
 #include <windowsx.h>
-#ifndef USE_BGFX
+#ifdef ENABLE_MINIMUM_DX_FUNCTIONS
 #include <d3d.h>
 #include <d3dtypes.h>
 #endif

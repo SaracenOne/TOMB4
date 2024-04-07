@@ -7,7 +7,7 @@ const Uint8 *SDLReadKeyboard(const Uint8* KeyMap);
 #else
 void DXReadKeyboard(char* KeyMap);
 #endif
-#ifndef USE_BGFX
+#ifdef ENABLE_MINIMUM_DX_FUNCTIONS
 long DXAttempt(HRESULT r);
 #endif
 void* AddStruct(void* p, long num, long size);
@@ -23,9 +23,15 @@ BOOL __stdcall DXEnumDirectDraw(GUID FAR* lpGUID, LPSTR lpDriverDescription, LPS
 #endif
 
 #endif
+
 #if !defined(MA_AUDIO_SAMPLES) || !defined(MA_AUDIO_ENGINE)
+#ifdef UNICODE
+BOOL __stdcall DXEnumDirectSound(LPGUID lpGuid, LPCWSTR lpcstrDescription, LPCWSTR lpcstrModule, LPVOID lpContext);
+#else
 BOOL __stdcall DXEnumDirectSound(LPGUID lpGuid, LPCSTR lpcstrDescription, LPCSTR lpcstrModule, LPVOID lpContext);
 #endif
+#endif
+
 long DXGetInfo(DXINFO* dxinfo, HWND hwnd);
 void DXFreeInfo(DXINFO* dxinfo);
 #ifndef USE_BGFX
@@ -53,8 +59,12 @@ long DXCreate(long w, long h, long bpp, long Flags, DXPTR* dxptr, HWND hWnd, lon
 long DXChangeVideoMode();
 long DXToggleFullScreen();
 HRESULT __stdcall DXEnumDirect3D(LPGUID lpGuid, LPSTR lpDeviceDescription, LPSTR lpDeviceName, LPD3DDEVICEDESC lpHWDesc, LPD3DDEVICEDESC lpHELDesc, LPVOID lpContext);
+#endif
+
+#ifdef ENABLE_MINIMUM_DX_FUNCTIONS
 const char* DXGetErrorString(HRESULT hr);
 #endif
+
 void DXInitKeyboard(HWND hwnd, HINSTANCE hinstance);
 
 extern DXPTR* G_dxptr;
