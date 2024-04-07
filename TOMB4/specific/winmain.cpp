@@ -520,7 +520,6 @@ int main(int argc, char* argv[]) {
 
 	fmvs_disabled = 1; // Disable all FMVs for now.
 
-	SetWindowPos(App.hWnd, 0, App.dx.rScreen.left, App.dx.rScreen.top, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 	App.dx.WaitAtBeginScene = 0;
 	App.dx.InScene = 0;
 	App.fmv = 0;
@@ -591,6 +590,7 @@ int main(int argc, char* argv[]) {
 	{
 		rendererWidth = window_width;
 		rendererHeight = window_height;
+		SDL_SetWindowPosition(sdl_window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 	}
 
 	SDL_SetWindowFullscreen(sdl_window, window_flags);
