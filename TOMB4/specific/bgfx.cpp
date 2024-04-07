@@ -239,13 +239,8 @@ void RenderBGFXDrawLists() {
         bgfx_fog_parameters[0] = 12.0F;
         bgfx_fog_parameters[1] = 20.0F;
     } else {
-        if (tomb4.distance_fog > 0) {
-            bgfx_fog_parameters[0] = 255.0F;
-            bgfx_fog_parameters[1] = 256.0F;
-        } else {
-            bgfx_fog_parameters[0] = LevelFogStart / 1024.0f;
-            bgfx_fog_parameters[1] = LevelFogEnd / 1024.0f;
-        }
+        bgfx_fog_parameters[0] = LevelFogStart / 1024.0f;
+        bgfx_fog_parameters[1] = LevelFogEnd / 1024.0f;
     };
 
     for (size_t i = 0; i < MAX_SORT_BUFFERS; i++) {

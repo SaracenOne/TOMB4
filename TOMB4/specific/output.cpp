@@ -191,17 +191,15 @@ void ProcessObjectMeshVertices(MESH_DATA* mesh)
 		DistanceFogEnd = 20.0F * 1024.0F;
 		DistanceClipRange = 1024.0F * 20.0F;
 	} else {
-		if (tomb4.distance_fog > 0) {
-			DistanceFogStart = tomb4.distance_fog * 1024.0F;
-			DistanceFogEnd = -1.0F;
+		float minimum_clip_range = tomb4.minimum_clip_range * 1024.0F;
+		DistanceFogStart = LevelFogStart;
+		DistanceFogEnd = LevelFogEnd;
+		if (environment_info->disable_distance_limit) {
 			DistanceClipRange = -1.0F;
 		} else {
-			DistanceFogStart = LevelFogStart;
-			DistanceFogEnd = LevelFogEnd;
-			if (environment_info->disable_distance_limit) {
-				DistanceClipRange = -1.0F;
-			} else {
-				DistanceClipRange = ClipRange;
+			DistanceClipRange = ClipRange;
+			if (DistanceClipRange < minimum_clip_range) {
+				DistanceClipRange = minimum_clip_range;
 			}
 		}
 	}
@@ -401,18 +399,15 @@ void ProcessStaticMeshVertices(MESH_DATA* mesh)
 		DistanceFogEnd = 20.0F * 1024.0F;
 		DistanceClipRange = 1024.0F * 20.0F;
 	} else {
-		if (tomb4.distance_fog > 0) {
-			DistanceFogStart = tomb4.distance_fog * 1024.0F;
-			DistanceFogEnd = -1.0F;
+		float minimum_clip_range = tomb4.minimum_clip_range * 1024.0F;
+		DistanceFogStart = LevelFogStart;
+		DistanceFogEnd = LevelFogEnd;
+		if (environment_info->disable_distance_limit) {
 			DistanceClipRange = -1.0F;
 		} else {
-			DistanceFogStart = LevelFogStart;
-			DistanceFogEnd = LevelFogEnd;
-			if (environment_info->disable_distance_limit) {
-				DistanceClipRange = -1.0F;
-			}
-			else {
-				DistanceClipRange = ClipRange;
+			DistanceClipRange = ClipRange;
+			if (DistanceClipRange < minimum_clip_range) {
+				DistanceClipRange = minimum_clip_range;
 			}
 		}
 	}
