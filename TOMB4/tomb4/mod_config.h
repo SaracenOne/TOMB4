@@ -59,6 +59,8 @@ struct MOD_LEVEL_CAMERA_INFO {
 	int look_camera_height = 16;
 
 	int camera_speed = 10;
+	int add_on_battle_camera_top = 256;
+	bool disable_battle_camera = false;
 };
 
 enum CREATURE_HIT_TYPE {

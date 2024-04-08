@@ -14,6 +14,9 @@
 #include "savegame.h"
 #include "../tomb4/tomb4.h"
 #include "../tomb4/tomb4plus/t4plus_environment.h"
+#include "../tomb4/mod_config.h"
+#include "../tomb4/mod_config.h"
+#include "gameflow.h"
 
 // T4Plus
 bool freeze_camera_button_pressed = false;
@@ -48,6 +51,8 @@ static GAME_VECTOR static_lookcamt;
 
 void InitialiseCamera()
 {
+	MOD_LEVEL_CAMERA_INFO *mod_camera_info = get_game_mod_level_camera_info(gfCurrentLevel);
+
 	camera_frozen = false;
 
 	last_target.x = lara_item->pos.x_pos;
@@ -63,7 +68,7 @@ void InitialiseCamera()
 	camera.pos.x = last_target.x;
 	camera.pos.z = last_target.z - 100;
 	camera.pos.room_number = lara_item->room_number;
-	camera.target_distance = 1536;
+	camera.target_distance = mod_camera_info->chase_cam_distance;
 	camera.item = 0;
 	camera.number_frames = 1;
 	camera.type = CHASE_CAMERA;
@@ -684,6 +689,8 @@ void CombatCamera(ITEM_INFO* item)
 	long distance, dx, dz, farthest, farthestnum, h, c, wx, wy, wz;
 	short angle, room_number;
 
+	MOD_LEVEL_CAMERA_INFO *mod_camera_info = get_game_mod_level_camera_info(gfCurrentLevel);
+
 	camera.target.x = item->pos.x_pos;
 	camera.target.z = item->pos.z_pos;
 
@@ -697,9 +704,9 @@ void CombatCamera(ITEM_INFO* item)
 		camera.target_angle = lara.head_y_rot + lara.torso_y_rot + item->pos.y_rot;
 
 		if (!tomb4.combat_cam_tilt)
-			camera.target_elevation = lara.torso_x_rot + item->pos.x_rot + lara.head_x_rot - 1820;
+			camera.target_elevation = lara.torso_x_rot + item->pos.x_rot + lara.head_x_rot + mod_camera_info->chase_camera_vertical_orientation;
 		else
-			camera.target_elevation = lara.torso_x_rot + item->pos.x_rot + lara.head_x_rot - 2730;
+			camera.target_elevation = lara.torso_x_rot + item->pos.x_rot + lara.head_x_rot + mod_camera_info->combat_cam_vertical_orientation;
 	}
 
 
@@ -750,11 +757,11 @@ void CombatCamera(ITEM_INFO* item)
 		camera.target.room_number = last_target.room_number;
 	}
 
-	camera.target_distance = 1536;
-	distance = 1536 * phd_cos(camera.target_elevation) >> W2V_SHIFT;
+	camera.target_distance = mod_camera_info->combat_cam_distance;
+	distance = camera.target_distance * phd_cos(camera.target_elevation) >> W2V_SHIFT;
 
 	for (int i = 0; i < 5; i++)
-		ideals[i].y = (1536 * phd_sin(camera.target_elevation) >> W2V_SHIFT) + camera.target.y;
+		ideals[i].y = (camera.target_distance * phd_sin(camera.target_elevation) >> W2V_SHIFT) + camera.target.y;
 
 	farthest = 0x7FFFFFFF;
 	farthestnum = 0;
@@ -850,6 +857,8 @@ void LookCamera(ITEM_INFO* item)
 	long shake, dx, dy, dz, wx, wy, wz, h, c, rndval, lp;
 	short room_number, room_number2, hxrot, txrot, hyrot, tyrot;
 
+	MOD_LEVEL_CAMERA_INFO *mod_camera_info = get_game_mod_level_camera_info(gfCurrentLevel);
+
 	hxrot = lara.head_x_rot;
 	hyrot = lara.head_y_rot;
 	txrot = lara.torso_x_rot;
@@ -870,7 +879,7 @@ void LookCamera(ITEM_INFO* item)
 		lara.head_y_rot = 14560;
 
 	pos1.x = 0;
-	pos1.y = 16;
+	pos1.y = mod_camera_info->look_camera_height;
 	pos1.z = 64;
 	GetLaraJointPos(&pos1, 8);
 	room_number = lara_item->room_number;
@@ -881,7 +890,7 @@ void LookCamera(ITEM_INFO* item)
 	if (h == NO_HEIGHT || c == NO_HEIGHT || c >= h || pos1.y > h || pos1.y < c)
 	{
 		pos1.x = 0;
-		pos1.y = 16;
+		pos1.y = mod_camera_info->look_camera_height;
 		pos1.z = 0;
 		GetLaraJointPos(&pos1, 8);
 
@@ -898,7 +907,7 @@ void LookCamera(ITEM_INFO* item)
 		if (h == NO_HEIGHT || c == NO_HEIGHT || c >= h || pos1.y > h || pos1.y < c)
 		{
 			pos1.x = 0;
-			pos1.y = 16;
+			pos1.y = mod_camera_info->look_camera_height;
 			pos1.z = -64;
 			GetLaraJointPos(&pos1, 8);
 
@@ -915,7 +924,7 @@ void LookCamera(ITEM_INFO* item)
 			if (h == NO_HEIGHT || c == NO_HEIGHT || c >= h || pos1.y > h || pos1.y < c)
 			{
 				pos1.x = 0;
-				pos1.y = 16;
+				pos1.y = mod_camera_info->look_camera_height;
 				pos1.z = -64;
 				GetLaraJointPos(&pos1, 8);
 			}
@@ -924,7 +933,7 @@ void LookCamera(ITEM_INFO* item)
 
 	pos2.x = 0;
 	pos2.y = 0;
-	pos2.z = -1024;
+	pos2.z = mod_camera_info->look_camera_distance;
 	GetLaraJointPos(&pos2, 8);
 	pos3.x = 0;
 	pos3.y = 0;
@@ -1344,6 +1353,8 @@ void CalculateCamera()
 	if (camera_frozen)
 		return;
 
+	MOD_LEVEL_CAMERA_INFO *mod_camera_info = get_game_mod_level_camera_info(gfCurrentLevel);
+
 	if (BinocularRange)
 	{
 		BinocularOn = 1;
@@ -1486,7 +1497,7 @@ void CalculateCamera()
 	else
 	{
 		if (camera.type != COMBAT_CAMERA || tomb4.combat_cam_tilt)
-			y -= 256;
+			y -= mod_camera_info->add_on_battle_camera_top;
 
 		if (camera.type == COMBAT_CAMERA)
 		{
@@ -1523,13 +1534,13 @@ void CalculateCamera()
 	if (camera.type != HEAVY_CAMERA || camera.timer == -1)
 	{
 		camera.type = CHASE_CAMERA;
-		camera.speed = 10;
+		camera.speed = mod_camera_info->camera_speed;
 		camera.number = -1;
 		camera.last_item = camera.item;
 		camera.item = 0;
 		camera.target_elevation = 0;
 		camera.target_angle = 0;
-		camera.target_distance = 1536;
+		camera.target_distance = mod_camera_info->chase_cam_distance;
 		camera.flags = 0;
 	}
 }

@@ -1293,9 +1293,59 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 					break;
 				}
 				case CUST_CAMERA: {
-					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_CAMERA unimplemented! (level %u)", current_level);
+					short fcam_properties = NG_READ_16(gfScriptFile, offset);
+					short distance_chase_cam = NG_READ_16(gfScriptFile, offset);
+					short v_orient_chase_cam = NG_READ_16(gfScriptFile, offset);
+					short h_orient_chase_cam = NG_READ_16(gfScriptFile, offset);
+					short distance_combat_cam = NG_READ_16(gfScriptFile, offset);
+					short v_orient_combat_cam = NG_READ_16(gfScriptFile, offset);
+					short distance_look_cam = NG_READ_16(gfScriptFile, offset);
+					short height_look_cam = NG_READ_16(gfScriptFile, offset);
+					short speed_camera = NG_READ_16(gfScriptFile, offset);
 
-					offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+					int i = 0;
+					int last = MOD_LEVEL_COUNT;
+
+					if (current_level != 0) {
+						i = current_level;
+						last = current_level + 1;
+					}
+
+					for (i = 0; i < last; i++) {
+						if (fcam_properties != -1) {
+							if (fcam_properties & 0x01) {
+								get_game_mod_level_camera_info(i)->disable_battle_camera = true;
+							}
+							if (fcam_properties & ~0x01) {
+								NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_CAMERA unsupported FCAM_ property! (level %u)", current_level);
+							}
+						}
+						if (distance_chase_cam != -1) {
+							get_game_mod_level_camera_info(i)->chase_cam_distance = distance_chase_cam;
+						}
+						if (v_orient_chase_cam != -1) {
+							get_game_mod_level_camera_info(i)->chase_camera_vertical_orientation = v_orient_chase_cam;
+						}
+						if (h_orient_chase_cam != -1) {
+							NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: h_orient_chase_cam is not supported! (level %u)", current_level);
+						}
+						if (distance_combat_cam != -1) {
+							get_game_mod_level_camera_info(i)->combat_cam_distance = distance_combat_cam;
+						}
+						if (v_orient_combat_cam != -1) {
+							get_game_mod_level_camera_info(i)->combat_cam_vertical_orientation = v_orient_combat_cam;
+						}
+						if (distance_look_cam != -1) {
+							get_game_mod_level_camera_info(i)->look_camera_distance = distance_look_cam;
+						}
+						if (height_look_cam != -1) {
+							get_game_mod_level_camera_info(i)->look_camera_height = height_look_cam;
+						}
+						if (speed_camera != -1) {
+							get_game_mod_level_camera_info(i)->camera_speed = speed_camera;
+						}
+					}
+
 					break;
 				}
 				case CUST_DISABLE_MISSING_SOUNDS: {

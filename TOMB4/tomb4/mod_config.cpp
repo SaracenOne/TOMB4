@@ -471,6 +471,9 @@ void LoadGameModLevelCameraInfo(const json_t* camera, MOD_LEVEL_CAMERA_INFO* cam
     READ_JSON_SINT32(look_camera_height, camera, camera_info);
 
     READ_JSON_SINT32(camera_speed, camera, camera_info);
+    READ_JSON_SINT32(add_on_battle_camera_top, camera, camera_info);
+
+    READ_JSON_BOOL(disable_battle_camera, camera, camera_info);
 }
 
 void LoadGameModLevelLaraInfo(const json_t* level, MOD_LEVEL_LARA_INFO *lara_info) {

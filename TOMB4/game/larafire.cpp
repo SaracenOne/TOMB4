@@ -1210,6 +1210,8 @@ void LaraGun()
 	if (lara.right_arm.flash_gun > 0)
 		lara.right_arm.flash_gun--;
 
+	MOD_LEVEL_CAMERA_INFO *mod_camera_info = get_game_mod_level_camera_info(gfCurrentLevel);
+
 	if (lara.gun_type == WEAPON_TORCH)
 	{
 		DoFlameTorch();
@@ -1340,7 +1342,7 @@ void LaraGun()
 		case WEAPON_REVOLVER:
 		case WEAPON_UZI:
 
-			if (camera.type != CINEMATIC_CAMERA && camera.type != LOOK_CAMERA && camera.type != HEAVY_CAMERA)
+			if (camera.type != CINEMATIC_CAMERA && camera.type != LOOK_CAMERA && camera.type != HEAVY_CAMERA && !mod_camera_info->disable_battle_camera)
 				camera.type = COMBAT_CAMERA;
 
 			draw_pistols(lara.gun_type);
@@ -1350,7 +1352,7 @@ void LaraGun()
 		case WEAPON_GRENADE:
 		case WEAPON_CROSSBOW:
 
-			if (camera.type != CINEMATIC_CAMERA && camera.type != LOOK_CAMERA && camera.type != HEAVY_CAMERA)
+			if (camera.type != CINEMATIC_CAMERA && camera.type != LOOK_CAMERA && camera.type != HEAVY_CAMERA && !mod_camera_info->disable_battle_camera)
 				camera.type = COMBAT_CAMERA;
 
 			draw_shotgun(lara.gun_type);
@@ -1397,7 +1399,7 @@ void LaraGun()
 		else
 			lara.mesh_ptrs[LM_HEAD] = meshes[objects[T4PlusGetLaraSlotID()].mesh_index + LM_HEAD * 2];
 
-		if (camera.type != CINEMATIC_CAMERA && camera.type != LOOK_CAMERA && camera.type != HEAVY_CAMERA)
+		if (camera.type != CINEMATIC_CAMERA && camera.type != LOOK_CAMERA && camera.type != HEAVY_CAMERA && !mod_camera_info->disable_battle_camera)
 			camera.type = COMBAT_CAMERA;
 
 		if (input & IN_ACTION)
