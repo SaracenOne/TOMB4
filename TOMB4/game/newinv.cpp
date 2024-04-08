@@ -1160,7 +1160,7 @@ void handle_object_changeover(long ringnum)
 			current_ammo_type = &CurrentUziAmmoType;
 		}
 
-		if (opts & 0x400)
+		else if (opts & 0x400)
 		{
 			ammo_object_list[0].invitem = INV_PISTOLS_AMMO_ITEM;
 			ammo_object_list[0].amount = -1;
@@ -1169,7 +1169,7 @@ void handle_object_changeover(long ringnum)
 			current_ammo_type = &CurrentPistolsAmmoType;
 		}
 
-		if (opts & 0x800)
+		else if (opts & 0x800)
 		{
 			ammo_object_list[0].invitem = INV_REVOLVER_AMMO_ITEM;
 			ammo_object_list[0].amount = AmountRevolverAmmo;
@@ -1178,61 +1178,45 @@ void handle_object_changeover(long ringnum)
 			current_ammo_type = &CurrentRevolverAmmoType;
 		}
 
-		if (opts & 0x80)
+		else if (opts & 0x80)
 		{
 			current_ammo_type = &CurrentCrossBowAmmoType;
 			ammo_object_list[num].invitem = INV_CROSSBOW_AMMO1_ITEM;
 			ammo_object_list[num].amount = AmountCrossBowAmmo1;
 			num++;
-			if (num >= MAX_AMMO_LIST_SIZE)
-				num = MAX_AMMO_LIST_SIZE - 1;
 			ammo_object_list[num].invitem = INV_CROSSBOW_AMMO2_ITEM;
 			ammo_object_list[num].amount = AmountCrossBowAmmo2;
 			num++;
-			if (num >= MAX_AMMO_LIST_SIZE)
-				num = MAX_AMMO_LIST_SIZE - 1;
 			ammo_object_list[num].invitem = INV_CROSSBOW_AMMO3_ITEM;
 			ammo_object_list[num].amount = AmountCrossBowAmmo3;
 			num++;
-			if (num >= MAX_AMMO_LIST_SIZE)
-				num = MAX_AMMO_LIST_SIZE - 1;
 			num_ammo_slots = num;
 		}
 
-		if (opts & 0x100)
+		else if (opts & 0x100)
 		{
 			current_ammo_type = &CurrentGrenadeGunAmmoType;
 			ammo_object_list[num].invitem = INV_GRENADEGUN_AMMO1_ITEM;
 			ammo_object_list[num].amount = AmountGrenadeAmmo1;
 			num++;
-			if (num >= MAX_AMMO_LIST_SIZE)
-				num = MAX_AMMO_LIST_SIZE - 1;
 			ammo_object_list[num].invitem = INV_GRENADEGUN_AMMO2_ITEM;
 			ammo_object_list[num].amount = AmountGrenadeAmmo2;
 			num++;
-			if (num >= MAX_AMMO_LIST_SIZE)
-				num = MAX_AMMO_LIST_SIZE - 1;
 			ammo_object_list[num].invitem = INV_GRENADEGUN_AMMO3_ITEM;
 			ammo_object_list[num].amount = AmountGrenadeAmmo3;
 			num++;
-			if (num >= MAX_AMMO_LIST_SIZE)
-				num = MAX_AMMO_LIST_SIZE - 1;
 			num_ammo_slots = num;
 		}
 
-		if (opts & 0x40)
+		else if (opts & 0x40)
 		{
 			current_ammo_type = &CurrentShotGunAmmoType;
 			ammo_object_list[num].invitem = INV_SHOTGUN_AMMO1_ITEM;
 			ammo_object_list[num].amount = AmountShotGunAmmo1;
 			num++;
-			if (num >= MAX_AMMO_LIST_SIZE)
-				num = MAX_AMMO_LIST_SIZE - 1;
 			ammo_object_list[num].invitem = INV_SHOTGUN_AMMO2_ITEM;
 			ammo_object_list[num].amount = AmountShotGunAmmo2;
 			num++;
-			if (num >= MAX_AMMO_LIST_SIZE)
-				num = MAX_AMMO_LIST_SIZE - 1;
 			num_ammo_slots = num;
 		}
 	}
