@@ -171,6 +171,8 @@ struct MOD_LEVEL_CREATURE_INFO {
 	bool disable_ahmet_heavy_trigger = false;
 
 	bool remove_mummy_stun_animations = false;
+
+	bool disable_sentry_flame_attack = false;
 };
 
 struct MOD_LEVEL_VAPOR_CUSTOMIZATION {

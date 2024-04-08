@@ -523,6 +523,8 @@ void LoadGameModLevelCreatureInfo(const json_t* creature, MOD_LEVEL_CREATURE_INF
     READ_JSON_BOOL(disable_ahmet_heavy_trigger, creature, creature_info);
 
     READ_JSON_BOOL(remove_mummy_stun_animations, creature, creature_info);
+
+    READ_JSON_BOOL(disable_sentry_flame_attack, creature, creature_info);
 }
 
 void LoadGameModLevelObjectsInfo(const json_t* objects, MOD_LEVEL_OBJECTS_INFO* objects_info) {

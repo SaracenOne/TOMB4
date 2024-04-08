@@ -159,7 +159,7 @@ void AutogunControl(short item_number)
 			{
 				if (!have_i_got_object(PUZZLE_ITEM5) && !item->item_flags[0])
 				{
-					if (info.distance > 0x400000)
+					if (info.distance > 0x400000 || get_game_mod_level_creature_info(gfCurrentLevel)->disable_sentry_flame_attack)
 					{
 						item->item_flags[0] = 2;
 						ShotLara(item, &info, &AGOffsets, autogun->joint_rotation[0], mod_object_customization->damage_1);
