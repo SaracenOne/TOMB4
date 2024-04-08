@@ -527,6 +527,11 @@ void LoadGameModLevelCreatureInfo(const json_t* creature, MOD_LEVEL_CREATURE_INF
     READ_JSON_BOOL(disable_sentry_flame_attack, creature, creature_info);
 }
 
+void LoadGameModLevelGFXInfo(const json_t* gfx, MOD_LEVEL_GFX_INFO *gfx_info) {
+    READ_JSON_SINT16(default_envmap_sprite_index, gfx, gfx_info);
+    READ_JSON_SINT16(pickup_envmap_sprite_index, gfx, gfx_info);
+}
+
 void LoadGameModLevelObjectsInfo(const json_t* objects, MOD_LEVEL_OBJECTS_INFO* objects_info) {
     READ_JSON_SINT16(lara_slot, objects, objects_info);
 
@@ -677,6 +682,11 @@ void LoadGameModLevel(const json_t *level, MOD_LEVEL_INFO *level_info) {
     const json_t* creature_info = json_getProperty(level, "creature_info");
     if (creature_info && JSON_OBJ == json_getType(creature_info)) {
         LoadGameModLevelCreatureInfo(creature_info, &level_info->creature_info);
+    }
+
+    const json_t* gfx_info = json_getProperty(level, "gfx_info");
+    if (gfx_info && JSON_OBJ == json_getType(gfx_info)) {
+        LoadGameModLevelGFXInfo(gfx_info, &level_info->gfx_info);
     }
 
     const json_t* objects_info = json_getProperty(level, "objects_info");

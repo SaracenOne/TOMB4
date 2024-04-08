@@ -180,6 +180,9 @@ struct MOD_LEVEL_VAPOR_CUSTOMIZATION {
 };
 
 struct MOD_LEVEL_GFX_INFO {
+	short default_envmap_sprite_index = 11;
+	short pickup_envmap_sprite_index = 11;
+
 	MOD_LEVEL_VAPOR_CUSTOMIZATION white_smoke_emitter_customization_for_OCB[MAX_VAPOR_OCB_CUSTOMIZATIONS];
 	MOD_LEVEL_VAPOR_CUSTOMIZATION black_smoke_emitter_customization_for_OCB[MAX_VAPOR_OCB_CUSTOMIZATIONS];
 	MOD_LEVEL_VAPOR_CUSTOMIZATION vapor_emitter_customization_for_OCB[MAX_VAPOR_OCB_CUSTOMIZATIONS];

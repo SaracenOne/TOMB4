@@ -861,7 +861,7 @@ void phd_PutPolygons(short* objptr, long clip)
 	if (objptr == meshes[objects[LARA_DOUBLE].mesh_index] || objptr == meshes[objects[LARA_DOUBLE].mesh_index + 2])
 		envmap_sprite = &spriteinfo[objects[T4PlusGetSkyGraphicsSlotID()].mesh_index];
 	else
-		envmap_sprite = &spriteinfo[objects[T4PlusGetDefaultSpritesSlotID()].mesh_index + 11];
+		envmap_sprite = &spriteinfo[objects[T4PlusGetDefaultSpritesSlotID()].mesh_index+ get_game_mod_level_gfx_info(gfCurrentLevel)->pickup_envmap_sprite_index];
 
 	ResetLighting();
 
@@ -1303,7 +1303,7 @@ void phd_PutPolygonsPickup(short* objptr, float x, float y, long color)
 	bWaterEffect = 0;
 	SetD3DViewMatrix();
 	mesh = (MESH_DATA*)objptr;
-	envmap_sprite = &spriteinfo[objects[T4PlusGetDefaultSpritesSlotID()].mesh_index + 11];
+	envmap_sprite = &spriteinfo[objects[T4PlusGetDefaultSpritesSlotID()].mesh_index + get_game_mod_level_gfx_info(gfCurrentLevel)->pickup_envmap_sprite_index];
 
 	ResetLighting();
 	if (tomb4.pickup_lighting == PICKUP_LIGHTING_ON)
