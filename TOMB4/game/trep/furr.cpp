@@ -21,6 +21,69 @@
 char furr_oneshot_buffer[LAST_FURR_FLIPEFFECT];
 FURRFlipeffectTable furr_flipeffect_table[LAST_FURR_FLIPEFFECT - FIRST_FURR_FLIPEFFECT];
 
+int furr_get_state_field(ITEM_INFO *item, int item_state_address_offset) {
+	switch(item_state_address_offset) {
+		case 14: {
+			return item->current_anim_state;
+			break;
+		}
+		case 16: {
+			return item->goal_anim_state;
+			break;
+		}
+		case 18: {
+			return item->required_anim_state;
+			break;
+		}
+		case 20: {
+			return item->anim_number;
+			break;
+		}
+		case 22: {
+			return item->frame_number;
+			break;
+		}
+		case 24: {
+			return item->room_number;
+			break;
+		}
+		case 34: {
+			return item->hit_points;
+			break;
+		}
+		case 64: {
+			return item->pos.x_pos;
+			break;
+		}
+		case 68: {
+			return item->pos.y_pos;
+			break;
+		}
+		case 72: {
+			return item->pos.z_pos;
+			break;
+		}
+		case 76: {
+			return item->pos.x_rot;
+			break;
+		}
+		case 78: {
+			return item->pos.y_rot;
+			break;
+		}
+		case 80: {
+			return item->pos.z_rot;
+			break;
+		}
+		default: {
+			Log(0, "item_state_address_offset %s has not yet been implemented.\n", item_state_address_offset);
+			break;
+		}
+	}
+
+	return 0;
+}
+
 // Params:
 // ID_1
 // ID_2
@@ -1111,7 +1174,11 @@ FURRResult furr_cmd_if_pressed(FURRParameters params) {
 // LARA'S PARAMETER
 // VALUE
 FURRResult furr_cmd_if_lara_equals(FURRParameters params) {
-	return FURR_RESULT_UNIMPLEMENTED;
+	if (furr_get_state_field(lara_item, params.first_parameter) == params.second_parameter) {
+		return FURR_RESULT_OK;
+	}
+
+	return FURR_RESULT_RET;
 }
 //
 
@@ -1119,7 +1186,11 @@ FURRResult furr_cmd_if_lara_equals(FURRParameters params) {
 // LARA'S PARAMETER
 // VALUE
 FURRResult furr_cmd_if_lara_not(FURRParameters params) {
-	return FURR_RESULT_UNIMPLEMENTED;
+	if (furr_get_state_field(lara_item, params.first_parameter) != params.second_parameter) {
+		return FURR_RESULT_OK;
+	}
+
+	return FURR_RESULT_RET;
 }
 //
 
@@ -1127,7 +1198,11 @@ FURRResult furr_cmd_if_lara_not(FURRParameters params) {
 // LARA'S PARAMETER
 // VALUE
 FURRResult furr_cmd_if_lara_greater_than(FURRParameters params) {
-	return FURR_RESULT_UNIMPLEMENTED;
+	if (furr_get_state_field(lara_item, params.first_parameter) > params.second_parameter) {
+		return FURR_RESULT_OK;
+	}
+
+	return FURR_RESULT_RET;
 }
 //
 
@@ -1135,7 +1210,11 @@ FURRResult furr_cmd_if_lara_greater_than(FURRParameters params) {
 // LARA'S PARAMETER
 // VALUE
 FURRResult furr_cmd_if_lara_less_than(FURRParameters params) {
-	return FURR_RESULT_UNIMPLEMENTED;
+	if (furr_get_state_field(lara_item, params.first_parameter) < params.second_parameter) {
+		return FURR_RESULT_OK;
+	}
+
+	return FURR_RESULT_RET;
 }
 //
 
@@ -1143,7 +1222,11 @@ FURRResult furr_cmd_if_lara_less_than(FURRParameters params) {
 // LARA'S PARAMETER
 // VALUE
 FURRResult furr_cmd_if_lara_equal_or_greater_than(FURRParameters params) {
-	return FURR_RESULT_UNIMPLEMENTED;
+	if (furr_get_state_field(lara_item, params.first_parameter) >= params.second_parameter) {
+		return FURR_RESULT_OK;
+	}
+
+	return FURR_RESULT_RET;
 }
 //
 
@@ -1151,7 +1234,11 @@ FURRResult furr_cmd_if_lara_equal_or_greater_than(FURRParameters params) {
 // LARA'S PARAMETER
 // VALUE
 FURRResult furr_cmd_if_lara_equal_or_less_than(FURRParameters params) {
-	return FURR_RESULT_UNIMPLEMENTED;
+	if (furr_get_state_field(lara_item, params.first_parameter) <= params.second_parameter) {
+		return FURR_RESULT_OK;
+	}
+
+	return FURR_RESULT_RET;
 }
 //
 
