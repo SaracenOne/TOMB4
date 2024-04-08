@@ -1107,6 +1107,54 @@ FURRResult furr_cmd_if_pressed(FURRParameters params) {
 }
 //
 
+// Params:
+// LARA'S PARAMETER
+// VALUE
+FURRResult furr_cmd_if_lara_equals(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
+}
+//
+
+// Params:
+// LARA'S PARAMETER
+// VALUE
+FURRResult furr_cmd_if_lara_not(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
+}
+//
+
+// Params:
+// LARA'S PARAMETER
+// VALUE
+FURRResult furr_cmd_if_lara_greater_than(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
+}
+//
+
+// Params:
+// LARA'S PARAMETER
+// VALUE
+FURRResult furr_cmd_if_lara_less_than(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
+}
+//
+
+// Params:
+// LARA'S PARAMETER
+// VALUE
+FURRResult furr_cmd_if_lara_equal_or_greater_than(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
+}
+//
+
+// Params:
+// LARA'S PARAMETER
+// VALUE
+FURRResult furr_cmd_if_lara_equal_or_less_than(FURRParameters params) {
+	return FURR_RESULT_UNIMPLEMENTED;
+}
+//
+
 FURRNameTableEntry furr_name_table[] = {
 	{"ONESHOT", FURR_ONESHOT},
 	{"EQUIP", FURR_EQUIP},
@@ -1236,6 +1284,12 @@ FURRNameTableEntry furr_name_table[] = {
 	{"ENVIRONMENT", FURR_ENVIRONMENT},
 	{"NO_FADEOUT", FURR_NO_FADEOUT},
 	{"IF_PRESSED", FURR_IF_PRESSED},
+	{"IF_LARA=", FURR_IF_LARA_EQUAL},
+	{"IF_LARA!=", FURR_IF_LARA_NOT},
+	{"IF_LARA>", FURR_IF_LARA_GREATER_THAN},
+	{"IF_LARA<", FURR_IF_LARA_LESS_THAN},
+	{"IF_LARA>=", FURR_IF_LARA_EQUAL_OR_GREATER_THAN},
+	{"IF_LARA<=", FURR_IF_LARA_EQUAL_OR_LESS_THAN},
 	{"BYTE_IF_EQL", FURR_BYTE_IF_EQL},
 	{"BYTE_IF_NOT", FURR_BYTE_IF_NOT},
 	{"BYTE_IF_GT", FURR_BYTE_IF_GT},
@@ -1387,6 +1441,13 @@ FURRDataTable furr_data_table[] = {
 	{1, furr_cmd_no_fadeout}, // FURR_NO_FADEOUT,
 
 	{1, furr_cmd_if_pressed }, // FURR_IF_PRESSED,
+
+	{2, furr_cmd_if_lara_equals }, // FURR_IF_LARA_EQUAL,
+	{2, furr_cmd_if_lara_not }, // FURR_IF_LARA_NOT,
+	{2, furr_cmd_if_lara_greater_than }, // FURR_IF_LARA_GREATER_THAN,
+	{2, furr_cmd_if_lara_less_than }, // FURR_IF_LARA_LESS_THAN,
+	{2, furr_cmd_if_lara_equal_or_greater_than }, // FURR_IF_LARA_EQUAL_OR_GREATER_THAN,
+	{2, furr_cmd_if_lara_equal_or_less_than }, // FURR_IF_LARA_EQUAL_OR_LESS_THAN,
 
 	// FURR_BYTE_IF_EQL, // ==
 	// FURR_BYTE_IF_NOT, // !=
