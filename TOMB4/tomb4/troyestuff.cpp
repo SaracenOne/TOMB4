@@ -7,7 +7,7 @@
 #include "../specific/3dmath.h"
 
 #define PAGE0_NUM	14
-#define PAGE1_NUM	11
+#define PAGE1_NUM	12
 #define YPOS	textY + y++ * font_height
 #define CHECK_SEL(c)	selection & (1 << s++) ? 1 : c
 
@@ -414,6 +414,7 @@ bool Page1(long& num, long textY, ulong selection)
 	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Bars Scale", 0);
 	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Freeze When Game Unfocused", 0);
 	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Shade Inventory Items", 0);
+	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Volumetric Flash Grenades", 0);
 
 	y = 2;
 	s = 0;
@@ -462,6 +463,25 @@ bool Page1(long& num, long textY, ulong selection)
 		default:
 			strcpy(buffer, "???");
 			break;
+	}
+	PrintString(phd_centerx + (phd_centerx >> 1), YPOS, CHECK_SEL(6), buffer, 0);
+
+	switch (tomb4.volumetric_flash_grenades) {
+	case VOLUMETRIC_FLASH_GRENADES_DEFAULT:
+		strcpy(buffer, "default");
+		break;
+	case VOLUMETRIC_FLASH_GRENADES_FLASH_ONLY:
+		strcpy(buffer, "flash");
+		break;
+	case VOLUMETRIC_FLASH_GRENADES_VOLUMETRIC_ONLY:
+		strcpy(buffer, "volumetric");
+		break;
+	case VOLUMETRIC_FLASH_GRENADES_VOLUMETRIC_AND_FLASH:
+		strcpy(buffer, "flash+volumetric");
+		break;
+	default:
+		strcpy(buffer, "???");
+		break;
 	}
 	PrintString(phd_centerx + (phd_centerx >> 1), YPOS, CHECK_SEL(6), buffer, 0);
 
@@ -638,6 +658,32 @@ bool Page1(long& num, long textY, ulong selection)
 
 			if (tomb4.pickup_lighting == PICKUP_LIGHTING_NULL)
 				tomb4.pickup_lighting = (pickup_lighting_enum)((int)PICKUP_LIGHTING_ENUM_SIZE - 1);
+
+			changed = 1;
+		}
+
+		break;
+
+	case 1 << 11:
+
+		if (dbinput & IN_RIGHT)
+		{
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+			tomb4.volumetric_flash_grenades = (volumetric_flash_grenades_enum)((int)tomb4.volumetric_flash_grenades + 1);
+
+			if (tomb4.volumetric_flash_grenades >= VOLUMETRIC_FLASH_GRENADES_ENUM_SIZE)
+				tomb4.volumetric_flash_grenades = (volumetric_flash_grenades_enum)((int)VOLUMETRIC_FLASH_GRENADES_NULL + 1);
+
+			changed = 1;
+		}
+
+		if (dbinput & IN_LEFT)
+		{
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+			tomb4.volumetric_flash_grenades = (volumetric_flash_grenades_enum)((int)tomb4.volumetric_flash_grenades - 1);
+
+			if (tomb4.volumetric_flash_grenades == VOLUMETRIC_FLASH_GRENADES_NULL)
+				tomb4.volumetric_flash_grenades = (volumetric_flash_grenades_enum)((int)VOLUMETRIC_FLASH_GRENADES_ENUM_SIZE - 1);
 
 			changed = 1;
 		}

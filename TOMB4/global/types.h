@@ -2657,6 +2657,15 @@ enum pickup_lighting_enum {
 	PICKUP_LIGHTING_ENUM_SIZE
 };
 
+enum volumetric_flash_grenades_enum {
+	VOLUMETRIC_FLASH_GRENADES_NULL,
+	VOLUMETRIC_FLASH_GRENADES_DEFAULT,
+	VOLUMETRIC_FLASH_GRENADES_FLASH_ONLY,
+	VOLUMETRIC_FLASH_GRENADES_VOLUMETRIC_ONLY,
+	VOLUMETRIC_FLASH_GRENADES_VOLUMETRIC_AND_FLASH,
+	VOLUMETRIC_FLASH_GRENADES_ENUM_SIZE
+};
+
 struct tomb4_options	//keep this at the bottom of the file, please
 {
 	bool footprints;
@@ -2684,6 +2693,7 @@ struct tomb4_options	//keep this at the bottom of the file, please
 	float GUI_Scale;
 	bool hang_game_thread;
 	pickup_lighting_enum pickup_lighting;		// Chronicles-style shading for inventory objects.
+	volumetric_flash_grenades_enum volumetric_flash_grenades;
 };
 
 #define VANILLA_ITEM_COUNT 256

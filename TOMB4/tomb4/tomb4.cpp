@@ -118,6 +118,10 @@ void init_tomb4_stuff()
 		sprintf(buf, "pickup_lighting");
 		tomb4.pickup_lighting = PICKUP_LIGHTING_DEFAULT;	// default
 		REG_WriteLong(buf, tomb4.pickup_lighting);
+
+		sprintf(buf, "volumetric_flash_greandes");
+		tomb4.volumetric_flash_grenades = VOLUMETRIC_FLASH_GRENADES_DEFAULT;	// default
+		REG_WriteLong(buf, tomb4.pickup_lighting);
 	}
 	else	//Key already exists, settings already written, read them. also falls back to default if any of them missing
 	{
@@ -207,6 +211,11 @@ void init_tomb4_stuff()
 		sprintf(buf, "pickup_lighting");
 		REG_ReadLong(buf, pickup_lighting, PICKUP_LIGHTING_DEFAULT);
 		tomb4.pickup_lighting = (pickup_lighting_enum)pickup_lighting;
+
+		ulong volumetric_flash_grenades;
+		sprintf(buf, "volumetric_flash_grenades");
+		REG_ReadLong(buf, volumetric_flash_grenades, VOLUMETRIC_FLASH_GRENADES_DEFAULT);
+		tomb4.volumetric_flash_grenades = (volumetric_flash_grenades_enum) volumetric_flash_grenades;
 	}
 
 	CloseRegistry();
@@ -292,6 +301,9 @@ void save_new_tomb4_settings()
 
 	sprintf(buf, "pickup_lighting");
 	REG_WriteLong(buf, tomb4.pickup_lighting);
+
+	sprintf(buf, "volumetric_flash_grenades");
+	REG_WriteLong(buf, tomb4.volumetric_flash_grenades);
 
 	CloseRegistry();
 }

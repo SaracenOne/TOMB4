@@ -36,7 +36,7 @@ OBJECT_VECTOR* sound_effects;
 long GlobalFogOff = 0;
 long number_sound_effects;
 
-long FogTableColor[28] =
+long FogTableColor[FOG_TABLE_SIZE] =
 {
 	0,
 	RGBONLY(245,200,60),

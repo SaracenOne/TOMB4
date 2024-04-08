@@ -25,6 +25,7 @@
 #include "gameflow.h"
 #include "../tomb4/mod_config.h"
 #include "../tomb4/tomb4plus/t4plus_objects.h"
+#include "../tomb4/tomb4.h"
 
 void DoGrenadeDamageOnBaddie(ITEM_INFO* baddie, ITEM_INFO* item)
 {
@@ -992,8 +993,13 @@ void ControlGrenade(short item_number)
 				FlashFadeB = FlashFadeG;
 			}
 
-			if (IsVolumetric())
+			if (IsVolumetric() &&
+				(
+					tomb4.volumetric_flash_grenades == VOLUMETRIC_FLASH_GRENADES_VOLUMETRIC_ONLY
+				))
+			{
 				FlashFader = 0;
+			}
 
 			TriggerFlashSmoke(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number);
 			TriggerFlashSmoke(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number);
@@ -1262,7 +1268,12 @@ void ControlGrenade(short item_number)
 			FlashFadeG = 255;
 			FlashFadeB = 255;
 
-			if (IsVolumetric())
+			if (IsVolumetric() &&
+				(
+					tomb4.volumetric_flash_grenades == VOLUMETRIC_FLASH_GRENADES_DEFAULT ||
+					tomb4.volumetric_flash_grenades == VOLUMETRIC_FLASH_GRENADES_VOLUMETRIC_ONLY ||
+					tomb4.volumetric_flash_grenades == VOLUMETRIC_FLASH_GRENADES_VOLUMETRIC_AND_FLASH
+				))
 			{
 				FlashFader = 0;
 				TriggerFXFogBulb(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, 4096, 255, 255, 255, 255, item->room_number);
