@@ -154,8 +154,8 @@ void InitialiseSlot(short item_number, long slot)
 	{
 	case ENEMY_JEEP:
 	case VON_CROY:
-	case RAGHEAD:
-	case SUPER_RAGHEAD:
+	case BADDY_1:
+	case BADDY_2:
 		creature->LOT.step = 1024;
 		creature->LOT.drop = -1024;
 		creature->LOT.can_jump = 1;
@@ -175,7 +175,7 @@ void InitialiseSlot(short item_number, long slot)
 	case DEMIGOD1:
 	case DEMIGOD2:
 	case DEMIGOD3:
-	case FUCKED_UP_DOG:
+	case DOG:
 		creature->LOT.step = 256;
 		creature->LOT.drop = -512;
 		creature->LOT.zone = BASIC_ZONE;

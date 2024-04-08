@@ -863,7 +863,7 @@ void ControlPlanetEffect(short item_number)
 			pos.z = 0;
 			GetJointAbsPosition(item, &pos, 0);
 
-			item2 = find_a_fucking_item(ANIMATING4);
+			item2 = find_an_item_with_object_type(ANIMATING4);
 			pos2.x = 0;
 			pos2.y = 0;
 			pos2.z = 0;

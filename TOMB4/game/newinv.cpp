@@ -401,10 +401,10 @@ static uchar up_debounce;
 static uchar down_debounce;
 static uchar select_debounce;
 static uchar deselect_debounce;
-static uchar friggrimmer;
-static uchar friggrimmer2;
+static uchar selection_test;
+static uchar deselection_test;
 static char loading_or_saving;
-static char use_the_bitch;
+static bool use_inv_item;
 
 long LoadGame()
 {
@@ -451,7 +451,7 @@ void init_new_inventry()
 	left_repeat = 0;
 	right_repeat = 0;
 	loading_or_saving = 0;
-	use_the_bitch = 0;
+	use_inv_item = false;
 
 	if (lara.num_shotgun_ammo1 == -1)
 		AmountShotGunAmmo1 = -1;
@@ -524,7 +524,7 @@ void init_new_inventry()
 	handle_object_changeover(RING_INVENTORY);
 }
 
-void do_debounced_joystick_poo()
+void debounce_joystick()
 {
 	go_left = 0;
 	go_right = 0;
@@ -593,22 +593,22 @@ void do_debounced_joystick_poo()
 		select_debounce = 1;
 	else
 	{
-		if (select_debounce == 1 && !friggrimmer)
+		if (select_debounce == 1 && !selection_test)
 			go_select = 1;
 
 		select_debounce = 0;
-		friggrimmer = 0;
+		selection_test = 0;
 	}
 
 	if (input & IN_DESELECT)
 		deselect_debounce = 1;
 	else
 	{
-		if (deselect_debounce == 1 && !friggrimmer2)
+		if (deselect_debounce == 1 && !deselection_test)
 			go_deselect = 1;
 
 		deselect_debounce = 0;
-		friggrimmer2 = 0;
+		deselection_test = 0;
 	}
 }
 
@@ -1504,7 +1504,7 @@ void combine_ClockWorkBeetle(long flag)
 	lara.mechanical_scarab = 1;
 }
 
-long do_special_waterskin_combine_bullshit(long flag)
+long do_special_waterskin_combine(long flag)
 {
 	long lp;
 	short small_liters, big_liters, small_capacity, big_capacity;
@@ -1648,12 +1648,10 @@ void draw_compass()
 void do_examine_mode()
 {
 	INVOBJ* objme;
-	static long WANK_RULES_YPOS;
-	static long WANK_SCROL_YPOS;
 	short saved_scale, invitem;
 
-	WANK_RULES_YPOS = font_height;
-	WANK_SCROL_YPOS = font_height * 5;
+	static long RULES_YPOS = font_height;
+	static long SCROLL_YPOS = font_height * 5;
 
 	examine_mode += 8;
 
@@ -1680,8 +1678,8 @@ void do_examine_mode()
 		DrawThreeDeeObject2D(long(((float)phd_centerx / 256) * 256 + inventry_xpos), long(((float)phd_centery / 120 * 256 + inventry_ypos) / 2),
 			INV_EXAMINE2_ITEM, examine_mode, 0, 0, 0, 0, 0);
 		objme->scale1 = saved_scale;
-		PrintString(phd_centerx, WANK_RULES_YPOS, 5, GetFixedStringForTextID(TXT_RULES1), FF_CENTER);
-		PrintString(phd_centerx, WANK_RULES_YPOS + phd_winheight / 2, 5, GetFixedStringForTextID(TXT_RULES2), FF_CENTER);
+		PrintString(phd_centerx, RULES_YPOS, 5, GetFixedStringForTextID(TXT_RULES1), FF_CENTER);
+		PrintString(phd_centerx, RULES_YPOS + phd_winheight / 2, 5, GetFixedStringForTextID(TXT_RULES2), FF_CENTER);
 		break;
 
 	case INV_EXAMINE3_ITEM:
@@ -1690,7 +1688,7 @@ void do_examine_mode()
 		DrawThreeDeeObject2D(long(((float)phd_centerx / 256) * 256 + inventry_xpos), long(((float)phd_centery / 120 * 256 + inventry_ypos) / 2 - 8),
 			INV_EXAMINE3_ITEM, examine_mode, 0x8000, 0x4000, 0x4000, 96, 0);
 		objme->scale1 = saved_scale;
-		PrintString(phd_centerx, WANK_SCROL_YPOS, 8, GetFixedStringForTextID(TXT_PETEPOO), FF_CENTER);
+		PrintString(phd_centerx, SCROLL_YPOS, 8, GetFixedStringForTextID(TXT_PETEPOO), FF_CENTER);
 		break;
 	}
 
@@ -2192,7 +2190,7 @@ void draw_ammo_selector()
 	INVOBJ* objme;
 	long xpos;
 	short yrot;
-	char cunter[256];
+	char buf[256];
 
 	if (!ammo_selector_flag)
 		return;
@@ -2221,12 +2219,12 @@ void draw_ammo_selector()
 		if (i == *current_ammo_type)
 		{
 			if (ammo_object_list[i].amount == -1)
-				sprintf(cunter, GetFixedStringForTextID(TXT_Unlimited_s), GetFixedStringForTextID(objme->objname));
+				sprintf(buf, GetFixedStringForTextID(TXT_Unlimited_s), GetFixedStringForTextID(objme->objname));
 			else
-				sprintf(cunter, "%d x %s", ammo_object_list[i].amount, GetFixedStringForTextID(objme->objname));
+				sprintf(buf, "%d x %s", ammo_object_list[i].amount, GetFixedStringForTextID(objme->objname));
 
 			if (ammo_selector_fade_val)
-				PrintString(phd_centerx, font_height + phd_centery + 2 * font_height - 9, 8, cunter, FF_CENTER);
+				PrintString(phd_centerx, font_height + phd_centery + 2 * font_height - 9, 8, buf, FF_CENTER);
 
 			DrawThreeDeeObject2D(long((float)phd_centerx / 256.0F * 64.0F + inventry_xpos + xpos),
 				long((float)phd_centery / 120.0F * 190.0F + inventry_ypos), ammo_object_list[i].invitem, ammo_selector_fade_val, 0, yrot, 0, 0, 0);
@@ -2259,7 +2257,7 @@ void handle_inventry_menu()
 			if (inv_item >= INV_WATERSKIN1_EMPTY_ITEM && inv_item <= INV_WATERSKIN1_3_ITEM &&	//small one selected
 				ammo_item >= INV_WATERSKIN2_EMPTY_ITEM && ammo_item <= INV_WATERSKIN2_5_ITEM)	//combining with big one
 			{
-				if (do_special_waterskin_combine_bullshit(0))
+				if (do_special_waterskin_combine(0))
 				{
 					combine_type_flag = 2;
 					combine_ring_fade_dir = 2;
@@ -2269,7 +2267,7 @@ void handle_inventry_menu()
 			else if (ammo_item >= INV_WATERSKIN1_EMPTY_ITEM && ammo_item <= INV_WATERSKIN1_3_ITEM &&	//big one selected
 				inv_item >= INV_WATERSKIN2_EMPTY_ITEM && inv_item <= INV_WATERSKIN2_5_ITEM)				//combining with small one
 			{
-				if (do_special_waterskin_combine_bullshit(1))
+				if (do_special_waterskin_combine(1))
 				{
 					combine_type_flag = 2;
 					combine_ring_fade_dir = 2;
@@ -2519,7 +2517,7 @@ void handle_inventry_menu()
 			case 5:
 			case 1:
 				menu_active = 0;
-				use_the_bitch = 1;
+				use_inv_item = true;
 				break;
 			}
 		}
@@ -2925,7 +2923,7 @@ long S_CallInventory2()
 
 	val = 0;
 	oldLaraBusy = lara.Busy;
-	friggrimmer = (input & IN_SELECT) != 0;
+	selection_test = (input & IN_SELECT) != 0;
 	rings[RING_INVENTORY] = &pcring1;
 	rings[RING_AMMO] = &pcring2;
 	CreateMonoScreen();
@@ -2959,7 +2957,7 @@ long S_CallInventory2()
 			return MainThread.ended;
 
 		S_DisplayMonoScreen();
-		do_debounced_joystick_poo();
+		debounce_joystick();
 
 		if (examine_mode)
 			do_examine_mode();
@@ -2976,7 +2974,7 @@ long S_CallInventory2()
 			draw_compass();
 		}
 
-		if (use_the_bitch && !input)
+		if (use_inv_item && !input)
 			val = 1;
 
 		S_OutputPolyList();
@@ -3012,8 +3010,8 @@ long S_CallInventory2()
 					break;
 			}
 
-			friggrimmer2 = 1;
-			friggrimmer = 1;
+			deselection_test = 1;
+			selection_test = 1;
 			deselect_debounce = 0;
 			go_deselect = 0;
 			loading_or_saving = 0;
@@ -3024,7 +3022,7 @@ long S_CallInventory2()
 	GLOBAL_lastinvitem = rings[RING_INVENTORY]->current_object_list[rings[RING_INVENTORY]->curobjinlist].invitem;
 	update_laras_weapons_status();
 
-	if (use_the_bitch)
+	if (use_inv_item)
 		use_current_item();
 
 	FreeMonoScreen();

@@ -672,7 +672,7 @@ void HitTarget(ITEM_INFO* item, GAME_VECTOR* hitpos, long damage, long grenade)
 		{
 		case 1:
 
-			if (item->object_number == SUPER_RAGHEAD && (item->current_anim_state == 8 || GetRandomControl() & 1) &&
+			if (item->object_number == BADDY_2 && (item->current_anim_state == 8 || GetRandomControl() & 1) &&
 				(lara.gun_type == WEAPON_PISTOLS || lara.gun_type == WEAPON_SHOTGUN || lara.gun_type == WEAPON_UZI))
 			{
 				SoundEffect(SFX_BAD_SWORD_RICO, &item->pos, SFX_DEFAULT);

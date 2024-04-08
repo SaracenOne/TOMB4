@@ -647,7 +647,7 @@ void RubbleFX(ITEM_INFO* item)
 {
 	ITEM_INFO* eq;
 
-	eq = find_a_fucking_item(EARTHQUAKE);
+	eq = find_an_item_with_object_type(EARTHQUAKE);
 
 	if (eq)
 	{

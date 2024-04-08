@@ -50,7 +50,7 @@
 #include "missile.h"
 #include "dog.h"
 #include "seth.h"
-#include "raghead.h"
+#include "baddy.h"
 #include "templar.h"
 #include "skeleton.h"
 #include "scorpion.h"
@@ -970,12 +970,12 @@ void BaddyObjects()
 		meshes[obj->mesh_index + 43] = meshes[objects[T4PlusGetMeshSwap2SlotID()].mesh_index + 42];
 	}
 
-	obj = &objects[RAGHEAD];
+	obj = &objects[BADDY_1];
 
 	if (obj->loaded)
 	{
-		obj->initialise = InitialiseRaghead;
-		obj->control = RagheadControl;
+		obj->initialise = InitialiseBaddy;
+		obj->control = BaddyControl;
 		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
 		obj->hit_points = 25;
@@ -1000,11 +1000,11 @@ void BaddyObjects()
 		for (int i = 0; i < 12; i++)
 			meshes[obj->mesh_index + 2 * i + 23] = meshes[objects[T4PlusGetMeshSwap3SlotID()].mesh_index + 2 * i + 22];
 
-		if (objects[SUPER_RAGHEAD].loaded)
-			obj->anim_index = objects[SUPER_RAGHEAD].anim_index;
+		if (objects[BADDY_2].loaded)
+			obj->anim_index = objects[BADDY_2].anim_index;
 	}
 
-	obj = &objects[RAGHEAD_MIP];
+	obj = &objects[BADDY_1_MIP];
 
 	if (obj->loaded)
 	{
@@ -1015,12 +1015,12 @@ void BaddyObjects()
 			meshes[obj->mesh_index + 2 * i + 23] = meshes[objects[T4PlusGetMeshSwap3SlotID()].mesh_index + 2 * i + 22];
 	}
 
-	obj = &objects[SUPER_RAGHEAD];
+	obj = &objects[BADDY_2];
 
 	if (obj->loaded)
 	{
-		obj->initialise = InitialiseRaghead;
-		obj->control = RagheadControl;
+		obj->initialise = InitialiseBaddy;
+		obj->control = BaddyControl;
 		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
 		obj->hit_points = 35;
@@ -1046,7 +1046,7 @@ void BaddyObjects()
 			meshes[obj->mesh_index + 2 * i + 23] = meshes[objects[T4PlusGetMeshSwap2SlotID()].mesh_index + 2 * i + 22];
 	}
 
-	obj = &objects[SUPER_RAGHEAD_MIP];
+	obj = &objects[BADDY_2_MIP];
 
 	if (obj->loaded)
 	{
@@ -1464,7 +1464,7 @@ void BaddyObjects()
 		bones[obj->bone_index + 52] |= 16;
 	}
 
-	obj = &objects[FUCKED_UP_DOG];
+	obj = &objects[DOG];
 
 	if (obj->loaded)
 	{

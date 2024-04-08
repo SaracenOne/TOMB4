@@ -152,7 +152,7 @@ void InitialiseTrainJeep(short item_number)
 	item = &items[item_number];
 	item->item_flags[0] = -80;
 
-	for (int i = 0; i < level_items; i++)	//find your raghead
+	for (int i = 0; i < level_items; i++)	//find your baddy
 	{
 		item2 = &items[i];
 

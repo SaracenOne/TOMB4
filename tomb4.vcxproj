@@ -218,6 +218,7 @@
     <ClInclude Include="TOMB4\game\lara_states.h" />
     <ClInclude Include="TOMB4\game\ahmet.h" />
     <ClInclude Include="TOMB4\game\baboon.h" />
+	<ClInclude Include="TOMB4\game\baddy.h" />
     <ClInclude Include="TOMB4\game\bat.h" />
     <ClInclude Include="TOMB4\game\bike.h" />
     <ClInclude Include="TOMB4\game\box.h" />
@@ -271,7 +272,6 @@
     <ClInclude Include="TOMB4\game\objlight.h" />
     <ClInclude Include="TOMB4\game\people.h" />
     <ClInclude Include="TOMB4\game\pickup.h" />
-    <ClInclude Include="TOMB4\game\raghead.h" />
     <ClInclude Include="TOMB4\game\rope.h" />
     <ClInclude Include="TOMB4\game\sas.h" />
     <ClInclude Include="TOMB4\game\savegame.h" />
@@ -446,6 +446,7 @@
   <ItemGroup>
     <ClCompile Include="TOMB4\game\ahmet.cpp" />
     <ClCompile Include="TOMB4\game\baboon.cpp" />
+	<ClCompile Include="TOMB4\game\baddy.cpp" />
     <ClCompile Include="TOMB4\game\bat.cpp" />
     <ClCompile Include="TOMB4\game\bike.cpp" />
     <ClCompile Include="TOMB4\game\box.cpp" />
@@ -499,7 +500,6 @@
     <ClCompile Include="TOMB4\game\objlight.cpp" />
     <ClCompile Include="TOMB4\game\people.cpp" />
     <ClCompile Include="TOMB4\game\pickup.cpp" />
-    <ClCompile Include="TOMB4\game\raghead.cpp" />
     <ClCompile Include="TOMB4\game\rope.cpp" />
     <ClCompile Include="TOMB4\game\sas.cpp" />
     <ClCompile Include="TOMB4\game\savegame.cpp" />

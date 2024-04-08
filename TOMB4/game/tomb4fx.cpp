@@ -2286,9 +2286,7 @@ void SetScreenFadeIn(short speed)
 
 void Fade()
 {
-	long oldfucker;
-
-	oldfucker = ScreenFade;
+	long originalScreenFade = ScreenFade;
 
 	if (dScreenFade && dScreenFade >= ScreenFade)
 	{
@@ -2298,7 +2296,7 @@ void Fade()
 		{
 			ScreenFade = dScreenFade;
 
-			if (oldfucker >= dScreenFade)
+			if (originalScreenFade >= dScreenFade)
 			{
 				ScreenFadedOut = 1;
 

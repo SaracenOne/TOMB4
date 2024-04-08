@@ -7,7 +7,7 @@ void InitPackNodes(NODELOADHEADER* lnode, PACKNODE* pnode, char* packed, long nu
 void DecodeAnim(PACKNODE* node, long num_nodes, long frame, long flags);
 short DecodeTrack(char* packed, RTDECODE* decode);
 short GetTrackWord(long off, char* packed, long packmethod);
-void frigup_lara();
+void fix_lara_for_cutseq();
 void updateAnimFrame(PACKNODE* node, int flags, short* frame);
 void* cutseq_malloc(long size);
 void finish_cutseq();
@@ -88,7 +88,7 @@ void handle_lara_chatting(short* _ranges);
 void handle_actor_chatting(long speechslot, long node, long slot, long objslot, short* _ranges);
 void trigger_item_in_room(long room_number, long object_number);
 void untrigger_item_in_room(long room_number, long object_number);
-ITEM_INFO* find_a_fucking_item(long object_number);
+ITEM_INFO* find_an_item_with_object_type(long object_number);
 void special2_end();
 void special2_init();
 void special3_end();

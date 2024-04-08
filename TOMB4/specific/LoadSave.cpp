@@ -476,7 +476,7 @@ void DoOptions()
 	}
 }
 
-void DisplayStatsUCunt()
+void DisplayGameStats()
 {
 	long sec, days, hours, min, y;
 	char buf[40];
@@ -587,7 +587,7 @@ long S_DisplayPauseMenu(long reset_selection, long reset_menu)
 	}
 	else if (menu == 2)
 	{
-		DisplayStatsUCunt();
+		DisplayGameStats();
 
 		if (dbinput & IN_DESELECT)
 		{

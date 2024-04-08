@@ -961,7 +961,7 @@ struct OBJECT_INFO
 	ushort save_mesh : 1;
 	void (*draw_routine_extra)(ITEM_INFO* item);
 	ulong explodable_meshbits;
-	ulong padfuck;
+	ulong pad;
 };
 
 struct FLOOR_INFO
@@ -1828,7 +1828,7 @@ struct RTDECODE
 	ushort data;
 	uchar decodetype;
 	uchar packmethod;
-	ushort padfuck;
+	ushort pad;
 };
 
 struct PACKNODE
@@ -2007,6 +2007,7 @@ struct OLD_CAMERA
 	long target_distance;
 	short target_angle;
 	short target_elevation;
+	short actual_elevation; // T4Plus
 	PHD_3DPOS pos;
 	PHD_3DPOS pos2;
 	PHD_VECTOR t;
@@ -2201,9 +2202,9 @@ struct PISTOL_DEF
 
 struct BINK_STRUCT
 {
-	long pad;
+	long first_pad;
 	long num;
-	char padfuck[8];
+	char second_pad[8];
 	long num2;
 };
 

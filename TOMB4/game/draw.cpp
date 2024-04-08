@@ -993,7 +993,7 @@ long DrawPhaseGame()
 	phd_PopMatrix();
 
 	if (GLOBAL_playing_cutseq)
-		frigup_lara();
+		fix_lara_for_cutseq();
 
 	SetLaraUnderwaterNodes();
 	DrawRooms(camera.pos.room_number);

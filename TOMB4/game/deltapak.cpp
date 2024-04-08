@@ -26,8 +26,8 @@
 #include "../tomb4/mod_config.h"
 #include "../tomb4/tomb4plus/t4plus_objects.h"
 
-static short frig_shadow_bbox[6] = { -165, 150, -777, 1, -87, 78 };
-static short frig_jeep_shadow_bbox[6] = { -600, 600, -777, 1, -600, 600 };
+static short cutseq_shadow_bbox[6] = { -165, 150, -777, 1, -87, 78 };
+static short cutseq_jeep_shadow_bbox[6] = { -600, 600, -777, 1, -600, 600 };
 static short troop_chat_ranges4[14] = { 485, 587, 558, 625, 639, 652, 661, 721, 729, 793, 805, 872, -1, -1 };
 static short lara_chat_ranges6[4] = { 257, 345, -1, -1 };
 static short voncroy_chat_ranges6[4] = { 6, 209, -1, -1 };
@@ -124,7 +124,7 @@ static char old_status_flags[16];
 
 void handle_cutseq_triggering(long name)
 {
-	long n, goin, fuck;
+	long n, goin, cutseq_id;
 
 	if (!cutseq_num)
 		return;
@@ -152,7 +152,7 @@ void handle_cutseq_triggering(long name)
 		if (cutseq_num == 11)
 			lara.vehicle = NO_ITEM;
 
-		fuck = 0;
+		cutseq_id = 0;
 		n = lara_item->current_anim_state;
 
 		if (ScreenFadedOut)
@@ -162,11 +162,11 @@ void handle_cutseq_triggering(long name)
 			if (!cutseq_busy_timeout)
 			{
 				cutseq_busy_timeout = 0;
-				fuck = 1;
+				cutseq_id = 1;
 			}
 
 			if (cutseq_num == 27 || lara.gun_status == LG_HANDS_BUSY || lara.gun_status == LG_NO_ARMS && !lara.flare_control_left ||
-				n == AS_ALL4S || n == AS_CRAWL || n == AS_ALL4TURNL || n == AS_ALL4TURNR || n == AS_CRAWLBACK || fuck)
+				n == AS_ALL4S || n == AS_CRAWL || n == AS_ALL4TURNL || n == AS_ALL4TURNR || n == AS_CRAWLBACK || cutseq_id)
 			{
 				if (!(gfLevelFlags & GF_YOUNGLARA))
 				{
@@ -236,15 +236,15 @@ void handle_cutseq_triggering(long name)
 
 			ScreenFadedOut = 0;
 			numnailed = 0;
-			fuck = cutseq_num;
+			cutseq_id = cutseq_num;
 
-			if (cutseq_control_routines[fuck].end_func)
-				cutseq_control_routines[fuck].end_func();
+			if (cutseq_control_routines[cutseq_id].end_func)
+				cutseq_control_routines[cutseq_id].end_func();
 
 			cutseq_trig = 0;
 			GLOBAL_playing_cutseq = 0;
 
-			if (fuck == 1)
+			if (cutseq_id == 1)
 			{
 				FlipMap(0);
 				cutseq_num = 2;
@@ -254,7 +254,7 @@ void handle_cutseq_triggering(long name)
 			}
 			else if (bDoCredits)
 			{
-				switch (fuck)
+				switch (cutseq_id)
 				{
 				case 28:
 					cutseq_num = 29;
@@ -271,7 +271,7 @@ void handle_cutseq_triggering(long name)
 				Load_and_Init_Cutseq(cutseq_num);
 				cutseq_trig = 2;
 			}
-			else if (fuck == 7 || fuck == 8)
+			else if (cutseq_id == 7 || cutseq_id == 8)
 			{
 				cutseq_num = 9;
 				Load_and_Init_Cutseq(9);
@@ -284,8 +284,8 @@ void handle_cutseq_triggering(long name)
 					S_StartSyncedAudio(GLOBAL_cutme->audio_track);
 			}
 			else if (
-				(get_game_mod_global_info()->tr_times_exclusive && (fuck == 31)) ||
-				(!get_game_mod_global_info()->tr_times_exclusive && ((fuck == 9 || fuck == 11 || fuck == 15 || fuck == 23)))
+				(get_game_mod_global_info()->tr_times_exclusive && (cutseq_id == 31)) ||
+				(!get_game_mod_global_info()->tr_times_exclusive && ((cutseq_id == 9 || cutseq_id == 11 || cutseq_id == 15 || cutseq_id == 23)))
 				)
 			{
 				gfLevelComplete = gfCurrentLevel + 1;
@@ -515,7 +515,7 @@ short GetTrackWord(long off, char* packed, long packmethod)
 	return ret;
 }
 
-void frigup_lara()
+void fix_lara_for_cutseq()
 {
 	long* bone;
 
@@ -551,9 +551,9 @@ void frigup_lara()
 	}
 
 	if (cutseq_num == 12)
-		GLaraShadowframe = frig_jeep_shadow_bbox;
+		GLaraShadowframe = cutseq_jeep_shadow_bbox;
 	else
-		GLaraShadowframe = frig_shadow_bbox;
+		GLaraShadowframe = cutseq_shadow_bbox;
 }
 
 void updateAnimFrame(PACKNODE* node, int flags, short* frame)
@@ -937,7 +937,7 @@ void eleventh_cutseq_init()
 {
 	ITEM_INFO* item;
 
-	item = find_a_fucking_item(ANIMATING5);
+	item = find_an_item_with_object_type(ANIMATING5);
 	old_status_flags[numnailed] = item->status;
 	item->status = ITEM_INVISIBLE;
 	item->flags &= ~IFL_CODEBITS;
@@ -1037,7 +1037,7 @@ void fourteen_control()
 
 	if (GLOBAL_cutseq_frame == 393)
 	{
-		item = find_a_fucking_item(SARCOPHAGUS_CUT);
+		item = find_an_item_with_object_type(SARCOPHAGUS_CUT);
 		item->flags = IFL_TRIGGERED;
 		item->mesh_bits = 3;
 	}
@@ -1254,7 +1254,7 @@ void twentyone_end()
 
 void twentythree_init()
 {
-	horus_item_thing = find_a_fucking_item(HORUS_STATUE);
+	horus_item_thing = find_an_item_with_object_type(HORUS_STATUE);
 }
 
 void twentythree_control()
@@ -1346,7 +1346,7 @@ void twentyfive_end()
 {
 	ITEM_INFO* item;
 
-	item = find_a_fucking_item(ANIMATING5);
+	item = find_an_item_with_object_type(ANIMATING5);
 	item->flags |= IFL_CODEBITS;
 	item->status = old_status_flags[numnailed];
 	numnailed++;
@@ -1357,7 +1357,7 @@ void twentyfive_init()
 {
 	ITEM_INFO* item;
 
-	item = find_a_fucking_item(ANIMATING5);
+	item = find_an_item_with_object_type(ANIMATING5);
 	old_status_flags[numnailed] = item->status;
 	item->status = ITEM_INVISIBLE;
 	item->flags &= ~IFL_CODEBITS;
@@ -1374,7 +1374,7 @@ void twentyseven_init()
 {
 	ITEM_INFO* item;
 
-	item = find_a_fucking_item(ANIMATING4);
+	item = find_an_item_with_object_type(ANIMATING4);
 	item->flags &= ~IFL_CODEBITS;
 	cutseq_meshbits[1] &= ~0x200;
 	lara.questitems = 0;
@@ -1390,7 +1390,7 @@ void twentyseven_end()
 {
 	ITEM_INFO* item;
 
-	item = find_a_fucking_item(ANIMATING5);
+	item = find_an_item_with_object_type(ANIMATING5);
 	item->status = ITEM_ACTIVE;
 	DelsHandyTeleportLara(18982, 18176, 15841, -16184);
 	FlipMap(8);
@@ -1773,7 +1773,7 @@ void untrigger_item_in_room(long room_number, long object_number)
 	}
 }
 
-ITEM_INFO* find_a_fucking_item(long object_number)
+ITEM_INFO *find_an_item_with_object_type(long object_number)
 {
 	ITEM_INFO* item;
 

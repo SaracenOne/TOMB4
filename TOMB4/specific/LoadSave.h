@@ -5,7 +5,7 @@
 #define MAX_SAVEGAMES 32
 
 void DoOptions();
-void DisplayStatsUCunt();
+void DisplayGameStats();
 long S_DisplayPauseMenu(long reset_selection, long reset_menu = -1);
 long DoLoadSave(long LoadSave);
 long S_LoadSave(long load_or_save, long mono, long inv_active);

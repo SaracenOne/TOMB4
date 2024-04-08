@@ -2932,7 +2932,7 @@ void ControlObelisk(short item_number)
 						TriggerExplosionSparks(s.x, s.y, s.z, 3, -1, 0, pyramid->room_number);
 						item->item_flags[2] = NO_ITEM;
 
-						disc = find_a_fucking_item(PUZZLE_ITEM1_COMBO1);
+						disc = find_an_item_with_object_type(PUZZLE_ITEM1_COMBO1);
 						disc->status = ITEM_INACTIVE;
 						SoundEffect(SFX_EXPLOSION1, &disc->pos, SFX_DEFAULT);
 						SoundEffect(SFX_EXPLOSION2, &disc->pos, SFX_DEFAULT);

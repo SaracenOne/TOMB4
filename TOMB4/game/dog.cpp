@@ -43,7 +43,7 @@ void DogControl(short item_number)
 	if (!CreatureActive(item_number))
 		return;
 
-	MOD_LEVEL_OBJECT_CUSTOMIZATION *mod_object_customization = get_game_mod_level_object_customization_for_slot(gfCurrentLevel, FUCKED_UP_DOG);
+	MOD_LEVEL_OBJECT_CUSTOMIZATION *mod_object_customization = get_game_mod_level_object_customization_for_slot(gfCurrentLevel, DOG);
 
 	angle = 0;
 	head_x = 0;

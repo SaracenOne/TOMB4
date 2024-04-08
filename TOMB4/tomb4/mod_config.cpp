@@ -863,11 +863,11 @@ void SetupDefaultObjectInfoForLevel(MOD_LEVEL_INFO* level_info) {
     
     level_object_customization[SKELETON].damage_1 = 80;
     
-    level_object_customization[RAGHEAD].damage_1 = 15;
-    level_object_customization[RAGHEAD].damage_2 = 120;
+    level_object_customization[BADDY_1].damage_1 = 15;
+    level_object_customization[BADDY_1].damage_2 = 120;
 
-    level_object_customization[SUPER_RAGHEAD].damage_1 = 15;
-    level_object_customization[SUPER_RAGHEAD].damage_2 = 120;
+    level_object_customization[BADDY_2].damage_1 = 15;
+    level_object_customization[BADDY_2].damage_2 = 120;
 
     level_object_customization[SETHA].damage_1 = 200;
     level_object_customization[SETHA].damage_2 = 250;
@@ -910,8 +910,8 @@ void SetupDefaultObjectInfoForLevel(MOD_LEVEL_INFO* level_info) {
 
     level_object_customization[BAT].damage_1 = 2;
 
-    level_object_customization[FUCKED_UP_DOG].damage_1 = 10;
-    level_object_customization[FUCKED_UP_DOG].damage_2 = 20;
+    level_object_customization[DOG].damage_1 = 10;
+    level_object_customization[DOG].damage_2 = 20;
 
     level_object_customization[HAMMERHEAD].damage_1 = 120;
 

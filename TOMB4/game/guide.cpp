@@ -134,7 +134,7 @@ void GuideControl(short item_number)
 						dist = SQUARE(x) + SQUARE(z);
 
 					if (dist < bestdist && dist < 0x400000 &&
-						(abs(item->pos.y_pos - candidate->pos.y_pos) < 256 || iDistance < 0x400000 || candidate->object_number == FUCKED_UP_DOG))
+						(abs(item->pos.y_pos - candidate->pos.y_pos) < 256 || iDistance < 0x400000 || candidate->object_number == DOG))
 					{
 						target = candidate;
 						bestdist = dist;

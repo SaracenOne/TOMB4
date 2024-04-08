@@ -98,7 +98,7 @@ void SetSplineData(long num, long cam)
 void InitialiseSpotCam(short Sequence)
 {
 	SPOTCAM* s;
-	long next_spline_camera, cunt;
+	long next_spline_camera, num;
 
 	if (Sequence >= CAMERA_COUNT) {
 		// Invalid spotcam!
@@ -154,35 +154,35 @@ void InitialiseSpotCam(short Sequence)
 	if (s->flags & 8)
 	{
 		spline_from_camera = 0;
-		cunt = 0;
-		SetSplineData(cunt, first_camera);	//INLINED
-		cunt++;
+		num = 0;
+		SetSplineData(num, first_camera);	//INLINED
+		num++;
 		next_spline_camera = first_camera;
 
 		for (int i = 0; i < current_camera_cnt; i++)
 		{
-			SetSplineData(cunt, next_spline_camera);	//INLINED
-			cunt++;
+			SetSplineData(num, next_spline_camera);	//INLINED
+			num++;
 			next_spline_camera++;
 		}
 
-		SetSplineData(cunt, last_camera);	//INLINED
+		SetSplineData(num, last_camera);	//INLINED
 	}
 	else if (s->flags & 1)
 	{
 		spline_from_camera = 0;
-		cunt = 0;
+		num = 0;
 		next_spline_camera = current_spline_camera;
-		SetSplineData(cunt, next_spline_camera);	//INLINED
-		cunt++;
+		SetSplineData(num, next_spline_camera);	//INLINED
+		num++;
 
-		while (cunt < 4)
+		while (num < 4)
 		{
 			if (next_spline_camera > last_camera)
 				next_spline_camera = first_camera;
 
-			SetSplineData(cunt, next_spline_camera);
-			cunt++;
+			SetSplineData(num, next_spline_camera);
+			num++;
 			next_spline_camera++;
 		}
 
@@ -215,14 +215,14 @@ void InitialiseSpotCam(short Sequence)
 		camera_roll[1] = camera_roll[0];
 		camera_fov[1] = camera_fov[0];
 		camera_speed[1] = camera_speed[0];
-		cunt = current_spline_camera;
-		SetSplineData(2, cunt);
-		cunt++;
+		num = current_spline_camera;
+		SetSplineData(2, num);
+		num++;
 
-		if (cunt > last_camera)
-			cunt = first_camera;
+		if (num > last_camera)
+			num = first_camera;
 
-		SetSplineData(3, cunt);
+		SetSplineData(3, num);
 	}
 }
 
@@ -281,7 +281,7 @@ void CalculateSpotCams()
 	ITEM_INFO* item;
 	CAMERA_INFO backup;
 	camera_type ctype;
-	long cpx, cpy, cpz, ctx, cty, ctz, cspeed, cfov, croll, next_spline_camera, cunt;
+	long cpx, cpy, cpz, ctx, cty, ctz, cspeed, cfov, croll, next_spline_camera, num;
 	long cs, cp, clen, tlen, cx, cy, cz, lx, ly, lz, sp;
 	static long bFirstLook = 0;
 	short spline_cnt;
@@ -458,7 +458,7 @@ void CalculateSpotCams()
 				else
 					next_spline_camera = current_spline_camera - 1;
 
-				cunt = 1;
+				num = 1;
 
 				if (spline_from_camera)
 				{
@@ -476,23 +476,23 @@ void CalculateSpotCams()
 						bDisableLaraControl = 1;
 					}
 
-					cunt = 0;
+					num = 0;
 
 					if (CurrentCam->flags & 0x80)
 					{
 						next_spline_camera = first_camera + (SpotCam[current_spline_camera].timer & 0xF);
 						current_spline_camera = (short)next_spline_camera;
-						SetSplineData(cunt, next_spline_camera);	//INLINED
-						cunt = 1;
+						SetSplineData(num, next_spline_camera);	//INLINED
+						num = 1;
 					}
 
-					SetSplineData(cunt, next_spline_camera);	//INLINED
-					cunt++;
+					SetSplineData(num, next_spline_camera);	//INLINED
+					num++;
 				}
 
 				next_spline_camera++;
 
-				while (cunt < 4)
+				while (num < 4)
 				{
 					if (FirstCam->flags & 4)
 					{
@@ -502,9 +502,9 @@ void CalculateSpotCams()
 					else if (next_spline_camera > last_camera)
 						next_spline_camera = last_camera;
 
-					SetSplineData(cunt, next_spline_camera);	//INLINED
+					SetSplineData(num, next_spline_camera);	//INLINED
 					next_spline_camera++;
-					cunt++;
+					num++;
 				}
 
 				current_spline_camera++;

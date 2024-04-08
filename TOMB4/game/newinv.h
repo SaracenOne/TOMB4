@@ -4,7 +4,7 @@
 long LoadGame();
 long SaveGame();
 void init_new_inventry();
-void do_debounced_joystick_poo();
+void debounce_joystick();
 void DrawInventoryItemMe(INVDRAWITEM* item, long shade, long overlay, long shagflag);
 void DrawThreeDeeObject2D(long x, long y, long num, long shade, long xrot, long yrot, long zrot, long bright, long overlay);
 long go_and_load_game();
@@ -41,7 +41,7 @@ void combine_PickupItem2(long flag);
 void combine_PickupItem3(long flag);
 void combine_PickupItem4(long flag);
 void combine_ClockWorkBeetle(long flag);
-long do_special_waterskin_combine_bullshit(long flag);
+long do_special_waterskin_combine(long flag);
 void setup_objectlist_startposition(short newobj);
 void setup_objectlist_startposition2(short newobj);
 long have_i_got_object(short object_number);
