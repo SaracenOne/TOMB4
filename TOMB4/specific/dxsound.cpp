@@ -384,7 +384,6 @@ bool DXCreateSampleADPCM(char* data, long comp_size, long uncomp_size, long num)
 {
 	Log(8, "DXCreateSampleADPCM");
 
-#ifdef MA_AUDIO_SAMPLES
 	bool result = false;
 
 	// Load the ADPCM data into a buffer
@@ -404,6 +403,7 @@ bool DXCreateSampleADPCM(char* data, long comp_size, long uncomp_size, long num)
 			ma_result decoder_result = ma_decoder_read_pcm_frames(&decoder, pPCMData, uncomp_size / ma_get_bytes_per_frame(config.format, config.channels), &frameCount);
 
 			if (decoder_result == MA_SUCCESS) {
+#ifdef MA_AUDIO_SAMPLES
 				// Now you can use the PCM data with MiniAudio
 				ma_audio_buffer_config bufferConfig = ma_audio_buffer_config_init(
 					ma_format_s16,
@@ -417,6 +417,15 @@ bool DXCreateSampleADPCM(char* data, long comp_size, long uncomp_size, long num)
 				if (audio_buffer_alloc_result == MA_SUCCESS) {
 					result = true;
 				}
+#else
+				XA_Buffers[num].pAudioData = (BYTE*)SYSTEM_MALLOC(uncomp_size - 32);
+				if (XA_Buffers[num].pAudioData) {
+					memcpy((void*)XA_Buffers[num].pAudioData, pPCMData, uncomp_size - 32);
+					XA_Buffers[num].AudioBytes = uncomp_size - 32;
+
+					result = true;
+				}
+#endif
 			}
 		} else {
 			Log(1, "Failed to initialize decoder.");
@@ -432,33 +441,6 @@ bool DXCreateSampleADPCM(char* data, long comp_size, long uncomp_size, long num)
 	ma_decoder_uninit(&decoder);
 
 	return result;
-#else
-	LPWAVEFORMATEX format;
-
-	if (!App.dx.lpDS)
-		return 0;
-
-	format = (LPWAVEFORMATEX)(data + 20);
-
-	if (format->nSamplesPerSec != 22050)
-		Log(1, "Incorrect SamplesPerSec");
-
-	ACMStreamHeader.cbSrcLength = comp_size - (sizeof(WAVEFORMATEX) + format->cbSize + 40);
-	mmresult = acmStreamConvert(hACMStream, &ACMStreamHeader, ACM_STREAMCONVERTF_BLOCKALIGN | ACM_STREAMCONVERTF_START);
-
-	if (mmresult != DS_OK)
-		Log(1, "Stream Convert %d", mmresult);
-
-	XA_Buffers[num].pAudioData = (BYTE*)SYSTEM_MALLOC(uncomp_size - 32);
-	if (XA_Buffers[num].pAudioData) {
-		memcpy((void*)XA_Buffers[num].pAudioData, decompressed_samples_buffer, uncomp_size - 32);
-		XA_Buffers[num].AudioBytes = uncomp_size - 32;
-
-		return true;
-	}
-
-	return false;
-#endif
 }
 
 void DXStopSample(long channel)
