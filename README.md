@@ -9,9 +9,10 @@ Reimplement the functionality of Tomb Raider Level Editor with support for exten
 
 ### Instructions
 * Before you run the program, you need a manifest file to be placed in the directory of the game you are attempting to run. You can download existing manifest files from [here](https://github.com/SaracenOne/tomb4_manifest_directory) or if you believe the engine has the features capable of running a particular custom level, you can attempt to generate your own manifest file with [this](https://github.com/SaracenOne/tomb4_feature_extractor) tool.
-* You can then run the custom level by either playing the `tomb4plus.exe` file in the game's directory, or running it with the `PATH="path/to/directory/"` command line argument.
-* When you first launch, you will see a setup screen. Choose your preferred setting click the `okay` button.
-* If you wish to see the setup screen again, run `tomb4plus.exe` with the `-SETUP` command line argument.
+* You can then run the custom level by either running the `tomb4plus_x64_release.exe` or `tomb4plus_x86_release.exe` (64-bit or 32-bit builds respectively) file in the game's directory, or running them with the `PATH="path/to/directory/"` command line argument.
+* When you first launch, you will see a setup screen. Choose your preferred settings and click the `okay` button. If you decide to run from the game's directory, you must also copy the `shaders` folder and corresponding `SDL2.dll` into the same location.
+* If you wish to see the setup screen again, run `tomb4plus_x64_release.exe` or `tomb4plus_x86_release.exe` with the `-SETUP` command line argument.
+* Some early custom levels will display warnings either ingame or in the readme file telling you to `ENABLE` or `DISABLE` volumetric fog effects. This was due to a limitation in the original engine which would restrict the usage of coloured distance fog if volumetric effects were enabled. The new renderer removes this limitation, so it is preferable to run the engine with volumetric effects `ENABLED` from now on. You should be able to safely ignore these warnings.
 * Unlike the original engine which stored configuration settings in the system registry, the new engine stores configuration options in an .ini file stored at `C:\Users\<YourName>\AppData\Roaming\Tomb4Plus\config.ini`. Likewise, savegames and screenshots are no longer stored in the game directory, but are instead stored in `C:\Users\<YourName>\AppData\Roaming\Tomb4Plus\game_data\<LevelName>\`. You can also run the executable in a directory with a file named `portable.txt` which will instead store configurations and saves in the exe's local directory if you would prefer.
 * Enjoy exploring the fascinating world of unofficial Tomb Raider content.
 
