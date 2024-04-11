@@ -28,6 +28,7 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 	}
 
 	// Workaround for hack which allows the camera and camera target to be selected out of order when called from a TriggerGroup.
+	ng_camera_target_id = NO_ITEM;
 	short selected_camera = -1;
 	short selected_target = -1;
 
