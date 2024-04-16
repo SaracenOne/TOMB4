@@ -17,9 +17,17 @@
 
 uint32_t bgfx_clear_col = 0x00000000;
 
+enum BGFXFogParameters {
+    BGFX_FOG_START_PARAMETER = 0,
+    BGFX_FOG_END_PARAMETER,
+    BGFX_FOG_PLACEHOLDER_1_PARAMETER,
+    BGFX_FOG_PLACEHOLDER_2_PARAMETER,
+    BGFX_FOG_PARAMETER_COUNT
+};
+
 float bgfx_fog_color[4];
 float bgfx_volumetric_fog_color[4];
-float bgfx_fog_parameters[4];
+float bgfx_fog_parameters[BGFX_FOG_PARAMETER_COUNT];
 
 bgfx::ProgramHandle m_outputVTLTexProgram = BGFX_INVALID_HANDLE;
 bgfx::ProgramHandle m_outputVTLTexAlphaClippedProgram = BGFX_INVALID_HANDLE;
@@ -236,11 +244,11 @@ void RenderBGFXDrawLists() {
     MOD_LEVEL_ENVIRONMENT_INFO* environment_info = get_game_mod_level_environment_info(gfCurrentLevel);
     if (gfLevelFlags & GF_TRAIN || environment_info->force_train_fog)
     {
-        bgfx_fog_parameters[0] = 12.0F;
-        bgfx_fog_parameters[1] = 20.0F;
+        bgfx_fog_parameters[BGFX_FOG_START_PARAMETER] = 12.0F;
+        bgfx_fog_parameters[BGFX_FOG_END_PARAMETER] = 20.0F;
     } else {
-        bgfx_fog_parameters[0] = LevelFogStart / 1024.0f;
-        bgfx_fog_parameters[1] = LevelFogEnd / 1024.0f;
+        bgfx_fog_parameters[BGFX_FOG_START_PARAMETER] = LevelFogStart / 1024.0f;
+        bgfx_fog_parameters[BGFX_FOG_END_PARAMETER] = LevelFogEnd / 1024.0f;
     };
 
     for (size_t i = 0; i < MAX_SORT_BUFFERS; i++) {

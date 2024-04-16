@@ -946,7 +946,9 @@ void DoTitle(uchar Name, uchar Audio)
 	S_SetReverbType(1);
 	InitialiseCamera();
 
+	// T4Plus
 	T4PlusLevelReset();
+	T4PlusEnterLevel(gfCurrentLevel, true);
 
 	if (bDoCredits)
 	{
