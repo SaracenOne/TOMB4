@@ -218,7 +218,7 @@
     <ClInclude Include="TOMB4\game\lara_states.h" />
     <ClInclude Include="TOMB4\game\ahmet.h" />
     <ClInclude Include="TOMB4\game\baboon.h" />
-	<ClInclude Include="TOMB4\game\baddy.h" />
+    <ClInclude Include="TOMB4\game\baddy.h" />
     <ClInclude Include="TOMB4\game\bat.h" />
     <ClInclude Include="TOMB4\game\bike.h" />
     <ClInclude Include="TOMB4\game\box.h" />
@@ -446,7 +446,7 @@
   <ItemGroup>
     <ClCompile Include="TOMB4\game\ahmet.cpp" />
     <ClCompile Include="TOMB4\game\baboon.cpp" />
-	<ClCompile Include="TOMB4\game\baddy.cpp" />
+    <ClCompile Include="TOMB4\game\baddy.cpp" />
     <ClCompile Include="TOMB4\game\bat.cpp" />
     <ClCompile Include="TOMB4\game\bike.cpp" />
     <ClCompile Include="TOMB4\game\box.cpp" />
