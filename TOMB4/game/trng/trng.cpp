@@ -367,6 +367,20 @@ void NGMoveStaticVerticalByUnits(unsigned short static_id, int units) {
 	}
 }
 
+GAME_VECTOR &NGGetGameVectorForStatic(unsigned short static_id) {
+	GAME_VECTOR game_vector;
+	NGStaticTableEntry* entry = &ng_static_id_table[static_id];
+	int room_number = ng_room_remap_table[entry->remapped_room_index].room_index;
+	if (room_number >= 0 && room_number < number_rooms) {
+		MESH_INFO* mesh = &room[room_number].mesh[entry->mesh_id];
+		game_vector.x = mesh->x;
+		game_vector.y = mesh->y;
+		game_vector.z = mesh->z;
+		game_vector.room_number = room_number;
+	}
+	return game_vector;
+}
+
 void NGRotateStaticX(unsigned short static_id, short rotation) {
 	NGStaticTableEntry* entry = &ng_static_id_table[static_id];
 	int room_number = ng_room_remap_table[entry->remapped_room_index].room_index;

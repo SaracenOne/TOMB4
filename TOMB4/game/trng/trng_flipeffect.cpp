@@ -873,7 +873,7 @@ bool static_move_static_with_data_in_x_parameter_list(unsigned char move_param_i
 	int script_static = move_item->index_item;
 
 	if (move_item->flags != 0xffff) {
-		if (move_item->flags & ~(FMOV_INFINITE_LOOP)) {
+		if (move_item->flags & ~(FMOV_INFINITE_LOOP | FMOV_HEAVY_AT_END | FMOV_TRIGGERS_ALL | FMOV_HEAVY_ALL)) {
 			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "static_move_static_with_data_in_x_parameter_list: unimplemented flags 0x%04x", move_item->flags);
 			return false;
 		}
@@ -961,6 +961,24 @@ bool static_move_static_with_data_in_x_parameter_list(unsigned char move_param_i
 	if (is_valid) {
 		NGSetStaticMovementInProgressSound(script_static, move_item->moving_sound);
 		NGSetStaticMovementFinishedSound(script_static, move_item->final_sound);
+
+		if (move_item->flags & FMOV_HEAVY_AT_END) {
+			NGSetStaticMovementTriggerHeavyAtEnd(script_static, true);
+		} else {
+			NGSetStaticMovementTriggerHeavyAtEnd(script_static, false);
+		}
+
+		if (move_item->flags & FMOV_TRIGGERS_ALL) {
+			NGSetStaticMovementTriggerNormalWhenMoving(script_static, true);
+		} else {
+			NGSetStaticMovementTriggerNormalWhenMoving(script_static, false);
+		}
+
+		if (move_item->flags & FMOV_HEAVY_ALL) {
+			NGSetStaticMovementTriggerHeavyWhenMoving(script_static, true);
+		} else {
+			NGSetStaticMovementTriggerHeavyWhenMoving(script_static, false);
+		}
 	}
 
 	return true;
@@ -980,7 +998,7 @@ bool moveable_move_moveable_with_data_in_x_parameter_list(unsigned char move_par
 	int script_item = ng_script_id_table[move_item->index_item].script_index;
 
 	if (move_item->flags != 0xffff) {
-		if (move_item->flags & ~(FMOV_INFINITE_LOOP)) {
+		if (move_item->flags & ~(FMOV_INFINITE_LOOP | FMOV_HEAVY_AT_END | FMOV_TRIGGERS_ALL | FMOV_HEAVY_ALL)) {
 			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "moveable_move_moveable_with_data_in_x_parameter_list: unimplemented flags 0x%04x", move_item->flags);
 			return false;
 		}
@@ -1068,6 +1086,24 @@ bool moveable_move_moveable_with_data_in_x_parameter_list(unsigned char move_par
 	if (is_valid) {
 		NGSetItemMovementInProgressSound(script_item, move_item->moving_sound);
 		NGSetItemMovementFinishedSound(script_item, move_item->final_sound);
+
+		if (move_item->flags & FMOV_HEAVY_AT_END) {
+			NGSetItemMovementTriggerHeavyAtEnd(script_item, true);
+		} else {
+			NGSetItemMovementTriggerHeavyAtEnd(script_item, false);
+		}
+
+		if (move_item->flags & FMOV_TRIGGERS_ALL) {
+			NGSetItemMovementTriggerNormalWhenMoving(script_item, true);
+		} else {
+			NGSetItemMovementTriggerNormalWhenMoving(script_item, false);
+		}
+
+		if (move_item->flags & FMOV_HEAVY_ALL) {
+			NGSetItemMovementTriggerHeavyWhenMoving(script_item, true);
+		} else {
+			NGSetItemMovementTriggerHeavyWhenMoving(script_item, false);
+		}
 	}
 
 	return true;

@@ -663,6 +663,9 @@ NGActionRepeatType NGAction(unsigned short item_id, unsigned short extra, int fl
 				NGSetItemHorizontalMovementSpeed(item_id, 32);
 				NGSetItemMovementInProgressSound(item_id, -1);
 				NGSetItemMovementFinishedSound(item_id, -1);
+				NGSetItemMovementTriggerHeavyAtEnd(item_id, false);
+				NGSetItemMovementTriggerNormalWhenMoving(item_id, false);
+				NGSetItemMovementTriggerHeavyWhenMoving(item_id, false);
 			}
 			break;
 		case MOVE_ITEM_UP_FOR_CLICKS:
@@ -676,6 +679,9 @@ NGActionRepeatType NGAction(unsigned short item_id, unsigned short extra, int fl
 				NGSetItemVerticalMovementSpeed(item_id, -32);
 				NGSetItemMovementInProgressSound(item_id, -1);
 				NGSetItemMovementFinishedSound(item_id, -1);
+				NGSetItemMovementTriggerHeavyAtEnd(item_id, false);
+				NGSetItemMovementTriggerNormalWhenMoving(item_id, false);
+				NGSetItemMovementTriggerHeavyWhenMoving(item_id, false);
 			}
 			break;
 		case MOVE_ITEM_DOWN_FOR_CLICKS:
@@ -689,6 +695,9 @@ NGActionRepeatType NGAction(unsigned short item_id, unsigned short extra, int fl
 				NGSetItemVerticalMovementSpeed(item_id, 32);
 				NGSetItemMovementInProgressSound(item_id, -1);
 				NGSetItemMovementFinishedSound(item_id, -1);
+				NGSetItemMovementTriggerHeavyAtEnd(item_id, false);
+				NGSetItemMovementTriggerNormalWhenMoving(item_id, false);
+				NGSetItemMovementTriggerHeavyWhenMoving(item_id, false);
 			}
 			break;
 		case MOVE_ITEM_WEST_FOR_CLICKS:
@@ -703,6 +712,9 @@ NGActionRepeatType NGAction(unsigned short item_id, unsigned short extra, int fl
 				NGSetItemHorizontalMovementSpeed(item_id, 32);
 				NGSetItemMovementInProgressSound(item_id, -1);
 				NGSetItemMovementFinishedSound(item_id, -1);
+				NGSetItemMovementTriggerHeavyAtEnd(item_id, false);
+				NGSetItemMovementTriggerNormalWhenMoving(item_id, false);
+				NGSetItemMovementTriggerHeavyWhenMoving(item_id, false);
 			}
 			break;
 		case MOVE_ITEM_NORTH_FOR_CLICKS:
@@ -717,6 +729,9 @@ NGActionRepeatType NGAction(unsigned short item_id, unsigned short extra, int fl
 				NGSetItemHorizontalMovementSpeed(item_id, 32);
 				NGSetItemMovementInProgressSound(item_id, -1);
 				NGSetItemMovementFinishedSound(item_id, -1);
+				NGSetItemMovementTriggerHeavyAtEnd(item_id, false);
+				NGSetItemMovementTriggerNormalWhenMoving(item_id, false);
+				NGSetItemMovementTriggerHeavyWhenMoving(item_id, false);
 			}
 			break;
 		case MOVE_ITEM_EAST_FOR_CLICKS:
@@ -731,6 +746,9 @@ NGActionRepeatType NGAction(unsigned short item_id, unsigned short extra, int fl
 				NGSetItemHorizontalMovementSpeed(item_id, 32);
 				NGSetItemMovementInProgressSound(item_id, -1);
 				NGSetItemMovementFinishedSound(item_id, -1);
+				NGSetItemMovementTriggerHeavyAtEnd(item_id, false);
+				NGSetItemMovementTriggerNormalWhenMoving(item_id, false);
+				NGSetItemMovementTriggerHeavyWhenMoving(item_id, false);
 			}
 			break;
 		case MOVE_ITEM_SOUTH_FOR_CLICKS:
@@ -745,6 +763,9 @@ NGActionRepeatType NGAction(unsigned short item_id, unsigned short extra, int fl
 				NGSetItemHorizontalMovementSpeed(item_id, 32);
 				NGSetItemMovementInProgressSound(item_id, -1);
 				NGSetItemMovementFinishedSound(item_id, -1);
+				NGSetItemMovementTriggerHeavyAtEnd(item_id, false);
+				NGSetItemMovementTriggerNormalWhenMoving(item_id, false);
+				NGSetItemMovementTriggerHeavyWhenMoving(item_id, false);
 			}
 			break;
 		case MOVE_CONTINUOUSLY_UPSTAIRS_DOWNSTAIRS_X_ANIMATING_FOR_CLICKS:
@@ -754,6 +775,9 @@ NGActionRepeatType NGAction(unsigned short item_id, unsigned short extra, int fl
 				NGSetItemVerticalMovementSpeed(item_id, -32);
 				NGSetItemMovementInProgressSound(item_id, -1);
 				NGSetItemMovementFinishedSound(item_id, -1);
+				NGSetItemMovementTriggerHeavyAtEnd(item_id, false);
+				NGSetItemMovementTriggerNormalWhenMoving(item_id, false);
+				NGSetItemMovementTriggerHeavyWhenMoving(item_id, false);
 			}
 			break;
 		case DISABLE_ITEM_COLLISION:

@@ -10,6 +10,7 @@
 #include "../lara.h"
 #include "../tomb4fx.h"
 #include "../sound.h"
+#include "../switch.h"
 #include "../text.h"
 
 #include "trng.h"
@@ -49,6 +50,9 @@ struct NG_MOVEMENT_INFO {
 	int move_vertical_remaining_units = 0;
 	int move_horizontal_repeat_units = 0;
 	int move_vertical_repeat_units = 0;
+	bool trigger_heavy_at_end = false;
+	bool trigger_normal_when_moving = false;
+	bool trigger_heavy_when_moving = false;
 };
 
 // NG_ITEM_EXTRADATA is persistent supllementary data used by TRNG triggers.
@@ -567,6 +571,7 @@ void NGHandleItemRotation(unsigned int item_num) {
 
 void NGHandleItemMovement(unsigned int item_num) {
 	if (NGGetItemHorizontalMovementRemainingUnits(item_num)) {
+		ITEM_INFO* item = &items[item_num];
 		int move_by_amount = NGGetItemHorizontalMovementSpeed(item_num);
 		int remaining_movement_units = NGGetItemHorizontalMovementRemainingUnits(item_num);
 		if (
@@ -579,8 +584,13 @@ void NGHandleItemMovement(unsigned int item_num) {
 		NGSetItemHorizontalMovementRemainingUnits(item_num, remaining_movement_units - move_by_amount);
 
 		if (NGGetItemHorizontalMovementRemainingUnits(item_num) == 0) {
-			if (NGGetItemMovementFinishedSound(item_num) != -1)
+			if (NGGetItemMovementFinishedSound(item_num) != -1) {
 				SoundEffect(NGGetItemMovementFinishedSound(item_num), &items[item_num].pos, 0);
+			}
+
+			if (NGGetItemMovementTriggerHeavyAtEnd(item_num)) {
+				TestTriggersAtXYZ(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, true, 0);
+			}
 
 			// Reset everything or loop
 			if (NGGetItemHorizontalMovementRepeatUnits(item_num) != 0) {
@@ -590,13 +600,23 @@ void NGHandleItemMovement(unsigned int item_num) {
 				NGSetItemHorizontalMovementSpeed(item_num, 0);
 			}
 		} else {
-			if (NGGetItemMovementInProgressSound(item_num) != -1)
+			if (NGGetItemMovementInProgressSound(item_num) != -1) {
 				SoundEffect(NGGetItemMovementInProgressSound(item_num), &items[item_num].pos, 0);
+			}
+
+			if (NGGetItemMovementTriggerNormalWhenMoving(item_num)) {
+				TestTriggersAtXYZ(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, false, 0);
+			}
+
+			if (NGGetItemMovementTriggerHeavyWhenMoving(item_num)) {
+				TestTriggersAtXYZ(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, true, 0);
+			}
 		}
 		UpdateItemRoom(item_num, -128);
 	}
 
 	if (NGGetItemVerticalMovementRemainingUnits(item_num)) {
+		ITEM_INFO* item = &items[item_num];
 		int move_by_amount = NGGetItemVerticalMovementSpeed(item_num);
 		int remaining_movement_units = NGGetItemVerticalMovementRemainingUnits(item_num);
 		if (
@@ -609,21 +629,34 @@ void NGHandleItemMovement(unsigned int item_num) {
 		NGSetItemVerticalMovementRemainingUnits(item_num, remaining_movement_units - move_by_amount);
 
 		if (NGGetItemVerticalMovementRemainingUnits(item_num) == 0) {
-			if (NGGetItemMovementFinishedSound(item_num) != -1)
+			if (NGGetItemMovementFinishedSound(item_num) != -1) {
 				SoundEffect(NGGetItemMovementFinishedSound(item_num), &items[item_num].pos, 0);
+			}
+
+			if (NGGetItemMovementTriggerHeavyAtEnd(item_num)) {
+				TestTriggersAtXYZ(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, true, 0);
+			}
 
 			// Reset everything or loop
 			if (NGGetItemVerticalMovementRepeatUnits(item_num) != 0) {
 				NGSetItemVerticalMovementSpeed(item_num, -NGGetItemVerticalMovementSpeed(item_num));
 				NGSetItemVerticalMovementRemainingUnits(item_num, NGGetItemVerticalMovementRepeatUnits(item_num));
 				NGSetItemVerticalMovementRepeatUnits(item_num, -NGGetItemVerticalMovementRepeatUnits(item_num));
-			}
-			else {
+			} else {
 				NGSetItemVerticalMovementSpeed(item_num, 0);
 			}
 		} else {
-			if (NGGetItemMovementInProgressSound(item_num) != -1)
+			if (NGGetItemMovementInProgressSound(item_num) != -1) {
 				SoundEffect(NGGetItemMovementInProgressSound(item_num), &items[item_num].pos, 0);
+			}
+
+			if (NGGetItemMovementTriggerNormalWhenMoving(item_num)) {
+				TestTriggersAtXYZ(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, false, 0);
+			}
+
+			if (NGGetItemMovementTriggerHeavyWhenMoving(item_num)) {
+				TestTriggersAtXYZ(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, true, 0);
+			}
 		}
 		UpdateItemRoom(item_num, -128);
 	}
@@ -677,6 +710,8 @@ void NGHandleStaticRotation(unsigned int static_num) {
 
 void NGHandleStaticMovement(unsigned int static_num) {
 	if (NGGetStaticHorizontalMovementRemainingUnits(static_num)) {
+		GAME_VECTOR &game_vector = NGGetGameVectorForStatic(static_num);
+
 		int move_by_amount = NGGetStaticHorizontalMovementSpeed(static_num);
 		int remaining_movement_units = NGGetStaticHorizontalMovementRemainingUnits(static_num);
 		if (
@@ -689,8 +724,17 @@ void NGHandleStaticMovement(unsigned int static_num) {
 		NGSetStaticHorizontalMovementRemainingUnits(static_num, remaining_movement_units - move_by_amount);
 
 		if (NGGetStaticHorizontalMovementRemainingUnits(static_num) == 0) {
-			if (NGGetStaticMovementFinishedSound(static_num) != -1)
-				SoundEffect(NGGetStaticMovementFinishedSound(static_num), &items[static_num].pos, 0);
+			if (NGGetStaticMovementFinishedSound(static_num) != -1) {
+				PHD_3DPOS pos;
+				pos.x_pos = game_vector.x;
+				pos.y_pos = game_vector.y;
+				pos.z_pos = game_vector.z;
+				SoundEffect(NGGetStaticMovementFinishedSound(static_num), &pos, 0);
+			}
+
+			if (NGGetStaticMovementTriggerHeavyAtEnd(static_num)) {
+				TestTriggersAtXYZ(game_vector.x, game_vector.y, game_vector.z, game_vector.room_number, true, 0);
+			}
 
 			// Reset everything or loop
 			if (NGGetStaticHorizontalMovementRepeatUnits(static_num) > 0) {
@@ -701,12 +745,27 @@ void NGHandleStaticMovement(unsigned int static_num) {
 			}
 		}
 		else {
-			if (NGGetStaticMovementInProgressSound(static_num) != -1)
-				SoundEffect(NGGetStaticMovementInProgressSound(static_num), &items[static_num].pos, 0);
+			if (NGGetStaticMovementInProgressSound(static_num) != -1) {
+				PHD_3DPOS pos;
+				pos.x_pos = game_vector.x;
+				pos.y_pos = game_vector.y;
+				pos.z_pos = game_vector.z;
+				SoundEffect(NGGetStaticMovementInProgressSound(static_num), &pos, 0);
+			}
+
+			if (NGGetStaticMovementTriggerNormalWhenMoving(static_num)) {
+				TestTriggersAtXYZ(game_vector.x, game_vector.y, game_vector.z, game_vector.room_number, false, 0);
+			}
+
+			if (NGGetStaticMovementTriggerHeavyWhenMoving(static_num)) {
+				TestTriggersAtXYZ(game_vector.x, game_vector.y, game_vector.z, game_vector.room_number, true, 0);
+			}
 		}
 	}
 
 	if (NGGetStaticVerticalMovementRemainingUnits(static_num)) {
+		GAME_VECTOR& game_vector = NGGetGameVectorForStatic(static_num);
+
 		int move_by_amount = NGGetStaticVerticalMovementSpeed(static_num);
 		int remaining_movement_units = NGGetStaticVerticalMovementRemainingUnits(static_num);
 		if (
@@ -719,8 +778,17 @@ void NGHandleStaticMovement(unsigned int static_num) {
 		NGSetStaticVerticalMovementRemainingUnits(static_num, remaining_movement_units - move_by_amount);
 
 		if (NGGetStaticVerticalMovementRemainingUnits(static_num) == 0) {
-			if (NGGetStaticMovementFinishedSound(static_num) != -1)
-				SoundEffect(NGGetStaticMovementFinishedSound(static_num), &items[static_num].pos, 0);
+			if (NGGetStaticMovementFinishedSound(static_num) != -1) {
+				PHD_3DPOS pos;
+				pos.x_pos = game_vector.x;
+				pos.y_pos = game_vector.y;
+				pos.z_pos = game_vector.z;
+				SoundEffect(NGGetStaticMovementFinishedSound(static_num), &pos, 0);
+			}
+
+			if (NGGetStaticMovementTriggerHeavyAtEnd(static_num)) {
+				TestTriggersAtXYZ(game_vector.x, game_vector.y, game_vector.z, game_vector.room_number, true, 0);
+			}
 
 			// Reset everything or loop
 			if (NGGetStaticVerticalMovementRepeatUnits(static_num) > 0) {
@@ -732,8 +800,21 @@ void NGHandleStaticMovement(unsigned int static_num) {
 			}
 		}
 		else {
-			if (NGGetStaticMovementInProgressSound(static_num) != -1)
-				SoundEffect(NGGetStaticMovementInProgressSound(static_num), &items[static_num].pos, 0);
+			if (NGGetStaticMovementInProgressSound(static_num) != -1) {
+				PHD_3DPOS pos;
+				pos.x_pos = game_vector.x;
+				pos.y_pos = game_vector.y;
+				pos.z_pos = game_vector.z;
+				SoundEffect(NGGetStaticMovementInProgressSound(static_num), &pos, 0);
+			}
+
+			if (NGGetStaticMovementTriggerNormalWhenMoving(static_num)) {
+				TestTriggersAtXYZ(game_vector.x, game_vector.y, game_vector.z, game_vector.room_number, false, 0);
+			}
+
+			if (NGGetStaticMovementTriggerHeavyWhenMoving(static_num)) {
+				TestTriggersAtXYZ(game_vector.x, game_vector.y, game_vector.z, game_vector.room_number, true, 0);
+			}
 		}
 	}
 }
@@ -1287,6 +1368,31 @@ void NGSetItemMovementFinishedSound(unsigned int item_num, int sound_effect_id) 
 	ng_items_extradata[item_num].movement_info.movement_finished_sound = sound_effect_id;
 }
 
+bool NGGetItemMovementTriggerHeavyAtEnd(unsigned int item_num) {
+	return ng_items_extradata[item_num].movement_info.trigger_heavy_at_end;
+}
+
+void NGSetItemMovementTriggerHeavyAtEnd(unsigned int item_num, bool trigger_heavy_at_end) {
+	ng_items_extradata[item_num].movement_info.trigger_heavy_at_end = trigger_heavy_at_end;
+}
+
+bool NGGetItemMovementTriggerNormalWhenMoving(unsigned int item_num) {
+	return ng_items_extradata[item_num].movement_info.trigger_normal_when_moving;
+}
+
+void NGSetItemMovementTriggerNormalWhenMoving(unsigned int item_num, bool trigger_normal_when_moving) {
+	ng_items_extradata[item_num].movement_info.trigger_normal_when_moving = trigger_normal_when_moving;
+}
+
+bool NGGetItemMovementTriggerHeavyWhenMoving(unsigned int item_num) {
+	return ng_items_extradata[item_num].movement_info.trigger_heavy_when_moving;
+}
+
+void NGSetItemMovementTriggerHeavyWhenMoving(unsigned int item_num, bool trigger_heavy_when_moving) {
+	ng_items_extradata[item_num].movement_info.trigger_heavy_when_moving = trigger_heavy_when_moving;
+}
+
+
 // Statics
 
 bool NGIsStaticPerformingContinousAction(unsigned int static_num) {
@@ -1409,6 +1515,30 @@ int NGGetStaticMovementFinishedSound(unsigned int static_num) {
 
 void NGSetStaticMovementFinishedSound(unsigned int static_num, int sound_effect_id) {
 	ng_statics_movement_info[static_num].movement_finished_sound = sound_effect_id;
+}
+
+bool NGGetStaticMovementTriggerHeavyAtEnd(unsigned int static_num) {
+	return ng_statics_movement_info[static_num].trigger_heavy_at_end;
+}
+
+void NGSetStaticMovementTriggerHeavyAtEnd(unsigned int static_num, bool trigger_heavy_at_end) {
+	ng_statics_movement_info[static_num].trigger_heavy_at_end = trigger_heavy_at_end;
+}
+
+bool NGGetStaticMovementTriggerNormalWhenMoving(unsigned int static_num) {
+	return ng_statics_movement_info[static_num].trigger_normal_when_moving;
+}
+
+void NGSetStaticMovementTriggerNormalWhenMoving(unsigned int static_num, bool trigger_normal_when_moving) {
+	ng_statics_movement_info[static_num].trigger_normal_when_moving = trigger_normal_when_moving;
+}
+
+bool NGGetStaticMovementTriggerHeavyWhenMoving(unsigned int static_num) {
+	return ng_statics_movement_info[static_num].trigger_heavy_when_moving;
+}
+
+void NGSetStaticMovementTriggerHeavyWhenMoving(unsigned int static_num, bool trigger_heavy_when_moving) {
+	ng_statics_movement_info[static_num].trigger_heavy_when_moving = trigger_heavy_when_moving;
 }
 
 //

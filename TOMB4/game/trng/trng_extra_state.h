@@ -178,6 +178,13 @@ extern void NGSetItemMovementInProgressSound(unsigned int item_num, int sound_ef
 extern void NGSetItemMovementFinishedSound(unsigned int item_num, int sound_effect_id);
 extern int NGGetItemMovementFinishedSound(unsigned int item_num);
 
+extern bool NGGetItemMovementTriggerHeavyAtEnd(unsigned int item_num);
+extern void NGSetItemMovementTriggerHeavyAtEnd(unsigned int item_num, bool trigger_heavy_at_end);
+extern bool NGGetItemMovementTriggerNormalWhenMoving(unsigned int item_num);
+extern void NGSetItemMovementTriggerNormalWhenMoving(unsigned int item_num, bool trigger_normal_when_moving);
+extern bool NGGetItemMovementTriggerHeavyWhenMoving(unsigned int item_num);
+extern void NGSetItemMovementTriggerHeavyWhenMoving(unsigned int item_num, bool trigger_heavy_when_moving);
+
 // Statics
 
 extern bool NGIsStaticPerformingContinousAction(unsigned int static_num);
@@ -218,6 +225,13 @@ extern int NGGetStaticMovementInProgressSound(unsigned int static_num);
 extern void NGSetStaticMovementInProgressSound(unsigned int static_num, int sound_effect_id);
 extern void NGSetStaticMovementFinishedSound(unsigned int static_num, int sound_effect_id);
 extern int NGGetStaticMovementFinishedSound(unsigned int static_num);
+
+extern bool NGGetStaticMovementTriggerHeavyAtEnd(unsigned int static_num);
+extern void NGSetStaticMovementTriggerHeavyAtEnd(unsigned int static_num, bool trigger_heavy_at_end);
+extern bool NGGetStaticMovementTriggerNormalWhenMoving(unsigned int static_num);
+extern void NGSetStaticMovementTriggerNormalWhenMoving(unsigned int static_num, bool trigger_normal_when_moving);
+extern bool NGGetStaticMovementTriggerHeavyWhenMoving(unsigned int static_num);
+extern void NGSetStaticMovementTriggerHeavyWhenMoving(unsigned int static_num, bool trigger_heavy_when_moving);
 
 //
 
