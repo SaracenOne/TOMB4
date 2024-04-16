@@ -2457,6 +2457,8 @@ void DartsControl(short item_number)
 
 void DartEmitterControl(short item_number)
 {
+	MOD_LEVEL_OBJECTS_INFO* mod_level_object_info = get_game_mod_level_objects_info(gfCurrentLevel);
+
 	ITEM_INFO* item;
 	ITEM_INFO* dart;
 	long x, z, xLimit, zLimit, xv, zv, rand;
@@ -2472,7 +2474,7 @@ void DartEmitterControl(short item_number)
 			return;
 		}
 
-		item->timer = 24;
+		item->timer = mod_level_object_info->darts_interval;
 	}
 
 	num = CreateItem();
@@ -2500,7 +2502,7 @@ void DartEmitterControl(short item_number)
 		InitialiseItem(num);
 		dart->pos.x_rot = 0;
 		dart->pos.y_rot = item->pos.y_rot + 0x8000;
-		dart->speed = 256;
+		dart->speed = mod_level_object_info->darts_speed;
 		xLimit = 0;
 		zLimit = 0;
 
@@ -2667,6 +2669,8 @@ void FallingBlock(short item_number)
 
 void FallingBlockCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 {
+	MOD_LEVEL_OBJECTS_INFO* mod_level_object_info = get_game_mod_level_objects_info(gfCurrentLevel);
+
 	ITEM_INFO* item;
 	long x, z, tx, tz;
 
@@ -2676,11 +2680,15 @@ void FallingBlockCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 	tx = item->pos.x_pos;
 	tz = item->pos.z_pos;
 
-	if (!item->item_flags[0] && !item->trigger_flags && item->pos.y_pos == l->pos.y_pos && !((tx ^ x) & ~1023) && !((z ^ tz) & ~1023))
+	if (!item->item_flags[0]
+		&& !item->trigger_flags
+		&& item->pos.y_pos == l->pos.y_pos
+		&& !((tx ^ x) & ~mod_level_object_info->falling_block_tremble)
+		&& !((z ^ tz) & ~mod_level_object_info->falling_block_tremble))
 	{
 		SoundEffect(SFX_ROCK_FALL_CRUMBLE, &item->pos, SFX_DEFAULT);
 		AddActiveItem(item_number);
-		item->item_flags[0] = 60;
+		item->item_flags[0] = mod_level_object_info->falling_block_timer;
 		item->status = ITEM_ACTIVE;
 		item->flags |= IFL_CODEBITS;
 	}
