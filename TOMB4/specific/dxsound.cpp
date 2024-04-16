@@ -41,7 +41,9 @@ static IXAudio2MasteringVoice* XAMaster;
 static IUnknown* XAEffect;
 static IXAudio2SourceVoice* XA_Voices[MAX_VOICES];
 static int XA_Voice_Active[MAX_VOICES];
+static float current_voice_samples_per_second = 0.0F;
 static XAUDIO2_BUFFER XA_Buffers[MAX_SAMPLE_BUFFERS];
+static float XA_SPS[MAX_SAMPLE_BUFFERS];
 static MMRESULT mmresult;
 static WAVEFORMATEX pcm_format;
 static HACMSTREAM hACMStream;
@@ -140,7 +142,7 @@ void DSAdjustPitch(long num, long pitch)
 
 	if (XA_Voices[num])
 	{
-		frequency = ulong((float)pitch / 65536.0F * 22050.0F);
+		frequency = ulong((float)pitch / 65536.0F * current_voice_samples_per_second);
 
 		if (frequency < 100)
 			frequency = 100;
@@ -369,6 +371,8 @@ bool DXCreateSample(char* data, long size, int samples_per_second, long num)
 		Log(1, "Incorrect SamplesPerSec");
 
 	XA_Buffers[num].pAudioData = (BYTE*)SYSTEM_MALLOC(size);
+
+	XA_SPS[num] = (float)get_game_mod_level_audio_info(gfCurrentLevel)->sample_rate;
 	if (XA_Buffers[num].pAudioData) {
 		memcpy((void*)XA_Buffers[num].pAudioData, data, size);
 		XA_Buffers[num].AudioBytes = size;
@@ -420,6 +424,7 @@ bool DXCreateSampleADPCM(char* data, long comp_size, long uncomp_size, long num)
 #else
 				XA_Buffers[num].pAudioData = (BYTE*)SYSTEM_MALLOC(uncomp_size - 32);
 				if (XA_Buffers[num].pAudioData) {
+					XA_SPS[num] = 22050;
 					memcpy((void*)XA_Buffers[num].pAudioData, pPCMData, uncomp_size - 32);
 					XA_Buffers[num].AudioBytes = uncomp_size - 32;
 
@@ -591,14 +596,20 @@ long DXStartSample(long num, long volume, long pitch, long pan, ulong flags)
 		return -1;
 
 	voice = XA_Voices[channel];
-	DSChangeVolume(channel, volume);
-	DSAdjustPitch(channel, pitch);
-	DSAdjustPan(channel, pan);
-	buffer = &XA_Buffers[num];
-	buffer->LoopCount = flags;
-	DXAttempt(voice->SubmitSourceBuffer(buffer, 0));
-	DXAttempt(voice->Start(0, XAUDIO2_COMMIT_NOW));
-	return channel;
+	if (voice)
+	{
+		current_voice_samples_per_second = XA_SPS[num];
+
+		DSChangeVolume(channel, volume);
+		DSAdjustPitch(channel, pitch);
+		DSAdjustPan(channel, pan);
+		buffer = &XA_Buffers[num];
+		buffer->LoopCount = flags;
+		DXAttempt(voice->SubmitSourceBuffer(buffer, 0));
+		DXAttempt(voice->Start(0, XAUDIO2_COMMIT_NOW));
+		return channel;
+	}
+	return -1;
 #endif
 }
 
