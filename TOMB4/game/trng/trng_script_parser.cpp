@@ -837,6 +837,11 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 			unsigned short object_id = NG_READ_16(gfScriptFile, offset);
 			unsigned short amount = NG_READ_16(gfScriptFile, offset);
 
+			// Special-case for shotgun.
+			if (object_id == SHOTGUN_AMMO1_ITEM || object_id == SHOTGUN_AMMO2_ITEM) {
+				amount *= 6;
+			}
+
 			if (current_level == 0) {
 				for (int i = 0; i < MOD_LEVEL_COUNT; i++) {
 					MOD_EQUIPMENT_MODIFIER *equipment_modifiers = get_game_mod_level_stat_info(i)->equipment_modifiers;
