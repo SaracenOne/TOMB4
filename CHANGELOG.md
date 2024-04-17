@@ -1,5 +1,28 @@
 # Tomb4Plus changelog
 
+## [0.2.1.0-alpha](https://github.com/SaracenOne/Tomb4Plus/releases/tag/0.2.1.0-alpha) (April 17th 2024)
+
+- Fixed major regression when climbing around an inner corner.
+- Added WEATHER_SET_X_DISTANCE_FOG_VALUE flipeffect.
+- Added WEATHER_SET_X_END_FOG_LIMIT_FOR_DISTANCE_FOG flipeffect.
+- Added multiplier when adding shotgun shell equipment.
+- Added music track playback when entering a boat.
+- Improved accuracy of CREATURE_IS_CURRENTLY condition.
+- Improved accuracy of OPEN_OR_CLOSE_ITEM action.
+- Improved accuracy of KILL_OBJECT action.
+- Improved accuracy of TRNG actions oneshot flag.
+- Added log warnings when unsupported OCB codes are used for tightrope.
+- Added CUST_KEEP_DEAD_ENEMIES.
+- Added CUST_LOOK_TRANSPARENT.
+- Fixed CUST_SET_STATIC_DAMAGE.
+- Fixed CUST_HAIR_TYPE.
+- Added FMOV_HEAVY_AT_END, FMOV_TRIGGERS_ALL, and FMOV_HEAVY_ALL flags.
+- Fixed position of audio for when moving statics.
+- Added support for alternative sample rates in XAudio2.
+- Fixed fog rendering in title level.
+- Added dart and falling block customisation.
+- Fixed camera targets not reseting when calling triggergroups.
+
 ## [0.2.0.0-alpha](https://github.com/SaracenOne/Tomb4Plus/releases/tag/0.2.0.0-alpha) (April 9th 2024)
 
 - Added support for native 64-bit build.
