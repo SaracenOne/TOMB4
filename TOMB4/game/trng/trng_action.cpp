@@ -25,6 +25,7 @@
 #include "../lara.h"
 #include "../baboon.h"
 #include "../traps.h"
+#include "../gameflow.h"
 
 void NGHurtEnemy(unsigned short item_id, unsigned short damage) {
 	if (items[item_id].hit_points > 0) {
@@ -312,120 +313,90 @@ NGActionRepeatType NGAction(unsigned short item_id, unsigned short extra, int fl
 			break;
 		}
 		case PERFORM_FLIPEFFECT_ON_ITEM: {
+			// TODO: the repeattype of this action is inaccurate.
+
 			effect_routines[action_data](&items[item_id]);
 			break;
 		}
-		// TODO: the kill behaviour needs to be re-evaluated
 		case KILL_OBJECT: {
 			ITEM_INFO* item = &items[item_id];
-			// The behaviour for what determines what items we can't kill is very weird.
-			// You can explode creatures over and over again even after death, but only after they've been active once.
-			// This should recreate behaviour I've observed, but it's still probably not accurate.
-			if ((objects[item->object_number].intelligent && !(item->flags & IFL_TRIGGERED)))
-				return NG_ACTION_REPEAT_TYPE_ALWAYS;
+			if (item->object_number != get_game_mod_level_objects_info(gfCurrentLevel)->lara_slot
+				&& !item->active
+				&& item->status == ITEM_ACTIVE) {
+
+				if (item->collidable) {
+					repeat_type = NG_ACTION_REPEAT_TYPE_NEVER;
+				}
+				break;
+			}
 
 			switch (action_data) {
 				// 0 vitality
 				case 0x00: {
-					ITEM_INFO* item = &items[item_id];
 					item->hit_points = 0;
 					break;
 				}
 				// Remove immediately
 				case 0x01: {
-					ITEM_INFO *item = &items[item_id];
-					item->status = ITEM_INVISIBLE;
-					RemoveActiveItem(item_id);
-					if (objects[item->object_number].intelligent)
-						DisableBaddieAI(item_id);
-					item->hit_points = -16384;
-					item->collidable = 0;
-					item->flags |= IFL_INVISIBLE | IFL_CLEARBODY;
+					KillItem(item_id);
 					break;
 				}
-				// Explosion
-				case 0x02: {
-					ITEM_INFO* item = &items[item_id];
-
-					TriggerExplosionSparks(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, 3, -2, 0, item->room_number);
-					for (int i = 0; i < 3; i++)
-						TriggerExplosionSparks(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, 3, -1, 0, item->room_number);
-
-					SoundEffect(SFX_EXPLOSION1, &item->pos, 0x1800000 | SFX_SETPITCH);
-					SoundEffect(SFX_EXPLOSION2, &item->pos, 0);
-
-					item->status = ITEM_INVISIBLE;
-					RemoveActiveItem(item_id);
-					if (objects[item->object_number].intelligent)
-						DisableBaddieAI(item_id);
-
-					break;
-				}
-				// Underwater Explosion
+				// Explosion / Underwater Explosion
+				case 0x02:
 				case 0x03: {
-					ITEM_INFO* item = &items[item_id];
+					if (action_data == 0x02) {
+						TriggerExplosionSparks(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, 3, -2, 0, item->room_number);
+						for (int i = 0; i < 3; i++)
+							TriggerExplosionSparks(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, 3, -1, 0, item->room_number);
 
-					TriggerUnderwaterExplosion(item, 0);
+					} else {
+						TriggerUnderwaterExplosion(item, 0);
+					}
 
-					SoundEffect(SFX_EXPLOSION1, &item->pos, 0x1800004);
-					SoundEffect(SFX_EXPLOSION2, &item->pos, 0);
+					KillItem(item_id);
 
-					item->status = ITEM_INVISIBLE;
+					item->status = ITEM_DEACTIVATED;
 
+					SoundEffect(SFX_EXPLOSION1, nullptr, 0);
+					SoundEffect(SFX_EXPLOSION2, nullptr, 0);
+
+					item->hit_points = -16384;
 					break;
 				}
 				// Explode Creature
 				case 0x04: {
-					ITEM_INFO* item = &items[item_id];
-
-					SoundEffect(SFX_EXPLOSION1, &item->pos, 0x1800004);
-					SoundEffect(SFX_EXPLOSION2, &item->pos, 0);
-
-					item->after_death = 1;
-					item->hit_points = 0;
-					CreatureDie(item_id, 1);
-
+					CreatureDie(item_id, true);
+					SoundEffect(SFX_EXPLOSION1, nullptr, 0);
+					SoundEffect(SFX_EXPLOSION2, nullptr, 0);
+					item->hit_points = -16384;
 					break;
 				}
 				// Creature Die
 				case 0x05: {
-					ITEM_INFO* item = &items[item_id];
-
-					bool is_invisible = item->flags & IFL_INVISIBLE;
-					CreatureDie(item_id, 0);
-					if (!is_invisible)
-						item->flags = item->flags & ~IFL_INVISIBLE;
-
+					// We may not want to set this if using persistent enemy bodies.
+					// T4Plus' implementation is different though.
 					item->after_death = 1;
+					item->status = ITEM_DEACTIVATED;
 					item->hit_points = 0;
 
 					break;
 				}
 				// Hide
 				case 0x06: {
-					// TODO: This one is weird, not quite sure how to properly recreate it behaviour
-					ITEM_INFO *item = &items[item_id];
-					item->status = ITEM_INVISIBLE;
-					RemoveActiveItem(item_id);
-					if (objects[item->object_number].intelligent)
-						DisableBaddieAI(item_id);
+					// Seems accurate but WTF?
+					item->pos.x_pos = 0;
 					break;
 				}
 				// Antitrigger
 				case 0x07: {
-					ITEM_INFO* item = &items[item_id];
-					if (item->status != ITEM_INVISIBLE)
-						item->status = ITEM_INACTIVE;
-					item->flags = item->flags & ~(IFL_CODEBITS | IFL_REVERSE);
-					RemoveActiveItem(item_id);
-					if (objects[item->object_number].intelligent)
-						DisableBaddieAI(item_id);
+					// Accurate!
+					item->flags |= 0x8000;
+					item->item_flags[0] = 0;
 					break;
 				}
 				// Smoke emitter
 				case 0x08: {
-					ITEM_INFO* item = &items[item_id];
-					item->flags = item->flags & ~(IFL_CODEBITS | IFL_REVERSE);
+					RemoveActiveItem(item_id);
 					break;
 				}
 				default: {
@@ -634,7 +605,7 @@ NGActionRepeatType NGAction(unsigned short item_id, unsigned short extra, int fl
 			break;
 		}
 		case OPEN_OR_CLOSE_DOOR_ITEM: {
-			repeat_type = NG_ACTION_REPEAT_TYPE_ALWAYS;
+			repeat_type = NG_ACTION_REPEAT_TYPE_NEVER;
 
 			T4PlusActivateItem(item_id, false);
 			items[item_id].timer = 0;
@@ -853,9 +824,15 @@ NGActionRepeatType NGAction(unsigned short item_id, unsigned short extra, int fl
 			RemoveActiveItem(item_id);
 			break;
 		}
-		default:
+		default: {
 			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Unimplemented NGAction %u", action_type);
 			break;
-		};
+		}
+	};
+
+	if (repeat_type != NG_ACTION_REPEAT_TYPE_NEVER && (flags & NG_TRIGGER_FLAG_BUTTON_ONESHOT)) { 
+		repeat_type = NG_ACTION_REPEAT_TYPE_ALWAYS;
+	}
+
 	return repeat_type;
 };
