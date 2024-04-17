@@ -21,7 +21,7 @@ ushort* overlap;
 short* ground_zone[5][2];
 long num_boxes;
 
-void CreatureDie(short item_number, long explode)
+void CreatureDie(short item_number, bool explode)
 {
 	ITEM_INFO* item;
 	ITEM_INFO* pickup;

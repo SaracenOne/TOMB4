@@ -1,7 +1,7 @@
 #pragma once
 #include "../global/types.h"
 
-void CreatureDie(short item_number, long explode);
+void CreatureDie(short item_number, bool explode);
 void InitialiseCreature(short item_number);
 long CreatureActive(short item_number);
 void CreatureAIInfo(ITEM_INFO* item, AI_INFO* info);
