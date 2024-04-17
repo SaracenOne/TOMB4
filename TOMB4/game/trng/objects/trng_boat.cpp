@@ -12,6 +12,7 @@
 #include "../../../specific/function_stubs.h"
 #include "../../../tomb4/mod_config.h"
 #include "../../../specific/3dmath.h"
+#include "../../../specific/audio.h"
 #include "../../../specific/input.h"
 #include "../../sphere.h"
 #include "../../../tomb4/tomb4plus/t4plus_objects.h"
@@ -664,6 +665,7 @@ void BoatCollision(short item_num, ITEM_INFO* l, COLL_INFO* coll)
 	if (item->status != ITEM_ACTIVE) {
 		AddActiveItem(item_num);
 		item->status = ITEM_ACTIVE;
+		S_CDPlay(12, 0);
 	}
 }
 
