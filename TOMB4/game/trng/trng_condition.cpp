@@ -57,7 +57,7 @@ bool NGIsCreatureActive(short item_num) {
 }
 
 bool NGIsTriggerActive(ITEM_INFO* item) {
-	if (item->flags & IFL_CODEBITS) {
+	if (!(item->flags & IFL_CODEBITS)) {
 		return false;
 	}
 
@@ -293,6 +293,7 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 		return NGGridFragmentConditionTrigger(param, extra, 4);
 	}
 	case VERTICAL_TRIGGER_ZONE: {
+		// TODO: make more accurate to TRNG
 		short *bounds = GetBoundsAccurate(lara_item);
 		int item_top_y = lara_item->pos.y_pos + bounds[2];
 		int item_bottom_y = lara_item->pos.y_pos; // + bounds[3];
@@ -303,6 +304,7 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 		return (item_top_y <= bottom_trigger_bounds && item_bottom_y >= top_trigger_bounds);
 	}
 	case VERTICAL_TRIGGER_ZONE_INVERSE: {
+		// TODO: make more accurate to TRNG
 		short* bounds = GetBoundsAccurate(lara_item);
 		int item_top_y = lara_item->pos.y_pos + bounds[2];
 		int item_bottom_y = lara_item->pos.y_pos; // + bounds[3];
@@ -313,6 +315,7 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 		return (item_top_y < top_trigger_bounds || item_bottom_y > bottom_trigger_bounds);
 	}
 	case VERTICAL_TRIGGER_ANTI_ZONE: {
+		// TODO: make more accurate to TRNG
 		short* bounds = GetBoundsAccurate(lara_item);
 		int item_top_y = lara_item->pos.y_pos + bounds[2];
 		int item_bottom_y = lara_item->pos.y_pos; // + bounds[3];
@@ -360,12 +363,6 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "KEYBOARD_COMMAND_GAME_IS_CURRENTLY is not currently implemented!");
 		return false;
 	}
-	case MULTIPLE_CONDITION_OF_X_TRIGGERGROUP_SCRIPT_COMMAND: {
-		return NGTriggerGroupFunction(param, TRIGGER_GROUP_EXECUTION_MULTIPLE);
-	}
-	case MULTIPLE_CONDITION_OF_X_MULTIENVCONDITION_SCRIPT_COMMAND: {
-		return TestMultiEnvCondition(param, extra);
-	}
 	case CREATURE_IS_CURRENTLY: {
 		switch (extra) {
 			// Enemy is dead
@@ -395,6 +392,12 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 		}
 
 		return false;
+	}
+	case MULTIPLE_CONDITION_OF_X_TRIGGERGROUP_SCRIPT_COMMAND: {
+		return NGTriggerGroupFunction(param, TRIGGER_GROUP_EXECUTION_MULTIPLE);
+	}
+	case MULTIPLE_CONDITION_OF_X_MULTIENVCONDITION_SCRIPT_COMMAND: {
+		return TestMultiEnvCondition(param, extra);
 	}
 	case LARA_HAS_FOUND_AT_LEAST_X_SECRETS: {
 		return savegame.Game.Secrets >= param;
