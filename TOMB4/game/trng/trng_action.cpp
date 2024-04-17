@@ -406,161 +406,7 @@ NGActionRepeatType NGAction(unsigned short item_id, unsigned short extra, int fl
 			}
 			break;
 		}
-		case FREEZE_ENEMY_FOR_SECONDS: {
-			// TODO: need to re-examine this function. Right now, the implementation of 'freezing' an enemy simply disable their control
-			// update, but it's possible it might affect their status instead.
-			if (!NGIsItemFrozen(item_id)) {
-				if (action_data == 0) {
-					NGSetItemFreezeTimer(item_id, -1);
-				}
-				else {
-					NGSetItemFreezeTimer(item_id, action_data * 30);
-				}
-			}
-			break;
-		}
-		case UNFREEZE_ENEMY_WITH_EFFECT: {
-			if (action_data != 0x00) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "UNFREEZE_ENEMY_WITH_EFFECT: action data %u unimplemented!", action_data);
-			}
-
-			if (NGIsItemFrozen(item_id)) {
-				// TODO: action_data signifies a special effect when unfreezeing
-				NGSetItemFreezeTimer(item_id, 0);
-			}
-			break;
-		}
-		case ENEMY_SAVE_THE_COORDINATES_AND_FACING_OF_X_MOVEABLE_IN_SAVEGAME: {
-			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ENEMY_SAVE_THE_COORDINATES_AND_FACING_OF_X_MOVEABLE_IN_SAVEGAME unimplemented!");
-			break;
-		}
-		case HURT_ENEMY: {
-			NGHurtEnemy(item_id, action_data & 0x7f);
-			break;
-		}
-		case MOVE_ITEM_IMMEDIATELY_TO_LARA_START_POS_WITH_MATCHING_OCB_SETTINGS: {
-			int lara_start_pos_id = NGFindIndexForLaraStartPosWithMatchingOCB(action_data & 0x7f);
-			if (lara_start_pos_id >= 0) {
-				AIOBJECT *ai = &AIObjects[lara_start_pos_id];
-				if (ai) {
-					items[item_id].pos.x_pos = ai->x;
-					items[item_id].pos.y_pos = ai->y;
-					items[item_id].pos.z_pos = ai->z;
-					items[item_id].pos.y_rot = ai->y_rot;
-					items[item_id].room_number = ai->room_number;
-				}
-			}
-			break;
-		}
-		case ACTIVATE_CAMERA_WITH_TIMER: {
-			if (item_id >= number_cameras) {
-				NGLog(NG_LOG_TYPE_ERROR, "Invalid camera number.");
-				break;
-			}
-
-			if (camera.fixed[item_id].flags & 0x100)
-				break;
-
-			camera.number = item_id;
-
-			if (camera.type == LOOK_CAMERA || camera.type == COMBAT_CAMERA) {
-				if (!(camera.fixed[item_id].flags & 0x01)) {
-					break;
-				}
-			}
-
-			camera.timer = action_data * 30;
-			camera.speed = 1;
-			if (ng_camera_target_id == NO_ITEM) {
-				ng_camera_target_id = lara.item_number;
-			}
-			
-			camera.item = &items[ng_camera_target_id];
-
-			if (flags & NG_TRIGGER_FLAG_BUTTON_ONESHOT) {
-				camera.flags |= 0x100;
-			}
-			if (flags & NG_TRIGGER_FLAG_HEAVY) {
-				camera.type = HEAVY_CAMERA;
-			}
-			else {
-				camera.type = FIXED_CAMERA;
-			}
-
-			break;
-		}
-		case SET_MOVEABLE_AS_TARGET_FOR_CAMERA: {
-			if (item_id >= ITEM_COUNT) {
-				NGLog(NG_LOG_TYPE_ERROR, "Invalid camera target.");
-				break;
-			}
-
-			ng_camera_target_id = item_id;
-			break;
-		}
-		case TRIGGER_MOVEABLE_ACTIVATE_WITH_TIMER: {
-			items[item_id].timer = ((short)(action_data & 0x7f)) * 30;
-			T4PlusActivateItem(item_id, false);
-			break;
-		}
-		case UNTRIGGER_MOVEABLE_ACTIVATE_WITH_TIMER: {
-			items[item_id].timer = ((short)(action_data & 0x7f)) * 30;
-			T4PlusActivateItem(item_id, true);
-			break;
-		}
-		case ACTIVATE_OR_UNTRIGGER_FLYBY_SEQUENCE: {
-			NGLog(NG_LOG_TYPE_POSSIBLE_INACCURACY, "ACTIVATE_OR_UNTRIGGER_FLYBY_SEQUENCE may not be implemented correctly!");
-
-			if (item_id >= MAXIMUM_SPOTCAMS) {
-				NGLog(NG_LOG_TYPE_ERROR, "Invalid spotcam!");
-			}
-
-			if (action_data == 0) {
-				if (!(SpotCam[item_id].flags & SP_FLYBYONESHOT)) {
-					bUseSpotCam = 1;
-
-					if (flags & NG_TRIGGER_FLAG_BUTTON_ONESHOT) {
-						SpotCam[item_id].flags |= SP_FLYBYONESHOT;
-					}
-
-					InitialiseSpotCam(item_id);
-				}
-			} else if (action_data == 1){
-				if (bUseSpotCam) {
-					SpotcamResetFOV();
-					bUseSpotCam = 0;
-				}
-			} else {
-				NGLog(NG_LOG_TYPE_ERROR, "ACTIVATE_OR_UNTRIGGER_FLYBY_SEQUENCE invalid action data!");
-			}
-			break;
-		}
-		case EFFECT_ADD_TO_ENEMY: {
-			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "EFFECT_ADD_TO_ENEMY unimplemented!");
-			break;
-		}
-		case EFFECT_REMOVE_TO_ENEMY: {
-			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "EFFECT_REMOVE_TO_ENEMY unimplemented!");
-			break;
-		}
-		case ENEMY_SET_MESH_AS_INVISIBLE: {
-			NGToggleItemMeshVisibilityMaskBit(item_id, action_data, false);
-			break;
-		}
-		case ENEMY_SET_MESH_AS_VISIBLE: {
-			NGToggleItemMeshVisibilityMaskBit(item_id, action_data, true);
-			break;
-		}
-		case SHOW_TRIGGER_COUNTDOWN_TIMER_FOR_ENEMY: {
-			NGSetDisplayTimerForMoveableWithType(item_id, (NGTimerTrackerType)(action_data & 0x7f));
-			break;
-		}
-		case SET_ENEMY_TRANSPARENCY_LEVEL: {
-			NGSetFadeOverride(item_id, action_data);
-			items[item_id].after_death = action_data;
-			break;
-		}
-		case FORCE_ANIMATION_0_TO_31_ON_ITEM: {
+			case FORCE_ANIMATION_0_TO_31_ON_ITEM: {
 			NGSetItemAnimation(item_id, action_data & 0x1f, true, false, false, true);
 			break;
 		}
@@ -751,6 +597,160 @@ NGActionRepeatType NGAction(unsigned short item_id, unsigned short extra, int fl
 				NGSetItemMovementTriggerHeavyWhenMoving(item_id, false);
 			}
 			break;
+		case HURT_ENEMY: {
+			NGHurtEnemy(item_id, action_data & 0x7f);
+			break;
+		}
+		case MOVE_ITEM_IMMEDIATELY_TO_LARA_START_POS_WITH_MATCHING_OCB_SETTINGS: {
+			int lara_start_pos_id = NGFindIndexForLaraStartPosWithMatchingOCB(action_data & 0x7f);
+			if (lara_start_pos_id >= 0) {
+				AIOBJECT *ai = &AIObjects[lara_start_pos_id];
+				if (ai) {
+					items[item_id].pos.x_pos = ai->x;
+					items[item_id].pos.y_pos = ai->y;
+					items[item_id].pos.z_pos = ai->z;
+					items[item_id].pos.y_rot = ai->y_rot;
+					items[item_id].room_number = ai->room_number;
+				}
+			}
+			break;
+		}
+		case ACTIVATE_CAMERA_WITH_TIMER: {
+			if (item_id >= number_cameras) {
+				NGLog(NG_LOG_TYPE_ERROR, "Invalid camera number.");
+				break;
+			}
+
+			if (camera.fixed[item_id].flags & 0x100)
+				break;
+
+			camera.number = item_id;
+
+			if (camera.type == LOOK_CAMERA || camera.type == COMBAT_CAMERA) {
+				if (!(camera.fixed[item_id].flags & 0x01)) {
+					break;
+				}
+			}
+
+			camera.timer = action_data * 30;
+			camera.speed = 1;
+			if (ng_camera_target_id == NO_ITEM) {
+				ng_camera_target_id = lara.item_number;
+			}
+			
+			camera.item = &items[ng_camera_target_id];
+
+			if (flags & NG_TRIGGER_FLAG_BUTTON_ONESHOT) {
+				camera.flags |= 0x100;
+			}
+			if (flags & NG_TRIGGER_FLAG_HEAVY) {
+				camera.type = HEAVY_CAMERA;
+			}
+			else {
+				camera.type = FIXED_CAMERA;
+			}
+
+			break;
+		}
+		case SET_MOVEABLE_AS_TARGET_FOR_CAMERA: {
+			if (item_id >= ITEM_COUNT) {
+				NGLog(NG_LOG_TYPE_ERROR, "Invalid camera target.");
+				break;
+			}
+
+			ng_camera_target_id = item_id;
+			break;
+		}
+		case TRIGGER_MOVEABLE_ACTIVATE_WITH_TIMER: {
+			items[item_id].timer = ((short)(action_data & 0x7f)) * 30;
+			T4PlusActivateItem(item_id, false);
+			break;
+		}
+		case UNTRIGGER_MOVEABLE_ACTIVATE_WITH_TIMER: {
+			items[item_id].timer = ((short)(action_data & 0x7f)) * 30;
+			T4PlusActivateItem(item_id, true);
+			break;
+		}
+		case ACTIVATE_OR_UNTRIGGER_FLYBY_SEQUENCE: {
+			NGLog(NG_LOG_TYPE_POSSIBLE_INACCURACY, "ACTIVATE_OR_UNTRIGGER_FLYBY_SEQUENCE may not be implemented correctly!");
+
+			if (item_id >= MAXIMUM_SPOTCAMS) {
+				NGLog(NG_LOG_TYPE_ERROR, "Invalid spotcam!");
+			}
+
+			if (action_data == 0) {
+				if (!(SpotCam[item_id].flags & SP_FLYBYONESHOT)) {
+					bUseSpotCam = 1;
+
+					if (flags & NG_TRIGGER_FLAG_BUTTON_ONESHOT) {
+						SpotCam[item_id].flags |= SP_FLYBYONESHOT;
+					}
+
+					InitialiseSpotCam(item_id);
+				}
+			} else if (action_data == 1){
+				if (bUseSpotCam) {
+					SpotcamResetFOV();
+					bUseSpotCam = 0;
+				}
+			} else {
+				NGLog(NG_LOG_TYPE_ERROR, "ACTIVATE_OR_UNTRIGGER_FLYBY_SEQUENCE invalid action data!");
+			}
+			break;
+		}
+		case EFFECT_ADD_TO_ENEMY: {
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "EFFECT_ADD_TO_ENEMY unimplemented!");
+			break;
+		}
+		case EFFECT_REMOVE_TO_ENEMY: {
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "EFFECT_REMOVE_TO_ENEMY unimplemented!");
+			break;
+		}
+		case ENEMY_SET_MESH_AS_INVISIBLE: {
+			NGToggleItemMeshVisibilityMaskBit(item_id, action_data, false);
+			break;
+		}
+		case ENEMY_SET_MESH_AS_VISIBLE: {
+			NGToggleItemMeshVisibilityMaskBit(item_id, action_data, true);
+			break;
+		}
+		case SHOW_TRIGGER_COUNTDOWN_TIMER_FOR_ENEMY: {
+			NGSetDisplayTimerForMoveableWithType(item_id, (NGTimerTrackerType)(action_data & 0x7f));
+			break;
+		}
+		case SET_ENEMY_TRANSPARENCY_LEVEL: {
+			NGSetFadeOverride(item_id, action_data);
+			items[item_id].after_death = action_data;
+			break;
+		}
+		case FREEZE_ENEMY_FOR_SECONDS: {
+			// TODO: need to re-examine this function. Right now, the implementation of 'freezing' an enemy simply disable their control
+			// update, but it's possible it might affect their status instead.
+			if (!NGIsItemFrozen(item_id)) {
+				if (action_data == 0) {
+					NGSetItemFreezeTimer(item_id, -1);
+				}
+				else {
+					NGSetItemFreezeTimer(item_id, action_data * 30);
+				}
+			}
+			break;
+		}
+		case UNFREEZE_ENEMY_WITH_EFFECT: {
+			if (action_data != 0x00) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "UNFREEZE_ENEMY_WITH_EFFECT: action data %u unimplemented!", action_data);
+			}
+
+			if (NGIsItemFrozen(item_id)) {
+				// TODO: action_data signifies a special effect when unfreezeing
+				NGSetItemFreezeTimer(item_id, 0);
+			}
+			break;
+		}
+		case ENEMY_SAVE_THE_COORDINATES_AND_FACING_OF_X_MOVEABLE_IN_SAVEGAME: {
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ENEMY_SAVE_THE_COORDINATES_AND_FACING_OF_X_MOVEABLE_IN_SAVEGAME unimplemented!");
+			break;
+		}
 		case DISABLE_ITEM_COLLISION:
 			NGDisableItemCollision(item_id);
 			break;
