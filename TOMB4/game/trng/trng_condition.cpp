@@ -42,6 +42,28 @@ enum GRID_FRAGMENT_TYPE {
 	FRAGMENT_TYPE_TWO_CROSS_DIAGONALS_PASSING_LINE
 };
 
+bool NGIsCreatureActive(short item_num) {
+	ITEM_INFO* item = &items[item_num];
+
+	if (item->flags & IFL_CLEARBODY) {
+		return false;
+	}
+
+	if (item->status == ITEM_INVISIBLE) {
+		return false;
+	}
+
+	return true;
+}
+
+bool NGIsTriggerActive(ITEM_INFO* item) {
+	if (item->flags & IFL_CODEBITS) {
+		return false;
+	}
+
+	return true;
+}
+
 bool NGGridFragmentCondition(int x_pos, int y_pos, int grid_size, int x_target_coordinate, int y_target_coordinate, GRID_FRAGMENT_TYPE grid_fragment_type, bool inverted) {
 	int fragment_size = SECTOR_SIZE / grid_size;
 	// Flipped these around to match
@@ -352,19 +374,19 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 			}
 			// Enemy has not yet been activated
 			case 0x01: {
-				return !items[param].active && items[param].status != ITEM_DEACTIVATED;
+				return (items[param].status == ITEM_INVISIBLE);
 			}
 			// Enemy is living
 			case 0x02: {
-				return items[param].status == ITEM_INACTIVE || items[param].status == ITEM_ACTIVE;
+				return NGIsCreatureActive(param);
 			}
 			// Enemy is active
 			case 0x03: {
-				return items[param].status == ITEM_ACTIVE;
+				return (NGIsCreatureActive(param) && NGIsTriggerActive(&items[param]));
 			}
 			// Enemy is not active
 			case 0x04: {
-				return items[param].status != ITEM_ACTIVE;
+				return (!NGIsCreatureActive(param) || !NGIsTriggerActive(&items[param]));
 			}
 			default: {
 				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "CREATURE_IS_CURRENTLY %u is not currently implemented!", extra);

@@ -390,7 +390,7 @@ NGActionRepeatType NGAction(unsigned short item_id, unsigned short extra, int fl
 				// Antitrigger
 				case 0x07: {
 					// Accurate!
-					item->flags |= 0x8000;
+					item->flags |= IFL_CLEARBODY;
 					item->item_flags[0] = 0;
 					break;
 				}
