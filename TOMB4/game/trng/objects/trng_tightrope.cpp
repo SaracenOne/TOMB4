@@ -8,6 +8,7 @@
 #include "../../../specific/function_stubs.h"
 #include "../trng_extra_state.h"
 #include "../../delstuff.h"
+#include "../trng.h"
 
 // Imported from Troye's Tomb5 project
 
@@ -67,6 +68,10 @@ void lara_as_trwalk(ITEM_INFO* item, COLL_INFO* coll) {
 	coll->enable_baddie_push = 0;
 	coll->enable_spaz = 0;
 
+	if (item->trigger_flags > 0) {
+		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Trigger flags are not yet supported for tightropes.");
+	}
+
 	FLOOR_INFO* floor;
 	short room_number;
 
@@ -81,9 +86,9 @@ void lara_as_trwalk(ITEM_INFO* item, COLL_INFO* coll) {
 			ng_lara_extrastate.TightRopeOff = 0;
 			item->goal_anim_state = AS_TROPEGETOFF;
 		}
-	}
-	else
+	} else {
 		GetTighRopeFallOff(127);
+	}
 
 	if (lara_item->current_anim_state != AS_TROPEFALL_L) {
 		if (input & IN_LOOK)
