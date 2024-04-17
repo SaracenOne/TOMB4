@@ -4915,7 +4915,7 @@ long LaraHangRightCornerTest(ITEM_INFO* item, COLL_INFO* coll)
 	item->pos.z_pos = z;
 	item->pos.y_rot += 0x4000;
 	lara.CornerX = (void*)(size_t(x) & 0xffffffff);
-	lara.CornerX = (void*)(size_t(z) & 0xffffffff);
+	lara.CornerZ = (void*)(size_t(z) & 0xffffffff);
 	flag = -IsValidHangPos(item, coll);
 
 	if (flag)
