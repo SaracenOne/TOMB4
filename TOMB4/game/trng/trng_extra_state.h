@@ -259,8 +259,8 @@ extern void NGEnableItemCollision(unsigned int item_num);
 extern void NGToggleItemMeshVisibilityMaskBit(unsigned int item_num, unsigned int mask_bit, bool enabled);
 extern unsigned int NGGetItemMeshVisibilityMask(unsigned int item_num);
 
-extern void NGSetAfterDeathOverride(int item_id, short after_death);
-extern short NGGetAfterDeathOverride(int item_id);
+extern void NGSetFadeOverride(int item_id, short fade_override);
+extern short NGGetFadeOverride(int item_id);
 
 extern void NGSetFullscreenCurtainTimer(int ticks);
 extern void NGSetCinemaTypeAndTimer(int type, int ticks);

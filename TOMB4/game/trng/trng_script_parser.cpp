@@ -1250,9 +1250,24 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 					break;
 				}
 				case CUST_KEEP_DEAD_ENEMIES: {
-					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_KEEP_DEAD_ENEMIES unimplemented! (level %u)", current_level);
+					short is_enabled = NG_READ_16(gfScriptFile, offset);
 
-					offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+					bool fade_dead_enemies = true;
+					if (is_enabled == 1) {
+						fade_dead_enemies = false;
+					} else if (is_enabled == 0) {
+						fade_dead_enemies = true;
+					} else {
+						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_KEEP_DEAD_ENEMIES type unimplemented! (level %u)", current_level);
+					}
+
+					if (current_level == 0) {
+						for (int i = 0; i < MOD_LEVEL_COUNT; i++) {
+							get_game_mod_level_creature_info(i)->fade_dead_enemies = fade_dead_enemies;
+						}
+					} else {
+						get_game_mod_level_creature_info(current_level)->fade_dead_enemies = fade_dead_enemies;
+					}
 					break;
 				}
 				case CUST_SET_OLD_CD_TRIGGER: {

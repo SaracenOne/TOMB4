@@ -1334,15 +1334,18 @@ void PrintObjects(short room_number)
 		obj = &objects[item->object_number];
 
 		// NGLE
-		short after_death_override = NGGetAfterDeathOverride(item_number);
-		if (after_death_override != 0)
-			item->after_death = after_death_override;
+		short fade_override = NGGetFadeOverride(item_number);
+		if (fade_override != 0)
+			item->after_death = fade_override;
 
 
 		if (item->status != ITEM_INVISIBLE)
 		{
-			if (item->after_death)
-				GlobalAlpha = 0xFE000000 * item->after_death;
+			if (get_game_mod_level_creature_info(gfCurrentLevel)->fade_dead_enemies || fade_override != 0) {
+				if (item->after_death) {
+					GlobalAlpha = 0xFE000000 * item->after_death;
+				}
+			}
 
 			NGSetCurrentDrawItemNumber(item_number); // NGLE
 
@@ -1358,8 +1361,11 @@ void PrintObjects(short room_number)
 		if (item->after_death < 128 && item->after_death > 0)
 			item->after_death++;
 
-		if (item->after_death == 128)
-			KillItem(item_number);
+		if (item->after_death == 128) {
+			if (get_game_mod_level_creature_info(gfCurrentLevel)->fade_dead_enemies) {
+				KillItem(item_number);
+			}
+		}
 	}
 
 	nPolyType = 3;

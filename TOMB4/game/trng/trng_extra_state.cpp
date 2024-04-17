@@ -61,7 +61,7 @@ struct NG_ITEM_EXTRADATA {
 	short frozen_ticks = 0;
 	bool collison_disabled = false; // Will only disable the ObjectCollision routine. Doors and enemies stll have collision.
 	unsigned int mesh_visibility_mask = 0xffffffff;
-	short after_death_override = 0;
+	short fade_override = 0;
 
 	NG_MOVEMENT_INFO movement_info;
 };
@@ -93,7 +93,7 @@ void NGResetItemExtraData(int item_number) {
 		current_extradata->collison_disabled = false; // Will only disable the ObjectCollision routine. Doors and enemies stll have collision.
 
 		current_extradata->mesh_visibility_mask = 0xffffffff;
-		current_extradata->after_death_override = 0;
+		current_extradata->fade_override = 0;
 
 		NGResetMovementInfo(&current_extradata->movement_info);
 	} else {
@@ -1613,12 +1613,12 @@ void NGSetDisplayTimerForMoveableWithType(int item_id, NGTimerTrackerType new_ti
 #endif
 }
 
-extern void NGSetAfterDeathOverride(int item_id, short after_death) {
-	ng_items_extradata[item_id].after_death_override = after_death;
+extern void NGSetFadeOverride(int item_id, short fade_override) {
+	ng_items_extradata[item_id].fade_override = fade_override;
 }
 
-extern short NGGetAfterDeathOverride(int item_id) {
-	return ng_items_extradata[item_id].after_death_override;
+extern short NGGetFadeOverride(int item_id) {
+	return ng_items_extradata[item_id].fade_override;
 }
 
 int ng_draw_item_number = NO_ITEM;

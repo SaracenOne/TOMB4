@@ -168,6 +168,7 @@ struct MOD_LEVEL_STATICS_INFO {
 };
 
 struct MOD_LEVEL_CREATURE_INFO {
+	bool fade_dead_enemies = true;
 	bool small_scorpion_is_poisonous = true;
 	int small_scorpion_poison_strength = 512;
 	

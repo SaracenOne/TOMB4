@@ -585,7 +585,7 @@ NGActionRepeatType NGAction(unsigned short item_id, unsigned short extra, int fl
 			break;
 		}
 		case SET_ENEMY_TRANSPARENCY_LEVEL: {
-			NGSetAfterDeathOverride(item_id, action_data);
+			NGSetFadeOverride(item_id, action_data);
 			items[item_id].after_death = action_data;
 			break;
 		}
