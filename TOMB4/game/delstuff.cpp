@@ -16,6 +16,7 @@
 #include "../tomb4/tomb4plus/t4plus_objects.h"
 #include "../specific/file.h"
 #include "../specific/platform.h"
+#include "../tomb4/mod_config.h"
 
 short* GLaraShadowframe;
 float lara_matrices[180];
@@ -96,6 +97,17 @@ static uchar SkinUseMatrix[14][2] =
 
 static long in_joints;
 
+bool LaraHasLookTransparencySetting(long current_level) {
+	if (tomb4.look_transparency == LOOK_TRANSPARENCY_ON) {
+		return true;
+	} else if (tomb4.look_transparency == LOOK_TRANSPARENCY_OFF) {
+		return false;
+	} else {
+		MOD_LEVEL_LARA_INFO* lara_info = get_game_mod_level_lara_info(current_level);
+		return lara_info->use_look_transparency;
+	}
+}
+
 void DrawLara(ITEM_INFO* item, long mirror)
 {
 	OBJECT_INFO* obj;
@@ -121,7 +133,7 @@ void DrawLara(ITEM_INFO* item, long mirror)
 	if (lara.vehicle == NO_ITEM)
 		S_PrintShadow(obj->shadow_size, GLaraShadowframe, item);
 
-	if (tomb4.look_transparency)
+	if (LaraHasLookTransparencySetting(gfCurrentLevel))
 	{
 		if (input & IN_LOOK)
 		{

@@ -419,7 +419,20 @@ bool Page1(long& num, long textY, ulong selection)
 	y = 2;
 	s = 0;
 
-	strcpy(buffer, tomb4.look_transparency ? "on" : "off");
+	switch (tomb4.look_transparency) {
+		case LOOK_TRANSPARENCY_DEFAULT:
+			strcpy(buffer, "default");
+			break;
+		case LOOK_TRANSPARENCY_ON:
+			strcpy(buffer, "on");
+			break;
+		case LOOK_TRANSPARENCY_OFF:
+			strcpy(buffer, "off");
+			break;
+		default:
+			strcpy(buffer, "???");
+			break;
+	}
 	PrintString(phd_centerx + (phd_centerx >> 1), YPOS, CHECK_SEL(6), buffer, 0);
 
 	strcpy(buffer, tomb4.ammo_counter ? "on" : "off");
@@ -489,10 +502,25 @@ bool Page1(long& num, long textY, ulong selection)
 	{
 	case 1 << 0:
 
-		if (dbinput & IN_LEFT || dbinput & IN_RIGHT)
+		if (dbinput & IN_RIGHT)
 		{
 			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
-			tomb4.look_transparency = !tomb4.look_transparency;
+			tomb4.look_transparency = (look_transparency_enum)((int)tomb4.look_transparency + 1);
+
+			if (tomb4.look_transparency >= LOOK_TRANSPARENCY_ENUM_SIZE)
+				tomb4.look_transparency = (look_transparency_enum)((int)LOOK_TRANSPARENCY_NULL + 1);
+
+			changed = 1;
+		}
+
+		if (dbinput & IN_LEFT)
+		{
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+			tomb4.look_transparency = (look_transparency_enum)((int)tomb4.look_transparency - 1);
+			;
+			if (tomb4.look_transparency == LOOK_TRANSPARENCY_NULL)
+				tomb4.look_transparency = (look_transparency_enum)((int)LOOK_TRANSPARENCY_ENUM_SIZE - 1);
+
 			changed = 1;
 		}
 

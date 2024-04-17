@@ -1165,27 +1165,42 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 
 					if (current_level == 0) {
 						for (int i = 0; i < MOD_LEVEL_COUNT; i++) {
-							if (damage != 0xffff) {
+							if (damage != -1) {
 								get_game_mod_level_misc_info(i)->damage_static_interaction = damage;
 							}
-							if (poison_intensity != 0xffff) {
+							if (poison_intensity != -1) {
 								get_game_mod_level_misc_info(i)->posion_static_interaction = poison_intensity;
 							}
 						}
 					} else {
-						if (damage != 0xffff) {
+						if (damage != -1) {
 							get_game_mod_level_misc_info(current_level)->damage_static_interaction = damage;
 						}
-						if (poison_intensity != 0xffff) {
+						if (poison_intensity != -1) {
 							get_game_mod_level_misc_info(current_level)->posion_static_interaction = poison_intensity;
 						}
 					}
 					break;
 				}
 				case CUST_LOOK_TRANSPARENT: {
-					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_LOOK_TRANSPARENT unimplemented! (level %u)", current_level);
+					short is_enabled = NG_READ_16(gfScriptFile, offset);
 
-					unsigned short is_enabled = NG_READ_16(gfScriptFile, offset);
+					bool use_look_transparency = true;
+					if (is_enabled == 0) {
+						use_look_transparency = false;
+					} else if (is_enabled == 1) {
+						use_look_transparency = true;
+					} else {
+						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_LOOK_TRANSPARENT type unimplemented! (level %u)", current_level);
+					}
+
+					if (current_level == 0) {
+						for (int i = 0; i < MOD_LEVEL_COUNT; i++) {
+							get_game_mod_level_lara_info(i)->use_look_transparency = use_look_transparency;
+						}
+					} else {
+						get_game_mod_level_lara_info(current_level)->use_look_transparency = use_look_transparency;
+					}
 					break;
 				}
 				case CUST_HAIR_TYPE: {
@@ -1197,16 +1212,16 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 							case 0x00:
 								break;
 							case 0x01:
-								get_game_mod_level_lara_info(current_level)->hair_type = LARA_HAIR_TYPE_NONE;
+								get_game_mod_level_lara_info(i)->hair_type = LARA_HAIR_TYPE_NONE;
 								break;
 							case 0x02:
-								get_game_mod_level_lara_info(current_level)->hair_type = LARA_HAIR_TYPE_PIGTAILS;
+								get_game_mod_level_lara_info(i)->hair_type = LARA_HAIR_TYPE_PIGTAILS;
 								break;
 							case 0x03:
-								get_game_mod_level_lara_info(current_level)->hair_type = LARA_HAIR_TYPE_BRAID;
+								get_game_mod_level_lara_info(i)->hair_type = LARA_HAIR_TYPE_BRAID;
 								break;
 							case 0x04:
-								NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_HAIR_TYPE hair type 04 unimplemented! (level %u)", current_level);
+								NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_HAIR_TYPE hair type 04 unimplemented! (level %u)", i);
 								break;
 							case 0xffff:
 								break;

@@ -76,8 +76,8 @@ void init_tomb4_stuff()
 		REG_WriteBool(buf, tomb4.tr5_loadbar);
 
 		sprintf(buf, "ltransparency");
-		tomb4.look_transparency = 0;						//off
-		REG_WriteBool(buf, tomb4.look_transparency);
+		tomb4.look_transparency = LOOK_TRANSPARENCY_DEFAULT;//default
+		REG_WriteLong(buf, tomb4.look_transparency);
 
 		sprintf(buf, "ammo_counter");
 		tomb4.ammo_counter = 0;								//off
@@ -175,8 +175,10 @@ void init_tomb4_stuff()
 		sprintf(buf, "tr5LB");
 		REG_ReadBool(buf, tomb4.tr5_loadbar, 0);
 
+		ulong ltransparency;
 		sprintf(buf, "ltransparency");
-		REG_ReadBool(buf, tomb4.look_transparency, 1);
+		REG_ReadLong(buf, ltransparency, LOOK_TRANSPARENCY_DEFAULT);
+		tomb4.look_transparency = (look_transparency_enum)ltransparency;
 
 		sprintf(buf, "ammo_counter");
 		REG_ReadBool(buf, tomb4.ammo_counter, 0);
@@ -270,7 +272,7 @@ void save_new_tomb4_settings()
 	REG_WriteBool(buf, tomb4.tr5_loadbar);
 
 	sprintf(buf, "ltransparency");
-	REG_WriteBool(buf, tomb4.look_transparency);
+	REG_WriteLong(buf, tomb4.look_transparency);
 
 	sprintf(buf, "ammo_counter");
 	REG_WriteBool(buf, tomb4.ammo_counter);

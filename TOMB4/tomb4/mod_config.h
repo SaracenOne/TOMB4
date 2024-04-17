@@ -301,6 +301,8 @@ struct MOD_LEVEL_LARA_INFO {
 
 	int ledge_to_jump_state = -1;
 	int ledge_to_down_state = -1;
+
+	bool use_look_transparency = true;
 };
 
 struct TRNG_ENGINE_VERSION {

@@ -2642,6 +2642,14 @@ enum inv_bg_mode_enum {
 	INV_BG_MODE_ENUM_SIZE
 };
 
+enum look_transparency_enum {
+	LOOK_TRANSPARENCY_NULL,
+	LOOK_TRANSPARENCY_DEFAULT,
+	LOOK_TRANSPARENCY_ON,
+	LOOK_TRANSPARENCY_OFF,
+	LOOK_TRANSPARENCY_ENUM_SIZE
+};
+
 enum reverb_enum {
 	REVERB_NULL,
 	REVERB_OFF,
@@ -2683,7 +2691,7 @@ struct tomb4_options	//keep this at the bottom of the file, please
 	bool loadingtxt;
 	inv_bg_mode_enum inv_bg_mode;			//1-> original, 2->TR5, 3-> clear
 	bool tr5_loadbar;
-	bool look_transparency;
+	look_transparency_enum look_transparency;
 	bool ammo_counter;
 	bool ammotype_hotkeys;
 	bool combat_cam_tilt;
