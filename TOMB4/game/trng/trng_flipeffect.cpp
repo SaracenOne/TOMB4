@@ -2534,7 +2534,7 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 		}
 		case WEATHER_SET_X_DISTANCE_FOG_VALUE: {
 			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "WEATHER_SET_X_DISTANCE_FOG_VALUE unimplemented!");
+				LevelFogStart = (1024.0F * 120.0F) - (1024.0F * (float)((unsigned char)action_data_1));
 				return true;
 			}
 			break;
@@ -2763,7 +2763,7 @@ bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_check
 		}
 		case WEATHER_SET_X_END_FOG_LIMIT_FOR_DISTANCE_FOG: {
 			if (skip_checks || !NGIsFlipeffectOneShotTriggeredForTile() && !NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(heavy)) {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "WEATHER_SET_X_END_FOG_LIMIT_FOR_DISTANCE_FOG unimplemented!");
+				LevelFogEnd = (1024.0F * 120.0F) - (1024.0F * (float)((unsigned char)action_data_1));
 				return true;
 			}
 			break;
