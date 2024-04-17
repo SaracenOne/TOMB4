@@ -205,9 +205,12 @@ TestEnvConditionTripletResult TestEnvConditionTriplet(NG_MULTI_ENV_TRIPLET* trip
 			break;
 		}
 		case ENV_MULT_CONDITION: {
-			result.is_valid = true;
-
 			NG_MULTI_ENV_CONDITION* multi_env_cond = &current_multi_env_conditions[triplet->distance_for_env];
+			// Not sure if this is correct.
+			if (multi_env_cond->env_condition_triplet_count > 0) {
+				result.is_valid = true;
+			}
+
 			for (int i = 0; i < multi_env_cond->env_condition_triplet_count; i++) {
 				TestEnvConditionTripletResult sub_result = TestEnvConditionTriplet(&multi_env_cond->env_condition_triplet_array[i], set_alignment_variables);
 
