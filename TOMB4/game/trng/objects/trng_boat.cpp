@@ -665,7 +665,11 @@ void BoatCollision(short item_num, ITEM_INFO* l, COLL_INFO* coll)
 	if (item->status != ITEM_ACTIVE) {
 		AddActiveItem(item_num);
 		item->status = ITEM_ACTIVE;
-		S_CDPlay(12, 0);
+	}
+
+	MOD_LEVEL_AUDIO_INFO *audio_info = get_game_mod_level_audio_info(gfCurrentLevel);
+	if (audio_info->boat_track >= 0) {
+		S_CDPlay(audio_info->boat_track, 0);
 	}
 }
 

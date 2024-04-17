@@ -205,6 +205,7 @@ struct MOD_LEVEL_AUDIO_INFO {
 	short first_looped_audio_track = 105;
 	short last_looped_audio_track = 111;
 
+	short boat_track = 12;
 	short inside_jeep_track = 98;
 	short outside_jeep_track = 110;
 	short secret_track = 5;

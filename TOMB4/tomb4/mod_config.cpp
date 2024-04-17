@@ -351,6 +351,7 @@ void LoadGameModLevelAudioInfo(const json_t* audio, MOD_LEVEL_AUDIO_INFO* audio_
     READ_JSON_SINT16(first_looped_audio_track, audio, audio_info);
     READ_JSON_SINT16(last_looped_audio_track, audio, audio_info);
 
+    READ_JSON_SINT16(boat_track, audio, audio_info);
     READ_JSON_SINT16(inside_jeep_track, audio, audio_info);
     READ_JSON_SINT16(outside_jeep_track, audio, audio_info);
     READ_JSON_SINT16(secret_track, audio, audio_info);
