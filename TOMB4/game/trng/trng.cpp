@@ -367,7 +367,7 @@ void NGMoveStaticVerticalByUnits(unsigned short static_id, int units) {
 	}
 }
 
-GAME_VECTOR &NGGetGameVectorForStatic(unsigned short static_id) {
+GAME_VECTOR NGGetGameVectorForStatic(unsigned short static_id) {
 	GAME_VECTOR game_vector;
 	NGStaticTableEntry* entry = &ng_static_id_table[static_id];
 	int room_number = ng_room_remap_table[entry->remapped_room_index].room_index;

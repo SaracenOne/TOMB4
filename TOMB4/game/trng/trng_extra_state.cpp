@@ -710,7 +710,7 @@ void NGHandleStaticRotation(unsigned int static_num) {
 
 void NGHandleStaticMovement(unsigned int static_num) {
 	if (NGGetStaticHorizontalMovementRemainingUnits(static_num)) {
-		GAME_VECTOR &game_vector = NGGetGameVectorForStatic(static_num);
+		GAME_VECTOR game_vector = NGGetGameVectorForStatic(static_num);
 
 		int move_by_amount = NGGetStaticHorizontalMovementSpeed(static_num);
 		int remaining_movement_units = NGGetStaticHorizontalMovementRemainingUnits(static_num);
@@ -764,7 +764,7 @@ void NGHandleStaticMovement(unsigned int static_num) {
 	}
 
 	if (NGGetStaticVerticalMovementRemainingUnits(static_num)) {
-		GAME_VECTOR& game_vector = NGGetGameVectorForStatic(static_num);
+		GAME_VECTOR game_vector = NGGetGameVectorForStatic(static_num);
 
 		int move_by_amount = NGGetStaticVerticalMovementSpeed(static_num);
 		int remaining_movement_units = NGGetStaticVerticalMovementRemainingUnits(static_num);

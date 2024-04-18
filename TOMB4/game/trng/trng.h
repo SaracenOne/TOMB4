@@ -98,7 +98,7 @@ extern void NGStaticItemByUnits(unsigned short static_id, NG_DIRECTIONS directio
 extern void NGMoveStaticHorizontalByUnits(unsigned short static_id, short angle, int units);
 extern void NGMoveStaticVerticalByUnits(unsigned short static_id, int units);
 
-extern GAME_VECTOR &NGGetGameVectorForStatic(unsigned short static_id);
+extern GAME_VECTOR NGGetGameVectorForStatic(unsigned short static_id);
 
 extern void NGRotateStaticX(unsigned short static_id, short rotation);
 extern void NGRotateStaticY(unsigned short static_id, short rotation);
