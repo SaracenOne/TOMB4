@@ -2412,7 +2412,13 @@ void NGReadNGGameflowInfo(char *gfScriptFile, size_t offset, size_t len) {
 		get_game_mod_global_info()->trng_hack_allow_meshes_with_exactly_256_vertices = true;
 		get_game_mod_global_info()->trng_advanced_block_raising_behaviour = true;
 		get_game_mod_global_info()->trng_pushables_have_gravity = true;
-		get_game_mod_global_info()->trng_swamp_room_type_enabled = true;
+
+		for (int i = 0; i < MOD_LEVEL_COUNT; i++) {
+			MOD_LEVEL_ENVIRONMENT_INFO *environment_info = get_game_mod_level_environment_info(i);
+			environment_info->room_swamp_flag = ROOM_SWAMP;
+			environment_info->room_cold_flag = ROOM_COLD;
+			environment_info->room_damage_flag = ROOM_DYNAMIC_LIT;
+		}
 
 		size_t options_header_block_start_position = offset;
 

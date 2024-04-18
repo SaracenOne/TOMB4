@@ -431,6 +431,10 @@ void LoadGameModLevelEnvironmentInfo(const json_t* environment, MOD_LEVEL_ENVIRO
     READ_JSON_BOOL(force_train_fog, environment, environment_info);
     READ_JSON_BOOL(disable_distance_limit, environment, environment_info);
     READ_JSON_BOOL(enable_multi_color_fog_bulbs, environment, environment_info);
+
+    READ_JSON_UINT32(room_swamp_flag, environment, environment_info);
+    READ_JSON_UINT32(room_cold_flag, environment, environment_info);
+    READ_JSON_UINT32(room_damage_flag, environment, environment_info);
 }
 
 void LoadGameModLevelFontInfo(const json_t* font, MOD_LEVEL_FONT_INFO* font_info) {
@@ -1434,7 +1438,6 @@ void LoadGameModConfigSecondPass() {
                     READ_JSON_BOOL(trng_hack_allow_meshes_with_exactly_256_vertices, global, mod_global_info);
                     READ_JSON_BOOL(trng_advanced_block_raising_behaviour, global, mod_global_info);
                     READ_JSON_BOOL(trng_pushables_have_gravity, global, mod_global_info);
-                    READ_JSON_BOOL(trng_swamp_room_type_enabled, global, mod_global_info);
 
                     READ_JSON_BOOL(trep_using_extended_saves, global, mod_global_info);
 

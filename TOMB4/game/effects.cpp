@@ -30,6 +30,7 @@
 #include "../tomb4/tomb4plus/t4plus_weather.h"
 #include "trep/furr.h"
 #include "../tomb4/tomb4plus/t4plus_objects.h"
+#include "../tomb4/tomb4plus/t4plus_environment.h"
 
 FX_INFO* effects;
 OBJECT_VECTOR* sound_effects;
@@ -1144,12 +1145,8 @@ void LaraBreath(ITEM_INFO* item)
 	PHD_VECTOR p;
 	PHD_VECTOR v;
 
-	if (lara.water_status == 1 || lara_item->hit_points < 0 || !(room[lara_item->room_number].flags & ROOM_COLD))
+	if (lara.water_status == 1 || lara_item->hit_points < 0 || !(T4PlusIsRoomCold(&room[lara_item->room_number])))
 		return;
-
-	if (room[lara_item->room_number].flags & ROOM_SNOW) {
-
-	}
 
 	if (lara_item->current_anim_state == AS_STOP)
 	{

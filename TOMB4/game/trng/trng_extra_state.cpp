@@ -23,6 +23,7 @@
 #include "trng_triggergroup.h"
 #include "trng_globaltrigger.h"
 #include "../../specific/file.h"
+#include "../../tomb4/tomb4plus/t4plus_environment.h"
 
 bool ng_loaded_savegame = false;
 
@@ -1100,20 +1101,17 @@ void NGFrameStartExtraState() {
 	{
 		ROOM_INFO* r = &room[lara_item->room_number];
 		if (r) {
-			int room_flags = r->flags;
-
 			// Lara is in a damage room.
-			if (room_flags & 0x10) {
+			if (T4PlusIsRoomDamage(r)) {
 				// TODO
 			} else {
 
 			}
 
-			// Lara is in a damage room.
-			if (room_flags & ROOM_COLD) {
+			// Lara is in a cold room.
+			if (T4PlusIsRoomCold(r)) {
 				// TODO
-			}
-			else {
+			} else {
 
 			}
 		}

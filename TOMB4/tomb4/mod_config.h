@@ -38,6 +38,10 @@ struct MOD_LEVEL_ENVIRONMENT_INFO {
 	bool force_train_fog = false;
 	bool disable_distance_limit = false;
 	bool enable_multi_color_fog_bulbs = false;
+
+	unsigned int room_swamp_flag = 0;
+	unsigned int room_cold_flag = 0;
+	unsigned int room_damage_flag = 0;
 };
 
 struct MOD_LEVEL_FONT_INFO {
@@ -342,7 +346,6 @@ struct MOD_GLOBAL_INFO {
 	bool trng_hack_allow_meshes_with_exactly_256_vertices = false; // TRNG seems to have a special hack which allows meshes of 256 verticies
 	bool trng_advanced_block_raising_behaviour = false;
 	bool trng_pushables_have_gravity = false;
-	bool trng_swamp_room_type_enabled = false;
 
 	bool trep_using_extended_saves = false;
 

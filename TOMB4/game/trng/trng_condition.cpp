@@ -704,14 +704,32 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 				case 0: {
 					return room_flags & ROOM_UNDERWATER;
 				}
+				case 1: {
+					return room_flags & 0x02;
+				}
 				case 2: {
 					return room_flags & ROOM_SWAMP;
 				}
+				case 3: {
+					return room_flags & ROOM_OUTSIDE;
+				}
 				case 4: {
-					return room_flags & 0x10;
+					return room_flags & ROOM_DYNAMIC_LIT;
 				}
 				case 5: {
-					return room_flags & ROOM_NOT_INSIDE; // TODO: check this
+					return room_flags & ROOM_NOT_INSIDE;
+				}
+				case 6: {
+					return room_flags & ROOM_INSIDE;
+				}
+				case 7: {
+					return room_flags & ROOM_NO_LENSFLARE;
+				}
+				case 8: {
+					return room_flags & ROOM_CAUSTICS;
+				}
+				case 9: {
+					return room_flags & ROOM_REFLECTIONS;
 				}
 				case 10: {
 					return room_flags & ROOM_SNOW;
@@ -720,7 +738,6 @@ bool NGCondition(short param, unsigned char extra, short timer) {
 					return room_flags & ROOM_RAIN;
 				}
 				case 12: {
-					// TODO: check if this is actually cold water
 					return room_flags & ROOM_COLD;
 				}
 				default: {
