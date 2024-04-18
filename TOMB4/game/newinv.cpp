@@ -1702,36 +1702,34 @@ void do_examine_mode()
 
 void dels_give_lara_items_cheat()
 {
-	long piss;
-
 	if (objects[CROWBAR_ITEM].loaded)
 		lara.crowbar = 1;
 
 	if (objects[CLOCKWORK_BEETLE].loaded)
 		lara.mechanical_scarab = 1;
 
-	for (piss = 0; piss < 12; piss++)
+	for (int i = 0; i < ((PUZZLE_ITEM12 - PUZZLE_ITEM1) + 1); i++)
 	{
-		if (objects[PUZZLE_ITEM1 + piss].loaded)
-			lara.puzzleitems[piss] = 1;
+		if (objects[PUZZLE_ITEM1 + i].loaded)
+			lara.puzzleitems[i] = 1;
 	}
 
-	for (piss = 0; piss < 12; piss++)
+	for (int i = 0; i < ((KEY_ITEM12 - KEY_ITEM1) + 1); i++)
 	{
-		if (objects[KEY_ITEM1 + piss].loaded)
-			lara.keyitems |= 1 << piss;
+		if (objects[KEY_ITEM1 + i].loaded)
+			lara.keyitems |= 1 << i;
 	}
 
-	for (piss = 0; piss < 4; piss++)
+	for (int i = 0; i < ((PICKUP_ITEM4 - PICKUP_ITEM1) + 1); i++)
 	{
-		if (objects[PICKUP_ITEM1 + piss].loaded)
-			lara.pickupitems |= 1 << piss;
+		if (objects[PICKUP_ITEM1 + i].loaded)
+			lara.pickupitems |= 1 << i;
 	}
 
-	for (piss = 0; piss < 6; piss++)
+	for (int i = 0; i < ((QUEST_ITEM6 - QUEST_ITEM1) + 1); i++)
 	{
-		if (objects[QUEST_ITEM1 + piss].loaded)
-			lara.questitems |= 1 << piss;
+		if (objects[QUEST_ITEM1 + i].loaded)
+			lara.questitems |= 1 << i;
 	}
 
 	if (objects[WATERSKIN1_EMPTY].loaded)
