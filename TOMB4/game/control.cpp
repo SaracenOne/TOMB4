@@ -401,7 +401,7 @@ long ControlPhase(long nframes, long demo_mode)
 			item = &items[item_num];
 			nex = item->next_active;
 
-			if (!NGIsItemFrozen(item_num)) { // TRNG
+			if (T4ObjectControlRoutine(item->object_number, item_num)) {
 				if (item->after_death < 128 || !get_game_mod_level_creature_info(gfCurrentLevel)->fade_dead_enemies) // T4Plus: Unsure if we should keep processing dead enemies.
 				{
 					if (objects[item->object_number].control)

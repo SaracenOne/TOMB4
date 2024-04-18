@@ -3,6 +3,7 @@
 #include "../mod_config.h"
 
 #include "../../game/gameflow.h"
+#include "../../game/trng/trng.h"
 
 int16_t T4PlusGetLaraSlotID() {
 	return get_game_mod_level_objects_info(gfCurrentLevel)->lara_slot;
@@ -142,4 +143,12 @@ int16_t T4PlusGetRubberBoatExtraSlotID() {
 
 int16_t T4PlusGetMotorBoatExtraSlotID() {
 	return get_game_mod_level_objects_info(gfCurrentLevel)->motor_boat_extra_slot;
+}
+
+bool T4ObjectControlRoutine(short object_number, short item_num) {
+	if (!NGIsItemFrozen(item_num)) {
+		return true;
+	} else {
+		return false;
+	}
 }
