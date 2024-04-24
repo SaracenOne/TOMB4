@@ -103,7 +103,10 @@ long GetOnBike(short item_number, COLL_INFO* coll)
 	if (item->flags & IFL_INVISIBLE || lara.gun_status != LG_NO_ARMS || lara_item->gravity_status)
 		return 0;
 
-	if (abs(item->pos.y_pos - lara_item->pos.y_pos) > 256 || !(input & IN_ACTION) && GLOBAL_inventoryitemchosen != PUZZLE_ITEM1)
+	int16_t nitrous_oxide_feeder_slot = get_game_mod_level_objects_info(gfCurrentLevel)->nitrous_oxide_feeder_slot;
+
+	if (abs(item->pos.y_pos - lara_item->pos.y_pos) > 256
+		|| !(input & IN_ACTION) && GLOBAL_inventoryitemchosen != nitrous_oxide_feeder_slot)
 		return 0;
 
 	dx = lara_item->pos.x_pos - item->pos.x_pos;
@@ -762,9 +765,11 @@ void BikeCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 		lara.gun_status = LG_HANDS_BUSY;
 		angle = short(phd_atan(item->pos.z_pos - l->pos.z_pos, item->pos.x_pos - l->pos.x_pos) - item->pos.y_rot);
 
+		int16_t nitrous_oxide_feeder_slot = get_game_mod_level_objects_info(gfCurrentLevel)->nitrous_oxide_feeder_slot;
+
 		if (angle <= -8190 || angle >= 24570)
 		{
-			if (GLOBAL_inventoryitemchosen == PUZZLE_ITEM1)
+			if (GLOBAL_inventoryitemchosen == nitrous_oxide_feeder_slot)
 			{
 				l->anim_number = objects[T4PlusGetMotorbikeExtraSlotID()].anim_index + 28;
 				GLOBAL_inventoryitemchosen = NO_ITEM;

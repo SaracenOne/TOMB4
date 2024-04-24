@@ -144,6 +144,9 @@ struct MOD_LEVEL_OBJECTS_INFO {
 	int16_t binocular_graphics_slot = BINOCULAR_GRAPHICS;
 	int16_t target_graphics_slot = TARGET_GRAPHICS;
 
+	int16_t nitrous_oxide_feeder_slot = PUZZLE_ITEM1;
+	int16_t jeep_key_slot = PUZZLE_ITEM1;
+	
 	int16_t rubber_boat_slot = RUBBER_BOAT;
 	int16_t rubber_boat_extra_slot = RUBBER_BOAT_LARA;
 	int16_t motor_boat_slot = MOTOR_BOAT;

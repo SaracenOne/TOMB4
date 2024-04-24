@@ -1153,9 +1153,21 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 					break;
 				}
 				case CUST_SET_JEEP_KEY_SLOT: {
-					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_SET_JEEP_KEY_SLOT unimplemented! (level %u)", current_level);
+					short jeep_key_slot = NG_READ_16(gfScriptFile, offset);
 
-					offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+					if (current_level == 0) {
+						for (int i = 0; i < MOD_LEVEL_COUNT; i++) {
+							if (jeep_key_slot != -1) {
+								get_game_mod_level_objects_info(i)->jeep_key_slot = jeep_key_slot;
+							}
+						}
+					}
+					else {
+						if (jeep_key_slot != -1) {
+							get_game_mod_level_objects_info(current_level)->jeep_key_slot = jeep_key_slot;
+						}
+					}
+					break;
 					break;
 				}
 				case CUST_STATIC_TRANSPARENCY: {

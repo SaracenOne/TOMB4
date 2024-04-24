@@ -70,7 +70,9 @@ static long GetOnJeep(short item_number, COLL_INFO* coll)
 
 	item = &items[item_number];
 
-	if (input & IN_ACTION || GLOBAL_inventoryitemchosen == PUZZLE_ITEM1)
+	int16_t jeep_key_slot = get_game_mod_level_objects_info(gfCurrentLevel)->jeep_key_slot;
+
+	if (input & IN_ACTION || GLOBAL_inventoryitemchosen == jeep_key_slot)
 	{
 		if (!(item->flags & IFL_INVISIBLE) && lara.gun_status == LG_NO_ARMS && lara_item->current_anim_state == AS_STOP &&
 			lara_item->anim_number == ANIM_BREATH && !lara_item->gravity_status)
@@ -91,14 +93,14 @@ static long GetOnJeep(short item_number, COLL_INFO* coll)
 
 						if (ang > -24586 && ang < -8206)
 						{
-							if (GLOBAL_inventoryitemchosen == PUZZLE_ITEM1)
+							if (GLOBAL_inventoryitemchosen == jeep_key_slot)
 							{
 								GLOBAL_inventoryitemchosen = NO_ITEM;
 								return 1;
 							}
 							
-							if (have_i_got_object(PUZZLE_ITEM1))
-								GLOBAL_enterinventory = PUZZLE_ITEM1;
+							if (have_i_got_object(jeep_key_slot))
+								GLOBAL_enterinventory = jeep_key_slot;
 						}
 					}
 					else
@@ -107,14 +109,14 @@ static long GetOnJeep(short item_number, COLL_INFO* coll)
 
 						if (ang > 8190 && ang < 24570)
 						{
-							if (GLOBAL_inventoryitemchosen == PUZZLE_ITEM1)
+							if (GLOBAL_inventoryitemchosen == jeep_key_slot)
 							{
 								GLOBAL_inventoryitemchosen = NO_ITEM;
 								return 1;
 							}
 
-							if (have_i_got_object(PUZZLE_ITEM1))
-								GLOBAL_enterinventory = PUZZLE_ITEM1;
+							if (have_i_got_object(jeep_key_slot))
+								GLOBAL_enterinventory = jeep_key_slot;
 						}
 					}
 				}

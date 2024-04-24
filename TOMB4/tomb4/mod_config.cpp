@@ -580,6 +580,9 @@ void LoadGameModLevelObjectsInfo(const json_t* objects, MOD_LEVEL_OBJECTS_INFO* 
     READ_JSON_SINT16(binocular_graphics_slot, objects, objects_info);
     READ_JSON_SINT16(target_graphics_slot, objects, objects_info);
 
+    READ_JSON_SINT16(nitrous_oxide_feeder_slot, objects, objects_info);
+    READ_JSON_SINT16(jeep_key_slot, objects, objects_info);
+
     READ_JSON_SINT16(darts_interval, objects, objects_info);
     READ_JSON_SINT16(darts_speed, objects, objects_info);
     READ_JSON_SINT16(falling_block_timer, objects, objects_info);
