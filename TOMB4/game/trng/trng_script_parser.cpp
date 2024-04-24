@@ -842,26 +842,16 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 				amount *= 6;
 			}
 
-			if (current_level == 0) {
-				for (int i = 0; i < MOD_LEVEL_COUNT; i++) {
-					MOD_EQUIPMENT_MODIFIER *equipment_modifiers = get_game_mod_level_stat_info(i)->equipment_modifiers;
+			int i = 0;
+			int last = MOD_LEVEL_COUNT;
 
-					int current_modifier_idx = 0;
-					for (current_modifier_idx = 0; current_modifier_idx < MAX_EQUIPMENT_MODIFIERS; current_modifier_idx++) {
-						if (equipment_modifiers[current_modifier_idx].object_id == -1) {
-							equipment_modifiers[current_modifier_idx].object_id = object_id;
-							equipment_modifiers[current_modifier_idx].amount = amount;
+			if (current_level != 0) {
+				i = current_level;
+				last = current_level + 1;
+			}
 
-							break;
-						}
-					}
-
-					if (current_modifier_idx >= MAX_EQUIPMENT_MODIFIERS) {
-						NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: Max equipment modifiers exceeded (level %u)", i);
-					}
-				}
-			} else {
-				MOD_EQUIPMENT_MODIFIER *equipment_modifiers = get_game_mod_level_stat_info(current_level)->equipment_modifiers;
+			for (; i < last; i++) {
+				MOD_EQUIPMENT_MODIFIER* equipment_modifiers = get_game_mod_level_stat_info(i)->equipment_modifiers;
 
 				int current_modifier_idx = 0;
 				for (current_modifier_idx = 0; current_modifier_idx < MAX_EQUIPMENT_MODIFIERS; current_modifier_idx++) {
@@ -874,7 +864,7 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 				}
 
 				if (current_modifier_idx >= MAX_EQUIPMENT_MODIFIERS) {
-					NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: Max equipment modifiers exceeded (level %u)", current_level);
+					NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: Max equipment modifiers exceeded (level %u)", i);
 				}
 			}
 
@@ -927,24 +917,34 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 				switch (customization_category) {
 				case CUST_DISABLE_SCREAMING_HEAD: {
 
-					if (current_level == 0) {
-						for (int i = 0; i < MOD_LEVEL_COUNT; i++) {
-							get_game_mod_level_objects_info(i)->lara_scream_slot = -1;
-						}
-					} else {
-						get_game_mod_level_objects_info(current_level)->lara_scream_slot = -1;
+					int i = 0;
+					int last = MOD_LEVEL_COUNT;
+
+					if (current_level != 0) {
+						i = current_level;
+						last = current_level + 1;
+					}
+
+					for (; i < last; i++) {
+						get_game_mod_level_objects_info(i)->lara_scream_slot = -1;
 					}
 					break;
 				}
 				case CUST_SET_SECRET_NUMBER: {
 					unsigned short secret_count = NG_READ_16(gfScriptFile, offset);
-					if (current_level == 0) {
-						for (int i = 0; i < MOD_LEVEL_COUNT; i++) {
-							get_game_mod_level_stat_info(i)->secret_count = secret_count;
-						}
-					} else {
-						get_game_mod_level_stat_info(current_level)->secret_count = secret_count;
+
+					int i = 0;
+					int last = MOD_LEVEL_COUNT;
+
+					if (current_level != 0) {
+						i = current_level;
+						last = current_level + 1;
 					}
+
+					for (; i < last; i++) {
+						get_game_mod_level_stat_info(i)->secret_count = secret_count;
+					}
+
 					break;
 				}
 				case CUST_SET_CREDITS_LEVEL: {
@@ -995,7 +995,6 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 				case CUST_SHATTER_RANGE: {
 					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_SHATTER_RANGE unimplemented! (level %u)", current_level);
 
-
 					unsigned short first_static_as_shatter = NG_READ_16(gfScriptFile, offset);
 					unsigned short last_static_as_shatter = NG_READ_16(gfScriptFile, offset);
 					offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
@@ -1039,42 +1038,42 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 					MOD_LEVEL_AMMO_INFO *ammo_info = nullptr;
 
 					switch (ammo_slot) {
-					case PISTOLS_AMMO_ITEM:
-						ammo_info = &weapon_info->pistol_ammo_info;
-						break;
-					case UZI_AMMO_ITEM:
-						ammo_info = &weapon_info->uzi_ammo_info;
-						break;
-					case SHOTGUN_AMMO1_ITEM:
-						ammo_info = &weapon_info->shotgun_1_ammo_info;
-						break;
-					case SHOTGUN_AMMO2_ITEM:
-						ammo_info = &weapon_info->shotgun_2_ammo_info;
-						break;
-					case CROSSBOW_AMMO1_ITEM:
-						ammo_info = &weapon_info->crossbow_1_ammo_info;
-						break;
-					case CROSSBOW_AMMO2_ITEM:
-						ammo_info = &weapon_info->crossbow_2_ammo_info;
-						break;
-					case CROSSBOW_AMMO3_ITEM:
-						ammo_info = &weapon_info->crossbow_3_ammo_info;
-						break;
-					case GRENADE_GUN_AMMO1_ITEM:
-						ammo_info = &weapon_info->grenade_1_ammo_info;
-						break;
-					case GRENADE_GUN_AMMO2_ITEM:
-						ammo_info = &weapon_info->grenade_2_ammo_info;
-						break;
-					case GRENADE_GUN_AMMO3_ITEM:
-						ammo_info = &weapon_info->grenade_3_ammo_info;
-						break;
-					case SIXSHOOTER_AMMO_ITEM:
-						ammo_info = &weapon_info->six_shooter_ammo_info;
-						break;
-					default:
-						NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: CUST_AMMO unknown ammo type! (level %u)", current_level);
-						break;
+						case PISTOLS_AMMO_ITEM:
+							ammo_info = &weapon_info->pistol_ammo_info;
+							break;
+						case UZI_AMMO_ITEM:
+							ammo_info = &weapon_info->uzi_ammo_info;
+							break;
+						case SHOTGUN_AMMO1_ITEM:
+							ammo_info = &weapon_info->shotgun_1_ammo_info;
+							break;
+						case SHOTGUN_AMMO2_ITEM:
+							ammo_info = &weapon_info->shotgun_2_ammo_info;
+							break;
+						case CROSSBOW_AMMO1_ITEM:
+							ammo_info = &weapon_info->crossbow_1_ammo_info;
+							break;
+						case CROSSBOW_AMMO2_ITEM:
+							ammo_info = &weapon_info->crossbow_2_ammo_info;
+							break;
+						case CROSSBOW_AMMO3_ITEM:
+							ammo_info = &weapon_info->crossbow_3_ammo_info;
+							break;
+						case GRENADE_GUN_AMMO1_ITEM:
+							ammo_info = &weapon_info->grenade_1_ammo_info;
+							break;
+						case GRENADE_GUN_AMMO2_ITEM:
+							ammo_info = &weapon_info->grenade_2_ammo_info;
+							break;
+						case GRENADE_GUN_AMMO3_ITEM:
+							ammo_info = &weapon_info->grenade_3_ammo_info;
+							break;
+						case SIXSHOOTER_AMMO_ITEM:
+							ammo_info = &weapon_info->six_shooter_ammo_info;
+							break;
+						default:
+							NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: CUST_AMMO unknown ammo type! (level %u)", current_level);
+							break;
 					}
 
 					if (ammo_info) {
@@ -1155,19 +1154,19 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 				case CUST_SET_JEEP_KEY_SLOT: {
 					short jeep_key_slot = NG_READ_16(gfScriptFile, offset);
 
-					if (current_level == 0) {
-						for (int i = 0; i < MOD_LEVEL_COUNT; i++) {
-							if (jeep_key_slot != -1) {
-								get_game_mod_level_objects_info(i)->jeep_key_slot = jeep_key_slot;
-							}
-						}
+					int i = 0;
+					int last = MOD_LEVEL_COUNT;
+
+					if (current_level != 0) {
+						i = current_level;
+						last = current_level + 1;
 					}
-					else {
+
+					for (; i < last; i++) {
 						if (jeep_key_slot != -1) {
-							get_game_mod_level_objects_info(current_level)->jeep_key_slot = jeep_key_slot;
+							get_game_mod_level_objects_info(i)->jeep_key_slot = jeep_key_slot;
 						}
 					}
-					break;
 					break;
 				}
 				case CUST_STATIC_TRANSPARENCY: {
@@ -1180,21 +1179,20 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 					short damage = NG_READ_16(gfScriptFile, offset);
 					short poison_intensity = NG_READ_16(gfScriptFile, offset);
 
-					if (current_level == 0) {
-						for (int i = 0; i < MOD_LEVEL_COUNT; i++) {
-							if (damage != -1) {
-								get_game_mod_level_misc_info(i)->damage_static_interaction = damage;
-							}
-							if (poison_intensity != -1) {
-								get_game_mod_level_misc_info(i)->posion_static_interaction = poison_intensity;
-							}
-						}
-					} else {
+					int i = 0;
+					int last = MOD_LEVEL_COUNT;
+
+					if (current_level != 0) {
+						i = current_level;
+						last = current_level + 1;
+					}
+
+					for (; i < last; i++) {
 						if (damage != -1) {
-							get_game_mod_level_misc_info(current_level)->damage_static_interaction = damage;
+							get_game_mod_level_misc_info(i)->damage_static_interaction = damage;
 						}
 						if (poison_intensity != -1) {
-							get_game_mod_level_misc_info(current_level)->posion_static_interaction = poison_intensity;
+							get_game_mod_level_misc_info(i)->posion_static_interaction = poison_intensity;
 						}
 					}
 					break;
@@ -1211,54 +1209,45 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_LOOK_TRANSPARENT type unimplemented! (level %u)", current_level);
 					}
 
-					if (current_level == 0) {
-						for (int i = 0; i < MOD_LEVEL_COUNT; i++) {
-							get_game_mod_level_lara_info(i)->use_look_transparency = use_look_transparency;
-						}
-					} else {
-						get_game_mod_level_lara_info(current_level)->use_look_transparency = use_look_transparency;
+					int i = 0;
+					int last = MOD_LEVEL_COUNT;
+
+					if (current_level != 0) {
+						i = current_level;
+						last = current_level + 1;
+					}
+
+					for (; i < last; i++) {
+						get_game_mod_level_lara_info(i)->use_look_transparency = use_look_transparency;
 					}
 					break;
 				}
 				case CUST_HAIR_TYPE: {
 					unsigned short hair_type = NG_READ_16(gfScriptFile, offset);
 
-					if (current_level == 0) {
-						for (int i = 0; i < MOD_LEVEL_COUNT; i++) {
-							switch (hair_type) {
-							case 0x00:
-								break;
-							case 0x01:
-								get_game_mod_level_lara_info(i)->hair_type = LARA_HAIR_TYPE_NONE;
-								break;
-							case 0x02:
-								get_game_mod_level_lara_info(i)->hair_type = LARA_HAIR_TYPE_PIGTAILS;
-								break;
-							case 0x03:
-								get_game_mod_level_lara_info(i)->hair_type = LARA_HAIR_TYPE_BRAID;
-								break;
-							case 0x04:
-								NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_HAIR_TYPE hair type 04 unimplemented! (level %u)", i);
-								break;
-							case 0xffff:
-								break;
-							}
-						}
-					} else {
+					int i = 0;
+					int last = MOD_LEVEL_COUNT;
+
+					if (current_level != 0) {
+						i = current_level;
+						last = current_level + 1;
+					}
+
+					for (; i < last; i++) {
 						switch (hair_type) {
 						case 0x00:
 							break;
 						case 0x01:
-							get_game_mod_level_lara_info(current_level)->hair_type = LARA_HAIR_TYPE_NONE;
+							get_game_mod_level_lara_info(i)->hair_type = LARA_HAIR_TYPE_NONE;
 							break;
 						case 0x02:
-							get_game_mod_level_lara_info(current_level)->hair_type = LARA_HAIR_TYPE_PIGTAILS;
+							get_game_mod_level_lara_info(i)->hair_type = LARA_HAIR_TYPE_PIGTAILS;
 							break;
 						case 0x03:
-							get_game_mod_level_lara_info(current_level)->hair_type = LARA_HAIR_TYPE_BRAID;
+							get_game_mod_level_lara_info(i)->hair_type = LARA_HAIR_TYPE_BRAID;
 							break;
 						case 0x04:
-							NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_HAIR_TYPE hair type 04 unimplemented! (level %u)", current_level);
+							NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_HAIR_TYPE hair type 04 unimplemented! (level %u)", i);
 							break;
 						case 0xffff:
 							break;
@@ -1278,12 +1267,16 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_KEEP_DEAD_ENEMIES type unimplemented! (level %u)", current_level);
 					}
 
-					if (current_level == 0) {
-						for (int i = 0; i < MOD_LEVEL_COUNT; i++) {
-							get_game_mod_level_creature_info(i)->fade_dead_enemies = fade_dead_enemies;
-						}
-					} else {
-						get_game_mod_level_creature_info(current_level)->fade_dead_enemies = fade_dead_enemies;
+					int i = 0;
+					int last = MOD_LEVEL_COUNT;
+
+					if (current_level != 0) {
+						i = current_level;
+						last = current_level + 1;
+					}
+
+					for (; i < last; i++) {
+						get_game_mod_level_creature_info(i)->fade_dead_enemies = fade_dead_enemies;
 					}
 					break;
 				}
@@ -1450,12 +1443,16 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 					break;
 				}
 				case CUST_TR5_UNDERWATER_COLLISIONS: {
-					if (current_level == 0) {
-						for (int i = 0; i < MOD_LEVEL_COUNT; i++) {
-							get_game_mod_level_lara_info(i)->use_tr5_swimming_collision = true;
-						}
-					} else {
-						get_game_mod_level_lara_info(current_level)->use_tr5_swimming_collision = true;
+					int i = 0;
+					int last = MOD_LEVEL_COUNT;
+
+					if (current_level != 0) {
+						i = current_level;
+						last = current_level + 1;
+					}
+
+					for (; i < last; i++) {
+						get_game_mod_level_lara_info(i)->use_tr5_swimming_collision = true;
 					}
 					break;
 				}
@@ -1473,14 +1470,17 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 					unsigned char flare_light_b = NG_READ_16(gfScriptFile, offset);
 					unsigned char flare_light_intensity = NG_READ_16(gfScriptFile, offset);
 
-					if (current_level == 0) {
-						for (int i = 0; i < MOD_LEVEL_COUNT; i++) {
-							NGSetupFlareCustomization(i, flare_flags, flare_lifetime_in_seconds, flare_light_r, flare_light_g, flare_light_b, flare_light_intensity);
-						}
-					} else {
-						NGSetupFlareCustomization(current_level, flare_flags, flare_lifetime_in_seconds, flare_light_r, flare_light_g, flare_light_b, flare_light_intensity);
+					int i = 0;
+					int last = MOD_LEVEL_COUNT;
+
+					if (current_level != 0) {
+						i = current_level;
+						last = current_level + 1;
 					}
 
+					for (; i < last; i++) {
+						NGSetupFlareCustomization(i, flare_flags, flare_lifetime_in_seconds, flare_light_r, flare_light_g, flare_light_b, flare_light_intensity);
+					}
 					break;
 				}
 				case CUST_SET_TEXT_COLOR: {
