@@ -27,9 +27,6 @@
 
 bool ng_loaded_savegame = false;
 
-int ng_triggered_items_for_timerfield[NG_MAX_TRIGGERED_ITEMS] = {};
-int ng_triggered_items_for_timerfield_count = 0;
-
 short ng_camera_target_id = NO_ITEM;
 
 // Includes tightrope state variables
@@ -121,37 +118,6 @@ int timer_tracker_remaining_until_timeout = 0;
 int ng_cinema_timer = -1;
 int ng_cinema_type = 0;
 
-struct TriggerState {
-	int index = -1;
-	int room = -1;
-};
-
-#define BACKUP_TRIGGER_STATE_COUNT 2
-TriggerState ng_backup_trigger_state[BACKUP_TRIGGER_STATE_COUNT];
-int ng_backup_trigger_state_count = 0;
-
-TriggerState ng_current_trigger_state;
-
-int pending_ng_room = -1;
-
-int ng_floorstate_data_size = 0;
-char *ng_flipeffect_oneshot_floorstate = NULL;
-char *ng_action_oneshot_floorstate = NULL;
-
-int ng_last_flipeffect_floor_trigger = -1;
-int ng_current_flipeffect_floor_trigger = -1;
-
-int ng_last_action_floor_trigger = -1;
-int ng_current_action_floor_trigger = -1;
-
-int ng_heavy_last_flipeffect_floor_trigger = -1;
-int ng_heavy_current_flipeffect_floor_trigger = -1;
-
-int ng_heavy_last_action_floor_trigger_count = 0;
-int ng_heavy_last_action_floor_trigger[NG_MAX_FLOORSTATE_ACTIONS] = {};
-int ng_heavy_current_action_floor_trigger_count = 0;
-int ng_heavy_current_action_floor_trigger[NG_MAX_FLOORSTATE_ACTIONS] = {};
-
 int lara_damage_resistence = 1000;
 
 bool ng_lara_infinite_air = false;
@@ -219,24 +185,6 @@ int ng_input_simulate_oneshot = -1;
 int ng_input_lock_timers[NG_INPUT_TIMER_COUNT];
 int ng_input_simulate_timers[NG_INPUT_TIMER_COUNT];
 
-void NGStorePendingRoomNumber(int room_number) {
-	pending_ng_room = room_number;
-}
-
-int NGRestorePendingRoomNumber() {
-	return pending_ng_room;
-}
-
-void NGUpdateCurrentTriggerRoomAndIndex(int new_room, int new_index) {
-	ng_current_trigger_state.index = new_index;
-	ng_current_trigger_state.room = new_room;
-}
-
-void NGClearCurrentTriggerRoomAndIndex() {
-	ng_current_trigger_state.index = -1;
-	ng_current_trigger_state.room = -1;
-}
-
 int NGGetPluginIDForFloorData(short *floor_data_ptr) {
 	int index = int(floor_data_ptr - floor_data);
 	if (ng_floor_id_table) {
@@ -248,80 +196,6 @@ int NGGetPluginIDForFloorData(short *floor_data_ptr) {
 		}
 	}
 	return 0;
-}
-
-// These may be needed since Lara's trigger index derived from earlier may get overwritten by something.
-void NGStoreBackupTriggerRoomAndIndex() {
-	ng_backup_trigger_state[ng_backup_trigger_state_count].index = ng_current_trigger_state.index;
-	ng_backup_trigger_state[ng_backup_trigger_state_count].room = ng_current_trigger_state.room;
-
-	ng_backup_trigger_state_count++;
-	if (ng_backup_trigger_state_count >= BACKUP_TRIGGER_STATE_COUNT) {
-		NGLog(NG_LOG_TYPE_ERROR, "NGStoreBackupTriggerRoomAndIndex: Overflow!");
-		exit(-1);
-	}
-}
-
-void NGRestoreBackupTriggerRoomAndIndex() {
-	ng_current_trigger_state.index = ng_backup_trigger_state[ng_backup_trigger_state_count - 1].index;
-	ng_current_trigger_state.room = ng_backup_trigger_state[ng_backup_trigger_state_count - 1].room;
-
-	ng_backup_trigger_state_count--;
-	if (ng_backup_trigger_state_count < 0) {
-		NGLog(NG_LOG_TYPE_ERROR, "NGRestoreBackupTriggerRoomAndIndex: Underflow!");
-		exit(-1);
-	}
-}
-
-bool NGIsFlipeffectOneShotTriggeredForTile() {
-	int index = ng_room_offset_table[ng_current_trigger_state.room] + ng_current_trigger_state.index;
-
-	bool result = ng_flipeffect_oneshot_floorstate[index];
-
-	return result;
-}
-
-bool NGIsActionOneShotTriggeredForTile() {
-	int index = ng_room_offset_table[ng_current_trigger_state.room] + ng_current_trigger_state.index;
-
-	bool result = ng_action_oneshot_floorstate[index];
-
-	return result;
-}
-
-// This method is not accurate since it seems like rollingballs can interrupted the check.
-bool NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(bool is_heavy_triggered) {
-	int index = ng_room_offset_table[ng_current_trigger_state.room] + ng_current_trigger_state.index;
-
-	if (!is_heavy_triggered) {
-		if (ng_current_flipeffect_floor_trigger == index || ng_last_flipeffect_floor_trigger == index)
-			return true;
-	} else {
-		if (ng_heavy_current_flipeffect_floor_trigger == index || ng_heavy_last_flipeffect_floor_trigger == index)
-			return true;
-	}
-
-	return false;
-}
-
-extern bool NGCheckActionFloorStatePressedThisFrameOrLastFrame(bool is_heavy_triggered) {
-	int index = ng_room_offset_table[ng_current_trigger_state.room] + ng_current_trigger_state.index;
-
-	if (!is_heavy_triggered) {
-		if (ng_current_action_floor_trigger == index || ng_last_action_floor_trigger == index)
-			return true;
-	} else {
-		for (int i = 0; i < ng_heavy_current_action_floor_trigger_count; i++) {
-			if (ng_heavy_current_action_floor_trigger[i] == index)
-				return true;
-		}
-		for (int i = 0; i < ng_heavy_last_action_floor_trigger_count; i++) {
-			if (ng_heavy_last_action_floor_trigger[i] == index)
-				return true;
-		}
-	}
-
-	return false;
 }
 
 int NGValidateInputAgainstLockTimers(int32_t input) {
@@ -1024,7 +898,7 @@ bool NGProcessGlobalTriggers(int selected_inventory_object_id) {
 }
 
 void NGFrameStartExtraState() {
-	ng_triggered_items_for_timerfield_count = 0;
+	//ng_triggered_items_for_timerfield_count = 0;
 
 	if (pending_level_load_timer >= 0) {
 		if (pending_level_load_timer == 0) {
@@ -1629,72 +1503,7 @@ int NGGetCurrentDrawItemNumber() {
 	return ng_draw_item_number;
 }
 
-void NGUpdateFlipeffectFloorstateData(bool heavy) {
-	int index = ng_room_offset_table[ng_current_trigger_state.room] + ng_current_trigger_state.index;
-
-	if (heavy) {
-		ng_heavy_current_flipeffect_floor_trigger = index;
-		ng_heavy_last_flipeffect_floor_trigger = index;
-	} else {
-		ng_current_flipeffect_floor_trigger = index;
-		ng_last_flipeffect_floor_trigger = index;
-	}
-}
-
-void NGUpdateActionFloorstateData(bool heavy) {
-	int index = ng_room_offset_table[ng_current_trigger_state.room] + ng_current_trigger_state.index;
-
-	if (heavy) {
-		{
-			bool already_exists = false;
-			for (int i = 0; i < ng_heavy_current_action_floor_trigger_count; i++) {
-				if (ng_heavy_current_action_floor_trigger[i] == index)
-					already_exists = true;
-					break;
-			}
-			if (!already_exists) {
-				if (ng_heavy_current_action_floor_trigger_count < NG_MAX_FLOORSTATE_ACTIONS) {
-					ng_heavy_current_action_floor_trigger[ng_heavy_current_action_floor_trigger_count] = index;
-					ng_heavy_current_action_floor_trigger_count++;
-				}else {
-					NGLog(NG_LOG_TYPE_POSSIBLE_INACCURACY, "Overflow of active heavy floorstate actions!");
-				}
-			}
-		}
-		{
-			bool already_exists = false;
-			for (int i = 0; i < ng_heavy_last_action_floor_trigger_count; i++) {
-				if (ng_heavy_last_action_floor_trigger[i] == index)
-					already_exists = true;
-				break;
-			}
-			if (!already_exists) {
-				if (ng_heavy_last_action_floor_trigger_count < NG_MAX_FLOORSTATE_ACTIONS) {
-					ng_heavy_last_action_floor_trigger[ng_heavy_last_action_floor_trigger_count] = index;
-					ng_heavy_last_action_floor_trigger_count++;
-				} else {
-					NGLog(NG_LOG_TYPE_POSSIBLE_INACCURACY, "Overflow of active heavy floorstate actions!");
-				}
-			}
-		}
-	} else {
-		ng_current_action_floor_trigger = index;
-		ng_last_action_floor_trigger = index;
-	}
-}
-
-void NGUpdateFlipeffectOneshot() {
-	int index = ng_room_offset_table[ng_current_trigger_state.room] + ng_current_trigger_state.index;
-	ng_flipeffect_oneshot_floorstate[index] = true;
-}
-
-void NGUpdateActionOneshot() {
-	int index = ng_room_offset_table[ng_current_trigger_state.room] + ng_current_trigger_state.index;
-	ng_action_oneshot_floorstate[index] = true;
-}
-
-void
-NGSetupExtraState() {
+void NGSetupExtraState() {
 	ng_camera_target_id = NO_ITEM;
 
 	ng_lara_extrastate.TightRopeFall = 0;
@@ -1817,26 +1626,6 @@ NGSetupExtraState() {
 	ng_cinema_timer = -1;
 	ng_cinema_type = 0;
 
-	// Floorstate
-	ng_last_flipeffect_floor_trigger = -1;
-	ng_current_flipeffect_floor_trigger = -1;
-	ng_last_action_floor_trigger = -1;
-	ng_current_action_floor_trigger = -1;
-	ng_heavy_last_flipeffect_floor_trigger = -1;
-	ng_heavy_current_flipeffect_floor_trigger = -1;
-	ng_heavy_last_action_floor_trigger_count = 0;
-	ng_heavy_current_action_floor_trigger_count = 0;
-
-	ng_floorstate_data_size = 0;
-	for (int i = 0; i < number_rooms; i++) {
-		ng_room_offset_table[i] = ng_floorstate_data_size;
-		ng_floorstate_data_size += room[i].x_size * room[i].y_size;
-	}
-	ng_flipeffect_oneshot_floorstate = (char*)game_malloc(sizeof(char) * ng_floorstate_data_size);
-	memset(ng_flipeffect_oneshot_floorstate, 0x00, ng_floorstate_data_size);
-
-	ng_action_oneshot_floorstate = (char*)game_malloc(sizeof(char) * ng_floorstate_data_size);
-	memset(ng_action_oneshot_floorstate, 0x00, ng_floorstate_data_size);
 
 	// Input lock and simulator
 	memset(ng_input_lock_timers, 0x00, sizeof(ng_input_lock_timers));
@@ -1852,11 +1641,6 @@ NGSetupExtraState() {
 	// Damage
 	lara_damage_resistence = 1000;
 
-	// Triggerstate
-	ng_current_trigger_state.room = -1;
-	ng_current_trigger_state.index = -1;
-	ng_backup_trigger_state_count = 0;
-
 	// Inventory
 	ng_used_inventory_object_for_frame = NO_ITEM;
 	ng_used_large_medipack = false;
@@ -1864,33 +1648,6 @@ NGSetupExtraState() {
 }
 
 void NGFrameFinishExtraState() {
-	// Lara
-	ng_last_flipeffect_floor_trigger = ng_current_flipeffect_floor_trigger;
-	ng_current_flipeffect_floor_trigger = -1;
-
-	ng_last_action_floor_trigger = ng_current_action_floor_trigger;
-	ng_current_action_floor_trigger = -1;
-
-	// Heavy
-	ng_heavy_last_flipeffect_floor_trigger = ng_heavy_current_flipeffect_floor_trigger;
-	ng_heavy_current_flipeffect_floor_trigger = -1;
-
-	if (ng_heavy_current_action_floor_trigger_count > 0) {
-		memcpy(ng_heavy_last_action_floor_trigger, ng_heavy_current_action_floor_trigger, ng_heavy_current_action_floor_trigger_count * sizeof(int));
-	}
-	ng_heavy_last_action_floor_trigger_count = ng_heavy_current_action_floor_trigger_count;
-	ng_heavy_current_action_floor_trigger_count = 0;
-
 	// Savegame
 	ng_loaded_savegame = false;
-}
-
-void NGRegisterTriggeredItemForTimerfield(short item_id) {
-	if (ng_triggered_items_for_timerfield_count >= NG_MAX_TRIGGERED_ITEMS) {
-		NGLog(NG_LOG_TYPE_ERROR, "Maximum triggered item overflow!");
-		return;
-	}
-
-	ng_triggered_items_for_timerfield[ng_triggered_items_for_timerfield_count] = item_id;
-	ng_triggered_items_for_timerfield_count++;
 }

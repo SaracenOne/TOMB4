@@ -24,10 +24,11 @@
 #include "../specific/file.h"
 #include "../tomb4/mod_config.h"
 #include "../tomb4/tomb4plus/t4plus_objects.h"
+#include "trng/trng_savegame.h"
 
 LEGACY_SAVEGAME_INFO savegame;
 
-static char* SGpoint = 0;
+static char* SGpoint = nullptr;
 static long SGcount = 0;
 
 long CheckSumValid(char* buffer)
@@ -525,7 +526,7 @@ void sgRestoreLevel()
 	FLOOR_INFO* floor;
 
 	if (OpenSaveGame(gfCurrentLevel, 0) >= 0) {
-		RestoreLevelData(0, false);
+		RestoreLevelData(false, get_game_mod_global_info()->trng_extended_flipmap_bitmask);
 
 		// T4Plus
 		T4PlusEnterLevel(gfCurrentLevel, false);
@@ -601,7 +602,7 @@ void sgSaveLevel()
 	long level_index;
 
 	level_index = OpenSaveGame(gfCurrentLevel, 1);
-	SaveLevelData(0, false);
+	SaveLevelData(0, get_game_mod_global_info()->trng_extended_flipmap_bitmask);
 	SaveLaraData();
 	SaveHubData(level_index);
 }
@@ -616,7 +617,7 @@ void sgSaveGame()
 	savegame.fog_colour.r = gfVolumetricFog.r;
 	savegame.fog_colour.g = gfVolumetricFog.g;
 	savegame.fog_colour.b = gfVolumetricFog.b;
-	SaveLevelData(1, false);
+	SaveLevelData(1, get_game_mod_global_info()->trng_extended_flipmap_bitmask);
 	SaveLaraData();
 	SaveHubData(level_index);
 	CreateCheckSum();
@@ -627,8 +628,11 @@ void sgRestoreGame()
 	OpenSaveGame(savegame.CurrentLevel & 0x7F, 0);
 	GameTimer = savegame.Game.Timer;
 	gfCurrentLevel = savegame.CurrentLevel & 0x7F;
-	RestoreLevelData(1, false);
-	RestoreLaraData(1);
+	RestoreLevelData(true, NGIsNGSavegame());
+	RestoreLaraData(true);
+
+	// TRNG
+	NGReadNGSavegameInfo();
 }
 
 long OpenSaveGame(uchar current_level, long saving)
@@ -1214,7 +1218,7 @@ void RestoreLevelData(bool full_save, bool use_full_flipmask)
 					room_number = i;
 					floor = GetFloor(mesh->x, mesh->y, mesh->z, &room_number);
 					GetHeight(floor, mesh->x, mesh->y, mesh->z);
-					TestTriggers(trigger_data, 1, 0, trigger_index_room, trigger_index_floor);
+					TestTriggers(trigger_index, true, 0);
 					floor->stopper = 0;
 				}
 

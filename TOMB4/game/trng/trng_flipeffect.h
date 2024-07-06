@@ -344,5 +344,25 @@ enum NG_FLIPEFFECTS {
 	LARA_SET_X_OPACITY_LEVEL_OFLARA_FOR_E_SECONDS = 411,
 };
 
-extern bool NGFlipEffect(unsigned short param, short extra, bool heavy, bool skip_checks);
-extern bool NGFlipEffectTrigger(unsigned short param, short extra, bool heavy);
+#define NG_MAX_SCANNED_FLIPEFFECTS 64
+#define NG_MAX_OLD_FLIPEFFECTS 512
+
+struct NGScannedFlipEffect {
+	uint16_t number;
+	uint16_t timer;
+	uint16_t flags;
+
+	uint32_t offset_floor_data;
+	uint16_t indice;
+	uint16_t plugin_id;
+};
+
+extern uint32_t scanned_flipeffect_count;
+extern NGScannedFlipEffect scanned_flipeffects[NG_MAX_SCANNED_FLIPEFFECTS];
+extern uint32_t old_flipeffect_count;
+extern NGOldTrigger old_flipeffects[NG_MAX_OLD_FLIPEFFECTS];
+
+extern int NGExecuteFlipEffect(uint16_t plugin_id, uint16_t param, int16_t extra, uint32_t flags);
+extern void NGExecuteFlipEffects();
+extern void NGCaptureFlipEffect(uint16_t flip_number, uint16_t timer, uint32_t flip_offset);
+extern void NGResetScanFlipEffects();

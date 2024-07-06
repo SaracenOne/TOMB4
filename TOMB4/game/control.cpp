@@ -78,11 +78,7 @@ long flip_status;
 long flipeffect = -1;
 long fliptimer = 0;
 
-// NGLE
-short *trigger_data;
-int trigger_index_room = -1;
-int trigger_index_floor = -1;
-
+short *trigger_index;
 long tiltxoff;
 long tiltyoff;
 long OnObject;
@@ -493,9 +489,16 @@ long ControlPhase(long nframes, long demo_mode)
 			mesh = SmashedMesh[SmashedMeshCount];
 			floor = GetFloor(mesh->x, mesh->y, mesh->z, &SmashedMeshRoom[SmashedMeshCount]);
 			GetHeight(floor, mesh->x, mesh->y, mesh->z);
-			TestTriggers(trigger_data, 1, 0, trigger_index_room, trigger_index_floor);
+			TestTriggers(trigger_index, true, 0);
 			floor->stopper = 0;
 			SmashedMesh[SmashedMeshCount] = 0;
+		}
+
+		if (NGIsUsingNGFlipEffects()) {
+			NGExecuteFlipEffects();
+		}
+		if (NGIsUsingNGActions()) {
+			NGProcessScannedActions();
 		}
 
 		KillMoveItems();
@@ -667,21 +670,13 @@ void AddRoomFlipItems(ROOM_INFO* r)
 	}
 }
 
-void TestTriggers(short* data, long heavy, long HeavyFlags, int room_number, int floor_index)
+void TestTriggers(short* data, bool heavy, long heavy_flags)
 {
-	NGUpdateCurrentTriggerRoomAndIndex(room_number, floor_index);
-
 	ITEM_INFO* item;
 	ITEM_INFO* camera_item;
 	long switch_off, flip, flip_available, neweffect, key, quad;
 	short camera_flags, camera_timer, type, trigger, value, flags, state;
 	char timer;
-
-	// NGLE
-	bool should_update_flipeffect_floorstate = false;
-	bool should_update_action_floorstate = false;
-	bool should_update_ng_flipeffect_oneshot = false;
-	bool should_update_ng_action_oneshot = false;
 
 	switch_off = 0;
 	flip = -1;
@@ -699,6 +694,9 @@ void TestTriggers(short* data, long heavy, long HeavyFlags, int room_number, int
 
 	if (!data)
 		return;
+
+	// NGLE
+	NGStoreLastFloorAddress(data);
 
 	if ((*data & 0x1F) == LAVA_TYPE)
 	{
@@ -757,6 +755,11 @@ void TestTriggers(short* data, long heavy, long HeavyFlags, int room_number, int
 		data++;
 	}
 
+	// NGLE
+	NGStoreFloorTriggerNow(data);
+	NGStoreIsHeavyTesting(heavy);
+	NGStoreItemIndexEnabledTrigger(NGGetLastMovedItemIndex());
+
 	type = (*data++ >> 8) & 0x3F;
 	flags = *data++;
 	timer = flags & 0xff;
@@ -773,18 +776,18 @@ void TestTriggers(short* data, long heavy, long HeavyFlags, int room_number, int
 			break;
 
 		case HEAVYSWITCH:
-			if (!HeavyFlags)
+			if (!heavy_flags)
 				return;
 
-			if (HeavyFlags >= 0)
+			if (heavy_flags >= 0)
 			{
-				if ((flags & IFL_CODEBITS) != HeavyFlags)
+				if ((flags & IFL_CODEBITS) != heavy_flags)
 					return;
 			}
 			else
 			{
 				flags |= IFL_CODEBITS;
-				flags += (short)HeavyFlags;
+				flags += (short)heavy_flags;
 			}
 
 			break;
@@ -877,12 +880,14 @@ void TestTriggers(short* data, long heavy, long HeavyFlags, int room_number, int
 		}
 	}
 
+	if (NGIsUsingNGTimerfields()) {
+		timer = (char)(NGCalculateTriggerTimer(data, timer) & 0xff);
+	}
+
 	camera_item = 0;
 
 	do
 	{
-		size_t trigger_floordata_offset = (data - floor_data) * sizeof(uint16_t);
-
 		trigger = *data++;
 		value = trigger & 0x3FF;
 
@@ -890,9 +895,6 @@ void TestTriggers(short* data, long heavy, long HeavyFlags, int room_number, int
 		{
 		case TO_OBJECT:
 			item = &items[value];
-
-			// For TRNG timerfields
-			NGRegisterTriggeredItemForTimerfield(value);
 
 			if (key >= 2 || ((type == ANTIPAD || type == ANTITRIGGER || type == HEAVYANTITRIGGER) && item->flags & IFL_ANTITRIGGER_ONESHOT) ||
 				(type == SWITCH && item->flags & IFL_SWITCH_ONESHOT) ||
@@ -907,7 +909,7 @@ void TestTriggers(short* data, long heavy, long HeavyFlags, int room_number, int
 
 			if (type == SWITCH || type == HEAVYSWITCH)
 			{
-				if (HeavyFlags >= 0)
+				if (heavy_flags >= 0)
 				{
 					item->flags ^= flags & IFL_CODEBITS;
 
@@ -1078,22 +1080,14 @@ void TestTriggers(short* data, long heavy, long HeavyFlags, int room_number, int
 			break;
 
 		case TO_FLIPEFFECT:
+			TriggerTimer = timer;
+			neweffect = value;
+
 			if (NGIsUsingNGFlipEffects()) {
+				uint32_t current_trigger_floordata_offset = (uint32_t)((data - floor_data) * sizeof(uint16_t)) - sizeof(uint16_t);
+
 				trigger = *data++;
-				timer = 0; // Does the flipeffect reset this?
-				int plugin_id = NGGetPluginIDForFloorData(data);
-				if (plugin_id == 0) {
-					NGFlipEffectTrigger(value, (trigger & 0x7fff), heavy);
-					should_update_flipeffect_floorstate = true;
-				} else {
-					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Plugin Trigger FlipEffects are currently not supported!");
-				}
-				if (flags & IFL_INVISIBLE) {
-					should_update_ng_flipeffect_oneshot = true;
-				}
-			} else {
-				TriggerTimer = timer;
-				neweffect = value;
+				NGCaptureFlipEffect(value, (trigger & 0x7fff), current_trigger_floordata_offset);
 			}
 			break;
 
@@ -1102,21 +1096,10 @@ void TestTriggers(short* data, long heavy, long HeavyFlags, int room_number, int
 			break;
 		case TO_ACTION:
 			if (NGIsUsingNGActions()) {
-				trigger = *data++;
-				int plugin_id = NGGetPluginIDForFloorData(data);
-				if (plugin_id == 0) {
-					NGActionRepeatType  repeat_type = NGActionTrigger(value, (trigger & 0x7fff), timer, heavy);
+				uint32_t current_trigger_floordata_offset = (uint32_t)((data - floor_data) * sizeof(uint16_t)) - sizeof(uint16_t);
 
-					if (repeat_type == NG_ACTION_REPEAT_TYPE_NEVER || repeat_type == NG_ACTION_REPEAT_TYPE_ON_REENTRY) {
-						should_update_action_floorstate = true;
-						// Do heavy actiosn always act as oneshot triggers?
-						if (repeat_type == NG_ACTION_REPEAT_TYPE_NEVER) {
-							should_update_ng_action_oneshot = true;
-						}
-					}
-				} else {
-					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Plugin Trigger NGActions are currently not supported!");
-				}
+				trigger = *data++;
+				NGCaptureAction(value, (trigger & 0x7fff), current_trigger_floordata_offset);
 			}
 			break;
 		case TO_FLYBY:
@@ -1193,15 +1176,6 @@ void TestTriggers(short* data, long heavy, long HeavyFlags, int room_number, int
 		case TO_FMV:
 			printf("FMV support is unimplemented!");
 			break;
-		case TO_TIMERFIELD:
-			for (int i = 0; i < ng_triggered_items_for_timerfield_count; i++) {
-				if (ng_triggered_items_for_timerfield[i] >= 0) {
-					timer = (char)(value & 0xff);
-					item = &items[ng_triggered_items_for_timerfield[i]];
-					item->timer = timer * 30;
-				}
-			}
-			break;
 		default:
 			break;
 		}
@@ -1213,23 +1187,10 @@ void TestTriggers(short* data, long heavy, long HeavyFlags, int room_number, int
 	if (flip != -1)
 		FlipMap(flip);
 
-	if (neweffect != -1 && (flip || !flip_available))
-	{
+	if (neweffect != -1 && (flip || !flip_available)) {
 		flipeffect = neweffect;
 		fliptimer = 0;
 	}
-
-	if (should_update_flipeffect_floorstate)
-		NGUpdateFlipeffectFloorstateData(heavy);
-
-	if (should_update_action_floorstate)
-		NGUpdateActionFloorstateData(heavy);
-
-	if (should_update_ng_flipeffect_oneshot)
-		NGUpdateFlipeffectOneshot();
-
-	if (should_update_ng_action_oneshot)
-		NGUpdateActionOneshot();
 }
 
 short GetDoor(FLOOR_INFO* floor)
@@ -1389,7 +1350,6 @@ FLOOR_INFO* GetFloor(long x, long y, long z, short* room_number)
 	short door;
 
 	r = &room[*room_number];
-	NGStorePendingRoomNumber(*room_number);
 
 	do
 	{
@@ -1434,7 +1394,6 @@ FLOOR_INFO* GetFloor(long x, long y, long z, short* room_number)
 			break;
 
 		*room_number = door;
-		NGStorePendingRoomNumber(*room_number);
 		r = &room[door];
 
 	} while (door != 255);
@@ -1449,7 +1408,6 @@ FLOOR_INFO* GetFloor(long x, long y, long z, short* room_number)
 					break;
 
 				*room_number = floor->sky_room;
-				NGStorePendingRoomNumber(*room_number);
 				r = &room[floor->sky_room];
 				floor = &r->floor[((z - r->z) >> 10) + r->x_size * ((x - r->x) >> 10)];
 
@@ -1467,7 +1425,6 @@ FLOOR_INFO* GetFloor(long x, long y, long z, short* room_number)
 				break;
 
 			*room_number = floor->pit_room;
-			NGStorePendingRoomNumber(*room_number);
 			r = &room[floor->pit_room];
 			floor = &r->floor[((z - r->z) >> 10) + r->x_size * ((x - r->x) >> 10)];
 
@@ -1568,10 +1525,8 @@ long GetWaterHeight(long x, long y, long z, short room_number)
 
 long GetHeight(FLOOR_INFO* floor, long x, long y, long z)
 {
-	int room_number = NGRestorePendingRoomNumber(); // NGLE
-
 	ITEM_INFO* item;
-	ROOM_INFO* r = &room[room_number]; // NGLE;
+	ROOM_INFO* r; // NGLE;
 	short* data;
 	long height;
 	ushort trigger;
@@ -1593,8 +1548,7 @@ long GetHeight(FLOOR_INFO* floor, long x, long y, long z)
 		if (CheckNoColFloorTriangle(floor, x, z) == 1)
 			break;
 
-		room_number = floor->pit_room;
-		r = &room[room_number];
+		r = &room[floor->pit_room];
 		floor = &r->floor[((z - r->z) >> 10) + ((x - r->x) >> 10) * r->x_size];
 	}
 
@@ -1603,9 +1557,7 @@ long GetHeight(FLOOR_INFO* floor, long x, long y, long z)
 	if (height == NO_HEIGHT)
 		return height;
 
-	trigger_data = NULL;
-	trigger_index_room = -1;
-	trigger_index_floor = -1;
+	trigger_index = NULL;
 
 	if (!floor->index)
 		return height;
@@ -1655,11 +1607,8 @@ long GetHeight(FLOOR_INFO* floor, long x, long y, long z)
 
 		case TRIGGER_TYPE: {
 
-			if (!trigger_data) {
-				trigger_data = data - 1; // NGLE
-				trigger_index_room = room_number; // NGLE
-				trigger_index_floor = ((z - r->z) >> 10) + ((x - r->x) >> 10) * r->x_size; // NGLE
-			}
+			if (!trigger_index)
+				trigger_index = data - 1;
 
 			// NGLE - parsing code for NGConditionals.
 			// Mainly going to be used for fragment conditionals
@@ -1727,9 +1676,7 @@ long GetHeight(FLOOR_INFO* floor, long x, long y, long z)
 		}
 
 		case LAVA_TYPE:
-			trigger_data = data - 1; // NGLE
-			trigger_index_room = room_number; // NGLE
-			trigger_index_floor = ((z - r->z) >> 10) + ((x - r->x) >> 10) * r->x_size; // NGLE
+			trigger_index = data - 1;
 			break;
 
 		case CLIMB_TYPE:
@@ -1737,11 +1684,8 @@ long GetHeight(FLOOR_INFO* floor, long x, long y, long z)
 		case TRIGTRIGGER_TYPE:
 		case MINER_TYPE:
 
-			if (!trigger_data) {
-				trigger_data = data - 1; // NGLE
-				trigger_index_room = room_number; // NGLE
-				trigger_index_floor = ((z - r->z) >> 10) + ((x - r->x) >> 10) * r->x_size; // NGLE
-			}
+			if (!trigger_index)
+				trigger_index = data - 1;
 
 			break;
 
@@ -2946,7 +2890,7 @@ long GetTargetOnLOS(GAME_VECTOR* src, GAME_VECTOR* dest, long DrawTarget, long f
 							{
 								room_number = shotitem->room_number;
 								GetHeight(GetFloor(shotitem->pos.x_pos, shotitem->pos.y_pos - 256, shotitem->pos.z_pos, &room_number), shotitem->pos.x_pos, shotitem->pos.y_pos - 256, shotitem->pos.z_pos);
-								TestTriggers(trigger_data, 1, shotitem->flags & IFL_CODEBITS, trigger_index_room, trigger_index_floor);
+								TestTriggers(trigger_index, true, shotitem->flags & IFL_CODEBITS);
 							}
 							else
 							{
@@ -3132,7 +3076,7 @@ void AnimateItem(ITEM_INFO* item)
 					unsigned char command_frame = (cmd[0] & 0xff);
 					unsigned char command_id = (cmd[0] & 0xff00) >> 8;
 					if (command_id == 0xa0 && (offset_frame == command_frame || command_frame == 0xff)) {
-						NGFlipEffect(cmd[1], cmd[2], false, true);
+						NGExecuteFlipEffect(0, cmd[1], cmd[2], SCANF_ANIM_COMMAND);
 					}
 				}
 				cmd += 3;

@@ -70,7 +70,7 @@ void SphinxControl(short item_number)
 				}
 				mesh->Flags &= ~1;
 				floor->stopper = 0;
-				TestTriggers(trigger_data, 1, 0, trigger_index_room, trigger_index_floor);
+				TestTriggers(trigger_index, true, 0);
 			}
 		}
 	}
@@ -172,7 +172,7 @@ void SphinxControl(short item_number)
 
 		if (item->frame_number == anims[item->anim_number].frame_base)
 		{
-			TestTriggers(trigger_data, 1, 0, trigger_index_room, trigger_index_floor);
+			TestTriggers(trigger_index, true, 0);
 
 			if (item->touch_bits & 0x40)
 			{

@@ -17,6 +17,8 @@
 #include "trng_animation.h"
 #include "trng_triggergroup.h"
 #include "trng_organizer.h"
+#include "trng_flipeffect.h"
+#include "trng_action.h"
 
 NGLevelInfo ng_level_info[MOD_LEVEL_COUNT];
 
@@ -31,9 +33,6 @@ NGRoomRemapTableEntry ng_room_remap_table[NG_ROOM_REMAP_TABLE_SIZE];
 
 int ng_static_id_count = 0;
 NGStaticTableEntry ng_static_id_table[NG_STATIC_ID_TABLE_SIZE];
-
-#define NGLE_START_SIGNATURE 0x474e
-#define NGLE_END_SIGNATURE 0x454c474e
 
 void NGPreloadLevelInfo(int current_level, FILE *level_fp) {
 	long ngle_ident = 0;
@@ -490,19 +489,92 @@ void NGSetup() {
 	} else {
 		ng_loaded_savegame = false;
 	}
+
+	stored_last_floor_address = nullptr;
+	stored_base_floor_trigger_now = nullptr;
+	stored_is_heavy_testing = false;
+	stored_last_item_index = -1;
+	stored_item_index_enabled_trigger = -1;
+	stored_item_index_current = -1;
+	stored_last_trigger_timer = 0;
+}
+
+void NGSignalForManagementCreatedItems() {
+	// TODO
 }
 
 void NGFrameStart() {
-	NGProcessAnimations();
-
-	NGProcessGlobalTriggers(NO_ITEM);
-	NGProcessTriggerGroups();
-	NGProcessOrganizers();
-
 	NGFrameStartExtraState();
+
+	NGResetScanActions();
+	NGResetScanFlipEffects();
+}
+
+void NGExecuteProgressiveActions() {
+	// TODO: replace with actual progressive action system.
+	NGProcessTriggerGroups();
 }
 
 void NGFrameFinish() {
+	NGExecuteProgressiveActions();
+
+	NGSignalForManagementCreatedItems();
+
+	// TODO: FMV stuff
+
+	// TODO: Singleshot resumed stuff
+
+	// TODO: Store Lara's last HP Value
+
+	// TODO: diagnostics
+
+	// TODO: counter and game commands
+
+	// TODO: roll boats
+
+	// TODO: store item used by Lara
+
+	// TODO: set time of last command
+
+	// TODO: Store health again (?)
+
+	// TODO: Standby
+
+	// TODO: Control Death Creatures
+
+	// TODO: Test old CD triggers
+
+	// TODO: demo title thing
+
+	//
+	NGProcessGlobalTriggers(NO_ITEM);
+
+	// TODO: cheats
+
+	// TODO: static collision
+
+	// TODO: adaptive far view
+
+	//
+	NGProcessOrganizers();
+
+	// TODO: test takeaway weapons
+
+	// TODO: manage damage
+
+	// TODO: animation change stuff
+
+	//
+	NGProcessAnimations();
+
+	// TODO: mirror stuff
+
+	// TODO: keypad stuff
+
+	// TODO: detector stuff
+
+	// TODO: operation switch
+
 	NGFrameFinishExtraState();
 }
 
@@ -527,7 +599,13 @@ bool NGIsUsingNGActions() {
 bool NGIsUsingNGAnimCommands() {
 	MOD_GLOBAL_INFO *global_info = get_game_mod_global_info();
 
-	return global_info->trng_ng_anim_commands_enabled && ng_level_info[gfCurrentLevel].is_using_ngle_triggers;
+	return global_info->trng_anim_commands_enabled && ng_level_info[gfCurrentLevel].is_using_ngle_triggers;
+}
+
+bool NGIsUsingNGTimerfields() {
+	MOD_GLOBAL_INFO* global_info = get_game_mod_global_info();
+
+	return global_info->trng_timerfields_enabled && ng_level_info[gfCurrentLevel].is_using_ngle_triggers;
 }
 
 int NGFindIndexForLaraStartPosWithMatchingOCB(unsigned int ocb) {
@@ -598,4 +676,117 @@ void NGLog(NGLogType type, const char* s, ...) {
 			break;
 		}
 	}
+}
+
+
+int16_t*stored_last_floor_address = nullptr;
+int16_t*stored_base_floor_trigger_now = nullptr;
+bool stored_is_heavy_testing = false;
+int16_t stored_last_item_index = -1;
+int16_t stored_item_index_enabled_trigger = -1;
+int16_t stored_item_index_current = -1;
+int32_t stored_last_trigger_timer = 0;
+
+void NGStoreLastFloorAddress(int16_t *p_floor_last_address) {
+	stored_last_floor_address = p_floor_last_address;
+}
+
+short *NGGetLastFloorAddress() {
+	return stored_last_floor_address;
+}
+
+void NGStoreFloorTriggerNow(int16_t *p_trigger_now) {
+	stored_base_floor_trigger_now = p_trigger_now;
+}
+
+short* NGGetFloorTriggerNow() {
+	return stored_base_floor_trigger_now;
+}
+
+void NGStoreIsHeavyTesting(bool p_is_heavy_testing) {
+	stored_is_heavy_testing = p_is_heavy_testing;
+}
+
+bool NGGetIsHeavyTesting() {
+	return stored_is_heavy_testing;
+}
+
+void NGStoreLastItemMovedIndex(int16_t item_num) {
+	stored_last_item_index = item_num;
+}
+
+int16_t NGGetLastMovedItemIndex() {
+	return stored_last_item_index;
+}
+
+void NGStoreItemIndexEnabledTrigger(int16_t item_num) {
+	stored_item_index_enabled_trigger = item_num;
+}
+
+int16_t NGGetItemIndexEnabledTrigger() {
+	return stored_item_index_enabled_trigger;
+}
+
+
+void NGStoreItemIndexCurrent(int16_t item_num) {
+	stored_item_index_current = item_num;
+}
+
+int16_t NGGetItemIndexCurrent() {
+	return stored_item_index_current;
+}
+
+bool NGIsInsideDummyTrigger() {
+	// TODO: figure out where this is set
+	return false;
+}
+
+void NGStoreLastTriggerTimer(int32_t timer) {
+	stored_last_trigger_timer = timer;
+}
+
+int32_t NGGetLastTriggerTimer() {
+	return stored_last_trigger_timer;
+}
+
+int32_t NGCalculateTriggerTimer(int16_t* data, int32_t timer) {
+	short trigger;
+	do
+	{
+		trigger = *data++;
+		short value = trigger & 0x3FF;
+
+		switch ((trigger & 0x3FFF) >> 10) {
+			case TO_ACTION:
+				if (NGIsUsingNGActions()) {
+					trigger = *data++;
+				}
+				break;
+			case TO_FLIPEFFECT:
+				if (NGIsUsingNGFlipEffects()) {
+					trigger = *data++;
+				}
+				break;
+			case TO_CAMERA:
+				trigger = *data++;
+				break;
+			case TO_TIMERFIELD:
+				timer = (value & 0x3ff);
+				
+				if (timer & 0x200) {
+					timer |= 0xFFFFFC00;
+				}
+
+				NGStoreLastTriggerTimer(timer);
+				return timer;
+
+				break;
+			default:
+				break;
+		}
+	} while (!(trigger & 0x8000));
+
+	NGStoreLastTriggerTimer(timer);
+
+	return timer;
 }

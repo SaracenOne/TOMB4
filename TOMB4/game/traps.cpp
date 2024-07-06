@@ -2224,7 +2224,7 @@ void ControlRollingBall(short item_number)
 
 	item->pos.x_rot -= (abs(item->item_flags[0]) + abs(item->item_flags[1])) >> 1;
 	GetHeight(GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number), item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
-	TestTriggers(trigger_data, 1, 0, trigger_index_room, trigger_index_floor);
+	TestTriggers(trigger_index, true, 0);
 
 	// T4Plus: test for either NGLE extended OCB or TREP smash and kill setting.
 	bool always_smash_and_kill = get_game_mod_level_misc_info(gfCurrentLevel)->enable_smashing_and_killing_rolling_balls;
@@ -2252,7 +2252,7 @@ void ControlRollingBall(short item_number)
 
 			// NGLE: can activate regular triggers with this OCB code.
 			if (item->trigger_flags & 0x40) {
-				TestTriggers(trigger_data, 0, 0, trigger_index_room, trigger_index_floor);
+				TestTriggers(trigger_index, false, 0);
 			}
 		}
 	}

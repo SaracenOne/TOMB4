@@ -200,7 +200,7 @@ void ScalesControl(short item_number)
 			room_number = item->room_number;
 			floor = GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
 			GetHeight(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
-			TestTriggers(trigger_data, 1, flags, trigger_index_room, trigger_index_floor);
+			TestTriggers(trigger_index, true, flags);
 		}
 	}
 
@@ -477,6 +477,6 @@ void AhmetControl(short item_number)
 	floor = GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
 	GetHeight(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
 	if (!mod_creature_info->disable_ahmet_heavy_trigger)
-		TestTriggers(trigger_data, 1, 0, trigger_index_room, trigger_index_floor);
+		TestTriggers(trigger_index, true, 0);
 	CreatureAnimation(item_number, angle, 0);
 }

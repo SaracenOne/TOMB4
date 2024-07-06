@@ -27,6 +27,7 @@
 #else
 LPDIRECT3DVERTEXBUFFER DestVB;
 #endif
+#include "../game/trng/trng_savegame.h"
 WATERTAB WaterTable[22][64];
 THREAD MainThread;
 short* clipflags;
@@ -296,6 +297,10 @@ long S_LoadGame(long slot_num)
 			fclose(file);
 			return 0;
 		}
+
+		// NGLE
+		NGReadNGSavegameBuffer(file);
+
 		fclose(file);
 
 		MOD_GLOBAL_INFO *mod_global_info = get_game_mod_global_info();

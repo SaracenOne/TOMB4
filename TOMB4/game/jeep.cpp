@@ -1537,8 +1537,8 @@ void JeepControl(short item_number)
 	room_number = item->room_number;
 	floor = GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
 	h = GetHeight(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
-	TestTriggers(trigger_data, 1, 0, trigger_index_room, trigger_index_floor);
-	TestTriggers(trigger_data, 0, 0, trigger_index_room, trigger_index_floor);
+	TestTriggers(trigger_index, true, 0);
+	TestTriggers(trigger_index, false, 0);
 
 	if (lara_item->hit_points <= 0)
 	{

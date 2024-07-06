@@ -6,8 +6,6 @@
 
 #define NG_MAX_TRIGGERED_ITEMS 128
 extern bool ng_loaded_savegame;
-extern int ng_triggered_items_for_timerfield[NG_MAX_TRIGGERED_ITEMS];
-extern int ng_triggered_items_for_timerfield_count;
 
 extern short ng_camera_target_id;
 
@@ -111,13 +109,6 @@ extern unsigned char ng_selected_inventory_item_memory;
 extern int ng_used_inventory_object_for_frame;
 extern bool ng_used_large_medipack;
 extern bool ng_used_small_medipack;
-
-extern void NGStorePendingRoomNumber(int room_number);
-extern int NGRestorePendingRoomNumber();
-extern void NGUpdateCurrentTriggerRoomAndIndex(int new_room, int new_index);
-extern void NGClearCurrentTriggerRoomAndIndex();
-extern void NGStoreBackupTriggerRoomAndIndex();
-extern void NGRestoreBackupTriggerRoomAndIndex();
 
 extern void NGSetupExtraState();
 
@@ -277,12 +268,3 @@ extern void NGSetDisplayTimerForMoveableWithType(int item_id, NGTimerTrackerType
 extern bool NGProcessGlobalTriggers(int selected_inventory_object_id);
 
 extern void NGDrawPhase();
-
-extern bool NGIsFlipeffectOneShotTriggeredForTile();
-extern bool NGIsActionOneShotTriggeredForTile();
-
-extern bool NGCheckFlipeffectFloorStatePressedThisFrameOrLastFrame(bool is_heavy_triggered);
-
-extern bool NGCheckActionFloorStatePressedThisFrameOrLastFrame(bool is_heavy_triggered);
-
-extern void NGRegisterTriggeredItemForTimerfield(short item_id);

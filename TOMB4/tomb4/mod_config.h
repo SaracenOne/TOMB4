@@ -337,10 +337,12 @@ struct MOD_GLOBAL_INFO {
 	TRNG_ENGINE_VERSION trng_engine_version;
 
 	// TRNG Stuff
+	bool trng_extended_flipmap_bitmask = false;
 	bool trng_flipeffects_enabled = false; // TRNG (special TRNG flipeffects. Disable if conflicting with FURR)
 	bool trng_conditionals_enabled = false; // TRNG replaces monkeybar trigger type with customizable conditional conditional
 	bool trng_actions_enabled = false;
-	bool trng_ng_anim_commands_enabled = false;
+	bool trng_anim_commands_enabled = false;
+	bool trng_timerfields_enabled = false;
 	bool trng_rollingball_extended_ocb = false; // TRNG (moveable and regular trigger activation)
 	bool trng_statics_extended_ocb = false; // TRNG (touch inflicting poison)
 	// Climable pushables (both implementations have different quirks. Will attempt to more accurately recreate them later)

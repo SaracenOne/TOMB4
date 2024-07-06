@@ -718,9 +718,9 @@ void BoatControl(short item_num, BOAT_TYPE boat_type)
 	if (lara.vehicle == item_num)
 	{
 		if (!(item->trigger_flags & BOAT_OCB_SKIP_REGULAR_TRIGGERS))
-			TestTriggers(trigger_data, 0, 0, trigger_index_room, trigger_index_floor);
+			TestTriggers(trigger_index, false, 0);
 		if (!(item->trigger_flags & BOAT_OCB_SKIP_HEAVY_TRIGGERS))
-			TestTriggers(trigger_data, 1, 0, trigger_index_room, trigger_index_floor);
+			TestTriggers(trigger_index, true, 0);
 	}
 
 	boat->water = GetWaterHeight(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, room_number);

@@ -13,8 +13,13 @@
 #include "../control.h"
 #include "../camera.h"
 
+uint32_t scanned_flipeffect_count = 0;
+NGScannedFlipEffect scanned_flipeffects[NG_MAX_SCANNED_FLIPEFFECTS];
+uint32_t old_flipeffect_count;
+NGOldTrigger old_flipeffects[NG_MAX_OLD_FLIPEFFECTS];
+
 // There is some ambiguity if the implementation of SINGLE_SHOT_RESUMED is implemented correctly for secondary data blocks
-bool NGISTriggerGroupDataResumed(NG_TRIGGER_GROUP_DATA* data) {
+bool NGIsTriggerGroupDataResumed(NG_TRIGGER_GROUP_DATA* data) {
 	return ((data->first_field & TGROUP_SINGLE_SHOT_RESUMED) &&
 		is_mod_trng_version_equal_or_greater_than_target(1, 2, 2, 7));
 }
@@ -53,7 +58,7 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 		}
 
 		if ((trigger_group.data[index].first_field & TGROUP_SINGLE_SHOT) ||
-			NGISTriggerGroupDataResumed(&trigger_group.data[index])) {
+			NGIsTriggerGroupDataResumed(&trigger_group.data[index])) {
 			if (trigger_group.oneshot_triggered) {
 				return false;
 			} else {
@@ -94,7 +99,7 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 						if (trigger_group.data[index].first_field & TGROUP_USE_FOUND_ITEM_INDEX) {
 							NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TGROUP_USE_FOUND_ITEM_INDEX used on flipeffect");
 						} else {
-							current_result = NGFlipEffect(trigger_group.data[index].second_field_lower, trigger_group.data[index].third_field_lower & 0x7fff, false, true);
+							current_result = NGExecuteFlipEffect(0, trigger_group.data[index].second_field_lower, trigger_group.data[index].third_field_lower & 0x7fff, SCANF_SCRIPT_TRIGGER);
 						}
 
 						if (!current_result) {
@@ -133,7 +138,7 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 							item_id = ng_script_id_table[trigger_group.data[index].second_field_lower].script_index;
 						}
 
-						NGAction(item_id, trigger_group.data[index].third_field_lower & 0x7fff, NG_TRIGGER_FLAG_HEAVY | NG_TRIGGER_FLAG_SCRIPT_TRIGGERED);
+						NGExecuteActionTrigger(0, trigger_group.data[index].third_field_lower & 0x7fff, item_id, SCANF_HEAVY | SCANF_SCRIPT_TRIGGER);
 
 						// Workaround to some weird behaviour which allows cameras and targets to be assigned out of order from a script trigger.
 						unsigned char action_type = (unsigned char)(trigger_group.data[index].third_field_lower & 0x7fff) & 0xff;
@@ -191,7 +196,7 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 					if (trigger_group.data[index].first_field & TGROUP_USE_FOUND_ITEM_INDEX) {
 						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TGROUP_USE_FOUND_ITEM_INDEX used on flipeffect");
 					} else {
-						current_result = NGFlipEffect(trigger_group.data[index].second_field_lower, trigger_group.data[index].third_field_lower & 0x7fff, false, true);
+						current_result = NGExecuteFlipEffect(0, trigger_group.data[index].second_field_lower, trigger_group.data[index].third_field_lower & 0x7fff, SCANF_SCRIPT_TRIGGER);
 					}
 
 					if (!current_result) {
@@ -242,7 +247,7 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 void NGProcessTriggerGroups() {
 	for (int i = 0; i < MAX_NG_TRIGGER_GROUPS; i++) {
 		for (int j = 0; j < current_trigger_groups[i].data_size; j++) {
-			if (NGISTriggerGroupDataResumed(&current_trigger_groups[i].data[j])) {
+			if (NGIsTriggerGroupDataResumed(&current_trigger_groups[i].data[j])) {
 				if (!current_trigger_groups[i].was_executed) {
 					current_trigger_groups[i].oneshot_triggered = false;
 				}

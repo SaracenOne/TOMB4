@@ -1342,9 +1342,7 @@ void GetCollisionInfo(COLL_INFO* coll, long x, long y, long z, short room_number
 	coll->mid_floor = h;
 	coll->mid_ceiling = c;
 	coll->mid_type = height_type;
-	coll->trigger_data = trigger_data; // NGLE
-	coll->trigger_index_room = trigger_index_room; // NGLE
-	coll->trigger_index_floor = trigger_index_floor; // NGLE
+	coll->trigger_index = trigger_index;
 	tilt = GetTiltType(floor, x, lara_item->pos.y_pos, z);
 	coll->tilt_x = (char)tilt;
 	coll->tilt_z = tilt >> 8;
@@ -1428,7 +1426,7 @@ void GetCollisionInfo(COLL_INFO* coll, long x, long y, long z, short room_number
 		coll->front_floor = -32767;
 	else if (coll->slopes_are_pits && (coll->front_type == BIG_SLOPE || coll->front_type == DIAGONAL) && coll->front_floor > coll->mid_floor)
 		coll->front_floor = 512;
-	else if (coll->lava_is_pit && coll->front_floor > 0 && trigger_data && (trigger_data[0] & 0x1F) == LAVA_TYPE)
+	else if (coll->lava_is_pit && coll->front_floor > 0 && trigger_index && (trigger_index[0] & 0x1F) == LAVA_TYPE)
 		coll->front_floor = 512;
 
 	/*left*/
@@ -1454,7 +1452,7 @@ void GetCollisionInfo(COLL_INFO* coll, long x, long y, long z, short room_number
 		coll->left_floor = -32767;
 	else if (coll->slopes_are_pits && (coll->left_type == BIG_SLOPE || coll->left_type == DIAGONAL) && coll->left_floor > 0)
 		coll->left_floor = 512;
-	else if (coll->lava_is_pit && coll->left_floor > 0 && trigger_data && (trigger_data[0] & 0x1F) == LAVA_TYPE)
+	else if (coll->lava_is_pit && coll->left_floor > 0 && trigger_index && (trigger_index[0] & 0x1F) == LAVA_TYPE)
 		coll->left_floor = 512;
 
 	floor = GetFloor(tx, yT, tz, &room_num);
@@ -1476,7 +1474,7 @@ void GetCollisionInfo(COLL_INFO* coll, long x, long y, long z, short room_number
 		coll->left_floor2 = -32767;
 	else if (coll->slopes_are_pits && (coll->left_type2 == BIG_SLOPE || coll->left_type2 == DIAGONAL) && coll->left_floor2 > 0)
 		coll->left_floor2 = 512;
-	else if (coll->lava_is_pit && coll->left_floor2 > 0 && trigger_data && (trigger_data[0] & 0x1F) == LAVA_TYPE)
+	else if (coll->lava_is_pit && coll->left_floor2 > 0 && trigger_index && (trigger_index[0] & 0x1F) == LAVA_TYPE)
 		coll->left_floor2 = 512;
 
 	/*right*/
@@ -1502,7 +1500,7 @@ void GetCollisionInfo(COLL_INFO* coll, long x, long y, long z, short room_number
 		coll->right_floor = -32767;
 	else if (coll->slopes_are_pits && (coll->right_type == BIG_SLOPE || coll->right_type == DIAGONAL) && coll->right_floor > 0)
 		coll->right_floor = 512;
-	else if (coll->lava_is_pit && coll->right_floor > 0 && trigger_data && (trigger_data[0] & 0x1F) == LAVA_TYPE)
+	else if (coll->lava_is_pit && coll->right_floor > 0 && trigger_index && (trigger_index[0] & 0x1F) == LAVA_TYPE)
 		coll->right_floor = 512;
 
 	floor = GetFloor(tx, yT, tz, &room_num);
@@ -1524,7 +1522,7 @@ void GetCollisionInfo(COLL_INFO* coll, long x, long y, long z, short room_number
 		coll->right_floor2 = -32767;
 	else if (coll->slopes_are_pits && (coll->right_type2 == BIG_SLOPE || coll->right_type2 == DIAGONAL) && coll->right_floor2 > 0)
 		coll->right_floor2 = 512;
-	else if (coll->lava_is_pit && coll->right_floor2 > 0 && trigger_data && (trigger_data[0] & 0x1F) == LAVA_TYPE)
+	else if (coll->lava_is_pit && coll->right_floor2 > 0 && trigger_index && (trigger_index[0] & 0x1F) == LAVA_TYPE)
 		coll->right_floor2 = 512;
 
 	room_num2 = room_number;

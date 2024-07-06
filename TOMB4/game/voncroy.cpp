@@ -868,7 +868,7 @@ void VoncroyRaceControl(short item_number)
 		room_number = oEnemy->room_number;
 		floor = GetFloor(oEnemy->pos.x_pos, oEnemy->pos.y_pos, oEnemy->pos.z_pos, &room_number);
 		GetHeight(floor, oEnemy->pos.x_pos, oEnemy->pos.y_pos, oEnemy->pos.z_pos);
-		TestTriggers(trigger_data, 1, 0, trigger_index_room, trigger_index_floor);
+		TestTriggers(trigger_index, true, 0);
 		ifl3 = 1;
 	}
 

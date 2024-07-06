@@ -323,7 +323,7 @@ void AnimateLara(ITEM_INFO* item)
 					unsigned char command_frame = (cmd[0] & 0xff);
 					unsigned char command_id = (cmd[0] & 0xff00) >> 8;
 					if (command_id == 0xa0 && (offset_frame == command_frame || command_frame == 0xff)) {
-						NGFlipEffect(cmd[1], cmd[2], false, true);
+						NGExecuteFlipEffect(0, cmd[1], cmd[2], SCANF_ANIM_COMMAND);
 					}
 				}
 				cmd += 3;

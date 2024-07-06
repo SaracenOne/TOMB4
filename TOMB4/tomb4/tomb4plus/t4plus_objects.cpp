@@ -146,6 +146,8 @@ int16_t T4PlusGetMotorBoatExtraSlotID() {
 }
 
 bool T4ObjectControlRoutine(short object_number, short item_num) {
+	NGStoreLastItemMovedIndex(item_num);
+
 	if (!NGIsItemFrozen(item_num)) {
 		return true;
 	} else {

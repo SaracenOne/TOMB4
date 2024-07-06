@@ -154,7 +154,7 @@ void ControlClockworkBeetle(short item_number)
 		bounce = 1;
 	}
 
-	TestTriggers(trigger_data, 0, 0, trigger_index_room, trigger_index_floor);
+	TestTriggers(trigger_index, false, 0);
 
 	if (room_number != item->room_number)
 		ItemNewRoom(item_number, room_number);

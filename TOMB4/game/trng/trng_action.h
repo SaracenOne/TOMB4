@@ -65,18 +65,25 @@ enum NG_ACTION_TYPE {
 	TRIGGER_REMOVE_X_MOVEABLE_AS_ACTIVE_ITEM = 95,
 };
 
-enum NGActionRepeatType {
-	NG_ACTION_REPEAT_TYPE_NEVER,
-	NG_ACTION_REPEAT_TYPE_ON_REENTRY,
-	NG_ACTION_REPEAT_TYPE_ALWAYS
+struct NGScannedAction {
+	uint16_t timer;
+	uint16_t item_index;
+	uint16_t flags;
+	uint32_t offset_floor_data;
+	uint16_t plugin_id;
 };
 
-#define NG_TRIGGER_FLAG_HEAVY (1 << 0)
-#define NG_TRIGGER_FLAG_BUTTON_ONESHOT (1 << 2)
-#define NG_TRIGGER_FLAG_SCRIPT_TRIGGERED (1 << 4)
-#define NG_TRIGGER_FLAG_DIRECT_CALL (1 << 5)
-#define NG_TRIGGER_FLAG_ANIM_COMMAND (1 << 7)
+#define NG_MAX_SCANNED_ACTIONS 64
+#define NG_MAX_OLD_ACTIONS 512
 
+extern uint32_t scanned_action_count;
+extern NGScannedAction scanned_actions[NG_MAX_SCANNED_ACTIONS];
+extern uint32_t old_action_count;
+extern NGOldTrigger old_actions[NG_MAX_OLD_ACTIONS];
 
-extern NGActionRepeatType NGActionTrigger(unsigned short param, unsigned short extra, short timer, bool is_heavy_triggered);
-extern NGActionRepeatType NGAction(unsigned short item_id, unsigned short timer, int flags);
+extern int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t flags);
+extern int32_t NGExecuteActionTrigger(uint16_t plugin_id, uint16_t action_timer, int32_t item_index, uint16_t flags);
+extern void NGProcessScannedActions();
+extern void NGCaptureAction(uint16_t item_index, uint16_t extra_timer, uint32_t floor_offset);
+
+extern void NGResetScanActions();

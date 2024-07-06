@@ -332,7 +332,7 @@ void StatuePlinthCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 		room_number = item->room_number;
 		floor = GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
 		GetHeight(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
-		TestTriggers(trigger_data, 1, item->flags & 0x3E00, trigger_index_room, trigger_index_floor);
+		TestTriggers(trigger_index, true, item->flags & 0x3E00);
 		item->mesh_bits = 255;
 		item->item_flags[0] = 1;
 		lara.puzzleitems[4]--;
@@ -610,7 +610,7 @@ void ControlTriggerTriggerer(short item_number)
 
 	item = &items[item_number];
 	GetHeight(GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &item->room_number), item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
-	data = trigger_data;
+	data = trigger_index;
 
 	if (data)
 	{

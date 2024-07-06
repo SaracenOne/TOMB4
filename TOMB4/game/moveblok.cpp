@@ -401,7 +401,7 @@ void MovableBlock(short item_number)
 				floor_info = GetFloor(item->pos.x_pos, item->pos.y_pos - 128, item->pos.z_pos, &room_number);
 				height = GetHeight(floor_info, item->pos.x_pos, item->pos.y_pos - 128, item->pos.z_pos);
 
-				TestTriggers(trigger_data, 1, item->flags & IFL_CODEBITS, trigger_index_room, trigger_index_floor);
+				TestTriggers(trigger_index, true, item->flags & IFL_CODEBITS);
 				RemoveActiveItem(item_number);
 				item->status = ITEM_INACTIVE;
 
@@ -588,7 +588,7 @@ void MovableBlock(short item_number)
 		if (frame == anims[lara_item->anim_number].frame_end)
 		{
 			if (item->gravity_status == 0 || !global_info->trng_pushables_have_gravity) {
-				TestTriggers(trigger_data, 1, item->flags & IFL_CODEBITS, trigger_index_room, trigger_index_floor);
+				TestTriggers(trigger_index, true, item->flags & IFL_CODEBITS);
 				RemoveActiveItem(item_number);
 				item->status = ITEM_INACTIVE;
 

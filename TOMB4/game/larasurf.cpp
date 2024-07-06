@@ -206,9 +206,7 @@ void LaraSurface(ITEM_INFO* item, COLL_INFO* coll)
 	coll->old.y = item->pos.y_pos;
 	coll->old.z = item->pos.z_pos;
 	coll->radius = 100;
-	coll->trigger_data = 0; // NGLE
-	coll->trigger_index_room = -1; // NGLE
-	coll->trigger_index_floor = -1; // NGLE
+	coll->trigger_index = 0; // NGLE
 	coll->slopes_are_walls = 0;
 	coll->slopes_are_pits = 0;
 	coll->lava_is_pit = 0;
@@ -244,7 +242,7 @@ void LaraSurface(ITEM_INFO* item, COLL_INFO* coll)
 	UpdateLaraRoom(item, 100);
 	LaraGun();
 
-	TestTriggers(coll->trigger_data, 0, 0, coll->trigger_index_room, coll->trigger_index_floor);
+	TestTriggers(coll->trigger_index, false, 0);
 }
 
 long LaraTestWaterClimbOut(ITEM_INFO* item, COLL_INFO* coll)

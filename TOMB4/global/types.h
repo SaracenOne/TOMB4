@@ -912,9 +912,7 @@ struct COLL_INFO
 	short facing;
 	short quadrant;
 	short coll_type;
-	short *trigger_data; // NGLE
-	int trigger_index_room; // NGLE
-	int trigger_index_floor; // NGLE
+	short *trigger_index;
 	char tilt_x;
 	char tilt_z;
 	char hit_by_baddie;

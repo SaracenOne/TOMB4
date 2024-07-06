@@ -434,9 +434,7 @@ void LaraAboveWater(ITEM_INFO* item, COLL_INFO* coll)
 	coll->old_anim_number = item->anim_number;
 	coll->old_frame_number = item->frame_number;
 	coll->radius = 100;
-	coll->trigger_data = 0; // NGLE
-	coll->trigger_index_room = -1; // NGLE
-	coll->trigger_index_floor = -1; // NGLE
+	coll->trigger_index = 0;
 	coll->slopes_are_walls = 0;
 	coll->slopes_are_pits = 0;
 	coll->lava_is_pit = 0;
@@ -516,7 +514,7 @@ void LaraAboveWater(ITEM_INFO* item, COLL_INFO* coll)
 	UpdateLaraRoom(item, -381);
 	LaraGun();
 
-	TestTriggers(coll->trigger_data, 0, 0, coll->trigger_index_room, coll->trigger_index_floor);
+	TestTriggers(coll->trigger_index, false, 0);
 }
 
 void SetCornerAnim(ITEM_INFO* item, COLL_INFO* coll, short rot, short flip)
@@ -2904,9 +2902,7 @@ void lara_as_deathslide(ITEM_INFO* item, COLL_INFO* coll)
 	room_number = item->room_number;
 	camera.target_angle = 12740;
 	GetHeight(GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number), item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
-	coll->trigger_data = trigger_data; // NGLE
-	coll->trigger_index_room = trigger_index_room; // NGLE
-	coll->trigger_index_floor = trigger_index_floor; // NGLE
+	coll->trigger_index = trigger_index;
 	
 	if (!(input & IN_ACTION))
 	{

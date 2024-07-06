@@ -1430,10 +1430,11 @@ void LoadGameModConfigSecondPass() {
                     READ_JSON_UINT8(trng_version_maintainence, global, &mod_global_info->trng_engine_version);
                     READ_JSON_UINT8(trng_version_build, global, &mod_global_info->trng_engine_version);
 
+                    READ_JSON_BOOL(trng_extended_flipmap_bitmask, global, mod_global_info);
                     READ_JSON_BOOL(trng_flipeffects_enabled, global, mod_global_info);
                     READ_JSON_BOOL(trng_actions_enabled, global, mod_global_info);
                     READ_JSON_BOOL(trng_conditionals_enabled, global, mod_global_info);
-                    READ_JSON_BOOL(trng_ng_anim_commands_enabled, global, mod_global_info);
+                    READ_JSON_BOOL(trng_anim_commands_enabled, global, mod_global_info);
                     READ_JSON_BOOL(trng_rollingball_extended_ocb, global, mod_global_info);
                     READ_JSON_BOOL(trng_statics_extended_ocb, global, mod_global_info);
                     READ_JSON_BOOL(trng_pushable_extended_ocb, global, mod_global_info);

@@ -5,7 +5,7 @@ long ControlPhase(long nframes, long demo_mode);
 void FlipMap(long FlipNumber);
 void RemoveRoomFlipItems(ROOM_INFO* r);
 void AddRoomFlipItems(ROOM_INFO* r);
-void TestTriggers(short* data, long heavy, long HeavyFlags, int room_number, int floor_index); // NGLE
+void TestTriggers(short* data, bool heavy, long heavy_flags);
 short GetDoor(FLOOR_INFO* floor);
 long CheckNoColFloorTriangle(FLOOR_INFO* floor, long x, long z);
 long CheckNoColCeilingTriangle(FLOOR_INFO* floor, long x, long z);
@@ -66,10 +66,7 @@ extern long flip_status;
 extern long flipeffect;
 extern long fliptimer;
 
-// NGLE
-extern short *trigger_data;
-extern int trigger_index_room;
-extern int trigger_index_floor;
+extern short *trigger_index;
 extern long tiltxoff;
 extern long tiltyoff;
 extern long OnObject;

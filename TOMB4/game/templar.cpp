@@ -161,7 +161,7 @@ void TemplarControl(short item_number)
 						mesh->Flags &= ~1;
 						floor->stopper = 0;
 						GetHeight(floor, pos.x, pos.y, pos.z);
-						TestTriggers(trigger_data, 1, 0, trigger_index_room, trigger_index_floor);
+						TestTriggers(trigger_index, true, 0);
 					}
 				}
 			}

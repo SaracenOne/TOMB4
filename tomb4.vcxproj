@@ -309,6 +309,7 @@
     <ClInclude Include="TOMB4\game\trng\trng_objects.h" />
     <ClInclude Include="TOMB4\game\trng\trng_organizer.h" />
     <ClInclude Include="TOMB4\game\trng\trng_plugin_interface.h" />
+    <ClInclude Include="TOMB4\game\trng\trng_progressive_action.h" />
     <ClInclude Include="TOMB4\game\trng\trng_savegame.h" />
     <ClInclude Include="TOMB4\game\trng\trng_script_parser.h" />
     <ClInclude Include="TOMB4\game\trng\trng_test_position.h" />
@@ -633,6 +634,9 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../tomb4/pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../tomb4/pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\trng\trng_progressive_action.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../tomb4/pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="TOMB4\game\trng\trng_savegame.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../tomb4/pch.h</PrecompiledHeaderFile>

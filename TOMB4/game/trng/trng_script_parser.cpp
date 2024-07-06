@@ -2411,10 +2411,12 @@ void NGReadNGGameflowInfo(char *gfScriptFile, size_t offset, size_t len) {
 		}
 
 		// TRNG Stuff
+		get_game_mod_global_info()->trng_extended_flipmap_bitmask = true;
 		get_game_mod_global_info()->trng_flipeffects_enabled = true;
 		get_game_mod_global_info()->trng_conditionals_enabled = true;
 		get_game_mod_global_info()->trng_actions_enabled = true;
-		get_game_mod_global_info()->trng_ng_anim_commands_enabled = true;
+		get_game_mod_global_info()->trng_anim_commands_enabled = true;
+		get_game_mod_global_info()->trng_timerfields_enabled = true;
 		get_game_mod_global_info()->trng_rollingball_extended_ocb = true;
 		get_game_mod_global_info()->trng_statics_extended_ocb = true;
 		get_game_mod_global_info()->trng_pushable_extended_ocb = true;

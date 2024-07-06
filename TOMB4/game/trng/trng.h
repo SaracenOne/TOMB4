@@ -3,6 +3,12 @@
 #include "../../global/types.h"
 #include "../../tomb4/mod_config.h"
 
+#define NGLE_INDEX 0x4000
+#define MASK_NGLE_INDEX  0x3FFF
+
+#define NGLE_START_SIGNATURE 0x474e
+#define NGLE_END_SIGNATURE 0x454c474e
+
 #define NG_READ_8(scr_buffer, scr_offset) scr_buffer[scr_offset]; \
 offset += sizeof(char)
 
@@ -15,6 +21,20 @@ scr_offset += sizeof(int)
 #define SILENCE_EXCESSIVE_LOGS // Debug macro to silence log commands which are commonly called every frame.
 
 #define NG_DEGREE(i) (i * 182)
+
+#define SCANF_HEAVY				0x100
+#define SCANF_TEMP_ONE_SHOT		0x200 
+#define SCANF_BUTTON_ONE_SHOT	0x400 
+#define SCANF_YET_TO_PERFORM    0x800
+#define SCANF_SCRIPT_TRIGGER	0x1000
+#define SCANF_DIRECT_CALL		0x2000
+#define SCANF_FLOOR_DATA		0x4000
+#define SCANF_ANIM_COMMAND		0x8000
+
+struct NGOldTrigger {
+	uint16_t flags;
+	uint32_t offset_floor_data;
+};
 
 enum NG_DEGREES_CODE {
 	DEGREES_CODE_45 = 0,
@@ -74,13 +94,6 @@ extern NGStaticTableEntry ng_static_id_table[NG_STATIC_ID_TABLE_SIZE];
 extern void NGPreloadAllLevelInfo(uint32_t valid_level_count);
 extern void NGLoadLevelInfo(FILE* level_fp);
 
-extern void NGStorePendingRoomNumber(int room_number);
-extern int NGRestorePendingRoomNumber();
-extern void NGUpdateCurrentTriggerRoomAndIndex(int new_room, int new_index);
-extern void NGClearCurrentTriggerRoomAndIndex();
-extern void NGStoreBackupTriggerRoomAndIndex();
-extern void NGRestoreBackupTriggerRoomAndIndex();
-
 extern int NGGetPluginIDForFloorData(short* floor_data_ptr);
 
 // Move the item in a direction by the number of units
@@ -124,15 +137,10 @@ extern bool NGIsUsingNGConditionals();
 extern bool NGIsUsingNGFlipEffects();
 extern bool NGIsUsingNGActions();
 extern bool NGIsUsingNGAnimCommands();
+extern bool NGIsUsingNGTimerfields();
 
 extern void NGSetCurrentDrawItemNumber(int item_num);
 extern int NGGetCurrentDrawItemNumber();
-
-extern void NGUpdateFlipeffectFloorstateData(bool heavy);
-extern void NGUpdateActionFloorstateData(bool heavy);
-
-extern void NGUpdateFlipeffectOneshot();
-extern void NGUpdateActionOneshot();
 
 extern int NGFindIndexForLaraStartPosWithMatchingOCB(unsigned int ocb);
 
@@ -154,3 +162,36 @@ enum NGLogType {
 };
 
 extern void NGLog(NGLogType type, const char* s, ...);
+
+extern void NGStoreLastFloorAddress(int16_t *p_floor_last_address);
+extern short *NGGetLastFloorAddress();
+
+extern void NGStoreFloorTriggerNow(int16_t *p_trigger_now);
+extern short *NGGetFloorTriggerNow();
+
+extern void NGStoreIsHeavyTesting(bool p_is_heavy_testing);
+extern bool NGGetIsHeavyTesting();
+
+extern void NGStoreLastItemMovedIndex(int16_t item_num);
+extern int16_t NGGetLastMovedItemIndex();
+
+extern void NGStoreItemIndexEnabledTrigger(int16_t item_num);
+extern int16_t NGGetItemIndexEnabledTrigger();
+
+extern void NGStoreItemIndexCurrent(int16_t item_num);
+extern int16_t NGGetItemIndexCurrent();
+
+extern bool NGIsInsideDummyTrigger();
+
+extern void NGStoreLastTriggerTimer(int32_t timer);
+extern int32_t NGGetLastTriggerTimer();
+
+extern int32_t NGCalculateTriggerTimer(int16_t* data, int32_t timer);
+
+extern int16_t* stored_last_floor_address;
+extern int16_t* stored_base_floor_trigger_now;
+extern bool stored_is_heavy_testing;
+extern int16_t stored_last_item_index;
+extern int16_t stored_item_index_enabled_trigger;
+extern int16_t stored_item_index_current;
+extern int32_t stored_last_trigger_timer;
