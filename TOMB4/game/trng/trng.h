@@ -195,3 +195,5 @@ extern int16_t stored_last_item_index;
 extern int16_t stored_item_index_enabled_trigger;
 extern int16_t stored_item_index_current;
 extern int32_t stored_last_trigger_timer;
+
+extern bool NGUsingLegacyNGTriggerBehaviour();

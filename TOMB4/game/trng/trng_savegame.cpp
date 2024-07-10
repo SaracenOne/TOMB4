@@ -1,6 +1,8 @@
 #include "../../tomb4/pch.h"
 
 #include "trng.h"
+#include "trng_action.h"
+#include "trng_flipeffect.h"
 #include "trng_savegame.h"
 
 #define MAX_NG_SAVEGAME_BUFFER_SIZE 0x8000
@@ -39,16 +41,38 @@ void NGReadNGSavegameInfo() {
 
 			switch (block_type) {
 				case 0x8003: { // OLD_EFFECTS
-					uint16_t total_old_flipeffects = NG_READ_16(ng_savegame_buffer, offset);
-					for (int i = 0; i < total_old_flipeffects; i++) {
-						uint16_t flags = NG_READ_16(ng_savegame_buffer, offset);
-						uint32_t offset_floor_data = NG_READ_32(ng_savegame_buffer, offset);
+					old_flipeffect_count = NG_READ_16(ng_savegame_buffer, offset);
+					for (int i = 0; i < old_flipeffect_count; i++) {
+						if (i < NG_MAX_OLD_FLIPEFFECTS) {
+							old_flipeffects[i].flags = NG_READ_16(ng_savegame_buffer, offset);
+							old_flipeffects[i].offset_floor_data = NG_READ_32(ng_savegame_buffer, offset);
+						} else {
+							NGLog(NG_LOG_TYPE_ERROR, "Old flipeffect overflow!");
+						}
 					}
 					break;
 				}
 				case 0x8004: { // OLD_FMV
 					for (int i = 0; i < 128; i++) {
 						uint8_t performed_fmv = NG_READ_8(ng_savegame_buffer, offset);
+					}
+					break;
+				}
+				case 0x8007: { // PROGR_ACTIONS
+					uint32_t progressive_action_count = NG_READ_16(ng_savegame_buffer, offset);
+					for (int i = 0; i < progressive_action_count; i++) {
+					}
+					break;
+				}
+				case 0x8008: { // OLD_ACTIONS
+					old_action_count = NG_READ_16(ng_savegame_buffer, offset);
+					for (int i = 0; i < old_action_count; i++) {
+						if (i < NG_MAX_OLD_ACTIONS) {
+							old_actions[i].flags = NG_READ_16(ng_savegame_buffer, offset);
+							old_actions[i].offset_floor_data = NG_READ_32(ng_savegame_buffer, offset);
+						} else {
+							NGLog(NG_LOG_TYPE_ERROR, "Old action overflow!");
+						}
 					}
 					break;
 				}
@@ -111,11 +135,11 @@ void NGReadNGSavegameInfo() {
 				}
 			}
 
-			size_t foo = start_offset + (block_size * sizeof(uint16_t));
+			size_t expected_block_size = start_offset + (block_size * sizeof(uint16_t));
 
-			if (offset != foo) {
+			if (offset != expected_block_size) {
 				NGLog(NG_LOG_TYPE_ERROR, "NGReadNGSavegameBuffer: size of block mismatch!");
-				offset = start_offset + (block_size * sizeof(uint16_t));
+				offset = expected_block_size;
 			}
 
 			if (offset >= ng_savegame_buffer_size) {

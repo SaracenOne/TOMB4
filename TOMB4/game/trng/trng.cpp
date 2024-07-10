@@ -790,3 +790,7 @@ int32_t NGCalculateTriggerTimer(int16_t* data, int32_t timer) {
 
 	return timer;
 }
+
+bool NGUsingLegacyNGTriggerBehaviour() {
+	return get_game_mod_global_info()->trng_legacy_ng_trigger_behaviour;
+}

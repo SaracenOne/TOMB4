@@ -852,8 +852,10 @@ void NGCaptureAction(uint16_t item_index, uint16_t extra_timer, uint32_t floor_o
 	uint32_t offset_now = floor_offset;
 	uint32_t offset_sector = 0;
 
-	offset_sector = trigger_index - floor_data; // May not be correct
-	offset_now |= (offset_sector << 24);
+	if (!NGUsingLegacyNGTriggerBehaviour()) {
+		offset_sector = trigger_index - floor_data; // May not be correct
+		offset_now |= (offset_sector << 24);
+	}
 
 	for (uint32_t i = 0; i < scanned_action_count; i++) {
 		if (scanned_actions[i].offset_floor_data == offset_now) {
@@ -930,11 +932,13 @@ void NGProcessScannedActions() {
 				test_run = false;
 				break;
 			} else {
-				if (old_actions[j].offset_floor_data != 0 &&
-					old_actions[j].flags & SCANF_TEMP_ONE_SHOT &&
-					(scanned_actions[i].flags & SCANF_HEAVY) == 0) {
-					if ((old_actions[j].offset_floor_data & 0xff000000) != (offset_floor & 0xff000000)) {
-						old_actions[j].offset_floor_data = 0;
+				if (!NGUsingLegacyNGTriggerBehaviour()) {
+					if (old_actions[j].offset_floor_data != 0 &&
+						old_actions[j].flags & SCANF_TEMP_ONE_SHOT &&
+						(scanned_actions[i].flags & SCANF_HEAVY) == 0) {
+						if ((old_actions[j].offset_floor_data & 0xff000000) != (offset_floor & 0xff000000)) {
+							old_actions[j].offset_floor_data = 0;
+						}
 					}
 				}
 			}

@@ -3080,11 +3080,13 @@ void NGExecuteFlipEffects() {
 			if (old_flipeffects[j].offset_floor_data == offset_floor_data) {
 				test_run = false;
 			} else {
-				if (old_flipeffects[j].offset_floor_data != 0 &&
-				old_flipeffects[j].flags & SCANF_TEMP_ONE_SHOT &&
-				(old_flipeffects[j].flags & SCANF_HEAVY) == 0) {
-					if ((old_flipeffects[j].offset_floor_data & 0xFF000000) != (offset_floor_data & 0xFF000000)) {
-						old_flipeffects[j].offset_floor_data = 0;
+				if (!NGUsingLegacyNGTriggerBehaviour()) {
+					if (old_flipeffects[j].offset_floor_data != 0 &&
+						old_flipeffects[j].flags & SCANF_TEMP_ONE_SHOT &&
+						(scanned_flipeffects[i].flags & SCANF_HEAVY) == 0) {
+						if ((old_flipeffects[j].offset_floor_data & 0xFF000000) != (offset_floor_data & 0xFF000000)) {
+							old_flipeffects[j].offset_floor_data = 0;
+						}
 					}
 				}
 			}
@@ -3114,7 +3116,7 @@ void NGExecuteFlipEffects() {
 				old_flipeffects[last_flipeffect].offset_floor_data = current_flipeffect->offset_floor_data;
 				old_flipeffects[last_flipeffect].flags = 0;
 				if (repeat_type == 1) {
-					old_flipeffects[last_flipeffect].flags = SCANF_TEMP_ONE_SHOT;
+					old_flipeffects[last_flipeffect].flags |= SCANF_TEMP_ONE_SHOT;
 				}
 			}
 		}
@@ -3128,13 +3130,16 @@ void NGCaptureFlipEffect(uint16_t flip_number, uint16_t timer, uint32_t flip_off
 	uint32_t offset_now = flip_offset;
 	uint32_t offset_sector = 0;
 
-	if (is_testing_heavy) {
-		offset_sector = trigger_index - floor_data; // May not be correct
-	} else {
-		offset_sector = uint32_t((NGGetLastFloorAddress()) - floor_data) * sizeof(uint16_t);
-	}
+	if (!NGUsingLegacyNGTriggerBehaviour()) {
+		if (is_testing_heavy) {
+			offset_sector = (trigger_index - floor_data) * sizeof(uint16_t); // May not be correct
+		}
+		else {
+			offset_sector = uint32_t((NGGetLastFloorAddress()) - floor_data) * sizeof(uint16_t);
+		}
 
-	offset_now |= (offset_sector << 24);
+		offset_now |= (offset_sector << 24);
+	}
 
 	for (uint32_t i = 0; i < scanned_flipeffect_count; i++) {
 		if (scanned_flipeffects[i].offset_floor_data == offset_now) {
