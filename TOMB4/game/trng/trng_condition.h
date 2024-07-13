@@ -55,5 +55,16 @@ enum NG_CONDITION_TYPE {
 	SOUND_THE_X_SOUND_EFFECT_IS_PLAYING = 85,
 };
 
+#define SECTOR_SIZE 1024
+#define NG_MAX_OLD_CONDITIONS 512
 
-extern bool NGCondition(short param, unsigned char extra, short timer);
+extern NGOldTrigger old_conditions[NG_MAX_OLD_CONDITIONS];
+extern int32_t old_condition_count;
+
+extern int NGRunCondition(uint16_t plugin_id, uint16_t condition_number, uint16_t index, uint16_t extra_buttons, bool *test_restore, bool *test_skips, int *repeat_type, uint16_t flags);
+extern int NGRunConditionTrigger(uint16_t *current_floor_data);
+
+extern bool NGIsValidConditionForDummy(int32_t condition_number, int32_t main_argument, bool test_first);
+extern bool NGAnalyzeDummyCondition(uint16_t *current_floor_data);
+
+extern void NGProcessConditions();

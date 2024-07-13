@@ -338,9 +338,7 @@ struct MOD_GLOBAL_INFO {
 
 	// TRNG Stuff
 	bool trng_extended_flipmap_bitmask = false;
-	bool trng_flipeffects_enabled = false; // TRNG (special TRNG flipeffects. Disable if conflicting with FURR)
-	bool trng_conditionals_enabled = false; // TRNG replaces monkeybar trigger type with customizable conditional conditional
-	bool trng_actions_enabled = false;
+	bool trng_new_triggers = false; // TRNG (special TRNG flipeffects. Disable if conflicting with FURR)
 	bool trng_anim_commands_enabled = false;
 	bool trng_timerfields_enabled = false;
 	bool trng_rollingball_extended_ocb = false; // TRNG (moveable and regular trigger activation)
@@ -351,6 +349,7 @@ struct MOD_GLOBAL_INFO {
 	bool trng_hack_allow_meshes_with_exactly_256_vertices = false; // TRNG seems to have a special hack which allows meshes of 256 verticies
 	bool trng_advanced_block_raising_behaviour = false;
 	bool trng_pushables_have_gravity = false;
+	bool trng_legacy_ng_trigger_behaviour = false;
 
 	bool trep_using_extended_saves = false;
 

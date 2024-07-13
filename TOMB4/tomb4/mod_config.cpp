@@ -1431,9 +1431,7 @@ void LoadGameModConfigSecondPass() {
                     READ_JSON_UINT8(trng_version_build, global, &mod_global_info->trng_engine_version);
 
                     READ_JSON_BOOL(trng_extended_flipmap_bitmask, global, mod_global_info);
-                    READ_JSON_BOOL(trng_flipeffects_enabled, global, mod_global_info);
-                    READ_JSON_BOOL(trng_actions_enabled, global, mod_global_info);
-                    READ_JSON_BOOL(trng_conditionals_enabled, global, mod_global_info);
+                    READ_JSON_BOOL(trng_new_triggers, global, mod_global_info);
                     READ_JSON_BOOL(trng_anim_commands_enabled, global, mod_global_info);
                     READ_JSON_BOOL(trng_rollingball_extended_ocb, global, mod_global_info);
                     READ_JSON_BOOL(trng_statics_extended_ocb, global, mod_global_info);
@@ -1442,6 +1440,7 @@ void LoadGameModConfigSecondPass() {
                     READ_JSON_BOOL(trng_hack_allow_meshes_with_exactly_256_vertices, global, mod_global_info);
                     READ_JSON_BOOL(trng_advanced_block_raising_behaviour, global, mod_global_info);
                     READ_JSON_BOOL(trng_pushables_have_gravity, global, mod_global_info);
+                    READ_JSON_BOOL(trng_legacy_ng_trigger_behaviour, global, mod_global_info);
 
                     READ_JSON_BOOL(trep_using_extended_saves, global, mod_global_info);
 
@@ -1501,7 +1500,7 @@ void T4PlusLevelSetup(int current_level) {
 
     using_multi_color_fog_bulbs = environment_info->enable_multi_color_fog_bulbs;
 
-    NGSetup();
+    NGLevelSetup();
 }
 
 // TODO: check if the equipment commands are valid on hub re-entry.

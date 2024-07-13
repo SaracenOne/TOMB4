@@ -853,7 +853,7 @@ void NGCaptureAction(uint16_t item_index, uint16_t extra_timer, uint32_t floor_o
 	uint32_t offset_sector = 0;
 
 	if (!NGUsingLegacyNGTriggerBehaviour()) {
-		offset_sector = trigger_index - floor_data; // May not be correct
+		offset_sector = (trigger_index - floor_data) * sizeof(uint16_t); // May not be correct
 		offset_now |= (offset_sector << 24);
 	}
 
@@ -889,13 +889,14 @@ int32_t NGExecuteActionTrigger(uint16_t plugin_id, uint16_t action_timer, int32_
 	uint16_t extra_timer = (action_number >> 8) & 0x7f;
 	int32_t repeat_type = 1;
 
-	if (NGIsInsideDummyTrigger()) {
+	if (NGGetIsInsideDummyTrigger()) {
 		return 1;
 	}
 
 	if (plugin_id > 0) {
 		if (plugin_id > 255) {
 			NGLog(NG_LOG_TYPE_ERROR, "Invalid plugin ID for action trigger %d", action_number);
+			return 2;
 		}
 
 		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Action plugin triggers are not yet implemented!");
@@ -947,7 +948,7 @@ void NGProcessScannedActions() {
 		if (test_run) {
 			NGScannedAction* current_action = &scanned_actions[i];
 			int32_t repeat_type = NGExecuteActionTrigger(current_action->plugin_id, current_action->timer, current_action->item_index, current_action->flags);
-			if (repeat_type > 0 && !NGIsInsideDummyTrigger()) {
+			if (repeat_type > 0 && !NGGetIsInsideDummyTrigger()) {
 				uint32_t last_action = 0;
 				for (last_action = 0; last_action < old_action_count; last_action++) {
 					if (old_actions[last_action].offset_floor_data == 0) {

@@ -53,8 +53,6 @@ extern NG_GLOBAL_TRIGGER_STATE ng_global_trigger_states[MAX_NG_GLOBAL_TRIGGERS];
 extern NG_TRIGGER_GROUP_STATE ng_trigger_group_states[MAX_NG_TRIGGER_GROUPS];
 extern NG_ORGANIZER_STATE ng_organizer_states[MAX_NG_ORGANIZERS];
 
-extern int ng_found_item_index;
-
 extern int ng_looped_sound_state[NumSamples];
 
 extern bool ng_lara_infinite_air;
@@ -110,7 +108,7 @@ extern int ng_used_inventory_object_for_frame;
 extern bool ng_used_large_medipack;
 extern bool ng_used_small_medipack;
 
-extern void NGSetupExtraState();
+extern void NGSetupLevelExtraState();
 
 extern void NGFrameStartExtraState();
 extern void NGFrameFinishExtraState();

@@ -722,8 +722,6 @@ void NGUpdateAllStatics() {
 	}
 }
 
-int ng_found_item_index = -1;
-
 #define MAX_LARA_COLLISONS 16
 int ng_lara_moveable_collisions[MAX_LARA_COLLISONS];
 int ng_lara_moveable_collision_size = 0;
@@ -797,10 +795,51 @@ int NGIsLaraCollidingWithMoveableSlot(int slot_number) {
 	return -1;
 }
 
-// Note, in TRNG, a 'friend' seems to only refer to Von Croy and the Guide, but not 'Troops'. I don't know exactly how this
-// is determined, but I'm only able to assume at this point that it's dictated by object ID. If this is wrong, please let me know.
+bool NGIsObjectMortalType(int object_id) {
+	if (object_id == BADDY_1 ||
+		object_id == BADDY_2 ||
+		(object_id >= CROCODILE && object_id <= SCORPION) ||
+		object_id == TROOPS ||
+		object_id == BABOON_NORMAL ||
+		object_id == WILD_BOAR ||
+		object_id == HARPY ||
+		object_id == BIG_BEETLE ||
+		object_id == BAT ||
+		object_id == DOG ||
+		object_id == SAS ||
+		object_id == SAS_CAPTAIN ||
+		object_id == SMALL_SCORPION)
+	{
+		return true;
+	} else {
+		return false;
+	}
+}
+
+bool NGIsObjectImmortalType(int object_id) {
+	if (object_id == SKELETON ||
+		object_id == SETHA ||
+		object_id == MUMMY ||
+		object_id == SPHINX ||
+		object_id == KNIGHTS_TEMPLAR ||
+		object_id == MUTANT ||
+		object_id == BIG_BEETLE ||
+		object_id == HORSE ||
+		(object_id >= DEMIGOD1 && object_id <= LITTLE_BEETLE) ||
+		(object_id >= WRAITH1 && object_id <= WRAITH4) ||
+		object_id == HAMMERHEAD ||
+		object_id == AHMET ||
+		object_id == FISH)
+	{
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
 bool NGIsObjectFriendType(int object_id) {
-	if (object_id == VON_CROY || object_id == GUIDE) {
+	if (object_id == VON_CROY || object_id == GUIDE || object_id == JEAN_YVES) {
 		return true;
 	} else {
 		return false;
@@ -809,7 +848,7 @@ bool NGIsObjectFriendType(int object_id) {
 
 int NGIsLaraCollidingWithCreature(NGCreatureType creature_type) {
 	for (int i = 0; i < ng_lara_moveable_collision_size; i++) {
-		if (objects[items[ng_lara_moveable_collisions[i]].object_number].intelligent) {
+		{
 			switch (creature_type) {
 				case NG_CREATURE_TYPE_ANY: {
 					return ng_lara_moveable_collisions[i];
@@ -817,7 +856,7 @@ int NGIsLaraCollidingWithCreature(NGCreatureType creature_type) {
 				case NG_CREATURE_TYPE_MORTAL: {
 					int object_id = items[ng_lara_moveable_collisions[i]].object_number;
 
-					if(!objects[object_id].undead && !NGIsObjectFriendType(object_id)) {
+					if(NGIsObjectMortalType(object_id)) {
 						return ng_lara_moveable_collisions[i];
 					}
 					break;
@@ -825,7 +864,7 @@ int NGIsLaraCollidingWithCreature(NGCreatureType creature_type) {
 				case NG_CREATURE_TYPE_IMMORTAL: {
 					int object_id = items[ng_lara_moveable_collisions[i]].object_number;
 
-					if(objects[object_id].undead && !NGIsObjectFriendType(object_id)) {
+					if(NGIsObjectImmortalType(object_id)) {
 						return ng_lara_moveable_collisions[i];
 					}
 					break;
@@ -1503,7 +1542,7 @@ int NGGetCurrentDrawItemNumber() {
 	return ng_draw_item_number;
 }
 
-void NGSetupExtraState() {
+void NGSetupLevelExtraState() {
 	ng_camera_target_id = NO_ITEM;
 
 	ng_lara_extrastate.TightRopeFall = 0;
@@ -1634,7 +1673,6 @@ void NGSetupExtraState() {
 	// Looped samples
 	memset(ng_looped_sound_state, 0x00, NumSamples * sizeof(int));
 
-	ng_found_item_index = -1;
 	ng_lara_moveable_collision_size = 0;
 	ng_lara_static_collision_size = 0;
 

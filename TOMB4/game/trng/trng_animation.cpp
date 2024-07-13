@@ -118,7 +118,7 @@ void NGTestAnimation(NG_ANIMATION *animation) {
 		}
 
 		if (is_valid) {
-			TestEnvConditionTripletResult result = TestEnvConditionTriplet(&animation->environment, animation->fan_flags & FAN_ALIGN_TO_ENV_POS);
+			TestEnvConditionTripletResult result = TestEnvConditionTriplet(&animation->environment, animation->fan_flags & FAN_ALIGN_TO_ENV_POS, -1);
 
 			if (result.is_valid) {
 				if (animation->fan_flags & FAN_SET_BUSY_HANDS) {

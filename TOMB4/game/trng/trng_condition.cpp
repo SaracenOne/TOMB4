@@ -30,7 +30,8 @@
 #include "../../specific/input.h"
 #include "../../specific/dxsound.h"
 
-#define SECTOR_SIZE 1024
+NGOldTrigger old_conditions[NG_MAX_OLD_CONDITIONS];
+int32_t old_condition_count;
 
 enum GRID_FRAGMENT_TYPE {
 	FRAGMENT_TYPE_SQUARE_FRAGMENT,
@@ -131,637 +132,1001 @@ bool NGGridFragmentConditionTrigger(int param, unsigned char extra, int grid_siz
 	return false;
 }
 
-bool NGCondition(short param, unsigned char extra, short timer) {
-	switch (timer) {
-	case INVENTORY_ITEM_IS_MISSING: {
-		return T4PlusGetInventoryCount(param) == 0;
-		break;
-	}
-	case INVENTORY_ITEM_IS_PRESENT: {
-		return T4PlusGetInventoryCount(param) > 0;
-	}
-	case INVENTORY_ITEM_HAS_AT_LEAST: {
-		return T4PlusGetInventoryCount(param) >= extra;
-		break;
-	}
-	case INVENTORY_ITEM_HAS_LESS_THAN: {
-		return T4PlusGetInventoryCount(param) < extra;
-		break;
-	}
-	case LARA_IS_PERFORMING_X_ACTION: {
-		bool is_lara_performing = !extra;
-		switch (param) {
-			case 0: // Climbing
-				if ((
-					lara_item->current_anim_state >= AS_CLIMBSTNC &&
-					lara_item->current_anim_state <= AS_CLIMBDOWN) == is_lara_performing) {
-					return true;
-				}
-				return false;
-				break;
-			case 1: // Swimming underwater
-				if ((
-					lara_item->current_anim_state == AS_TREAD ||
-					lara_item->current_anim_state == AS_SWIM ||
-					lara_item->current_anim_state == AS_GLIDE) == is_lara_performing) {
-					return true;
-				}
-				return false;
-				break;
-			case 2: // Floating on water
-				if ((
-					lara_item->current_anim_state == AS_SURFTREAD ||
-					lara_item->current_anim_state == AS_SURFSWIM ||
-					lara_item->current_anim_state == AS_SURFBACK ||
-					lara_item->current_anim_state == AS_SURFLEFT ||
-					lara_item->current_anim_state == AS_SURFRIGHT) == is_lara_performing) {
-					return true;
-				}
-				return false;
-				break;
-			case 3: // Falling
-				if ((lara_item->current_anim_state == AS_FASTFALL ||
-					lara_item->current_anim_state == AS_FALLBACK) == is_lara_performing) {
-					return true;
-				}
-				return false;
-				break;
-			case 4: // Jumping
-				if ((
-					lara_item->current_anim_state == AS_BACKJUMP ||
-					lara_item->current_anim_state == AS_UPJUMP ||
-					lara_item->current_anim_state == AS_FORWARDJUMP) == is_lara_performing) {
-					return true;
-				}
-				return false;
-				break;
-			case 5: // Moving on all fours
-				if ((
-					lara_item->current_anim_state == AS_ALL4S ||
-					lara_item->current_anim_state == AS_CRAWL ||
-					lara_item->current_anim_state == AS_ALL4TURNL ||
-					lara_item->current_anim_state == AS_ALL4TURNR ||
-					lara_item->current_anim_state == AS_CRAWLBACK ||
-					lara_item->current_anim_state == AS_DUCK ||
-					lara_item->current_anim_state == AS_DUCKROLL ||
-					lara_item->current_anim_state == AS_DUCKROTL ||
-					lara_item->current_anim_state == AS_DUCKROTR) == is_lara_performing) {
-					return true;
-				}
-				return false;
-				break;
-			case 6: // Sliding
-				if ((lara_item->current_anim_state == AS_SLIDE ||
-					lara_item->current_anim_state == AS_SLIDEBACK) == is_lara_performing) {
-					return true;
-				}
-				return false;
-				break;
-			case 7: // Rolling
-				if ((lara_item->current_anim_state == AS_FASTBACK) == is_lara_performing) {
-					return true;
-				}
-				break;
-			case 8: // Running
-				if ((lara_item->current_anim_state == AS_RUN) == is_lara_performing) {
-					return true;
-				}
-				return false;
-				break;
-			case 9: // Walking
-				if ((lara_item->current_anim_state == AS_WALK) == is_lara_performing) {
-					return true;
-				}
-				return false;
-				break;
-			case 10: // Dying
-				if ((lara_item->current_anim_state == AS_DEATH) == is_lara_performing) {
-					return true;
-				}
-				return false;
-				break;
-			case 11: // Stopping
-				if ((lara_item->current_anim_state == AS_STOP) == is_lara_performing) {
-					return true;
-				}
-				return false;
-				break;
-			case 12: // Monkeying
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_IS_PERFORMING_X_ACTION monkeying not currently implemented!");
-				return !is_lara_performing;
-				break;
-			case 13: // Pushing block
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_IS_PERFORMING_X_ACTION pushing block not currently implemented!");
-				return !is_lara_performing;
-				break;
-			case 14: // Pulling block
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_IS_PERFORMING_X_ACTION pulling block not currently implemented!");
-				return !is_lara_performing;
-				break;
-			case 15: // Pulling or pushing block
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_IS_PERFORMING_X_ACTION pulling or pushing block not currently implemented!");
-				return !is_lara_performing;
-				break;
-			case 16: // Swimming underwater or on water
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_IS_PERFORMING_X_ACTION swimming underwater or on water not currently implemented!");
-				return !is_lara_performing;
-				break;
-			case 17: // Shooting
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_IS_PERFORMING_X_ACTION shooting not currently implemented!");
-				return !is_lara_performing;
-				break;
-			case 18: // Hanging
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_IS_PERFORMING_X_ACTION hanging not currently implemented!");
-				return !is_lara_performing;
-				break;
-			case 19: // Dripping
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_IS_PERFORMING_X_ACTION dripping not currently implemented!");
-				return !is_lara_performing;
-				break;
+int32_t NGPerformTRNGCondition(uint16_t condition_number, uint16_t main_argument, uint16_t extra, bool *test_restore, bool *test_skip, int *repeat_type, uint16_t flags) {
+	if (NGGetIsInsideDummyTrigger()) {
+		if (!NGIsValidConditionForDummy(condition_number, main_argument, true)) {
+			*test_restore = false;
+			*test_skip = false;
+			*repeat_type = 0;
+			return 0;
 		}
+	}
 
-		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_IS_PERFORMING_X_ACTION is not currently implemented!");
-		return false;
-	}
-	case FRAGMENTED_TRIGGGER_CHECK_IN_WAY_IF_LARA_IS_IN_FRAGMENT_OF_2X2_SECTOR_GRID: {
-		return NGGridFragmentConditionTrigger(param, extra, 2);
-	}
-	case FRAGMENTED_TRIGGGER_CHECK_IN_WAY_IF_LARA_IS_IN_FRAGMENT_OF_3X3_SECTOR_GRID: {
-		return NGGridFragmentConditionTrigger(param, extra, 3);
-	}
-	case FRAGMENTED_TRIGGGER_CHECK_IN_WAY_IF_LARA_IS_IN_FRAGMENT_OF_4X4_SECTOR_GRID: {
-		return NGGridFragmentConditionTrigger(param, extra, 4);
-	}
-	case VERTICAL_TRIGGER_ZONE: {
-		// TODO: make more accurate to TRNG
-		short *bounds = GetBoundsAccurate(lara_item);
-		int item_top_y = lara_item->pos.y_pos + bounds[2];
-		int item_bottom_y = lara_item->pos.y_pos; // + bounds[3];
+	int32_t result = 0;
+	
+	switch (condition_number) {
+		case INVENTORY_ITEM_IS_MISSING: {
+			if (T4PlusGetInventoryCount(main_argument) == 0) {
+				result = 1;
+			}
+			break;
+		}
+		case INVENTORY_ITEM_IS_PRESENT: {
+			if (T4PlusGetInventoryCount(main_argument) != 0) {
+				result = 1;
+			}
+			break;
+		}
+		case INVENTORY_ITEM_HAS_AT_LEAST: {
+			*test_restore = true;
+			if (T4PlusGetInventoryCount(main_argument) >= extra) {
+				result = 1;
+			}
+			break;
+		}
+		case INVENTORY_ITEM_HAS_LESS_THAN: {
+			*test_restore = true;
+			if (T4PlusGetInventoryCount(main_argument) < extra) {
+				result = 1;
+			}
+			break;
+		}
+		case LARA_IS_PERFORMING_X_ACTION: {
+			*test_restore = true;
 
-		int bottom_trigger_bounds = lara_item->floor - (param * 128);
-		int top_trigger_bounds = bottom_trigger_bounds - ((extra + 1) * 128);
+			bool is_lara_performing = !extra;
+			switch (main_argument) {
+				case 0: // Climbing
+					if ((
+						lara_item->current_anim_state >= AS_CLIMBSTNC &&
+						lara_item->current_anim_state <= AS_CLIMBDOWN) == is_lara_performing) {
+						result = 1;
+					}
+					break;
+				case 1: // Swimming underwater
+					if ((
+						lara_item->current_anim_state == AS_TREAD ||
+						lara_item->current_anim_state == AS_SWIM ||
+						lara_item->current_anim_state == AS_GLIDE) == is_lara_performing) {
+						result = 1;
+					}
+					break;
+				case 2: // Floating on water
+					if ((
+						lara_item->current_anim_state == AS_SURFTREAD ||
+						lara_item->current_anim_state == AS_SURFSWIM ||
+						lara_item->current_anim_state == AS_SURFBACK ||
+						lara_item->current_anim_state == AS_SURFLEFT ||
+						lara_item->current_anim_state == AS_SURFRIGHT) == is_lara_performing) {
+						result = 1;
+					}
+					break;
+				case 3: // Falling
+					if ((lara_item->current_anim_state == AS_FASTFALL ||
+						lara_item->current_anim_state == AS_FALLBACK) == is_lara_performing) {
+						result = 1;
+					}
+					break;
+				case 4: // Jumping
+					if ((
+						lara_item->current_anim_state == AS_BACKJUMP ||
+						lara_item->current_anim_state == AS_UPJUMP ||
+						lara_item->current_anim_state == AS_FORWARDJUMP) == is_lara_performing) {
+						result = 1;
+					}
+					break;
+				case 5: // Moving on all fours
+					if ((
+						lara_item->current_anim_state == AS_ALL4S ||
+						lara_item->current_anim_state == AS_CRAWL ||
+						lara_item->current_anim_state == AS_ALL4TURNL ||
+						lara_item->current_anim_state == AS_ALL4TURNR ||
+						lara_item->current_anim_state == AS_CRAWLBACK ||
+						lara_item->current_anim_state == AS_DUCK ||
+						lara_item->current_anim_state == AS_DUCKROLL ||
+						lara_item->current_anim_state == AS_DUCKROTL ||
+						lara_item->current_anim_state == AS_DUCKROTR) == is_lara_performing) {
+						result = 1;
+					}
+					break;
+				case 6: // Sliding
+					if ((lara_item->current_anim_state == AS_SLIDE ||
+						lara_item->current_anim_state == AS_SLIDEBACK) == is_lara_performing) {
+						result = 1;
+					}
+					break;
+				case 7: // Rolling
+					if ((lara_item->current_anim_state == AS_FASTBACK) == is_lara_performing) {
+						result = 1;
+					}
+					break;
+				case 8: // Running
+					if ((lara_item->current_anim_state == AS_RUN) == is_lara_performing) {
+						result = 1;
+					}
+					break;
+				case 9: // Walking
+					if ((lara_item->current_anim_state == AS_WALK) == is_lara_performing) {
+						result = 1;
+					}
+					break;
+				case 10: // Dying
+					if ((lara_item->current_anim_state == AS_DEATH) == is_lara_performing) {
+						result = 1;
+					}
+					break;
+				case 11: // Stopping
+					if ((lara_item->current_anim_state == AS_STOP) == is_lara_performing) {
+						result = 1;
+					}
+					break;
+				case 12: // Monkeying
+					if ((
+						lara_item->current_anim_state == AS_HANG2 ||
+						lara_item->current_anim_state == AS_MONKEYSWING ||
+						lara_item->current_anim_state == AS_MONKEYL ||
+						lara_item->current_anim_state == AS_MONKEYR ||
+						lara_item->current_anim_state == AS_MONKEY180 ||
+						lara_item->current_anim_state == AS_HANGTURNL ||
+						lara_item->current_anim_state == AS_HANGTURNR) == is_lara_performing) {
+						result = 1;
+					}
+					break;
+				case 13: // Pushing block
+					if ((lara_item->current_anim_state == AS_PUSHBLOCK) == is_lara_performing) {
+						result = 1;
+					}
+					break;
+				case 14: // Pulling block
+					if ((lara_item->current_anim_state == AS_PULLBLOCK) == is_lara_performing) {
+						result = 1;
+					}
+					break;
+				case 15: // Pulling or pushing block
+					if ((lara_item->current_anim_state == AS_PUSHBLOCK || lara_item->current_anim_state == AS_PULLBLOCK) == is_lara_performing) {
+						result = 1;
+					}
+					break;
+				case 16: // Swimming underwater or on water
+					if ((
+						lara_item->current_anim_state == AS_TREAD ||
+						lara_item->current_anim_state == AS_SWIM ||
+						lara_item->current_anim_state == AS_SURFTREAD ||
+						lara_item->current_anim_state == AS_SURFSWIM) == is_lara_performing) {
+						result = 1;
+					}
+					break;
+				case 17: // Shooting
+					if (lara.has_fired == is_lara_performing) {
+						result = 1;
+					}
+					break;
+				case 18: // Hanging
+					if ((
+						lara_item->current_anim_state == AS_HANG ||
+						lara_item->current_anim_state == AS_HANGLEFT ||
+						lara_item->current_anim_state == AS_HANGRIGHT ||
+						lara_item->current_anim_state == AS_HANGTURNL ||
+						lara_item->current_anim_state == AS_HANGTURNR) == is_lara_performing) {
+						result = 1;
+					}
+					break;
+				case 19: { // Dripping
+						bool is_dripping = false;
+						for (int i = 0; i < 16; i++) {
+							if (lara.wet[i]) {
+								is_dripping = true;
+							}
+						}
+						result = (is_dripping == is_lara_performing);
+					}
+					break;
+				default:
+					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "LARA_IS_PERFORMING_X_ACTION is not currently implemented!");
+					break;
+			}
+			break;
+		}
+		case FRAGMENTED_TRIGGGER_CHECK_IN_WAY_IF_LARA_IS_IN_FRAGMENT_OF_2X2_SECTOR_GRID: {
+			*test_restore = true;
+			if (NGGridFragmentConditionTrigger(main_argument, extra, 2)) {
+				result = 1;
+			}
+			break;
+		}
+		case FRAGMENTED_TRIGGGER_CHECK_IN_WAY_IF_LARA_IS_IN_FRAGMENT_OF_3X3_SECTOR_GRID: {
+			*test_restore = true;
+			if (NGGridFragmentConditionTrigger(main_argument, extra, 3)) {
+				result = 1;
+			}
+			break;
+		}
+		case FRAGMENTED_TRIGGGER_CHECK_IN_WAY_IF_LARA_IS_IN_FRAGMENT_OF_4X4_SECTOR_GRID: {
+			*test_restore = true;
+			if (NGGridFragmentConditionTrigger(main_argument, extra, 4)) {
+				result = 1;
+			}
+			break;
+		}
+		case VERTICAL_TRIGGER_ZONE: {
+			// TODO: make more accurate to TRNG
+			*test_restore = true;
+			short* bounds = GetBoundsAccurate(lara_item);
+			int item_top_y = lara_item->pos.y_pos + bounds[2];
+			int item_bottom_y = lara_item->pos.y_pos; // + bounds[3];
 
-		return (item_top_y <= bottom_trigger_bounds && item_bottom_y >= top_trigger_bounds);
-	}
-	case VERTICAL_TRIGGER_ZONE_INVERSE: {
-		// TODO: make more accurate to TRNG
-		short* bounds = GetBoundsAccurate(lara_item);
-		int item_top_y = lara_item->pos.y_pos + bounds[2];
-		int item_bottom_y = lara_item->pos.y_pos; // + bounds[3];
+			int bottom_trigger_bounds = lara_item->floor - (main_argument * 128);
+			int top_trigger_bounds = bottom_trigger_bounds - ((extra + 1) * 128);
 
-		int bottom_trigger_bounds = lara_item->floor - (param * 128);
-		int top_trigger_bounds = bottom_trigger_bounds - ((extra + 1) * 128);
+			if (item_top_y <= bottom_trigger_bounds && item_bottom_y >= top_trigger_bounds) {
+				result = 1;
+			}
+			break;
+		}
+		case VERTICAL_TRIGGER_ZONE_INVERSE: {
+			// TODO: make more accurate to TRNG
+			*test_restore = true;
+			short* bounds = GetBoundsAccurate(lara_item);
+			int item_top_y = lara_item->pos.y_pos + bounds[2];
+			int item_bottom_y = lara_item->pos.y_pos; // + bounds[3];
 
-		return (item_top_y < top_trigger_bounds || item_bottom_y > bottom_trigger_bounds);
-	}
-	case VERTICAL_TRIGGER_ANTI_ZONE: {
-		// TODO: make more accurate to TRNG
-		short* bounds = GetBoundsAccurate(lara_item);
-		int item_top_y = lara_item->pos.y_pos + bounds[2];
-		int item_bottom_y = lara_item->pos.y_pos; // + bounds[3];
+			int bottom_trigger_bounds = lara_item->floor - (main_argument * 128);
+			int top_trigger_bounds = bottom_trigger_bounds - ((extra + 1) * 128);
 
-		int bottom_trigger_bounds = lara_item->floor - (param * 128);
-		int top_trigger_bounds = bottom_trigger_bounds - ((extra + 1) * 128);
+			if (item_top_y < top_trigger_bounds || item_bottom_y > bottom_trigger_bounds) {
+				result = 1;
+			}
+			break;
+		}
+		case VERTICAL_TRIGGER_ANTI_ZONE: {
+			// TODO: make more accurate to TRNG
+			*test_restore = true;
+			short* bounds = GetBoundsAccurate(lara_item);
+			int item_top_y = lara_item->pos.y_pos + bounds[2];
+			int item_bottom_y = lara_item->pos.y_pos; // + bounds[3];
 
-		return !(item_top_y < bottom_trigger_bounds && item_bottom_y > top_trigger_bounds);
-	}
-	case KEYBOARD_SCANCODE_IS_CURRENTLY: {
-		int scancode = param;
-#ifdef USE_SDL
-		scancode = convert_tomb_keycode_to_sdl_scancode(scancode);
-		if (!keymap) {
-			return false;
-		}
-		if (scancode == SDLK_UNKNOWN) {
-			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Unknown keyboard scancode %u!", scancode);
-			return false;
-		}
-#endif
-		// TODO: find the difference between multishot and singleshot
-		switch (extra) {
-			// Inactive single shot
-			case 0: {
-				return keymap[scancode] == 0;
-			}
-			// Active single shot
-			case 1: {
-				return keymap[scancode] != 0;
-			}
-			// Inactive multi shot
-			case 2: {
-				return keymap[scancode] == 0;
-			}
-			// Inactive single shot
-			case 3: {
-				return keymap[scancode] != 0;
-			}
-		}
+			int bottom_trigger_bounds = lara_item->floor - (main_argument * 128);
+			int top_trigger_bounds = bottom_trigger_bounds - ((extra + 1) * 128);
 
-		return false;
-	}
-	case KEYBOARD_COMMAND_GAME_IS_CURRENTLY: {
-		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "KEYBOARD_COMMAND_GAME_IS_CURRENTLY is not currently implemented!");
-		return false;
-	}
-	case CREATURE_IS_CURRENTLY: {
-		switch (extra) {
-			// Enemy is dead
-			case 0x00: {
-				return (items[param].status == ITEM_DEACTIVATED);
+			if (!(item_top_y < bottom_trigger_bounds && item_bottom_y > top_trigger_bounds)) {
+				result = 1;
 			}
-			// Enemy has not yet been activated
-			case 0x01: {
-				return (items[param].status == ITEM_INVISIBLE);
-			}
-			// Enemy is living
-			case 0x02: {
-				return NGIsCreatureActive(param);
-			}
-			// Enemy is active
-			case 0x03: {
-				return (NGIsCreatureActive(param) && NGIsTriggerActive(&items[param]));
-			}
-			// Enemy is not active
-			case 0x04: {
-				return (!NGIsCreatureActive(param) || !NGIsTriggerActive(&items[param]));
-			}
-			default: {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "CREATURE_IS_CURRENTLY %u is not currently implemented!", extra);
-				break;
-			}
+			break;
 		}
-
-		return false;
-	}
-	case MULTIPLE_CONDITION_OF_X_TRIGGERGROUP_SCRIPT_COMMAND: {
-		return NGTriggerGroupFunction(param, TRIGGER_GROUP_EXECUTION_MULTIPLE);
-	}
-	case MULTIPLE_CONDITION_OF_X_MULTIENVCONDITION_SCRIPT_COMMAND: {
-		return TestMultiEnvCondition(param, extra);
-	}
-	case LARA_HAS_FOUND_AT_LEAST_X_SECRETS: {
-		return savegame.Game.Secrets >= param;
-	}
-	case LARA_HAS_FOUND_EXACTLY_X_SECRETS: {
-		return savegame.Game.Secrets == param;
-	}
-	case KEYPAD_LAST_NUMBER_TYPED_IN_KEYPAD_IS_X_VALUE: {
-		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "KEYPAD_LAST_NUMBER_TYPED_IN_KEYPAD_IS_X_VALUE is not currently implemented!");
-		return false;
-	}
-	case TIMER_TIMER_SCREEN_VALUE_IS_Y_THAN_X_SECONDS: {
-		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TIMER_TIMER_SCREEN_VALUE_IS_Y_THAN_X_SECONDS is not currently implemented!");
-		return false;
-	}
-	case CREATURE_CURRENT_ANIMATION_0_31_IS:
-	case CREATURE_CURRENT_ANIMATION_32_63_IS:
-	case CREATURE_CURRENT_ANIMATION_64_95_IS:
-		return items[param].anim_number - objects[items[param].object_number].anim_index == extra;
-	case CREATURE_IS_CURRENTLY_OF_STATE: {
-		return items[param].current_anim_state == extra;
-	}
-	// Lara status is enabled/disabled
-	case LARA_STATUS_IS_ENABLED_OR_DISABLED: {
-		switch (param) {
-			// Poisoned
-			case 2:
-				if ((lara_item->poisoned) == (bool)extra)
-					return true;
-				break;
-			// Lara touching floor
-			case 4:
-				if ((lara_item->pos.y_pos == lara_item->floor) == (bool)extra)
-					return true;
-				break;
-			default:
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: Unimplemented NGCondition Lara Status %u!", param);
-				break;
-		}
-		return false;
-		break;
-	}
-	case LARA_IS_TOUCHING_MOVEABLE_ID: {
-		int result = NGIsLaraCollidingWithMoveableID(param);
-		if (result >= 0) {
-			ng_found_item_index = result;
-			return true;
-		}
-		break;
-	}
-	case LARA_IS_TOUCHING_MOVEABLE_SLOT: {
-		int result = NGIsLaraCollidingWithMoveableSlot(param);
-		if (result >= 0) {
-			ng_found_item_index = result;
-			return true;
-		}
-		break;
-	}
-	case LARA_IS_TOUCHING_CREATURE_TYPE: {
-		switch (param) {
-			// Mortal creatures
-			case 0x00: {
-				int result = NGIsLaraCollidingWithCreature(NG_CREATURE_TYPE_MORTAL);
-				if (result >= 0) {
-					ng_found_item_index = result;
-					return true;
-				}
-				break;
+		case KEYBOARD_SCANCODE_IS_CURRENTLY: {
+			*test_restore = true;
+			int scancode = main_argument;
+	#ifdef USE_SDL
+			scancode = convert_tomb_keycode_to_sdl_scancode(scancode);
+			if (!keymap) {
+				result = false;
 			}
-			// Immortal creatures
-			case 0x01: {
-				int result = NGIsLaraCollidingWithCreature(NG_CREATURE_TYPE_IMMORTAL);
-				if (result >= 0) {
-					ng_found_item_index = result;
-					return true;
-				}
-				break;
+			if (scancode == SDLK_UNKNOWN) {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Unknown keyboard scancode %u!", scancode);
+				result = false;
 			}
-			// Friends
-			case 0x02: {
-				int result = NGIsLaraCollidingWithCreature(NG_CREATURE_TYPE_FRIEND);
-				if (result >= 0) {
-					ng_found_item_index = result;
-					return true;
-				}
-				break;
-			}
-			default: {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: LARA_IS_TOUCHING_CREATURE_TYPE %u unimplemented!", param);
-				break;
-			}
-		}
-
-		return false;
-	}
-	case LARA_IS_VITALITY_IS_X_THAN: {
-		switch (extra) {
-			// Equal than
-			case 0: {
-				return lara_item->hit_points == param;
-			}
-			// Higher than
-			case 1: {
-				return lara_item->hit_points > param;
-			}
-			// Less than
-			case 2: {
-				return lara_item->hit_points < param;
-			}
-			default: {
-				NGLog(NG_LOG_TYPE_ERROR, "NGCondition: LARA_IS_VITALITY_IS_X_THAN unknown param!");
-			}
-		}
-		return false;
-	}
-	case LARA_IS_PERFORMING_ANIMATION: {
-		if (lara_item->anim_number - objects[T4PlusGetLaraSlotID()].anim_index == param) {
-			return true;
-		} else {
-			return false;
-		}
-		break;
-	}
-	case LARA_IS_STATE: {
-		return lara_item->current_anim_state == param;
-	}
-	case ANIMTEXTURE_THE_X_ANIMRANGE_TEXTURE_IS_ENABLED_OR_DISABLED: {
-		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ANIMTEXTURE_THE_X_ANIMRANGE_TEXTURE_IS_ENABLED_OR_DISABLED is not currently implemented!");
-		return false;
-	}
-	case LARA_IS_TOUCHING_STATIC_SLOT: {
-		int result = NGIsLaraCollidingWithStaticID(param);
-		if (result >= 0) {
-			return true;
-		}
-		break;
-	}
-	case LARA_IS_TOUCHING_STATIC_ID: {
-		int result = NGIsLaraCollidingWithStaticID(param);
-		if (result >= 0) {
-			return true;
-		}
-		break;
-	}
-	case LARA_IS_HOLDING_OR_DRIVING_ITEMS: {
-		switch (param) {
-			// Holding pistols
-			case 1: {
-				return lara.gun_type == WEAPON_PISTOLS && lara.gun_status == LG_READY;
-			}
-			case 2: {
-				return lara.gun_type == WEAPON_REVOLVER && lara.gun_status == LG_READY;
-			}
-			case 3: {
-				return lara.gun_type == WEAPON_UZI && lara.gun_status == LG_READY;
-			}
-			case 4: {
-				return lara.gun_type == WEAPON_SHOTGUN && lara.gun_status == LG_READY;
-			}
-			case 5: {
-				return lara.gun_type == WEAPON_GRENADE && lara.gun_status == LG_READY;
-			}
-			case 6: {
-				return lara.gun_type == WEAPON_CROSSBOW && lara.gun_status == LG_READY;
-			}
-			case 7: {
-				return lara.gun_type == WEAPON_FLARE;
-			}
-			case 8: {
-				return lara.gun_type == WEAPON_TORCH && !lara.LitTorch;
-			}
-			case 9: {
-				return lara.gun_type == WEAPON_TORCH && lara.LitTorch;
-			}
-			case 10: {
-				if (lara.vehicle != NO_ITEM)
-					return items[lara.vehicle].object_number == T4PlusGetJeepSlotID();
-				break;
-			}
-			case 11: {
-				if (lara.vehicle != NO_ITEM)
-					return items[lara.vehicle].object_number == T4PlusGetMotorbikeSlotID();
-				break;
-			}
-			case 12: {
-				if (lara.vehicle != NO_ITEM)
-					return items[lara.vehicle].object_number == T4PlusGetRubberBoatSlotID();
-				break;
-			}
-			case 13: {
-				if (lara.vehicle != NO_ITEM)
-					return items[lara.vehicle].object_number == T4PlusGetMotorBoatSlotID();
-				break;
-			}
-			case 14: {
-				return lara.RopePtr != -1;
-			}
-			case 15: {
-				return lara_item->current_anim_state == AS_POLESTAT ||
-					lara_item->current_anim_state == AS_POLEUP ||
-					lara_item->current_anim_state == AS_POLEDOWN ||
-					lara_item->current_anim_state == AS_POLELEFT ||
-					lara_item->current_anim_state == AS_POLERIGHT;
-			}
-			case 16: {
-				return lara.gun_type == WEAPON_TORCH;
-			}
-			case 17: {
-				if (lara.vehicle != NO_ITEM)
-					return items[lara.vehicle].object_number == KAYAK;
-				break;
-			}
-			default: {
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: LARA_IS_HOLDING_OR_DRIVING_ITEMS unimplemented type: %u!", param);
-			}
-		}
-
-		return false;
-		break;
-	}
-	case CREATURE_THE_X_CREATURE_HAS_THE_TRANSPARENCY_LEVEL: {
-		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: CREATURE_THE_X_CREATURE_HAS_THE_TRANSPARENCY_LEVEL unimplemented type: 0x%02x!", extra);
-		break;
-	}
-	case VARIABLES_THE_X_NUMERIC_VERIABLE_IS_EQUAL_OR_GREATER_TO_BIG_NUMBER_VALUE: {
-		if (NGNumericGetVariable(param) >= current_big_numbers[extra].big_number)
-			return true;
-		else
-			return false;
-	}
-	case VARIABLES_THE_X_NUMERIC_VERIABLE_IS_LESS_THAN_BIG_NUMBER_VALUE: {
-		if (NGNumericGetVariable(param) < current_big_numbers[extra].big_number)
-			return true;
-		else
-			return false;
-	}
-	case VARIABLES_THE_X_NUMERIC_VERIABLE_IS_EQUAL_TO_BIG_NUMBER_VALUE: {
-		if (NGNumericGetVariable(param) == current_big_numbers[extra].big_number)
-			return true;
-		else
-			return false;
-	}
-	case VARIABLES_THE_X_NUMERIC_VARIABLE_IS_EQUAL_OR_GREATER_TO: {
-		if (NGNumericGetVariable(param) >= extra)
-			return true;
-		else
-			return false;
-	}
-	case VARIABLES_THE_X_NUMERIC_VARIABLE_IS_LESS_THAN: {
-		if (NGNumericGetVariable(param) < extra)
-			return true;
-		else
-			return false;
-	}
-	case VARIABLES_THE_X_NUMERIC_VARIABLE_IS_EQUAL_TO: {
-		if (NGNumericGetVariable(param) == extra)
-			return true;
-		else
-			return false;
-	}
-	case VARIABLES_THE_X_NUMERIC_VARIABLE_HAS_THE_BIT_SET: {
-		if (NGNumericGetVariable(param) & (1 << extra))
-			return true;
-		else
-			return false;
-	}
-	case VARIABLES_THE_X_NUMERIC_VARIABLE_HAS_THE_BIT_CLEAR: {
-		if (!(NGNumericGetVariable(param) & (1 << extra)))
-			return true;
-		else
-			return false;
-	}
-	case VARIABLES_THE_CURRENT_VALUE_VARIABLE_IS_GREATER_OR_EQUAL_THAN_X_VALUE: {
-		if (ng_current_value >= param)
-			return true;
-		else
-			return false;
-	}
-	case VARIABLES_THE_CURRENT_VALUE_VARIABLE_IS_LESS_THAN_X_VALUE: {
-		if (ng_current_value < param)
-			return true;
-		else
-			return false;
-	}
-	case VARIABLES_THE_CURRENT_VALUE_VARIABLE_IS_EQUAL_THAN_X_VALUE: {
-		if (ng_current_value == param)
-			return true;
-		else
-			return false;
-	}
-	case LARA_IS_LESS_OR_EVEN_CLICKS_DISTANT_TO_MOVEABLE: {
-		return NGIsSourcePositionLessThanDistanceToTargetPosition(&lara_item->pos, &items[param].pos, extra * 256, false);
-		break;
-	}
-	case LARA_IS_LESS_OR_EVEN_UNITS_DISTANT_TO_MOVEABLE: {
-		return NGIsSourcePositionLessThanDistanceToTargetPosition(&lara_item->pos, &items[param].pos, extra, false);
-		break;
-	}
-	case LARA_IS_IN_ROOM_TYPE: {
-		ROOM_INFO* r = &room[lara_item->room_number];
-		if (r) {
-			int room_flags = r->flags;
-			switch (param) {
+	#endif
+			// TODO: find the difference between multishot and singleshot
+			switch (extra) {
+				// Inactive single shot
 				case 0: {
-					return room_flags & ROOM_UNDERWATER;
+					result = (keymap[scancode] == 0);
+					break;
 				}
+				// Active single shot
 				case 1: {
-					return room_flags & 0x02;
+					result = (keymap[scancode] != 0);
+					break;
 				}
+				// Inactive multi shot
 				case 2: {
-					return room_flags & ROOM_SWAMP;
+					result = (keymap[scancode] == 0);
+					break;
 				}
+				// Inactive single shot
 				case 3: {
-					return room_flags & ROOM_OUTSIDE;
-				}
-				case 4: {
-					return room_flags & ROOM_DYNAMIC_LIT;
-				}
-				case 5: {
-					return room_flags & ROOM_NOT_INSIDE;
-				}
-				case 6: {
-					return room_flags & ROOM_INSIDE;
-				}
-				case 7: {
-					return room_flags & ROOM_NO_LENSFLARE;
-				}
-				case 8: {
-					return room_flags & ROOM_CAUSTICS;
-				}
-				case 9: {
-					return room_flags & ROOM_REFLECTIONS;
-				}
-				case 10: {
-					return room_flags & ROOM_SNOW;
-				}
-				case 11: {
-					return room_flags & ROOM_RAIN;
-				}
-				case 12: {
-					return room_flags & ROOM_COLD;
-				}
-				default: {
-					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: LARA_IS_IN_ROOM_TYPE unsupported room type!");
+					result = (keymap[scancode] != 0);
 					break;
 				}
 			}
-			return false;
+			break;
 		}
-		break;
-	}
-	case LARA_IS_TOUCHING_MOVEABLE_WITH_MESH_NUMBER: {
-		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: LARA_IS_TOUCHING_MOVEABLE_WITH_MESH_NUMBER unimplemented!");
-		return false;
-		break;
-	}
-	case SOUND_THE_X_SOUND_EFFECT_IS_PLAYING: {
-		return DSIsSamplePlaying(param);
-		break;
-	}
-	default:
-		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: %u unimplemented!", timer);
-		break;
+		case KEYBOARD_COMMAND_GAME_IS_CURRENTLY: {
+			*test_restore = true;
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "KEYBOARD_COMMAND_GAME_IS_CURRENTLY is not currently implemented!");
+			break;
+		}
+		case CREATURE_IS_CURRENTLY: {
+			*test_restore = true;
+			*test_skip = true;
+			switch (extra) {
+				// Enemy is dead
+				case 0x00: {
+					result = (items[main_argument].status == ITEM_DEACTIVATED);
+					break;
+				}
+				// Enemy has not yet been activated
+				case 0x01: {
+					result = (items[main_argument].status == ITEM_INVISIBLE);
+					break;
+				}
+				// Enemy is living
+				case 0x02: {
+					result = NGIsCreatureActive(main_argument);
+					break;
+				}
+				// Enemy is active
+				case 0x03: {
+					result = (NGIsCreatureActive(main_argument) && NGIsTriggerActive(&items[main_argument]));
+					break;
+				}
+				// Enemy is not active
+				case 0x04: {
+					result = (!NGIsCreatureActive(main_argument) || !NGIsTriggerActive(&items[main_argument]));
+					break;
+				}
+				default: {
+					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "CREATURE_IS_CURRENTLY %u is not currently implemented!", extra);
+					break;
+				}
+			}
+			break;
+		}
+		case MULTIPLE_CONDITION_OF_X_TRIGGERGROUP_SCRIPT_COMMAND: {
+			result = NGTriggerGroupFunction(main_argument, TRIGGER_GROUP_EXECUTION_MULTIPLE);
+			break;
+		}
+		case MULTIPLE_CONDITION_OF_X_MULTIENVCONDITION_SCRIPT_COMMAND: {
+			*test_restore = true;
+			result = TestMultiEnvCondition(main_argument, extra, -1);
+			break;
+		}
+		case LARA_HAS_FOUND_AT_LEAST_X_SECRETS: {
+			result = (savegame.Game.Secrets >= main_argument);
+			break;
+		}
+		case LARA_HAS_FOUND_EXACTLY_X_SECRETS: {
+			result = (savegame.Game.Secrets == main_argument);
+			break;
+		}
+		case KEYPAD_LAST_NUMBER_TYPED_IN_KEYPAD_IS_X_VALUE: {
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "KEYPAD_LAST_NUMBER_TYPED_IN_KEYPAD_IS_X_VALUE is not currently implemented!");
+			break;
+		}
+		case TIMER_TIMER_SCREEN_VALUE_IS_Y_THAN_X_SECONDS: {
+			*test_restore = true;
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TIMER_TIMER_SCREEN_VALUE_IS_Y_THAN_X_SECONDS is not currently implemented!");
+			break;
+		}
+		case CREATURE_CURRENT_ANIMATION_0_31_IS:
+		case CREATURE_CURRENT_ANIMATION_32_63_IS:
+		case CREATURE_CURRENT_ANIMATION_64_95_IS:
+			*test_restore = true;
+			*test_skip = true;
+			result = (items[main_argument].anim_number - objects[items[main_argument].object_number].anim_index == extra);
+			break;
+		case CREATURE_IS_CURRENTLY_OF_STATE: {
+			*test_restore = true;
+			*test_skip = true;
+			result = (items[main_argument].current_anim_state == extra);
+			break;
+		}
+		// Lara status is enabled/disabled
+		case LARA_STATUS_IS_ENABLED_OR_DISABLED: {
+			*test_restore = true;
+			switch (main_argument) {
+				// Infinite Air
+				case 1:
+					if (NGLaraHasInfiniteAir() == (bool)extra)
+						result = 1;
+					break;
+				// Poisoned
+				case 2:
+					if ((lara_item->poisoned) == (bool)extra)
+						result = 1;
+					break;
+				// Lara touching floor
+				case 4:
+					if ((lara_item->pos.y_pos == lara_item->floor) == (bool)extra)
+						result = 1;
+					break;
+				default:
+					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: Unimplemented NGCondition Lara Status %u!", main_argument);
+					break;
+			}
+			break;
+		}
+		case LARA_IS_TOUCHING_MOVEABLE_ID: {
+			*test_skip = true;
+			int id = NGIsLaraCollidingWithMoveableID(main_argument);
+			if (id >= 0) {
+				NGStoreItemIndexConditional(id);
+				result = 1;
+			}
+			break;
+		}
+		case LARA_IS_TOUCHING_MOVEABLE_SLOT: {
+			int id = NGIsLaraCollidingWithMoveableSlot(main_argument);
+			if (id >= 0) {
+				NGStoreItemIndexConditional(id);
+				result = 1;
+			}
+			break;
+		}
+		case LARA_IS_TOUCHING_CREATURE_TYPE: {
+			switch (main_argument) {
+				// Mortal creatures
+				case 0x00: {
+					int id = NGIsLaraCollidingWithCreature(NG_CREATURE_TYPE_MORTAL);
+					if (id >= 0) {
+						NGStoreItemIndexConditional(id);
+						result = 1;
+					}
+					break;
+				}
+				// Immortal creatures
+				case 0x01: {
+					int id = NGIsLaraCollidingWithCreature(NG_CREATURE_TYPE_IMMORTAL);
+					if (id >= 0) {
+						NGStoreItemIndexConditional(id);
+						result = 1;
+					}
+					break;
+				}
+				// Friends
+				case 0x02: {
+					int id = NGIsLaraCollidingWithCreature(NG_CREATURE_TYPE_FRIEND);
+					if (id >= 0) {
+						NGStoreItemIndexConditional(id);
+						result = 1;
+					}
+					break;
+				}
+				default: {
+					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: LARA_IS_TOUCHING_CREATURE_TYPE %u unimplemented!", main_argument);
+					break;
+				}
+			}
+			break;
+		}
+		case LARA_IS_VITALITY_IS_X_THAN: {
+			*test_restore = true;
+			switch (extra) {
+				// Equal than
+				case 0: {
+					result = (lara_item->hit_points == main_argument);
+					break;
+				}
+				// Higher than
+				case 1: {
+					result = (lara_item->hit_points > main_argument);
+					break;
+				}
+				// Less than
+				case 2: {
+					result = (lara_item->hit_points < main_argument);
+					break;
+				}
+				default: {
+					NGLog(NG_LOG_TYPE_ERROR, "NGCondition: LARA_IS_VITALITY_IS_X_THAN unknown main_argument!");
+					break;
+				}
+			}
+			break;
+		}
+		case LARA_IS_PERFORMING_ANIMATION: {
+			if (lara_item->anim_number - objects[T4PlusGetLaraSlotID()].anim_index == main_argument) {
+				result = 1;
+			}
+			break;
+		}
+		case LARA_IS_STATE: {
+			if (lara_item->current_anim_state == main_argument) {
+				result = 1;
+			}
+			break;
+		}
+		case ANIMTEXTURE_THE_X_ANIMRANGE_TEXTURE_IS_ENABLED_OR_DISABLED: {
+			*test_restore = true;
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ANIMTEXTURE_THE_X_ANIMRANGE_TEXTURE_IS_ENABLED_OR_DISABLED is not currently implemented!");
+			break;
+		}
+		case LARA_IS_TOUCHING_STATIC_SLOT: {
+			int id = NGIsLaraCollidingWithStaticID(main_argument);
+			if (id >= 0) {
+				result = 1;
+			}
+			break;
+		}
+		case LARA_IS_TOUCHING_STATIC_ID: {
+			int id = NGIsLaraCollidingWithStaticID(main_argument);
+			if (id >= 0) {
+				result = 1;
+			}
+			break;
+		}
+		case LARA_IS_HOLDING_OR_DRIVING_ITEMS: {
+			switch (main_argument) {
+				// Holding pistols
+				case 1: {
+					result = (lara.gun_type == WEAPON_PISTOLS && lara.gun_status == LG_READY);
+					break;
+				}
+				case 2: {
+					result = (lara.gun_type == WEAPON_REVOLVER && lara.gun_status == LG_READY);
+					break;
+				}
+				case 3: {
+					result = (lara.gun_type == WEAPON_UZI && lara.gun_status == LG_READY);
+					break;
+				}
+				case 4: {
+					result = (lara.gun_type == WEAPON_SHOTGUN && lara.gun_status == LG_READY);
+					break;
+				}
+				case 5: {
+					result = (lara.gun_type == WEAPON_GRENADE && lara.gun_status == LG_READY);
+					break;
+				}
+				case 6: {
+					result = (lara.gun_type == WEAPON_CROSSBOW && lara.gun_status == LG_READY);
+					break;
+				}
+				case 7: {
+					result = (lara.gun_type == WEAPON_FLARE);
+					break;
+				}
+				case 8: {
+					result = (lara.gun_type == WEAPON_TORCH && !lara.LitTorch);
+					break;
+				}
+				case 9: {
+					result = (lara.gun_type == WEAPON_TORCH && lara.LitTorch);
+					break;
+				}
+				case 10: {
+					if (lara.vehicle != NO_ITEM)
+						result = (items[lara.vehicle].object_number == T4PlusGetJeepSlotID());
+					break;
+				}
+				case 11: {
+					if (lara.vehicle != NO_ITEM)
+						result = (items[lara.vehicle].object_number == T4PlusGetMotorbikeSlotID());
+					break;
+				}
+				case 12: {
+					if (lara.vehicle != NO_ITEM)
+						result = (items[lara.vehicle].object_number == T4PlusGetRubberBoatSlotID());
+					break;
+				}
+				case 13: {
+					if (lara.vehicle != NO_ITEM)
+						result = (items[lara.vehicle].object_number == T4PlusGetMotorBoatSlotID());
+					break;
+				}
+				case 14: {
+					result = (lara.RopePtr != -1);
+					break;
+				}
+				case 15: {
+					result = (lara_item->current_anim_state == AS_POLESTAT ||
+						lara_item->current_anim_state == AS_POLEUP ||
+						lara_item->current_anim_state == AS_POLEDOWN ||
+						lara_item->current_anim_state == AS_POLELEFT ||
+						lara_item->current_anim_state == AS_POLERIGHT);
+					break;
+				}
+				case 16: {
+					result = (lara.gun_type == WEAPON_TORCH);
+					break;
+				}
+				case 17: {
+					if (lara.vehicle != NO_ITEM)
+						result = (items[lara.vehicle].object_number == KAYAK);
+					break;
+				}
+				default: {
+					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: LARA_IS_HOLDING_OR_DRIVING_ITEMS unimplemented type: %u!", main_argument);
+					break;
+				}
+			}
+			break;
+		}
+		case CREATURE_THE_X_CREATURE_HAS_THE_TRANSPARENCY_LEVEL: {
+			*test_restore = true;
+			*test_skip = true;
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: CREATURE_THE_X_CREATURE_HAS_THE_TRANSPARENCY_LEVEL unimplemented type: 0x%02x!", extra);
+			break;
+		}
+		case VARIABLES_THE_X_NUMERIC_VERIABLE_IS_EQUAL_OR_GREATER_TO_BIG_NUMBER_VALUE: {
+			*test_restore = true;
+			*test_skip = false;
+			if (NGNumericGetVariable(main_argument) >= current_big_numbers[extra].big_number)
+				result = 1;
+			break;
+		}
+		case VARIABLES_THE_X_NUMERIC_VERIABLE_IS_LESS_THAN_BIG_NUMBER_VALUE: {
+			*test_restore = true;
+			*test_skip = false;
+			if (NGNumericGetVariable(main_argument) < current_big_numbers[extra].big_number)
+				result = 1;
+			break;
+		}
+		case VARIABLES_THE_X_NUMERIC_VERIABLE_IS_EQUAL_TO_BIG_NUMBER_VALUE: {
+			*test_restore = true;
+			*test_skip = false;
+			if (NGNumericGetVariable(main_argument) == current_big_numbers[extra].big_number)
+				result = 1;
+			break;
+		}
+		case VARIABLES_THE_X_NUMERIC_VARIABLE_IS_EQUAL_OR_GREATER_TO: {
+			*test_restore = true;
+			*test_skip = false;
+			if (NGNumericGetVariable(main_argument) >= extra)
+				result = 1;
+			break;
+		}
+		case VARIABLES_THE_X_NUMERIC_VARIABLE_IS_LESS_THAN: {
+			*test_restore = true;
+			*test_skip = false;
+			if (NGNumericGetVariable(main_argument) < extra)
+				result = 1;
+			break;
+		}
+		case VARIABLES_THE_X_NUMERIC_VARIABLE_IS_EQUAL_TO: {
+			*test_restore = true;
+			*test_skip = false;
+			if (NGNumericGetVariable(main_argument) == extra)
+				result = 1;
+			break;
+		}
+		case VARIABLES_THE_X_NUMERIC_VARIABLE_HAS_THE_BIT_SET: {
+			*test_restore = true;
+			*test_skip = false;
+			if (NGNumericGetVariable(main_argument) & (1 << extra))
+				result = 1;
+			break;
+		}
+		case VARIABLES_THE_X_NUMERIC_VARIABLE_HAS_THE_BIT_CLEAR: {
+			*test_restore = true;
+			*test_skip = false;
+			if (!(NGNumericGetVariable(main_argument) & (1 << extra)))
+				result = 1;
+			break;
+		}
+		case VARIABLES_THE_CURRENT_VALUE_VARIABLE_IS_GREATER_OR_EQUAL_THAN_X_VALUE: {
+			*test_restore = true;
+			*test_skip = false;
+			if (ng_current_value >= main_argument)
+				result = 1;
+			break;
+		}
+		case VARIABLES_THE_CURRENT_VALUE_VARIABLE_IS_LESS_THAN_X_VALUE: {
+			*test_restore = true;
+			*test_skip = false;
+			if (ng_current_value < main_argument)
+				result = 1;
+			break;
+		}
+		case VARIABLES_THE_CURRENT_VALUE_VARIABLE_IS_EQUAL_THAN_X_VALUE: {
+			*test_restore = true;
+			*test_skip = false;
+			if (ng_current_value == main_argument)
+				result = 1;
+			break;
+		}
+		case LARA_IS_LESS_OR_EVEN_CLICKS_DISTANT_TO_MOVEABLE: {
+			*test_restore = true;
+			*test_skip = true;
+			result = NGIsSourcePositionLessThanDistanceToTargetPosition(&lara_item->pos, &items[main_argument].pos, extra * 256, false);
+			break;
+		}
+		case LARA_IS_LESS_OR_EVEN_UNITS_DISTANT_TO_MOVEABLE: {
+			*test_restore = true;
+			*test_skip = true;
+			result = NGIsSourcePositionLessThanDistanceToTargetPosition(&lara_item->pos, &items[main_argument].pos, extra, false);
+			break;
+		}
+		case LARA_IS_IN_ROOM_TYPE: {
+			*test_restore = false;
+			*test_skip = false;
+			ROOM_INFO* r = &room[lara_item->room_number];
+			if (r) {
+				int room_flags = r->flags;
+				switch (main_argument) {
+					case 0: {
+						result = room_flags & ROOM_UNDERWATER;
+						break;
+					}
+					case 1: {
+						result = room_flags & 0x02;
+						break;
+					}
+					case 2: {
+						result = room_flags & ROOM_SWAMP;
+						break;
+					}
+					case 3: {
+						result = room_flags & ROOM_OUTSIDE;
+						break;
+					}
+					case 4: {
+						result = room_flags & ROOM_DAMAGE;
+						break;
+					}
+					case 5: {
+						result = room_flags & ROOM_NOT_INSIDE;
+						break;
+					}
+					case 6: {
+						result = room_flags & ROOM_INSIDE;
+						break;
+					}
+					case 7: {
+						result = room_flags & ROOM_NO_LENSFLARE;
+						break;
+					}
+					case 8: {
+						result = room_flags & ROOM_CAUSTICS;
+						break;
+					}
+					case 9: {
+						result = room_flags & ROOM_REFLECTIONS;
+						break;
+					}
+					case 10: {
+						result = room_flags & ROOM_SNOW;
+						break;
+					}
+					case 11: {
+						result = room_flags & ROOM_RAIN;
+						break;
+					}
+					case 12: {
+						result = room_flags & ROOM_COLD;
+						break;
+					}
+					default: {
+						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: LARA_IS_IN_ROOM_TYPE unsupported room type!");
+						break;
+					}
+				}
+				break;
+			}
+			break;
+		}
+		case LARA_IS_TOUCHING_MOVEABLE_WITH_MESH_NUMBER: {
+			*test_restore = true;
+			*test_skip = true;
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: LARA_IS_TOUCHING_MOVEABLE_WITH_MESH_NUMBER unimplemented!");
+			break;
+		}
+		case SOUND_THE_X_SOUND_EFFECT_IS_PLAYING: {
+			*test_restore = false;
+			*test_skip = false;
+			result = DSIsSamplePlaying(main_argument);
+			break;
+		}
+		default:
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGCondition: %u unimplemented!", condition_number);
+			break;
 	};
 
-	return false;
+	if (NGGetIsInsideDummyTrigger())
+		*repeat_type = 0;
+
+	return result;
 };
+
+int NGRunCondition(uint16_t plugin_id, uint16_t condition_number, uint16_t index, uint16_t extra_buttons, bool *test_restore, bool *test_skips, int *repeat_type, uint16_t flags) {
+	int result = 0;
+	
+	if (NGGetInsideConditionCount() != 0) {
+		*repeat_type = 0;
+		*test_restore = false;
+		*test_skips = false;
+		return 0;
+	}
+
+	if (NGGetIsInsideDummyTrigger()) {
+		if (plugin_id > 0) {
+			*repeat_type = 0;
+			*test_restore = false;
+			*test_skips = false;
+			return 0;
+		}
+
+		if (!NGIsValidConditionForDummy(condition_number, index, true)) {
+			*repeat_type = 0;
+			*test_restore = false;
+			*test_skips = false;
+			return 0;
+		}
+	}
+
+	if (plugin_id > 0) {
+		if (plugin_id > 255) {
+			NGLog(NG_LOG_TYPE_ERROR, "Invalid plugin ID for action trigger %d", condition_number);
+			*repeat_type = 0;
+			*test_restore = false;
+			*test_skips = false;
+			return 0;
+		}
+
+		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Condition plugin triggers are not yet implemented!");
+		return 2;
+	}
+
+	// TODO: CALLBACK FIRST
+
+	// TODO: CALLBACK REPLACE
+
+	result = NGPerformTRNGCondition(condition_number, index, extra_buttons, test_restore, test_skips, repeat_type, flags);
+
+	// TODO: CALLBACK AFTER
+
+	return result;
+}
+
+int NGRunConditionTrigger(uint16_t *current_floor_data) {
+	NGStoreTestConditionsFound(true);
+
+	uint32_t offset_condition = (uint32_t)current_floor_data;
+	uint32_t offset_now = offset_condition - (uint32_t)floor_data;
+
+	for (int32_t i = 0; i < old_condition_count; i++) {
+		if (old_conditions[i].offset_floor_data == offset_now) {
+			return 0;
+		}
+	}
+
+	uint16_t plugin_id = NGGetPluginIDForFloorData(NGGetFloorTriggerNow());
+
+	bool is_oneshot = false;
+	if (NGGetFloorTriggerNow()[1] & IFL_INVISIBLE) {
+		is_oneshot = true;
+	}
+
+	bool is_heavy = false;
+	if (NGGetIsHeavyTesting()) {
+		is_heavy = true;
+	}
+
+	int repeat_type = 0;
+
+	uint16_t condition = current_floor_data[0] & 0xff;
+	uint16_t index = current_floor_data[1] & 0x3ff;
+	uint16_t extra = current_floor_data[0] >> 9;
+	extra &= 0x1f;
+
+	bool test_restore = false;
+
+	uint16_t flags = SCANF_FLOOR_DATA;
+	if (is_oneshot) {
+		flags |= SCANF_BUTTON_ONE_SHOT;
+	}
+	if (is_heavy) {
+		flags |= SCANF_HEAVY;
+	}
+
+	bool test_skips = true;
+
+	// Run condition
+	int32_t result = NGRunCondition(plugin_id, condition, index, extra, &test_restore, &test_skips, &repeat_type, flags);
+
+	if (test_restore) {
+		stored_save_trigger_buttons |= IFL_CODEBITS;
+		stored_save_trigger_buttons &= (IFL_CODEBITS | IFL_INVISIBLE);
+	}
+
+	if (result) {
+		if (test_skips) {
+			result = 2;
+		}
+	}
+
+	if (!NGGetIsInsideDummyTrigger() && (result || repeat_type == 3) && (repeat_type != 0 || is_oneshot)) {
+		if (repeat_type == 3) {
+			repeat_type = 1;
+		}
+
+		if (is_oneshot && result) {
+			repeat_type = 2;
+		}
+
+		int32_t last_condition = 0;
+		for (int32_t i = 0; i < old_condition_count; i++) {
+			last_condition = i;
+			if (old_conditions[i].offset_floor_data == 0) {
+				break;
+			}
+		}
+
+		if (last_condition == old_condition_count) {
+			old_condition_count++;
+		}
+
+		flags = SCANF_FLOOR_DATA;
+		if (is_heavy) {
+			flags |= SCANF_HEAVY;
+		}
+		if (repeat_type == 1) {
+			flags |= SCANF_TEMP_ONE_SHOT;
+		}
+
+		old_conditions[last_condition].flags = flags;
+		old_conditions[last_condition].offset_floor_data = offset_now;
+	}
+
+	return result;
+}
+
+bool NGIsValidConditionForDummy(int32_t condition_number, int32_t main_argument, bool test_first) {
+	if (test_first) {
+		if (condition_number == MULTIPLE_CONDITION_OF_X_TRIGGERGROUP_SCRIPT_COMMAND) {
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "MULTIPLE_CONDITION_OF_X_TRIGGERGROUP_SCRIPT_COMMAND unimplemented as dummy condition");
+			return false;
+		}
+
+		if (condition_number == MULTIPLE_CONDITION_OF_X_MULTIENVCONDITION_SCRIPT_COMMAND) {
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "MULTIPLE_CONDITION_OF_X_MULTIENVCONDITION_SCRIPT_COMMAND unimplemented as dummy condition");
+			return false;
+		}
+	}
+
+	// TODO add missing conditions.
+	if (condition_number == FRAGMENTED_TRIGGGER_CHECK_IN_WAY_IF_LARA_IS_IN_FRAGMENT_OF_2X2_SECTOR_GRID ||
+		condition_number == FRAGMENTED_TRIGGGER_CHECK_IN_WAY_IF_LARA_IS_IN_FRAGMENT_OF_3X3_SECTOR_GRID ||
+		condition_number == FRAGMENTED_TRIGGGER_CHECK_IN_WAY_IF_LARA_IS_IN_FRAGMENT_OF_4X4_SECTOR_GRID) {
+		return true;
+	}
+
+	return false;
+}
+
+bool NGAnalyzeDummyCondition(uint16_t *current_floor_data) {
+	uint32_t offset_condition = (uint32_t)current_floor_data;
+	uint32_t offset_now = offset_condition - (uint32_t)floor_data;
+
+	uint16_t plugin_id = NGGetPluginIDForFloorData((short *)offset_now);
+	if (plugin_id > 0) {
+		return false;
+	}
+
+	uint16_t condition_number = current_floor_data[0] & 0xff;
+	uint16_t index = current_floor_data[1] & 0x3ff;
+	uint16_t extra = current_floor_data[0] >> 9;
+	extra &= 0x1f;
+
+	if (!NGIsValidConditionForDummy(condition_number, index, true)) {
+		return false;
+	}
+
+	bool test_restore = false;
+	bool test_skip = true;
+	int32_t repeat_type = 0;
+	uint32_t result = 0;
+
+	// TODO - store
+
+	result = NGRunCondition(0, condition_number, index, extra, &test_restore, &test_skip, &repeat_type, SCANF_DIRECT_CALL);
+
+	// TODO - restore
+
+	if (result == 0) {
+		NGStoreTestDummyFailed(true);
+		return false;
+	}
+
+	return true;
+}
+
+void NGProcessConditions() {
+	if (!NGGetTestConditionsFound()) {
+		for (int i = 0; i < old_condition_count; i++) {
+			if (old_conditions[i].flags & SCANF_TEMP_ONE_SHOT) {
+				old_conditions[i].offset_floor_data = 0;
+			}
+		}
+	}
+}

@@ -2128,4 +2128,6 @@ void SetupGame()
 	GetAIPickups();
 	SeedRandomDraw(0xD371F947);
 	SeedRandomControl(0xD371F947);
+
+	T4PlusLevelSetup(gfCurrentLevel);
 }

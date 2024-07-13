@@ -1642,11 +1642,9 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 					NGLog(NG_LOG_TYPE_PRINT, "0x%04x, 0x%04x, 0x%04x", first_field, second_field, third_field);
 
 					tables->level_trigger_group_table[tables->level_trigger_group_count].record.data[data_index].plugin_id = 0;
-					tables->level_trigger_group_table[tables->level_trigger_group_count].record.data[data_index].first_field = first_field;
-					tables->level_trigger_group_table[tables->level_trigger_group_count].record.data[data_index].second_field_lower = second_field;
-					tables->level_trigger_group_table[tables->level_trigger_group_count].record.data[data_index].second_field_upper = 0;
-					tables->level_trigger_group_table[tables->level_trigger_group_count].record.data[data_index].third_field_lower = third_field;
-					tables->level_trigger_group_table[tables->level_trigger_group_count].record.data[data_index].third_field_upper = 0;
+					tables->level_trigger_group_table[tables->level_trigger_group_count].record.data[data_index].flags = first_field;
+					tables->level_trigger_group_table[tables->level_trigger_group_count].record.data[data_index].object = second_field;
+					tables->level_trigger_group_table[tables->level_trigger_group_count].record.data[data_index].timer = third_field;
 
 					data_index++;
 					if (data_index >= NG_TRIGGER_GROUP_DATA_SIZE) {
@@ -1706,11 +1704,9 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 					}
 
 					tables->level_trigger_group_table[tables->level_trigger_group_count].record.data[data_index].plugin_id = plugin_id;
-					tables->level_trigger_group_table[tables->level_trigger_group_count].record.data[data_index].first_field = first_field;
-					tables->level_trigger_group_table[tables->level_trigger_group_count].record.data[data_index].second_field_lower = second_field_lower;
-					tables->level_trigger_group_table[tables->level_trigger_group_count].record.data[data_index].second_field_upper = second_field_upper;
-					tables->level_trigger_group_table[tables->level_trigger_group_count].record.data[data_index].third_field_lower = third_field_lower;
-					tables->level_trigger_group_table[tables->level_trigger_group_count].record.data[data_index].third_field_upper = third_field_upper;
+					tables->level_trigger_group_table[tables->level_trigger_group_count].record.data[data_index].flags = first_field;
+					tables->level_trigger_group_table[tables->level_trigger_group_count].record.data[data_index].object = second_field_lower;
+					tables->level_trigger_group_table[tables->level_trigger_group_count].record.data[data_index].timer = third_field_lower;
 
 					data_index++;
 					if (data_index >= NG_TRIGGER_GROUP_DATA_SIZE) {
@@ -2287,11 +2283,9 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 				NGLog(NG_LOG_TYPE_PRINT, "0x%04x, 0x%04x, 0x%04x", first_field, second_field, third_field);
 
 				tables->level_trigger_group_table[tables->level_trigger_group_count].record.data[data_index].plugin_id = 0;
-				tables->level_trigger_group_table[tables->level_trigger_group_count].record.data[data_index].first_field = first_field;
-				tables->level_trigger_group_table[tables->level_trigger_group_count].record.data[data_index].second_field_lower = second_field;
-				tables->level_trigger_group_table[tables->level_trigger_group_count].record.data[data_index].second_field_upper = 0;
-				tables->level_trigger_group_table[tables->level_trigger_group_count].record.data[data_index].third_field_lower = third_field;
-				tables->level_trigger_group_table[tables->level_trigger_group_count].record.data[data_index].third_field_upper = 0;
+				tables->level_trigger_group_table[tables->level_trigger_group_count].record.data[data_index].flags = first_field;
+				tables->level_trigger_group_table[tables->level_trigger_group_count].record.data[data_index].object = second_field;
+				tables->level_trigger_group_table[tables->level_trigger_group_count].record.data[data_index].timer = third_field;
 
 				data_index++;
 				if (data_index > NG_TRIGGER_GROUP_DATA_SIZE) {
@@ -2412,9 +2406,7 @@ void NGReadNGGameflowInfo(char *gfScriptFile, size_t offset, size_t len) {
 
 		// TRNG Stuff
 		get_game_mod_global_info()->trng_extended_flipmap_bitmask = true;
-		get_game_mod_global_info()->trng_flipeffects_enabled = true;
-		get_game_mod_global_info()->trng_conditionals_enabled = true;
-		get_game_mod_global_info()->trng_actions_enabled = true;
+		get_game_mod_global_info()->trng_new_triggers = true;
 		get_game_mod_global_info()->trng_anim_commands_enabled = true;
 		get_game_mod_global_info()->trng_timerfields_enabled = true;
 		get_game_mod_global_info()->trng_rollingball_extended_ocb = true;
@@ -2432,7 +2424,7 @@ void NGReadNGGameflowInfo(char *gfScriptFile, size_t offset, size_t len) {
 			MOD_LEVEL_ENVIRONMENT_INFO *environment_info = get_game_mod_level_environment_info(i);
 			environment_info->room_swamp_flag = ROOM_SWAMP;
 			environment_info->room_cold_flag = ROOM_COLD;
-			environment_info->room_damage_flag = ROOM_DYNAMIC_LIT;
+			environment_info->room_damage_flag = ROOM_DAMAGE;
 		}
 
 		size_t options_header_block_start_position = offset;

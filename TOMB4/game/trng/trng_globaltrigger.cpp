@@ -74,7 +74,7 @@ bool NGExecuteSingleGlobalTrigger(int global_trigger_id, int selected_inventory_
 			int result = NGIsLaraCollidingWithMoveableID(ng_script_id_table[global_trigger->parameter].script_index);
 			if (result >= 0) {
 				global_trigger_condition_passed = true;
-				ng_found_item_index = result;
+				NGStoreItemIndexConditional(result);
 			}
 			break;
 		}
@@ -82,7 +82,7 @@ bool NGExecuteSingleGlobalTrigger(int global_trigger_id, int selected_inventory_
 			int result = NGIsLaraCollidingWithMoveableSlot(global_trigger->parameter);
 			if (result >= 0) {
 				global_trigger_condition_passed = true;
-				ng_found_item_index = result;
+				NGStoreItemIndexConditional(result);
 			}
 			break;
 		}
@@ -90,7 +90,7 @@ bool NGExecuteSingleGlobalTrigger(int global_trigger_id, int selected_inventory_
 			int result = NGIsLaraCollidingWithCreature(NG_CREATURE_TYPE_ANY);
 			if (result >= 0) {
 				global_trigger_condition_passed = true;
-				ng_found_item_index = result;
+				NGStoreItemIndexConditional(result);
 			}
 			break;
 		}

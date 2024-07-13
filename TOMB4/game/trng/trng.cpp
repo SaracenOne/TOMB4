@@ -19,6 +19,7 @@
 #include "trng_organizer.h"
 #include "trng_flipeffect.h"
 #include "trng_action.h"
+#include "trng_condition.h"
 
 NGLevelInfo ng_level_info[MOD_LEVEL_COUNT];
 
@@ -479,9 +480,9 @@ void NGSetItemAnimation(uint16_t item_id,
 	}
 }
 
-void NGSetup() {	
+void NGLevelSetup() {	
 	NGLoadTablesForLevel(gfCurrentLevel);
-	NGSetupExtraState();
+	NGSetupLevelExtraState();
 
 	// Loaded from a savegame
 	if (gfGameMode == 4) {
@@ -490,13 +491,45 @@ void NGSetup() {
 		ng_loaded_savegame = false;
 	}
 
+	stored_condition_count = 0;
+	stored_is_inside_dummy_trigger = false;
 	stored_last_floor_address = nullptr;
 	stored_base_floor_trigger_now = nullptr;
 	stored_is_heavy_testing = false;
 	stored_last_item_index = -1;
 	stored_item_index_enabled_trigger = -1;
 	stored_item_index_current = -1;
+	stored_item_index_conditional = -1;
 	stored_last_trigger_timer = 0;
+	stored_test_conditions_found = false;
+	stored_save_trigger_buttons = 0;
+	stored_test_dummy_failed = false;
+
+	// Flipeffects
+	scanned_flipeffect_count = 0;
+	for (int i = 0; i < NG_MAX_SCANNED_FLIPEFFECTS; i++) {
+		memset(&scanned_flipeffects[i], 0, sizeof(NGScannedFlipEffect));
+	}
+	old_flipeffect_count = 0;
+	for (int i = 0; i < NG_MAX_OLD_FLIPEFFECTS; i++) {
+		memset(&old_flipeffects[i], 0, sizeof(NGOldTrigger));
+	}
+
+	// Actions
+	scanned_action_count = 0;
+	for (int i = 0; i < NG_MAX_SCANNED_ACTIONS; i++) {
+		memset(&scanned_actions[i], 0, sizeof(NGScannedAction));
+	}
+	old_action_count = 0;
+	for (int i = 0; i < NG_MAX_OLD_ACTIONS; i++) {
+		memset(&old_actions[i], 0, sizeof(NGOldTrigger));
+	}
+
+	// Conditions
+	old_condition_count = 0;
+	for (int i = 0; i < NG_MAX_OLD_CONDITIONS; i++) {
+		memset(&old_conditions[i], 0, sizeof(NGOldTrigger));
+	}
 }
 
 void NGSignalForManagementCreatedItems() {
@@ -508,6 +541,16 @@ void NGFrameStart() {
 
 	NGResetScanActions();
 	NGResetScanFlipEffects();
+
+	//
+
+	NGStoreTestDummyFailed(false);
+	
+	//
+
+	NGStoreTestConditionsFound(false);
+
+	//
 }
 
 void NGExecuteProgressiveActions() {
@@ -578,22 +621,10 @@ void NGFrameFinish() {
 	NGFrameFinishExtraState();
 }
 
-bool NGIsUsingNGConditionals() {
+bool NGIsUsingNGNewTriggers() {
 	MOD_GLOBAL_INFO *global_info = get_game_mod_global_info();
 
-	return global_info->trng_conditionals_enabled && ng_level_info[gfCurrentLevel].is_using_ngle_triggers;
-}
-
-bool NGIsUsingNGFlipEffects() {
-	MOD_GLOBAL_INFO *global_info = get_game_mod_global_info();
-
-	return global_info->trng_flipeffects_enabled && ng_level_info[gfCurrentLevel].is_using_ngle_triggers;
-}
-
-bool NGIsUsingNGActions() {
-	MOD_GLOBAL_INFO *global_info = get_game_mod_global_info();
-
-	return global_info->trng_actions_enabled && ng_level_info[gfCurrentLevel].is_using_ngle_triggers;
+	return global_info->trng_new_triggers && ng_level_info[gfCurrentLevel].is_using_ngle_triggers;
 }
 
 bool NGIsUsingNGAnimCommands() {
@@ -678,14 +709,20 @@ void NGLog(NGLogType type, const char* s, ...) {
 	}
 }
 
-
-int16_t*stored_last_floor_address = nullptr;
-int16_t*stored_base_floor_trigger_now = nullptr;
+int32_t stored_condition_count = 0;
+bool stored_is_inside_dummy_trigger = false;
+int16_t *stored_last_floor_address = nullptr;
+int16_t *stored_base_floor_trigger_now = nullptr;
 bool stored_is_heavy_testing = false;
 int16_t stored_last_item_index = -1;
 int16_t stored_item_index_enabled_trigger = -1;
 int16_t stored_item_index_current = -1;
+int16_t stored_item_index_conditional = -1;
 int32_t stored_last_trigger_timer = 0;
+bool stored_test_conditions_found = false;
+uint32_t stored_save_trigger_buttons = 0;
+bool stored_test_dummy_failed = false;
+
 
 void NGStoreLastFloorAddress(int16_t *p_floor_last_address) {
 	stored_last_floor_address = p_floor_last_address;
@@ -736,9 +773,28 @@ int16_t NGGetItemIndexCurrent() {
 	return stored_item_index_current;
 }
 
-bool NGIsInsideDummyTrigger() {
-	// TODO: figure out where this is set
-	return false;
+void NGStoreItemIndexConditional(int16_t index) {
+	stored_item_index_conditional = index;
+}
+
+int16_t NGGetItemIndexConditional() {
+	return stored_item_index_conditional;
+}
+
+void NGStoreInsideConditionCount(int32_t count) {
+	stored_condition_count = count;
+}
+
+int32_t NGGetInsideConditionCount() {
+	return stored_condition_count;
+}
+
+void NGStoreIsInsideDummyTrigger(bool is_inside_dummy) {
+	stored_is_inside_dummy_trigger = is_inside_dummy;
+}
+
+bool NGGetIsInsideDummyTrigger() {
+	return stored_is_inside_dummy_trigger;
 }
 
 void NGStoreLastTriggerTimer(int32_t timer) {
@@ -747,6 +803,30 @@ void NGStoreLastTriggerTimer(int32_t timer) {
 
 int32_t NGGetLastTriggerTimer() {
 	return stored_last_trigger_timer;
+}
+
+void NGStoreTestConditionsFound(bool found) {
+	stored_test_conditions_found = found;
+}
+
+bool NGGetTestConditionsFound() {
+	return stored_test_conditions_found;
+}
+
+void NGStoreSaveTriggerButtons(uint32_t trigger_buttons) {
+	stored_save_trigger_buttons = trigger_buttons;
+}
+
+uint32_t NGGetSaveTriggerButtons() {
+	return stored_save_trigger_buttons;
+}
+
+void NGStoreTestDummyFailed(bool failed) {
+	stored_test_dummy_failed = failed;
+}
+
+bool NGGetTestDummyFailed() {
+	return stored_test_dummy_failed;
 }
 
 int32_t NGCalculateTriggerTimer(int16_t* data, int32_t timer) {
@@ -758,12 +838,12 @@ int32_t NGCalculateTriggerTimer(int16_t* data, int32_t timer) {
 
 		switch ((trigger & 0x3FFF) >> 10) {
 			case TO_ACTION:
-				if (NGIsUsingNGActions()) {
+				if (NGIsUsingNGNewTriggers()) {
 					trigger = *data++;
 				}
 				break;
 			case TO_FLIPEFFECT:
-				if (NGIsUsingNGFlipEffects()) {
+				if (NGIsUsingNGNewTriggers()) {
 					trigger = *data++;
 				}
 				break;

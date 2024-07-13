@@ -122,7 +122,7 @@ extern bool NGIsSourcePositionLessThanDistanceToTargetPosition(PHD_3DPOS *source
 
 extern void NGSetItemAnimation(uint16_t item_id, uint32_t animation, bool update_state_id, bool update_next_state_id, bool update_speed, bool force_reset);
 
-extern void NGSetup();
+extern void NGLevelSetup();
 
 extern void NGUpdateAllItems();
 extern void NGUpdateAllStatics();
@@ -133,9 +133,7 @@ extern bool NGIsItemFrozen(unsigned int item_num);
 extern void NGFrameStart();
 extern void NGFrameFinish();
 
-extern bool NGIsUsingNGConditionals();
-extern bool NGIsUsingNGFlipEffects();
-extern bool NGIsUsingNGActions();
+extern bool NGIsUsingNGNewTriggers();
 extern bool NGIsUsingNGAnimCommands();
 extern bool NGIsUsingNGTimerfields();
 
@@ -181,19 +179,40 @@ extern int16_t NGGetItemIndexEnabledTrigger();
 extern void NGStoreItemIndexCurrent(int16_t item_num);
 extern int16_t NGGetItemIndexCurrent();
 
-extern bool NGIsInsideDummyTrigger();
+extern void NGStoreItemIndexConditional(int16_t index);
+int16_t NGGetItemIndexConditional();
+
+extern void NGStoreInsideConditionCount(int32_t count);
+extern int32_t NGGetInsideConditionCount();
+
+extern void NGStoreIsInsideDummyTrigger(bool is_dummy);
+extern bool NGGetIsInsideDummyTrigger();
 
 extern void NGStoreLastTriggerTimer(int32_t timer);
 extern int32_t NGGetLastTriggerTimer();
 
-extern int32_t NGCalculateTriggerTimer(int16_t* data, int32_t timer);
+extern void NGStoreTestConditionsFound(bool found);
+extern bool NGGetTestConditionsFound();
 
-extern int16_t* stored_last_floor_address;
-extern int16_t* stored_base_floor_trigger_now;
+extern void NGStoreSaveTriggerButtons(uint32_t trigger_buttons);
+extern uint32_t NGGetSaveTriggerButtons();
+
+extern void NGStoreTestDummyFailed(bool failed);
+extern bool NGGetTestDummyFailed();
+
+extern int32_t stored_condition_count;
+extern bool stored_is_inside_dummy_trigger;
+extern int16_t *stored_last_floor_address;
+extern int16_t *stored_base_floor_trigger_now;
 extern bool stored_is_heavy_testing;
 extern int16_t stored_last_item_index;
 extern int16_t stored_item_index_enabled_trigger;
 extern int16_t stored_item_index_current;
+extern int16_t stored_item_index_conditional;
 extern int32_t stored_last_trigger_timer;
+extern bool stored_test_conditions_found;
+extern uint32_t stored_save_trigger_buttons;
+extern bool stored_test_dummy_failed;
 
+extern int32_t NGCalculateTriggerTimer(int16_t* data, int32_t timer);
 extern bool NGUsingLegacyNGTriggerBehaviour();

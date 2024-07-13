@@ -32,6 +32,7 @@
 #include "../tomb4/tomb4plus/t4plus_objects.h"
 #include "../tomb4/tomb4plus/t4plus_environment.h"
 #include "trng/trng.h"
+#include "trng/trng_condition.h"
 
 FX_INFO* effects;
 OBJECT_VECTOR* sound_effects;
@@ -1079,8 +1080,8 @@ void SoundEffects()
 			SoundEffect(sfx->data, (PHD_3DPOS*)sfx, 0);
 	}
 
-	if (NGIsUsingNGFlipEffects()) {
-		// TODO: implement ControlEndConditions here.
+	if (NGIsUsingNGNewTriggers()) {
+		NGProcessConditions();
 	} else {
 		if (flipeffect != -1)
 			effect_routines[flipeffect](0);

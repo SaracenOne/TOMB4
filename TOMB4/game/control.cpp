@@ -494,10 +494,8 @@ long ControlPhase(long nframes, long demo_mode)
 			SmashedMesh[SmashedMeshCount] = 0;
 		}
 
-		if (NGIsUsingNGFlipEffects()) {
+		if (NGIsUsingNGNewTriggers()) {
 			NGExecuteFlipEffects();
-		}
-		if (NGIsUsingNGActions()) {
 			NGProcessScannedActions();
 		}
 
@@ -851,23 +849,19 @@ void TestTriggers(short* data, bool heavy, long heavy_flags)
 			return;
 
 		case MONKEY:
-			if (NGIsUsingNGConditionals()) {
-				value = *data++ & 0x3FF;
-				char extra = (flags >> 9);
-				short ng_timer = flags & 0xff;
+			if (NGIsUsingNGNewTriggers()) {
+				//value = *data++ & 0x3FF;
+ 				NGStoreSaveTriggerButtons(flags);
+				int result = NGRunConditionTrigger((uint16_t *)data-1);
+				flags = NGGetSaveTriggerButtons();
 
-				int plugin_id = NGGetPluginIDForFloorData(data + 1);
-				if (plugin_id == 0) {
-					if (!NGCondition(value, extra, ng_timer))
-						return;
-				} else {
-					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Plugin Trigger Conditionals are currently not supported!");
-				}
+				if (!result)
+					return;
+
+				data++;
 
 				// I don't know if this is the correct way of handling this, but it seems to fix some
 				// bugs in some pre 1.3 levels at least.
-				flags |= 0x2000;
-				// This seems to fix some other bugs.
 				timer = 0;
 			} else {
 				state = lara_item->current_anim_state;
@@ -1083,7 +1077,7 @@ void TestTriggers(short* data, bool heavy, long heavy_flags)
 			TriggerTimer = timer;
 			neweffect = value;
 
-			if (NGIsUsingNGFlipEffects()) {
+			if (NGIsUsingNGNewTriggers()) {
 				uint32_t current_trigger_floordata_offset = (uint32_t)((data - floor_data) * sizeof(uint16_t)) - sizeof(uint16_t);
 
 				trigger = *data++;
@@ -1095,7 +1089,7 @@ void TestTriggers(short* data, bool heavy, long heavy_flags)
 			T4TriggerSecret(value); // TRLE
 			break;
 		case TO_ACTION:
-			if (NGIsUsingNGActions()) {
+			if (NGIsUsingNGNewTriggers()) {
 				uint32_t current_trigger_floordata_offset = (uint32_t)((data - floor_data) * sizeof(uint16_t)) - sizeof(uint16_t);
 
 				trigger = *data++;
@@ -1619,18 +1613,13 @@ long GetHeight(FLOOR_INFO* floor, long x, long y, long z)
 			unsigned char timer = flags & 0xff;
 			if (trigger_type == MONKEY)
 			{
-				if (NGIsUsingNGConditionals())
+				if (NGIsUsingNGNewTriggers())
 				{
-					unsigned char value = *data++ & 0x3FF;
-					char extra = (flags >> 9);
+					NGStoreIsInsideDummyTrigger(true);
+					floor_object_trigger_valid = NGAnalyzeDummyCondition((uint16_t*)data - 1);
+					NGStoreIsInsideDummyTrigger(false);
 
-					int plugin_id = NGGetPluginIDForFloorData(data + 1);
-					if (plugin_id == 0) {
-						floor_object_trigger_valid = NGCondition(value, extra, timer);
-					} else {
-						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Plugin Trigger Conditionals are currently not supported!");
-						floor_object_trigger_valid = false;
-					}
+					data++;
 				}
 			}
 
@@ -1646,13 +1635,13 @@ long GetHeight(FLOOR_INFO* floor, long x, long y, long z)
 					{
 						// NGLE skips
 						if ((trigger & 0x3C00) == (TO_FLIPEFFECT << 10)) {
-							if (NGIsUsingNGFlipEffects()) {
+							if (NGIsUsingNGNewTriggers()) {
 								trigger = *data++;
 							}
 						}
 
 						if ((trigger & 0x3C00) == (TO_ACTION << 10)) {
-							if (NGIsUsingNGActions()) {
+							if (NGIsUsingNGNewTriggers()) {
 								trigger = *data++;
 							}
 						}
@@ -1963,18 +1952,13 @@ long GetCeiling(FLOOR_INFO* floor, long x, long y, long z)
 				unsigned char timer = flags & 0xff;
 				if (trigger_type == MONKEY)
 				{
-					if (NGIsUsingNGConditionals())
+					if (NGIsUsingNGNewTriggers())
 					{
-						unsigned char value = *data++ & 0x3FF;
-						char extra = (flags >> 9);
+						NGStoreIsInsideDummyTrigger(true);
+						ceiling_object_trigger_valid = NGAnalyzeDummyCondition((uint16_t*)data - 1);
+						NGStoreIsInsideDummyTrigger(false);
 
-						int plugin_id = NGGetPluginIDForFloorData(data + 1);
-						if (plugin_id == 0) {
-							ceiling_object_trigger_valid = NGCondition(value, extra, timer);
-						} else {
-							NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Plugin Trigger Conditionals are currently not supported!");
-							ceiling_object_trigger_valid = false;
-						}
+						data++;
 					}
 				}
 
@@ -1990,13 +1974,13 @@ long GetCeiling(FLOOR_INFO* floor, long x, long y, long z)
 						{
 							// NGLE skips
 							if ((trigger & 0x3C00) == (TO_FLIPEFFECT << 10)) {
-								if (NGIsUsingNGFlipEffects()) {
+								if (NGIsUsingNGNewTriggers()) {
 									trigger = *data++;
 								}
 							}
 
 							if ((trigger & 0x3C00) == (TO_ACTION << 10)) {
-								if (NGIsUsingNGActions()) {
+								if (NGIsUsingNGNewTriggers()) {
 									trigger = *data++;
 								}
 							}

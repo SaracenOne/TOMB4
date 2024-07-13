@@ -261,8 +261,6 @@ unsigned int __stdcall LoadLevel(void* name)
 		SetFadeClip(0, 1);
 		reset_cutseq_vars();
 		FileClose(level_fp);
-
-		T4PlusLevelSetup(gfCurrentLevel);
 	} 
 	else
 	{

@@ -178,29 +178,25 @@ enum NG_AMMO_FLAGS {
 };
 
 struct NG_MULTI_ENV_TRIPLET {
-	unsigned short env_condition;
-	short distance_for_env;
-	unsigned short extra;
+	uint16_t env_condition;
+	int16_t distance_for_env;
+	uint16_t extra;
 };
 
 struct NG_GLOBAL_TRIGGER {
-	unsigned short flags = 0x0;
-	unsigned short type = 0x00;
-	int parameter = 0x00;
-	unsigned short condition_trigger_group = 0x00;
-	unsigned short perform_trigger_group = 0x00;
-	unsigned short on_false_trigger_group = 0x00;
+	uint16_t flags = 0x0;
+	uint16_t type = 0x00;
+	int32_t parameter = 0x00;
+	uint16_t condition_trigger_group = 0x00;
+	uint16_t perform_trigger_group = 0x00;
+	uint16_t on_false_trigger_group = 0x00;
 };
 
 struct NG_TRIGGER_GROUP_DATA {
-	unsigned short first_field = 0x00;
-	unsigned short plugin_id = 0;
-
-	unsigned short second_field_lower = 0x00;
-	unsigned short second_field_upper = 0x00;
-	
-	unsigned short third_field_lower = 0x00;
-	unsigned short third_field_upper = 0x00;
+	uint16_t plugin_id = 0;
+	uint16_t flags = 0x00;
+	uint16_t object = 0x00;	
+	uint16_t timer = 0x00;
 };
 
 #define NG_TRIGGER_GROUP_DATA_SIZE 0xff

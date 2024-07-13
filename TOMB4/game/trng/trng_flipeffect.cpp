@@ -36,6 +36,11 @@
 #include "../../specific/function_table.h"
 #include "../../specific/3dmath.h"
 
+uint32_t scanned_flipeffect_count = 0;
+NGScannedFlipEffect scanned_flipeffects[NG_MAX_SCANNED_FLIPEFFECTS];
+uint32_t old_flipeffect_count;
+NGOldTrigger old_flipeffects[NG_MAX_OLD_FLIPEFFECTS];
+
 void NGAttractLaraInDirection(unsigned char direction, unsigned char speed) {
 	switch (direction) {
 		// West
@@ -571,7 +576,7 @@ bool set_room_type(unsigned char room_number, unsigned char room_type) {
 				break;
 			}
 			case 4: {
-				r->flags |= ROOM_DYNAMIC_LIT;
+				r->flags |= ROOM_DAMAGE;
 				break;
 			}
 			case 5: {
@@ -638,7 +643,7 @@ bool remove_room_type(unsigned char room_number, unsigned char room_type) {
 				break;
 			}
 			case 4: {
-				r->flags &= ~ROOM_DYNAMIC_LIT;
+				r->flags &= ~ROOM_DAMAGE;
 				break;
 			}
 			case 5: {
@@ -3034,12 +3039,12 @@ int NGPerformTRNGFlipEffect(uint16_t flip_number, int16_t full_timer, uint32_t f
 	return repeat_type;
 }
 
-int NGExecuteFlipEffect(uint16_t plugin_id, uint16_t param, int16_t extra, uint32_t flags) {
+int NGExecuteFlipEffect(uint16_t plugin_id, uint16_t flip_number, int16_t full_timer, uint32_t flags) {
 	int repeat_type = 0;
 
 	if (plugin_id > 0) {
 		if (plugin_id == 0xffff) {
-			NGLog(NG_LOG_TYPE_ERROR, "Invalid Plugin ID for Flipeffect %u", param);
+			NGLog(NG_LOG_TYPE_ERROR, "Invalid Plugin ID for Flipeffect %u", flip_number);
 			return 0;
 		}
 
@@ -3052,7 +3057,7 @@ int NGExecuteFlipEffect(uint16_t plugin_id, uint16_t param, int16_t extra, uint3
 
 	// TODO: Callback Replace
 
-	repeat_type = NGPerformTRNGFlipEffect(param, extra, flags);
+	repeat_type = NGPerformTRNGFlipEffect(flip_number, full_timer, flags);
 
 	// TODO: Callback After
 
@@ -3101,7 +3106,7 @@ void NGExecuteFlipEffects() {
 			}
 
 			int repeat_type = NGExecuteFlipEffect(current_flipeffect->plugin_id, current_flipeffect->number, current_flipeffect->timer, current_flipeffect->flags);
-			if (repeat_type > 0 && !NGIsInsideDummyTrigger()) {
+			if (repeat_type > 0 && !NGGetIsInsideDummyTrigger()) {
 				uint32_t last_flipeffect = 0;
 				for (last_flipeffect = 0; last_flipeffect < old_flipeffect_count; last_flipeffect++) {
 					if (old_flipeffects[last_flipeffect].offset_floor_data == 0) {

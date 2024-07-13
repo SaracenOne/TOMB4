@@ -13,14 +13,9 @@
 #include "../control.h"
 #include "../camera.h"
 
-uint32_t scanned_flipeffect_count = 0;
-NGScannedFlipEffect scanned_flipeffects[NG_MAX_SCANNED_FLIPEFFECTS];
-uint32_t old_flipeffect_count;
-NGOldTrigger old_flipeffects[NG_MAX_OLD_FLIPEFFECTS];
-
 // There is some ambiguity if the implementation of SINGLE_SHOT_RESUMED is implemented correctly for secondary data blocks
 bool NGIsTriggerGroupDataResumed(NG_TRIGGER_GROUP_DATA* data) {
-	return ((data->first_field & TGROUP_SINGLE_SHOT_RESUMED) &&
+	return ((data->flags & TGROUP_SINGLE_SHOT_RESUMED) &&
 		is_mod_trng_version_equal_or_greater_than_target(1, 2, 2, 7));
 }
 
@@ -34,30 +29,30 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 
 	// Workaround for hack which allows the camera and camera target to be selected out of order when called from a TriggerGroup.
 	ng_camera_target_id = NO_ITEM;
-	short selected_camera = -1;
-	short selected_target = -1;
+	int16_t selected_camera = -1;
+	int16_t selected_target = -1;
 
 	NG_TRIGGER_GROUP& trigger_group = current_trigger_groups[trigger_group_id];
-	int index = 0;
+	int32_t index = 0;
 
 	bool parsed_first_operation = false;
 	bool operation_result = false;
 
-	if (trigger_group.data[index].first_field == 0x0000) {
+	if (trigger_group.data[index].flags == 0x0000) {
 		NGLog(NG_LOG_TYPE_ERROR, "Attempted to execute NULL TriggerGroup (%u)!", trigger_group_id);
 	}
 
 	while (index < trigger_group.data_size) {
 		// Check of unsupported TGROUP flags
-		if (trigger_group.data[index].first_field & TGROUP_USE_EXECUTOR_ITEM_INDEX ||
-			trigger_group.data[index].first_field & TGROUP_USE_ITEM_USED_BY_LARA_INDEX ||
-			trigger_group.data[index].first_field & TGROUP_USE_OWNER_ANIM_ITEM_INDEX ||
-			trigger_group.data[index].first_field & TGROUP_USE_TRIGGER_ITEM_INDEX) {
+		if (trigger_group.data[index].flags & TGROUP_USE_EXECUTOR_ITEM_INDEX ||
+			trigger_group.data[index].flags & TGROUP_USE_ITEM_USED_BY_LARA_INDEX ||
+			trigger_group.data[index].flags & TGROUP_USE_OWNER_ANIM_ITEM_INDEX ||
+			trigger_group.data[index].flags & TGROUP_USE_TRIGGER_ITEM_INDEX) {
 			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Unsupported TGROUP flags detected!");
 			return false;
 		}
 
-		if ((trigger_group.data[index].first_field & TGROUP_SINGLE_SHOT) ||
+		if ((trigger_group.data[index].flags & TGROUP_SINGLE_SHOT) ||
 			NGIsTriggerGroupDataResumed(&trigger_group.data[index])) {
 			if (trigger_group.oneshot_triggered) {
 				return false;
@@ -66,7 +61,7 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 			}
 		}
 
-		if (trigger_group.data[index].first_field & TGROUP_ELSE) {
+		if (trigger_group.data[index].flags & TGROUP_ELSE) {
 			// ELSE
 			if (operation_result == true) {
 				break;
@@ -76,18 +71,18 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 			}
 		}
 
-		if (trigger_group.data[index].first_field == 0x0000)
+		if (trigger_group.data[index].flags == 0x0000)
 			break;
 
-		if ((!(trigger_group.data[index].first_field & TGROUP_OR) && (operation_result == true || !parsed_first_operation)) ||
-			trigger_group.data[index].first_field & TGROUP_OR) {
+		if ((!(trigger_group.data[index].flags & TGROUP_OR) && (operation_result == true || !parsed_first_operation)) ||
+			trigger_group.data[index].flags & TGROUP_OR) {
 			bool current_result = false;
 
 			if (trigger_group.data[index].plugin_id != 0) {
 				int t4_plugin_id = NGGetT4PluginID(trigger_group.data[index].plugin_id);
 				char *plugin_string = NGGetPluginString(trigger_group.data[index].plugin_id);
 
-				if ((trigger_group.data[index].first_field & 0xF000) == 0x8000 || (trigger_group.data[index].first_field & 0xF000) == 0x9000) {
+				if ((trigger_group.data[index].flags & 0xF000) == 0x8000 || (trigger_group.data[index].flags & 0xF000) == 0x9000) {
 					current_result = false;
 				} else {
 					current_result = true;
@@ -95,11 +90,11 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 
 				if (t4_plugin_id != -1) {
 					// Flipeffect
-					if ((trigger_group.data[index].first_field & 0xF000) == 0x2000) {
-						if (trigger_group.data[index].first_field & TGROUP_USE_FOUND_ITEM_INDEX) {
+					if ((trigger_group.data[index].flags & 0xF000) == 0x2000) {
+						if (trigger_group.data[index].flags & TGROUP_USE_FOUND_ITEM_INDEX) {
 							NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TGROUP_USE_FOUND_ITEM_INDEX used on flipeffect");
 						} else {
-							current_result = NGExecuteFlipEffect(0, trigger_group.data[index].second_field_lower, trigger_group.data[index].third_field_lower & 0x7fff, SCANF_SCRIPT_TRIGGER);
+							current_result = NGExecuteFlipEffect(0, trigger_group.data[index].object, trigger_group.data[index].timer & 0x7fff, SCANF_SCRIPT_TRIGGER);
 						}
 
 						if (!current_result) {
@@ -114,34 +109,34 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Plugin triggers are not yet supported (trigger_id: %u, plugin:%s, first_field:0x%x, second_field:%u, third_field:0x%x)",
 							trigger_group_id,
 							plugin_string,
-							trigger_group.data[index].first_field,
-							((int)trigger_group.data[index].second_field_upper << 16 | (int)trigger_group.data[index].second_field_lower),
-							((int)trigger_group.data[index].third_field_upper << 16 | (int)trigger_group.data[index].third_field_lower));
+							trigger_group.data[index].flags,
+							((int)trigger_group.data[index].object),
+							((int)trigger_group.data[index].timer));
 					} else {
 						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Plugin triggers are not yet supported (trigger_id: %u, plugin_id:%u, first_field:0x%x, second_field:%u, third_field:0x%x)",
 							trigger_group_id,
 							trigger_group.data[index].plugin_id,
-							trigger_group.data[index].first_field,
-							((int)trigger_group.data[index].second_field_upper << 16 | (int)trigger_group.data[index].second_field_lower),
-							((int)trigger_group.data[index].third_field_upper << 16 | (int)trigger_group.data[index].third_field_lower));
+							trigger_group.data[index].flags,
+							((int)trigger_group.data[index].object),
+							((int)trigger_group.data[index].timer));
 					}
 				}
 			} else {
 				// ActionNG
-				if (trigger_group.data[index].first_field & TGROUP_ACTION) {
-					if (trigger_group.data[index].first_field & TGROUP_MOVEABLE) {
+				if (trigger_group.data[index].flags & TGROUP_ACTION) {
+					if (trigger_group.data[index].flags & TGROUP_MOVEABLE) {
 
 						short item_id = NO_ITEM;
-						if (trigger_group.data[index].first_field & TGROUP_USE_FOUND_ITEM_INDEX) {
-							item_id = ng_found_item_index;
+						if (trigger_group.data[index].flags & TGROUP_USE_FOUND_ITEM_INDEX) {
+							item_id = NGGetItemIndexConditional();
 						} else {
-							item_id = ng_script_id_table[trigger_group.data[index].second_field_lower].script_index;
+							item_id = ng_script_id_table[trigger_group.data[index].object].script_index;
 						}
 
-						NGExecuteActionTrigger(0, trigger_group.data[index].third_field_lower & 0x7fff, item_id, SCANF_HEAVY | SCANF_SCRIPT_TRIGGER);
+						NGExecuteActionTrigger(0, trigger_group.data[index].timer & 0x7fff, item_id, SCANF_HEAVY | SCANF_SCRIPT_TRIGGER);
 
 						// Workaround to some weird behaviour which allows cameras and targets to be assigned out of order from a script trigger.
-						unsigned char action_type = (unsigned char)(trigger_group.data[index].third_field_lower & 0x7fff) & 0xff;
+						unsigned char action_type = (unsigned char)(trigger_group.data[index].timer & 0x7fff) & 0xff;
 						switch (action_type) {
 							case ACTIVATE_CAMERA_WITH_TIMER: {
 								if (item_id >= number_cameras) {
@@ -175,35 +170,47 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 							current_result = true;
 						}
 					}
-				} else if (trigger_group.data[index].first_field & TGROUP_CONDITION_TRIGGER) {
+				} else if (trigger_group.data[index].flags & TGROUP_CONDITION_TRIGGER) {
+					int32_t condition_index = -1;
 					// ConditionNG (item id)
-					if (trigger_group.data[index].first_field & TGROUP_MOVEABLE) {
-						if (trigger_group.data[index].first_field & TGROUP_USE_FOUND_ITEM_INDEX) {
-							current_result = NGCondition(ng_found_item_index, (trigger_group.data[index].third_field_lower >> 8) & 0xff, trigger_group.data[index].third_field_lower & 0xff);
+					if (trigger_group.data[index].flags & TGROUP_MOVEABLE) {
+						if (trigger_group.data[index].flags & TGROUP_USE_FOUND_ITEM_INDEX) {
+							condition_index = NGGetItemIndexConditional();
 						}
 						else {
-							current_result = NGCondition(ng_script_id_table[trigger_group.data[index].second_field_lower].script_index, (trigger_group.data[index].third_field_lower >> 8) & 0xff, trigger_group.data[index].third_field_lower & 0xff);
+							condition_index = ng_script_id_table[trigger_group.data[index].object].script_index;
 
 						}
 					} else {
-						if (trigger_group.data[index].first_field & TGROUP_USE_FOUND_ITEM_INDEX) {
+						if (trigger_group.data[index].flags & TGROUP_USE_FOUND_ITEM_INDEX) {
 							NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TGROUP_USE_FOUND_ITEM_INDEX used on condition");
+							condition_index = -1;
 						} else {
-							current_result = NGCondition(trigger_group.data[index].second_field_lower, (trigger_group.data[index].third_field_lower >> 8) & 0xff, trigger_group.data[index].third_field_lower & 0xff);
+							condition_index = trigger_group.data[index].object;
 						}
 					}
-				} else if (trigger_group.data[index].first_field & TGROUP_FLIPEFFECT) {
-					if (trigger_group.data[index].first_field & TGROUP_USE_FOUND_ITEM_INDEX) {
+
+					if (condition_index >= 0) {
+						bool test_restore = false;
+						bool test_skip = false;
+						int32_t repeat_type = 0;
+
+						current_result = NGRunCondition(0, trigger_group.data[index].timer & 0xff, condition_index, (trigger_group.data[index].timer >> 8) & 0xff, &test_restore, &test_skip, &repeat_type, SCANF_SCRIPT_TRIGGER);
+					} else {
+						NGLog(NG_LOG_TYPE_ERROR, "TriggerGroup unimplemented condition index");
+					}
+				} else if (trigger_group.data[index].flags & TGROUP_FLIPEFFECT) {
+					if (trigger_group.data[index].flags & TGROUP_USE_FOUND_ITEM_INDEX) {
 						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TGROUP_USE_FOUND_ITEM_INDEX used on flipeffect");
 					} else {
-						current_result = NGExecuteFlipEffect(0, trigger_group.data[index].second_field_lower, trigger_group.data[index].third_field_lower & 0x7fff, SCANF_SCRIPT_TRIGGER);
+						current_result = NGExecuteFlipEffect(0, trigger_group.data[index].object, trigger_group.data[index].timer & 0x7fff, SCANF_SCRIPT_TRIGGER);
 					}
 
 					if (!current_result) {
 						NGLog(NG_LOG_TYPE_ERROR, "Flipeffect returned false!");
 						current_result = true;
 					}
-				} else if (trigger_group.data[index].first_field == 0x0000) {
+				} else if (trigger_group.data[index].flags == 0x0000) {
 					break;
 				} else {
 					NGLog(NG_LOG_TYPE_ERROR, "Unknown triggergroup command!");
@@ -212,10 +219,10 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 				}
 			}
 
-			if (trigger_group.data[index].first_field & TGROUP_NOT)
+			if (trigger_group.data[index].flags & TGROUP_NOT)
 				current_result = !current_result;
 
-			if (trigger_group.data[index].first_field & TGROUP_OR) {
+			if (trigger_group.data[index].flags & TGROUP_OR) {
 				if (current_result == true)
 					operation_result = true;
 			}

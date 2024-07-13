@@ -2,6 +2,7 @@
 
 #include "trng.h"
 #include "trng_action.h"
+#include "trng_condition.h"
 #include "trng_flipeffect.h"
 #include "trng_savegame.h"
 
@@ -77,6 +78,17 @@ void NGReadNGSavegameInfo() {
 					break;
 				}
 				case 0x800E: { // OLD_CONDITION
+					old_condition_count = NG_READ_16(ng_savegame_buffer, offset);
+					for (int i = 0; i < old_condition_count; i++) {
+						if (i < NG_MAX_OLD_CONDITIONS) {
+							old_conditions[i].flags = NG_READ_16(ng_savegame_buffer, offset);
+							old_conditions[i].offset_floor_data = NG_READ_32(ng_savegame_buffer, offset);
+						}
+						else {
+							NGLog(NG_LOG_TYPE_ERROR, "Old condition overflow!");
+						}
+					}
+					break;
 					break;
 				}
 				case 0x800F: { // VARIABLE_DATA
@@ -95,6 +107,7 @@ void NGReadNGSavegameInfo() {
 					break;
 				}
 				case 0x801E: { // STATUS_ORGANIZER
+					uint16_t status_organizer_count = NG_READ_16(ng_savegame_buffer, offset);
 					break;
 				}
 				case 0x8011: { // PRINT_STRING
