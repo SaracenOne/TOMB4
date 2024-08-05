@@ -764,7 +764,6 @@ int16_t NGGetItemIndexEnabledTrigger() {
 	return stored_item_index_enabled_trigger;
 }
 
-
 void NGStoreItemIndexCurrent(int16_t item_num) {
 	stored_item_index_current = item_num;
 }

@@ -152,6 +152,10 @@ struct MOD_LEVEL_OBJECTS_INFO {
 	int16_t motor_boat_slot = MOTOR_BOAT;
 	int16_t motor_boat_extra_slot = MOTOR_BOAT_LARA;
 
+	int16_t laser_head_slot = LASER_HEAD;
+	int16_t laser_head_base_slot = LASER_HEAD_BASE;
+	int16_t laser_head_tentacle_slot = LASER_HEAD_TENTACLE;
+
 	int16_t darts_interval = 24;
 	int16_t darts_speed = 256;
 	int16_t falling_block_timer = 60;
@@ -249,6 +253,11 @@ struct MOD_LEVEL_AUDIO_INFO {
 	short motorboat_moving_sfx_id = 307;
 	short rubber_boat_idle_sfx_id = 308;
 	short rubber_boat_moving_sfx_id = 307;
+
+	short god_head_charge_sfx_id = SFX_GENERIC_NRG_CHARGE;
+	short god_head_laser_loop_sfx_id = SFX_BAZOOKA_FIRE;
+	short god_head_blast_sfx_id = SFX_DEMIGOD_FALCON_PLAS;
+	short god_head_smash_sfx_id = SFX_EXPLOSION2;
 };
 
 struct MOD_LEVEL_RECT_COLOR_INFO {

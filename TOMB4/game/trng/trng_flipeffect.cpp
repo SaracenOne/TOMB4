@@ -2086,6 +2086,7 @@ int NGPerformTRNGFlipEffect(uint16_t flip_number, int16_t full_timer, uint32_t f
 			break;
 		}
 		case LARA_ATTRACT_LARA_IN_DIRECTION_ON_GROUND_AND_IN_AIR_WITH_SPEED: {
+			repeat_type = 0;
 			lara_attract_lara_in_direction_on_ground_and_in_air_with_speed(timer, extra_timer);
 			break;
 		}
@@ -2848,6 +2849,7 @@ int NGPerformTRNGFlipEffect(uint16_t flip_number, int16_t full_timer, uint32_t f
 			break;
 		}
 		case PERFORM_X_TRIGGERGROUP_FROM_SCRIPT_IN_MULTI_EXECUTION: {
+			repeat_type = 0;
 			perform_triggergroup_from_script_in_multi_execution_mode(timer, extra_timer);
 			break;
 		}

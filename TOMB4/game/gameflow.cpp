@@ -147,6 +147,8 @@ char gfLayer2Vel;
 
 ulong GameTimer;
 uchar bDoCredits = 0;
+bool JustLoaded = 0;
+
 char DEL_playingamefmv = 0;
 char skipped_level = 0;
 char Chris_Menu = 0;
@@ -576,6 +578,7 @@ void DoLevel(uchar Name, uchar Audio)
 	framecount = 0;
 	gfStatus = ControlPhase(2, 0);
 	dbinput = 0;
+	JustLoaded = false;
 
 	while (!gfStatus)
 	{
@@ -986,6 +989,7 @@ void DoTitle(uchar Name, uchar Audio)
 	gfLevelComplete = 0;
 	nFrames = 2;
 	gfStatus = ControlPhase(2, 0);
+	JustLoaded = false;
 
 	while (!gfStatus)
 	{

@@ -526,7 +526,7 @@ void DrawHair()
 		}
 	}
 
-	for (int i = 0; i < hair_count; i++)
+	for (size_t i = 0; i < hair_count; i++)
 	{
 		ii = i * 6;
 		meshpp = &meshes[objects[T4PlusGetLaraHairSlotID()].mesh_index];

@@ -14,6 +14,7 @@ long GetWaterHeight(long x, long y, long z, short room_number);
 long GetHeight(FLOOR_INFO* floor, long x, long y, long z);
 long GetCeiling(FLOOR_INFO* floor, long x, long y, long z);
 void AlterFloorHeight(ITEM_INFO* item, long height);
+void InterpolateAngle(short dest, short* src, short* diff, short speed);
 void TranslateItem(ITEM_INFO* item, short x, short y, short z);
 long GetChange(ITEM_INFO* item, ANIM_STRUCT* anim);
 void UpdateSky();

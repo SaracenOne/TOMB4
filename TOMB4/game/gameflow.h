@@ -43,6 +43,8 @@ extern char gfLayer2Vel;
 
 extern ulong GameTimer;
 extern uchar bDoCredits;
+extern bool JustLoaded;
+
 extern char DEL_playingamefmv;
 extern char skipped_level;
 extern char Chris_Menu;

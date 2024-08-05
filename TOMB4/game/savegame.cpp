@@ -1547,4 +1547,6 @@ void RestoreLevelData(bool full_save, bool use_full_flipmask)
 			CurrentPendulum.Rope = (ROPE_STRUCT*)((char*)CurrentPendulum.Rope + (size_t)RopeList);
 		}
 	}
+
+	JustLoaded = true;
 }

@@ -1492,7 +1492,7 @@ void UpdateSkyLightning()
 	}
 }
 
-void mRotBoundingBoxNoPersp(short* bounds, short* rotatedBounds)
+__forceinline void mRotBoundingBoxNoPerspExt(short* bounds, short* rotatedBounds, bool legacy)
 {
 	PHD_VECTOR pos[8];
 	long x, y, z;
@@ -1546,9 +1546,15 @@ void mRotBoundingBoxNoPersp(short* bounds, short* rotatedBounds)
 
 	for (int i = 0; i < 8; i++)
 	{
-		x = pos[i].x * phd_mxptr[M00] + pos[i].y * phd_mxptr[M01] + pos[i].z * phd_mxptr[M02] + phd_mxptr[M03];
-		y = pos[i].x * phd_mxptr[M10] + pos[i].y * phd_mxptr[M11] + pos[i].z * phd_mxptr[M12] + phd_mxptr[M13];
-		z = pos[i].x * phd_mxptr[M20] + pos[i].y * phd_mxptr[M21] + pos[i].z * phd_mxptr[M22] + phd_mxptr[M23];
+		if (!legacy) {
+			x = (pos[i].x * phd_mxptr[M00] + pos[i].y * phd_mxptr[M01] + pos[i].z * phd_mxptr[M02]) >> W2V_SHIFT;
+			y = (pos[i].x * phd_mxptr[M10] + pos[i].y * phd_mxptr[M11] + pos[i].z * phd_mxptr[M12]) >> W2V_SHIFT;
+			z = (pos[i].x * phd_mxptr[M20] + pos[i].y * phd_mxptr[M21] + pos[i].z * phd_mxptr[M22]) >> W2V_SHIFT;
+		} else {
+			x = pos[i].x * phd_mxptr[M00] + pos[i].y * phd_mxptr[M01] + pos[i].z * phd_mxptr[M02] + phd_mxptr[M03];
+			y = pos[i].x * phd_mxptr[M10] + pos[i].y * phd_mxptr[M11] + pos[i].z * phd_mxptr[M12] + phd_mxptr[M13];
+			z = pos[i].x * phd_mxptr[M20] + pos[i].y * phd_mxptr[M21] + pos[i].z * phd_mxptr[M22] + phd_mxptr[M23];
+		}
 
 		if (x < xMin)
 			xMin = (short)x;
@@ -1577,6 +1583,16 @@ void mRotBoundingBoxNoPersp(short* bounds, short* rotatedBounds)
 	rotatedBounds[5] = zMax;
 }
 
+void mRotBoundingBoxNoPerspLegacy(short* bounds, short* rotatedBounds)
+{
+	mRotBoundingBoxNoPerspExt(bounds, rotatedBounds, true);
+}
+
+void mRotBoundingBoxNoPersp(short* bounds, short* rotatedBounds)
+{
+	mRotBoundingBoxNoPerspExt(bounds, rotatedBounds, false);
+}
+
 void calc_animating_item_clip_window(ITEM_INFO* item, short* bounds)
 {
 	ROOM_INFO* r;
@@ -1602,7 +1618,7 @@ void calc_animating_item_clip_window(ITEM_INFO* item, short* bounds)
 	phd_PushUnitMatrix();
 	phd_RotYXZ(item->pos.y_rot, item->pos.x_rot, item->pos.z_rot);
 	phd_SetTrans(0, 0, 0);
-	mRotBoundingBoxNoPersp(bounds, rotatedBounds);
+	mRotBoundingBoxNoPerspLegacy(bounds, rotatedBounds);
 	phd_PopMatrix();
 
 	xMin = item->pos.x_pos + rotatedBounds[0];

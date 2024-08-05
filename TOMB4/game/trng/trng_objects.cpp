@@ -8,8 +8,10 @@
 
 #include "objects/trng_tightrope.h"
 #include "objects/trng_parallel_bars.h"
-#include "../../tomb4/mod_config.h"
 #include "objects/trng_boat.h"
+#include "objects/trng_guardian.h"
+
+#include "../../tomb4/mod_config.h"
 
 int NGGetObjectIDForInventoryItemMemoryID(int id) {
 	switch (id) {
@@ -74,6 +76,30 @@ void NGSetupNGObjects() {
 	obj->control = MotorBoatControl;
 	obj->draw_routine = DrawBoat;
 	obj->save_position = 1;
+	obj->save_flags = 1;
+	obj->save_anim = 1;
+
+	obj = &objects[game_mod_config.level_info[gfCurrentLevel].objects_info.laser_head_slot];
+	obj->initialise = InitialiseGuardian;
+	obj->control = GuardianControl;
+	obj->collision = CreatureCollision;
+	obj->explodable_meshbits = 6;
+	obj->HitEffect = 3;
+	obj->save_position = 1;
+	obj->save_hitpoints = 1;
+	obj->save_flags = 1;
+	obj->save_anim = 1;
+	obj->save_mesh = 1;
+
+	obj = &objects[game_mod_config.level_info[gfCurrentLevel].objects_info.laser_head_base_slot];
+	obj->control = ControlAnimatingSlots;
+	obj->collision = ObjectCollision;
+	obj->save_flags = 1;
+	obj->save_anim = 1;
+
+	obj = &objects[game_mod_config.level_info[gfCurrentLevel].objects_info.laser_head_tentacle_slot];
+	obj->control = ControlAnimatingSlots;
+	obj->collision = ObjectCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 }

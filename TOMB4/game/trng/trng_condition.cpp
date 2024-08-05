@@ -65,7 +65,7 @@ bool NGIsTriggerActive(ITEM_INFO* item) {
 	return true;
 }
 
-bool NGGridFragmentCondition(int x_pos, int y_pos, int grid_size, int x_target_coordinate, int y_target_coordinate, GRID_FRAGMENT_TYPE grid_fragment_type, bool inverted) {
+bool NGGridFragmentCondition(int32_t x_pos, int32_t y_pos, int32_t grid_size, int32_t x_target_coordinate, int32_t y_target_coordinate, GRID_FRAGMENT_TYPE grid_fragment_type, bool inverted) {
 	int fragment_size = SECTOR_SIZE / grid_size;
 	// Flipped these around to match
 	int touching_fragment_x = x_pos / fragment_size;
@@ -92,7 +92,7 @@ bool NGGridFragmentCondition(int x_pos, int y_pos, int grid_size, int x_target_c
 	return false;
 }
 
-bool NGGridFragmentConditionTrigger(int param, unsigned char extra, int grid_size) {
+bool NGGridFragmentConditionTrigger(int32_t param, uint32_t extra, int32_t grid_size) {
 	int lara_sector_displacement_y = (lara_item->pos.x_pos & 0x3ff);
 	int lara_sector_displacement_x = (lara_item->pos.z_pos & 0x3ff);
 

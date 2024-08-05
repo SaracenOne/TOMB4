@@ -295,6 +295,7 @@
     <ClInclude Include="TOMB4\game\trep\furr.h" />
     <ClInclude Include="TOMB4\game\trep\trepsave.h" />
     <ClInclude Include="TOMB4\game\trng\objects\trng_boat.h" />
+    <ClInclude Include="TOMB4\game\trng\objects\trng_guardian.h" />
     <ClInclude Include="TOMB4\game\trng\objects\trng_parallel_bars.h" />
     <ClInclude Include="TOMB4\game\trng\objects\trng_tightrope.h" />
     <ClInclude Include="TOMB4\game\trng\trng.h" />
@@ -541,6 +542,12 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="TOMB4\game\trng\objects\trng_guardian.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
     <ClCompile Include="TOMB4\game\trng\objects\trng_parallel_bars.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
@@ -637,6 +644,9 @@
     </ClCompile>
     <ClCompile Include="TOMB4\game\trng\trng_progressive_action.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../tomb4/pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="TOMB4\game\trng\trng_savegame.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../tomb4/pch.h</PrecompiledHeaderFile>

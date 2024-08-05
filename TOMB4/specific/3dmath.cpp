@@ -400,9 +400,9 @@ void phd_PushUnitMatrix()
 
 void phd_SetTrans(long x, long y, long z)
 {
-	phd_mxptr[M03] = x << 14;
-	phd_mxptr[M13] = y << 14;
-	phd_mxptr[M23] = z << 14;
+	phd_mxptr[M03] = x << W2V_SHIFT;
+	phd_mxptr[M13] = y << W2V_SHIFT;
+	phd_mxptr[M23] = z << W2V_SHIFT;
 	mSetTrans(x, y, z);
 }
 

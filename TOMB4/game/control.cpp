@@ -2048,6 +2048,23 @@ void AlterFloorHeight(ITEM_INFO* item, long height)
 	}
 }
 
+void InterpolateAngle(short dest, short* src, short* diff, short speed)
+{
+	long adiff;
+
+	adiff = (ushort)dest - (ushort)*src;
+
+	if (adiff > 0x8000)
+		adiff -= 0x10000;
+	else if (adiff < -0x8000)
+		adiff += 0x10000;
+
+	if (diff)
+		diff[0] = (short)adiff;
+
+	*src += short(adiff >> speed);
+}
+
 void TranslateItem(ITEM_INFO* item, short x, short y, short z)
 {
 	long s, c;

@@ -30,6 +30,7 @@ long GetFrames(ITEM_INFO* item, short* frm[], long* rate);
 short* GetBoundsAccurate(ITEM_INFO* item);
 short* GetBestFrame(ITEM_INFO* item);
 void UpdateSkyLightning();
+void mRotBoundingBoxNoPerspLegacy(short* bounds, short* rotatedBounds);
 void mRotBoundingBoxNoPersp(short* bounds, short* rotatedBounds);
 void calc_animating_item_clip_window(ITEM_INFO* item, short* bounds);
 
