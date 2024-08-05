@@ -1351,7 +1351,7 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 						last = current_level + 1;
 					}
 
-					for (i = 0; i < last; i++) {
+					for (; i < last; i++) {
 						if (fcam_properties != -1) {
 							if (fcam_properties & 0x01) {
 								get_game_mod_level_camera_info(i)->disable_battle_camera = true;
