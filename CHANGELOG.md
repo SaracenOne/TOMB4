@@ -1,5 +1,9 @@
 # Tomb4Plus changelog
 
+## [0.2.2.0-alpha](https://github.com/SaracenOne/Tomb4Plus/releases/tag/0.2.2.0-alpha) (August 13th 2024)
+
+- Made application aware of high-DPI monitor settings.
+
 ## [0.2.1.0-alpha](https://github.com/SaracenOne/Tomb4Plus/releases/tag/0.2.1.0-alpha) (April 17th 2024)
 
 - Fixed major regression when climbing around an inner corner.
