@@ -300,7 +300,7 @@ void ClearSurfaces()
 
 bool SDLCreateWindow()
 {
-	Uint32 sdl_window_flags = SDL_WINDOW_HIDDEN;
+	Uint32 sdl_window_flags = SDL_WINDOW_HIDDEN | SDL_WINDOW_ALLOW_HIGHDPI;
 
 #if INTPTR_MAX == INT64_MAX
 	sdl_window = SDL_CreateWindow("Tomb4Plus (64-bit)", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_DEFAULT_WIDTH, WINDOW_DEFAULT_HEIGHT, sdl_window_flags);
@@ -488,6 +488,8 @@ int main(int argc, char* argv[]) {
 	// Tomb4Plus
 	LoadGameModConfigSecondPass();
 	//
+
+	SDL_SetHint(SDL_HINT_WINDOWS_DPI_AWARENESS, "permonitorv2");
 
 	SDL_Init(SDL_INIT_EVENTS | SDL_INIT_GAMECONTROLLER);
 
