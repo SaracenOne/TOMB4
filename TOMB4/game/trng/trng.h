@@ -72,6 +72,18 @@ extern int ng_script_id_count;
 extern int ng_room_remap_count;
 extern int ng_static_id_count;
 
+struct NGAnimatedTexture {
+	bool test;
+	uint8_t total_uv_rotations;
+	uint16_t total_range_ng;
+	uint16_t total_info_range_animation[40];
+	uint16_t from_tex[40];
+	uint16_t to_tex[40];
+	uint16_t size_default;
+};
+
+extern NGAnimatedTexture ng_animated_texture;
+
 #define NG_SCRIPT_ID_TABLE_SIZE 8192
 struct NGScriptIDTableEntry {
 	short script_index;

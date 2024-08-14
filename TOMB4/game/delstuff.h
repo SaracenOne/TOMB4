@@ -1,7 +1,7 @@
 #pragma once
 #include "../global/types.h"
 
-void DrawLara(ITEM_INFO* item, long mirror);
+void DrawLara(ITEM_INFO* item, bool mirror);
 void GetLaraJointPos(PHD_VECTOR* pos, long node);
 void SetLaraUnderwaterNodes();
 void Rich_CalcLaraMatrices_Normal(short* frame, long* bone, long flag);

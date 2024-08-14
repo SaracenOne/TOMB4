@@ -108,7 +108,7 @@ bool LaraHasLookTransparencySetting(long current_level) {
 	}
 }
 
-void DrawLara(ITEM_INFO* item, long mirror)
+void DrawLara(ITEM_INFO* item, bool mirror)
 {
 	OBJECT_INFO* obj;
 	FVECTOR v0;

@@ -393,11 +393,12 @@ void LaraBubbles(ITEM_INFO* item)
 	{
 		CreateBubble((PHD_3DPOS*)&pos, item->room_number, 8, 7);
 
-		if (gfLevelFlags & GF_MIRROR  && item->room_number == gfMirrorRoom)
-		{
-			pos.z = 2 * gfMirrorZPlane - pos.z;
-			CreateBubble((PHD_3DPOS*)&pos, item->room_number, 8, 7);
-			pos.z = 2 * gfMirrorZPlane - pos.z;
+		for (int i = 0; i < t4p_mirror_count; i++) {
+			if (item->room_number == t4p_mirror_info[i].mirror_room) {
+				pos = T4PMirrorVectorOnPlane(&t4p_mirror_info[i], pos);
+				CreateBubble((PHD_3DPOS*)&pos, item->room_number, 8, 7);
+				pos = T4PMirrorVectorOnPlane(&t4p_mirror_info[i], pos);
+			}
 		}
 	}
 }

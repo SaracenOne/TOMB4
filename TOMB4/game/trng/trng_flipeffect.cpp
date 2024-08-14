@@ -1578,7 +1578,7 @@ bool disable_global_trigger_with_id(unsigned char global_trigger_id_lower, unsig
 
 // NGLE - 404
 bool trigger_secret(unsigned char secret_number, unsigned char _unused) {
-	T4TriggerSecret(secret_number);
+	T4PTriggerSecret(secret_number);
 	return true;
 }
 
@@ -1681,12 +1681,12 @@ int NGPerformTRNGFlipEffect(uint16_t flip_number, int16_t full_timer, uint32_t f
 			break;
 		}
 		case WEATHER_FOG_ENABLE_VOLUMETRIC_FX: {
-			t4_override_fog_mode = T4_FOG_FORCE_VOLUMETRIC;
+			t4_override_fog_mode = T4P_FOG_FORCE_VOLUMETRIC;
 			UpdateDistanceFogColor();
 			break;
 		}
 		case WEATHER_FOG_DISABLE_VOLUMETRIC_FX: {
-			t4_override_fog_mode = T4_FOG_FORCE_DISTANT;
+			t4_override_fog_mode = T4P_FOG_FORCE_DISTANT;
 			UpdateDistanceFogColor();
 			break;
 		}
@@ -1973,7 +1973,7 @@ int NGPerformTRNGFlipEffect(uint16_t flip_number, int16_t full_timer, uint32_t f
 			break;
 		}
 		case SOUND_PLAY_X_IMPORTED_FILE_IN_LOOP_MODE_ON_CHANNEL: {
-			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "SOUND_PLAY_X_IMPORTED_FILE_IN_LOOP_MODE_ON_CHANNEL unimplemented!");
+ 			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "SOUND_PLAY_X_IMPORTED_FILE_IN_LOOP_MODE_ON_CHANNEL unimplemented!");
 			break;
 		}
 		case SOUND_PLAY_X_IMPORTED_FILE_IN_SINGLE_PLAY_MODE_ON_CHANNEL: {

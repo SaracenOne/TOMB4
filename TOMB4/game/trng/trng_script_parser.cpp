@@ -491,13 +491,13 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 			unsigned short snow_type = NG_READ_16(gfScriptFile, offset);
 			switch (snow_type) {
 			case 0:
-				get_game_mod_level_misc_info(current_level)->snow_type = WEATHER_DISABLED;
+				get_game_mod_level_misc_info(current_level)->snow_type = T4P_WEATHER_DISABLED;
 				break;
 			case 1:
-				get_game_mod_level_misc_info(current_level)->snow_type = WEATHER_ENABLED_IN_SPECIFIC_ROOMS;
+				get_game_mod_level_misc_info(current_level)->snow_type = T4P_WEATHER_ENABLED_IN_SPECIFIC_ROOMS;
 				break;
 			case 2:
-				get_game_mod_level_misc_info(current_level)->snow_type = WEATHER_ENABLED_ALL_OUTSIDE;
+				get_game_mod_level_misc_info(current_level)->snow_type = T4P_WEATHER_ENABLED_ALL_OUTSIDE;
 				break;
 			default:
 				NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: unknown snow type! (level %u)", current_level);
@@ -542,6 +542,13 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 			}
 			break;
 		}
+		case 0x05: {
+			// WorldViewFar
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: WorldViewFar is not implemented! (level %u)", current_level);
+			// Skip to the end
+			offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+			break;
+		}
 		case 0x06: {
 			// TextFormat
 			unsigned short text_color_id = NG_READ_16(gfScriptFile, offset);
@@ -570,13 +577,13 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 			unsigned short rain_type = NG_READ_16(gfScriptFile, offset);
 			switch (rain_type) {
 			case 0:
-				get_game_mod_level_misc_info(current_level)->rain_type = WEATHER_DISABLED;
+				get_game_mod_level_misc_info(current_level)->rain_type = T4P_WEATHER_DISABLED;
 				break;
 			case 1:
-				get_game_mod_level_misc_info(current_level)->rain_type = WEATHER_ENABLED_IN_SPECIFIC_ROOMS;
+				get_game_mod_level_misc_info(current_level)->rain_type = T4P_WEATHER_ENABLED_IN_SPECIFIC_ROOMS;
 				break;
 			case 2:
-				get_game_mod_level_misc_info(current_level)->rain_type = WEATHER_ENABLED_ALL_OUTSIDE;
+				get_game_mod_level_misc_info(current_level)->rain_type = T4P_WEATHER_ENABLED_ALL_OUTSIDE;
 				break;
 			default:
 				NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: unknown rain type! (level %u)", current_level);
@@ -729,6 +736,9 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 			// The rest of it should be an array of animatings:
 			while ((offset != command_block_end_position)) {
 				unsigned short animating_index = NG_READ_16(gfScriptFile, offset);
+				if (animating_index != 0xffff) {
+
+				}
 			}
 			break;
 		}
@@ -1281,7 +1291,29 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 					break;
 				}
 				case CUST_SET_OLD_CD_TRIGGER: {
-					get_game_mod_level_audio_info(current_level)->old_cd_trigger_system = NG_READ_8(gfScriptFile, offset);
+					short is_enabled = NG_READ_16(gfScriptFile, offset);
+
+					bool old_cd_trigger = true;
+					if (is_enabled == 1) {
+						old_cd_trigger = false;
+					}
+					else if (is_enabled == 0) {
+						old_cd_trigger = true;
+					} else {
+						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_SET_OLD_CD_TRIGGER type unimplemented! (level %u)", current_level);
+					}
+
+					int i = 0;
+					int last = MOD_LEVEL_COUNT;
+
+					if (current_level != 0) {
+						i = current_level;
+						last = current_level + 1;
+					}
+
+					for (; i < last; i++) {
+						get_game_mod_level_audio_info(i)->old_cd_trigger_system = old_cd_trigger;
+					}
 					break;
 				}
 				case CUST_ESCAPE_FLY_CAMERA: {
@@ -1839,6 +1871,13 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 			tables->level_organizer_count++;
 			break;
 		}
+		case 0x18: {
+			// SoundSettings
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Turbo is not implemented! (level %u)", current_level);
+			// Skip to the end
+			offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+			break;
+		}
 		case 0x19: {
 			// Item Groups
 			unsigned short id = NG_READ_16(gfScriptFile, offset);
@@ -2157,8 +2196,16 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 			tables->level_test_position_count++;
 			break;
 		}
+		case 0x1f: {
+			// LogItem
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: LogItem is not implemented (level %u)", current_level);
+
+			// Skip to the end
+			offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+			break;
+		}
 		case 0x20: {
-			// WindowsFont (?)
+			// WindowsFont
 			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: WindowsFont(?) is not implemented! (level %u)", current_level);
 
 			unsigned short id = NG_READ_16(gfScriptFile, offset);
@@ -2200,6 +2247,14 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 			offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 			break;
 		}
+		case 0x24: {
+			// DiagnosticType
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: DiagnosticType is not implemented (level %u)", current_level);
+
+			// Skip to the end
+			offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+			break;
+		}
 		case 0x25: {
 			// Switch
 			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Switch is not implemented (level %u)", current_level);
@@ -2231,9 +2286,25 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 			offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
 			break;
 		}
+		case 0x29: {
+			// DefaultWindowsFont
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: DefaultWindowsFont is not implemented! (level %u)", current_level);
+
+			// Skip to the end
+			offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+			break;
+		}
 		case 0x2a: {
 			// Demo
 			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Demo is not implemented! (level %u)", current_level);
+
+			// Skip to the end
+			offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+			break;
+		}
+		case 0x2b: {
+			// Plugin
+			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: Plugin is not implemented! (level %u)", current_level);
 
 			// Skip to the end
 			offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
@@ -2256,7 +2327,7 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 			break;
 		}
 		case 0x2e: {
-			// TriggerGroup (WIP)
+			// TriggerGroupWord
 			unsigned short id = NG_READ_16(gfScriptFile, offset);
 
 			NGLog(NG_LOG_TYPE_PRINT, "Triggergroup %u: (level %u)", id, current_level);
@@ -2299,15 +2370,15 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 			break;
 		}
 		case 0xc9: {
-			// Level flags (?)
+			// Level flags
 			unsigned short flags = NG_READ_16(gfScriptFile, offset);
 
 			#define UPDATE_LEVEL_INFO_WITH_FLAGS \
 			MOD_LEVEL_MISC_INFO *misc_info = get_game_mod_level_misc_info(current_level); \
 			if (flags & 0x04) \
-				misc_info->override_fog_mode = T4_FOG_FORCE_VOLUMETRIC; \
+				misc_info->override_fog_mode = T4P_FOG_FORCE_VOLUMETRIC; \
 			if (flags & 0x08) \
-				misc_info->override_fog_mode = T4_FOG_FORCE_DISTANT;
+				misc_info->override_fog_mode = T4P_FOG_FORCE_DISTANT;
 
 			if (current_level == 0) {
 				for (int i = 0; i < MOD_LEVEL_COUNT; i++) {
@@ -2425,6 +2496,9 @@ void NGReadNGGameflowInfo(char *gfScriptFile, size_t offset, size_t len) {
 			environment_info->room_swamp_flag = ROOM_SWAMP;
 			environment_info->room_cold_flag = ROOM_COLD;
 			environment_info->room_damage_flag = ROOM_DAMAGE;
+			
+			MOD_LEVEL_GFX_INFO* gfx_info = get_game_mod_level_gfx_info(i);
+			gfx_info->cold_breath = COLD_BREATH_ENABLED_IN_COLD_ROOMS;
 		}
 
 		size_t options_header_block_start_position = offset;
@@ -2465,6 +2539,14 @@ void NGReadNGGameflowInfo(char *gfScriptFile, size_t offset, size_t len) {
 					short flags = NG_READ_16(gfScriptFile, offset);
 					break;
 				}
+				// DiagnosticType
+				case 0x24: {
+					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: DiagnosticType is not implemented.");
+
+					// Skip to the end
+					offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(short) + sizeof(short));
+					break;
+				}
 				// Plugin
 				case 0x2b: {
 					unsigned short plugin_id = NG_READ_16(gfScriptFile, offset);
@@ -2501,10 +2583,18 @@ void NGReadNGGameflowInfo(char *gfScriptFile, size_t offset, size_t len) {
 
 					break;
 				}
-				// SHOW_LARA_IN_TITLE
+				// FlagOptions
 				case 0xc8: {
 					unsigned short flags = NG_READ_16(gfScriptFile, offset);
+					bool diagnostics = flags & 0x01;
+					bool crypt_script = flags & 0x02;
+					bool crypt_savegame = flags & 0x04;
+					bool crs = flags & 0x08;
+					bool bump_mapping_enable = flags & 0x10;
+					bool bump_mapping_disable = flags & 0x20;
 					get_game_mod_global_info()->show_lara_in_title = flags & 0x40;
+					bool disable_advanced_audio_engine = flags & 0x80;
+					bool enable_trlm_option = flags & 0x100;
 					break;
 				}
 				default: {

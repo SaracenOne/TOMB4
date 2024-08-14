@@ -26,6 +26,8 @@ NGLevelInfo ng_level_info[MOD_LEVEL_COUNT];
 int ng_floor_id_size = 0;
 char *ng_floor_id_table = NULL;
 
+NGAnimatedTexture ng_animated_texture;
+
 int ng_script_id_count = 0;
 NGScriptIDTableEntry ng_script_id_table[NG_SCRIPT_ID_TABLE_SIZE];
 
@@ -119,6 +121,7 @@ void NGLoadLevelInfo(FILE* level_fp) {
 	memset(&ng_script_id_table, 0x00, NG_SCRIPT_ID_TABLE_SIZE * sizeof(short));
 	memset(&ng_room_remap_table, -1, NG_ROOM_REMAP_TABLE_SIZE * sizeof(short));
 	memset(&ng_static_id_table, 0x00, NG_STATIC_ID_TABLE_SIZE * sizeof(short));
+	memset(&ng_animated_texture, 0x00, sizeof(NGAnimatedTexture));
 
 	ng_script_id_count = 0;
 	ng_room_remap_count = 0;
@@ -154,8 +157,14 @@ void NGLoadLevelInfo(FILE* level_fp) {
 
 				switch (chunk_ident) {
 					// Animated Textures
-					case 0x8002: {
-						fseek(level_fp, (chunk_size * sizeof(short)) - (sizeof(short) * 2), SEEK_CUR);
+					case 0x8002: {;
+						if (chunk_size == ((sizeof(NGAnimatedTexture) / 2) + sizeof(short))) {
+							fread(&ng_animated_texture, sizeof(NGAnimatedTexture), 1, level_fp);
+							ng_animated_texture.test = true;
+						} else {
+							memset(&ng_animated_texture, 0, sizeof(NGAnimatedTexture));
+							fseek(level_fp, (chunk_size * sizeof(short)) - (sizeof(short) * 2), SEEK_CUR);
+						}
 						break;
 					}
 					// Moveables Table

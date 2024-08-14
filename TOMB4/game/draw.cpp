@@ -29,8 +29,9 @@
 
 #include "trng/trng_extra_state.h"
 #include "trng/trng.h"
-#include "../tomb4/tomb4plus/t4plus_weather.h"
+#include "../tomb4/tomb4plus/t4plus_mirror.h"
 #include "../tomb4/tomb4plus/t4plus_objects.h"
+#include "../tomb4/tomb4plus/t4plus_weather.h"
 #include "../specific/file.h"
 #include "../specific/platform.h"
 
@@ -592,7 +593,7 @@ void DrawAnimatingItem(ITEM_INFO* item)
 	phd_PopMatrix();
 }
 
-static void DoMirrorStuff()
+static void DoMirrorStuff(int mirror_id)
 {
 	LARA_ARM larm;
 	LARA_ARM rarm;
@@ -634,7 +635,7 @@ static void DoMirrorStuff()
 		}
 	}
 	
-	Draw_Mirror_Lara();
+	Draw_Mirror_Lara(mirror_id);
 
 	if (BinocularRange)
 	{
@@ -667,8 +668,8 @@ void DrawRooms(short CurrentRoom)
 	r->test_right = phd_winxmax;
 	r->test_bottom = phd_winymax;
 	outside = r->flags & ROOM_OUTSIDE;
-	rain_outside = ((t4_rain_type == WEATHER_ENABLED_IN_SPECIFIC_ROOMS && (r->flags & ROOM_RAIN) || t4_rain_type == WEATHER_ENABLED_ALL_OUTSIDE) && outside > 0); // T4Plus
-	snow_outside = ((t4_snow_type == WEATHER_ENABLED_IN_SPECIFIC_ROOMS && (r->flags & ROOM_SNOW) || t4_snow_type == WEATHER_ENABLED_ALL_OUTSIDE) && outside > 0); // T4Plus
+	rain_outside = ((t4p_rain_type == T4P_WEATHER_ENABLED_IN_SPECIFIC_ROOMS && (r->flags & ROOM_RAIN) || t4p_rain_type == T4P_WEATHER_ENABLED_ALL_OUTSIDE) && outside > 0); // T4Plus
+	snow_outside = ((t4p_snow_type == T4P_WEATHER_ENABLED_IN_SPECIFIC_ROOMS && (r->flags & ROOM_SNOW) || t4p_snow_type == T4P_WEATHER_ENABLED_ALL_OUTSIDE) && outside > 0); // T4Plus
 	camera_underwater = r->flags & ROOM_UNDERWATER;
 	r->bound_active = 2;
 	draw_room_list[0] = CurrentRoom;
@@ -774,7 +775,7 @@ void DrawRooms(short CurrentRoom)
 
 			if (lara_item->mesh_bits)
 			{
-				DrawLara(lara_item, 0);
+				DrawLara(lara_item, false);
 				phd_PushMatrix();
 
 				if (lara.right_arm.flash_gun)
@@ -815,8 +816,11 @@ void DrawRooms(short CurrentRoom)
 				DrawGunflashes();
 			}
 
-			if (gfLevelFlags & GF_MIRROR && lara_item->room_number == gfMirrorRoom)
-				DoMirrorStuff();
+			for (int i = 0; i < t4p_mirror_count; i++) {
+				if (lara_item->room_number == t4p_mirror_info[i].mirror_room) {
+					DoMirrorStuff(i);
+				}
+			}
 		}
 	}
 
@@ -902,7 +906,7 @@ void RenderIt(short CurrentRoom)
 	r->test_right = phd_winxmax;
 	r->test_bottom = phd_winymax;
 	outside = r->flags & ROOM_OUTSIDE;
-	rain_outside = ((t4_rain_type == WEATHER_ENABLED_IN_SPECIFIC_ROOMS && (r->flags & ROOM_RAIN) || t4_rain_type == WEATHER_ENABLED_ALL_OUTSIDE) & outside); // T4Plus
+	rain_outside = ((t4p_rain_type == T4P_WEATHER_ENABLED_IN_SPECIFIC_ROOMS && (r->flags & ROOM_RAIN) || t4p_rain_type == T4P_WEATHER_ENABLED_ALL_OUTSIDE) & outside); // T4Plus
 	camera_underwater = r->flags & ROOM_UNDERWATER;
 	r->bound_active = 2;
 	draw_room_list[0] = CurrentRoom;
@@ -1041,7 +1045,7 @@ void GetRoomBounds()
 			if (r->flags & ROOM_OUTSIDE)
 				outside = ROOM_OUTSIDE;
 			// T4Plus
-			if ((t4_rain_type == WEATHER_ENABLED_IN_SPECIFIC_ROOMS && (r->flags & ROOM_RAIN) || t4_rain_type == WEATHER_ENABLED_ALL_OUTSIDE) && outside) // T4Plus
+			if ((t4p_rain_type == T4P_WEATHER_ENABLED_IN_SPECIFIC_ROOMS && (r->flags & ROOM_RAIN) || t4p_rain_type == T4P_WEATHER_ENABLED_ALL_OUTSIDE) && outside) // T4Plus
 				rain_outside = 1;
 		}
 
@@ -1071,7 +1075,7 @@ void GetRoomBounds()
 				rn = *door++;
 
 				// T4Plus
-				if ((t4_snow_type == WEATHER_ENABLED_IN_SPECIFIC_ROOMS && (r->flags & ROOM_SNOW) || t4_snow_type == WEATHER_ENABLED_ALL_OUTSIDE) && room[rn].flags & ROOM_OUTSIDE) // T4Plus
+				if ((t4p_snow_type == T4P_WEATHER_ENABLED_IN_SPECIFIC_ROOMS && (r->flags & ROOM_SNOW) || t4p_snow_type == T4P_WEATHER_ENABLED_ALL_OUTSIDE) && room[rn].flags & ROOM_OUTSIDE) // T4Plus
 					snow_outside = 1; // T4Plus
 
 				if (door[0] * long(r->x + door[3] - mW2V[M03]) +

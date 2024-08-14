@@ -6,6 +6,8 @@
 
 #include "tomb4plus/t4plus_plugin.h"
 #include "tomb4plus/t4plus_weather.h"
+#include "tomb4plus/t4plus_mirror.h"
+#include "tomb4plus/t4plus_environment.h"
 
 #define MOD_LEVEL_COUNT 64
 
@@ -40,7 +42,7 @@ struct MOD_LEVEL_ENVIRONMENT_INFO {
 	bool enable_multi_color_fog_bulbs = false;
 
 	unsigned int room_swamp_flag = 0;
-	unsigned int room_cold_flag = 0;
+	unsigned int room_cold_flag = ROOM_COLD;
 	unsigned int room_damage_flag = 0;
 };
 
@@ -194,13 +196,23 @@ struct MOD_LEVEL_CREATURE_INFO {
 	bool disable_sentry_flame_attack = false;
 };
 
+struct MOD_LEVEL_MIRROR_CUSTOMIZATION {
+	short room_number = -1;
+	int plane_position = 0;
+	T4PlusMirrorDirection plane_direction = T4PlusMirrorDirection::T4_MIR_PLANE_X;
+};
+
 struct MOD_LEVEL_VAPOR_CUSTOMIZATION {
 
 };
 
 struct MOD_LEVEL_GFX_INFO {
+	T4PColdBreath cold_breath = COLD_BREATH_DISABLED;
+	
 	short default_envmap_sprite_index = 11;
 	short pickup_envmap_sprite_index = 11;
+
+	MOD_LEVEL_MIRROR_CUSTOMIZATION mirror_customization[MAX_MIRRORS-1];
 
 	MOD_LEVEL_VAPOR_CUSTOMIZATION white_smoke_emitter_customization_for_OCB[MAX_VAPOR_OCB_CUSTOMIZATIONS];
 	MOD_LEVEL_VAPOR_CUSTOMIZATION black_smoke_emitter_customization_for_OCB[MAX_VAPOR_OCB_CUSTOMIZATIONS];
@@ -455,10 +467,10 @@ struct MOD_LEVEL_WEAPON_INFO {
 };
 
 struct MOD_LEVEL_MISC_INFO {
-	T4OverrideFogMode override_fog_mode = T4_FOG_DEFAULT;
+	T4POverrideFogMode override_fog_mode = T4P_FOG_DEFAULT;
 
-	T4WeatherType rain_type = WEATHER_DISABLED;
-	T4WeatherType snow_type = WEATHER_DISABLED;
+	T4PWeatherType rain_type = T4P_WEATHER_DISABLED;
+	T4PWeatherType snow_type = T4P_WEATHER_DISABLED;
 
 	bool draw_legend_on_flyby = false;
 	unsigned int legend_timer = 150;

@@ -1,31 +1,27 @@
 #pragma once
+#include "../../specific/platform.h"
+#include "../../global/types.h"
 
-#define MAX_MIRRORED_ANIMATING_ITEM_IDS 32
+#define MAX_MIRRORS 128
 
 enum T4PlusMirrorDirection {
-	T4_MIR_DIR_NORTH,
-	T4_MIR_DIR_EAST,
-	T4_MIR_DIR_SOUTH,
-	T4_MIR_DIR_WEST,
-	T4_MIR_DIR_UP,
-	T4_MIR_DIR_DOWN,
+	T4_MIR_PLANE_X,
+	T4_MIR_PLANE_Y,
+	T4_MIR_PLANE_Z
 };
 
 struct T4PlusMirrorInfo {
-	short mirror_room;
+	unsigned int mirror_room;
 	int pivot_point;
 	T4PlusMirrorDirection direction;
-	short mirrored_animating_item_ids[MAX_MIRRORED_ANIMATING_ITEM_IDS];
-	bool inverse;
 };
 
-struct T4PlusRoomMirrorInfo {
-	int mirror_count = -1;
-	T4PlusMirrorInfo *mirrors;
-};
+extern int t4p_mirror_count;
+extern T4PlusMirrorInfo t4p_mirror_info[MAX_MIRRORS];
 
-T4PlusRoomMirrorInfo *room_mirror_info;
-
-bool T4PlusGetMirrorCountForRoom(int room_number) {
-	return room_mirror_info[room_number].mirror_count;
-}
+extern void T4PResetMirrors();
+extern void T4PInsertMirror(int mirror_room, int pivot_point, T4PlusMirrorDirection direction);
+extern PHD_VECTOR T4PMirrorVectorOnPlane(T4PlusMirrorInfo* mirror_info, PHD_VECTOR vec);
+extern PHD_3DPOS T4PMirrorUnrotated3DPosOnPlane(T4PlusMirrorInfo* mirror_info, PHD_3DPOS pos);
+extern PHD_3DPOS T4PMirrorRotated3DPosOnPlane(T4PlusMirrorInfo* mirror_info, PHD_3DPOS pos);
+extern PHD_3DPOS T4PMirrorInverted3DPosOnPlane(T4PlusMirrorInfo* mirror_info, PHD_3DPOS pos);

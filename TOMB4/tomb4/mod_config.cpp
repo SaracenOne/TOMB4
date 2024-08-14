@@ -4,7 +4,9 @@
 
 #include "libs/tiny-json/tiny-json.h"
 #include "../specific/function_stubs.h"
+#include "../game/gameflow.h"
 #include "../game/trng/trng.h"
+#include "tomb4plus/t4plus_mirror.h"
 #include "tomb4plus/t4plus_inventory.h"
 #include "../game/lara.h"
 
@@ -481,20 +483,43 @@ void LoadGameModLevelCameraInfo(const json_t* camera, MOD_LEVEL_CAMERA_INFO* cam
     READ_JSON_BOOL(disable_battle_camera, camera, camera_info);
 }
 
-void LoadGameModLevelLaraInfo(const json_t* level, MOD_LEVEL_LARA_INFO *lara_info) {
-    char *hair_type_temp_ptr = nullptr;
-    READ_JSON_STRING_TEMP(hair_type, level, hair_type_temp_ptr)
-        if (hair_type_temp_ptr) {
-            if (strcmp("braid", hair_type_temp_ptr) == 0) {
-                lara_info->hair_type = LARA_HAIR_TYPE_BRAID;
-            } else if (strcmp("pigtails", hair_type_temp_ptr) == 0) {
-                lara_info->hair_type = LARA_HAIR_TYPE_PIGTAILS;
-            } else if (strcmp("none", hair_type_temp_ptr) == 0) {
-                lara_info->hair_type = LARA_HAIR_TYPE_NONE;
-            } else {
-                lara_info->hair_type = LARA_HAIR_TYPE_DEFAULT;
-            }
+typedef struct {
+    const char* name;
+    int value;
+} StringEnumPair;
+
+// Function to map string to enum
+int MapStringToEnum(const char* str, const StringEnumPair* table, int default_value) {
+    for (int i = 0; table[i].name != NULL; i++) {
+        if (strcmp(str, table[i].name) == 0) {
+            return table[i].value;
         }
+    }
+    return default_value;
+}
+
+#define READ_JSON_STRING_TO_ENUM(value_name, json, ptr, table, default_value) { \
+    const json_t* value_name = json_getProperty(json, #value_name); \
+    if (value_name && JSON_TEXT == json_getType(value_name)) { \
+        const char* temp_ptr = json_getValue(value_name); \
+        ptr = MapStringToEnum(temp_ptr, table, default_value); \
+    } \
+}
+
+#define READ_JSON_STRING_TO_ENUM_GENERIC(enum_type, value_name, json, ptr, table, default_value) { \
+    int temp = default_value; \
+    READ_JSON_STRING_TO_ENUM(value_name, json, temp, table, default_value) \
+    ptr = (enum_type) temp; \
+}
+
+void LoadGameModLevelLaraInfo(const json_t* level, MOD_LEVEL_LARA_INFO *lara_info) {
+    static const StringEnumPair hair_type_table[] = {
+        {"braid", LARA_HAIR_TYPE_BRAID},
+        {"pigtails", LARA_HAIR_TYPE_PIGTAILS},
+        {"none", LARA_HAIR_TYPE_NONE},
+    };
+
+    READ_JSON_STRING_TO_ENUM_GENERIC(LARA_HAIR_TYPE, hair_type, level, lara_info->hair_type, hair_type_table, lara_info->hair_type);
 
     READ_JSON_SINT32(hair_gravity, level, lara_info);
 
@@ -536,8 +561,51 @@ void LoadGameModLevelCreatureInfo(const json_t* creature, MOD_LEVEL_CREATURE_INF
 }
 
 void LoadGameModLevelGFXInfo(const json_t* gfx, MOD_LEVEL_GFX_INFO *gfx_info) {
+    static const StringEnumPair cold_breath_table[] = {
+        {"disabled", COLD_BREATH_DISABLED},
+        {"enabled_in_cold_rooms_only", COLD_BREATH_ENABLED_IN_COLD_ROOMS},
+        {"enabled_outside_and_in_cold_rooms", COLD_BREATH_ENABLED_OUTSIDE_AND_IN_COLD_ROOMS},
+    };
+
+    READ_JSON_STRING_TO_ENUM_GENERIC(
+        T4PColdBreath,
+        cold_breath,
+        gfx,
+        gfx_info->cold_breath,
+        cold_breath_table,
+        gfx_info->cold_breath);
+
     READ_JSON_SINT16(default_envmap_sprite_index, gfx, gfx_info);
     READ_JSON_SINT16(pickup_envmap_sprite_index, gfx, gfx_info);
+
+    const json_t* mirror_customization = json_getProperty(gfx, "mirror_customization");
+    if (mirror_customization && JSON_ARRAY == json_getType(mirror_customization)) {
+        json_t const* mirror_customization_json;
+        int mirror_customization_index = 0;
+        for (mirror_customization_json = json_getChild(mirror_customization); mirror_customization_json != 0; mirror_customization_json = json_getSibling(mirror_customization_json)) {
+            if (mirror_customization_index >= MAX_MIRRORS - 1)
+                break;
+
+
+            READ_JSON_SINT16(room_number, mirror_customization_json, &gfx_info->mirror_customization[mirror_customization_index]);
+            READ_JSON_SINT32(plane_position, mirror_customization_json, &gfx_info->mirror_customization[mirror_customization_index]);
+            
+            static const StringEnumPair plane_direction_table[] = {
+                {"x", T4_MIR_PLANE_X},
+                {"y", T4_MIR_PLANE_Y},
+                {"z", T4_MIR_PLANE_Z},
+            };
+            READ_JSON_STRING_TO_ENUM_GENERIC(
+                T4PlusMirrorDirection,
+                plane_direction,
+                mirror_customization_json,
+                gfx_info->mirror_customization[mirror_customization_index].plane_direction,
+                plane_direction_table,
+                gfx_info->mirror_customization[mirror_customization_index].plane_direction);
+
+            mirror_customization_index++;
+        }
+    }
 }
 
 void LoadGameModLevelObjectsInfo(const json_t* objects, MOD_LEVEL_OBJECTS_INFO* objects_info) {
@@ -611,9 +679,9 @@ void LoadGameModLevelObjectsInfo(const json_t* objects, MOD_LEVEL_OBJECTS_INFO* 
 }
 
 void LoadGameModLevelMiscInfo(const json_t *misc, MOD_LEVEL_MISC_INFO *misc_info) {
-    READ_JSON_INTEGER_CAST(override_fog_mode, misc, misc_info, T4OverrideFogMode);
-    READ_JSON_INTEGER_CAST(rain_type, misc, misc_info, T4WeatherType);
-    READ_JSON_INTEGER_CAST(snow_type, misc, misc_info, T4WeatherType);
+    READ_JSON_INTEGER_CAST(override_fog_mode, misc, misc_info, T4POverrideFogMode);
+    READ_JSON_INTEGER_CAST(rain_type, misc, misc_info, T4PWeatherType);
+    READ_JSON_INTEGER_CAST(snow_type, misc, misc_info, T4PWeatherType);
 
     READ_JSON_BOOL(draw_legend_on_flyby, misc, misc_info);
     READ_JSON_UINT32(legend_timer, misc, misc_info);
@@ -1501,6 +1569,19 @@ void T4PlusLevelSetup(int current_level) {
     using_multi_color_fog_bulbs = environment_info->enable_multi_color_fog_bulbs;
 
     NGLevelSetup();
+
+    T4PResetMirrors();
+    if (gfMirrorRoom >= 0) {
+        T4PInsertMirror(gfMirrorRoom, gfMirrorZPlane, T4_MIR_PLANE_Z);
+    }
+
+    for (int i = 0; i < MAX_MIRRORS - 1; i++) {
+        MOD_LEVEL_MIRROR_CUSTOMIZATION* mirror_customization = &get_game_mod_level_gfx_info(current_level)->mirror_customization[i];
+
+        if (mirror_customization->room_number >= 0) {
+            T4PInsertMirror(mirror_customization->room_number, mirror_customization->plane_position, mirror_customization->plane_direction);
+        }
+    }
 }
 
 // TODO: check if the equipment commands are valid on hub re-entry.
@@ -1509,8 +1590,8 @@ void T4PlusEnterLevel(int current_level, bool initial_entry) {
         t4_override_fog_mode = get_game_mod_level_misc_info(current_level)->override_fog_mode;
         UpdateDistanceFogColor();
 
-        t4_rain_type = get_game_mod_level_misc_info(current_level)->rain_type;
-        t4_snow_type = get_game_mod_level_misc_info(current_level)->snow_type;
+        t4p_rain_type = get_game_mod_level_misc_info(current_level)->rain_type;
+        t4p_snow_type = get_game_mod_level_misc_info(current_level)->snow_type;
 
         MOD_EQUIPMENT_MODIFIER *equipment_modifiers = get_game_mod_level_stat_info(current_level)->equipment_modifiers;
         for (int i = 0; i < MAX_EQUIPMENT_MODIFIERS; i++) {

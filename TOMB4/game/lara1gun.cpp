@@ -461,7 +461,7 @@ void RifleHandler(long weapon_type)
 {
 	WEAPON_INFO* winfo;
 	PHD_VECTOR pos;
-	long x, y, z, r, g, b;
+	long r, g, b;
 
 	winfo = &weapons[weapon_type];
 	LaraGetNewTarget(winfo);
@@ -496,14 +496,19 @@ void RifleHandler(long weapon_type)
 
 		if (weapon_type == WEAPON_SHOTGUN)
 		{
-			x = (GetRandomControl() & 0xFF) + (phd_sin(lara_item->pos.y_rot) >> 4) + lara_item->pos.x_pos;
-			y = ((GetRandomControl() & 0x7F) - 575) + lara_item->pos.y_pos;
-			z = (GetRandomControl() & 0xFF) + (phd_cos(lara_item->pos.y_rot) >> 4) + lara_item->pos.z_pos;
+			pos.x = (GetRandomControl() & 0xFF) + (phd_sin(lara_item->pos.y_rot) >> 4) + lara_item->pos.x_pos;
+			pos.y = ((GetRandomControl() & 0x7F) - 575) + lara_item->pos.y_pos;
+			pos.z = (GetRandomControl() & 0xFF) + (phd_cos(lara_item->pos.y_rot) >> 4) + lara_item->pos.z_pos;
 
-			if (gfLevelFlags & GF_MIRROR && lara_item->room_number == gfMirrorRoom)
-				TriggerDynamic_MIRROR(x, y, z, 12, r, g, b);
-			else
-				TriggerDynamic(x, y, z, 12, r, g, b);
+			TriggerDynamic(pos.x, pos.y, pos.z, 12, r, g, b);
+
+			for (int i = 0; i < t4p_mirror_count; i++) {
+				if (lara_item->room_number == t4p_mirror_info[i].mirror_room) {
+					PHD_VECTOR mirrored_pos = T4PMirrorVectorOnPlane(&t4p_mirror_info[i], pos);
+
+					TriggerDynamic(mirrored_pos.x, mirrored_pos.y, mirrored_pos.z, 12, r, g, b);
+				}
+			}
 		}
 		else if (weapon_type == WEAPON_REVOLVER)
 		{
@@ -512,10 +517,15 @@ void RifleHandler(long weapon_type)
 			pos.z = (GetRandomControl() & 0xFF) - 128;
 			GetLaraJointPos(&pos, 11);
 
-			if (gfLevelFlags & GF_MIRROR && lara_item->room_number == gfMirrorRoom)
-				TriggerDynamic_MIRROR(pos.x, pos.y, pos.z, 12, r, g, b);
-			else
-				TriggerDynamic(pos.x, pos.y, pos.z, 12, r, g, b);
+			TriggerDynamic(pos.x, pos.y, pos.z, 12, r, g, b);
+
+			for (int i = 0; i < t4p_mirror_count; i++) {
+				if (lara_item->room_number == t4p_mirror_info[i].mirror_room) {
+					PHD_VECTOR mirrored_pos = T4PMirrorVectorOnPlane(&t4p_mirror_info[i], pos);
+
+					TriggerDynamic(mirrored_pos.x, mirrored_pos.y, mirrored_pos.z, 12, r, g, b);
+				}
+			}
 		}
 	}
 }

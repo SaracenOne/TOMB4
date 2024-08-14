@@ -33,12 +33,11 @@ void DrawFlareInAir(ITEM_INFO* item)
 	phd_PutPolygons_train(meshes[objects[FLARE_ITEM].mesh_index], 0);
 	phd_PopMatrix();
 
-	if (gfLevelFlags & GF_MIRROR)
-	{
-		if (item->room_number == gfMirrorRoom)
-		{
+	for (int i = 0; i < t4p_mirror_count; i++) {
+		if (item->room_number == t4p_mirror_info[i].mirror_room) {
 			phd_PushMatrix();
-			phd_TranslateAbs(item->pos.x_pos, item->pos.y_pos, 2 * gfMirrorZPlane - item->pos.z_pos);
+			PHD_3DPOS mirrored_pos = T4PMirrorUnrotated3DPosOnPlane(&t4p_mirror_info[i], item->pos);
+			phd_TranslateAbs(mirrored_pos.x_pos, mirrored_pos.y_pos, mirrored_pos.z_pos);
 			phd_RotYXZ(item->pos.y_rot, item->pos.x_rot, item->pos.z_rot);
 			phd_PutPolygons_train(meshes[objects[FLARE_ITEM].mesh_index], 0);
 			phd_PopMatrix();
@@ -187,12 +186,14 @@ void DoFlareInHand(long flare_age)
 	GetLaraJointPos(&pos, 14);
 	lara.left_arm.flash_gun = (short)DoFlareLight(&pos, flare_age);
 
-	if (gfLevelFlags & GF_MIRROR && lara_item->room_number == gfMirrorRoom)
-	{
-		pos.z = 2 * gfMirrorZPlane - pos.z;
-		DoFlareLight(&pos, flare_age);
+	for (int i = 0; i < t4p_mirror_count; i++) {
+		if (lara_item->room_number == t4p_mirror_info[i].mirror_room) {
+			PHD_VECTOR mirrored_vector = pos;
+			mirrored_vector = T4PMirrorVectorOnPlane(&t4p_mirror_info[i], mirrored_vector);
+			DoFlareLight(&mirrored_vector, flare_age);
+		}
 	}
-	
+
 	// TRLE
 	MOD_LEVEL_FLARE_INFO *flare_info = get_game_mod_level_flare_info(gfCurrentLevel);
 
@@ -526,11 +527,12 @@ void FlareControl(short item_number)
 
 	if (DoFlareLight((PHD_VECTOR*)&flare->pos, flare_age))
 	{
-		if (gfLevelFlags & GF_MIRROR && flare->room_number == gfMirrorRoom)
-		{
-			flare->pos.z_pos = 2 * gfMirrorZPlane - flare->pos.z_pos;
-			DoFlareLight((PHD_VECTOR*)&flare->pos, flare_age);
-			flare->pos.z_pos = 2 * gfMirrorZPlane - flare->pos.z_pos;
+		for (int i = 0; i < t4p_mirror_count; i++) {
+			if (flare->room_number == t4p_mirror_info[i].mirror_room) {
+				flare->pos = T4PMirrorUnrotated3DPosOnPlane(&t4p_mirror_info[i], flare->pos);
+				DoFlareLight((PHD_VECTOR*)&flare->pos, flare_age);
+				flare->pos = T4PMirrorUnrotated3DPosOnPlane(&t4p_mirror_info[i], flare->pos);
+			}
 		}
 
 		flare_age |= 0x8000;

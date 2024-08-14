@@ -889,16 +889,16 @@ void invisibility_off(ITEM_INFO* item)
 	if (game_mod_config.global_info.tomo_enable_weather_flipeffect) {
 		switch (TriggerTimer) {
 			case 1: // Rain
-				t4_rain_type = WEATHER_ENABLED_ALL_OUTSIDE;
-				t4_snow_type = WEATHER_DISABLED;
+				t4p_rain_type = T4P_WEATHER_ENABLED_ALL_OUTSIDE;
+				t4p_snow_type = T4P_WEATHER_DISABLED;
 				break;
 			case 2: // Snow
-				t4_rain_type = WEATHER_DISABLED;
-				t4_snow_type = WEATHER_ENABLED_ALL_OUTSIDE;
+				t4p_rain_type = T4P_WEATHER_DISABLED;
+				t4p_snow_type = T4P_WEATHER_ENABLED_ALL_OUTSIDE;
 				break;
 			case 3: // No weather
-				t4_rain_type = WEATHER_DISABLED;
-				t4_snow_type = WEATHER_DISABLED;
+				t4p_rain_type = T4P_WEATHER_DISABLED;
+				t4p_snow_type = T4P_WEATHER_DISABLED;
 				break;
 		}
 	} else {
@@ -1151,7 +1151,7 @@ void LaraBreath(ITEM_INFO* item)
 	PHD_VECTOR p;
 	PHD_VECTOR v;
 
-	if (lara.water_status == 1 || lara_item->hit_points < 0 || !(T4PlusIsRoomCold(&room[lara_item->room_number])))
+	if (lara.water_status == 1 || lara_item->hit_points < 0 || !(T4PlusDoesRoomCauseColdBreath(&room[lara_item->room_number])))
 		return;
 
 	if (lara_item->current_anim_state == AS_STOP)

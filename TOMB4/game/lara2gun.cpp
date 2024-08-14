@@ -15,6 +15,7 @@
 #include "control.h"
 
 #include "../tomb4/tomb4plus/t4plus_objects.h"
+#include "../tomb4/tomb4plus/t4plus_mirror.h"
 
 static PISTOL_DEF PistolTable[4] =
 {
@@ -505,9 +506,14 @@ void PistolHandler(long weapon_type)
 		g = (GetRandomControl() & 0x1F) + 128;
 		b = GetRandomControl() & 0x3F;
 
-		if (gfLevelFlags & GF_MIRROR && lara_item->room_number == gfMirrorRoom)
-			TriggerDynamic_MIRROR(pos.x, pos.y, pos.z, 10, r, g, b);
-		else
-			TriggerDynamic(pos.x, pos.y, pos.z, 10, r, g, b);
+		TriggerDynamic(pos.x, pos.y, pos.z, 10, r, g, b);
+
+		for (int i = 0; i < t4p_mirror_count; i++) {
+			if (lara_item->room_number == t4p_mirror_info[i].mirror_room) {
+				PHD_VECTOR mirrored_pos = T4PMirrorVectorOnPlane(&t4p_mirror_info[i], pos);
+
+				TriggerDynamic(mirrored_pos.x, mirrored_pos.y, mirrored_pos.z, 10, r, g, b);
+			}
+		}
 	}
 }

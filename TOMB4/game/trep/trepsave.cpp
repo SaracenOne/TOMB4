@@ -20,8 +20,8 @@ void S_TREPLoadgame(long slot_num) {
 	FILE* file = platform_fopen(full_path.c_str(), "rb");
 
 	furr_clear_oneshot_buffer();
-	t4_rain_type = WEATHER_DISABLED;
-	t4_snow_type = WEATHER_DISABLED;
+	t4p_rain_type = T4P_WEATHER_DISABLED;
+	t4p_snow_type = T4P_WEATHER_DISABLED;
 
 	if (file)
 	{
@@ -33,16 +33,16 @@ void S_TREPLoadgame(long slot_num) {
 			memcpy(&weather, buffer + 0x270, sizeof(char));
 			switch (weather) {
 				case 1:
-					t4_rain_type = WEATHER_ENABLED_ALL_OUTSIDE;
-					t4_snow_type = WEATHER_DISABLED;
+					t4p_rain_type = T4P_WEATHER_ENABLED_ALL_OUTSIDE;
+					t4p_snow_type = T4P_WEATHER_DISABLED;
 					break;
 				case 2:
-					t4_rain_type = WEATHER_DISABLED;
-					t4_snow_type = WEATHER_ENABLED_ALL_OUTSIDE;
+					t4p_rain_type = T4P_WEATHER_DISABLED;
+					t4p_snow_type = T4P_WEATHER_ENABLED_ALL_OUTSIDE;
 					break;
 				default:
-					t4_rain_type = WEATHER_DISABLED;
-					t4_snow_type = WEATHER_DISABLED;
+					t4p_rain_type = T4P_WEATHER_DISABLED;
+					t4p_snow_type = T4P_WEATHER_DISABLED;
 					break;
 			}
 		}
@@ -68,10 +68,10 @@ void S_TREPSavegame(long slot_num) {
 		memcpy(buffer, furr_oneshot_buffer, LAST_FURR_FLIPEFFECT);
 
 		char weather = 0;
-		if (t4_rain_type == WEATHER_ENABLED_ALL_OUTSIDE) {
+		if (t4p_rain_type == T4P_WEATHER_ENABLED_ALL_OUTSIDE) {
 			weather += 1;
 		}
-		if (t4_snow_type == WEATHER_ENABLED_ALL_OUTSIDE) {
+		if (t4p_snow_type == T4P_WEATHER_ENABLED_ALL_OUTSIDE) {
 			weather += 2;
 		}
 

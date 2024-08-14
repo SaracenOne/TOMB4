@@ -34,6 +34,7 @@
 #include "../tomb4/mod_config.h"
 #include "../specific/platform.h"
 #include "../specific/bgfx.h"
+#include "../tomb4/tomb4plus/t4plus_mirror.h"
 
 short CreditGroups[18] =
 {

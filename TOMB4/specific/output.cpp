@@ -33,6 +33,7 @@
 #include "../tomb4/mod_config.h"
 #include "bgfx.h"
 #include "../tomb4/tomb4plus/t4plus_objects.h"
+#include "../game/trng/trng.h"
 
 bool using_multi_color_fog_bulbs = false;
 

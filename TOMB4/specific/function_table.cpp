@@ -32,14 +32,14 @@ void SetDistanceFogColor(long r, long g, long b)
 ;
 #ifndef USE_BGFX
 	long CurrentFog = 0;
-	if (t4_override_fog_mode == T4_FOG_FORCE_VOLUMETRIC) {
+	if (t4_override_fog_mode == T4P_FOG_FORCE_VOLUMETRIC) {
 		CurrentFog = RGBA(0, 0, 0, 0xFF);
 	} else {
 		CurrentFog = RGBA(r, g, b, 0xFF);
 	}
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_FOGCOLOR, CurrentFog);
 #else
-	if (t4_override_fog_mode == T4_FOG_FORCE_VOLUMETRIC) {
+	if (t4_override_fog_mode == T4P_FOG_FORCE_VOLUMETRIC) {
 		bgfx_fog_color[0] = 0.0f;
 		bgfx_fog_color[1] = 0.0f;
 		bgfx_fog_color[2] = 0.0f;

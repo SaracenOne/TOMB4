@@ -1086,7 +1086,7 @@ void TestTriggers(short* data, bool heavy, long heavy_flags)
 			break;
 
 		case TO_SECRET:
-			T4TriggerSecret(value); // TRLE
+			T4PTriggerSecret(value); // TRLE
 			break;
 		case TO_ACTION:
 			if (NGIsUsingNGNewTriggers()) {

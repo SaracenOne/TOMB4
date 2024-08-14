@@ -496,11 +496,11 @@ void TriggerFXFogBulb(long x, long y, long z, long FXRad, long density, long r, 
 
 bool IsVolumetric()
 {
-	if (t4_override_fog_mode == T4_FOG_FORCE_VOLUMETRIC)
+	if (t4_override_fog_mode == T4P_FOG_FORCE_VOLUMETRIC)
 	{
 		return true;
 	}
-	else if (t4_override_fog_mode == T4_FOG_FORCE_DISTANT)
+	else if (t4_override_fog_mode == T4P_FOG_FORCE_DISTANT)
 	{
 		return false;
 	}

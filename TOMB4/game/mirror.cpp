@@ -7,44 +7,36 @@
 #include "hair.h"
 #include "lara.h"
 #include "gameflow.h"
+#include "../tomb4/tomb4plus/t4plus_mirror.h"
 
-void Draw_Mirror_Lara()
+void Draw_Mirror_Lara(int mirror_id)
 {
 	HAIR_STRUCT* hair;
 	GUNSHELL_STRUCT* gunshell;
-	long zplane;
 
-	zplane = gfMirrorZPlane << 1;
 	hair = &hairs[0][0];
 
 	for (int i = 0; i < 6; i++)
 	{
-		hair->pos.z_pos = zplane - hair->pos.z_pos;
-		hair->pos.y_rot = 0x8000 - hair->pos.y_rot;
+		hair->pos = T4PMirrorRotated3DPosOnPlane(&t4p_mirror_info[mirror_id], hair->pos);
 		hair++;
 	}
 
-	for (int i = 0; i < 24; i++)
+	for (int i = 0; i < MAX_GUNSHELLS; i++)
 	{
 		gunshell = &Gunshells[i];
 
-		if (gunshell->counter)
-			gunshell->pos.z_pos = zplane - gunshell->pos.z_pos;
+		if (gunshell->counter) 
+			gunshell->pos = T4PMirrorUnrotated3DPosOnPlane(&t4p_mirror_info[mirror_id], gunshell->pos);
 	}
 
-	lara_item->pos.z_pos = zplane - lara_item->pos.z_pos;
-	lara_item->pos.x_rot = -lara_item->pos.x_rot;
-	lara_item->pos.y_rot = -lara_item->pos.y_rot;
-	lara_item->pos.z_rot += 0x8000;
+	lara_item->pos = T4PMirrorInverted3DPosOnPlane(&t4p_mirror_info[mirror_id], lara_item->pos);
 	CalcLaraMatrices(2);
 	SetCullCW();
-	DrawLara(lara_item, 1);
+	DrawLara(lara_item, true);
 	DrawGunshells();
 	SetCullCCW();
-	lara_item->pos.z_pos = zplane - lara_item->pos.z_pos;
-	lara_item->pos.x_rot = -lara_item->pos.x_rot;
-	lara_item->pos.y_rot = -lara_item->pos.y_rot;
-	lara_item->pos.z_rot += 0x8000;
+	lara_item->pos = T4PMirrorInverted3DPosOnPlane(&t4p_mirror_info[mirror_id], lara_item->pos);
 	phd_PushMatrix();
 
 	if (lara.right_arm.flash_gun)
@@ -83,20 +75,19 @@ void Draw_Mirror_Lara()
 
 	phd_PopMatrix();
 
-	for (int i = 0; i < 24; i++)
+	for (int i = 0; i < MAX_GUNSHELLS; i++)
 	{
 		gunshell = &Gunshells[i];
 
 		if (gunshell->counter)
-			gunshell->pos.z_pos = zplane - gunshell->pos.z_pos;
+			gunshell->pos = T4PMirrorUnrotated3DPosOnPlane(&t4p_mirror_info[mirror_id], gunshell->pos);
 	}
 
 	hair = &hairs[0][0];
 
 	for (int i = 0; i < 6; i++)
 	{
-		hair->pos.z_pos = zplane - hair->pos.z_pos;
-		hair->pos.y_rot = 0x8000 - hair->pos.y_rot;
+		hair->pos = T4PMirrorRotated3DPosOnPlane(&t4p_mirror_info[mirror_id], hair->pos);
 		hair++;
 	}
 }

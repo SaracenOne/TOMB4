@@ -945,14 +945,14 @@ FURRResult furr_cmd_swap_inventory(FURRParameters params) {
 // WEATHER
 FURRResult furr_cmd_change_weather(FURRParameters params) {
 	if (params.first_parameter == 0) {
-		t4_rain_type = WEATHER_DISABLED;
-		t4_snow_type = WEATHER_DISABLED;
+		t4p_rain_type = T4P_WEATHER_DISABLED;
+		t4p_snow_type = T4P_WEATHER_DISABLED;
 	} else if (params.first_parameter == 1) {
-		t4_rain_type = WEATHER_ENABLED_ALL_OUTSIDE;
-		t4_snow_type = WEATHER_DISABLED;
+		t4p_rain_type = T4P_WEATHER_ENABLED_ALL_OUTSIDE;
+		t4p_snow_type = T4P_WEATHER_DISABLED;
 	} else if (params.first_parameter == 2) {
-		t4_rain_type = WEATHER_DISABLED;
-		t4_snow_type = WEATHER_ENABLED_ALL_OUTSIDE;
+		t4p_rain_type = T4P_WEATHER_DISABLED;
+		t4p_snow_type = T4P_WEATHER_ENABLED_ALL_OUTSIDE;
 	}
 
 	return FURR_RESULT_OK;
