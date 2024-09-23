@@ -1222,31 +1222,10 @@ void LaraGun()
 		lara.gun_status = LG_NO_ARMS;
 	else if (lara.gun_status == LG_NO_ARMS)
 	{
-		if (input & IN_DRAW) {
+		if (input & IN_DRAW)
 			lara.request_gun_type = lara.last_gun_type;
-
-			// T4Plus: find a valid gun.
-			if (lara.request_gun_type == WEAPON_NONE && lara.gun_type == WEAPON_NONE) {
-				if (lara.grenade_type_carried) {
-					lara.request_gun_type = WEAPON_GRENADE;
-				}
-				if (lara.crossbow_type_carried) {
-					lara.request_gun_type = WEAPON_CROSSBOW;
-				}
-				if (lara.sixshooter_type_carried) {
-					lara.request_gun_type = WEAPON_REVOLVER;
-				}
-				if (lara.uzis_type_carried) {
-					lara.request_gun_type = WEAPON_UZI;
-				}
-				if (lara.shotgun_type_carried) {
-					lara.request_gun_type = WEAPON_SHOTGUN;
-				}
-				if (lara.pistols_type_carried) {
-					lara.request_gun_type = WEAPON_PISTOLS;
-				}
-			}
-		} else if (input & IN_FLARE && !(gfLevelFlags & GF_YOUNGLARA)) {
+		else if (input & IN_FLARE && !(gfLevelFlags & GF_YOUNGLARA))
+		{
 			if (lara_item->current_anim_state == AS_DUCK && lara_item->anim_number != ANIM_DUCKBREATHE)
 				return;
 
