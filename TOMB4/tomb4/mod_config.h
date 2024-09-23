@@ -49,6 +49,19 @@ struct MOD_LEVEL_ENVIRONMENT_INFO {
 struct MOD_LEVEL_FONT_INFO {
 	int custom_glyph_scale_width = DEFAULT_GLYPH_SCALE_WIDTH;
 	int custom_glyph_scale_height = DEFAULT_GLYPH_SCALE_HEIGHT;
+	float custom_vertical_spacing = 0.075F;
+
+	int main_font_main_color = 0xff808080;
+	int main_font_fade_color = 0xff808080;
+
+	int options_title_font_main_color = 0xffc08040;
+	int options_title_font_fade_color = 0xff401000;
+
+	int inventory_title_font_main_color = 0xffe0c000;
+	int inventory_title_font_fade_color = 0xff402000;
+
+	int inventory_item_font_main_color = 0xff808080;
+	int inventory_item_font_fade_color = 0xff101010;
 
 	CHARDEF custom_font_table[CHAR_TABLE_COUNT] = {};
 };
@@ -383,6 +396,7 @@ struct MOD_GLOBAL_INFO {
 	bool spinning_debris = true;
 	bool fix_rope_glitch = true;
 	bool fix_lara_small_switch_rotation = true;
+	bool fix_lara_hands_free_flipeffect_bugs = true;
 
 	bool show_logo_in_title = true;
 	bool show_lara_in_title = false;
@@ -398,6 +412,21 @@ struct MOD_LEVEL_STAT_INFO {
 	unsigned int secret_count = 70;
 
 	MOD_EQUIPMENT_MODIFIER equipment_modifiers[MAX_EQUIPMENT_MODIFIERS];
+};
+
+struct MOD_LEVEL_LOCALIZED_STRING_OVERWRITE {
+	const char *id = "";
+	const char *string = "";
+};
+
+struct MOD_LEVEL_LOCALIZED_STRINGS_OVERWRITE_INFO {
+	const char *locale_name = "";
+	MOD_LEVEL_LOCALIZED_STRING_OVERWRITE *string_remap_table;
+};
+
+struct MOD_LEVEL_STRINGS_OVERWRITE_INFO {
+	int localized_strings_info_count = 0;
+	MOD_LEVEL_LOCALIZED_STRINGS_OVERWRITE_INFO *localized_strings_info;
 };
 
 struct MOD_LEVEL_FLARE_INFO {
@@ -500,6 +529,8 @@ struct MOD_LEVEL_MISC_INFO {
 	int trep_switch_off_ocb_5_anim = 0;
 	int trep_switch_on_ocb_6_anim = 0;
 	int trep_switch_off_ocb_6_anim = 0;
+
+	bool enable_teeth_spikes_kill_enemies = false;
 
 	short static_transparency_glass = 128;
 	short static_transparency_ice = 208;

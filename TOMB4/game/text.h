@@ -125,6 +125,7 @@ void PrintString(long x, long y, uchar col, const char* string, ushort flags);
 
 extern long stash_font_height;
 extern long smol_font_height;
+extern long savegame_font_height;
 extern long small_font;
 extern long font_height;
 extern long GnFrameCounter;

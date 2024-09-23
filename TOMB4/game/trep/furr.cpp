@@ -189,25 +189,47 @@ FURRResult furr_cmd_kill_lara(FURRParameters params) {
 
 // Params:
 FURRResult furr_cmd_remove_pistols(FURRParameters params) {
-	return FURR_RESULT_UNIMPLEMENTED;
+	lara.pistols_type_carried = 0;
+
+	return FURR_RESULT_OK;
 }
 
 // Params:
 // ONOFF
 FURRResult furr_cmd_set_binoculars(FURRParameters params) {
-	return FURR_RESULT_UNIMPLEMENTED;
+	if (params.first_parameter == 0) {
+		lara.binoculars = 0;
+	}
+	else {
+		lara.binoculars = 1;
+	}
+
+	return FURR_RESULT_OK;
 }
 
 // Params:
 // ONOFF
 FURRResult furr_cmd_set_crowbar(FURRParameters params) {
-	return FURR_RESULT_UNIMPLEMENTED;
+	if (params.first_parameter == 0) {
+		lara.crowbar = 0;
+	}
+	else {
+		lara.crowbar = 1;
+	}
+
+	return FURR_RESULT_OK;
 }
 
 // Params:
 // ONOFF
 FURRResult furr_cmd_set_lasersight(FURRParameters params) {
-	return FURR_RESULT_UNIMPLEMENTED;
+	if (params.first_parameter == 0) {
+		lara.lasersight = 0;
+	} else {
+		lara.lasersight = 1;
+	}
+
+	return FURR_RESULT_OK;
 }
 
 // Params:

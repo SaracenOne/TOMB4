@@ -1222,10 +1222,31 @@ void LaraGun()
 		lara.gun_status = LG_NO_ARMS;
 	else if (lara.gun_status == LG_NO_ARMS)
 	{
-		if (input & IN_DRAW)
+		if (input & IN_DRAW) {
 			lara.request_gun_type = lara.last_gun_type;
-		else if (input & IN_FLARE && !(gfLevelFlags & GF_YOUNGLARA))
-		{
+
+			// T4Plus: find a valid gun.
+			if (lara.request_gun_type == WEAPON_NONE && lara.gun_type == WEAPON_NONE) {
+				if (lara.grenade_type_carried) {
+					lara.request_gun_type = WEAPON_GRENADE;
+				}
+				if (lara.crossbow_type_carried) {
+					lara.request_gun_type = WEAPON_CROSSBOW;
+				}
+				if (lara.sixshooter_type_carried) {
+					lara.request_gun_type = WEAPON_REVOLVER;
+				}
+				if (lara.uzis_type_carried) {
+					lara.request_gun_type = WEAPON_UZI;
+				}
+				if (lara.shotgun_type_carried) {
+					lara.request_gun_type = WEAPON_SHOTGUN;
+				}
+				if (lara.pistols_type_carried) {
+					lara.request_gun_type = WEAPON_PISTOLS;
+				}
+			}
+		} else if (input & IN_FLARE && !(gfLevelFlags & GF_YOUNGLARA)) {
 			if (lara_item->current_anim_state == AS_DUCK && lara_item->anim_number != ANIM_DUCKBREATHE)
 				return;
 
@@ -1288,7 +1309,7 @@ void LaraGun()
 			lara.gun_status = LG_UNDRAW_GUNS;
 	}
 	else if (lara.gun_status == LG_HANDS_BUSY && input & IN_FLARE && lara_item->current_anim_state == AS_ALL4S && lara_item->anim_number == ANIM_ALL4S)
-		lara.request_gun_type = 7;
+		lara.request_gun_type = WEAPON_FLARE;
 
 	switch (lara.gun_status)
 	{
@@ -1352,7 +1373,7 @@ void LaraGun()
 		case WEAPON_GRENADE:
 		case WEAPON_CROSSBOW:
 
-			if (camera.type != CINEMATIC_CAMERA && camera.type != LOOK_CAMERA && camera.type != HEAVY_CAMERA && !mod_camera_info->disable_battle_camera)
+ 			if (camera.type != CINEMATIC_CAMERA && camera.type != LOOK_CAMERA && camera.type != HEAVY_CAMERA && !mod_camera_info->disable_battle_camera)
 				camera.type = COMBAT_CAMERA;
 
 			draw_shotgun(lara.gun_type);

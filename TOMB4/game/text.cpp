@@ -12,6 +12,7 @@
 
 long stash_font_height;
 long smol_font_height;
+long savegame_font_height;
 long small_font;
 long font_height;
 long GnFrameCounter;
@@ -94,12 +95,44 @@ static CHARDEF CharDef[CHAR_TABLE_COUNT];
 
 void InitFont()
 {
-	MOD_LEVEL_FONT_INFO *fontInfo = get_game_mod_level_font_info(gfCurrentLevel);
+	MOD_LEVEL_FONT_INFO *font_info = get_game_mod_level_font_info(gfCurrentLevel);
 
-	custom_glyph_scale_width = fontInfo->custom_glyph_scale_width;
-	custom_glyph_scale_height = fontInfo->custom_glyph_scale_height;
+	custom_glyph_scale_width = font_info->custom_glyph_scale_width;
+	custom_glyph_scale_height = font_info->custom_glyph_scale_height;
 
-	memcpy(CharDef, fontInfo->custom_font_table, sizeof(CHARDEF) * CHAR_TABLE_COUNT);
+	// Main font colour
+	ShadeFromTo[2][0].b = (font_info->main_font_main_color & 0x00ff0000) >> 16;
+	ShadeFromTo[2][0].g = (font_info->main_font_main_color & 0x0000ff00) >> 8;
+	ShadeFromTo[2][0].r = (font_info->main_font_main_color & 0x000000ff);
+	ShadeFromTo[2][1].b = (font_info->main_font_fade_color & 0x00ff0000) >> 16;
+	ShadeFromTo[2][1].g = (font_info->main_font_fade_color & 0x0000ff00) >> 8;
+	ShadeFromTo[2][1].r = (font_info->main_font_fade_color & 0x000000ff);
+
+	// Option item colour
+	ShadeFromTo[5][0].b = (font_info->inventory_item_font_main_color & 0x00ff0000) >> 16;
+	ShadeFromTo[5][0].g = (font_info->inventory_item_font_main_color & 0x0000ff00) >> 8;
+	ShadeFromTo[5][0].r = (font_info->inventory_item_font_main_color & 0x000000ff);
+	ShadeFromTo[5][1].b = (font_info->inventory_item_font_fade_color & 0x00ff0000) >> 16;
+	ShadeFromTo[5][1].g = (font_info->inventory_item_font_fade_color & 0x0000ff00) >> 8;
+	ShadeFromTo[5][1].r = (font_info->inventory_item_font_fade_color & 0x000000ff);
+
+	// Option title colour
+	ShadeFromTo[6][0].b = (font_info->options_title_font_main_color & 0x00ff0000) >> 16;
+	ShadeFromTo[6][0].g = (font_info->options_title_font_main_color & 0x0000ff00) >> 8;
+	ShadeFromTo[6][0].r = (font_info->options_title_font_main_color & 0x000000ff);
+	ShadeFromTo[6][1].b = (font_info->options_title_font_fade_color & 0x00ff0000) >> 16;
+	ShadeFromTo[6][1].g = (font_info->options_title_font_fade_color & 0x0000ff00) >> 8;
+	ShadeFromTo[6][1].r = (font_info->options_title_font_fade_color & 0x000000ff);
+
+	// Option title colour
+	ShadeFromTo[8][0].b = (font_info->inventory_title_font_main_color & 0x00ff0000) >> 16;
+	ShadeFromTo[8][0].g = (font_info->inventory_title_font_main_color & 0x0000ff00) >> 8;
+	ShadeFromTo[8][0].r = (font_info->inventory_title_font_main_color & 0x000000ff);
+	ShadeFromTo[8][1].b = (font_info->inventory_title_font_fade_color & 0x00ff0000) >> 16;
+	ShadeFromTo[8][1].g = (font_info->inventory_title_font_fade_color & 0x0000ff00) >> 8;
+	ShadeFromTo[8][1].r = (font_info->inventory_title_font_fade_color & 0x000000ff);
+
+	memcpy(CharDef, font_info->custom_font_table, sizeof(CHARDEF) * CHAR_TABLE_COUNT);
 
 	GFXTLVERTEX v;
 	static CHARDEF copy[106];
@@ -174,8 +207,9 @@ void InitFont()
 		CharDef[i].y_offset = yoff;
 	}
 
-	font_height = long(float(3.0F * phd_winymax / 40.0F));
+	font_height = long(float(phd_winymax * font_info->custom_vertical_spacing));
 	stash_font_height = font_height;
+	savegame_font_height = long(float(3.0F * phd_winymax / 40.0F));
 	smol_font_height = long(float(7.0F * phd_winymax / 120.0F));
 }
 

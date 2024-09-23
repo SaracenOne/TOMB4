@@ -620,9 +620,9 @@ long DoLoadSave(long LoadSave)
 		txt = TXT_Load_Game;
 
 	float font_scale = 15.0f / (float)MAX_SAVEGAMES * 1.06f;
-	long scaled_font_height = (long)(font_height * font_scale);
+	long scaled_font_height = (long)(savegame_font_height * font_scale);
 
-	PrintString(phd_centerx, font_height, 6, GetFixedStringForTextID(txt), FF_CENTER);
+	PrintString(phd_centerx, savegame_font_height, 6, GetFixedStringForTextID(txt), FF_CENTER);
 
 	for (int i = 0; i < MAX_SAVEGAMES; i++)
 	{
@@ -645,15 +645,15 @@ long DoLoadSave(long LoadSave)
 		if (pSave->valid)
 		{
 			sprintf(string, "%03d", pSave->num);
-			PrintStringScaled(phd_centerx - long((float)phd_winwidth / 640.0F * 310.0), font_height + scaled_font_height * (i + 2), color, string, 0, 1.0F, font_scale);
-			PrintStringScaled(phd_centerx - long((float)phd_winwidth / 640.0F * 270.0), font_height + scaled_font_height * (i + 2), color, name, 0, 1.0F, font_scale);
+			PrintStringScaled(phd_centerx - long((float)phd_winwidth / 640.0F * 310.0), savegame_font_height + scaled_font_height * (i + 2), color, string, 0, 1.0F, font_scale);
+			PrintStringScaled(phd_centerx - long((float)phd_winwidth / 640.0F * 270.0), savegame_font_height + scaled_font_height * (i + 2), color, name, 0, 1.0F, font_scale);
 			sprintf(string, "%d %s %02d:%02d:%02d", pSave->days, GetFixedStringForTextID(TXT_days), pSave->hours, pSave->minutes, pSave->seconds);
-			PrintStringScaled(phd_centerx - long((float)phd_winwidth / 640.0F * -135.0), font_height + scaled_font_height * (i + 2), color, string, 0, 1.0F, font_scale);
+			PrintStringScaled(phd_centerx - long((float)phd_winwidth / 640.0F * -135.0), savegame_font_height + scaled_font_height * (i + 2), color, string, 0, 1.0F, font_scale);
 		}
 		else
 		{
 			sprintf(string, "%s", pSave->name);
-			PrintStringScaled(phd_centerx, font_height + scaled_font_height * (i + 2), color, string, FF_CENTER, 1.0F, font_scale);
+			PrintStringScaled(phd_centerx, savegame_font_height + scaled_font_height * (i + 2), color, string, FF_CENTER, 1.0F, font_scale);
 		}
 
 		small_font = 0;

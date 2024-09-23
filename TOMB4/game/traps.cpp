@@ -24,6 +24,7 @@
 #include "camera.h"
 #include "lara.h"
 #include "debris.h"
+#include "jeep.h"
 
 #include "../tomb4/mod_config.h"
 
@@ -1401,6 +1402,7 @@ void ControlScaledSpike(short item_number)
 	item = &items[item_number];
 
 	MOD_LEVEL_OBJECT_CUSTOMIZATION *mod_object_customization = get_game_mod_level_object_customization_for_slot(gfCurrentLevel, TEETH_SPIKES);
+	MOD_LEVEL_MISC_INFO *misc_info = get_game_mod_level_misc_info(gfCurrentLevel);
 
 	if (!TriggerActive(item) || item->item_flags[2])
 	{
@@ -1436,6 +1438,10 @@ void ControlScaledSpike(short item_number)
 	}
 	else
 	{
+		if (misc_info->enable_teeth_spikes_kill_enemies) {
+			JeepBaddieCollision(item);
+		}
+
 		if (item->item_flags[0] == 1024)
 			SoundEffect(SFX_TEETH_SPIKES, &item->pos, SFX_DEFAULT);
 
@@ -1500,8 +1506,6 @@ void ControlScaledSpike(short item_number)
 				room_number = lara_item->room_number;
 				dy = GetHeight(GetFloor(lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos, &room_number),
 					lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos);
-
-				MOD_LEVEL_MISC_INFO *misc_info = get_game_mod_level_misc_info(gfCurrentLevel);
 
 				if (item->pos.y_pos >= lara_item->pos.y_pos && (dy - lara_item->pos.y_pos < 50 || misc_info->lara_impales_on_spikes))
 				{

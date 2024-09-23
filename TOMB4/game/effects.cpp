@@ -770,6 +770,29 @@ void KillActiveBaddies(ITEM_INFO* item)
 void lara_hands_free(ITEM_INFO* item)
 {
 	lara.gun_status = LG_NO_ARMS;
+
+	// T4Plus: Bug fix for weapons getting stuck in perpetual animation loop.
+	if (get_game_mod_global_info()->fix_lara_hands_free_flipeffect_bugs) {
+		lara.gun_type = WEAPON_NONE;
+		lara.request_gun_type = WEAPON_NONE;
+
+		lara.left_arm.frame_number = 0;
+		lara.right_arm.frame_number = 0;
+
+		lara.mesh_ptrs[LM_LHAND] = meshes[objects[0].mesh_index + 2 * LM_LHAND];
+		lara.mesh_ptrs[LM_RHAND] = meshes[objects[0].mesh_index + 2 * LM_RHAND];
+		lara.left_arm.frame_number = 0;
+		lara.right_arm.frame_number = 0;
+		lara.target = 0;
+		lara.right_arm.lock = 0;
+		lara.left_arm.lock = 0;
+
+		if (lara.weapon_item != NO_ITEM)
+		{
+			KillItem(lara.weapon_item);
+			lara.weapon_item = NO_ITEM;
+		}
+	}
 }
 
 void draw_right_gun(ITEM_INFO* item)

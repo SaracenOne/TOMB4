@@ -442,6 +442,16 @@ void LoadGameModLevelEnvironmentInfo(const json_t* environment, MOD_LEVEL_ENVIRO
 void LoadGameModLevelFontInfo(const json_t* font, MOD_LEVEL_FONT_INFO* font_info) {
     READ_JSON_SINT32(custom_glyph_scale_width, font, font_info);
     READ_JSON_SINT32(custom_glyph_scale_height, font, font_info);
+    READ_JSON_FLOAT32(custom_vertical_spacing, font, font_info);
+
+    READ_JSON_ARGB(main_font_main_color, font, font_info);
+    READ_JSON_ARGB(main_font_fade_color, font, font_info);
+    READ_JSON_ARGB(options_title_font_main_color, font, font_info);
+    READ_JSON_ARGB(options_title_font_fade_color, font, font_info);
+    READ_JSON_ARGB(inventory_title_font_main_color, font, font_info);
+    READ_JSON_ARGB(inventory_title_font_fade_color, font, font_info);
+    READ_JSON_ARGB(inventory_item_font_main_color, font, font_info);
+    READ_JSON_ARGB(inventory_item_font_fade_color, font, font_info);
 
     const json_t* char_table = json_getProperty(font, "custom_font_table");
     if (char_table && JSON_ARRAY == json_getType(char_table)) {
@@ -608,6 +618,20 @@ void LoadGameModLevelGFXInfo(const json_t* gfx, MOD_LEVEL_GFX_INFO *gfx_info) {
     }
 }
 
+void LoadGameModObjectCustomizationInfo(const json_t* object_customization_json, MOD_LEVEL_OBJECT_CUSTOMIZATION *object_customization) {
+    {
+        const json_t* prop = json_getProperty(object_customization_json, "hit_points");
+        if (prop && JSON_INTEGER == json_getType(prop)) {
+            (object_customization)->override_hit_points = true;
+            (object_customization)->hit_points = (signed int)json_getInteger(prop);
+        }
+    };
+
+    READ_JSON_SINT32(damage_1, object_customization_json, object_customization);
+    READ_JSON_SINT32(damage_2, object_customization_json, object_customization);
+    READ_JSON_SINT32(damage_3, object_customization_json, object_customization);
+}
+
 void LoadGameModLevelObjectsInfo(const json_t* objects, MOD_LEVEL_OBJECTS_INFO* objects_info) {
     READ_JSON_SINT16(lara_slot, objects, objects_info);
 
@@ -664,14 +688,7 @@ void LoadGameModLevelObjectsInfo(const json_t* objects, MOD_LEVEL_OBJECTS_INFO* 
             if (object_customization_index >= NUMBER_OBJECTS)
                 break;
 
-            { const json_t* prop = json_getProperty(object_customization_json, "hit_points"); if (prop && JSON_INTEGER == json_getType(prop)) {
-                (&objects_info->object_customization[object_customization_index])->override_hit_points = true;
-                (&objects_info->object_customization[object_customization_index])->hit_points = (signed int)json_getInteger(prop);
-            } };
-
-            READ_JSON_SINT32(damage_1, object_customization_json, &objects_info->object_customization[object_customization_index]);
-            READ_JSON_SINT32(damage_2, object_customization_json, &objects_info->object_customization[object_customization_index]);
-            READ_JSON_SINT32(damage_3, object_customization_json, &objects_info->object_customization[object_customization_index]);
+            LoadGameModObjectCustomizationInfo(object_customization_json, &objects_info->object_customization[object_customization_index]);
 
             object_customization_index++;
         }
@@ -709,6 +726,8 @@ void LoadGameModLevelMiscInfo(const json_t *misc, MOD_LEVEL_MISC_INFO *misc_info
     READ_JSON_SINT32(trep_switch_off_ocb_5_anim, misc, misc_info);
     READ_JSON_SINT32(trep_switch_on_ocb_6_anim, misc, misc_info);
     READ_JSON_SINT32(trep_switch_off_ocb_6_anim, misc, misc_info);
+
+    READ_JSON_BOOL(enable_teeth_spikes_kill_enemies, misc, misc_info);
 }
 
 void LoadGameModLevelStatInfo(const json_t* stats, MOD_LEVEL_STAT_INFO* stat_info) {
@@ -797,6 +816,19 @@ void LoadGameModLevel(const json_t *level, MOD_LEVEL_INFO *level_info) {
 void SetupDefaultFontInfoForLevel(MOD_LEVEL_INFO* level_info) {
     level_info->font_info.custom_glyph_scale_width = 512;
     level_info->font_info.custom_glyph_scale_height = 240;
+    level_info->font_info.custom_vertical_spacing = 0.075f;
+
+    level_info->font_info.main_font_main_color = 0xff808080;
+    level_info->font_info.main_font_fade_color = 0xff808080;
+
+    level_info->font_info.options_title_font_main_color = 0xffc08040;
+    level_info->font_info.options_title_font_fade_color = 0xff401000;
+
+    level_info->font_info.inventory_title_font_main_color = 0xffe0c000;
+    level_info->font_info.inventory_title_font_fade_color = 0xff402000;
+
+    level_info->font_info.inventory_item_font_main_color = 0xff808080;
+    level_info->font_info.inventory_item_font_fade_color = 0xff101010;
 
     memcpy(level_info->font_info.custom_font_table, DEFAULT_CHAR_TABLE, sizeof(CHARDEF) * CHAR_TABLE_COUNT);
 }
