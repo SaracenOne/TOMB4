@@ -14,6 +14,7 @@
 #include "../../specific/input.h"
 #include "../../specific/dxshell.h"
 #include "../newinv.h"
+#include "../../tomb4/tomb4plus/t4plus_items.h"
 
 bool NGExecuteSingleGlobalTrigger(int global_trigger_id, int selected_inventory_object_id) {
 	NG_GLOBAL_TRIGGER* global_trigger = &ng_levels[gfCurrentLevel].records->global_trigger_table[global_trigger_id].record;
@@ -71,26 +72,28 @@ bool NGExecuteSingleGlobalTrigger(int global_trigger_id, int selected_inventory_
 			break;
 		}
 		case GT_COLLIDE_ITEM: {
-			int result = NGIsLaraCollidingWithMoveableID(ng_script_id_table[global_trigger->parameter].script_index);
-			if (result >= 0) {
+			ITEM_INFO *item = &items[ng_script_id_table[global_trigger->parameter].script_index];
+
+			ITEM_INFO* collided_item = NGIsLaraCollidingWithItem(item, global_trigger->flags & FGT_PUSHING_COLLISION ? NG_COLLISION_TYPE_PUSH : NG_COLLISION_TYPE_BOUNDS);
+			if (collided_item) {
 				global_trigger_condition_passed = true;
-				NGStoreItemIndexConditional(result);
+				NGStoreItemIndexConditional(T4PlusGetIDForItemInfo(collided_item));
 			}
 			break;
 		}
 		case GT_COLLIDE_SLOT: {
-			int result = NGIsLaraCollidingWithMoveableSlot(global_trigger->parameter);
-			if (result >= 0) {
+			ITEM_INFO *collided_item = NGIsLaraCollidingWithMoveableSlot(global_trigger->parameter, global_trigger->flags & FGT_PUSHING_COLLISION ? NG_COLLISION_TYPE_PUSH : NG_COLLISION_TYPE_BOUNDS);
+			if (collided_item) {
 				global_trigger_condition_passed = true;
-				NGStoreItemIndexConditional(result);
+				NGStoreItemIndexConditional(T4PlusGetIDForItemInfo(collided_item));
 			}
 			break;
 		}
 		case GT_COLLIDE_CREATURE: {
-			int result = NGIsLaraCollidingWithCreature(NG_CREATURE_TYPE_ANY);
-			if (result >= 0) {
+			ITEM_INFO* collided_item = NGIsLaraCollidingWithCreature(NG_CREATURE_TYPE_ANY, global_trigger->flags & FGT_PUSHING_COLLISION ? NG_COLLISION_TYPE_PUSH : NG_COLLISION_TYPE_BOUNDS);
+			if (collided_item) {
 				global_trigger_condition_passed = true;
-				NGStoreItemIndexConditional(result);
+				NGStoreItemIndexConditional(T4PlusGetIDForItemInfo(collided_item));
 			}
 			break;
 		}
@@ -156,11 +159,6 @@ bool NGExecuteSingleGlobalTrigger(int global_trigger_id, int selected_inventory_
 
 	if (global_trigger->flags & FGT_NOT_TRUE)
 		global_trigger_condition_passed = !global_trigger_condition_passed;
-
-	if (global_trigger->flags & FGT_PUSHING_COLLISION) {
-		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Unimplemented FGT_PUSHING_COLLISION!");
-		return false;
-	}
 
 	if (global_trigger->flags & FGT_REMOVE_INPUT) {
 		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Unimplemented FGT_REMOVE_INPUT!");

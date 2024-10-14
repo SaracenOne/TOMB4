@@ -203,13 +203,11 @@ bool NGTriggerGroupFunction(unsigned int trigger_group_id, unsigned char executi
 					if (trigger_group.data[index].flags & TGROUP_USE_FOUND_ITEM_INDEX) {
 						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TGROUP_USE_FOUND_ITEM_INDEX used on flipeffect");
 					} else {
-						current_result = NGExecuteFlipEffect(0, trigger_group.data[index].object, trigger_group.data[index].timer & 0x7fff, SCANF_SCRIPT_TRIGGER);
+						int repeat_type = NGExecuteFlipEffect(0, trigger_group.data[index].object, trigger_group.data[index].timer & 0x7fff, SCANF_SCRIPT_TRIGGER);
 					}
 
-					if (!current_result) {
-						NGLog(NG_LOG_TYPE_ERROR, "Flipeffect returned false!");
-						current_result = true;
-					}
+					current_result = true;
+
 				} else if (trigger_group.data[index].flags == 0x0000) {
 					break;
 				} else {

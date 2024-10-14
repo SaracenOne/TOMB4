@@ -722,29 +722,30 @@ void NGUpdateAllStatics() {
 	}
 }
 
-#define MAX_LARA_COLLISONS 16
-int ng_lara_moveable_collisions[MAX_LARA_COLLISONS];
-int ng_lara_moveable_collision_size = 0;
+NGItemCollision ng_lara_moveable_collisions[MAX_LARA_COLLISONS];
+int32_t ng_lara_moveable_collision_size = 0;
 
-#define MAX_LARA_STATIC_COLLISONS 16
-int ng_lara_static_collisions[MAX_LARA_STATIC_COLLISONS];
-int ng_lara_static_collision_size = 0;
+int32_t ng_lara_static_collisions[MAX_LARA_STATIC_COLLISONS];
+int32_t ng_lara_static_collision_size = 0;
 
-void NGAddLaraMoveableCollision(int item_number) {
+
+void NGAddLaraItemCollision(ITEM_INFO *item_info, int32_t flags) {
 	if (ng_lara_moveable_collision_size >= MAX_LARA_COLLISONS-1)
 		return;
 	
 	for (int i = 0; i < ng_lara_moveable_collision_size; i++) {
-		if (ng_lara_moveable_collisions[i] == item_number) {
+		if (ng_lara_moveable_collisions[i].item_info == item_info) {
+			ng_lara_moveable_collisions[i].flags |= flags;
 			return;
 		}
 	}
 
-	ng_lara_moveable_collisions[ng_lara_moveable_collision_size] = item_number;
+	ng_lara_moveable_collisions[ng_lara_moveable_collision_size].item_info = item_info;
+	ng_lara_moveable_collisions[ng_lara_moveable_collision_size].flags = flags;
 	ng_lara_moveable_collision_size++;
 }
 
-extern void NGAddLaraStaticCollision(int room_number, int mesh_number) {
+extern void NGAddLaraStaticCollision(int32_t room_number, int32_t mesh_number) {
 	if (ng_lara_static_collision_size >= MAX_LARA_STATIC_COLLISONS-1)
 		return;
 
@@ -775,24 +776,31 @@ void NGClearLaraCollisions() {
 	ng_lara_static_collision_size = 0;
 }
 
-int NGIsLaraCollidingWithMoveableID(int item_number) {
+ITEM_INFO * NGIsLaraCollidingWithItem(ITEM_INFO *item, int32_t mask) {
+	if (!item)
+		return nullptr;
+
 	for (int i = 0; i < ng_lara_moveable_collision_size; i++) {
-		if (ng_lara_moveable_collisions[i] == item_number) {
-			return ng_lara_moveable_collisions[i];
+		if (ng_lara_moveable_collisions[i].item_info == item) {
+			if ((ng_lara_moveable_collisions[i].flags & mask) != 0)
+				return ng_lara_moveable_collisions[i].item_info;
+			else
+				return nullptr;
 		}
 	}
 
-	return -1;
+	return nullptr;
 }
 
-int NGIsLaraCollidingWithMoveableSlot(int slot_number) {
+ITEM_INFO *NGIsLaraCollidingWithMoveableSlot(int32_t slot_number, int32_t mask) {
 	for (int i = 0; i < ng_lara_moveable_collision_size; i++) {
-		if (items[ng_lara_moveable_collisions[i]].object_number == slot_number) {
-			return ng_lara_moveable_collisions[i];
+		if (ng_lara_moveable_collisions[i].item_info->object_number == slot_number) {
+			if ((ng_lara_moveable_collisions[i].flags & mask) != 0)
+				return ng_lara_moveable_collisions[i].item_info;
 		}
 	}
 
-	return -1;
+	return nullptr;
 }
 
 bool NGIsObjectMortalType(int object_id) {
@@ -846,46 +854,49 @@ bool NGIsObjectFriendType(int object_id) {
 	}
 }
 
-int NGIsLaraCollidingWithCreature(NGCreatureType creature_type) {
-	for (int i = 0; i < ng_lara_moveable_collision_size; i++) {
-		{
-			switch (creature_type) {
-				case NG_CREATURE_TYPE_ANY: {
-					return ng_lara_moveable_collisions[i];
-				}
-				case NG_CREATURE_TYPE_MORTAL: {
-					int object_id = items[ng_lara_moveable_collisions[i]].object_number;
+ITEM_INFO *NGIsLaraCollidingWithCreature(NGCreatureType creature_type, int32_t mask) {
+	for (int32_t i = 0; i < ng_lara_moveable_collision_size; i++) {
+		switch (creature_type) {
+			case NG_CREATURE_TYPE_ANY: {
+				if ((ng_lara_moveable_collisions[i].flags & mask) != 0)
+					return ng_lara_moveable_collisions[i].item_info;
+				break;
+			}
+			case NG_CREATURE_TYPE_MORTAL: {
+				int32_t object_id = ng_lara_moveable_collisions[i].item_info->object_number;
 
-					if(NGIsObjectMortalType(object_id)) {
-						return ng_lara_moveable_collisions[i];
-					}
-					break;
+				if(NGIsObjectMortalType(object_id)) {
+					if ((ng_lara_moveable_collisions[i].flags & mask) != 0)
+						return ng_lara_moveable_collisions[i].item_info;
 				}
-				case NG_CREATURE_TYPE_IMMORTAL: {
-					int object_id = items[ng_lara_moveable_collisions[i]].object_number;
+				break;
+			}
+			case NG_CREATURE_TYPE_IMMORTAL: {
+				int32_t object_id = ng_lara_moveable_collisions[i].item_info->object_number;
 
-					if(NGIsObjectImmortalType(object_id)) {
-						return ng_lara_moveable_collisions[i];
-					}
-					break;
+				if(NGIsObjectImmortalType(object_id)) {
+					if ((ng_lara_moveable_collisions[i].flags & mask) != 0)
+						return ng_lara_moveable_collisions[i].item_info;
 				}
-				case NG_CREATURE_TYPE_FRIEND: {
-					int object_id = items[ng_lara_moveable_collisions[i]].object_number;
+				break;
+			}
+			case NG_CREATURE_TYPE_FRIEND: {
+				int32_t object_id = ng_lara_moveable_collisions[i].item_info->object_number;
 
-					if(NGIsObjectFriendType(object_id)) {
-						return ng_lara_moveable_collisions[i];
-					}
-					break;
+				if(NGIsObjectFriendType(object_id)) {
+					if ((ng_lara_moveable_collisions[i].flags & mask) != 0)
+						return ng_lara_moveable_collisions[i].item_info;
 				}
-				default: {
-					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGIsLaraCollidingWithCreature: creature_type %u unimplemented!", creature_type);
-					break;
-				}
+				break;
+			}
+			default: {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGIsLaraCollidingWithCreature: creature_type %u unimplemented!", creature_type);
+				break;
 			}
 		}
 	}
 
-	return -1;
+	return nullptr;
 }
 
 int NGIsLaraCollidingWithStaticID(int id) {

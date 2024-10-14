@@ -14,7 +14,7 @@ void LaraBaddieCollision(ITEM_INFO* l, COLL_INFO* coll);
 void ObjectCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);
 void ObjectCollisionNoBigPush(short item_number, ITEM_INFO* l, COLL_INFO* coll);
 void TrapCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);
-long ItemPushLara(ITEM_INFO* item, ITEM_INFO* l, COLL_INFO* coll, long spaz, long BigPush);
+bool ItemPushLara(ITEM_INFO* item, ITEM_INFO* l, COLL_INFO* coll, long spaz, long BigPush);
 long TestBoundsCollide(ITEM_INFO* item, ITEM_INFO* l, long rad);
 long TestBoundsCollideStatic(short* bounds, PHD_3DPOS* pos, long rad);
 long ItemPushLaraStatic(ITEM_INFO* l, short* bounds, PHD_3DPOS* pos, COLL_INFO* coll);

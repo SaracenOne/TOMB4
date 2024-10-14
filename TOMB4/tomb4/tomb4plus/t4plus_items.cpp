@@ -64,3 +64,15 @@ void T4PlusActivateItem(short item_id, bool anti) {
 		item->flags &= ~(IFL_CODEBITS | IFL_REVERSE);
 	}
 }
+
+int32_t T4PlusGetIDForItemInfo(ITEM_INFO* item) {
+	return int32_t(items - item) / sizeof(ITEM_INFO);
+}
+
+ITEM_INFO* T4PlusGetItemInfoForID(int32_t item_id) {
+	if (item_id < ITEM_COUNT) {
+		return &items[item_id];
+	}
+
+	return nullptr;
+}

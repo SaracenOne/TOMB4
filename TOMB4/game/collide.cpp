@@ -236,8 +236,6 @@ void GenericDeadlyBoundingBoxCollision(short item_number, ITEM_INFO* l, COLL_INF
 
 	if (item->status != ITEM_INVISIBLE && item->item_flags[3] && TestBoundsCollide(item, l, coll->radius))
 	{
-		NGAddLaraMoveableCollision(item_number); // NGLE
-
 		dx = lara_item->pos.x_pos;
 		dy = lara_item->pos.y_pos;
 		dz = lara_item->pos.z_pos;
@@ -273,8 +271,6 @@ void GenericSphereBoxCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 
 	if (item->status != ITEM_INVISIBLE && TestBoundsCollide(item, l, coll->radius))
 	{
-		NGAddLaraMoveableCollision(item_number); // NGLE
-
 		TouchBits = TestCollision(item, l);
 
 		if (TouchBits)
@@ -344,8 +340,6 @@ void CreatureCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 
 	if (TestBoundsCollide(item, l, coll->radius) && TestCollision(item, l))
 	{
-		NGAddLaraMoveableCollision(item_number); // NGLE
-
 		if (lara.water_status != LW_UNDERWATER && lara.water_status != LW_SURFACE)
 		{
 			if (coll->enable_baddie_push)
@@ -741,8 +735,6 @@ void ObjectCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 
 	if (TestBoundsCollide(item, l, coll->radius) && TestCollision(item, l) && coll->enable_baddie_push)
 	{
-		NGAddLaraMoveableCollision(item_number); // NGLE
-
 		ItemPushLara(item, l, coll, 0, 1);
 	}
 }
@@ -760,8 +752,6 @@ void ObjectCollisionNoBigPush(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 
 	if (TestBoundsCollide(item, l, coll->radius) && TestCollision(item, l) && coll->enable_baddie_push)
 	{
-		NGAddLaraMoveableCollision(item_number); // NGLE
-
 		ItemPushLara(item, l, coll, 0, 0);
 	}
 }
@@ -783,7 +773,7 @@ void TrapCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 	ObjectCollision(item_number, l, coll);
 }
 
-long ItemPushLara(ITEM_INFO* item, ITEM_INFO* l, COLL_INFO* coll, long spaz, long BigPush)
+bool ItemPushLara(ITEM_INFO* item, ITEM_INFO* l, COLL_INFO* coll, long spaz, long BigPush)
 {
 	short* bounds;
 	long dx, dz, s, c, x, z;
@@ -815,8 +805,10 @@ long ItemPushLara(ITEM_INFO* item, ITEM_INFO* l, COLL_INFO* coll, long spaz, lon
 		zmax += coll->radius;
 	}
 
+	NGAddLaraItemCollision(item, NG_COLLISION_TYPE_BOUNDS); // NGLE
+
 	if (abs(dx) > 4608 || abs(dz) > 4608 || x <= xmin || x >= xmax || z <= zmin || z >= zmax)
-		return 0;
+		return false;
 
 	left = x - xmin;
 	top = zmax - z;
@@ -879,7 +871,9 @@ long ItemPushLara(ITEM_INFO* item, ITEM_INFO* l, COLL_INFO* coll, long spaz, lon
 		lara.gun_status = LG_NO_ARMS;
 	}
 
-	return 1;
+	NGAddLaraItemCollision(item, NG_COLLISION_TYPE_PUSH); // NGLE
+
+	return true;
 }
 
 long TestBoundsCollide(ITEM_INFO* item, ITEM_INFO* l, long rad)

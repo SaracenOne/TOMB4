@@ -224,11 +224,23 @@ extern void NGSetStaticMovementTriggerHeavyWhenMoving(unsigned int static_num, b
 
 //
 
-extern void NGAddLaraMoveableCollision(int item_number);
-extern void NGAddLaraStaticCollision(int room_number, int mesh_number);
+struct NGItemCollision {
+	ITEM_INFO* item_info;
+	int32_t flags;
+};
+
+
+#define MAX_LARA_COLLISONS 20
+#define MAX_LARA_STATIC_COLLISONS 20
+
+#define NG_COLLISION_TYPE_BOUNDS 1
+#define NG_COLLISION_TYPE_PUSH 2
+
+extern void NGAddLaraItemCollision(ITEM_INFO *item_info, int32_t flags);
+extern void NGAddLaraStaticCollision(int32_t room_number, int32_t mesh_number);
 extern void NGClearLaraCollisions();
-extern int NGIsLaraCollidingWithMoveableID(int item_number);
-extern int NGIsLaraCollidingWithMoveableSlot(int slot_number);
+extern ITEM_INFO *NGIsLaraCollidingWithItem(ITEM_INFO *item_info, int32_t mask);
+extern ITEM_INFO *NGIsLaraCollidingWithMoveableSlot(int32_t slot_number, int32_t mask);
 
 enum NGCreatureType {
 	NG_CREATURE_TYPE_ANY,
@@ -237,7 +249,7 @@ enum NGCreatureType {
 	NG_CREATURE_TYPE_FRIEND
 };
 
-extern int NGIsLaraCollidingWithCreature(NGCreatureType creature_type);
+ITEM_INFO *NGIsLaraCollidingWithCreature(NGCreatureType creature_type, int32_t mask);
 extern int NGIsLaraCollidingWithStaticID(int id);
 extern int NGIsLaraCollidingWithStaticSlot(int slot);
 

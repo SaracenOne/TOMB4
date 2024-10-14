@@ -29,6 +29,7 @@
 
 #include "../../specific/input.h"
 #include "../../specific/dxsound.h"
+#include "../../tomb4/tomb4plus/t4plus_items.h"
 
 NGOldTrigger old_conditions[NG_MAX_OLD_CONDITIONS];
 int32_t old_condition_count;
@@ -44,7 +45,7 @@ enum GRID_FRAGMENT_TYPE {
 };
 
 bool NGIsCreatureActive(short item_num) {
-	ITEM_INFO* item = &items[item_num];
+	ITEM_INFO* item = T4PlusGetItemInfoForID(item_num);
 
 	if (item->flags & IFL_CLEARBODY) {
 		return false;
@@ -442,12 +443,12 @@ int32_t NGPerformTRNGCondition(uint16_t condition_number, uint16_t main_argument
 			switch (extra) {
 				// Enemy is dead
 				case 0x00: {
-					result = (items[main_argument].status == ITEM_DEACTIVATED);
+					result = (T4PlusGetItemInfoForID(main_argument)->status == ITEM_DEACTIVATED);
 					break;
 				}
 				// Enemy has not yet been activated
 				case 0x01: {
-					result = (items[main_argument].status == ITEM_INVISIBLE);
+					result = (T4PlusGetItemInfoForID(main_argument)->status == ITEM_INVISIBLE);
 					break;
 				}
 				// Enemy is living
@@ -457,12 +458,12 @@ int32_t NGPerformTRNGCondition(uint16_t condition_number, uint16_t main_argument
 				}
 				// Enemy is active
 				case 0x03: {
-					result = (NGIsCreatureActive(main_argument) && NGIsTriggerActive(&items[main_argument]));
+					result = (NGIsCreatureActive(main_argument) && NGIsTriggerActive(T4PlusGetItemInfoForID(main_argument)));
 					break;
 				}
 				// Enemy is not active
 				case 0x04: {
-					result = (!NGIsCreatureActive(main_argument) || !NGIsTriggerActive(&items[main_argument]));
+					result = (!NGIsCreatureActive(main_argument) || !NGIsTriggerActive(T4PlusGetItemInfoForID(main_argument)));
 					break;
 				}
 				default: {
@@ -483,6 +484,7 @@ int32_t NGPerformTRNGCondition(uint16_t condition_number, uint16_t main_argument
 		}
 		case LARA_HAS_FOUND_AT_LEAST_X_SECRETS: {
 			result = (savegame.Game.Secrets >= main_argument);
+			result = true; // TEST
 			break;
 		}
 		case LARA_HAS_FOUND_EXACTLY_X_SECRETS: {
@@ -503,12 +505,12 @@ int32_t NGPerformTRNGCondition(uint16_t condition_number, uint16_t main_argument
 		case CREATURE_CURRENT_ANIMATION_64_95_IS:
 			*test_restore = true;
 			*test_skip = true;
-			result = (items[main_argument].anim_number - objects[items[main_argument].object_number].anim_index == extra);
+			result = (T4PlusGetItemInfoForID(main_argument)->anim_number - objects[T4PlusGetItemInfoForID(main_argument)->object_number].anim_index == extra);
 			break;
 		case CREATURE_IS_CURRENTLY_OF_STATE: {
 			*test_restore = true;
 			*test_skip = true;
-			result = (items[main_argument].current_anim_state == extra);
+			result = (T4PlusGetItemInfoForID(main_argument)->current_anim_state == extra);
 			break;
 		}
 		// Lara status is enabled/disabled
@@ -538,17 +540,17 @@ int32_t NGPerformTRNGCondition(uint16_t condition_number, uint16_t main_argument
 		}
 		case LARA_IS_TOUCHING_MOVEABLE_ID: {
 			*test_skip = true;
-			int id = NGIsLaraCollidingWithMoveableID(main_argument);
-			if (id >= 0) {
-				NGStoreItemIndexConditional(id);
+			ITEM_INFO* item = NGIsLaraCollidingWithItem(T4PlusGetItemInfoForID(main_argument), NG_COLLISION_TYPE_PUSH);
+			if (item) {
+				NGStoreItemIndexConditional(T4PlusGetIDForItemInfo(item));
 				result = 1;
 			}
 			break;
 		}
 		case LARA_IS_TOUCHING_MOVEABLE_SLOT: {
-			int id = NGIsLaraCollidingWithMoveableSlot(main_argument);
-			if (id >= 0) {
-				NGStoreItemIndexConditional(id);
+			ITEM_INFO* item = NGIsLaraCollidingWithMoveableSlot(main_argument, NG_COLLISION_TYPE_PUSH);
+			if (item) {
+				NGStoreItemIndexConditional(T4PlusGetIDForItemInfo(item));
 				result = 1;
 			}
 			break;
@@ -557,27 +559,27 @@ int32_t NGPerformTRNGCondition(uint16_t condition_number, uint16_t main_argument
 			switch (main_argument) {
 				// Mortal creatures
 				case 0x00: {
-					int id = NGIsLaraCollidingWithCreature(NG_CREATURE_TYPE_MORTAL);
-					if (id >= 0) {
-						NGStoreItemIndexConditional(id);
+					ITEM_INFO *item = NGIsLaraCollidingWithCreature(NG_CREATURE_TYPE_MORTAL, NG_COLLISION_TYPE_PUSH);
+					if (item) {
+						NGStoreItemIndexConditional(T4PlusGetIDForItemInfo(item));
 						result = 1;
 					}
 					break;
 				}
 				// Immortal creatures
 				case 0x01: {
-					int id = NGIsLaraCollidingWithCreature(NG_CREATURE_TYPE_IMMORTAL);
-					if (id >= 0) {
-						NGStoreItemIndexConditional(id);
+					ITEM_INFO* item = NGIsLaraCollidingWithCreature(NG_CREATURE_TYPE_IMMORTAL, NG_COLLISION_TYPE_PUSH);
+					if (item) {
+						NGStoreItemIndexConditional(T4PlusGetIDForItemInfo(item));
 						result = 1;
 					}
 					break;
 				}
 				// Friends
 				case 0x02: {
-					int id = NGIsLaraCollidingWithCreature(NG_CREATURE_TYPE_FRIEND);
-					if (id >= 0) {
-						NGStoreItemIndexConditional(id);
+					ITEM_INFO* item = NGIsLaraCollidingWithCreature(NG_CREATURE_TYPE_FRIEND, NG_COLLISION_TYPE_PUSH);
+					if (item) {
+						NGStoreItemIndexConditional(T4PlusGetIDForItemInfo(item));
 						result = 1;
 					}
 					break;
@@ -686,22 +688,22 @@ int32_t NGPerformTRNGCondition(uint16_t condition_number, uint16_t main_argument
 				}
 				case 10: {
 					if (lara.vehicle != NO_ITEM)
-						result = (items[lara.vehicle].object_number == T4PlusGetJeepSlotID());
+						result = (T4PlusGetItemInfoForID(lara.vehicle)->object_number == T4PlusGetJeepSlotID());
 					break;
 				}
 				case 11: {
 					if (lara.vehicle != NO_ITEM)
-						result = (items[lara.vehicle].object_number == T4PlusGetMotorbikeSlotID());
+						result = (T4PlusGetItemInfoForID(lara.vehicle)->object_number == T4PlusGetMotorbikeSlotID());
 					break;
 				}
 				case 12: {
 					if (lara.vehicle != NO_ITEM)
-						result = (items[lara.vehicle].object_number == T4PlusGetRubberBoatSlotID());
+						result = (T4PlusGetItemInfoForID(lara.vehicle)->object_number == T4PlusGetRubberBoatSlotID());
 					break;
 				}
 				case 13: {
 					if (lara.vehicle != NO_ITEM)
-						result = (items[lara.vehicle].object_number == T4PlusGetMotorBoatSlotID());
+						result = (T4PlusGetItemInfoForID(lara.vehicle)->object_number == T4PlusGetMotorBoatSlotID());
 					break;
 				}
 				case 14: {
@@ -722,7 +724,7 @@ int32_t NGPerformTRNGCondition(uint16_t condition_number, uint16_t main_argument
 				}
 				case 17: {
 					if (lara.vehicle != NO_ITEM)
-						result = (items[lara.vehicle].object_number == KAYAK);
+						result = (T4PlusGetItemInfoForID(lara.vehicle)->object_number == KAYAK);
 					break;
 				}
 				default: {
@@ -818,13 +820,13 @@ int32_t NGPerformTRNGCondition(uint16_t condition_number, uint16_t main_argument
 		case LARA_IS_LESS_OR_EVEN_CLICKS_DISTANT_TO_MOVEABLE: {
 			*test_restore = true;
 			*test_skip = true;
-			result = NGIsSourcePositionLessThanDistanceToTargetPosition(&lara_item->pos, &items[main_argument].pos, extra * 256, false);
+			result = NGIsSourcePositionLessThanDistanceToTargetPosition(&lara_item->pos, &T4PlusGetItemInfoForID(main_argument)->pos, extra * 256, false);
 			break;
 		}
 		case LARA_IS_LESS_OR_EVEN_UNITS_DISTANT_TO_MOVEABLE: {
 			*test_restore = true;
 			*test_skip = true;
-			result = NGIsSourcePositionLessThanDistanceToTargetPosition(&lara_item->pos, &items[main_argument].pos, extra, false);
+			result = NGIsSourcePositionLessThanDistanceToTargetPosition(&lara_item->pos, &T4PlusGetItemInfoForID(main_argument)->pos, extra, false);
 			break;
 		}
 		case LARA_IS_IN_ROOM_TYPE: {
