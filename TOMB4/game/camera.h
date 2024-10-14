@@ -33,3 +33,5 @@ extern long ExittingBinos;
 extern long LaserSight;
 
 extern SHATTER_ITEM ShatterItem;
+
+extern bool tr5_camera_behaviour;

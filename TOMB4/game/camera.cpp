@@ -15,8 +15,8 @@
 #include "../tomb4/tomb4.h"
 #include "../tomb4/tomb4plus/t4plus_environment.h"
 #include "../tomb4/mod_config.h"
-#include "../tomb4/mod_config.h"
 #include "gameflow.h"
+#include "sphere.h"
 
 // T4Plus
 bool freeze_camera_button_pressed = false;
@@ -44,10 +44,13 @@ SHATTER_ITEM ShatterItem;
 static OLD_CAMERA old_cam;
 static GAME_VECTOR last_target;
 static GAME_VECTOR last_ideal;
-static char camerasnaps = 0;
+static char TargetSnaps = 0;
+static char CameraSnaps = 0;
 
 static GAME_VECTOR static_lookcamp;
 static GAME_VECTOR static_lookcamt;
+
+bool tr5_camera_behaviour = true;
 
 void InitialiseCamera()
 {
@@ -69,7 +72,7 @@ void InitialiseCamera()
 	camera.pos.z = last_target.z - 100;
 	camera.pos.room_number = lara_item->room_number;
 	camera.target_distance = mod_camera_info->chase_cam_distance;
-	camera.item = 0;
+	camera.item = nullptr;
 	camera.number_frames = 1;
 	camera.type = CHASE_CAMERA;
 	camera.speed = 1;
@@ -97,7 +100,7 @@ void MoveCamera(GAME_VECTOR* ideal, long speed)
 	}
 
 	// T4Plus
-	bool force_camera_update = false;
+	bool force_camera_update = tr5_camera_behaviour;
 
 	if (!force_camera_update &&
 		old_cam.pos.x_rot == lara_item->pos.x_rot && old_cam.pos.y_rot == lara_item->pos.y_rot && old_cam.pos.z_rot == lara_item->pos.z_rot &&
@@ -197,15 +200,15 @@ void MoveCamera(GAME_VECTOR* ideal, long speed)
 
 			if (!(mgLOS(&temp2, &temp1, 0)))
 			{
-				camerasnaps++;
+				CameraSnaps++;
 
-				if (camerasnaps >= 8)
+				if (CameraSnaps >= 8)
 				{
 					camera.pos.x = ideal->x;
 					camera.pos.y = ideal->y;
 					camera.pos.z = ideal->z;
 					camera.pos.room_number = ideal->room_number;
-					camerasnaps = 0;
+					CameraSnaps = 0;
 				}
 			}
 		}
@@ -238,7 +241,11 @@ void MoveCamera(GAME_VECTOR* ideal, long speed)
 
 	if (camera.mike_at_lara)
 	{
-		camera.actual_elevation = lara.head_y_rot + lara.torso_y_rot + lara_item->pos.y_rot;
+		if (!tr5_camera_behaviour) {
+			if (camera.actual_elevation != lara.head_y_rot + lara.torso_y_rot + lara_item->pos.y_rot) {
+				camera.actual_elevation = lara.head_y_rot + lara.torso_y_rot + lara_item->pos.y_rot;
+			}
+		}
 		camera.mike_pos.x = lara_item->pos.x_pos;
 		camera.mike_pos.y = lara_item->pos.y_pos;
 		camera.mike_pos.z = lara_item->pos.z_pos;
@@ -248,7 +255,11 @@ void MoveCamera(GAME_VECTOR* ideal, long speed)
 		dx = camera.target.x - camera.pos.x;
 		dz = camera.target.z - camera.pos.z;
 		dx = phd_atan(dz, dx);
-		camera.actual_elevation = (short)dx;
+		if (!tr5_camera_behaviour) {
+			if (camera.actual_elevation != (short)dx) {
+				camera.actual_elevation = (short)dx;
+			}
+		}
 		camera.mike_pos.x = camera.pos.x + (phd_sin(dx) * phd_persp >> W2V_SHIFT);
 		camera.mike_pos.y = camera.pos.y;
 		camera.mike_pos.z = camera.pos.z + (phd_cos(dx) * phd_persp >> W2V_SHIFT);
@@ -530,6 +541,36 @@ void LaraTorch(PHD_VECTOR* Soffset, PHD_VECTOR* Eoffset, short yrot, long bright
 	}
 }
 
+void UpdateCameraElevation() {
+	PHD_VECTOR pos;
+	PHD_VECTOR pos1;
+	if (camera.lara_node != -1) {
+		pos.x = 0;
+		pos.y = 0;
+		pos.z = 0;
+		if (camera.item != NULL) {
+			GetJointAbsPosition(camera.item, &pos, camera.lara_node);
+		} else {
+			GetLaraJointPos(&pos, camera.lara_node);
+		}
+		pos1.x = 0;
+		pos1.y = -256;
+		pos1.z = 2048;
+		if (camera.item != NULL) {
+			GetJointAbsPosition(camera.item, &pos1, camera.lara_node);
+		} else {
+			GetLaraJointPos(&pos1, camera.lara_node);
+		}
+		pos.z = pos1.z - pos.z;
+		pos.x = pos1.x - pos.x;
+		camera.actual_angle = (short)(camera.target_angle + phd_atan(pos.z, pos.x));
+	} else {
+		camera.actual_angle = lara_item->pos.y_rot + camera.target_angle;
+	}
+	camera.actual_elevation += (camera.target_elevation - camera.actual_elevation) >> 3;
+}
+
+
 void ChaseCamera(ITEM_INFO* item)
 {
 	FLOOR_INFO* floor;
@@ -544,12 +585,25 @@ void ChaseCamera(ITEM_INFO* item)
 
 	camera.target_elevation += item->pos.x_rot;
 
-	if (camera.target_elevation > 15470)
-		camera.target_elevation = 15470;
-	else if (camera.target_elevation < -15470)
-		camera.target_elevation = -15470;
+	if (tr5_camera_behaviour) {
+		UpdateCameraElevation();
+	}
 
-	distance = camera.target_distance * phd_cos(camera.target_elevation) >> W2V_SHIFT;
+	if (tr5_camera_behaviour) {
+		if (camera.actual_elevation > 15470)
+			camera.actual_elevation = 15470;
+		else if (camera.actual_elevation < -15470)
+			camera.actual_elevation = -15470;
+
+		distance = camera.target_distance * phd_cos(camera.actual_elevation) >> W2V_SHIFT;
+	} else {
+		if (camera.target_elevation > 15470)
+			camera.target_elevation = 15470;
+		else if (camera.target_elevation < -15470)
+			camera.target_elevation = -15470;
+
+		distance = camera.target_distance * phd_cos(camera.target_elevation) >> W2V_SHIFT;
+	}
 
 	room_number = camera.target.room_number;
 	floor = GetFloor(camera.target.x, camera.target.y + 256, camera.target.z, &room_number);
@@ -566,25 +620,28 @@ void ChaseCamera(ITEM_INFO* item)
 	h = GetHeight(floor, wx, wy, wz);
 	c = GetCeiling(floor, wx, wy, wz);
 
-	if (c + 16 > h - 16 && h != NO_HEIGHT && c != NO_HEIGHT)
-	{
-		camera.target.y = (h + c) >> 1;
-		camera.target_elevation = 0;
-	}
-	else if (wy > h - 16 && h != NO_HEIGHT)
-	{
-		camera.target.y = h - 16;
-		camera.target_elevation = 0;
-	}
-	else if (wy < c + 16 && c != NO_HEIGHT)
-	{
-		camera.target.y = c + 16;
-		camera.target_elevation = 0;
+	if (!tr5_camera_behaviour) {
+		if (c + 16 > h - 16 && h != NO_HEIGHT && c != NO_HEIGHT)
+		{
+			camera.target.y = (h + c) >> 1;
+			camera.target_elevation = 0;
+		}
+		else if (wy > h - 16 && h != NO_HEIGHT)
+		{
+			camera.target.y = h - 16;
+			camera.target_elevation = 0;
+		}
+		else if (wy < c + 16 && c != NO_HEIGHT)
+		{
+			camera.target.y = c + 16;
+			camera.target_elevation = 0;
+		}
+
+		wx = camera.target.x;
+		wy = camera.target.y;
+		wz = camera.target.z;
 	}
 
-	wx = camera.target.x;
-	wy = camera.target.y;
-	wz = camera.target.z;
 	GetFloor(wx, wy, wz, &camera.target.room_number);
 	room_number = camera.target.room_number;
 	floor = GetFloor(wx, wy, wz, &room_number);
@@ -593,24 +650,39 @@ void ChaseCamera(ITEM_INFO* item)
 
 	if (wy < c || wy > h || c >= h || h == NO_HEIGHT || c == NO_HEIGHT)
 	{
+		if (tr5_camera_behaviour) {
+			TargetSnaps++;
+		}
 		camera.target.x = last_target.x;
 		camera.target.y = last_target.y;
 		camera.target.z = last_target.z;
 		camera.target.room_number = last_target.room_number;
+	} else {
+		TargetSnaps = 0;
 	}
 
-	for (int i = 0; i < 5; i++)
-		ideals[i].y = (camera.target_distance * phd_sin(camera.target_elevation) >> W2V_SHIFT) + camera.target.y;
+	if (tr5_camera_behaviour) {
+		for (int i = 0; i < 5; i++)
+			ideals[i].y = camera.target.y + (camera.target_distance * phd_sin(camera.actual_elevation) >> W2V_SHIFT);
+	} else {
+		for (int i = 0; i < 5; i++)
+			ideals[i].y = (camera.target_distance * phd_sin(camera.target_elevation) >> W2V_SHIFT) + camera.target.y;
+	}
 
 	farthest = 0x7FFFFFFF;
 	farthestnum = 0;
 
 	for (int i = 0; i < 5; i++)
 	{
-		if (i)
+		if (i) {
 			angle = (i - 1) << 14;
-		else
-			angle = camera.target_angle + item->pos.y_rot;
+		} else {
+			if (tr5_camera_behaviour) {
+				angle = camera.actual_angle;
+			} else {
+				angle = camera.target_angle + item->pos.y_rot;
+			}
+		}
 
 		ideals[i].x = camera.target.x - ((distance * phd_sin(angle)) >> W2V_SHIFT);
 		ideals[i].z = camera.target.z - ((distance * phd_cos(angle)) >> W2V_SHIFT);
@@ -627,14 +699,24 @@ void ChaseCamera(ITEM_INFO* item)
 			temp[1].z = camera.pos.z;
 			temp[1].room_number = camera.pos.room_number;
 
-			if (!i)
-			{
-				farthestnum = 0;
-				break;
+			if (!tr5_camera_behaviour) {
+				if (!i)
+				{
+					farthestnum = 0;
+					break;
+				}
 			}
 
 			if (mgLOS(&temp[0], &temp[1], 0))
 			{
+				if (tr5_camera_behaviour) {
+					if (!i)
+					{
+						farthestnum = 0;
+						break;
+					}
+				}
+
 				dx = SQUARE(camera.pos.x - ideals[i].x);
 				dz = SQUARE(camera.pos.z - ideals[i].z);
 				dz += dx;
@@ -656,14 +738,17 @@ void ChaseCamera(ITEM_INFO* item)
 			temp[1].y = camera.pos.y;
 			temp[1].z = camera.pos.z;
 			temp[1].room_number = camera.pos.room_number;
-			dx = SQUARE(camera.target.x - ideals[i].x);		//no mgLOS check here?
-			dz = SQUARE(camera.target.z - ideals[i].z);
-			dz += dx;
 
-			if (dz > 0x90000)
-			{
-				farthestnum = 0;
-				break;
+			if (!tr5_camera_behaviour || mgLOS(&temp[0], &temp[1], 0)) {
+				dx = SQUARE(camera.target.x - ideals[i].x);
+				dz = SQUARE(camera.target.z - ideals[i].z);
+				dz += dx;
+
+				if (dz > 0x90000)
+				{
+					farthestnum = 0;
+					break;
+				}
 			}
 		}
 	}
@@ -696,17 +781,32 @@ void CombatCamera(ITEM_INFO* item)
 
 	if (lara.target)
 	{
-		camera.target_angle = lara.target_angles[0] + item->pos.y_rot;
+		if (tr5_camera_behaviour) {
+			camera.target_angle = lara.target_angles[0];
+		} else {
+			camera.target_angle = lara.target_angles[0] + item->pos.y_rot;
+		}
 		camera.target_elevation = lara.target_angles[1] + item->pos.x_rot;
 	}
 	else
 	{
-		camera.target_angle = lara.head_y_rot + lara.torso_y_rot + item->pos.y_rot;
-
-		if (!tomb4.combat_cam_tilt)
-			camera.target_elevation = lara.torso_x_rot + item->pos.x_rot + lara.head_x_rot + mod_camera_info->chase_camera_vertical_orientation;
-		else
-			camera.target_elevation = lara.torso_x_rot + item->pos.x_rot + lara.head_x_rot + mod_camera_info->combat_cam_vertical_orientation;
+		if (tr5_camera_behaviour) {
+			camera.target_angle = lara.head_y_rot + lara.torso_y_rot;
+			if (!tomb4.combat_cam_tilt) {
+				camera.target_elevation = lara.head_x_rot + lara.torso_x_rot + item->pos.x_rot + mod_camera_info->chase_camera_vertical_orientation;
+			} else {
+				camera.target_elevation = lara.head_x_rot + lara.torso_x_rot + item->pos.x_rot + mod_camera_info->combat_cam_vertical_orientation;
+			}
+			camera.target_elevation = lara.head_x_rot + lara.torso_x_rot + item->pos.x_rot - 2730;
+		}
+		else {
+			camera.target_angle = lara.head_y_rot + lara.torso_y_rot + item->pos.y_rot;
+			if (!tomb4.combat_cam_tilt) {
+				camera.target_elevation = lara.torso_x_rot + item->pos.x_rot + lara.head_x_rot + mod_camera_info->chase_camera_vertical_orientation;
+			} else {
+				camera.target_elevation = lara.torso_x_rot + item->pos.x_rot + lara.head_x_rot + mod_camera_info->combat_cam_vertical_orientation;
+			}
+		}
 	}
 
 
@@ -751,27 +851,49 @@ void CombatCamera(ITEM_INFO* item)
 
 	if (wy < c || wy > h || c >= h || h == NO_HEIGHT || c == NO_HEIGHT)
 	{
+		if (tr5_camera_behaviour) {
+			TargetSnaps++;
+		}
 		camera.target.x = last_target.x;
 		camera.target.y = last_target.y;
 		camera.target.z = last_target.z;
 		camera.target.room_number = last_target.room_number;
+	} else {
+		TargetSnaps = 0;
 	}
 
+	if (tr5_camera_behaviour) {
+		UpdateCameraElevation();
+	}
 	camera.target_distance = mod_camera_info->combat_cam_distance;
-	distance = camera.target_distance * phd_cos(camera.target_elevation) >> W2V_SHIFT;
+	if (tr5_camera_behaviour) {\
+		distance = camera.target_distance * phd_cos(camera.actual_elevation) >> W2V_SHIFT;
+	} else {
+		distance = camera.target_distance * phd_cos(camera.target_elevation) >> W2V_SHIFT;
+	}
 
-	for (int i = 0; i < 5; i++)
-		ideals[i].y = (camera.target_distance * phd_sin(camera.target_elevation) >> W2V_SHIFT) + camera.target.y;
+	if (tr5_camera_behaviour) {
+		for (int i = 0; i < 5; i++)
+			ideals[i].y = camera.target.y + (camera.target_distance * phd_sin(camera.actual_elevation) >> W2V_SHIFT);
+	} else {
+		for (int i = 0; i < 5; i++)
+			ideals[i].y = (camera.target_distance * phd_sin(camera.target_elevation) >> W2V_SHIFT) + camera.target.y;
+	}
 
 	farthest = 0x7FFFFFFF;
 	farthestnum = 0;
 
 	for (int i = 0; i < 5; i++)
 	{
-		if (i)
+		if (i) {
 			angle = (i - 1) << 14;
-		else
-			angle = camera.target_angle;
+		} else {
+			if (tr5_camera_behaviour) {
+				angle = camera.actual_angle;
+			} else {
+				angle = camera.target_angle;
+			}
+		}
 
 		ideals[i].x = camera.target.x - ((distance * phd_sin(angle)) >> W2V_SHIFT);
 		ideals[i].z = camera.target.z - ((distance * phd_cos(angle)) >> W2V_SHIFT);
@@ -788,18 +910,22 @@ void CombatCamera(ITEM_INFO* item)
 			temp[1].z = camera.pos.z;
 			temp[1].room_number = camera.pos.room_number;
 
-			if (!i)
-			{
-				farthestnum = 0;
-				break;
-			}
-
-			if (mgLOS(&temp[0], &temp[1], 0) || !i)
-			{
+			if (!tr5_camera_behaviour) {
 				if (!i)
 				{
 					farthestnum = 0;
 					break;
+				}
+			}
+
+			if (mgLOS(&temp[0], &temp[1], 0) || !i)
+			{
+				if (tr5_camera_behaviour) {
+					if (!i)
+					{
+						farthestnum = 0;
+						break;
+					}
 				}
 
 				dx = SQUARE(camera.pos.x - ideals[i].x);
@@ -823,14 +949,17 @@ void CombatCamera(ITEM_INFO* item)
 			temp[1].y = camera.pos.y;
 			temp[1].z = camera.pos.z;
 			temp[1].room_number = camera.pos.room_number;
-			dx = SQUARE(camera.target.x - ideals[i].x);		//no mgLOS check here?
-			dz = SQUARE(camera.target.z - ideals[i].z);
-			dz += dx;
 
-			if (dz > 0x90000)
-			{
-				farthestnum = 0;
-				break;
+			if (!tr5_camera_behaviour || mgLOS(&temp[0], &temp[1], 0)) {
+				dx = SQUARE(camera.target.x - ideals[i].x);
+				dz = SQUARE(camera.target.z - ideals[i].z);
+				dz += dx;
+
+				if (dz > 0x90000)
+				{
+					farthestnum = 0;
+					break;
+				}
 			}
 		}
 	}
@@ -1109,17 +1238,23 @@ void LookCamera(ITEM_INFO* item)
 
 	if (camera.mike_at_lara)
 	{
-		camera.actual_elevation = lara.head_y_rot + lara.torso_y_rot + lara_item->pos.y_rot;
+		if (!tr5_camera_behaviour) {
+			if (camera.actual_elevation != lara.head_y_rot + lara.torso_y_rot + lara_item->pos.y_rot) {
+				camera.actual_elevation = lara.head_y_rot + lara.torso_y_rot + lara_item->pos.y_rot;
+			}
+		}
 		camera.mike_pos.x = lara_item->pos.x_pos;
 		camera.mike_pos.y = lara_item->pos.y_pos;
 		camera.mike_pos.z = lara_item->pos.z_pos;
-	}
-	else
-	{
+	}else {
 		dx = camera.target.x - camera.pos.x;
 		dz = camera.target.z - camera.pos.z;
 		dx = phd_atan(dz, dx);
-		camera.actual_elevation = (short)dx;
+		if (!tr5_camera_behaviour) {
+			if (camera.actual_elevation != (short)dx) {
+				camera.actual_elevation = (short)dx;
+			}
+		}
 		camera.mike_pos.x = camera.pos.x + (phd_sin(dx) * phd_persp >> W2V_SHIFT);
 		camera.mike_pos.y = camera.pos.y;
 		camera.mike_pos.z = camera.pos.z + (phd_cos(dx) * phd_persp >> W2V_SHIFT);
@@ -1273,17 +1408,23 @@ void BinocularCamera(ITEM_INFO* item)
 
 	if (camera.mike_at_lara)
 	{
-		camera.actual_elevation = lara.head_y_rot + lara.torso_y_rot + lara_item->pos.y_rot;
+		if (!tr5_camera_behaviour) {
+			if (camera.actual_elevation != lara.head_y_rot + lara.torso_y_rot + lara_item->pos.y_rot) {
+				camera.actual_elevation = lara.head_y_rot + lara.torso_y_rot + lara_item->pos.y_rot;
+			}
+		}
 		camera.mike_pos.x = lara_item->pos.x_pos;
 		camera.mike_pos.y = lara_item->pos.y_pos;
 		camera.mike_pos.z = lara_item->pos.z_pos;
-	}
-	else
-	{
+	} else {
 		dx = camera.target.x - camera.pos.x;
 		dz = camera.target.z - camera.pos.z;
 		dx = phd_atan(dz, dx);
-		camera.actual_elevation = (short)dx;
+		if (!tr5_camera_behaviour) {
+			if (camera.actual_elevation != (short)dx) {
+				camera.actual_elevation = (short)dx;
+			}
+		}
 		camera.mike_pos.x = camera.pos.x + (phd_sin(dx) * phd_persp >> W2V_SHIFT);
 		camera.mike_pos.y = camera.pos.y;
 		camera.mike_pos.z = camera.pos.z + (phd_cos(dx) * phd_persp >> W2V_SHIFT);
@@ -1343,9 +1484,47 @@ void BinocularCamera(ITEM_INFO* item)
 	}
 }
 
+void ConfirmCameraTargetPos() {
+	FLOOR_INFO* floor;
+	PHD_VECTOR pos;
+	long wx, wy, wz, c, h;
+	short room_number;
+
+	pos.z = 0;
+	pos.y = 0;
+	pos.x = 0;
+	GetJointAbsPosition(lara_item, &pos, LM_HEAD);
+
+	if (camera.lara_node != -1) {
+		camera.target.x = pos.x;
+		camera.target.y = pos.y;
+		camera.target.z = pos.z;
+	} else {
+		camera.target.x = lara_item->pos.x_pos;
+		camera.target.y = (camera.target.y + pos.y) >> 1;
+		camera.target.z = lara_item->pos.z_pos;
+	}
+
+	wx = camera.target.x;
+	wy = camera.target.y;
+	wz = camera.target.z;
+	room_number = camera.target.room_number;
+	floor = GetFloor(wx, wy, wz, &room_number);
+	h = GetHeight(floor, wx, wy, wz);
+	c = GetCeiling(floor, wx, wy, wz);
+
+	if (wy < c || h < wy || h <= c || h == NO_HEIGHT || c == NO_HEIGHT) {
+		camera.target.x = pos.x;
+		camera.target.y = pos.y;
+		camera.target.z = pos.z;
+	}
+}
+
 void CalculateCamera()
 {
 	ITEM_INFO* item;
+	OBJECT_VECTOR* fixed;
+	PHD_VECTOR v;
 	short* bounds;
 	long shift, fixed_camera, y, dx, dz;
 	short gotit, change, tilt;
@@ -1457,18 +1636,47 @@ void CalculateCamera()
 		last_target.y = camera.target.y;
 		last_target.z = camera.target.z;
 		last_target.room_number = camera.target.room_number;
-		camera.target.x = item->pos.x_pos;
-		camera.target.z = item->pos.z_pos;
 
-		if (camera.flags == 1 || UseForcedFixedCamera)
-		{
-			shift = (bounds[4] + bounds[5]) / 2;
-			camera.target.x += (phd_sin(item->pos.y_rot) * shift >> W2V_SHIFT);
-			camera.target.z += (phd_cos(item->pos.y_rot) * shift >> W2V_SHIFT);
+		if (!tr5_camera_behaviour) {
+			camera.target.x = item->pos.x_pos;
+			camera.target.z = item->pos.z_pos;
+
+			if (camera.flags == 1 || UseForcedFixedCamera)
+			{
+				shift = (bounds[4] + bounds[5]) / 2;
+				camera.target.x += (phd_sin(item->pos.y_rot) * shift >> W2V_SHIFT);
+				camera.target.z += (phd_cos(item->pos.y_rot) * shift >> W2V_SHIFT);
+			}
 		}
 
 		camera.target.room_number = item->room_number;
 		camera.target.y = y;
+
+		if (tr5_camera_behaviour) {
+			gotit = 0;
+			if (camera.type != CHASE_CAMERA && camera.flags != 3) {
+				fixed = &camera.fixed[camera.number];
+				if (fixed->flags & 2) {
+					v.x = 0;
+					v.y = 0;
+					v.z = 0;
+					GetLaraJointPos(&v, LM_TORSO);
+					camera.target.x = v.x;
+					camera.target.y = v.y;
+					camera.target.z = v.z;
+					gotit = 1;
+				}
+			}
+			if (!gotit) {
+				shift = (bounds[0] + bounds[1] + bounds[4] + bounds[5]) >> 2;
+				camera.target.x = item->pos.x_pos + (shift * phd_sin(item->pos.y_rot) >> W2V_SHIFT);
+				camera.target.z = item->pos.z_pos + (shift * phd_cos(item->pos.y_rot) >> W2V_SHIFT);
+				
+				if (item->object_number == LARA) {
+					ConfirmCameraTargetPos();
+				}
+			}
+		}
 
 		if (fixed_camera != camera.fixed_camera)
 		{
@@ -1481,13 +1689,26 @@ void CalculateCamera()
 
 			if (camera.speed != 1 && camera.old_type != LOOK_CAMERA && BinocularOn >= 0)
 			{
-				camera.target.x = old_cam.t.x + ((camera.target.x - old_cam.t.x) >> 2);
-				camera.target.y = old_cam.t.y + ((camera.target.y - old_cam.t.y) >> 2);
-				camera.target.z = old_cam.t.z + ((camera.target.z - old_cam.t.z) >> 2);
+				if (TargetSnaps <= 8) {
+					camera.target.x = old_cam.t.x + ((camera.target.x - old_cam.t.x) >> 2);
+					camera.target.y = old_cam.t.y + ((camera.target.y - old_cam.t.y) >> 2);
+					camera.target.z = old_cam.t.z + ((camera.target.z - old_cam.t.z) >> 2);
+				} else {
+					TargetSnaps = 0;
+				}
 			}
 		}
 
 		GetFloor(camera.target.x, camera.target.y, camera.target.z, &camera.target.room_number);
+
+		if (tr5_camera_behaviour) {
+			if (abs(last_target.x - camera.target.x) < 4 && abs(last_target.y - camera.target.y) < 4 && abs(last_target.z - camera.target.z) < 4)
+			{
+				camera.target.x = last_target.x;
+				camera.target.y = last_target.y;
+				camera.target.z = last_target.z;
+			}
+		}
 
 		if (camera.type == CHASE_CAMERA || camera.flags == 3)
 			ChaseCamera(item);
@@ -1496,8 +1717,10 @@ void CalculateCamera()
 	}
 	else
 	{
-		if (camera.type != COMBAT_CAMERA || tomb4.combat_cam_tilt)
-			y -= mod_camera_info->add_on_battle_camera_top;
+		if (!tr5_camera_behaviour) {
+			if (camera.type != COMBAT_CAMERA || tomb4.combat_cam_tilt)
+				y -= mod_camera_info->add_on_battle_camera_top;
+		}
 
 		if (camera.type == COMBAT_CAMERA)
 		{
@@ -1542,5 +1765,6 @@ void CalculateCamera()
 		camera.target_angle = 0;
 		camera.target_distance = mod_camera_info->chase_cam_distance;
 		camera.flags = 0;
+		camera.lara_node = -1;
 	}
 }

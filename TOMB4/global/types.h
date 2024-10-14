@@ -869,6 +869,7 @@ struct CAMERA_INFO
 	short target_elevation;
 	short actual_elevation;
 	short actual_angle;
+	short lara_node; // T4Plus
 	short number;
 	short last;
 	short timer;

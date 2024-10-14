@@ -2043,30 +2043,64 @@ void lara_as_extcornerl(ITEM_INFO* item, COLL_INFO* coll)
 {
 	short flip;
 
-	camera.target_angle = 0x4000;
+	if (tr5_camera_behaviour) {
+		camera.target_angle = 0;
+	} else {
+		camera.target_angle = 0x4000;
+	}
+
 	camera.target_elevation = -6144;
 	flip = item->anim_number == ANIM_EXTCORNERL_END || item->anim_number == ANIM_EXTCLIMBL_END;
 	SetCornerAnim(item, coll, 0x4000, flip);
+	
+	if (tr5_camera_behaviour) {
+		camera.lara_node = LM_TORSO;
+	} else {
+		camera.lara_node = -1;
+	}
 }
 
 void lara_as_extcornerr(ITEM_INFO* item, COLL_INFO* coll)
 {
 	short flip;
 
-	camera.target_angle = -0x4000;
+	if (tr5_camera_behaviour) {
+		camera.target_angle = 0;
+	}
+	else {
+		camera.target_angle = -0x4000;
+	}
+
 	camera.target_elevation = -6144;
 	flip = item->anim_number == ANIM_EXTCORNERR_END || item->anim_number == ANIM_EXTCLIMBR_END;
 	SetCornerAnim(item, coll, -0x4000, flip);
+
+	if (tr5_camera_behaviour) {
+		camera.lara_node = LM_TORSO;
+	} else {
+		camera.lara_node = -1;
+	}
 }
 
 void lara_as_intcornerl(ITEM_INFO* item, COLL_INFO* coll)
 {
 	short flip;
 
-	camera.target_angle = -0x4000;
+	if (tr5_camera_behaviour) {
+		camera.target_angle = 0;
+	} else {
+		camera.target_angle = -0x4000;
+	}
+
 	camera.target_elevation = -6144;
 	flip = item->anim_number == ANIM_INTCORNERL_END || item->anim_number == ANIM_INTCLIMBL_END;
 	SetCornerAnim(item, coll, -0x4000, flip);
+
+	if (tr5_camera_behaviour) {
+		camera.lara_node = LM_TORSO;
+	} else {
+		camera.lara_node = -1;
+	}
 }
 
 void lara_as_intcornerr(ITEM_INFO* item, COLL_INFO* coll)
@@ -2077,6 +2111,12 @@ void lara_as_intcornerr(ITEM_INFO* item, COLL_INFO* coll)
 	camera.target_elevation = -6144;
 	flip = item->anim_number == ANIM_INTCORNERR_END || item->anim_number == ANIM_INTCLIMBR_END;
 	SetCornerAnim(item, coll, 0x4000, flip);
+
+	if (tr5_camera_behaviour) {
+		camera.lara_node = LM_TORSO;
+	} else {
+		camera.lara_node = -1;
+	}
 }
 
 void lara_as_splat(ITEM_INFO* item, COLL_INFO* coll)
@@ -2214,7 +2254,12 @@ void lara_col_back(ITEM_INFO* item, COLL_INFO* coll)
 
 	if (coll->mid_floor > 128 && coll->mid_floor < 384)
 	{
+		// T4Plus: fixed right step-down
+#if 0
 		if (item->frame_number >= 964 && item->frame_number <= 993)
+#else
+		if (item->frame_number >= (539 + 26) && item->frame_number <= (539 + 55))
+#endif
 		{
 			item->anim_number = ANIM_BACKSTEPD_RIGHT;
 			item->frame_number = anims[ANIM_BACKSTEPD_RIGHT].frame_base;
@@ -2488,8 +2533,7 @@ void lara_col_slideback(ITEM_INFO* item, COLL_INFO* coll)
 	lara_slide_slope(item, coll);
 }
 
-void lara_col_roll(ITEM_INFO* item, COLL_INFO* coll)
-{
+void lara_col_roll(ITEM_INFO* item, COLL_INFO* coll) {
 	lara.move_angle = item->pos.y_rot;
 	coll->bad_pos = -NO_HEIGHT;
 	coll->bad_neg = -384;
@@ -2517,6 +2561,13 @@ void lara_col_roll(ITEM_INFO* item, COLL_INFO* coll)
 
 void lara_col_roll2(ITEM_INFO* item, COLL_INFO* coll)
 {
+	if (tr5_camera_behaviour) {
+		camera.lara_node = LM_HIPS;
+	}
+	else {
+		camera.lara_node = -1;
+	}
+
 	item->gravity_status = 0;
 	item->fallspeed = 0;
 	lara.move_angle = item->pos.y_rot + 32768;
@@ -2558,6 +2609,11 @@ void lara_as_pushblock(ITEM_INFO* item, COLL_INFO* coll)
 	camera.flags = 1;
 	camera.target_angle = 16380;
 	camera.target_elevation = -4550;
+	if (tr5_camera_behaviour) {
+		camera.lara_node = LM_TORSO;
+	} else {
+		camera.lara_node = -1;
+	}
 }
 
 void lara_as_pullblock(ITEM_INFO* item, COLL_INFO* coll)
@@ -2568,6 +2624,11 @@ void lara_as_pullblock(ITEM_INFO* item, COLL_INFO* coll)
 	camera.flags = 1;
 	camera.target_angle = 6370;
 	camera.target_elevation = -4550;
+	if (tr5_camera_behaviour) {
+		camera.lara_node = LM_TORSO;
+	} else {
+		camera.lara_node = -1;
+	}
 }
 
 void lara_as_ppready(ITEM_INFO* item, COLL_INFO* coll)
@@ -2725,6 +2786,11 @@ void lara_as_waterout(ITEM_INFO* item, COLL_INFO* coll)
 	coll->enable_baddie_push = 0;
 	coll->enable_spaz = 0;
 	camera.flags = 1;
+	if (tr5_camera_behaviour) {
+		camera.lara_node = LM_HIPS;
+	} else {
+		camera.lara_node = -1;
+	}
 }
 
 void lara_as_wade(ITEM_INFO* item, COLL_INFO* coll)
