@@ -74,24 +74,24 @@ long GetSpheres(ITEM_INFO* item, SPHERE* ptr, long WorldSpace)
 	{
 		poppush = *bone++;
 
-		if (poppush & 1)
+		if (poppush & POP_BONE_FLAG)
 			phd_PopMatrix();
 
-		if (poppush & 2)
+		if (poppush & PUSH_BONE_FLAG)
 			phd_PushMatrix();
 
 		phd_TranslateRel(bone[0], bone[1], bone[2]);
 		gar_RotYXZsuperpack(&rot, 0);
 
-		if (poppush & 0x1C && extra_rot)
+		if (poppush & (X_ROTATION_FLAG | Y_ROTATION_FLAG | Z_ROTATION_FLAG) && extra_rot)
 		{
-			if (poppush & 8)
+			if (poppush & Y_ROTATION_FLAG)
 				phd_RotY(*extra_rot++);
 
-			if (poppush & 4)
+			if (poppush & X_ROTATION_FLAG)
 				phd_RotX(*extra_rot++);
 
-			if (poppush & 0x10)
+			if (poppush & Z_ROTATION_FLAG)
 				phd_RotZ(*extra_rot++);
 		}
 
@@ -235,24 +235,24 @@ void GetJointAbsPosition(ITEM_INFO* item, PHD_VECTOR* pos, long joint)
 		{
 			poppush = *bone;
 
-			if (poppush & 1)
+			if (poppush & POP_BONE_FLAG)
 				phd_PopMatrix_I();
 
-			if (poppush & 2)
+			if (poppush & PUSH_BONE_FLAG)
 				phd_PushMatrix_I();
 
 			phd_TranslateRel_I(bone[1], bone[2], bone[3]);
 			gar_RotYXZsuperpack_I(&rot, &rot2, 0);
 
-			if (poppush & 0x1C)
+			if (poppush & (X_ROTATION_FLAG | Y_ROTATION_FLAG | Z_ROTATION_FLAG))
 			{
-				if (poppush & 8)
+				if (poppush & Y_ROTATION_FLAG)
 					phd_RotY_I(*extra_rotation++);
 
-				if (poppush & 4)
+				if (poppush & X_ROTATION_FLAG)
 					phd_RotX_I(*extra_rotation++);
 
-				if (poppush & 0x10)
+				if (poppush & Z_ROTATION_FLAG)
 					phd_RotZ_I(*extra_rotation++);
 			}
 
@@ -272,24 +272,24 @@ void GetJointAbsPosition(ITEM_INFO* item, PHD_VECTOR* pos, long joint)
 		{
 			poppush = *bone;
 
-			if (poppush & 1)
+			if (poppush & POP_BONE_FLAG)
 				phd_PopMatrix();
 
-			if (poppush & 2)
+			if (poppush & PUSH_BONE_FLAG)
 				phd_PushMatrix();
 
 			phd_TranslateRel(bone[1], bone[2], bone[3]);
 			gar_RotYXZsuperpack(&rot, 0);
 
-			if (poppush & 0x1C)
+			if (poppush & (X_ROTATION_FLAG | Y_ROTATION_FLAG | Z_ROTATION_FLAG))
 			{
-				if (poppush & 8)
+				if (poppush & Y_ROTATION_FLAG)
 					phd_RotY(*extra_rotation++);
 
-				if (poppush & 4)
+				if (poppush & X_ROTATION_FLAG)
 					phd_RotX(*extra_rotation++);
 
-				if (poppush & 0x10)
+				if (poppush & Z_ROTATION_FLAG)
 					phd_RotZ(*extra_rotation++);
 			}
 

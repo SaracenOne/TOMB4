@@ -14,7 +14,7 @@ int32_t NGAbsDiffO(int16_t first, int16_t second) {
 		second = swap_value;
 	}
 
-	if (first < -16384 && second > 16384) {
+	if (first < -0x4000 && second > 0x4000) {
 		uint16_t word_value = (uint16_t)first;
 		return abs(word_value - second);
 	}
@@ -84,7 +84,7 @@ uint16_t NGGetAlignedOrient(uint16_t orient, bool test_force_horthogonal, int *g
 }
 
 int NGProportionDistance(int increment, int distance) {
-	return (int)((float)increment * ((float)distance / 1024.0f));
+	return (int)((float)increment * ((float)distance / float(BLOCK_SIZE)));
 }
 
 void NGCalculateIncrement(short orientation, int* inc_x_out, int* inc_z_out, int distance) {
@@ -102,9 +102,9 @@ void NGCalculateIncrement(short orientation, int* inc_x_out, int* inc_z_out, int
 
 	inc_x = rcossin_tbl[Indice] << 12;
 	inc_z = rcossin_tbl[Indice + 1] << 12;
-	inc_x = inc_x >> 14;
-	inc_z = inc_z >> 14;
-	if (distance != 1024) {
+	inc_x = inc_x >> W2V_SHIFT;
+	inc_z = inc_z >> W2V_SHIFT;
+	if (distance != BLOCK_SIZE) {
 		inc_x = NGProportionDistance(inc_x, distance);
 		inc_z = NGProportionDistance(inc_z, distance);
 	}
@@ -211,7 +211,7 @@ TestEnvConditionTripletResult TestEnvConditionTriplet(NG_MULTI_ENV_TRIPLET* trip
 
 			int inc_x;
 			int inc_z;
-			NGCalculateIncrement(orientation, &inc_x, &inc_z, 1024);
+			NGCalculateIncrement(orientation, &inc_x, &inc_z, BLOCK_SIZE);
 
 			coord_x += inc_x;
 			coord_z += inc_z;
@@ -261,7 +261,7 @@ TestEnvConditionTripletResult TestEnvConditionTriplet(NG_MULTI_ENV_TRIPLET* trip
 
 			int inc_x;
 			int inc_z;
-			NGCalculateIncrement(orientation, &inc_x, &inc_z, 1024);
+			NGCalculateIncrement(orientation, &inc_x, &inc_z, BLOCK_SIZE);
 
 			coord_x += inc_x;
 			coord_z += inc_z;
@@ -319,9 +319,9 @@ TestEnvConditionTripletResult TestEnvConditionTriplet(NG_MULTI_ENV_TRIPLET* trip
 		}
 		case ENV_DISTANCE_CEILING: {
 			FLOOR_INFO *floor = GetFloor(lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos, &lara_item->room_number);
-			long ceiling = GetCeiling(floor, lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos);
+			int32_t ceiling = GetCeiling(floor, lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos);
 
-			long distance_to_ceiling = -(ceiling - lara_item->pos.y_pos);
+			int32_t distance_to_ceiling = -(ceiling - lara_item->pos.y_pos);
 
 			if (distance_to_ceiling >= triplet->distance_for_env) {
 				result.is_valid = true;
@@ -406,16 +406,16 @@ TestEnvConditionTripletResult TestEnvConditionTriplet(NG_MULTI_ENV_TRIPLET* trip
 
 			switch (orientation) {
 				case 0x8000:
-					coord_z -= 1024;
+					coord_z -= BLOCK_SIZE;
 					break;
 				case 0x0000:
-					coord_z += 1024;
+					coord_z += BLOCK_SIZE;
 					break;
 				case 0xC000:
-					coord_x -= 1024;
+					coord_x -= BLOCK_SIZE;
 					break;
 				case 0x4000:
-					coord_x += 1024;
+					coord_x += BLOCK_SIZE;
 					break;
 			}
 
@@ -535,13 +535,13 @@ TestEnvConditionTripletResult TestEnvConditionTriplet(NG_MULTI_ENV_TRIPLET* trip
 
 			switch (orientation) {
 				case 0x0000:
-					strip = 31 - GapZ;
+					strip = ((QUARTER_CLICK_SIZE / 2) - 1) - GapZ;
 					break;
 				case 0x8000:
 					strip = GapZ;
 					break;
 				case 0x4000:
-					strip = 31 - GapX;
+					strip = ((QUARTER_CLICK_SIZE / 2) - 1) - GapX;
 					break;
 				case 0xC000:
 					strip = GapX;

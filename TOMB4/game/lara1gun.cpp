@@ -106,7 +106,7 @@ void FireCrossbow(PHD_3DPOS* pos)
 			vec.x = 0;
 			vec.y = 228;
 			vec.z = 32;
-			GetLaraJointPos(&vec, 11);
+			GetLaraJointPos(&vec, LMX_HAND_R);
 			item->room_number = lara_item->room_number;
 			floor = GetFloor(vec.x, vec.y, vec.z, &item->room_number);
 			h = GetHeight(floor, vec.x, vec.y, vec.z);
@@ -137,7 +137,7 @@ void FireCrossbow(PHD_3DPOS* pos)
 			}
 		}
 
-		item->speed = 512;
+		item->speed = HALF_BLOCK_SIZE;
 		AddActiveItem(item_number);
 
 		if (lara.crossbow_type_carried & W_AMMO1)
@@ -222,12 +222,12 @@ void FireShotgun()
 		pos.x = 0;
 		pos.y = 228;
 		pos.z = 32;
-		GetLaraJointPos(&pos, 11);
+		GetLaraJointPos(&pos, LMX_HAND_R);
 
 		pos2.x = 0;
 		pos2.y = 1508;
 		pos2.z = 32;
-		GetLaraJointPos(&pos2, 11);
+		GetLaraJointPos(&pos2, LMX_HAND_R);
 
 		SmokeCountL = 32;
 		SmokeWeapon = WEAPON_SHOTGUN;
@@ -276,7 +276,7 @@ void FireGrenade()
 	pos.x = 0;
 	pos.y = 276;
 	pos.z = 80;
-	GetLaraJointPos(&pos, 11);
+	GetLaraJointPos(&pos, LMX_HAND_R);
 	item->pos.x_pos = pos.x;
 	item->pos.y_pos = pos.y;
 	item->pos.z_pos = pos.z;
@@ -293,7 +293,7 @@ void FireGrenade()
 	pos2.x = 0;
 	pos2.y = 1204;
 	pos2.z = 80;
-	GetLaraJointPos(&pos2, 11);
+	GetLaraJointPos(&pos2, LMX_HAND_R);
 
 	SmokeCountL = 32;
 	SmokeWeapon = 5;
@@ -357,7 +357,7 @@ void AnimateShotgun(long weapon_type)
 			pos.z = 32;
 		}
 
-		GetLaraJointPos(&pos, 11);
+		GetLaraJointPos(&pos, LMX_HAND_R);
 
 		if (lara_item->mesh_bits)
 			TriggerGunSmoke(pos.x, pos.y, pos.z, 0, 0, 0, 0, SmokeWeapon, SmokeCountL);
@@ -515,7 +515,7 @@ void RifleHandler(long weapon_type)
 			pos.x = (GetRandomControl() & 0xFF) - 128;
 			pos.y = (GetRandomControl() & 0x7F) - 63;
 			pos.z = (GetRandomControl() & 0xFF) - 128;
-			GetLaraJointPos(&pos, 11);
+			GetLaraJointPos(&pos, LMX_HAND_R);
 
 			TriggerDynamic(pos.x, pos.y, pos.z, 12, r, g, b);
 
@@ -607,7 +607,7 @@ void CrossbowHitSwitchType78(ITEM_INFO* item, ITEM_INFO* target, long MustHitLas
 	{
 		if (cs != -1 && objects[target->object_number].explodable_meshbits & 1 << cs)
 		{
-			ExplodeItemNode(target, cs, 0, 64);
+			ExplodeItemNode(target, cs, 0, 0x40);
 			target->mesh_bits &= ~(1 << cs);
 		}
 	}
@@ -618,8 +618,8 @@ void CrossbowHitSwitchType78(ITEM_INFO* item, ITEM_INFO* target, long MustHitLas
 			if (target->flags & IFL_CODEBITS && (target->flags & IFL_CODEBITS) != IFL_CODEBITS)
 			{
 				room_number = target->room_number;
-				GetHeight(GetFloor(target->pos.x_pos, target->pos.y_pos - 256, target->pos.z_pos, &room_number),
-					target->pos.x_pos, target->pos.y_pos - 256, target->pos.z_pos);
+				GetHeight(GetFloor(target->pos.x_pos, target->pos.y_pos - CLICK_SIZE, target->pos.z_pos, &room_number),
+					target->pos.x_pos, target->pos.y_pos - CLICK_SIZE, target->pos.z_pos);
 				TestTriggers(trigger_index, true, target->flags & IFL_CODEBITS);
 			}
 			else
@@ -635,7 +635,7 @@ void CrossbowHitSwitchType78(ITEM_INFO* item, ITEM_INFO* target, long MustHitLas
 			}
 
 			if (target->object_number == SWITCH_TYPE7)
-				ExplodeItemNode(target, objects[SWITCH_TYPE7].nmeshes - 1, 0, 64);
+				ExplodeItemNode(target, objects[SWITCH_TYPE7].nmeshes - 1, 0, 0x40);
 
 			AddActiveItem(short(target - items));
 			target->flags |= IFL_CODEBITS | IFL_SWITCH_ONESHOT;
@@ -650,8 +650,8 @@ void TriggerUnderwaterExplosion(ITEM_INFO* item, long vehicle)
 
 	if (vehicle)
 	{
-		x = (GetRandomControl() & 0x1FF) + item->pos.x_pos - 256;
-		z = (GetRandomControl() & 0x1FF) + item->pos.z_pos - 256;
+		x = (GetRandomControl() & 0x1FF) + item->pos.x_pos - CLICK_SIZE;
+		z = (GetRandomControl() & 0x1FF) + item->pos.z_pos - CLICK_SIZE;
 		TriggerExplosionBubble(x, item->pos.y_pos, z, item->room_number);
 		TriggerExplosionSparks(x, item->pos.y_pos, z, 2, -1, 1, item->room_number);
 		wh = GetWaterHeight(x, item->pos.y_pos, z, item->room_number);
@@ -673,18 +673,18 @@ void TriggerUnderwaterExplosion(ITEM_INFO* item, long vehicle)
 		{
 			y = item->pos.y_pos - wh;
 
-			if (y < 2048)
+			if (y < (BLOCK_SIZE * 2))
 			{
 				splash_setup.x = item->pos.x_pos;
 				splash_setup.y = wh;
 				splash_setup.z = item->pos.z_pos;
-				wh = 2048 - y;
+				wh = (BLOCK_SIZE * 2) - y;
 				splash_setup.InnerRadVel = 160;
 				splash_setup.MiddleSize = 224;
 				splash_setup.OuterRad = 272;
 				splash_setup.InnerRad = short((wh >> 6) + 16);
 				splash_setup.InnerSize = short((wh >> 6) + 12);
-				splash_setup.InnerYVel = short((-512 - wh) << 3);
+				splash_setup.InnerYVel = short((-HALF_BLOCK_SIZE - wh) << 3);
 				splash_setup.pad1 = short((wh >> 6) + 24);
 				splash_setup.MiddleRad = short((wh >> 6) + 24);
 				splash_setup.MiddleRadVel = short((-768 - wh) << 2);
@@ -799,7 +799,7 @@ void ControlCrossbow(short item_number)
 
 	if (room[item->room_number].flags & ROOM_UNDERWATER)
 	{
-		if (item->speed > 64)
+		if (item->speed > QUARTER_CLICK_SIZE)
 			item->speed -= item->speed >> 4;
 
 		if (GlobalCounter & 1)
@@ -826,7 +826,7 @@ void ControlCrossbow(short item_number)
 			exploded = 1;
 		else
 		{
-			ExplodeItemNode(item, 0, 0, 256);
+			ExplodeItemNode(item, 0, 0, 0x100);
 			KillItem(item_number);
 			return;
 		}
@@ -844,9 +844,9 @@ void ControlCrossbow(short item_number)
 	}
 
 	if (exploded)
-		rad = 2048;
+		rad = (BLOCK_SIZE * 2);
 	else
-		rad = 128;
+		rad = HALF_CLICK_SIZE;
 
 	for (int i = 0; i < 2; i++)
 	{
@@ -868,7 +868,8 @@ void ControlCrossbow(short item_number)
 			{
 				if (exploded)
 				{
-					if (target->object_number >= SMASH_OBJECT1 && target->object_number <= SMASH_OBJECT8)
+					MOD_LEVEL_STATIC_INFO *static_info = &get_game_mod_level_statics_info(gfCurrentLevel)->static_info[target->object_number];
+					if (static_info->explosion_can_shatter)
 					{
 						TriggerExplosionSparks(target->pos.x_pos, target->pos.y_pos, target->pos.z_pos, 3, -2, 0, target->room_number);
 						target->pos.y_pos -= 128;
@@ -909,7 +910,7 @@ void ControlCrossbow(short item_number)
 					{
 						TriggerExplosionSparks(mesh->x, mesh->y, mesh->z, 3, -2, 0, item->room_number);
 						mesh->y -= 128;
-						TriggerShockwave((PHD_VECTOR*)&mesh->x, 0xB00028, 64, 0x10806000, 0);
+						TriggerShockwave((PHD_VECTOR*)&mesh->x, 0xB00028, QUARTER_CLICK_SIZE, 0x10806000, 0);
 						mesh->y += 128;
 					}
 
@@ -928,7 +929,7 @@ void ControlCrossbow(short item_number)
 		}
 
 		exploded = 1;
-		rad = 2048;
+		rad = (BLOCK_SIZE * 2);
 	}
 
 	if (exploded)
@@ -953,7 +954,7 @@ void ControlCrossbow(short item_number)
 
 	if (collided || exploded)
 	{
-		ExplodeItemNode(item, 0, 0, 256);
+		ExplodeItemNode(item, 0, 0, 0x100);
 		KillItem(item_number);
 	}
 }
@@ -1024,15 +1025,15 @@ void ControlGrenade(short item_number)
 				item2->shade = -0x3DF0;
 				item2->object_number = GRENADE;
 				item2->room_number = item->room_number;
-				item2->pos.x_pos = (GetRandomControl() & 0x1FF) + item->pos.x_pos - 256;
-				item2->pos.y_pos = item->pos.y_pos - 256;
-				item2->pos.z_pos = (GetRandomControl() & 0x1FF) + item->pos.z_pos - 256;
+				item2->pos.x_pos = (GetRandomControl() & 0x1FF) + item->pos.x_pos - CLICK_SIZE;
+				item2->pos.y_pos = item->pos.y_pos - CLICK_SIZE;
+				item2->pos.z_pos = (GetRandomControl() & 0x1FF) + item->pos.z_pos - CLICK_SIZE;
 				InitialiseItem(new_num);
 				item2->pos.x_rot = (GetRandomControl() & 0x3FFF) + 0x2000;
 				item2->pos.y_rot = short(GetRandomControl() * 2);
 				item2->pos.z_rot = 0;
-				item2->speed = 64;
-				item2->fallspeed = (-64 * phd_sin(item2->pos.x_rot)) >> W2V_SHIFT;
+				item2->speed = QUARTER_CLICK_SIZE;
+				item2->fallspeed = (-QUARTER_CLICK_SIZE * phd_sin(item2->pos.x_rot)) >> W2V_SHIFT;
 				item2->current_anim_state = item2->pos.x_rot;
 				item2->goal_anim_state = item2->pos.y_rot;
 				item2->required_anim_state = 0;
@@ -1064,12 +1065,12 @@ void ControlGrenade(short item_number)
 
 		if (item->speed)
 		{
-			item->pos.z_rot += 182 * ((item->speed >> 4) + 3);
+			item->pos.z_rot += DEGREES_TO_ROTATION(1) * ((item->speed >> 4) + 3);
 
 			if (item->required_anim_state)
-				item->pos.y_rot += 182 * ((item->speed >> 2) + 3);
+				item->pos.y_rot += DEGREES_TO_ROTATION(1) * ((item->speed >> 2) + 3);
 			else
-				item->pos.x_rot += 182 * ((item->speed >> 2) + 3);
+				item->pos.x_rot += DEGREES_TO_ROTATION(1) * ((item->speed >> 2) + 3);
 		}
 	}
 	else
@@ -1079,12 +1080,12 @@ void ControlGrenade(short item_number)
 
 		if (item->speed)
 		{
-			item->pos.z_rot += 182 * ((item->speed >> 2) + 7);
+			item->pos.z_rot += DEGREES_TO_ROTATION(1) * ((item->speed >> 2) + 7);
 
 			if (item->required_anim_state)
-				item->pos.y_rot += 182 * ((item->speed >> 1) + 7);
+				item->pos.y_rot += DEGREES_TO_ROTATION(1) * ((item->speed >> 1) + 7);
 			else
-				item->pos.x_rot += 182 * ((item->speed >> 1) + 7);
+				item->pos.x_rot += DEGREES_TO_ROTATION(1) * ((item->speed >> 1) + 7);
 		}
 	}
 
@@ -1093,7 +1094,7 @@ void ControlGrenade(short item_number)
 		phd_PushUnitMatrix();
 		phd_SetTrans(0, 0, 0);
 		phd_RotYXZ(item->pos.y_rot + 0x8000, item->pos.x_rot, item->pos.z_rot);
-		phd_TranslateRel(0, 0, -64);
+		phd_TranslateRel(0, 0, -QUARTER_CLICK_SIZE);
 		pos.x = (long)mMXPtr[M03];
 		pos.y = (long)mMXPtr[M13];
 		pos.z = (long)mMXPtr[M23];
@@ -1164,7 +1165,7 @@ void ControlGrenade(short item_number)
 
 		if (!item->hit_points)
 		{
-			rad = 2048;
+			rad = (BLOCK_SIZE * 2);
 			exploded = 1;
 		}
 		else if (item->hit_points > 118)
@@ -1186,7 +1187,8 @@ void ControlGrenade(short item_number)
 
 				while (target)
 				{
-					if (target->object_number >= SMASH_OBJECT1 && target->object_number <= SMASH_OBJECT8)
+					MOD_LEVEL_STATIC_INFO* static_info = &get_game_mod_level_statics_info(gfCurrentLevel)->static_info[target->object_number];
+					if (static_info->explosion_can_shatter)
 					{
 						TriggerExplosionSparks(target->pos.x_pos, target->pos.y_pos, target->pos.z_pos, 3, -2, 0, target->room_number);
 						target->pos.y_pos -= 128;
@@ -1212,13 +1214,13 @@ void ControlGrenade(short item_number)
 						else
 						{
 							room_number = item->room_number;
-							GetHeight(GetFloor(target->pos.x_pos, target->pos.y_pos - 256, target->pos.z_pos, &room_number),
-								target->pos.x_pos, target->pos.y_pos - 256, target->pos.z_pos);
+							GetHeight(GetFloor(target->pos.x_pos, target->pos.y_pos - CLICK_SIZE, target->pos.z_pos, &room_number),
+								target->pos.x_pos, target->pos.y_pos - CLICK_SIZE, target->pos.z_pos);
 							TestTriggers(trigger_index, true, target->flags & IFL_CODEBITS);
 						}
 
 						if (target->object_number == SWITCH_TYPE7)
-							ExplodeItemNode(target, objects[SWITCH_TYPE7].nmeshes - 1, 0, 64);
+							ExplodeItemNode(target, objects[SWITCH_TYPE7].nmeshes - 1, 0, 0x40);
 
 						AddActiveItem(short(target - items));
 						target->status = ITEM_ACTIVE;
@@ -1240,10 +1242,10 @@ void ControlGrenade(short item_number)
 					{
 						Log(0, "Shatter");
 						TriggerExplosionSparks(mesh->x, mesh->y, mesh->z, 3, -2, 0, item->room_number);
-						mesh->y -= 128;
+						mesh->y -= HALF_CLICK_SIZE;
 						TriggerShockwave((PHD_VECTOR*)&mesh->x, 0xB00028, 64, 0x10806000, 0);
-						mesh->y += 128;
-						ShatterObject(0, mesh, -128, item->room_number, 0);
+						mesh->y += HALF_CLICK_SIZE;
+						ShatterObject(0, mesh, -HALF_CLICK_SIZE, item->room_number, 0);
 						SmashedMeshRoom[SmashedMeshCount] = item->room_number;
 						SmashedMesh[SmashedMeshCount] = mesh;
 						SmashedMeshCount++;
@@ -1264,7 +1266,7 @@ void ControlGrenade(short item_number)
 				if (item->item_flags[0] == 3)
 					break;
 
-				rad = 2048;
+				rad = (BLOCK_SIZE * 2);
 			}
 		}
 	}

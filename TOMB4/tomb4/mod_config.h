@@ -14,9 +14,13 @@
 // 1 - Change object customization ID format.
 #define ENGINE_MANIFEST_VERSION 1
 
-#define DEFAULT_FOG_START_VALUE 12288
-#define DEFAULT_FOG_END_VALUE 20480
-#define DEFAULT_FAR_VIEW_VALUE 20480
+#define DEFAULT_FOG_START_BLOCKS 12
+#define DEFAULT_FOG_END_BLOCKS 20
+#define DEFAULT_CLIP_RANGE_BLOCKS 20
+
+#define DEFAULT_FOG_START_VALUE BLOCK_SIZE * DEFAULT_FOG_START_BLOCKS
+#define DEFAULT_FOG_END_VALUE BLOCK_SIZE * DEFAULT_FOG_END_BLOCKS
+#define DEFAULT_FAR_VIEW_VALUE BLOCK_SIZE * DEFAULT_FOG_END_BLOCKS
 
 // This may need increasing...
 #define MAXIMUM_JSON_ALLOCATION_BLOCKS 32768 
@@ -68,18 +72,18 @@ struct MOD_LEVEL_FONT_INFO {
 };
 
 struct MOD_LEVEL_CAMERA_INFO {
-	int chase_camera_distance = 1536;
-	int chase_camera_vertical_orientation = -1820;
+	int chase_camera_distance = BLOCK_SIZE + HALF_BLOCK_SIZE;
+	int chase_camera_vertical_orientation = -DEGREES_TO_ROTATION(10);
 	int chase_camera_horizontal_orientation = 0;
 
-	int combat_camera_distance = 1536;
-	int combat_camera_vertical_orientation = -2730;
+	int combat_camera_distance = BLOCK_SIZE + HALF_BLOCK_SIZE;
+	int combat_camera_vertical_orientation = -DEGREES_TO_ROTATION(15);
 
-	int look_camera_distance = -1024;
-	int look_camera_height = 16;
+	int look_camera_distance = -BLOCK_SIZE;
+	int look_camera_height = (QUARTER_CLICK_SIZE / 4);
 
 	int camera_speed = 10;
-	int add_on_battle_camera_top = 256;
+	int add_on_battle_camera_top = CLICK_SIZE;
 	bool disable_battle_camera = false;
 };
 
@@ -120,41 +124,47 @@ struct MOD_LEVEL_OBJECT_CUSTOMIZATION {
 	const char *ceiling_routine;
 	const char *floor_routine;
 
-	ushort is_amphibious : 1;
+	uint16_t is_amphibious : 1;
 
-	ushort is_agent : 1;
-	ushort is_undead : 1;
+	uint16_t is_agent : 1;
+	uint16_t is_undead : 1;
 
-	ushort save_position : 1;
-	ushort save_hitpoints : 1;
-	ushort save_flags : 1;
-	ushort save_anim : 1;
-	ushort save_mesh : 1;
+	uint16_t save_position : 1;
+	uint16_t save_hitpoints : 1;
+	uint16_t save_flags : 1;
+	uint16_t save_anim : 1;
+	uint16_t save_mesh : 1;
 
-	ushort override_hit_points : 1;
-	ushort override_hit_type : 1;
+	uint16_t override_hit_points : 1;
+	uint16_t override_hit_type : 1;
 
-	ushort explode_immediately : 1;
-	ushort explode_after_death_animation : 1;
-	ushort explosive_death_only : 1;
-	ushort hit_type : 2;
+	uint16_t explode_immediately : 1;
+	uint16_t explode_after_death_animation : 1;
+	uint16_t explosive_death_only : 1;
+	uint16_t hit_type : 2;
 	
-	int pivot_length = 0;
-	int radius = 10;
-	int shadow_size = 0;
+	int32_t pivot_length = 0;
+	int32_t radius = 10;
+	int32_t shadow_size = 0;
 
-	int explodable_meshbits = 0;
+	int32_t explodable_meshbits = 0;
 
-	short hit_points = 0;
-	short damage_1 = 0;
-	short damage_2 = 0;
-	short damage_3 = 0;
+	int16_t hit_points = 0;
+	int16_t damage_1 = 0;
+	int16_t damage_2 = 0;
+	int16_t damage_3 = 0;
 
-	ushort linked_object_1 = 0;
-	ushort linked_object_2 = 0;
-	ushort linked_object_3 = 0;
+	uint16_t linked_object_1 = 0;
+	uint16_t linked_object_2 = 0;
+	uint16_t linked_object_3 = 0;
 
-	int object_mip = 0;
+	int32_t object_mip = 0;
+
+	bool pathfinding_can_jump;
+	bool pathfinding_can_monkey;
+	int32_t pathfinding_max_step = CLICK_SIZE;
+	int32_t pathfinding_max_drop = -HALF_BLOCK_SIZE;
+	int32_t pathfinding_zone = BASIC_ZONE;
 
 	MOD_LEVEL_OBJECT_BONE_CUSTOMIZATION bone_customization[MAX_BONE_CUSTOMIZATIONS];
 };
@@ -212,6 +222,9 @@ struct MOD_LEVEL_OBJECTS_INFO {
 	int16_t laser_head_base_slot = LASER_HEAD_BASE;
 	int16_t laser_head_tentacle_slot = LASER_HEAD_TENTACLE;
 
+	int16_t lara_double_slot = LARA_DOUBLE;
+	int16_t enemy_jeep_slot = ENEMY_JEEP;
+
 	int16_t darts_interval = 24;
 	int16_t darts_speed = 256;
 	int16_t falling_block_timer = 60;
@@ -223,6 +236,7 @@ struct MOD_LEVEL_OBJECTS_INFO {
 
 struct MOD_LEVEL_STATIC_INFO {
 	bool lara_guns_can_shatter = false;
+	bool explosion_can_shatter = false;
 	bool large_objects_can_shatter = false;
 	bool creatures_can_shatter = false;
 	bool record_shatter_state_in_savegames = false;
@@ -237,7 +251,9 @@ struct MOD_LEVEL_STATICS_INFO {
 struct MOD_LEVEL_CREATURE_INFO {
 	bool fade_dead_enemies = true;
 	bool small_scorpion_is_poisonous = true;
-	int small_scorpion_poison_strength = 512;
+	int32_t small_scorpion_poison_strength = 512;
+
+	bool use_voncroy_racing_behaviour = false;
 	
 	bool remove_knights_templar_sparks = false;
 	
@@ -251,8 +267,8 @@ struct MOD_LEVEL_CREATURE_INFO {
 };
 
 struct MOD_LEVEL_MIRROR_CUSTOMIZATION {
-	short room_number = -1;
-	int plane_position = 0;
+	int16_t room_number = -1;
+	int32_t plane_position = 0;
 	T4PlusMirrorDirection plane_direction = T4PlusMirrorDirection::T4_MIR_PLANE_X;
 };
 

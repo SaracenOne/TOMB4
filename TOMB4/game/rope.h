@@ -1,6 +1,8 @@
 #pragma once
 #include "../global/types.h"
 
+#define MAXIMUM_ROPES 64
+
 void DrawRopeList();
 void ProjectRopePoints(ROPE_STRUCT* Rope);
 PHD_VECTOR* Normalise(PHD_VECTOR* v);
@@ -19,6 +21,6 @@ long RopeNodeCollision(ROPE_STRUCT* rope, long x, long y, long z, long rad);
 void RopeControl(short item_num);
 void RopeCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);
 
-extern ROPE_STRUCT RopeList[64];
+extern ROPE_STRUCT RopeList[MAXIMUM_ROPES];
 extern PENDULUM CurrentPendulum;
 extern long nRope;

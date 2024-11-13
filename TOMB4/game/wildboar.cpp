@@ -135,12 +135,12 @@ void WildboarControl(short item_number)
 
 			if (info.distance >= 0x400000)
 			{
-				boar->maximum_turn = 1092;
+				boar->maximum_turn = DEGREES_TO_ROTATION(6);
 				item->flags = 0;
 			}
 			else
 			{
-				boar->maximum_turn = 546;
+				boar->maximum_turn = DEGREES_TO_ROTATION(3);
 				neckX = (short)-info.distance;
 				headX = (short)-info.distance;
 			}

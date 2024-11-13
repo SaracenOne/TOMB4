@@ -77,7 +77,7 @@ void LaraCheatyBits()
 		}
 
 		dels_give_lara_items_cheat();
-		lara_item->hit_points = 1000;
+		lara_item->hit_points = DEFAULT_LARA_MAX_HEALTH;
 	}
 
 #ifdef DEBUG
@@ -104,7 +104,7 @@ void LaraCheatyBits()
 			lara_item->goal_anim_state = AS_SWIM;
 			lara_item->gravity_status = 0;
 			lara_item->pos.x_rot = 0;
-			lara.air = DEFAULT_LARA_MAX_AIR;
+			lara.air = DEFAULT_LARA_MAX_OXYGEN;
 			lara.death_count = 0;
 			lara.torso_y_rot = 0;
 			lara.torso_x_rot = 0;
@@ -154,7 +154,7 @@ void LaraCheatyBits()
 
 void LaraCheat(ITEM_INFO* item, COLL_INFO* coll)
 {
-	lara_item->hit_points = 1000;
+	lara_item->hit_points = DEFAULT_LARA_MAX_HEALTH;
 	LaraUnderWater(item, coll);
 
 	if (input & IN_WALK && !(input & IN_LOOK))
@@ -481,7 +481,7 @@ void LaraControl(short item_number)
 			{
 				if (wd <= 474 || room_water_state & ROOM_SWAMP)
 				{
-					if (hfw > 256)
+					if (hfw > CLICK_SIZE)
 					{
 						lara.water_status = LW_WADE;
 
@@ -500,7 +500,7 @@ void LaraControl(short item_number)
 				}
 				else if (room_water_state)
 				{
-					lara.air = DEFAULT_LARA_MAX_AIR;
+					lara.air = DEFAULT_LARA_MAX_OXYGEN;
 					lara.water_status = LW_UNDERWATER;
 					l->gravity_status = 0;
 					l->pos.y_pos += 100;
@@ -509,21 +509,21 @@ void LaraControl(short item_number)
 
 					if (l->current_anim_state == AS_SWANDIVE)
 					{
-						l->pos.x_rot = -8190;
+						l->pos.x_rot = -DEGREES_TO_ROTATION(45);
 						l->goal_anim_state = AS_DIVE;
 						AnimateLara(l);
 						l->fallspeed *= 2;
 					}
 					else if (l->current_anim_state == AS_FASTDIVE)
 					{
-						l->pos.x_rot = -15470;
+						l->pos.x_rot = -DEGREES_TO_ROTATION(85);
 						l->goal_anim_state = AS_DIVE;
 						AnimateLara(l);
 						l->fallspeed *= 2;
 					}
 					else
 					{
-						l->pos.x_rot = -8190;
+						l->pos.x_rot = -DEGREES_TO_ROTATION(45);
 						l->anim_number = 112;
 						l->frame_number = anims[112].frame_base;
 						l->current_anim_state = AS_DIVE;
@@ -546,9 +546,9 @@ void LaraControl(short item_number)
 			}
 			[[fallthrough]];
 		case LW_WADE:
-			camera.target_elevation = -4004;
+			camera.target_elevation = -DEGREES_TO_ROTATION(22);
 
-			if (hfw <= 256)
+			if (hfw <= CLICK_SIZE)
 			{
 				lara.water_status = LW_ABOVE_WATER;
 
@@ -609,7 +609,7 @@ void LaraControl(short item_number)
 
 			if (!room_water_state)
 			{
-				if (wd != NO_HEIGHT && abs(hfw) < 256)
+				if (wd != NO_HEIGHT && abs(hfw) < CLICK_SIZE)
 				{
 					lara.water_status = LW_SURFACE;
 					l->pos.y_pos = wh;
@@ -654,7 +654,7 @@ void LaraControl(short item_number)
 
 			if (!room_water_state)
 			{
-				if (hfw <= 256)
+				if (hfw <= CLICK_SIZE)
 				{
 					lara.water_status = LW_ABOVE_WATER;
 					l->anim_number = ANIM_FALLDOWN;
@@ -728,7 +728,7 @@ void LaraControl(short item_number)
 		}
 		else if (lara.vehicle == NO_ITEM)
 		{
-			lara.air = DEFAULT_LARA_MAX_AIR;
+			lara.air = DEFAULT_LARA_MAX_OXYGEN;
 		}
 
 		LaraAboveWater(l, lara_coll);
@@ -759,8 +759,8 @@ void LaraControl(short item_number)
 		{
 			lara.air += 10;
 
-			if (lara.air > DEFAULT_LARA_MAX_AIR)
-				lara.air = DEFAULT_LARA_MAX_AIR;
+			if (lara.air > DEFAULT_LARA_MAX_OXYGEN)
+				lara.air = DEFAULT_LARA_MAX_OXYGEN;
 		}
 
 		LaraSurface(l, lara_coll);

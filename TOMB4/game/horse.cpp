@@ -193,7 +193,7 @@ void HorsemanControl(short item_number)
 			switch (item->current_anim_state)
 			{
 			case 1:
-				horseman->maximum_turn = 546;
+				horseman->maximum_turn = DEGREES_TO_ROTATION(3);
 				item2->goal_anim_state = 2;
 
 				if (item->required_anim_state)
@@ -232,12 +232,12 @@ void HorsemanControl(short item_number)
 						item->goal_anim_state = 3;
 						item2->goal_anim_state = 1;
 					}
-					else if (info.angle < -1820 && (info.distance < 0x100000 || info.distance < 0x1C6E39 && info.angle > -3640))
+					else if (info.angle < -1820 && (info.distance < 0x100000 || info.distance < 0x1C6E39 && info.angle > -DEGREES_TO_ROTATION(20)))
 					{
 						horseman->maximum_turn = 0;
 						item->goal_anim_state = 7;
 					}
-					else if (info.angle > 1820 && (info.distance < 0x100000 || info.distance < 0x1C6E39 && info.angle < 3640))
+					else if (info.angle > 1820 && (info.distance < 0x100000 || info.distance < 0x1C6E39 && info.angle < DEGREES_TO_ROTATION(20)))
 					{
 						horseman->maximum_turn = 0;
 						item->goal_anim_state = 6;
@@ -247,7 +247,7 @@ void HorsemanControl(short item_number)
 				break;
 
 			case 2:
-				horseman->maximum_turn = 273;
+				horseman->maximum_turn = HALF_DEGREES_TO_ROTATION(3);
 
 				if (larainfo.distance > 0x1000000 || horseman->reached_goal || horseman->enemy == lara_item)
 				{
@@ -368,7 +368,7 @@ void HorsemanControl(short item_number)
 				break;
 
 			case 10:
-				horseman->maximum_turn = 546;
+				horseman->maximum_turn = DEGREES_TO_ROTATION(3);
 				horseman->flags = 0;
 
 				if (horseman->reached_goal)
@@ -412,12 +412,12 @@ void HorsemanControl(short item_number)
 			case 14:
 				horseman->maximum_turn = 0;
 
-				if (abs(info.angle) < 546)
+				if (abs(info.angle) < DEGREES_TO_ROTATION(3))
 					item->pos.y_rot += info.angle;
 				else if (info.angle < 0)
-					item->pos.y_rot -= 546;
+					item->pos.y_rot -= DEGREES_TO_ROTATION(3);
 				else
-					item->pos.y_rot += 546;
+					item->pos.y_rot += DEGREES_TO_ROTATION(3);
 
 				break;
 
@@ -430,7 +430,7 @@ void HorsemanControl(short item_number)
 
 			case 17:
 				horseman->reached_goal = 0;
-				horseman->maximum_turn = 546;
+				horseman->maximum_turn = DEGREES_TO_ROTATION(3);
 
 				if (!item2->flags && item2->touch_bits & 0xA2000)
 				{
@@ -494,12 +494,12 @@ void HorsemanControl(short item_number)
 
 		if (item2 && item->item_flags[1])
 		{
-			if (abs(rot - item->pos.x_rot) < 256)
+			if (abs(rot - item->pos.x_rot) < CLICK_SIZE)
 				item->pos.x_rot = 0;
 			else if (rot > item->pos.x_rot)
-				item->pos.x_rot += 256;
+				item->pos.x_rot += CLICK_SIZE;
 			else if (rot < item->pos.x_rot)
-				item->pos.x_rot -= 256;
+				item->pos.x_rot -= CLICK_SIZE;
 
 			item2->pos = item->pos;
 
@@ -544,9 +544,9 @@ void TriggerHorsemanRicochets(PHD_VECTOR* pos, long yrot, long num)
 		sptr->y = pos->y;
 		sptr->z = pos->z;
 		sptr->Gravity = random >> 7 & 0x1F;
-		rot = 2 * ((random >> 3 & 0x7FF) + yrot - 1024 & 0xFFF);
+		rot = 2 * ((random >> 3 & 0x7FF) + yrot - BLOCK_SIZE & 0xFFF);
 		sptr->Xvel = -rcossin_tbl[rot] >> 2;
-		sptr->Yvel = (random & 0xFFF) - 2048;
+		sptr->Yvel = (random & 0xFFF) - (BLOCK_SIZE * 2);
 		sptr->Zvel = rcossin_tbl[rot + 1] >> 2;
 		sptr->Friction = 34;
 		sptr->Flags = 0;
@@ -572,7 +572,7 @@ void TriggerHorsemanRicochets(PHD_VECTOR* pos, long yrot, long num)
 		sptr->x = pos->x;
 		sptr->y = pos->y;
 		sptr->z = pos->z;
-		rot = 2 * ((random >> 3 & 0x7FF) + yrot - 1024 & 0xFFF);
+		rot = 2 * ((random >> 3 & 0x7FF) + yrot - BLOCK_SIZE & 0xFFF);
 		sptr->Xvel = -rcossin_tbl[rot] >> 2;
 		sptr->Yvel = (random & 0xFFF) - 2048;
 		sptr->Zvel = rcossin_tbl[rot + 1] >> 2;

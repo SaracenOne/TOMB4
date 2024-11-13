@@ -34,7 +34,7 @@ void InitialiseHair()
 		bone += 4;
 		hptr = &hairs[i][0];
 		hptr->pos.y_rot = 0;
-		hptr->pos.x_rot = -16384;
+		hptr->pos.x_rot = -0x4000;
 		first_hair[i] = 1;
 
 		for (int j = 1; j < 7; j++, bone += 4)
@@ -42,7 +42,7 @@ void InitialiseHair()
 			hptr->pos.x_pos = bone[3];
 			hptr->pos.y_pos = bone[2];
 			hptr->pos.z_pos = bone[1];
-			hptr->pos.x_rot = -16384;
+			hptr->pos.x_rot = -0x4000;
 			hptr->pos.y_rot = 0;
 			hptr->pos.z_rot = 0;
 			hptr->vel.x = 0;
@@ -320,15 +320,13 @@ void HairControl(bool in_cutscene, LaraHairUpdateType lara_hair_update_type, sho
 	bone = &bones[obj->bone_index];
 	hair = &hairs[lara_hair_update_type == LARA_HAIR_UPDATE_TYPE_PIGTAILS_RIGHT][0];
 
-	if (first_hair[lara_hair_update_type == LARA_HAIR_UPDATE_TYPE_PIGTAILS_RIGHT])
-	{
+	if (first_hair[lara_hair_update_type == LARA_HAIR_UPDATE_TYPE_PIGTAILS_RIGHT]) {
 		first_hair[lara_hair_update_type == LARA_HAIR_UPDATE_TYPE_PIGTAILS_RIGHT] = 0;
 		hair->pos.x_pos = pos.x;
 		hair->pos.y_pos = pos.y;
 		hair->pos.z_pos = pos.z;
 
-		for (int i = 0; i < 6; i++, bone += 4)
-		{
+		for (int i = 0; i < 6; i++, bone += 4) {
 			phd_PushUnitMatrix();
 			phd_SetTrans(hair->pos.x_pos, hair->pos.y_pos, hair->pos.z_pos);
 			phd_RotYXZ(hair->pos.y_rot, hair->pos.x_rot, 0);
@@ -343,11 +341,9 @@ void HairControl(bool in_cutscene, LaraHairUpdateType lara_hair_update_type, sho
 		SmokeWindZ = 0;
 		SmokeWindX = 0;
 		hair_wind = 0;
-		hair_dwind_angle = 2048;
-		hair_wind_angle = 2048;
-	}
-	else
-	{
+		hair_dwind_angle = (BLOCK_SIZE * 2);
+		hair_wind_angle = (BLOCK_SIZE * 2);
+	} else {
 		hair->pos.x_pos = pos.x;
 		hair->pos.y_pos = pos.y;
 		hair->pos.z_pos = pos.z;
@@ -370,20 +366,19 @@ void HairControl(bool in_cutscene, LaraHairUpdateType lara_hair_update_type, sho
 		else if (hair_wind >= 9)
 			hair_wind--;
 
-		hair_dwind_angle = (hair_dwind_angle + 2 * (GetRandomControl() & 0x3F) - 64) & 0x1FFE;
+		hair_dwind_angle = (hair_dwind_angle + 2 * (GetRandomControl() & 0x3F) - QUARTER_CLICK_SIZE) & 0x1FFE;
 
-		if (hair_dwind_angle < 1024)
-			hair_dwind_angle = 2048 - hair_dwind_angle;
-		else if (hair_dwind_angle > 3072)
-			hair_dwind_angle += 6144 - (2 * hair_dwind_angle);
+		if (hair_dwind_angle < BLOCK_SIZE)
+			hair_dwind_angle = (BLOCK_SIZE * 2) - hair_dwind_angle;
+		else if (hair_dwind_angle > (BLOCK_SIZE * 3))
+			hair_dwind_angle += (BLOCK_SIZE * 6) - (2 * hair_dwind_angle);
 
 		hair_wind_angle = (hair_wind_angle + ((hair_dwind_angle - hair_wind_angle) >> 3)) & 0x1FFE;
 		SmokeWindX = (hair_wind * rcossin_tbl[hair_wind_angle]) >> 12;
 		SmokeWindZ = (hair_wind * rcossin_tbl[hair_wind_angle + 1]) >> 12;
 		hair++;
 
-		for (int i = 1; i < 7; i++, bone += 4)
-		{
+		for (int i = 1; i < 7; i++, bone += 4) {
 			pos.x = hair->pos.x_pos;
 			pos.y = hair->pos.y_pos;
 			pos.z = hair->pos.z_pos;
@@ -418,7 +413,7 @@ void HairControl(bool in_cutscene, LaraHairUpdateType lara_hair_update_type, sho
 			{
 				hair->pos.x_pos = pos.x;
 
-				if (hair->pos.y_pos - height <= 256)	//snap to floor if it goes below, no more than 1 click to avoid hairection when going through corners
+				if (hair->pos.y_pos - height <= CLICK_SIZE)	//snap to floor if it goes below, no more than 1 click to avoid hairection when going through corners
 					hair->pos.y_pos = height;
 
 				hair->pos.z_pos = pos.z;

@@ -1428,7 +1428,7 @@ bool LoadItems()
 				stat = &static_objects[r->mesh[j].static_number];
 				y = floor->floor << 8;
 
-				if (y <= (r->mesh[j].y - stat->y_maxc + 512) && y < r->mesh[j].y - stat->y_minc)
+				if (y <= (r->mesh[j].y - stat->y_maxc + HALF_BLOCK_SIZE) && y < r->mesh[j].y - stat->y_minc)
 				{
 					if (!stat->x_maxc || !stat->x_minc || !stat->z_maxc || !stat->z_minc ||
 						(stat->x_maxc ^ stat->x_minc) & 0x8000 && (stat->z_maxc ^ stat->z_minc) & 0x8000)

@@ -57,7 +57,7 @@ ITEM_INFO* TriggerClockworkBeetle(long flag)
 						dy = item->pos.y_pos - item2->pos.y_pos;
 						dz = item->pos.z_pos - item2->pos.z_pos;
 
-						if (dx > -1024 && dx < 1024 && dz > -1024 && dz < 1024 && dy > -1024 && dy < 1024)
+						if (dx > -BLOCK_SIZE && dx < BLOCK_SIZE && dz > -BLOCK_SIZE && dz < BLOCK_SIZE && dy > -BLOCK_SIZE && dy < BLOCK_SIZE)
 						{
 							item->item_flags[1] = item2->pos.y_rot + 0x8000;
 
@@ -108,12 +108,12 @@ void ControlClockworkBeetle(short item_number)
 			pos.x = 0;
 			pos.y = 0;
 			pos.z = -32;
-			GetLaraJointPos(&pos, 11);
+			GetLaraJointPos(&pos, LMX_HAND_R);
 			item->pos.x_pos = pos.x;
 			item->pos.y_pos = pos.y;
 			item->pos.z_pos = pos.z;
 			item->pos.y_rot = lara_item->pos.y_rot;
-			item->pos.z_rot = -12740;
+			item->pos.z_rot = -DEGREES_TO_ROTATION(70);
 			item->status = ITEM_ACTIVE;
 			return;
 		}
@@ -124,7 +124,7 @@ void ControlClockworkBeetle(short item_number)
 			floor = GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
 			h = GetHeight(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
 
-			if (abs(lara_item->pos.y_pos - h) > 64)
+			if (abs(lara_item->pos.y_pos - h) > QUARTER_CLICK_SIZE)
 			{
 				item->pos.x_pos = lara_item->pos.x_pos;
 				item->pos.y_pos = lara_item->pos.y_pos;
@@ -183,23 +183,23 @@ void ControlClockworkBeetle(short item_number)
 				if (abs(rotY) > 0x8000)
 					rotY = item->pos.y_rot - angle;
 
-				if (abs(rotY) < 256)
+				if (abs(rotY) < CLICK_SIZE)
 				{
 					item->pos.y_rot = angle;
 					item->item_flags[2] = 1;
 				}
 				else if (rotY < 0)
-					item->pos.y_rot -= 256;
+					item->pos.y_rot -= CLICK_SIZE;
 				else
-					item->pos.y_rot += 256;
+					item->pos.y_rot += CLICK_SIZE;
 			}
 
 			break;
 
 		case 1:
 		case 4:
-			x = ((item->pos.x_pos & -512) | 512) - item->pos.x_pos;
-			z = ((item->pos.z_pos & -512) | 512) - item->pos.z_pos;
+			x = ((item->pos.x_pos & -HALF_BLOCK_SIZE) | HALF_BLOCK_SIZE) - item->pos.x_pos;
+			z = ((item->pos.z_pos & -HALF_BLOCK_SIZE) | HALF_BLOCK_SIZE) - item->pos.z_pos;
 
 			if (x > -8 && z > -8 && x < 8 && z < 8)
 			{
@@ -223,7 +223,7 @@ void ControlClockworkBeetle(short item_number)
 							dy = item->pos.y_pos - item2->pos.y_pos;
 							dz = item->pos.z_pos - item2->pos.z_pos;
 
-							if (dx > -1024 && dx < 1024 && dz > -1024 && dz < 1024 && dy > -1024 && dy < 1024)
+							if (dx > -BLOCK_SIZE && dx < BLOCK_SIZE && dz > -BLOCK_SIZE && dz < BLOCK_SIZE && dy > -BLOCK_SIZE && dy < BLOCK_SIZE)
 								item2->item_flags[0] = 1;
 						}
 					}
@@ -261,15 +261,15 @@ void ControlClockworkBeetle(short item_number)
 			if (abs(rotY) > 0x8000)
 				rotY = item->pos.y_rot - item->item_flags[1];
 
-			if (abs(rotY) < 256)
+			if (abs(rotY) < CLICK_SIZE)
 			{
 				item->item_flags[2] = 3;
 				item->pos.y_rot = item->item_flags[1];
 			}
 			else if (rotY < 0)
-				item->pos.y_rot -= 256;
+				item->pos.y_rot -= CLICK_SIZE;
 			else
-				item->pos.y_rot += 256;
+				item->pos.y_rot += CLICK_SIZE;
 
 			break;
 

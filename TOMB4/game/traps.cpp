@@ -79,10 +79,10 @@ short floor_fires[16 * 3] =		//16 points on the burning floor that spawn fires!
 short deadly_floor_fires[4 * 2] =	//4 points on the burning floor that kill Lara if she is too close at explode time
 {
 	//xoff, zoff
-	-512, -512,
+	-HALF_BLOCK_SIZE, -HALF_BLOCK_SIZE,
 	0, 0,
-	512, 512,
-	0, 768
+	HALF_BLOCK_SIZE, HALF_BLOCK_SIZE,
+	0, HALF_BLOCK_SIZE + CLICK_SIZE
 };
 
 static PHD_VECTOR FloorTrapDoorPos = { 0, 0, -655 };
@@ -236,8 +236,8 @@ void TwoBlockPlatformCeiling(ITEM_INFO* item, long x, long y, long z, long* heig
 {
 	if (OnTwoBlockPlatform(item, x, z))
 	{
-		if (y > item->pos.y_pos + 32 && item->pos.y_pos > *height)
-			*height = item->pos.y_pos + 256;
+		if (y > item->pos.y_pos + (QUARTER_CLICK_SIZE / 2) && item->pos.y_pos > *height)
+			*height = item->pos.y_pos + CLICK_SIZE;
 	}
 }
 
@@ -318,7 +318,7 @@ void ControlJobySpike(short item_number)
 		y = lara_item->pos.y_pos + frm[0][2];
 		h = item->pos.y_pos + (3328 * item->item_flags[1] >> 12);
 
-		if (lara_item->hit_points > 0 && h > y && abs(item->pos.x_pos - lara_item->pos.x_pos) < 512 && abs(item->pos.z_pos - lara_item->pos.z_pos) < 512)
+		if (lara_item->hit_points > 0 && h > y && abs(item->pos.x_pos - lara_item->pos.x_pos) < HALF_BLOCK_SIZE && abs(item->pos.z_pos - lara_item->pos.z_pos) < HALF_BLOCK_SIZE)
 		{
 			DoBloodSplat(lara_item->pos.x_pos + (GetRandomControl() & 0x7F) - 64, GetRandomControl() % (h - y) + y, lara_item->pos.z_pos + (GetRandomControl() & 0x7F) - 64, (GetRandomControl() & 3) + 2, (short)(2 * GetRandomControl()), item->room_number);
 			lara_item->hit_points -= 8;
@@ -391,8 +391,8 @@ void DrawScaledSpike(ITEM_INFO* item)
 
 			if (item->object_number == EXPANDING_PLATFORM)
 			{
-				scale.x = 16384;
-				scale.y = 16384;
+				scale.x = 0x4000;
+				scale.y = 0x4000;
 				scale.z = item->item_flags[1] << 2;
 			}
 			else
@@ -401,8 +401,8 @@ void DrawScaledSpike(ITEM_INFO* item)
 
 				if (item->object_number != JOBY_SPIKES)
 				{
-					scale.x = 16384;
-					scale.z = 16384;
+					scale.x = 0x4000;
+					scale.z = 0x4000;
 				}
 				else
 				{
@@ -433,11 +433,11 @@ void ControlSlicerDicer(short item_number)
 	item = &items[item_number];
 	SoundEffect(SFX_METAL_SCRAPE_LOOP, &item->pos, SFX_DEFAULT);
 	SoundEffect(SFX_METAL_SCRAPE_LOOP1, &item->pos, SFX_DEFAULT);
-	distance = 4608 * phd_cos(item->trigger_flags) >> 14;
-	item->pos.x_pos = 256 * item->item_flags[0] + (phd_sin(item->pos.y_rot) * distance >> 14);
-	item->pos.y_pos = 256 * item->item_flags[1] - (4608 * phd_sin(item->trigger_flags) >> 14);
-	item->pos.z_pos = 256 * item->item_flags[2] + (phd_cos(item->pos.y_rot) * distance >> 14);
-	item->trigger_flags += 170;
+	distance = ((BLOCK_SIZE * 4) + HALF_BLOCK_SIZE) * phd_cos(item->trigger_flags) >> W2V_SHIFT;
+	item->pos.x_pos = CLICK_SIZE * item->item_flags[0] + (phd_sin(item->pos.y_rot) * distance >> W2V_SHIFT);
+	item->pos.y_pos = CLICK_SIZE * item->item_flags[1] - (((BLOCK_SIZE * 4) + HALF_BLOCK_SIZE) * phd_sin(item->trigger_flags) >> W2V_SHIFT);
+	item->pos.z_pos = CLICK_SIZE * item->item_flags[2] + (phd_cos(item->pos.y_rot) * distance >> W2V_SHIFT);
+	item->trigger_flags += 0xaa;
 	room_number = item->room_number;
 	GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
 
@@ -523,17 +523,17 @@ void ControlSprinkler(short item_number)
 			smokeptr->TransType = 2;
 			smokeptr->Life = (GetRandomControl() & 3) + 24;
 			smokeptr->sLife = smokeptr->Life;
-			smokeptr->x = (GetRandomControl() & 0x1F) + item->pos.x_pos - 16;
+			smokeptr->x = (GetRandomControl() & 0x1F) + item->pos.x_pos - (QUARTER_CLICK_SIZE / 4);
 			smokeptr->y = (GetRandomControl() & 0x1F) + item->pos.y_pos - 944;
-			smokeptr->z = (GetRandomControl() & 0x1F) + item->pos.z_pos - 16;
-			smokeptr->Xvel = 2 * (GetRandomControl() & 0x1FF) - 512;
+			smokeptr->z = (GetRandomControl() & 0x1F) + item->pos.z_pos - (QUARTER_CLICK_SIZE / 4);
+			smokeptr->Xvel = 2 * (GetRandomControl() & 0x1FF) - HALF_BLOCK_SIZE;
 
 			if (i)
 				smokeptr->Yvel = (GetRandomControl() & 0x1F) - 16;
 			else
-				smokeptr->Yvel = 2 * (GetRandomControl() & 0x1FF) + 512;
+				smokeptr->Yvel = 2 * (GetRandomControl() & 0x1FF) + HALF_BLOCK_SIZE;
 
-			smokeptr->Zvel = 2 * (GetRandomControl() & 0x1FF) - 512;
+			smokeptr->Zvel = 2 * (GetRandomControl() & 0x1FF) - HALF_BLOCK_SIZE;
 			smokeptr->Friction = 3;
 			smokeptr->Flags = 16;
 			smokeptr->RotAng = GetRandomControl() & 0xFFF;
@@ -1321,9 +1321,9 @@ void ControlRaisingBlock(short item_number)
 		if (!item->item_flags[2])
 		{
 			if (item->object_number == RAISING_BLOCK2)
-				AlterFloorHeight(item, -2048);
+				AlterFloorHeight(item, -(BLOCK_SIZE * 2));
 			else
-				AlterFloorHeight(item, -1024);
+				AlterFloorHeight(item, -BLOCK_SIZE);
 
 			item->item_flags[2] = 1;
 		}
@@ -1337,15 +1337,15 @@ void ControlRaisingBlock(short item_number)
 			if (get_game_mod_global_info()->trng_advanced_block_raising_behaviour)
 			{
 				// TRNG
-				ITEM_INFO* pushable = GetPushableForRaisingBlock(item, item->object_number == RAISING_BLOCK2 ? 2048 : 1024);
+				ITEM_INFO* pushable = GetPushableForRaisingBlock(item, item->object_number == RAISING_BLOCK2 ? (BLOCK_SIZE * 2) : BLOCK_SIZE);
 				if (pushable)
 				{
 					pushable->pos.y_pos -= item->object_number == RAISING_BLOCK2 ? 32 : 16;
 				}
 			}
 
-			if (item->trigger_flags && abs(item->pos.x_pos - lara_item->pos.x_pos) < 10240 &&
-				abs(item->pos.y_pos - lara_item->pos.y_pos) < 10240 && abs(item->pos.z_pos - lara_item->pos.z_pos) < 10240)
+			if (item->trigger_flags && abs(item->pos.x_pos - lara_item->pos.x_pos) < (BLOCK_SIZE * 10) &&
+				abs(item->pos.y_pos - lara_item->pos.y_pos) < (BLOCK_SIZE * 10) && abs(item->pos.z_pos - lara_item->pos.z_pos) < (BLOCK_SIZE * 10))
 			{
 				if (item->item_flags[1] == 64 || item->item_flags[1] == 4096)
 					camera.bounce = -32;
@@ -1358,8 +1358,8 @@ void ControlRaisingBlock(short item_number)
 	{
 		SoundEffect(SFX_RUMBLE_NEXTDOOR, &item->pos, SFX_DEFAULT);
 
-		if (item->trigger_flags && abs(item->pos.x_pos - lara_item->pos.x_pos) < 10240 &&
-			abs(item->pos.y_pos - lara_item->pos.y_pos) < 10240 && abs(item->pos.z_pos - lara_item->pos.z_pos) < 10240)
+		if (item->trigger_flags && abs(item->pos.x_pos - lara_item->pos.x_pos) < (BLOCK_SIZE * 10) &&
+			abs(item->pos.y_pos - lara_item->pos.y_pos) < (BLOCK_SIZE * 10) && abs(item->pos.z_pos - lara_item->pos.z_pos) < (BLOCK_SIZE * 10))
 		{
 			if (item->item_flags[1] == 64 || item->item_flags[1] == 4096)
 				camera.bounce = -32;
@@ -1382,9 +1382,9 @@ void ControlRaisingBlock(short item_number)
 	else if (item->item_flags[2])
 	{
 		if (item->object_number == RAISING_BLOCK2)
-			AlterFloorHeight(item, 2048);
+			AlterFloorHeight(item, (BLOCK_SIZE * 2));
 		else
-			AlterFloorHeight(item, 1024);
+			AlterFloorHeight(item, BLOCK_SIZE);
 
 		item->item_flags[2] = 0;
 	}
@@ -1937,12 +1937,12 @@ void RollingBallCollideStaticObjects(long x, long y, long z, long height, short 
 	pos.x = x;
 	pos.y = y;
 	pos.z = z;
-	RollingBallBounds[0] = x + 256;
-	RollingBallBounds[1] = x - 256;
+	RollingBallBounds[0] = x + CLICK_SIZE;
+	RollingBallBounds[1] = x - CLICK_SIZE;
 	RollingBallBounds[2] = y;
 	RollingBallBounds[3] = y - height;
-	RollingBallBounds[4] = z + 256;
-	RollingBallBounds[5] = z - 256;
+	RollingBallBounds[4] = z + CLICK_SIZE;
+	RollingBallBounds[5] = z - CLICK_SIZE;
 
 	int i = 0;
 	for (int i = 0; i < valid_room_count; i++)
@@ -2079,29 +2079,29 @@ void ControlRollingBall(short item_number)
 	bz = item->pos.z_pos - 512;
 	rx = item->pos.x_pos + 512;
 	lx = item->pos.x_pos - 512;
-	fhf = GetHeight(GetFloor(fx, item->pos.y_pos, fz, &room_number), fx, item->pos.y_pos, fz) - 512;
-	bhf = GetHeight(GetFloor(fx, item->pos.y_pos, bz, &room_number), fx, item->pos.y_pos, bz) - 512;
-	rhf = GetHeight(GetFloor(rx, item->pos.y_pos, bz + 512, &room_number), rx, item->pos.y_pos, bz + 512) - 512;
-	lhf = GetHeight(GetFloor(lx, item->pos.y_pos, bz + 512, &room_number), lx, item->pos.y_pos, bz + 512) - 512;
+	fhf = GetHeight(GetFloor(fx, item->pos.y_pos, fz, &room_number), fx, item->pos.y_pos, fz) - HALF_BLOCK_SIZE;
+	bhf = GetHeight(GetFloor(fx, item->pos.y_pos, bz, &room_number), fx, item->pos.y_pos, bz) - HALF_BLOCK_SIZE;
+	rhf = GetHeight(GetFloor(rx, item->pos.y_pos, bz + HALF_BLOCK_SIZE, &room_number), rx, item->pos.y_pos, bz + HALF_BLOCK_SIZE) - HALF_BLOCK_SIZE;
+	lhf = GetHeight(GetFloor(lx, item->pos.y_pos, bz + HALF_BLOCK_SIZE, &room_number), lx, item->pos.y_pos, bz + HALF_BLOCK_SIZE) - HALF_BLOCK_SIZE;
 
-	if (item->pos.y_pos - h > -256 || item->pos.y_pos - fhf >= 512 || item->pos.y_pos - rhf >= 512 ||
-		item->pos.y_pos - bhf >= 512 || item->pos.y_pos - lhf >= 512)
+	if (item->pos.y_pos - h > -CLICK_SIZE || item->pos.y_pos - fhf >= HALF_BLOCK_SIZE || item->pos.y_pos - rhf >= HALF_BLOCK_SIZE ||
+		item->pos.y_pos - bhf >= HALF_BLOCK_SIZE || item->pos.y_pos - lhf >= HALF_BLOCK_SIZE)
 	{
 		velnotadjusted = 0;
 
-		if (fh - h <= 256)
+		if (fh - h <= CLICK_SIZE)
 		{
-			if (fhf - h < -1024 || fh - h < -256)
+			if (fhf - h < -BLOCK_SIZE || fh - h < -CLICK_SIZE)
 			{
 				if (item->item_flags[1] <= 0)
 				{
 					if (!item->item_flags[1] && item->item_flags[0])
-						item->pos.z_pos = (item->pos.z_pos & -512) | 512;
+						item->pos.z_pos = (item->pos.z_pos & -HALF_BLOCK_SIZE) | HALF_BLOCK_SIZE;
 				}
 				else
 				{
 					item->item_flags[1] = -item->item_flags[1] >> 1;
-					item->pos.z_pos = (item->pos.z_pos & -512) | 512;
+					item->pos.z_pos = (item->pos.z_pos & -HALF_BLOCK_SIZE) | HALF_BLOCK_SIZE;
 				}
 			}
 			else if (fh == h)
@@ -2112,17 +2112,17 @@ void ControlRollingBall(short item_number)
 
 		if (bh - h > 256)
 			velnotadjusted++;
-		else if (bhf - h < -1024 || bh - h < -256)
+		else if (bhf - h < -BLOCK_SIZE || bh - h < -CLICK_SIZE)
 		{
 			if (item->item_flags[1] >= 0)
 			{
 				if (!item->item_flags[1] && item->item_flags[0])
-					item->pos.z_pos = (item->pos.z_pos & -512) | 512;
+					item->pos.z_pos = (item->pos.z_pos & -HALF_BLOCK_SIZE) | HALF_BLOCK_SIZE;
 			}
 			else
 			{
 				item->item_flags[1] = -item->item_flags[1] >> 1;
-				item->pos.z_pos = (item->pos.z_pos & -512) | 512;
+				item->pos.z_pos = (item->pos.z_pos & -HALF_BLOCK_SIZE) | HALF_BLOCK_SIZE;
 			}
 		}
 		else if (bh == h)
@@ -2132,7 +2132,7 @@ void ControlRollingBall(short item_number)
 
 		if (velnotadjusted == 2)
 		{
-			if (abs(item->item_flags[1]) <= 64)
+			if (abs(item->item_flags[1]) <= QUARTER_CLICK_SIZE)
 				item->item_flags[1] = 0;
 			else
 				item->item_flags[1] -= item->item_flags[1] >> 6;
@@ -2140,19 +2140,19 @@ void ControlRollingBall(short item_number)
 
 		velnotadjusted = 0;
 
-		if (lh - h <= 256)
+		if (lh - h <= CLICK_SIZE)
 		{
-			if (lhf - h < -1024 || lh - h < -256)
+			if (lhf - h < -BLOCK_SIZE || lh - h < -CLICK_SIZE)
 			{
 				if (item->item_flags[0] >= 0)
 				{
 					if (!item->item_flags[0] && item->item_flags[1])
-						item->pos.x_pos = (item->pos.x_pos & -512) | 512;
+						item->pos.x_pos = (item->pos.x_pos & -HALF_BLOCK_SIZE) | HALF_BLOCK_SIZE;
 				}
 				else
 				{
 					item->item_flags[0] = -item->item_flags[0] >> 1;
-					item->pos.x_pos = (item->pos.x_pos & -512) | 512;
+					item->pos.x_pos = (item->pos.x_pos & -HALF_BLOCK_SIZE) | HALF_BLOCK_SIZE;
 				}
 			}
 			else if (lh == h)
@@ -2161,19 +2161,19 @@ void ControlRollingBall(short item_number)
 				item->item_flags[0] -= (short)((lh - h) >> 1);
 		}
 
-		if (rh - h <= 256)
+		if (rh - h <= CLICK_SIZE)
 		{
-			if (rhf - h < -1024 || rh - h < -256)
+			if (rhf - h < -BLOCK_SIZE || rh - h < -CLICK_SIZE)
 			{
 				if (item->item_flags[0] <= 0)
 				{
 					if (!item->item_flags[0] && item->item_flags[1])
-						item->pos.x_pos = (item->pos.x_pos & -512) | 512;
+						item->pos.x_pos = (item->pos.x_pos & -HALF_BLOCK_SIZE) | HALF_BLOCK_SIZE;
 				}
 				else
 				{
 					item->item_flags[0] = -item->item_flags[0] >> 1;
-					item->pos.x_pos = (item->pos.x_pos & -512) | 512;
+					item->pos.x_pos = (item->pos.x_pos & -HALF_BLOCK_SIZE) | HALF_BLOCK_SIZE;
 				}
 			}
 			else if (rh == h)
@@ -2184,7 +2184,7 @@ void ControlRollingBall(short item_number)
 
 		if (velnotadjusted == 2)
 		{
-			if (abs(item->item_flags[0]) <= 64)
+			if (abs(item->item_flags[0]) <= QUARTER_CLICK_SIZE)
 				item->item_flags[0] = 0;
 			else
 				item->item_flags[0] -= item->item_flags[0] >> 6;
@@ -2215,12 +2215,12 @@ void ControlRollingBall(short item_number)
 
 	if (tyrot != destyrot)
 	{
-		if (((destyrot - tyrot) & 0x7FFF) >= 512)
+		if (((destyrot - tyrot) & 0x7FFF) >= HALF_BLOCK_SIZE)
 		{
-			if (destyrot <= tyrot || destyrot - tyrot >= 32768)
-				item->pos.y_rot = tyrot - 512;
+			if (destyrot <= tyrot || destyrot - tyrot >= 0x8000)
+				item->pos.y_rot = tyrot - HALF_BLOCK_SIZE;
 			else
-				item->pos.y_rot = tyrot + 512;
+				item->pos.y_rot = tyrot + HALF_BLOCK_SIZE;
 		}
 		else
 			item->pos.y_rot = destyrot;
@@ -2492,16 +2492,16 @@ void DartEmitterControl(short item_number)
 		dart->room_number = item->room_number;
 
 		if (!item->pos.y_rot)
-			z = 512;
+			z = HALF_BLOCK_SIZE;
 		else if (item->pos.y_rot == 0x4000)
-			x = 512;
+			x = HALF_BLOCK_SIZE;
 		else if (item->pos.y_rot == -0x4000)
-			x = -512;
+			x = -HALF_BLOCK_SIZE;
 		else if (item->pos.y_rot == -0x8000)
-			z = -512;
+			z = -HALF_BLOCK_SIZE;
 
 		dart->pos.x_pos = x + item->pos.x_pos;
-		dart->pos.y_pos = item->pos.y_pos - 512;
+		dart->pos.y_pos = item->pos.y_pos - HALF_BLOCK_SIZE;
 		dart->pos.z_pos = z + item->pos.z_pos;
 		InitialiseItem(num);
 		dart->pos.x_rot = 0;
@@ -2590,11 +2590,11 @@ void ControlSmashableBikeWall(short item_number)
 	if (!TriggerActive(item) || lara.vehicle == NO_ITEM)
 		return;
 
-	if (TestBoundsCollide(item, &items[lara.vehicle], 1024))
+	if (TestBoundsCollide(item, &items[lara.vehicle], BLOCK_SIZE))
 	{
 		SoundEffect(SFX_BIKE_HIT_OBJECTS, &item->pos, SFX_DEFAULT);
 		item->mesh_bits = -2;
-		ExplodingDeath2(item_number, -1, 2305);
+		ExplodingDeath2(item_number, -1, 0x901);
 		item->mesh_bits = 0;
 		TestTriggersAtXYZ(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, 1, 0);
 		KillItem(item_number);
@@ -2626,11 +2626,11 @@ void FallingBlockCeiling(ITEM_INFO* item, long x, long y, long z, long* height)
 	tx = x ^ item->pos.x_pos;
 	tz = z ^ item->pos.z_pos;
 
-	if (tx & ~1023 || tz & ~1023)
+	if (tx & ~(BLOCK_SIZE - 1) || tz & ~(BLOCK_SIZE - 1))
 		return;
 
 	if (y > item->pos.y_pos)
-		*height = item->pos.y_pos + 256;
+		*height = item->pos.y_pos + CLICK_SIZE;
 }
 
 void FallingBlockFloor(ITEM_INFO* item, long x, long y, long z, long* height)
@@ -2640,7 +2640,7 @@ void FallingBlockFloor(ITEM_INFO* item, long x, long y, long z, long* height)
 	tx = x ^ item->pos.x_pos;
 	tz = z ^ item->pos.z_pos;
 
-	if (tx & ~1023 || tz & ~1023)
+	if (tx & ~(BLOCK_SIZE - 1) || tz & ~(BLOCK_SIZE - 1))
 		return;
 
 	if (y <= item->pos.y_pos)
@@ -2722,9 +2722,9 @@ void CeilingTrapDoorCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 		item->status = ITEM_ACTIVE;
 		item->goal_anim_state = 1;
 		UseForcedFixedCamera = 1;
-		ForcedFixedCamera.x = item->pos.x_pos - ((1024 * phd_sin(item->pos.y_rot)) >> W2V_SHIFT);
-		ForcedFixedCamera.y = item->pos.y_pos + 1024;
-		ForcedFixedCamera.z = item->pos.z_pos - ((1024 * phd_cos(item->pos.y_rot)) >> W2V_SHIFT);
+		ForcedFixedCamera.x = item->pos.x_pos - ((BLOCK_SIZE * phd_sin(item->pos.y_rot)) >> W2V_SHIFT);
+		ForcedFixedCamera.y = item->pos.y_pos + BLOCK_SIZE;
+		ForcedFixedCamera.z = item->pos.z_pos - ((BLOCK_SIZE * phd_cos(item->pos.y_rot)) >> W2V_SHIFT);
 		ForcedFixedCamera.room_number = item->room_number;
 	}
 	else if (item->current_anim_state == 1)
@@ -2928,12 +2928,12 @@ void ControlObelisk(short item_number)
 
 			if (GlobalCounter & 1)
 			{
-				d.x = (GetRandomControl() & 0x3FF) + s.x - 512;
-				d.y = (GetRandomControl() & 0x3FF) + s.y - 512;
-				d.z = (GetRandomControl() & 0x3FF) + s.z - 512;
+				d.x = (GetRandomControl() & 0x3FF) + s.x - HALF_BLOCK_SIZE;
+				d.y = (GetRandomControl() & 0x3FF) + s.y - HALF_BLOCK_SIZE;
+				d.z = (GetRandomControl() & 0x3FF) + s.z - HALF_BLOCK_SIZE;
 
-				if (abs(s.x - lara_item->pos.x_pos) < 20480 && abs(s.y - lara_item->pos.y_pos) < 20480 && abs(s.z - lara_item->pos.z_pos) < 20480 &&
-					abs(d.x - lara_item->pos.x_pos) < 20480 && abs(d.y - lara_item->pos.y_pos) < 20480 && abs(d.z - lara_item->pos.z_pos) < 20480)
+				if (abs(s.x - lara_item->pos.x_pos) < (BLOCK_SIZE * 20) && abs(s.y - lara_item->pos.y_pos) < (BLOCK_SIZE * 20) && abs(s.z - lara_item->pos.z_pos) < (BLOCK_SIZE * 20) &&
+					abs(d.x - lara_item->pos.x_pos) < (BLOCK_SIZE * 20) && abs(d.y - lara_item->pos.y_pos) < (BLOCK_SIZE * 20) && abs(d.z - lara_item->pos.z_pos) < (BLOCK_SIZE * 20))
 				{
 					if (item->item_flags[2] != NO_ITEM)
 					{

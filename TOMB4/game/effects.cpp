@@ -1072,9 +1072,9 @@ void DoLotsOfBlood(long x, long y, long z, short speed, short ang, short room_nu
 
 	for (; num > 0; num--)
 	{
-		bx = x - (GetRandomControl() << 9) / 0x8000 + 256;
-		by = y - (GetRandomControl() << 9) / 0x8000 + 256;
-		bz = z - (GetRandomControl() << 9) / 0x8000 + 256;
+		bx = x - (GetRandomControl() << 9) / 0x8000 + CLICK_SIZE;
+		by = y - (GetRandomControl() << 9) / 0x8000 + CLICK_SIZE;
+		bz = z - (GetRandomControl() << 9) / 0x8000 + CLICK_SIZE;
 		DoBloodSplat(bx, by, bz, speed, ang, room_number);
 	}
 }
@@ -1203,12 +1203,12 @@ void LaraBreath(ITEM_INFO* item)
 	p.x = 0;
 	p.y = -4;
 	p.z = 64;
-	GetLaraJointPos(&p, 8);
+	GetLaraJointPos(&p, LMX_HEAD);
 
 	v.x = (GetRandomControl() & 7) - 4;
 	v.y = (GetRandomControl() & 7) - 8;
 	v.z = (GetRandomControl() & 0x7F) + 64;
-	GetLaraJointPos(&v, 8);
+	GetLaraJointPos(&v, LMX_HEAD);
 
 	TriggerBreath(p.x, p.y, p.z, v.x - p.x, v.y - p.y, v.z - p.z);
 }

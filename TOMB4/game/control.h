@@ -1,6 +1,8 @@
 #pragma once
 #include "../global/types.h"
 
+#define INFINITE_HEALTH -16384
+
 long ControlPhase(long nframes, long demo_mode);
 void FlipMap(long FlipNumber);
 void RemoveRoomFlipItems(ROOM_INFO* r);

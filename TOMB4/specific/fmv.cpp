@@ -192,7 +192,7 @@ long PlayFmvNow(long num)
 	{
 		App.DXInfo.nDisplayMode = dm;
 		DXChangeVideoMode();
-		InitWindow(0, 0, App.dx.dwRenderWidth, App.dx.dwRenderHeight, 20, 20480, 80, App.dx.dwRenderWidth, App.dx.dwRenderHeight);
+		InitWindow(0, 0, App.dx.dwRenderWidth, App.dx.dwRenderHeight, 20, (BLOCK_SIZE * 20), 80, App.dx.dwRenderWidth, App.dx.dwRenderHeight);
 		InitFont();
 		S_InitD3DMatrix();
 		SetD3DViewMatrix();

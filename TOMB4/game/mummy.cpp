@@ -160,7 +160,7 @@ void MummyControl(short item_number)
 			}
 			else
 			{
-				mummy->maximum_turn = 1274;
+				mummy->maximum_turn = DEGREES_TO_ROTATION(7);
 
 				if (info.distance < 0x900000)
 					item->goal_anim_state = 3;
@@ -172,7 +172,7 @@ void MummyControl(short item_number)
 
 		case 3:
 			mummy->flags = 0;
-			mummy->maximum_turn = 1274;
+			mummy->maximum_turn = DEGREES_TO_ROTATION(7);
 
 			if (info.distance < 0x40000)
 				item->goal_anim_state = 1;
@@ -195,12 +195,12 @@ void MummyControl(short item_number)
 		case 10:
 			mummy->maximum_turn = 0;
 
-			if (abs(info.angle) < 1274)
+			if (abs(info.angle) < DEGREES_TO_ROTATION(7))
 				item->pos.y_rot += info.angle;
 			else if (info.angle < 0)
-				item->pos.y_rot -= 1274;
+				item->pos.y_rot -= DEGREES_TO_ROTATION(7);
 			else
-				item->pos.y_rot += 1274;
+				item->pos.y_rot += DEGREES_TO_ROTATION(7);
 
 			if (!mummy->flags && item->touch_bits & 0x4800)
 			{

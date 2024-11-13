@@ -28,6 +28,6 @@ void LaraDoubleControl(short item_number)
 	if (item->hit_status)
 		lara_item->hit_points += item->hit_points - mod_object_customization->damage_1;
 
-	item->hit_points = 1000;
+	item->hit_points = DEFAULT_LARA_MAX_HEALTH;
 	AnimateItem(item);
 }

@@ -43,5 +43,10 @@ extern int16_t T4PlusGetRubberBoatSlotID();
 extern int16_t T4PlusGetMotorBoatSlotID();
 extern int16_t T4PlusGetRubberBoatExtraSlotID();
 extern int16_t T4PlusGetMotorBoatExtraSlotID();
+extern int16_t T4PlusGetLaraDoubleSlotID();
+
+extern int16_t T4PlusGetEnemyJeepSlotID();
+
+extern void T4PlusSetupDefaultObjectCustomization();
 
 bool T4ObjectControlRoutine(short object_number, short item_num);

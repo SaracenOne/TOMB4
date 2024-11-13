@@ -141,11 +141,11 @@ void InitialiseSlot(short item_number, long slot)
 	creature->LOT.can_monkey = 0;
 	creature->LOT.is_jumping = 0;
 	creature->LOT.is_monkeying = 0;
-	creature->maximum_turn = 182;
+	creature->maximum_turn = DEGREES_TO_ROTATION(1);
 	creature->flags = 0;
 	creature->enemy = 0;
-	creature->LOT.step = 256;
-	creature->LOT.drop = -512;
+	creature->LOT.step = CLICK_SIZE;
+	creature->LOT.drop = -HALF_BLOCK_SIZE;
 	creature->LOT.block_mask = 0x4000;
 	creature->LOT.fly = 0;
 	creature->LOT.zone = BASIC_ZONE;
@@ -156,8 +156,8 @@ void InitialiseSlot(short item_number, long slot)
 	case VON_CROY:
 	case BADDY_1:
 	case BADDY_2:
-		creature->LOT.step = 1024;
-		creature->LOT.drop = -1024;
+		creature->LOT.step = BLOCK_SIZE;
+		creature->LOT.drop = -BLOCK_SIZE;
 		creature->LOT.can_jump = 1;
 		creature->LOT.can_monkey = 1;
 		creature->LOT.zone = HUMAN_ZONE;
@@ -176,39 +176,39 @@ void InitialiseSlot(short item_number, long slot)
 	case DEMIGOD2:
 	case DEMIGOD3:
 	case DOG:
-		creature->LOT.step = 256;
-		creature->LOT.drop = -512;
+		creature->LOT.step = CLICK_SIZE;
+		creature->LOT.drop = -HALF_BLOCK_SIZE;
 		creature->LOT.zone = BASIC_ZONE;
 		break;
 
 	case SKELETON:
 	case SETHA:
-		creature->LOT.step = 256;
-		creature->LOT.drop = -512;
+		creature->LOT.step = CLICK_SIZE;
+		creature->LOT.drop = -HALF_BLOCK_SIZE;
 		creature->LOT.can_jump = 1;
 		creature->LOT.zone = SKELLY_ZONE;
 		break;
 
 	case CROCODILE:
-		creature->LOT.step = 20480;
-		creature->LOT.drop = -20480;
-		creature->LOT.fly = 32;
+		creature->LOT.step = (BLOCK_SIZE * 20);
+		creature->LOT.drop = -(BLOCK_SIZE * 20);
+		creature->LOT.fly = QUARTER_CLICK_SIZE / 2;
 		creature->LOT.zone = CROC_ZONE;
 		break;
 
 	case BAT:
-		creature->LOT.step = 20480;
-		creature->LOT.drop = -20480;
-		creature->LOT.fly = 16;
+		creature->LOT.step = (BLOCK_SIZE * 20);
+		creature->LOT.drop = -(BLOCK_SIZE * 20);
+		creature->LOT.fly = QUARTER_CLICK_SIZE / 4;
 		creature->LOT.zone = FLYER_ZONE;
 		break;
 
 	case HARPY:
 	case BIG_BEETLE:
 	case HAMMERHEAD:
-		creature->LOT.step = 20480;
-		creature->LOT.drop = -20480;
-		creature->LOT.fly = 32;
+		creature->LOT.step = (BLOCK_SIZE * 20);
+		creature->LOT.drop = -(BLOCK_SIZE * 20);
+		creature->LOT.fly = QUARTER_CLICK_SIZE / 2;
 		creature->LOT.zone = FLYER_ZONE;
 		break;
 	}

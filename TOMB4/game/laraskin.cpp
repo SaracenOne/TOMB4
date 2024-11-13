@@ -99,10 +99,10 @@ void CreateSkinningData()
 
 			for (int j = 1; j < obj->nmeshes; j++, bone += 4, meshpp++)
 			{
-				if (bone[0] & 1)
+				if (bone[0] & POP_BONE_FLAG)
 					PopXYZ();
 
-				if (bone[0] & 2)
+				if (bone[0] & PUSH_BONE_FLAG)
 					PushXYZ();
 
 				SkinXYZPtr->x += bone[1];
@@ -140,10 +140,10 @@ void CreateSkinningData()
 
 			for (int j = 1; j < obj->nmeshes; j++, bone += 4, meshpp++)
 			{
-				if (bone[0] & 1)
+				if (bone[0] & POP_BONE_FLAG)
 					PopXYZ();
 
-				if (bone[0] & 2)
+				if (bone[0] & PUSH_BONE_FLAG)
 					PushXYZ();
 
 				SkinXYZPtr->x += bone[1];
@@ -179,10 +179,10 @@ void CreateSkinningData()
 
 		for (int j = 1; j < obj->nmeshes; j++, bone += 4, meshpp++)
 		{
-			if (*bone & 1)
+			if (*bone & POP_BONE_FLAG)
 				PopXYZ();
 
-			if (*bone & 2)
+			if (*bone & PUSH_BONE_FLAG)
 				PushXYZ();
 
 			SkinXYZPtr->x += bone[1];

@@ -31,8 +31,10 @@ void NGDecryptScriptBlock(char *block) {
 	const unsigned char XOR_CYPHER[] = { 0xEF, 0x55, 0xE1, 0xF8, 0x3D, 0x6F, 0xD6, 0x19, 0xDA, 0x97, 0x1D, 0x8B, 0x85, 0x0F, 0xB4, 0x0A, 0xC4 };
 	const unsigned char SWIZZLE_CYPHER[] = { 0x39, 0x31, 0x01, 0x07, 0x24, 0x25, 0x00, 0x11, 0x2D, 0x0D, 0x28, 0x2C, 0x2E, 0x21, 0x1E, 0x22, 0x14, 0x29, 0x1A, 0x13, 0x3B, 0x35, 0x2B, 0x02, 0x16, 0x06, 0x17, 0x09, 0x1F, 0x0A, 0x15, 0x0F, 0x05, 0x08, 0x2A, 0x18, 0x37, 0x0E, 0x30, 0x38, 0x2F, 0x3C, 0x0C, 0x27, 0x1C, 0x20, 0x10, 0x1B, 0x34, 0x23, 0x3E, 0x3A, 0x3F, 0x0B, 0x12, 0x26, 0x04, 0x36, 0x32, 0x3D, 0x33, 0x19, 0x1D, 0x03 };
 
+	const int SWIZZLE_CYPHER_COUNT = sizeof(SWIZZLE_CYPHER);
+
 	int block_counter = 0;
-	for (int i = 0; i < 64; i++) {
+	for (int i = 0; i < SWIZZLE_CYPHER_COUNT; i++) {
 		if (block_counter >= sizeof(XOR_CYPHER)) {
 			block_counter = 0;
 		}
@@ -41,17 +43,17 @@ void NGDecryptScriptBlock(char *block) {
 		block_counter++;
 	}
 
-	char decrypted_block[64] = {};
+	char decrypted_block[SWIZZLE_CYPHER_COUNT] = {};
 
-	for (int i = 0; i < 64; i++) {
+	for (int i = 0; i < SWIZZLE_CYPHER_COUNT; i++) {
 		int j = 0;
-		while (j < 64 && SWIZZLE_CYPHER[j] != i) {
+		while (j < SWIZZLE_CYPHER_COUNT && SWIZZLE_CYPHER[j] != i) {
 			j++;
 		}
 		decrypted_block[i] = block[j];
 	}
 
-	for (int i = 0; i < 64; i++) {
+	for (int i = 0; i < SWIZZLE_CYPHER_COUNT; i++) {
 		block[i] = decrypted_block[i];
 	}
 }
@@ -513,7 +515,7 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 				if (far_view > world_far_view)
 					far_view = world_far_view;
 
-				get_game_mod_level_environment_info(current_level)->far_view = (unsigned int)far_view * 1024;
+				get_game_mod_level_environment_info(current_level)->far_view = (unsigned int)far_view * BLOCK_SIZE;
 			}
 			break;
 		}
@@ -524,19 +526,19 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 			short fog_end = NG_READ_16(gfScriptFile, offset);
 
 			if (fog_start != -1) {
-				get_game_mod_level_environment_info(current_level)->fog_start_range = fog_start * 1024;
+				get_game_mod_level_environment_info(current_level)->fog_start_range = fog_start * BLOCK_SIZE;
 			} else {
-				get_game_mod_level_environment_info(current_level)->fog_start_range = 12 * 1024;
+				get_game_mod_level_environment_info(current_level)->fog_start_range = 12 * BLOCK_SIZE;
 			}
 
 			if (fog_end != -1) {
-				get_game_mod_level_environment_info(current_level)->fog_end_range = fog_end * 1024;
+				get_game_mod_level_environment_info(current_level)->fog_end_range = fog_end * BLOCK_SIZE;
 			} else {
 				if (far_view != -1) {
-					get_game_mod_level_environment_info(current_level)->fog_end_range = far_view * 1024;
+					get_game_mod_level_environment_info(current_level)->fog_end_range = far_view * BLOCK_SIZE;
 				} else {
 					if (world_far_view != -1) {
-						get_game_mod_level_environment_info(current_level)->fog_end_range = world_far_view * 1024;
+						get_game_mod_level_environment_info(current_level)->fog_end_range = world_far_view * BLOCK_SIZE;
 					}
 				}
 			}
@@ -2530,7 +2532,7 @@ void NGReadNGGameflowInfo(char *gfScriptFile, size_t offset, size_t len) {
 						world_far_view = 127;
 					}
 					for (int i = 0; i < MOD_LEVEL_COUNT; i++) {
-						get_game_mod_level_environment_info(i)->far_view = (unsigned int)world_far_view * 1024;
+						get_game_mod_level_environment_info(i)->far_view = (unsigned int)world_far_view * BLOCK_SIZE;
 					}
 					break;
 				}

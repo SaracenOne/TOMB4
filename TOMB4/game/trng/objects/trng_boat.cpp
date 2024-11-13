@@ -164,8 +164,8 @@ static long BoatUserControl(ITEM_INFO* item)
 			{
 				boat->boat_turn -= 22;
 
-				if (boat->boat_turn < -728)
-					boat->boat_turn = -728;
+				if (boat->boat_turn < -DEGREES_TO_ROTATION(4))
+					boat->boat_turn = -DEGREES_TO_ROTATION(4);
 			}
 
 			no_turn = 0;
@@ -178,8 +178,8 @@ static long BoatUserControl(ITEM_INFO* item)
 			{
 				boat->boat_turn += 22;
 
-				if (boat->boat_turn > 728)
-					boat->boat_turn = 728;
+				if (boat->boat_turn > DEGREES_TO_ROTATION(4))
+					boat->boat_turn = DEGREES_TO_ROTATION(4);
 			}
 
 			no_turn = 0;
@@ -234,16 +234,16 @@ static long CanGetOff(long lr)
 	else
 		angle = item->pos.y_rot - 0x4000;
 
-	x = item->pos.x_pos + ((1024 * phd_sin(angle)) >> W2V_SHIFT);
+	x = item->pos.x_pos + ((BLOCK_SIZE * phd_sin(angle)) >> W2V_SHIFT);
 	y = item->pos.y_pos;
-	z = item->pos.z_pos + ((1024 * phd_cos(angle)) >> W2V_SHIFT);
+	z = item->pos.z_pos + ((BLOCK_SIZE * phd_cos(angle)) >> W2V_SHIFT);
 
 	room_number = item->room_number;
 	floor = GetFloor(x, y, z, &room_number);
 	h = GetHeight(floor, x, y, z);
 	c = GetCeiling(floor, x, y, z);
 
-	if (h - item->pos.y_pos >= -512 && height_type != BIG_SLOPE && height_type != DIAGONAL && c - item->pos.y_pos <= -762 && h - c >= 762)
+	if (h - item->pos.y_pos >= -HALF_BLOCK_SIZE && height_type != BIG_SLOPE && height_type != DIAGONAL && c - item->pos.y_pos <= -(HALF_BLOCK_SIZE + CLICK_SIZE) && h - c >= (HALF_BLOCK_SIZE + CLICK_SIZE))
 		return 1;
 
 	return 0;
@@ -425,7 +425,7 @@ static long BoatDynamics(short item_number)
 	if (item->speed < 0)
 		boat->prop_rot += 6006;
 	else
-		boat->prop_rot += 546 * item->speed + 364;
+		boat->prop_rot += DEGREES_TO_ROTATION(3) * item->speed + DEGREES_TO_ROTATION(2);
 
 	slip = (30 * phd_sin(item->pos.z_rot)) >> W2V_SHIFT;
 
@@ -533,7 +533,7 @@ static long BoatCheckGeton(short item_num, COLL_INFO *coll)
 	dx = lara_item->pos.x_pos - item->pos.x_pos;
 	dz = lara_item->pos.z_pos - item->pos.z_pos;
 
-	if ((dz * phd_cos(-item->pos.y_rot) - dx * phd_sin(-item->pos.y_rot)) >> W2V_SHIFT > 512)
+	if ((dz * phd_cos(-item->pos.y_rot) - dx * phd_sin(-item->pos.y_rot)) >> W2V_SHIFT > HALF_BLOCK_SIZE)
 		return 0;
 
 	pass = 0;
@@ -551,7 +551,7 @@ static long BoatCheckGeton(short item_num, COLL_INFO *coll)
 	else if (lara.water_status == LW_ABOVE_WATER)
 	{
 		if (lara_item->fallspeed > 0) {
-			if (lara_item->pos.y_pos + 512 > item->pos.y_pos)
+			if (lara_item->pos.y_pos + HALF_BLOCK_SIZE > item->pos.y_pos)
 				pass = 3;
 		}
 		else if (!lara_item->fallspeed)
@@ -616,7 +616,7 @@ void BoatCollision(short item_num, ITEM_INFO* l, COLL_INFO* coll)
 
 	if (!geton)
 	{
-		coll->enable_baddie_push = 1;
+		coll->enable_baddie_push = true;
 		ObjectCollision(item_num, l, coll);
 		return;
 	}
@@ -812,8 +812,8 @@ void BoatControl(short item_num, BOAT_TYPE boat_type)
 			item->frame_number = lara_item->frame_number + anims[item->anim_number].frame_base - anims[lara_item->anim_number].frame_base;
 		}
 
-		camera.target_elevation = -3640;
-		camera.target_distance = 2048;
+		camera.target_elevation = -DEGREES_TO_ROTATION(20);
+		camera.target_distance = (BLOCK_SIZE * 2);
 	}
 	else
 	{
@@ -826,8 +826,8 @@ void BoatControl(short item_num, BOAT_TYPE boat_type)
 	boat->pitch += (item->speed - boat->pitch) >> 2;
 
 	ceiling = wh - ceiling;
-	if (ceiling < 5120)
-		pitch = item->speed * ceiling / 5120;
+	if (ceiling < (BLOCK_SIZE * 5))
+		pitch = item->speed * ceiling / (BLOCK_SIZE * 5);
 	else
 		pitch = item->speed;
 
@@ -915,8 +915,8 @@ void BoatControl(short item_num, BOAT_TYPE boat_type)
 	/*
 	if (!(wibble & 0xF) && wh && !leaving)
 	{
-		DoWake(item, -384, 0, 0);
-		DoWake(item, 384, 0, 1);
+		DoWake(item, -(CLICK_SIZE + HALF_CLICK_SIZE), 0, 0);
+		DoWake(item, (CLICK_SIZE + HALF_CLICK_SIZE), 0, 1);
 	}
 
 	if (!item->speed || !wh || leaving)

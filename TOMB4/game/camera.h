@@ -1,6 +1,8 @@
 #pragma once
 #include "../global/types.h"
 
+#define MAX_CAMERA_CHASE_IDEALS 5
+
 void InitialiseCamera();
 void MoveCamera(GAME_VECTOR* ideal, long speed);
 long mgLOS(GAME_VECTOR* start, GAME_VECTOR* target, long push);

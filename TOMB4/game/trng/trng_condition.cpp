@@ -67,7 +67,7 @@ bool NGIsTriggerActive(ITEM_INFO* item) {
 }
 
 bool NGGridFragmentCondition(int32_t x_pos, int32_t y_pos, int32_t grid_size, int32_t x_target_coordinate, int32_t y_target_coordinate, GRID_FRAGMENT_TYPE grid_fragment_type, bool inverted) {
-	int fragment_size = SECTOR_SIZE / grid_size;
+	int fragment_size = BLOCK_SIZE / grid_size;
 	// Flipped these around to match
 	int touching_fragment_x = x_pos / fragment_size;
 	int touching_fragment_y = y_pos / fragment_size;
@@ -820,7 +820,7 @@ int32_t NGPerformTRNGCondition(uint16_t condition_number, uint16_t main_argument
 		case LARA_IS_LESS_OR_EVEN_CLICKS_DISTANT_TO_MOVEABLE: {
 			*test_restore = true;
 			*test_skip = true;
-			result = NGIsSourcePositionLessThanDistanceToTargetPosition(&lara_item->pos, &T4PlusGetItemInfoForID(main_argument)->pos, extra * 256, false);
+			result = NGIsSourcePositionLessThanDistanceToTargetPosition(&lara_item->pos, &T4PlusGetItemInfoForID(main_argument)->pos, extra * CLICK_SIZE, false);
 			break;
 		}
 		case LARA_IS_LESS_OR_EVEN_UNITS_DISTANT_TO_MOVEABLE: {

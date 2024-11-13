@@ -832,7 +832,7 @@ void BaddyObjects()
 	obj->initialise = InitialiseLaraLoad;
 	obj->draw_routine = 0;
 	obj->shadow_size = 160;
-	obj->hit_points = 1000;
+	obj->hit_points = DEFAULT_LARA_MAX_HEALTH;
 	obj->using_drawanimating_item = 0;
 	obj->save_hitpoints = 1;
 	obj->save_position = 1;
@@ -848,9 +848,9 @@ void BaddyObjects()
 	obj->save_position = 1;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
-	bones[obj->bone_index + 4] |= 4;
-	bones[obj->bone_index + 12] |= 4;
-	bones[obj->bone_index + 28] |= 4;
+	bones[obj->bone_index + 4] |= X_ROTATION_FLAG;
+	bones[obj->bone_index + 12] |= X_ROTATION_FLAG;
+	bones[obj->bone_index + 28] |= X_ROTATION_FLAG;
 
 	obj = &objects[JEEP];
 	obj->initialise = InitialiseJeep;
@@ -861,10 +861,10 @@ void BaddyObjects()
 	obj->save_position = 1;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
-	bones[obj->bone_index + 32] |= 4;
-	bones[obj->bone_index + 36] |= 4;
-	bones[obj->bone_index + 44] |= 4;
-	bones[obj->bone_index + 48] |= 4;
+	bones[obj->bone_index + 32] |= X_ROTATION_FLAG;
+	bones[obj->bone_index + 36] |= X_ROTATION_FLAG;
+	bones[obj->bone_index + 44] |= X_ROTATION_FLAG;
+	bones[obj->bone_index + 48] |= X_ROTATION_FLAG;
 
 	obj = &objects[SKELETON];
 
@@ -877,7 +877,7 @@ void BaddyObjects()
 		obj->hit_points = 15;
 		obj->pivot_length = 50;
 		obj->radius = 128;
-		obj->object_mip = 5120;
+		obj->object_mip = (BLOCK_SIZE * 5);
 		obj->explodable_meshbits = 0xA00;
 		obj->intelligent = 1;
 		obj->save_mesh = 1;
@@ -894,17 +894,18 @@ void BaddyObjects()
 	if (obj->loaded)
 	{
 		obj->initialise = InitialiseVoncroy;
-		obj->control = VoncroyControl;
-
-		if (gfCurrentLevel != 1)
+		if (get_game_mod_level_creature_info(gfCurrentLevel)->use_voncroy_racing_behaviour) {
 			obj->control = VoncroyRaceControl;
+		} else {
+			obj->control = VoncroyControl;
+		}
 
 		obj->collision = CreatureCollision;
 		obj->pivot_length = 0;
 		obj->shadow_size = 128;
 		obj->hit_points = 15;
 		obj->radius = 128;
-		obj->object_mip = 5120;
+		obj->object_mip = (BLOCK_SIZE * 5);
 		obj->explodable_meshbits = 0x200000;
 		obj->intelligent = 1;
 		obj->save_mesh = 1;
@@ -914,10 +915,10 @@ void BaddyObjects()
 		obj->save_position = 1;
 		obj->HitEffect = 0;
 		obj->undead = 1;
-		bones[obj->bone_index + 24] |= 4;
-		bones[obj->bone_index + 24] |= 8;
-		bones[obj->bone_index + 80] |= 4;
-		bones[obj->bone_index + 80] |= 8;
+		bones[obj->bone_index + 24] |= X_ROTATION_FLAG;
+		bones[obj->bone_index + 24] |= Y_ROTATION_FLAG;
+		bones[obj->bone_index + 80] |= X_ROTATION_FLAG;
+		bones[obj->bone_index + 80] |= Y_ROTATION_FLAG;
 		meshes[obj->mesh_index + 15] = meshes[objects[T4PlusGetMeshSwap1SlotID()].mesh_index + 14];
 		meshes[obj->mesh_index + 31] = meshes[objects[T4PlusGetMeshSwap1SlotID()].mesh_index + 30];
 		meshes[obj->mesh_index + 37] = meshes[objects[T4PlusGetMeshSwap1SlotID()].mesh_index + 36];
@@ -940,10 +941,10 @@ void BaddyObjects()
 		obj->control = GuideControl;
 		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
-		obj->hit_points = -16384;
+		obj->hit_points = INFINITE_HEALTH;
 		obj->pivot_length = 0;
 		obj->radius = 128;
-		obj->object_mip = 5120;
+		obj->object_mip = (BLOCK_SIZE * 5);
 		obj->intelligent = 1;
 		obj->HitEffect = 0;
 		obj->save_flags = 1;
@@ -952,10 +953,10 @@ void BaddyObjects()
 		obj->save_hitpoints = 1;
 		obj->save_position = 1;
 		obj->undead = 1;
-		bones[obj->bone_index + 24] |= 4;
-		bones[obj->bone_index + 24] |= 8;
-		bones[obj->bone_index + 80] |= 4;
-		bones[obj->bone_index + 80] |= 8;
+		bones[obj->bone_index + 24] |= X_ROTATION_FLAG;
+		bones[obj->bone_index + 24] |= Y_ROTATION_FLAG;
+		bones[obj->bone_index + 80] |= X_ROTATION_FLAG;
+		bones[obj->bone_index + 80] |= Y_ROTATION_FLAG;
 		meshes[obj->mesh_index + 31] = meshes[objects[T4PlusGetMeshSwap2SlotID()].mesh_index + 30];
 		meshes[obj->mesh_index + 37] = meshes[objects[T4PlusGetMeshSwap2SlotID()].mesh_index + 36];
 		meshes[obj->mesh_index + 43] = meshes[objects[T4PlusGetMeshSwap2SlotID()].mesh_index + 42];
@@ -982,7 +983,7 @@ void BaddyObjects()
 		obj->pivot_length = 50;
 		obj->radius = 102;
 		obj->bite_offset = 1;
-		obj->object_mip = 5120;
+		obj->object_mip = (BLOCK_SIZE * 5);
 		obj->intelligent = 1;
 		obj->save_mesh = 1;
 		obj->save_flags = 1;
@@ -990,10 +991,10 @@ void BaddyObjects()
 		obj->save_hitpoints = 1;
 		obj->save_position = 1;
 		obj->HitEffect = 1;
-		bones[obj->bone_index + 28] |= 4;
-		bones[obj->bone_index + 28] |= 8;
-		bones[obj->bone_index + 88] |= 4;
-		bones[obj->bone_index + 88] |= 8;
+		bones[obj->bone_index + 28] |= X_ROTATION_FLAG;
+		bones[obj->bone_index + 28] |= Y_ROTATION_FLAG;
+		bones[obj->bone_index + 88] |= X_ROTATION_FLAG;
+		bones[obj->bone_index + 88] |= Y_ROTATION_FLAG;
 		meshes[obj->mesh_index + 9] = meshes[objects[T4PlusGetMeshSwap3SlotID()].mesh_index + 8];
 		meshes[obj->mesh_index + 15] = meshes[objects[T4PlusGetMeshSwap3SlotID()].mesh_index + 14];
 
@@ -1027,7 +1028,7 @@ void BaddyObjects()
 		obj->pivot_length = 50;
 		obj->radius = 102;
 		obj->bite_offset = 1;
-		obj->object_mip = 5120;
+		obj->object_mip = (BLOCK_SIZE * 5);
 		obj->intelligent = 1;
 		obj->HitEffect = 1;
 		obj->save_flags = 1;
@@ -1035,10 +1036,10 @@ void BaddyObjects()
 		obj->save_mesh = 1;
 		obj->save_hitpoints = 1;
 		obj->save_position = 1;
-		bones[obj->bone_index + 28] |= 4;
-		bones[obj->bone_index + 28] |= 8;
-		bones[obj->bone_index + 88] |= 4;
-		bones[obj->bone_index + 88] |= 8;
+		bones[obj->bone_index + 28] |= X_ROTATION_FLAG;
+		bones[obj->bone_index + 28] |= Y_ROTATION_FLAG;
+		bones[obj->bone_index + 88] |= X_ROTATION_FLAG;
+		bones[obj->bone_index + 88] |= Y_ROTATION_FLAG;
 		meshes[obj->mesh_index + 9] = meshes[objects[T4PlusGetMeshSwap2SlotID()].mesh_index + 8];
 		meshes[obj->mesh_index + 15] = meshes[objects[T4PlusGetMeshSwap2SlotID()].mesh_index + 14];
 
@@ -1067,8 +1068,8 @@ void BaddyObjects()
 		obj->shadow_size = 128;
 		obj->hit_points = 80;
 		obj->pivot_length = 50;
-		obj->radius = 512;
-		obj->object_mip = 5120;
+		obj->radius = HALF_BLOCK_SIZE;
+		obj->object_mip = (BLOCK_SIZE * 5);
 		obj->intelligent = 1;
 		obj->HitEffect = 1;
 		obj->save_flags = 1;
@@ -1107,7 +1108,7 @@ void BaddyObjects()
 		obj->shadow_size = 128;
 		obj->hit_points = 15;
 		obj->radius = 170;
-		obj->object_mip = 5120;
+		obj->object_mip = (BLOCK_SIZE * 5);
 		obj->intelligent = 1;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
@@ -1115,9 +1116,9 @@ void BaddyObjects()
 		obj->save_position = 1;
 		obj->HitEffect = 2;
 		obj->undead = 1;
-		bones[obj->bone_index + 28] |= 4;
-		bones[obj->bone_index + 28] |= 8;
-		bones[obj->bone_index + 72] |= 8;
+		bones[obj->bone_index + 28] |= X_ROTATION_FLAG;
+		bones[obj->bone_index + 28] |= Y_ROTATION_FLAG;
+		bones[obj->bone_index + 72] |= Y_ROTATION_FLAG;
 	}
 
 	obj = &objects[KNIGHTS_TEMPLAR];
@@ -1131,7 +1132,7 @@ void BaddyObjects()
 		obj->shadow_size = 128;
 		obj->hit_points = 15;
 		obj->radius = 128;
-		obj->object_mip = 5120;
+		obj->object_mip = (BLOCK_SIZE * 5);
 		obj->intelligent = 1;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
@@ -1139,9 +1140,9 @@ void BaddyObjects()
 		obj->save_position = 1;
 		obj->HitEffect = 2;
 		obj->undead = 1;
-		bones[obj->bone_index + 24] |= 4;
-		bones[obj->bone_index + 24] |= 8;
-		bones[obj->bone_index + 56] |= 8;
+		bones[obj->bone_index + 24] |= X_ROTATION_FLAG;
+		bones[obj->bone_index + 24] |= Y_ROTATION_FLAG;
+		bones[obj->bone_index + 56] |= Y_ROTATION_FLAG;
 	}
 
 	obj = &objects[SPHINX];
@@ -1154,8 +1155,8 @@ void BaddyObjects()
 		obj->shadow_size = 128;
 		obj->hit_points = 1000;
 		obj->pivot_length = 500;
-		obj->radius = 512;
-		obj->object_mip = 5120;
+		obj->radius = HALF_BLOCK_SIZE;
+		obj->object_mip = (BLOCK_SIZE * 5);
 		obj->intelligent = 1;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
@@ -1176,7 +1177,7 @@ void BaddyObjects()
 		obj->hit_points = 500;
 		obj->pivot_length = 50;
 		obj->radius = 341;
-		obj->object_mip = 5120;
+		obj->object_mip = (BLOCK_SIZE * 5);
 		obj->intelligent = 1;
 		obj->undead = 1;
 		obj->save_flags = 1;
@@ -1193,7 +1194,7 @@ void BaddyObjects()
 		obj->control = LaraDoubleControl;
 		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
-		obj->hit_points = 1000;
+		obj->hit_points = DEFAULT_LARA_MAX_HEALTH;
 		obj->pivot_length = 50;
 		obj->radius = 128;
 		obj->intelligent = 1;
@@ -1215,7 +1216,7 @@ void BaddyObjects()
 		obj->hit_points = 25;
 		obj->pivot_length = 50;
 		obj->radius = 409;
-		obj->object_mip = 5120;
+		obj->object_mip = (BLOCK_SIZE * 5);
 		obj->intelligent = 1;
 		obj->HitEffect = 3;
 		obj->undead = 1;
@@ -1237,7 +1238,7 @@ void BaddyObjects()
 		obj->hit_points = 45;
 		obj->pivot_length = 300;
 		obj->radius = 341;
-		obj->object_mip = 5120;
+		obj->object_mip = (BLOCK_SIZE * 5);
 		obj->intelligent = 1;
 		obj->HitEffect = 1;
 		obj->save_flags = 1;
@@ -1245,10 +1246,10 @@ void BaddyObjects()
 		obj->water_creature = 1;
 		obj->save_hitpoints = 1;
 		obj->save_position = 1;
-		bones[obj->bone_index] |= 8;
-		bones[obj->bone_index + 4] |= 8;
-		bones[obj->bone_index + 8] |= 8;
-		bones[obj->bone_index + 36] |= 8;
+		bones[obj->bone_index] |= Y_ROTATION_FLAG;
+		bones[obj->bone_index + 4] |= Y_ROTATION_FLAG;
+		bones[obj->bone_index + 8] |= Y_ROTATION_FLAG;
+		bones[obj->bone_index + 36] |= Y_ROTATION_FLAG;
 	}
 
 	obj = &objects[CROCODILE];
@@ -1262,7 +1263,7 @@ void BaddyObjects()
 		obj->hit_points = 36;
 		obj->pivot_length = 300;
 		obj->radius = 409;
-		obj->object_mip = 5120;
+		obj->object_mip = (BLOCK_SIZE * 5);
 		obj->intelligent = 1;
 		obj->HitEffect = 1;
 		obj->save_flags = 1;
@@ -1270,10 +1271,10 @@ void BaddyObjects()
 		obj->water_creature = 1;
 		obj->save_hitpoints = 1;
 		obj->save_position = 1;
-		bones[obj->bone_index] |= 8;
-		bones[obj->bone_index + 28] |= 8;
-		bones[obj->bone_index + 36] |= 8;
-		bones[obj->bone_index + 40] |= 8;
+		bones[obj->bone_index] |= Y_ROTATION_FLAG;
+		bones[obj->bone_index + 28] |= Y_ROTATION_FLAG;
+		bones[obj->bone_index + 36] |= Y_ROTATION_FLAG;
+		bones[obj->bone_index + 40] |= Y_ROTATION_FLAG;
 	}
 
 	obj = &objects[DEMIGOD1];
@@ -1287,7 +1288,7 @@ void BaddyObjects()
 		obj->shadow_size = 128;
 		obj->hit_points = 200;
 		obj->radius = 341;
-		obj->object_mip = 5120;
+		obj->object_mip = (BLOCK_SIZE * 5);
 		obj->intelligent = 1;
 		obj->save_flags = 1;
 		obj->undead = 1;
@@ -1295,10 +1296,10 @@ void BaddyObjects()
 		obj->HitEffect = 3;
 		obj->save_hitpoints = 1;
 		obj->save_position = 1;
-		bones[obj->bone_index + 32] |= 4;
-		bones[obj->bone_index + 32] |= 8;
-		bones[obj->bone_index + 32] |= 16;
-		bones[obj->bone_index + 80] |= 8;
+		bones[obj->bone_index + 32] |= X_ROTATION_FLAG;
+		bones[obj->bone_index + 32] |= Y_ROTATION_FLAG;
+		bones[obj->bone_index + 32] |= Z_ROTATION_FLAG;
+		bones[obj->bone_index + 80] |= Y_ROTATION_FLAG;
 	}
 
 	obj = &objects[DEMIGOD2];
@@ -1312,16 +1313,16 @@ void BaddyObjects()
 		obj->shadow_size = 128;
 		obj->hit_points = 200;
 		obj->radius = 341;
-		obj->object_mip = 5120;
+		obj->object_mip = (BLOCK_SIZE * 5);
 		obj->intelligent = 1;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
 		obj->save_hitpoints = 1;
 		obj->save_position = 1;
-		bones[obj->bone_index + 32] |= 4;
-		bones[obj->bone_index + 32] |= 8;
-		bones[obj->bone_index + 32] |= 16;
-		bones[obj->bone_index + 80] |= 8;
+		bones[obj->bone_index + 32] |= X_ROTATION_FLAG;
+		bones[obj->bone_index + 32] |= Y_ROTATION_FLAG;
+		bones[obj->bone_index + 32] |= Z_ROTATION_FLAG;
+		bones[obj->bone_index + 80] |= Y_ROTATION_FLAG;
 	}
 
 	obj = &objects[DEMIGOD3];
@@ -1335,16 +1336,16 @@ void BaddyObjects()
 		obj->shadow_size = 128;
 		obj->hit_points = 200;
 		obj->radius = 341;
-		obj->object_mip = 5120;
+		obj->object_mip = (BLOCK_SIZE * 5);
 		obj->intelligent = 1;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
 		obj->save_hitpoints = 1;
 		obj->save_position = 1;
-		bones[obj->bone_index + 32] |= 4;
-		bones[obj->bone_index + 32] |= 8;
-		bones[obj->bone_index + 32] |= 16;
-		bones[obj->bone_index + 80] |= 8;
+		bones[obj->bone_index + 32] |= X_ROTATION_FLAG;
+		bones[obj->bone_index + 32] |= Y_ROTATION_FLAG;
+		bones[obj->bone_index + 32] |= Z_ROTATION_FLAG;
+		bones[obj->bone_index + 80] |= Y_ROTATION_FLAG;
 	}
 
 	obj = &objects[MUTANT];
@@ -1365,10 +1366,10 @@ void BaddyObjects()
 		obj->save_position = 1;
 		obj->HitEffect = 3;
 		obj->undead = 1;
-		bones[obj->bone_index + 24] |= 4;
-		bones[obj->bone_index + 24] |= 8;
-		bones[obj->bone_index + 28] |= 4;
-		bones[obj->bone_index + 28] |= 8;
+		bones[obj->bone_index + 24] |= X_ROTATION_FLAG;
+		bones[obj->bone_index + 24] |= Y_ROTATION_FLAG;
+		bones[obj->bone_index + 28] |= X_ROTATION_FLAG;
+		bones[obj->bone_index + 28] |= Y_ROTATION_FLAG;
 	}
 
 	obj = &objects[TROOPS];
@@ -1383,17 +1384,17 @@ void BaddyObjects()
 		obj->hit_points = 40;
 		obj->radius = 102;
 		obj->bite_offset = 0;
-		obj->object_mip = 5120;
+		obj->object_mip = (BLOCK_SIZE * 5);
 		obj->intelligent = 1;
 		obj->HitEffect = 1;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
 		obj->save_hitpoints = 1;
 		obj->save_position = 1;
-		bones[obj->bone_index] |= 4;
-		bones[obj->bone_index] |= 8;
-		bones[obj->bone_index + 28] |= 4;
-		bones[obj->bone_index + 28] |= 8;
+		bones[obj->bone_index] |= X_ROTATION_FLAG;
+		bones[obj->bone_index] |= Y_ROTATION_FLAG;
+		bones[obj->bone_index + 28] |= X_ROTATION_FLAG;
+		bones[obj->bone_index + 28] |= Y_ROTATION_FLAG;
 	}
 
 	obj = &objects[SAS];
@@ -1408,17 +1409,17 @@ void BaddyObjects()
 		obj->hit_points = 40;
 		obj->radius = 102;
 		obj->bite_offset = 0;
-		obj->object_mip = 5120;
+		obj->object_mip = (BLOCK_SIZE * 5);
 		obj->intelligent = 1;
 		obj->HitEffect = 1;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
 		obj->save_hitpoints = 1;
 		obj->save_position = 1;
-		bones[obj->bone_index] |= 4;
-		bones[obj->bone_index] |= 8;
-		bones[obj->bone_index + 28] |= 4;
-		bones[obj->bone_index + 28] |= 8;
+		bones[obj->bone_index] |= X_ROTATION_FLAG;
+		bones[obj->bone_index] |= Y_ROTATION_FLAG;
+		bones[obj->bone_index + 28] |= X_ROTATION_FLAG;
+		bones[obj->bone_index + 28] |= Y_ROTATION_FLAG;
 	}
 
 	obj = &objects[HARPY];
@@ -1432,7 +1433,7 @@ void BaddyObjects()
 		obj->hit_points = 60;
 		obj->pivot_length = 50;
 		obj->radius = 409;
-		obj->object_mip = 5120;
+		obj->object_mip = (BLOCK_SIZE * 5);
 		obj->intelligent = 1;
 		obj->HitEffect = 1;
 		obj->save_flags = 1;
@@ -1458,10 +1459,10 @@ void BaddyObjects()
 		obj->save_anim = 1;
 		obj->save_hitpoints = 1;
 		obj->save_position = 1;
-		bones[obj->bone_index + 48] |= 8;
-		bones[obj->bone_index + 48] |= 16;
-		bones[obj->bone_index + 52] |= 8;
-		bones[obj->bone_index + 52] |= 16;
+		bones[obj->bone_index + 48] |= Y_ROTATION_FLAG;
+		bones[obj->bone_index + 48] |= Z_ROTATION_FLAG;
+		bones[obj->bone_index + 52] |= Y_ROTATION_FLAG;
+		bones[obj->bone_index + 52] |= Z_ROTATION_FLAG;
 	}
 
 	obj = &objects[DOG];
@@ -1475,16 +1476,16 @@ void BaddyObjects()
 		obj->hit_points = 16;
 		obj->pivot_length = 300;
 		obj->radius = 341;
-		obj->object_mip = 5120;
+		obj->object_mip = (BLOCK_SIZE * 5);
 		obj->intelligent = 1;
 		obj->HitEffect = 1;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
 		obj->save_hitpoints = 1;
 		obj->save_position = 1;
-		bones[obj->bone_index] |= 8;
-		bones[obj->bone_index + 8] |= 4;
-		bones[obj->bone_index + 8] |= 8;
+		bones[obj->bone_index] |= Y_ROTATION_FLAG;
+		bones[obj->bone_index + 8] |= X_ROTATION_FLAG;
+		bones[obj->bone_index + 8] |= Y_ROTATION_FLAG;
 	}
 
 	obj = &objects[AHMET];
@@ -1498,14 +1499,14 @@ void BaddyObjects()
 		obj->hit_points = 80;
 		obj->pivot_length = 300;
 		obj->radius = 341;
-		obj->object_mip = 5120;
+		obj->object_mip = (BLOCK_SIZE * 5);
 		obj->intelligent = 1;
 		obj->HitEffect = 1;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
 		obj->save_hitpoints = 1;
 		obj->save_position = 1;
-		bones[obj->bone_index + 36] |= 8;
+		bones[obj->bone_index + 36] |= Y_ROTATION_FLAG;
 	}
 
 	for (int i = 0; i < 3; i++)
@@ -1555,7 +1556,7 @@ void BaddyObjects()
 			obj->shadow_size = 128;
 			obj->hit_points = 40;
 			obj->pivot_length = 500;
-			obj->radius = 512;
+			obj->radius = HALF_BLOCK_SIZE;
 			obj->intelligent = 1;
 			obj->save_flags = 1;
 			obj->save_anim = 1;
@@ -1563,10 +1564,10 @@ void BaddyObjects()
 			obj->save_position = 1;
 			obj->HitEffect = 2;
 			obj->undead = 1;
-			bones[obj->bone_index + 32] |= 4;
-			bones[obj->bone_index + 36] |= 4;
-			bones[obj->bone_index + 44] |= 4;
-			bones[obj->bone_index + 48] |= 4;
+			bones[obj->bone_index + 32] |= X_ROTATION_FLAG;
+			bones[obj->bone_index + 36] |= X_ROTATION_FLAG;
+			bones[obj->bone_index + 44] |= X_ROTATION_FLAG;
+			bones[obj->bone_index + 48] |= X_ROTATION_FLAG;
 		}
 	}
 
@@ -1600,7 +1601,7 @@ void BaddyObjects()
 		obj->hit_points = 30;
 		obj->pivot_length = 50;
 		obj->radius = 204;
-		obj->object_mip = 5120;
+		obj->object_mip = (BLOCK_SIZE * 5);
 		obj->intelligent = 1;
 		obj->HitEffect = 1;
 		obj->save_flags = 1;
@@ -1628,10 +1629,10 @@ void BaddyObjects()
 		obj->save_position = 1;
 		obj->HitEffect = 3;
 		obj->undead = 1;
-		bones[obj->bone_index] |= 8;
-		bones[obj->bone_index + 4] |= 4;
-		bones[obj->bone_index + 8] |= 16;
-		bones[obj->bone_index + 12] |= 16;
+		bones[obj->bone_index] |= Y_ROTATION_FLAG;
+		bones[obj->bone_index + 4] |= X_ROTATION_FLAG;
+		bones[obj->bone_index + 8] |= Z_ROTATION_FLAG;
+		bones[obj->bone_index + 12] |= Z_ROTATION_FLAG;
 	}
 
 	obj = &objects[HORSE];
@@ -1666,7 +1667,7 @@ void BaddyObjects()
 		obj->initialise = InitialiseJeanYves;
 		obj->control = JeanYvesControl;
 		obj->collision = ObjectCollision;
-		obj->object_mip = 10240;
+		obj->object_mip = (BLOCK_SIZE * 10);
 		obj->save_flags = 1;
 		obj->save_anim = 1;
 		obj->save_position = 1;
@@ -1706,10 +1707,10 @@ void BaddyObjects()
 		obj->hit_points = 1;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
-		bones[obj->bone_index] |= 16;
-		bones[obj->bone_index + 4] |= 16;
-		bones[obj->bone_index + 8] |= 16;
-		bones[obj->bone_index + 12] |= 16;
+		bones[obj->bone_index] |= Z_ROTATION_FLAG;
+		bones[obj->bone_index + 4] |= Z_ROTATION_FLAG;
+		bones[obj->bone_index + 8] |= Z_ROTATION_FLAG;
+		bones[obj->bone_index + 12] |= Z_ROTATION_FLAG;
 	}
 
 	for (int i = 0; i < 4; i++)
@@ -1770,7 +1771,7 @@ void BuildOutsideTable()
 	OutsideRoomTable = (char*)SYSTEM_MALLOC(0xB640);
 	if (!OutsideRoomTable)
 	{
-		platform_fatal_error("Could not allocate memory for OutsieRoomTable.");
+		platform_fatal_error("Could not allocate memory for OutsideRoomTable.");
 		return;
 	}
 	
@@ -1928,7 +1929,7 @@ void InitialiseLara()
 	lara.look = 1;
 	lara.item_number = item_num;
 	lara.hit_direction = -1;
-	lara.air = DEFAULT_LARA_MAX_AIR;
+	lara.air = DEFAULT_LARA_MAX_OXYGEN;
 	lara.vehicle = NO_ITEM;
 	lara.weapon_item = NO_ITEM;
 	lara.water_surface_dist = 100;
@@ -1936,7 +1937,7 @@ void InitialiseLara()
 	lara.location = -1;
 	lara.highest_location = -1;
 	lara.RopePtr = -1;
-	lara_item->hit_points = 1000;
+	lara_item->hit_points = DEFAULT_LARA_MAX_HEALTH;
 	lara.gun_status = LG_NO_ARMS;
 
 	if (gfLevelFlags & GF_YOUNGLARA)
@@ -1989,7 +1990,7 @@ void InitialiseObjects()
 		obj->pivot_length = 0;
 		obj->radius = 10;
 		obj->shadow_size = 0;
-		obj->hit_points = -16384;
+		obj->hit_points = INFINITE_HEALTH;
 		obj->explodable_meshbits = 0;
 		obj->draw_routine_extra = 0;
 		obj->frame_base = (short*)((long)(size_t(obj->frame_base) & 0xffffffff) + (char*)frames);

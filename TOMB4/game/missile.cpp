@@ -88,7 +88,7 @@ void ControlBodyPart(short fx_number)
 		}
 		else
 		{
-			fx->pos.y_rot += 32768;
+			fx->pos.y_rot += 0x8000;
 			fx->pos.x_pos = ox;
 			fx->pos.z_pos = oz;
 		}

@@ -1127,7 +1127,7 @@ void SaveLevelData(bool full_save, bool use_full_flipmask)
 		{
 			flags = 0;
 
-			for (int i = 0; i < 64; i++)
+			for (int i = 0; i < MAX_VONCROY_FLAGS; i++)
 			{
 				if (VonCroyCutFlags[i])
 					flags |= 1 << (i & 0xF);
@@ -1436,10 +1436,10 @@ void RestoreLevelData(bool full_save, bool use_full_flipmask)
 
 			if (item->object_number == RAISING_BLOCK1 && item->item_flags[1] ||
 				item->object_number == EXPANDING_PLATFORM && item->item_flags[2])
-				AlterFloorHeight(item, -1024);
+				AlterFloorHeight(item, -BLOCK_SIZE);
 
 			if (item->object_number == RAISING_BLOCK2 && item->item_flags[1])
-				AlterFloorHeight(item, -2048);
+				AlterFloorHeight(item, -(BLOCK_SIZE * 2));
 		}
 	}
 
@@ -1530,7 +1530,7 @@ void RestoreLevelData(bool full_save, bool use_full_flipmask)
 
 		if (gfCurrentLevel == 1)
 		{
-			for (int i = 0; i < 64; i++)
+			for (int i = 0; i < MAX_VONCROY_FLAGS; i++)
 			{
 				if (!(i & 0xF))
 					ReadSG(&uword, sizeof(ushort));

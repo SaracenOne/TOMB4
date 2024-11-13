@@ -14,6 +14,7 @@
 #include "lara.h"
 #include "switch.h"
 #include "lot.h"
+#include "../specific/3dmath.h"
 
 static PHD_VECTOR CrowbarDoorPos = { -412, 0, 140 };
 static PHD_VECTOR PullDoorPos = { -201, 0, 322 };
@@ -21,9 +22,49 @@ static PHD_VECTOR PushDoorPos = { 201, 0, -702 };
 static PHD_VECTOR KickDoorPos = { 0, 0, -917 };
 static PHD_VECTOR DoubleDoorPos = { 0, 0, 220 };
 static PHD_VECTOR UnderwaterDoorPos = { -251, -760, -46 };
-static short CrowbarDoorBounds[12] = { -512, 512, -1024, 0, 0, 512, -14560, 14560, -14560, 14560, -14560, 14560 };
-static short PushPullKickDoorBounds[12] = { -384, 384, 0, 0, -1024, 512, -1820, 1820, -5460, 5460, -1820, 1820 };
-static short UnderwaterDoorBounds[12] = { -256, 256, -1024, 0, -1024, 0, -14560, 14560, -14560, 14560, -14560, 14560 };
+
+static short CrowbarDoorBounds[] = {
+	-HALF_BLOCK_SIZE,
+	HALF_BLOCK_SIZE,
+	-BLOCK_SIZE,
+	0,
+	0,
+	HALF_BLOCK_SIZE,
+	-DEGREES_TO_ROTATION(80),
+	DEGREES_TO_ROTATION(80),
+	-DEGREES_TO_ROTATION(80),
+	DEGREES_TO_ROTATION(80),
+	-DEGREES_TO_ROTATION(80),
+	DEGREES_TO_ROTATION(80)
+};
+static short PushPullKickDoorBounds[] = {
+	-(CLICK_SIZE + HALF_CLICK_SIZE),
+	(CLICK_SIZE + HALF_CLICK_SIZE),
+	0,
+	0,
+	-BLOCK_SIZE,
+	HALF_BLOCK_SIZE,
+	-DEGREES_TO_ROTATION(10),
+	DEGREES_TO_ROTATION(10),
+	-DEGREES_TO_ROTATION(30),
+	DEGREES_TO_ROTATION(30),
+	-DEGREES_TO_ROTATION(10),
+	DEGREES_TO_ROTATION(10)
+};
+static short UnderwaterDoorBounds[] = {
+	-CLICK_SIZE,
+	CLICK_SIZE,
+	-BLOCK_SIZE,
+	0,
+	-BLOCK_SIZE,
+	0,
+	-DEGREES_TO_ROTATION(80),
+	DEGREES_TO_ROTATION(80),
+	-DEGREES_TO_ROTATION(80),
+	DEGREES_TO_ROTATION(80),
+	-DEGREES_TO_ROTATION(80),
+	DEGREES_TO_ROTATION(80)
+};
 
 void ShutThatDoor(DOORPOS_DATA* d)
 {
@@ -99,9 +140,9 @@ void DoorControl(short item_number)
 			item->item_flags[0]--;
 			item->pos.y_pos -= 12;
 
-			if (item->pos.y_pos < bounds[2] + *(long*)&item->item_flags[2] - 256)
+			if (item->pos.y_pos < bounds[2] + *(long*)&item->item_flags[2] - CLICK_SIZE)
 			{
-				item->pos.y_pos = bounds[2] + *(long*)&item->item_flags[2] - 256;
+				item->pos.y_pos = bounds[2] + *(long*)&item->item_flags[2] - CLICK_SIZE;
 				item->item_flags[0] = 0;
 			}
 

@@ -337,7 +337,7 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 					SoundEffect(SFX_EXPLOSION1, nullptr, 0);
 					SoundEffect(SFX_EXPLOSION2, nullptr, 0);
 
-					item->hit_points = -16384;
+					item->hit_points = INFINITE_HEALTH;
 					break;
 				}
 				// Explode Creature
@@ -345,7 +345,7 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 					CreatureDie(item_id, true);
 					SoundEffect(SFX_EXPLOSION1, nullptr, 0);
 					SoundEffect(SFX_EXPLOSION2, nullptr, 0);
-					item->hit_points = -16384;
+					item->hit_points = INFINITE_HEALTH;
 					break;
 				}
 				// Creature Die
@@ -457,8 +457,8 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 			NGLog(NG_LOG_TYPE_POSSIBLE_INACCURACY, "NGAction: MOVE_CONTINUOUSLY_FORWARD_BACKWARD_X_ANIMATING_FOR_CLICKS may not be accurate.");
 			if (!NGGetItemHorizontalMovementRemainingUnits(item_id)) {
 				NGSetItemHorizontalMovementAngle(item_id, items[item_id].pos.y_rot);
-				NGSetItemHorizontalMovementRemainingUnits(item_id, (extra_timer + 1) * 256);
-				NGSetItemHorizontalMovementRepeatUnits(item_id, (extra_timer + 1) * 256);
+				NGSetItemHorizontalMovementRemainingUnits(item_id, (extra_timer + 1) * CLICK_SIZE);
+				NGSetItemHorizontalMovementRepeatUnits(item_id, (extra_timer + 1) * CLICK_SIZE);
 				NGSetItemHorizontalMovementSpeed(item_id, 32);
 				NGSetItemMovementInProgressSound(item_id, -1);
 				NGSetItemMovementFinishedSound(item_id, -1);
@@ -473,7 +473,7 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 			}
 
 			if (!NGGetItemVerticalMovementRemainingUnits(item_id)) {
-				NGSetItemVerticalMovementRemainingUnits(item_id, (extra_timer + 1) * -256);
+				NGSetItemVerticalMovementRemainingUnits(item_id, (extra_timer + 1) * -CLICK_SIZE);
 				NGSetItemVerticalMovementRepeatUnits(item_id, 0);
 				NGSetItemVerticalMovementSpeed(item_id, -32);
 				NGSetItemMovementInProgressSound(item_id, -1);
@@ -489,7 +489,7 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 			}
 
 			if (!NGGetItemVerticalMovementRemainingUnits(item_id)) {
-				NGSetItemVerticalMovementRemainingUnits(item_id, (extra_timer + 1) * 256);
+				NGSetItemVerticalMovementRemainingUnits(item_id, (extra_timer + 1) * CLICK_SIZE);
 				NGSetItemVerticalMovementRepeatUnits(item_id, 0);
 				NGSetItemVerticalMovementSpeed(item_id, 32);
 				NGSetItemMovementInProgressSound(item_id, -1);
@@ -506,7 +506,7 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 
 			if (!NGGetItemHorizontalMovementRemainingUnits(item_id)) {
 				NGSetItemHorizontalMovementAngle(item_id, (short)0xC000);
-				NGSetItemHorizontalMovementRemainingUnits(item_id, (extra_timer + 1) * 256);
+				NGSetItemHorizontalMovementRemainingUnits(item_id, (extra_timer + 1) * CLICK_SIZE);
 				NGSetItemHorizontalMovementRepeatUnits(item_id, 0);
 				NGSetItemHorizontalMovementSpeed(item_id, 32);
 				NGSetItemMovementInProgressSound(item_id, -1);
@@ -523,7 +523,7 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 
 			if (!NGGetItemHorizontalMovementRemainingUnits(item_id)) {
 				NGSetItemHorizontalMovementAngle(item_id, (short)0x0000);
-				NGSetItemHorizontalMovementRemainingUnits(item_id, (extra_timer + 1) * 256);
+				NGSetItemHorizontalMovementRemainingUnits(item_id, (extra_timer + 1) * CLICK_SIZE);
 				NGSetItemHorizontalMovementRepeatUnits(item_id, 0);
 				NGSetItemHorizontalMovementSpeed(item_id, 32);
 				NGSetItemMovementInProgressSound(item_id, -1);
@@ -540,7 +540,7 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 
 			if (!NGGetItemHorizontalMovementRemainingUnits(item_id)) {
 				NGSetItemHorizontalMovementAngle(item_id, (short)0x4000);
-				NGSetItemHorizontalMovementRemainingUnits(item_id, (extra_timer + 1) * 256);
+				NGSetItemHorizontalMovementRemainingUnits(item_id, (extra_timer + 1) * CLICK_SIZE);
 				NGSetItemHorizontalMovementRepeatUnits(item_id, 0);
 				NGSetItemHorizontalMovementSpeed(item_id, 32);
 				NGSetItemMovementInProgressSound(item_id, -1);
@@ -557,7 +557,7 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 
 			if (!NGGetItemHorizontalMovementRemainingUnits(item_id)) {
 				NGSetItemHorizontalMovementAngle(item_id, (short)0x8000);
-				NGSetItemHorizontalMovementRemainingUnits(item_id, (extra_timer + 1) * 256);
+				NGSetItemHorizontalMovementRemainingUnits(item_id, (extra_timer + 1) * CLICK_SIZE);
 				NGSetItemHorizontalMovementRepeatUnits(item_id, 0);
 				NGSetItemHorizontalMovementSpeed(item_id, 32);
 				NGSetItemMovementInProgressSound(item_id, -1);
@@ -569,8 +569,8 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 			break;
 		case MOVE_CONTINUOUSLY_UPSTAIRS_DOWNSTAIRS_X_ANIMATING_FOR_CLICKS:
 			if (!NGGetItemVerticalMovementRemainingUnits(item_id)) {
-				NGSetItemVerticalMovementRemainingUnits(item_id, (extra_timer + 1) * -256);
-				NGSetItemVerticalMovementRepeatUnits(item_id, -((extra_timer + 1) * -256));
+				NGSetItemVerticalMovementRemainingUnits(item_id, (extra_timer + 1) * -CLICK_SIZE);
+				NGSetItemVerticalMovementRepeatUnits(item_id, -((extra_timer + 1) * -CLICK_SIZE));
 				NGSetItemVerticalMovementSpeed(item_id, -32);
 				NGSetItemMovementInProgressSound(item_id, -1);
 				NGSetItemMovementFinishedSound(item_id, -1);

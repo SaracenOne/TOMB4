@@ -244,11 +244,11 @@ void RenderBGFXDrawLists() {
     MOD_LEVEL_ENVIRONMENT_INFO* environment_info = get_game_mod_level_environment_info(gfCurrentLevel);
     if (gfLevelFlags & GF_TRAIN || environment_info->force_train_fog)
     {
-        bgfx_fog_parameters[BGFX_FOG_START_PARAMETER] = 12.0F;
-        bgfx_fog_parameters[BGFX_FOG_END_PARAMETER] = 20.0F;
+        bgfx_fog_parameters[BGFX_FOG_START_PARAMETER] = float(DEFAULT_FOG_START_BLOCKS);
+        bgfx_fog_parameters[BGFX_FOG_END_PARAMETER] = float(DEFAULT_FOG_END_BLOCKS);
     } else {
-        bgfx_fog_parameters[BGFX_FOG_START_PARAMETER] = LevelFogStart / 1024.0f;
-        bgfx_fog_parameters[BGFX_FOG_END_PARAMETER] = LevelFogEnd / 1024.0f;
+        bgfx_fog_parameters[BGFX_FOG_START_PARAMETER] = LevelFogStart / float(BLOCK_SIZE);
+        bgfx_fog_parameters[BGFX_FOG_END_PARAMETER] = LevelFogEnd / float(BLOCK_SIZE);
     };
 
     for (size_t i = 0; i < MAX_SORT_BUFFERS; i++) {

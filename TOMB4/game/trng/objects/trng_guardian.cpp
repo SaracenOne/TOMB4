@@ -85,7 +85,7 @@ void InitialiseGuardian(short item_number)
 	}
 
 	item->pos.y_pos -= 640;
-	item->item_flags[1] = (short)item->pos.y_pos - 640;
+	item->item_flags[1] = (short)item->pos.y_pos - (HALF_BLOCK_SIZE + HALF_CLICK_SIZE);
 	item->current_anim_state = 0;
 	item->item_flags[3] = 90;
 	memset(&gt, 0, sizeof(GUARDIAN_TARGET));
@@ -116,9 +116,9 @@ void TriggerGuardianSparks(GAME_VECTOR* pos, long size, long rgb, long power)
 		sptr->x = pos->x;
 		sptr->y = pos->y;
 		sptr->z = pos->z;
-		sptr->Xvel = ((GetRandomControl() & 0xFFF) - 2048) << power;
-		sptr->Yvel = ((rnd & 0xFFF) - 2048) << power;
-		sptr->Zvel = ((GetRandomControl() & 0xFFF) - 2048) << power;
+		sptr->Xvel = ((GetRandomControl() & 0xFFF) - (BLOCK_SIZE * 2)) << power;
+		sptr->Yvel = ((rnd & 0xFFF) - (BLOCK_SIZE * 2)) << power;
+		sptr->Zvel = ((GetRandomControl() & 0xFFF) - (BLOCK_SIZE * 2)) << power;
 
 		sptr->Gravity = rnd >> 7 & 0x1F;
 		sptr->Flags = 0;
@@ -268,7 +268,7 @@ void GuardianControl(short item_number)
 	{
 		item->trigger_flags++;
 		item->pos.y_pos = item->item_flags[1] - (128 * phd_sin(item->item_flags[2]) >> W2V_SHIFT);
-		item->item_flags[2] += 546;
+		item->item_flags[2] += DEGREES_TO_ROTATION(3);
 		s.x = 0;
 		s.y = 168;
 		s.z = 248;
@@ -369,7 +369,7 @@ void GuardianControl(short item_number)
 		{
 			if (gt.TrackLara)
 			{
-				if (!(GetRandomControl() & 0x1F) && abs(gt.Xdiff) < 1024 && abs(gt.Ydiff) < 1024 && !lara_item->fallspeed || !(GetRandomControl() & 0x1FF))
+				if (!(GetRandomControl() & 0x1F) && abs(gt.Xdiff) < BLOCK_SIZE && abs(gt.Ydiff) < BLOCK_SIZE && !lara_item->fallspeed || !(GetRandomControl() & 0x1FF))
 				{
 					item->item_flags[0]++;
 					item->item_flags[3] = 0;
@@ -482,7 +482,7 @@ void GuardianControl(short item_number)
 
 								if (adiff < 0x2000)
 								{
-									adiff += 512;
+									adiff += HALF_BLOCK_SIZE;
 
 									if (adiff < 0x2000)
 									{
@@ -583,8 +583,8 @@ void GuardianControl(short item_number)
 
 		if (!(GlobalCounter & 7))
 		{
-			item->item_flags[3] = (GetRandomControl() & 0x3FFF) + item->pos.y_rot - 4096;
-			item->trigger_flags = (GetRandomControl() & 0x1000) - 2048;
+			item->item_flags[3] = (GetRandomControl() & 0x3FFF) + item->pos.y_rot - (BLOCK_SIZE * 4);
+			item->trigger_flags = (GetRandomControl() & 0x1000) - (BLOCK_SIZE * 2);
 		}
 
 		InterpolateAngle(item->item_flags[3], &item->pos.y_rot, 0, 2);
@@ -593,10 +593,10 @@ void GuardianControl(short item_number)
 
 		if (item->speed > 136)
 		{
-			ExplodeItemNode(&items[aptr[0]], 0, 0, 128);
+			ExplodeItemNode(&items[aptr[0]], 0, 0, 0x80);
 			KillItem(aptr[0]);
-			ExplodeItemNode(item, 0, 0, 128);
-			item->pos.y_pos -= 256;
+			ExplodeItemNode(item, 0, 0, 0x80);
+			item->pos.y_pos -= CLICK_SIZE;
 			TriggerExplosionSparks(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, 3, -2, 2, item->room_number);
 			TriggerExplosionSparks(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, 2, 0, 2, item->room_number);
 			TriggerShockwave((PHD_VECTOR*)&item->pos, 0xA00020, 64, 0x24008040, 0);
@@ -633,9 +633,9 @@ void GuardianControl(short item_number)
 			gt.elptr[0] = 0;
 			gt.elptr[1] = 0;
 			item->item_flags[0] = 3;
-			item->item_flags[3] = (GetRandomControl() & 0x1000) + item->pos.y_rot - 2048;
+			item->item_flags[3] = (GetRandomControl() & 0x1000) + item->pos.y_rot - (BLOCK_SIZE * 2);
 			item->speed = 3;
-			item->trigger_flags = (GetRandomControl() & 0x1000) + item->pos.x_rot - 2048;
+			item->trigger_flags = (GetRandomControl() & 0x1000) + item->pos.x_rot - (BLOCK_SIZE * 2);
 		}
 	}
 }

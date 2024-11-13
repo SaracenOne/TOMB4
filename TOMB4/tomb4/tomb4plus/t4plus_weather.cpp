@@ -27,11 +27,10 @@ T4PWeatherType t4p_snow_type = T4P_WEATHER_DISABLED;
 long rain_outside = 0;
 long snow_outside = 0;
 
-#define RAIN_ARRAY_SIZE 1024
-#define SNOW_ARRAY_SIZE 1024
+#define PERCIPITATION_ARRAY_SIZE 1024
 
-static RAINDROPS Rain[RAIN_ARRAY_SIZE];
-static SNOWFLAKE Snow[SNOW_ARRAY_SIZE];
+static RAINDROPS Rain[PERCIPITATION_ARRAY_SIZE];
+static SNOWFLAKE Snow[PERCIPITATION_ARRAY_SIZE];
 static short rain_count = 0;
 static short snow_count = 0;
 static short max_rain = 0;
@@ -45,15 +44,15 @@ void InitWeatherFX()
 	rain_outside = 0;
 	snow_outside = 0;
 
-	snow_count = SNOW_ARRAY_SIZE;
-	rain_count = RAIN_ARRAY_SIZE;
+	snow_count = PERCIPITATION_ARRAY_SIZE;
+	rain_count = PERCIPITATION_ARRAY_SIZE;
 	max_snow = 64;
 	max_rain = 64;
 }
 
 void ClearWeatherFX()
 {
-	for (int i = 0; i < 1024; i++)
+	for (int i = 0; i < PERCIPITATION_ARRAY_SIZE; i++)
 	{
 		Rain[i].x = 0;
 		Snow[i].x = 0;
@@ -81,10 +80,10 @@ void DoRain()
 		if (rain_outside && !rptr->x && num_alive < max_rain)
 		{
 			num_alive++;
-			rad = GetRandomDraw() & 8191;
-			angle = GetRandomDraw() & 8190;
+			rad = GetRandomDraw() & DEGREES_TO_ROTATION(45) + 1;
+			angle = GetRandomDraw() & DEGREES_TO_ROTATION(45);
 			rptr->x = camera.pos.x + (rad * rcossin_tbl[angle] >> (W2V_SHIFT - 2));
-			rptr->y = camera.pos.y + -1024 - (GetRandomDraw() & 0x7FF);
+			rptr->y = camera.pos.y + -BLOCK_SIZE - (GetRandomDraw() & 0x7FF);
 			rptr->z = camera.pos.z + (rad * rcossin_tbl[angle + 1] >> (W2V_SHIFT - 2));
 
 			if (t4p_rain_type == T4P_WEATHER_DISABLED) {
@@ -129,8 +128,8 @@ void DoRain()
 			rptr->y += rptr->yv << 3;
 			rptr->z += rptr->zv + 4 * SmokeWindZ;
 			r = &room[rptr->room_number];
-			x = r->x + 1024;
-			z = r->z + 1024;
+			x = r->x + BLOCK_SIZE;
+			z = r->z + BLOCK_SIZE;
 			x_size = r->x_size - 1;
 			y_size = r->y_size - 1;
 
@@ -325,7 +324,7 @@ void DoSnow()
 			rad = GetRandomDraw() & 0x1FFF;
 			angle = (GetRandomDraw() & 0xFFF) << 1;
 			snow->x = camera.pos.x + (rad * rcossin_tbl[angle] >> (W2V_SHIFT - 2));
-			snow->y = camera.pos.y - 1024 - (GetRandomDraw() & 0x7FF);
+			snow->y = camera.pos.y - BLOCK_SIZE - (GetRandomDraw() & 0x7FF);
 			snow->z = camera.pos.z + (rad * rcossin_tbl[angle + 1] >> (W2V_SHIFT - 2));
 
 			if (t4p_snow_type == T4P_WEATHER_DISABLED) {
@@ -371,8 +370,8 @@ void DoSnow()
 			r = &room[snow->room_number];
 
 			if (snow->y <= r->maxceiling || snow->y >= r->minfloor ||
-				snow->z <= r->z + 1024 || snow->z >= (r->x_size << 10) + r->z - 1024 ||
-				snow->x <= r->x + 1024 || snow->x >= (r->y_size << 10) + r->x - 1024)
+				snow->z <= r->z + BLOCK_SIZE || snow->z >= (r->x_size << 10) + r->z - BLOCK_SIZE ||
+				snow->x <= r->x + BLOCK_SIZE || snow->x >= (r->y_size << 10) + r->x - BLOCK_SIZE)
 			{
 				room_number = snow->room_number;
 				GetFloor(snow->x, snow->y, snow->z, &room_number);

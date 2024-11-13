@@ -120,12 +120,12 @@ void SphinxControl(short item_number)
 		break;
 
 	case 4:
-		sphinx->maximum_turn = 546;
+		sphinx->maximum_turn = DEGREES_TO_ROTATION(3);
 
-		if (info.distance > 0x400000 && abs(info.angle) <= 512 || item->required_anim_state == 5)
+		if (info.distance > 0x400000 && abs(info.angle) <= HALF_BLOCK_SIZE || item->required_anim_state == 5)
 			item->goal_anim_state = 5;
 		else if (info.distance < 0x400000 && item->goal_anim_state != 5 &&
-			h2 <= item->pos.y_pos + 256 && h2 >= item->pos.y_pos - 256)
+			h2 <= item->pos.y_pos + CLICK_SIZE && h2 >= item->pos.y_pos - CLICK_SIZE)
 		{
 			item->goal_anim_state = 9;
 			item->required_anim_state = 6;
@@ -149,13 +149,13 @@ void SphinxControl(short item_number)
 			item->required_anim_state = 6;
 			sphinx->maximum_turn = 0;
 		}
-		else if (info.distance > 0x400000 && abs(info.angle) > 512)
+		else if (info.distance > 0x400000 && abs(info.angle) > HALF_BLOCK_SIZE)
 			item->goal_anim_state = 9;
 
 		break;
 
 	case 6:
-		sphinx->maximum_turn = 546;
+		sphinx->maximum_turn = DEGREES_TO_ROTATION(3);
 
 		if (info.distance > 0x400000 || h2 > item->pos.y_pos + 256 || h2 < item->pos.y_pos - 256)
 		{

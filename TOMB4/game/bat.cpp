@@ -110,7 +110,7 @@ void BatControl(short item_number)
 			bat->mood = ESCAPE_MOOD;
 
 		CreatureMood(item, &info, 0);
-		angle = CreatureTurn(item, 3640);
+		angle = CreatureTurn(item, DEGREES_TO_ROTATION(20));
 
 		switch (item->current_anim_state)
 		{
@@ -120,7 +120,7 @@ void BatControl(short item_number)
 				bat->flags = 0;
 
 			if (!bat->flags && (item->touch_bits || bat->enemy != lara_item && info.distance < 0x10000 &&
-				info.ahead && abs(item->pos.y_pos - bat->enemy->pos.y_pos) < 896))
+				info.ahead && abs(item->pos.y_pos - bat->enemy->pos.y_pos) < ((CLICK_SIZE * 3) + HALF_CLICK_SIZE)))
 				item->goal_anim_state = 3;
 
 			break;
@@ -128,7 +128,7 @@ void BatControl(short item_number)
 		case 3:
 
 			if (!bat->flags && item->touch_bits || bat->enemy != lara_item && info.distance < 0x10000 &&
-				info.ahead && abs(item->pos.y_pos - bat->enemy->pos.y_pos) < 896)
+				info.ahead && abs(item->pos.y_pos - bat->enemy->pos.y_pos) < ((CLICK_SIZE * 3) + HALF_CLICK_SIZE))
 			{
 				CreatureEffect(item, &bat_bite, DoBloodSplat);
 

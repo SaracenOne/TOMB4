@@ -62,9 +62,9 @@ void InitialiseDoor(short item_number)
 
 	if (!item->pos.y_rot)
 		dx = -1;
-	else if (item->pos.y_rot == -32768)
+	else if (item->pos.y_rot == -0x8000)
 		dx = 1;
-	else if (item->pos.y_rot == 16384)
+	else if (item->pos.y_rot == 0x4000)
 		dy = -1;
 	else
 		dy = 1;
@@ -177,18 +177,18 @@ void InitialiseFlameEmitter(short item_number)
 	if (item->trigger_flags < 0)
 	{
 		item->item_flags[0] = (GetRandomControl() & 0x3F) + 90;
-		item->item_flags[2] = 256;
+		item->item_flags[2] = 0x100;
 
 		if ((-item->trigger_flags & 7) == 7)
 		{
 			if (!item->pos.y_rot)
-				item->pos.z_pos += 512;
+				item->pos.z_pos += HALF_BLOCK_SIZE;
 			else if (item->pos.y_rot == 0x4000)
-				item->pos.x_pos += 512;
+				item->pos.x_pos += HALF_BLOCK_SIZE;
 			else if (item->pos.y_rot == -0x8000)
-				item->pos.z_pos -= 512;
+				item->pos.z_pos -= HALF_BLOCK_SIZE;
 			else if (item->pos.y_rot == -0x4000)
-				item->pos.x_pos -= 512;
+				item->pos.x_pos -= HALF_BLOCK_SIZE;
 		}
 	}
 }
@@ -198,37 +198,37 @@ void InitialiseFlameEmitter2(short item_number)
 	ITEM_INFO* item;
 
 	item = &items[item_number];
-	item->pos.y_pos -= 64;
+	item->pos.y_pos -= QUARTER_CLICK_SIZE;
 
 	if (item->trigger_flags != 123)
 	{
 		if (!item->pos.y_rot)
 		{
 			if (item->trigger_flags == 2)
-				item->pos.z_pos += 80;
+				item->pos.z_pos += QUARTER_CLICK_SIZE + (QUARTER_CLICK_SIZE / 4);
 			else
-				item->pos.z_pos += 256;
+				item->pos.z_pos += CLICK_SIZE;
 		}
 		else if (item->pos.y_rot == 0x4000)
 		{
 			if (item->trigger_flags == 2)
-				item->pos.x_pos += 80;
+				item->pos.x_pos += QUARTER_CLICK_SIZE + (QUARTER_CLICK_SIZE / 4);
 			else
-				item->pos.x_pos += 256;
+				item->pos.x_pos += CLICK_SIZE;
 		}
 		else if (item->pos.y_rot == -0x8000)
 		{
 			if (item->trigger_flags == 2)
-				item->pos.z_pos -= 80;
+				item->pos.z_pos -= QUARTER_CLICK_SIZE + (QUARTER_CLICK_SIZE / 4);
 			else
-				item->pos.z_pos -= 256;
+				item->pos.z_pos -= CLICK_SIZE;
 		}
 		else if (item->pos.y_rot == -0x4000)
 		{
 			if (item->trigger_flags == 2)
-				item->pos.x_pos -= 80;
+				item->pos.x_pos -= QUARTER_CLICK_SIZE + (QUARTER_CLICK_SIZE / 4);
 			else
-				item->pos.x_pos -= 256;
+				item->pos.x_pos -= CLICK_SIZE;
 		}
 	}
 }
@@ -271,7 +271,7 @@ void InitialiseJobySpike(short item_number)
 	floor = GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
 	h = GetHeight(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
 	c = GetCeiling(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
-	item->item_flags[3] = short((4096 * (h - c)) / 3328);
+	item->item_flags[3] = short(((BLOCK_SIZE * 4) * (h - c)) / 3328);
 }
 
 void InitialiseTwoBlockPlatform(short item_number)
@@ -288,11 +288,11 @@ void InitialiseSlicerDicer(short item_number)
 	ITEM_INFO* item;
 
 	item = &items[item_number];
-	item->pos.x_pos += 512 * phd_sin(item->pos.y_rot + 0x4000) >> W2V_SHIFT;
-	item->pos.z_pos += 512 * phd_cos(item->pos.y_rot + 0x4000) >> W2V_SHIFT;
+	item->pos.x_pos += HALF_BLOCK_SIZE * phd_sin(item->pos.y_rot + 0x4000) >> W2V_SHIFT;
+	item->pos.z_pos += HALF_BLOCK_SIZE * phd_cos(item->pos.y_rot + 0x4000) >> W2V_SHIFT;
 	item->item_flags[3] = 50;
 	item->item_flags[0] = short(item->pos.x_pos >> 8);
-	item->item_flags[1] = short((item->pos.y_pos - 4608) >> 8);
+	item->item_flags[1] = short((item->pos.y_pos - ((BLOCK_SIZE * 4) + HALF_BLOCK_SIZE)) >> 8);
 	item->item_flags[2] = short(item->pos.z_pos >> 8);
 }
 
@@ -312,21 +312,21 @@ void InitialiseScaledSpike(short item_number)
 	xzrots[7] = 0x6000;
 	item->status = ITEM_INVISIBLE;
 
-	if (item->trigger_flags & 8)
+	if (item->trigger_flags & 0x8)
 	{
-		item->pos.x_rot = xzrots[item->trigger_flags & 7];
+		item->pos.x_rot = xzrots[item->trigger_flags & 0x7];
 		item->pos.y_rot = 0x4000;
-		item->pos.z_pos -= SPxzoffs[item->trigger_flags & 7];
+		item->pos.z_pos -= SPxzoffs[item->trigger_flags & 0x7];
 	}
 	else
 	{
-		item->pos.z_rot = xzrots[item->trigger_flags & 7];
-		item->pos.x_pos += SPxzoffs[item->trigger_flags & 7];
+		item->pos.z_rot = xzrots[item->trigger_flags & 0x7];
+		item->pos.x_pos += SPxzoffs[item->trigger_flags & 0x7];
 	}
 
-	item->item_flags[0] = 1024;
+	item->item_flags[0] = 0x400;
 	item->item_flags[2] = 0;
-	item->pos.y_pos += SPyoffs[item->trigger_flags & 7];
+	item->pos.y_pos += SPyoffs[item->trigger_flags & 0x7];
 }
 
 void InitialiseRaisingBlock(short item_number)
@@ -343,13 +343,13 @@ void InitialiseRaisingBlock(short item_number)
 	if (item->object_number == EXPANDING_PLATFORM)
 	{
 		if (!item->pos.y_rot)
-			item->pos.z_pos += 511;
+			item->pos.z_pos += (HALF_BLOCK_SIZE - 1);
 		else if (item->pos.y_rot == 0x4000)
-			item->pos.x_pos += 511;
+			item->pos.x_pos += (HALF_BLOCK_SIZE - 1);
 		else if (item->pos.y_rot == -0x8000)
-			item->pos.z_pos -= 511;
+			item->pos.z_pos -= (HALF_BLOCK_SIZE - 1);
 		else if (item->pos.y_rot == -0x4000)
-			item->pos.x_pos -= 511;
+			item->pos.x_pos -= (HALF_BLOCK_SIZE - 1);
 	}
 
 	if (item->trigger_flags == 2)
@@ -456,13 +456,13 @@ void InitialiseSmokeEmitter(short item_number)
 		item->item_flags[0] = item->trigger_flags >> 4;
 
 		if (!item->pos.y_rot)
-			item->pos.z_pos += 320;
+			item->pos.z_pos += (CLICK_SIZE + QUARTER_CLICK_SIZE);
 		else if (item->pos.y_rot == 0x4000)
-			item->pos.x_pos += 320;
+			item->pos.x_pos += (CLICK_SIZE + QUARTER_CLICK_SIZE);
 		else if (item->pos.y_rot == -0x4000)
-			item->pos.x_pos -= 320;
+			item->pos.x_pos -= (CLICK_SIZE + QUARTER_CLICK_SIZE);
 		else if (item->pos.y_rot == -0x8000)
-			item->pos.z_pos -= 320;
+			item->pos.z_pos -= (CLICK_SIZE + QUARTER_CLICK_SIZE);
 	}
 	else if (room[item->room_number].flags & ROOM_UNDERWATER && item->trigger_flags == 1)
 	{
@@ -521,7 +521,7 @@ void CreateRope(ROPE_STRUCT* rope, PHD_VECTOR* pos, PHD_VECTOR* dir, long slengt
 	dir->z <<= (W2V_SHIFT + 2);
 	Normalise(dir);
 
-	for (int n = 0; n < 24; ++n)
+	for (int n = 0; n < MAX_ROPE_SEGMENTS; ++n)
 	{
 		rope->Segment[n].x = (__int64)(rope->SegmentLength * n) * dir->x >> (W2V_SHIFT + 2);
 		rope->Segment[n].y = (__int64)(rope->SegmentLength * n) * dir->y >> (W2V_SHIFT + 2);
@@ -558,7 +558,7 @@ void InitialiseRope(short item_number)
 
 void init_all_ropes()
 {
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < MAXIMUM_ROPES; i++)
 		RopeList[i].Active = 0;
 
 	nRope = 0;
@@ -591,6 +591,6 @@ void InitialiseEffects()
 	next_blood = 0;
 	ClearScarabs();
 
-	for (int i = 0; i < 64; i++)
+	for (int i = 0; i < MAX_LOCUSTS; i++)
 		Locusts[i].On = 0;
 }

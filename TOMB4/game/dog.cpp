@@ -127,7 +127,7 @@ void DogControl(short item_number)
 			break;
 
 		case 2:
-			dog->maximum_turn = 546;
+			dog->maximum_turn = DEGREES_TO_ROTATION(3);
 
 			if (item->ai_bits & PATROL1)
 				item->goal_anim_state = 2;
@@ -139,7 +139,7 @@ void DogControl(short item_number)
 			break;
 
 		case 3:
-			dog->maximum_turn = 1092;
+			dog->maximum_turn = DEGREES_TO_ROTATION(6);
 
 			if (dog->mood == ESCAPE_MOOD)
 			{
@@ -159,7 +159,7 @@ void DogControl(short item_number)
 			break;
 
 		case 5:
-			dog->maximum_turn = 546;
+			dog->maximum_turn = DEGREES_TO_ROTATION(3);
 
 			if (dog->mood == BORED_MOOD)
 				item->goal_anim_state = 9;
@@ -238,7 +238,7 @@ void DogControl(short item_number)
 			else if (dog->mood == BORED_MOOD)
 			{
 				dog->flags = 0;
-				dog->maximum_turn = 182;
+				dog->maximum_turn = DEGREES_TO_ROTATION(1);
 
 				if (random < 256 && item->ai_bits & MODIFY && item->current_anim_state == 1)
 				{

@@ -126,6 +126,31 @@ void NGReadNGSavegameInfo() {
 					break;
 				}
 				case 0x8031: { // SAVEGAME_INFOS
+					uint16_t flags = NG_READ_16(ng_savegame_buffer, offset);
+					uint16_t first_shatter = NG_READ_16(ng_savegame_buffer, offset);
+					uint16_t last_shatter = NG_READ_16(ng_savegame_buffer, offset);
+					uint16_t lara_state_id = NG_READ_16(ng_savegame_buffer, offset);
+					uint16_t lara_hp = NG_READ_16(ng_savegame_buffer, offset);
+
+					char tr4_name[32];
+					for (int i = 0; i < sizeof(tr4_name); i++) {
+						tr4_name[i] = NG_READ_8(ng_savegame_buffer, offset);
+					}
+
+					int16_t vehicle = NG_READ_16(ng_savegame_buffer, offset);
+
+					int8_t buffer_a[157];
+					for (int i = 0; i < sizeof(buffer_a); i++) {
+						buffer_a[i] = NG_READ_8(ng_savegame_buffer, offset);
+					}
+
+					int8_t buffer_b[68];
+					for (int i = 0; i < sizeof(buffer_b); i++) {
+						buffer_b[i] = NG_READ_8(ng_savegame_buffer, offset);
+					}
+
+					uint16_t room_flags = NG_READ_16(ng_savegame_buffer, offset);
+					uint32_t offset_lara = NG_READ_32(ng_savegame_buffer, offset);
 					break;
 				}
 				case 0x8038: { // VAR_GLOBAL_TRNG

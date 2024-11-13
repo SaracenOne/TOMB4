@@ -18,6 +18,8 @@
 #include "../tomb4/tomb4.h"
 #include "../tomb4/tomb4plus/t4plus_inventory.h"
 #include "../tomb4/tomb4plus/t4plus_environment.h"
+#include "../tomb4/mod_config.h"
+#include "../tomb4/tomb4plus/t4plus_objects.h"
 
 DISPLAYPU pickups[MAX_PICKUP_DISPLAYABLE_COUNT];
 long PickupX;
@@ -67,7 +69,7 @@ void DrawGameInfo(long timed)
 		{
 			if (tomb4.enemy_bars && lara.target->hit_points > 0)
 			{
-				if (lara.target->object_number == LARA_DOUBLE)
+				if (lara.target->object_number == T4PlusGetLaraDoubleSlotID())
 					S_DrawEnemyBar(lara_item->hit_points / 10);
 				else if (lara.target->object_number == SKELETON)
 					S_DrawEnemyBar(100);
@@ -159,24 +161,24 @@ void DrawAirBar(long flash_state)
 	long air;
 
 	if (lara.vehicle == NO_ITEM && (lara.water_status == LW_UNDERWATER || lara.water_status == LW_SURFACE
-		|| (T4PlusIsRoomSwamp(&room[lara_item->room_number]) && lara.air < DEFAULT_LARA_MAX_AIR)))
+		|| (T4PlusIsRoomSwamp(&room[lara_item->room_number]) && lara.air < DEFAULT_LARA_MAX_OXYGEN)))
 	{
 		air = lara.air;
 
 		if (air < 0)
 			air = 0;
-		else if (air > DEFAULT_LARA_MAX_AIR)
-			air = DEFAULT_LARA_MAX_AIR;
+		else if (air > DEFAULT_LARA_MAX_OXYGEN)
+			air = DEFAULT_LARA_MAX_OXYGEN;
 
 		if (air <= 450)
 		{
 			if (flash_state)
-				S_DrawAirBar(100 * air / DEFAULT_LARA_MAX_AIR);
+				S_DrawAirBar(100 * air / DEFAULT_LARA_MAX_OXYGEN);
 			else
 				S_DrawAirBar(0);
 		}
 		else
-			S_DrawAirBar(100 * air / DEFAULT_LARA_MAX_AIR);
+			S_DrawAirBar(100 * air / DEFAULT_LARA_MAX_OXYGEN);
 	}
 }
 

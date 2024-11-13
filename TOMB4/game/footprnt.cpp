@@ -54,7 +54,7 @@ void AddFootPrint(ITEM_INFO* item)
 		print->y = GetHeight(floor, pos.x, pos.y, pos.z);
 		print->z = pos.z;
 		print->YRot = item->pos.y_rot;
-		print->Active = 512;
+		print->Active = HALF_BLOCK_SIZE;
 		FootPrintNum = (FootPrintNum + 1) & 0x1F;
 	}
 }
@@ -92,11 +92,11 @@ void S_DrawFootPrints()
 				col = 112;
 
 			pos[0].x = 0;
-			pos[0].z = -64;
-			pos[1].x = -128;
-			pos[1].z = 64;
-			pos[2].x = 128;
-			pos[2].z = 64;
+			pos[0].z = -QUARTER_CLICK_SIZE;
+			pos[1].x = -HALF_CLICK_SIZE;
+			pos[1].z = QUARTER_CLICK_SIZE;
+			pos[2].x = HALF_CLICK_SIZE;
+			pos[2].z = QUARTER_CLICK_SIZE;
 
 			phd_PushUnitMatrix();
 			phd_TranslateRel(print->x, print->y, print->z);

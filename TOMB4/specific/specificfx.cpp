@@ -627,13 +627,13 @@ void S_PrintShadow(short size, short* box, ITEM_INFO* item)
 
 void DrawTrainStrips()
 {
-	DrawTrainFloorStrip(-20480, -5120, &textinfo[aranges[7]], 0x1101010);
-	DrawTrainFloorStrip(-20480, 3072, &textinfo[aranges[7]], 0x1101010);
-	DrawTrainFloorStrip(-20480, -2048, &textinfo[aranges[5]], 0x100800);
-	DrawTrainFloorStrip(-20480, 2048, &textinfo[aranges[6]], 0x810);
-	DrawTrainFloorStrip(-20480, -1024, &textinfo[aranges[3]], 0);
-	DrawTrainFloorStrip(-20480, 1024, &textinfo[aranges[4]], 0);
-	DrawTrainFloorStrip(-20480, 0, &textinfo[aranges[2]], 0);
+	DrawTrainFloorStrip(-(BLOCK_SIZE * 20), -(BLOCK_SIZE * 5), &textinfo[aranges[7]], 0x1101010);
+	DrawTrainFloorStrip(-(BLOCK_SIZE * 20), (BLOCK_SIZE * 3), &textinfo[aranges[7]], 0x1101010);
+	DrawTrainFloorStrip(-(BLOCK_SIZE * 20), -(BLOCK_SIZE * 2), &textinfo[aranges[5]], 0x100800);
+	DrawTrainFloorStrip(-(BLOCK_SIZE * 20), (BLOCK_SIZE * 2), &textinfo[aranges[6]], 0x810);
+	DrawTrainFloorStrip(-(BLOCK_SIZE * 20), -(BLOCK_SIZE), &textinfo[aranges[3]], 0);
+	DrawTrainFloorStrip(-(BLOCK_SIZE * 20), (BLOCK_SIZE), &textinfo[aranges[4]], 0);
+	DrawTrainFloorStrip(-(BLOCK_SIZE * 20), 0, &textinfo[aranges[2]], 0);
 }
 
 void S_DrawDrawSparks(SPARKS* sptr, long smallest_size, long* xyptr, long* zptr)
@@ -835,7 +835,7 @@ void DrawBikeSpeedo(long ux, long uy, long vel, long maxVel, long turboVel, long
 	rTVel = turboVel >> 1;
 	angle = -0x4000;
 
-	for (int i = 0; i <= rTVel; i += 2048)
+	for (int i = 0; i <= rTVel; i += (BLOCK_SIZE * 2))
 	{
 		x0 = ((rSize * (phd_sin(angle + i)) >> (W2V_SHIFT - 1)) - ((rSize * phd_sin(angle + i)) >> (W2V_SHIFT + 1))) * (p + (p / 4.0F));
 		y0 = (-(rSize * phd_cos(angle + i)) >> W2V_SHIFT) * (p * 2);
@@ -2531,13 +2531,13 @@ void DrawWraithTrail(ITEM_INFO* item)
 	for (int i = 0; i < 5; i++)
 	{
 		if (!i)
-			phd_RotY(-1092);
+			phd_RotY(-DEGREES_TO_ROTATION(6));
 		else if (i == 2)
-			phd_RotY(1092);
+			phd_RotY(DEGREES_TO_ROTATION(6));
 		else if (i == 3)
-			phd_RotZ(-1092);
+			phd_RotZ(-DEGREES_TO_ROTATION(6));
 		else if (i == 4)
-			phd_RotZ(1092);
+			phd_RotZ(DEGREES_TO_ROTATION(6));
 
 		XY = (long*)&tsv_buffer[0];
 		Z = (long*)&tsv_buffer[512];
@@ -3001,13 +3001,13 @@ void DrawTrainFloorStrip(long x, long z, TEXTURESTRUCT* tex, long y_and_flags)
 	num = 0;
 	offsets = (PHD_VECTOR*)&tsv_buffer[1968];
 	offsets[0].z = z;
-	offsets[1].z = z + 512;
-	offsets[2].z = z + 1024;
+	offsets[1].z = z + HALF_BLOCK_SIZE;
+	offsets[2].z = z + BLOCK_SIZE;
 
 	if (y_and_flags & 0x1000000)
 	{
-		offsets[1].z += 1024;
-		offsets[2].z += 2048;
+		offsets[1].z += BLOCK_SIZE;
+		offsets[2].z += (BLOCK_SIZE * 2);
 	}
 
 	offsets[0].y = ((y_and_flags >> 16) & 0xFF) << 4;
@@ -3039,9 +3039,9 @@ void DrawTrainFloorStrip(long x, long z, TEXTURESTRUCT* tex, long y_and_flags)
 			p3.y = offsets[2].x * mMXPtr[M10] + offsets[2].y * mMXPtr[M11] + offsets[2].z * mMXPtr[M12] + mMXPtr[M13];
 			p3.z = offsets[2].x * mMXPtr[M20] + offsets[2].y * mMXPtr[M21] + offsets[2].z * mMXPtr[M22] + mMXPtr[M23];
 
-			offsets[0].x += 512;
-			offsets[1].x += 512;
-			offsets[2].x += 512;
+			offsets[0].x += HALF_BLOCK_SIZE;
+			offsets[1].x += HALF_BLOCK_SIZE;
+			offsets[2].x += HALF_BLOCK_SIZE;
 			XY += 6;
 			Z += 3;
 
@@ -3058,9 +3058,9 @@ void DrawTrainFloorStrip(long x, long z, TEXTURESTRUCT* tex, long y_and_flags)
 			Z[2] = (long)p3.z;
 		}
 
-		offsets[0].x -= 512;
-		offsets[1].x -= 512;
-		offsets[2].x -= 512;
+		offsets[0].x -= HALF_BLOCK_SIZE;
+		offsets[1].x -= HALF_BLOCK_SIZE;
+		offsets[2].x -= HALF_BLOCK_SIZE;
 		XY = (long*)&tsv_buffer[0];
 		Z = (long*)&tsv_buffer[984];
 

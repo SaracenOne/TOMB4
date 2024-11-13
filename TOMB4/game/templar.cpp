@@ -56,8 +56,8 @@ void TemplarControl(short item_number)
 
 		if (!creature_info->remove_knights_templar_sparks) {
 			pos.x = 0;
-			pos.y = 48;
-			pos.z = 448;
+			pos.y = QUARTER_CLICK_SIZE - (QUARTER_CLICK_SIZE / 4);
+			pos.z = HALF_BLOCK_SIZE - QUARTER_CLICK_SIZE;
 			GetJointAbsPosition(item, &pos, 10);
 			TriggerFlareSparks(pos.x, pos.y, pos.z, (GetRandomControl() & 0x1FF) - 256, -128 - (GetRandomControl() & 0x7F), (GetRandomControl() & 0x1FF) - 256, 0);
 		}
@@ -96,7 +96,7 @@ void TemplarControl(short item_number)
 	{
 	case 1:
 		knight->flags = 0;
-		knight->maximum_turn = 364;
+		knight->maximum_turn = DEGREES_TO_ROTATION(2);
 
 		if (info.distance > 0x718E4)
 		{
@@ -115,7 +115,7 @@ void TemplarControl(short item_number)
 		break;
 
 	case 2:
-		knight->maximum_turn = 1274;
+		knight->maximum_turn = DEGREES_TO_ROTATION(7);
 
 		if (lara.target == item || info.distance <= 0x718E4)
 			item->goal_anim_state = 1;
@@ -127,12 +127,12 @@ void TemplarControl(short item_number)
 	case 5:
 		knight->maximum_turn = 0;
 
-		if (abs(info.angle) < 182)
+		if (abs(info.angle) < DEGREES_TO_ROTATION(1))
 			item->pos.y_rot += info.angle;
 		else if (info.angle < 0)
-			item->pos.y_rot -= 182;
+			item->pos.y_rot -= DEGREES_TO_ROTATION(1);
 		else
-			item->pos.y_rot += 182;
+			item->pos.y_rot += DEGREES_TO_ROTATION(1);
 
 		if (item->frame_number > anims[item->anim_number].frame_base + 42 && item->frame_number < anims[item->anim_number].frame_base + 51)
 		{
@@ -180,12 +180,12 @@ void TemplarControl(short item_number)
 	case 6:
 		knight->maximum_turn = 0;
 
-		if (abs(info.angle) < 182)
+		if (abs(info.angle) < DEGREES_TO_ROTATION(1))
 			item->pos.y_rot += info.angle;
 		else if (info.angle < 0)
-			item->pos.y_rot -= 182;
+			item->pos.y_rot -= DEGREES_TO_ROTATION(1);
 		else
-			item->pos.y_rot += 182;
+			item->pos.y_rot += DEGREES_TO_ROTATION(1);
 
 		if (item->hit_status)
 		{

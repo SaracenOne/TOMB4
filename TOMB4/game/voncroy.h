@@ -9,5 +9,7 @@ void InitialiseVoncroy(short item_number);
 void VoncroyRaceControl(short item_number);
 void VoncroyControl(short item_number);
 
-extern uchar VonCroyCutFlags[64];
+#define MAX_VONCROY_FLAGS 64
+
+extern uchar VonCroyCutFlags[MAX_VONCROY_FLAGS];
 extern char bVoncroyCutScene;

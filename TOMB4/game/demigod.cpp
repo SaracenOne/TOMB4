@@ -28,14 +28,14 @@ void TriggerDemigodMissile(PHD_3DPOS* pos, short room_number, short type)
 	{
 		fx = &effects[fx_number];
 		fx->pos.x_pos = pos->x_pos;
-		fx->pos.y_pos = pos->y_pos - (GetRandomControl() & 0x3F) - 32;
+		fx->pos.y_pos = pos->y_pos - (GetRandomControl() & 0x3F) - (QUARTER_CLICK_SIZE / 2);
 		fx->pos.z_pos = pos->z_pos;
 		fx->pos.x_rot = pos->x_rot;
 
 		if (type < 4)
 			fx->pos.y_rot = pos->y_rot;
 		else
-			fx->pos.y_rot = pos->y_rot + (GetRandomControl() & 0x7FF) - 1024;
+			fx->pos.y_rot = pos->y_rot + (GetRandomControl() & 0x7FF) - 0x400;
 
 		fx->pos.z_rot = 0;
 
@@ -138,7 +138,7 @@ void TriggerHammerSmoke(long x, long y, long z, long num)
 		sptr->x = (GetRandomControl() & 0x1F) + x - 16;
 		sptr->y = (GetRandomControl() & 0x1F) + y - 16;
 		sptr->z = (GetRandomControl() & 0x1F) + z - 16;
-		off = (GetRandomControl() & 0xFF) + 255;
+		off = (GetRandomControl() & 0xFF) + (CLICK_SIZE - 1);
 		sptr->Xvel = short((off * phd_sin(angle)) >> W2V_SHIFT);
 		sptr->Yvel = -32 - (GetRandomControl() & 0x3F);
 		sptr->Zvel = short((off * phd_cos(angle)) >> W2V_SHIFT);
@@ -213,10 +213,10 @@ void DoDemigodEffects(short item_number)
 		{
 			pos1.x = 0;
 			pos1.y = 0;
-			pos1.z = 192;
+			pos1.z = (HALF_CLICK_SIZE + QUARTER_CLICK_SIZE);
 			pos2.x = 0;
 			pos2.y = 0;
-			pos2.z = 384;
+			pos2.z = (CLICK_SIZE + HALF_CLICK_SIZE);
 			GetJointAbsPosition(item, &pos1, GlobalCounter & 1 ? 18 : 17);
 			GetJointAbsPosition(item, &pos2, GlobalCounter & 1 ? 18 : 17);
 			pos.z_pos = pos1.z;
@@ -345,7 +345,7 @@ void DemigodControl(short item_number)
 			dx = lara_item->pos.x_pos - item->pos.x_pos;
 			dz = lara_item->pos.z_pos - item->pos.z_pos;
 			iAngle = (short)phd_atan(dz, dx) - item->pos.y_rot;
-			iAhead = abs(iAngle) < 16384;
+			iAhead = abs(iAngle) < 0x4000;
 			dx = abs(dx);
 			dz = abs(dz);
 
@@ -429,7 +429,7 @@ void DemigodControl(short item_number)
 			break;
 
 		case 1:
-			god->maximum_turn = 1274;
+			god->maximum_turn = DEGREES_TO_ROTATION(7);
 
 			if (info.distance < 0x400000)
 			{
@@ -462,7 +462,7 @@ void DemigodControl(short item_number)
 			break;
 
 		case 2:
-			god->maximum_turn = 1274;
+			god->maximum_turn = DEGREES_TO_ROTATION(7);
 
 			if (info.distance < 0x400000)
 			{
@@ -501,12 +501,12 @@ void DemigodControl(short item_number)
 
 			if (item->anim_number == objects[objnum].anim_index + 6)
 			{
-				if (abs(info.angle) < 1274)
+				if (abs(info.angle) < DEGREES_TO_ROTATION(7))
 					item->pos.y_rot += info.angle;
 				else if (info.angle < 0)
-					item->pos.y_rot -= 1274;
+					item->pos.y_rot -= DEGREES_TO_ROTATION(7);
 				else
-					item->pos.y_rot += 1274;
+					item->pos.y_rot += DEGREES_TO_ROTATION(7);
 			}
 
 			if (Targetable(item, &info) || god->flags)
@@ -524,7 +524,7 @@ void DemigodControl(short item_number)
 			break;
 
 		case 6:
-			god->maximum_turn = 1274;
+			god->maximum_turn = DEGREES_TO_ROTATION(7);
 
 			if (Targetable(item, &info))
 				item->goal_anim_state = 7;
@@ -532,7 +532,7 @@ void DemigodControl(short item_number)
 			break;
 
 		case 9:
-			god->maximum_turn = 1274;
+			god->maximum_turn = DEGREES_TO_ROTATION(7);
 
 			if (!Targetable(item, &info) && info.distance < 0x1900000)
 				item->goal_anim_state = 10;
@@ -540,7 +540,7 @@ void DemigodControl(short item_number)
 			break;
 
 		case 10:
-			god->maximum_turn = 1274;
+			god->maximum_turn = DEGREES_TO_ROTATION(7);
 			DoDemigodEffects(item_number);
 
 			if (!Targetable(item, &info) || info.distance < 0x1900000 || !(GetRandomControl() & 0xFF))
@@ -559,12 +559,12 @@ void DemigodControl(short item_number)
 
 			if (item->anim_number == objects[objnum].anim_index + 6)
 			{
-				if (abs(info.angle) < 1274)
+				if (abs(info.angle) < DEGREES_TO_ROTATION(7))
 					item->pos.y_rot += info.angle;
 				else if (info.angle < 0)
-					item->pos.y_rot -= 1274;
+					item->pos.y_rot -= DEGREES_TO_ROTATION(7);
 				else
-					item->pos.y_rot += 1274;
+					item->pos.y_rot += DEGREES_TO_ROTATION(7);
 			}
 
 			if (Targetable(item, &info) || god->flags)
@@ -580,12 +580,12 @@ void DemigodControl(short item_number)
 			torso_y = iAngle;
 			torso_z = 0;
 
-			if (abs(info.angle) < 1274)
+			if (abs(info.angle) < DEGREES_TO_ROTATION(7))
 				item->pos.y_rot += info.angle;
 			else if (info.angle < 0)
-				item->pos.y_rot -= 1274;
+				item->pos.y_rot -= DEGREES_TO_ROTATION(7);
 			else
-				item->pos.y_rot += 1274;
+				item->pos.y_rot += DEGREES_TO_ROTATION(7);
 
 			if (info.distance < 0x900000 && info.bite ||
 			((lara_item->current_anim_state >= AS_CLIMBSTNC && lara_item->current_anim_state <= AS_CLIMBDOWN ||

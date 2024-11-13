@@ -96,7 +96,7 @@ void ScarabControl(short item_number)
 		{
 		case 1:
 			item->pos.y_pos = item->floor;
-			beetle->maximum_turn = 182;
+			beetle->maximum_turn = DEGREES_TO_ROTATION(1);
 
 			if (item->hit_status || info.distance < 0x900000 || beetle->hurt_by_lara || item->ai_bits == MODIFY)
 				item->goal_anim_state = 2;
@@ -104,7 +104,7 @@ void ScarabControl(short item_number)
 			break;
 
 		case 3:
-			beetle->maximum_turn = 1274;
+			beetle->maximum_turn = DEGREES_TO_ROTATION(7);
 
 			if (item->required_anim_state)
 				item->goal_anim_state = item->required_anim_state;
@@ -117,7 +117,7 @@ void ScarabControl(short item_number)
 			break;
 
 		case 4:
-			beetle->maximum_turn = 1274;
+			beetle->maximum_turn = DEGREES_TO_ROTATION(7);
 
 			if (info.ahead)
 			{
@@ -157,7 +157,7 @@ void ScarabControl(short item_number)
 			break;
 
 		case 9:
-			beetle->maximum_turn = 1274;
+			beetle->maximum_turn = DEGREES_TO_ROTATION(7);
 
 			if (item->required_anim_state)
 				item->goal_anim_state = item->required_anim_state;
@@ -279,9 +279,9 @@ void UpdateScarabs()
 			oldx = fx->pos.x_pos;
 			oldy = fx->pos.y_pos;
 			oldz = fx->pos.z_pos;
-			fx->pos.x_pos += fx->speed * phd_sin(fx->pos.y_rot) >> 14;
+			fx->pos.x_pos += fx->speed * phd_sin(fx->pos.y_rot) >> W2V_SHIFT;
 			fx->pos.y_pos += fx->fallspeed;
-			fx->pos.z_pos += fx->speed * phd_cos(fx->pos.y_rot) >> 14;
+			fx->pos.z_pos += fx->speed * phd_cos(fx->pos.y_rot) >> W2V_SHIFT;
 			fx->fallspeed += 6;
 			dx = lara_item->pos.x_pos - fx->pos.x_pos;
 			dy = lara_item->pos.y_pos - fx->pos.y_pos;
@@ -296,21 +296,21 @@ void UpdateScarabs()
 
 			if (fx->flags)
 			{
-				if (abs(dx) + abs(dz) > 1024)
+				if (abs(dx) + abs(dz) > 0x400)
 				{
 					if (fx->speed < (i & 0x1F) + 24)
 						fx->speed++;
 
-					if (abs(angle) < 4096)
+					if (abs(angle) < 0x1000)
 						fx->pos.y_rot += short((wibble - i) << 3);
 					else if (angle < 0)
-						fx->pos.y_rot -= 1024;
+						fx->pos.y_rot -= 0x400;
 					else
-						fx->pos.y_rot += 1024;
+						fx->pos.y_rot += 0x400;
 				}
 				else
 				{
-					fx->pos.y_rot += fx->speed & 1 ? 512 : -512;
+					fx->pos.y_rot += fx->speed & 1 ? HALF_BLOCK_SIZE : -HALF_BLOCK_SIZE;
 					fx->speed = 48 - (lara.LitTorch << 6) - (abs(angle) >> 7);
 
 					if (fx->speed < -16)
@@ -337,7 +337,7 @@ void UpdateScarabs()
 			}
 			
 			if (fx->fallspeed < 500)
-				fx->pos.x_rot = -64 * fx->fallspeed;
+				fx->pos.x_rot = -0x40 * fx->fallspeed;
 			else
 			{
 				fx->On = 0;
@@ -385,13 +385,13 @@ void InitialiseScarabGenerator(short item_number)
 	if (!item->item_flags[0])
 	{
 		if (item->pos.y_rot > 4096 && item->pos.y_rot < 28672)
-			item->pos.x_pos -= 512;
+			item->pos.x_pos -= HALF_BLOCK_SIZE;
 		else if (item->pos.y_rot < -4096 && item->pos.y_rot > -28672)
-			item->pos.x_pos += 512;
+			item->pos.x_pos += HALF_BLOCK_SIZE;
 
 		if (item->pos.y_rot > -8192 && item->pos.y_rot < 8192)
-			item->pos.z_pos -= 512;
-		else if (item->pos.y_rot < -20480 || item->pos.y_rot > 20480)
-			item->pos.z_pos += 512;
+			item->pos.z_pos -= HALF_BLOCK_SIZE;
+		else if (item->pos.y_rot < -(BLOCK_SIZE * 20) || item->pos.y_rot >(BLOCK_SIZE * 20))
+			item->pos.z_pos += HALF_BLOCK_SIZE;
 	}
 }

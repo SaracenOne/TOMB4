@@ -326,15 +326,15 @@ void TriggerGunSmoke(long x, long y, long z, long xVel, long yVel, long zVel, lo
 
 	if (notLara)
 	{
-		sptr->Xvel = short((GetRandomControl() & 0x3FF) + xVel - 512);
-		sptr->Yvel = short((GetRandomControl() & 0x3FF) + yVel - 512);
-		sptr->Zvel = short((GetRandomControl() & 0x3FF) + zVel - 512);
+		sptr->Xvel = short((GetRandomControl() & 0x3FF) + xVel - HALF_BLOCK_SIZE);
+		sptr->Yvel = short((GetRandomControl() & 0x3FF) + yVel - HALF_BLOCK_SIZE);
+		sptr->Zvel = short((GetRandomControl() & 0x3FF) + zVel - HALF_BLOCK_SIZE);
 	}
 	else
 	{
-		sptr->Xvel = ((GetRandomControl() & 0x1FF) - 256) >> 1;
-		sptr->Yvel = ((GetRandomControl() & 0x1FF) - 256) >> 1;
-		sptr->Zvel = ((GetRandomControl() & 0x1FF) - 256) >> 1;
+		sptr->Xvel = ((GetRandomControl() & 0x1FF) - CLICK_SIZE) >> 1;
+		sptr->Yvel = ((GetRandomControl() & 0x1FF) - CLICK_SIZE) >> 1;
+		sptr->Zvel = ((GetRandomControl() & 0x1FF) - CLICK_SIZE) >> 1;
 	}
 
 	sptr->Friction = 4;
@@ -387,7 +387,7 @@ void LaraBubbles(ITEM_INFO* item)
 	pos.x = 0;
 	pos.y = -4;
 	pos.z = 64;
-	GetLaraJointPos(&pos, 8);
+	GetLaraJointPos(&pos, LMX_HEAD);
 
 	for (int i = (GetRandomControl() & 1) + 2; i > 0; i--)
 	{
@@ -544,12 +544,12 @@ void TriggerGlobalFireFlame()
 	sptr->ColFadeSpeed = (GetRandomControl() & 3) + 8;
 	sptr->Life = (GetRandomControl() & 7) + 32;
 	sptr->sLife = sptr->Life;
-	sptr->x = 4 * (GetRandomControl() & 0x1F) - 64;
+	sptr->x = 4 * (GetRandomControl() & 0x1F) - QUARTER_CLICK_SIZE;
 	sptr->y = 0;
-	sptr->z = 4 * (GetRandomControl() & 0x1F) - 64;
-	sptr->Xvel = 2 * (GetRandomControl() & 0xFF) - 256;
+	sptr->z = 4 * (GetRandomControl() & 0x1F) - QUARTER_CLICK_SIZE;
+	sptr->Xvel = 2 * (GetRandomControl() & 0xFF) - CLICK_SIZE;
 	sptr->Yvel = -16 - (GetRandomControl() & 0xF);
-	sptr->Zvel = 2 * (GetRandomControl() & 0xFF) - 256;
+	sptr->Zvel = 2 * (GetRandomControl() & 0xFF) - CLICK_SIZE;
 	sptr->Friction = 5;
 	sptr->Gravity = -32 - (GetRandomControl() & 0x1F);
 	sptr->MaxYvel = -16 - (GetRandomControl() & 7);
@@ -763,9 +763,9 @@ void S_DrawFires()
 			continue;
 
 		if (fire->size == 2)
-			size = 256;
+			size = CLICK_SIZE;
 		else
-			size = 384;
+			size = (CLICK_SIZE + HALF_CLICK_SIZE);
 
 		bounds[0] = -size;
 		bounds[1] = size;
@@ -918,7 +918,7 @@ void UpdateSmokeSparks()
 			sptr->z += SmokeWindZ >> 1;
 		}
 
-		sptr->Size = uchar(sptr->sSize + ((fade * (sptr->dSize - sptr->sSize)) >> 16));
+		sptr->Size = uchar(sptr->sSize + ((fade * (sptr->dSize - sptr->sSize)) >> (QUARTER_CLICK_SIZE / 4)));
 	}
 }
 
@@ -935,12 +935,12 @@ void TriggerShatterSmoke(long x, long y, long z)
 	sptr->TransType = 2;
 	sptr->Life = (GetRandomControl() & 7) + 48;
 	sptr->sLife = sptr->Life;
-	sptr->x = (GetRandomControl() & 0x1F) + x - 16;
-	sptr->y = (GetRandomControl() & 0x1F) + y - 16;
-	sptr->z = (GetRandomControl() & 0x1F) + z - 16;
-	sptr->Xvel = 2 * (GetRandomControl() & 0x1FF) - 512;
-	sptr->Yvel = 2 * (GetRandomControl() & 0x1FF) - 512;
-	sptr->Zvel = 2 * (GetRandomControl() & 0x1FF) - 512;
+	sptr->x = (GetRandomControl() & 0x1F) + x - (QUARTER_CLICK_SIZE / 4);
+	sptr->y = (GetRandomControl() & 0x1F) + y - (QUARTER_CLICK_SIZE / 4);
+	sptr->z = (GetRandomControl() & 0x1F) + z - (QUARTER_CLICK_SIZE / 4);
+	sptr->Xvel = 2 * (GetRandomControl() & 0x1FF) - HALF_BLOCK_SIZE;
+	sptr->Yvel = 2 * (GetRandomControl() & 0x1FF) - HALF_BLOCK_SIZE;
+	sptr->Zvel = 2 * (GetRandomControl() & 0x1FF) - HALF_BLOCK_SIZE;
 	sptr->Friction = 7;
 	
 	if (GetRandomControl() & 1)
@@ -1072,7 +1072,7 @@ void TriggerGunShell(short leftright, short objnum, long weapon)
 			break;
 		}
 
-		GetLaraJointPos(&pos, 11);
+		GetLaraJointPos(&pos, LMX_HAND_R);
 	}
 	else
 	{
@@ -1091,7 +1091,7 @@ void TriggerGunShell(short leftright, short objnum, long weapon)
 			break;
 		}
 
-		GetLaraJointPos(&pos, 14);
+		GetLaraJointPos(&pos, LMX_HAND_L);
 	}
 
 	if (lara_item->mesh_bits)
@@ -1168,9 +1168,9 @@ void UpdateGunShells()
 		else
 			shell->fallspeed += 6;
 
-		shell->pos.x_rot += 182 * ((shell->speed >> 1) + 7);
-		shell->pos.y_rot += 182 * shell->speed;
-		shell->pos.z_rot += 4186;
+		shell->pos.x_rot += DEGREES_TO_ROTATION(((shell->speed >> 1) + 7));
+		shell->pos.y_rot += DEGREES_TO_ROTATION(shell->speed);
+		shell->pos.z_rot += DEGREES_TO_ROTATION(23);
 		shell->pos.x_pos += shell->speed * phd_sin(shell->DirXrot) >> (W2V_SHIFT + 1);
 		shell->pos.y_pos += shell->fallspeed;
 		shell->pos.z_pos += shell->speed * phd_cos(shell->DirXrot) >> (W2V_SHIFT + 1);
@@ -1816,7 +1816,7 @@ void TriggerShockwaveHitEffect(long x, long y, long z, long rgb, short dir, long
 	sptr->y = (GetRandomControl() & 0x1F) + y - 16;
 	sptr->z = (GetRandomControl() & 0x1F) + z - 16;
 	sptr->Xvel = (short)xvel;
-	sptr->Yvel = -512 - (GetRandomControl() & 0x1FF);
+	sptr->Yvel = -HALF_BLOCK_SIZE - (GetRandomControl() & 0x1FF);
 	sptr->Zvel = (short)zvel;
 	sptr->Friction = 3;
 	sptr->Flags = 538;
@@ -1866,7 +1866,7 @@ void UpdateShockwaves()
 			dz = lara_item->pos.z_pos - sw->z;
 			dist = phd_sqrt(SQUARE(dx) + SQUARE(dz));
 
-			if (sw->y > lara_item->pos.y_pos + bounds[2] && sw->y < bounds[3] + lara_item->pos.y_pos + 256 &&
+			if (sw->y > lara_item->pos.y_pos + bounds[2] && sw->y < bounds[3] + lara_item->pos.y_pos + CLICK_SIZE &&
 				dist > sw->InnerRad && dist < sw->OuterRad)
 			{
 				dir = (short)phd_atan(dz, dx);
@@ -2049,16 +2049,16 @@ void TriggerFlashSmoke(long x, long y, long z, short room_number)
 
 	if (uw)
 	{
-		sptr->Xvel = (GetRandomControl() & 0x3FF) - 512;
-		sptr->Yvel = (GetRandomControl() & 0x3FF) - 512;
-		sptr->Zvel = (GetRandomControl() & 0x3FF) - 512;
+		sptr->Xvel = (GetRandomControl() & 0x3FF) - HALF_BLOCK_SIZE;
+		sptr->Yvel = (GetRandomControl() & 0x3FF) - HALF_BLOCK_SIZE;
+		sptr->Zvel = (GetRandomControl() & 0x3FF) - HALF_BLOCK_SIZE;
 		sptr->Friction = 68;
 	}
 	else
 	{
-		sptr->Xvel = 2 * (GetRandomControl() & 0x3FF) - 1024;
-		sptr->Yvel = -512 - (GetRandomControl() & 0x3FF);
-		sptr->Zvel = 2 * (GetRandomControl() & 0x3FF) - 1024;
+		sptr->Xvel = 2 * (GetRandomControl() & 0x3FF) - BLOCK_SIZE;
+		sptr->Yvel = -HALF_BLOCK_SIZE - (GetRandomControl() & 0x3FF);
+		sptr->Zvel = 2 * (GetRandomControl() & 0x3FF) - BLOCK_SIZE;
 		sptr->Friction = 85;
 	}
 

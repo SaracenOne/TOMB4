@@ -44,9 +44,9 @@ void TriggerSethMissileFlame(short fx_number, long xv, long yv, long zv)
 	sptr->TransType = 2;
 	sptr->Life = (GetRandomControl() & 3) + 16;
 	sptr->sLife = sptr->Life;
-	sptr->x = (GetRandomControl() & 0xF) - 8;
+	sptr->x = (GetRandomControl() & 0xF) - (QUARTER_CLICK_SIZE / 8);
 	sptr->y = 0;
-	sptr->z = (GetRandomControl() & 0xF) - 8;
+	sptr->z = (GetRandomControl() & 0xF) - (QUARTER_CLICK_SIZE / 8);
 	sptr->Xvel = (short)xv;
 	sptr->Yvel = (short)yv;
 	sptr->Zvel = (short)zv;
@@ -68,7 +68,7 @@ void TriggerSethMissileFlame(short fx_number, long xv, long yv, long zv)
 	else
 		sptr->Scalar = 2;
 
-	sptr->Size = (GetRandomControl() & 7) + 64;
+	sptr->Size = (GetRandomControl() & 7) + QUARTER_CLICK_SIZE;
 	sptr->sSize = sptr->Size;
 	sptr->dSize = sptr->Size >> 5;
 }
@@ -93,7 +93,7 @@ void TriggerSethMissile(PHD_3DPOS* pos, short room_number, short type)
 		fx->counter = short(2 * GetRandomControl() + 0x8000);
 		fx->flag1 = type;
 		fx->object_number = T4PlusGetBubblesSlotID();
-		fx->speed = (GetRandomControl() & 0x1F) - (type == 1 ? 64 : 0) + 96;
+		fx->speed = (GetRandomControl() & 0x1F) - (type == 1 ? QUARTER_CLICK_SIZE : 0) + (QUARTER_CLICK_SIZE + (QUARTER_CLICK_SIZE / 2));
 		fx->frame_number = objects[T4PlusGetBubblesSlotID()].mesh_index + 2 * type;
 	}
 }
@@ -218,22 +218,22 @@ void DoSethEffects(short item_number)
 		{
 			for (int i = 0; i < 2; i++)
 			{
-				vec.x = (GetRandomControl() & 0x7FF) + r.x - 1024;
-				vec.y = (GetRandomControl() & 0x7FF) + r.y - 1024;
+				vec.x = (GetRandomControl() & 0x7FF) + r.x - BLOCK_SIZE;
+				vec.y = (GetRandomControl() & 0x7FF) + r.y - BLOCK_SIZE;
 				zv = (GetRandomControl() & 0x7FF);
-				vec.z = zv + r.z - 1024;
+				vec.z = zv + r.z - BLOCK_SIZE;
 				xv = short((r.x - vec.x) << 3);
 				yv = short((r.y - vec.y) << 3);
-				zv = (1024 - zv) << 3;
+				zv = (BLOCK_SIZE - zv) << 3;
 				TriggerSethSparks(vec.x, vec.y, vec.z, xv, yv, zv);
 
-				vec.x = (GetRandomControl() & 0x7FF) + l.x - 1024;
-				vec.y = (GetRandomControl() & 0x7FF) + l.y - 1024;
+				vec.x = (GetRandomControl() & 0x7FF) + l.x - BLOCK_SIZE;
+				vec.y = (GetRandomControl() & 0x7FF) + l.y - BLOCK_SIZE;
 				zv = (GetRandomControl() & 0x7FF);
-				vec.z = zv + l.z - 1024;
+				vec.z = zv + l.z - BLOCK_SIZE;
 				xv = short((l.x - vec.x) << 3);
 				yv = short((l.y - vec.y) << 3);
-				zv = (1024 - zv) << 3;
+				zv = (BLOCK_SIZE - zv) << 3;
 				TriggerSethSparks(vec.x, vec.y, vec.z, xv, yv, zv);
 			}
 		}
@@ -333,30 +333,30 @@ void DoSethEffects(short item_number)
 		{
 			for (int i = 0; i < 2; i++)
 			{
-				vec.x = (GetRandomControl() & 0x7FF) + r.x - 1024;
-				vec.y = (GetRandomControl() & 0x7FF) + r.y - 1024;
+				vec.x = (GetRandomControl() & 0x7FF) + r.x - BLOCK_SIZE;
+				vec.y = (GetRandomControl() & 0x7FF) + r.y - BLOCK_SIZE;
 				zv = (GetRandomControl() & 0x7FF);
-				vec.z = zv + r.z - 1024;
+				vec.z = zv + r.z - BLOCK_SIZE;
 				xv = short((r.x - vec.x) << 3);
 				yv = short((r.y - vec.y) << 3);
-				zv = (1024 - zv) << 3;
+				zv = (BLOCK_SIZE - zv) << 3;
 				TriggerSethSparks(vec.x, vec.y, vec.z, xv, yv, zv);
 
-				vec.x = (GetRandomControl() & 0x7FF) + l.x - 1024;
-				vec.y = (GetRandomControl() & 0x7FF) + l.y - 1024;
+				vec.x = (GetRandomControl() & 0x7FF) + l.x - BLOCK_SIZE;
+				vec.y = (GetRandomControl() & 0x7FF) + l.y - BLOCK_SIZE;
 				zv = (GetRandomControl() & 0x7FF);
-				vec.z = zv + l.z - 1024;
+				vec.z = zv + l.z - BLOCK_SIZE;
 				xv = short((l.x - vec.x) << 3);
 				yv = short((l.y - vec.y) << 3);
-				zv = (1024 - zv) << 3;
+				zv = (BLOCK_SIZE - zv) << 3;
 				TriggerSethSparks(vec.x, vec.y, vec.z, xv, yv, zv);
 			}
 		}
 
 		size = item->item_flags[0] * 2;
 
-		if (size > 128)
-			size = 128;
+		if (size > HALF_CLICK_SIZE)
+			size = HALF_CLICK_SIZE;
 
 		if ((wibble & 0xF) == 8)
 		{
@@ -442,7 +442,7 @@ void SethControl(short item_number)
 	z += Zoffset;
 	floor = GetFloor(x, y, z, &room_number);
 	farheight = GetHeight(floor, x, y, z);
-	can_jump = (y < nearheight - 384 || y < midheight - 384) && (y < farheight + 256 && y > farheight - 256 || farheight == NO_HEIGHT);
+	can_jump = (y < nearheight - (CLICK_SIZE + HALF_CLICK_SIZE) || y < midheight - (CLICK_SIZE + HALF_CLICK_SIZE)) && (y < farheight + CLICK_SIZE && y > farheight - CLICK_SIZE || farheight == NO_HEIGHT);
 
 	x = item->pos.x_pos - Xoffset;
 	y = item->pos.y_pos;
@@ -475,7 +475,7 @@ void SethControl(short item_number)
 				item->goal_anim_state = item->required_anim_state;
 			else if (info.distance < 0x100000 && info.bite)
 				item->goal_anim_state = 8;
-			else if (lara_item->pos.y_pos < item->pos.y_pos - 1024)
+			else if (lara_item->pos.y_pos < item->pos.y_pos - BLOCK_SIZE)
 			{
 				if (seth->reached_goal)
 					item->goal_anim_state = 14;
@@ -491,7 +491,7 @@ void SethControl(short item_number)
 				item->item_flags[0] = 0;
 				item->goal_anim_state = 11;
 			}
-			else if (c != NO_HEIGHT && c < y - 1792 && h != NO_HEIGHT && h > y - 1024 && GetRandomControl() & 1)
+			else if (c != NO_HEIGHT && c < y - ((BLOCK_SIZE * 2) - CLICK_SIZE) && h != NO_HEIGHT && h > y - BLOCK_SIZE && GetRandomControl() & 1)
 			{
 				item->pos.y_pos -= 1536;
 
@@ -525,7 +525,7 @@ void SethControl(short item_number)
 			break;
 
 		case 2:
-			seth->maximum_turn = 1274;
+			seth->maximum_turn = DEGREES_TO_ROTATION(7);
 
 			if (info.ahead && info.distance < 0x1000000 || can_jump || seth->reached_goal)
 				item->goal_anim_state = 1; 
@@ -535,7 +535,7 @@ void SethControl(short item_number)
 			break;
 
 		case 3:
-			seth->maximum_turn = 2002;
+			seth->maximum_turn = DEGREES_TO_ROTATION(11);
 
 			if (info.ahead && info.distance < 0x1000000 || can_jump || seth->reached_goal)
 				item->goal_anim_state = 1;
@@ -592,12 +592,12 @@ void SethControl(short item_number)
 			hp = lara_item->hit_points;
 			seth->maximum_turn = 0;
 
-			if (abs(info.angle) < 546)
+			if (abs(info.angle) < DEGREES_TO_ROTATION(3))
 				item->pos.y_rot += info.angle;
 			else if (info.angle < 0)
-				item->pos.y_rot -= 546;
+				item->pos.y_rot -= DEGREES_TO_ROTATION(3);
 			else
-				item->pos.y_rot += 546;
+				item->pos.y_rot += DEGREES_TO_ROTATION(3);
 
 			if (!seth->flags && item->touch_bits)
 			{
@@ -627,12 +627,12 @@ void SethControl(short item_number)
 		case 13:
 			seth->maximum_turn = 0;
 
-			if (abs(info.angle) < 546)
+			if (abs(info.angle) < DEGREES_TO_ROTATION(3))
 				item->pos.y_rot += info.angle;
 			else if (info.angle < 0)
-				item->pos.y_rot -= 546;
+				item->pos.y_rot -= DEGREES_TO_ROTATION(3);
 			else
-				item->pos.y_rot += 546;
+				item->pos.y_rot += DEGREES_TO_ROTATION(3);
 
 			DoSethEffects(item_number);
 			break;
@@ -646,15 +646,15 @@ void SethControl(short item_number)
 				seth->maximum_turn = 0;
 				seth->target.y = lara_item->pos.y_pos;
 
-				if (abs(info.angle) < 546)
+				if (abs(info.angle) < DEGREES_TO_ROTATION(3))
 					item->pos.y_rot += info.angle;
 				else if (info.angle < 0)
-					item->pos.y_rot -= 546;
+					item->pos.y_rot -= DEGREES_TO_ROTATION(3);
 				else
-					item->pos.y_rot += 546;
+					item->pos.y_rot += DEGREES_TO_ROTATION(3);
 			}
 
-			if (lara_item->pos.y_pos > item->floor - 512)
+			if (lara_item->pos.y_pos > item->floor - HALF_BLOCK_SIZE)
 			{
 				seth->LOT.fly = 0;
 				item->gravity_status = 1;
@@ -683,7 +683,7 @@ void SethControl(short item_number)
 				item->current_anim_state = 16;
 				item->goal_anim_state = 16;
 			}
-			else if (abs(h - y) < 512)
+			else if (abs(h - y) < HALF_BLOCK_SIZE)
 			{
 				item->anim_number = objects[SETHA].anim_index + 17;
 				item->current_anim_state = 7;

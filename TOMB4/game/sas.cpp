@@ -280,21 +280,21 @@ void SasControl(short item_number)
 
 			if (item->anim_number == objects[item->object_number].anim_index + 17)
 			{
-				if (abs(info.angle) < 1820)
+				if (abs(info.angle) < DEGREES_TO_ROTATION(10))
 					item->pos.y_rot += info.angle;
 				else if (info.angle < 0)
-					item->pos.y_rot -= 1820;
+					item->pos.y_rot -= DEGREES_TO_ROTATION(10);
 				else
-					item->pos.y_rot += 1820;
+					item->pos.y_rot += DEGREES_TO_ROTATION(10);
 			}
 			else if (item->ai_bits == MODIFY || lara.vehicle)
 			{
-				if (abs(info.angle) < 364)
+				if (abs(info.angle) < DEGREES_TO_ROTATION(2))
 					item->pos.y_rot += info.angle;
 				else if (info.angle < 0)
-					item->pos.y_rot -= 364;
+					item->pos.y_rot -= DEGREES_TO_ROTATION(2);
 				else
-					item->pos.y_rot += 364;
+					item->pos.y_rot += DEGREES_TO_ROTATION(2);
 			}
 
 			if (item->ai_bits & GUARD)
@@ -347,7 +347,7 @@ void SasControl(short item_number)
 		case 2:
 			head = iAngle;
 			sas->flags = 0;
-			sas->maximum_turn = 910;
+			sas->maximum_turn = DEGREES_TO_ROTATION(5);
 
 			if (item->ai_bits & PATROL1)
 				item->goal_anim_state = 2;
@@ -379,7 +379,7 @@ void SasControl(short item_number)
 			if (info.ahead)
 				head = info.angle;
 
-			sas->maximum_turn = 1820;
+			sas->maximum_turn = DEGREES_TO_ROTATION(10);
 			tilt = angle >> 1;
 
 			if (lara.vehicle)

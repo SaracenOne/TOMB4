@@ -15,6 +15,7 @@
 #include "flmtorch.h"
 #include "lara.h"
 #include "deltapak.h"
+#include "../specific/3dmath.h"
 
 uchar NumRPickups;
 uchar RPickups[16];
@@ -663,17 +664,17 @@ void PuzzleHoleCollision(short item_num, ITEM_INFO* l, COLL_INFO* coll)
 	{
 		bounds = GetBoundsAccurate(item);
 		yrot = item->pos.y_rot;
-		PuzzleBounds[0] = bounds[0] - 256;
-		PuzzleBounds[1] = bounds[1] + 256;
-		PuzzleBounds[4] = bounds[4] - 256;
-		PuzzleBounds[5] = bounds[5] + 256;
+		PuzzleBounds[0] = bounds[0] - CLICK_SIZE;
+		PuzzleBounds[1] = bounds[1] + CLICK_SIZE;
+		PuzzleBounds[4] = bounds[4] - CLICK_SIZE;
+		PuzzleBounds[5] = bounds[5] + CLICK_SIZE;
 
 		if (PuzzleType == 2)
 		{
-			PuzzleBounds[0] -= 1024;
-			PuzzleBounds[1] += 1024;
-			PuzzleBounds[4] -= 1024;
-			PuzzleBounds[5] += 1024;
+			PuzzleBounds[0] -= BLOCK_SIZE;
+			PuzzleBounds[1] += BLOCK_SIZE;
+			PuzzleBounds[4] -= BLOCK_SIZE;
+			PuzzleBounds[5] += BLOCK_SIZE;
 			item->pos.y_rot = l->pos.y_rot;
 		}
 

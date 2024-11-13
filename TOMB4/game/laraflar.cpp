@@ -66,7 +66,7 @@ long DoFlareLight(PHD_VECTOR* pos, long flare_age)
 
 	rnd = GetRandomControl();
 	x = pos->x + ((rnd & 0xF) << 3);
-	y = pos->y + (rnd >> 1 & 120) - 256;
+	y = pos->y + (rnd >> 1 & 120) - CLICK_SIZE;
 	z = pos->z + (rnd >> 5 & 120);
 	ret = 1;
 
@@ -138,8 +138,8 @@ long DoFlareLight(PHD_VECTOR* pos, long flare_age)
 	
 	if (flare_info->has_sparks) {
 		if (flare_age < flare_info->flare_lifetime_in_ticks - 24) {
-			unsigned long flare_spark_rnd = GetRandomControl();
-			TriggerFlareSparks(pos->x, pos->y, pos->z, 0, long((float(flare_spark_rnd) * -0.025f)), 0, flare_info->sparks_include_smoke);
+			uint32_t flare_spark_rnd = GetRandomControl();
+			TriggerFlareSparks(pos->x, pos->y, pos->z, 0, int32_t((float(flare_spark_rnd) * -0.025f)), 0, flare_info->sparks_include_smoke);
 		}
 	}
 
@@ -168,7 +168,7 @@ long DoFlareLight(PHD_VECTOR* pos, long flare_age)
 		sptr->MaxYvel = 0;
 		sptr->Def = objects[T4PlusGetDefaultSpritesSlotID()].mesh_index + 11;
 		sptr->Gravity = 0;
-		sptr->Size = 64;
+		sptr->Size = QUARTER_CLICK_SIZE;
 		sptr->dSize = sptr->Size;
 		sptr->sSize = sptr->Size;
 	}
@@ -183,7 +183,7 @@ void DoFlareInHand(long flare_age)
 	pos.x = 11;
 	pos.y = 32;
 	pos.z = 41;
-	GetLaraJointPos(&pos, 14);
+	GetLaraJointPos(&pos, LMX_HAND_L);
 	lara.left_arm.flash_gun = (short)DoFlareLight(&pos, flare_age);
 
 	for (int i = 0; i < t4p_mirror_count; i++) {
@@ -225,7 +225,7 @@ void CreateFlare(short object, long thrown)
 		pos.x = -16;
 		pos.y = 32;
 		pos.z = 42;
-		GetLaraJointPos(&pos, 14);
+		GetLaraJointPos(&pos, LMX_HAND_L);
 		flare->pos.x_pos = pos.x;
 		flare->pos.y_pos = pos.y;
 		flare->pos.z_pos = pos.z;
@@ -484,8 +484,8 @@ void FlareControl(short item_number)
 
 	if (flare->fallspeed)
 	{
-		flare->pos.x_rot += 546;
-		flare->pos.z_rot += 910;
+		flare->pos.x_rot += DEGREES_TO_ROTATION(3);
+		flare->pos.z_rot += DEGREES_TO_ROTATION(5);
 	}
 	else
 	{

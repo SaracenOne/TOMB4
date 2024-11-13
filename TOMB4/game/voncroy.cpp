@@ -53,7 +53,7 @@ static short VonCroyCutTracks[64] =
 	-1, -1, 68, 26, 43, -1, -1, -1, -1, -1, -1, 37, -1, -1, 36, 21, 25, 23, -1, -1, -1, 38, -1, -1, 36, 21, 25, 23, -1, -1, -1, -1
 };
 
-uchar VonCroyCutFlags[64];	//flags cut played
+uchar VonCroyCutFlags[MAX_VONCROY_FLAGS];	//flags cut played
 char bVoncroyCutScene;
 
 static PHD_VECTOR actualCameraPos;
@@ -84,7 +84,7 @@ void SetCutSceneCamera(ITEM_INFO* item)
 	f = cut->f;
 
 	if (f & 0xFFFF)
-		AlterFOV(182 * (f & 0xFFFF));
+		AlterFOV(DEGREES_TO_ROTATION((f & 0xFFFF)));
 
 	if (f & 0x40000)
 	{
@@ -115,7 +115,7 @@ void SetCutSceneCamera(ITEM_INFO* item)
 	if (f & 0x20000)
 	{
 		camera.target.x = item->pos.x_pos;
-		camera.target.y = item->pos.y_pos - 256;
+		camera.target.y = item->pos.y_pos - CLICK_SIZE;
 		camera.target.z = item->pos.z_pos;
 	}
 
@@ -256,7 +256,7 @@ void DoVonCroyCutscene(ITEM_INFO* item, CREATURE_INFO* info)
 			item->pos.y_rot = ang;
 
 		IsRoomOutsideNo = -1;
-		IsRoomOutside(item->pos.x_pos, item->pos.y_pos - 64, item->pos.z_pos);
+		IsRoomOutside(item->pos.x_pos, item->pos.y_pos - QUARTER_CLICK_SIZE, item->pos.z_pos);
 
 		if (IsRoomOutsideNo != item->room_number && IsRoomOutsideNo != -1)
 			ItemNewRoom(short(item - items), IsRoomOutsideNo);
@@ -337,9 +337,9 @@ void DoVonCroyCutscene(ITEM_INFO* item, CREATURE_INFO* info)
 		VonCroyCutFlags[item->item_flags[3]] = 1;
 		ang = info->enemy->pos.y_rot - item->pos.y_rot;
 
-		if (ang > 1024)
+		if (ang > 0x400)
 			item->required_anim_state = 22;
-		else if (ang < -1024)
+		else if (ang < -0x400)
 			item->required_anim_state = 35;
 
 		item->goal_anim_state = 1;
@@ -369,7 +369,7 @@ void InitialiseVoncroy(short item_number)
 	item->current_anim_state = 6;
 	item->goal_anim_state = 6;
 	item->meshswap_meshbits = 0x40080;
-	memset(VonCroyCutFlags, 0, 64);
+	memset(VonCroyCutFlags, 0, MAX_VONCROY_FLAGS);
 }
 
 void VoncroyRaceControl(short item_number)
@@ -414,12 +414,12 @@ void VoncroyRaceControl(short item_number)
 	floor = GetFloor(x, y, z, &room_number);
 	farheight = GetHeight(floor, x, y, z);
 
-	if (y >= nearheight - 384 || y >= midheight + 256 || y <= midheight - 256)
+	if (y >= nearheight - (CLICK_SIZE + HALF_CLICK_SIZE) || y >= midheight + CLICK_SIZE || y <= midheight - CLICK_SIZE)
 		jump_ahead = 0;
 	else
 		jump_ahead = 1;
 
-	if (y >= nearheight - 384 || y >= midheight - 384 || y >= farheight + 256 || y <= farheight - 256)
+	if (y >= nearheight - (CLICK_SIZE + HALF_CLICK_SIZE) || y >= midheight - (CLICK_SIZE + HALF_CLICK_SIZE) || y >= farheight + CLICK_SIZE || y <= farheight - CLICK_SIZE)
 		long_jump_ahead = 0;
 	else
 		long_jump_ahead = 1;
@@ -639,7 +639,7 @@ void VoncroyRaceControl(short item_number)
 	case 2:
 		VonCroy->LOT.is_jumping = 0;
 		VonCroy->LOT.is_monkeying = 0;
-		VonCroy->maximum_turn = 1092;
+		VonCroy->maximum_turn = DEGREES_TO_ROTATION(6);
 
 		if (ahead)
 			head = (short)iAngle;
@@ -680,7 +680,7 @@ void VoncroyRaceControl(short item_number)
 		if (item->frame_number == anims[item->anim_number].frame_base)
 		{
 			VonCroy->LOT.is_jumping = 0;
-			VonCroy->maximum_turn = 1456;
+			VonCroy->maximum_turn = DEGREES_TO_ROTATION(8);
 		}
 
 		tilt = angle >> 1;
@@ -738,7 +738,7 @@ void VoncroyRaceControl(short item_number)
 	case 5:
 		VonCroy->LOT.is_jumping = 1;
 		VonCroy->LOT.is_monkeying = 1;
-		VonCroy->maximum_turn = 1092;
+		VonCroy->maximum_turn = DEGREES_TO_ROTATION(6);
 
 		if (item->box_number == VonCroy->LOT.target_box || !VonCroy->monkey_ahead)
 		{
@@ -799,9 +799,9 @@ void VoncroyRaceControl(short item_number)
 		VonCroy->maximum_turn = 0;
 
 		if (item->item_flags[2])
-			CreatureYRot(&item->pos, oEnemy->pos.y_rot - item->pos.y_rot, 512);
+			CreatureYRot(&item->pos, oEnemy->pos.y_rot - item->pos.y_rot, HALF_BLOCK_SIZE);
 		else
-			CreatureYRot(&item->pos, (short)iAngle, 512);
+			CreatureYRot(&item->pos, (short)iAngle, HALF_BLOCK_SIZE);
 
 		break;
 
@@ -816,12 +816,12 @@ void VoncroyRaceControl(short item_number)
 
 		VonCroy->maximum_turn = 0;
 
-		if (abs(info.angle) < 1092)
+		if (abs(info.angle) < DEGREES_TO_ROTATION(6))
 			item->pos.y_rot += info.angle;
 		else if (info.angle < 0)
-			item->pos.y_rot -= 1092;
+			item->pos.y_rot -= DEGREES_TO_ROTATION(6);
 		else
-			item->pos.y_rot += 1092;
+			item->pos.y_rot += DEGREES_TO_ROTATION(6);
 
 		if (oEnemy && oEnemy->flags == 6 && item->frame_number > anims[item->anim_number].frame_base + 21)
 			ifl3 = -1;
@@ -829,9 +829,9 @@ void VoncroyRaceControl(short item_number)
 		{
 			if (item->frame_number > anims[item->anim_number].frame_base + 15 && item->frame_number < anims[item->anim_number].frame_base + 26)
 			{
-				if (abs(oEnemy->pos.x_pos - item->pos.x_pos) < 512 &&
-					abs(oEnemy->pos.y_pos - item->pos.y_pos) <= 512 &&
-					abs(oEnemy->pos.z_pos - item->pos.z_pos) < 512)
+				if (abs(oEnemy->pos.x_pos - item->pos.x_pos) < HALF_BLOCK_SIZE &&
+					abs(oEnemy->pos.y_pos - item->pos.y_pos) <= HALF_BLOCK_SIZE &&
+					abs(oEnemy->pos.z_pos - item->pos.z_pos) < HALF_BLOCK_SIZE)
 				{
 					oEnemy->hit_points -= 20;
 					oEnemy->hit_status = 1;
@@ -859,7 +859,7 @@ void VoncroyRaceControl(short item_number)
 	case 36:
 	case 37:
 		VonCroy->maximum_turn = 0;
-		MoveCreature3DPos(&item->pos, &oEnemy->pos, 8, oEnemy->pos.y_rot - item->pos.y_rot, 512);
+		MoveCreature3DPos(&item->pos, &oEnemy->pos, 8, oEnemy->pos.y_rot - item->pos.y_rot, HALF_BLOCK_SIZE);
 		break;
 	}
 
@@ -986,8 +986,8 @@ void VoncroyControl(short item_number)
 	floor = GetFloor(x, y, z, &room_number);
 	farheight = GetHeight(floor, x, y, z);
 
-	jump_ahead = y < nearheight - 384 && y < midheight + 256 && y > midheight - 256;
-	long_jump_ahead = y < nearheight - 384 && y < midheight - 384 && y < farheight + 256 && y > farheight - 256;
+	jump_ahead = y < nearheight - (CLICK_SIZE + HALF_CLICK_SIZE) && y < midheight + CLICK_SIZE && y > midheight - CLICK_SIZE;
+	long_jump_ahead = y < nearheight - (CLICK_SIZE + HALF_CLICK_SIZE) && y < midheight - (CLICK_SIZE + HALF_CLICK_SIZE) && y < farheight + CLICK_SIZE && y > farheight - CLICK_SIZE;
 
 	item->ai_bits = FOLLOW;
 	GetAITarget(VonCroy);
@@ -1012,7 +1012,7 @@ void VoncroyControl(short item_number)
 				dz = candidate->pos.z_pos - item->pos.z_pos;
 				dist = SQUARE(dx) + SQUARE(dz);
 
-				if (abs(dx) <= 5120 && abs(dz) <= 5120 && dist < max_dist)
+				if (abs(dx) <= (BLOCK_SIZE * 5) && abs(dz) <= (BLOCK_SIZE * 5) && dist < max_dist)
 				{
 					VonCroy->reached_goal = 0;
 					target = candidate;
@@ -1141,9 +1141,9 @@ void VoncroyControl(short item_number)
 			item->goal_anim_state = item->required_anim_state;
 		else if (item->item_flags[2] == 2)
 		{
-			if (enemy->pos.y_rot - item->pos.y_rot < -1024)
+			if (enemy->pos.y_rot - item->pos.y_rot < -0x400)
 				item->goal_anim_state = 35;
-			else if (enemy->pos.y_rot - item->pos.y_rot > 1024)
+			else if (enemy->pos.y_rot - item->pos.y_rot > 0x400)
 				item->goal_anim_state = 22;
 			else
 			{
@@ -1163,7 +1163,7 @@ void VoncroyControl(short item_number)
 				item->goal_anim_state = 31;
 			else if (enemy->hit_points > 0 && VonCroyAI.ahead)
 			{
-				if (abs(enemy->pos.y_pos + 512 - item->pos.y_pos) < 512)
+				if (abs(enemy->pos.y_pos + HALF_BLOCK_SIZE - item->pos.y_pos) < HALF_BLOCK_SIZE)
 					item->goal_anim_state = 21;
 			}
 		}
@@ -1295,9 +1295,9 @@ void VoncroyControl(short item_number)
 				else
 					item->goal_anim_state = 14;
 			}
-			else if (VonCroyLaraAI.angle > 1024)
+			else if (VonCroyLaraAI.angle > 0x400)
 				item->goal_anim_state = 35;
-			else if (VonCroyLaraAI.angle < -1024)
+			else if (VonCroyLaraAI.angle < -0x400)
 				item->goal_anim_state = 22;
 			else
 				item->item_flags[2] = 1;
@@ -1328,7 +1328,7 @@ void VoncroyControl(short item_number)
 				item->goal_anim_state = 31;
 			else if (enemy->hit_points > 0 && VonCroyAI.ahead)
 			{
-				if (abs(enemy->pos.y_pos + 512 - item->pos.y_pos) < 512)
+				if (abs(enemy->pos.y_pos + HALF_BLOCK_SIZE - item->pos.y_pos) < HALF_BLOCK_SIZE)
 					item->goal_anim_state = 21;
 			}
 		}
@@ -1340,7 +1340,7 @@ void VoncroyControl(short item_number)
 	case 2:
 		VonCroy->LOT.is_jumping = 0;
 		VonCroy->LOT.is_monkeying = 0;
-		VonCroy->maximum_turn = 1092;
+		VonCroy->maximum_turn = DEGREES_TO_ROTATION(6);
 
 		if (VonCroyLaraAI.ahead)
 			head = VonCroyLaraAI.angle;
@@ -1380,7 +1380,7 @@ void VoncroyControl(short item_number)
 		if (item->frame_number == anims[item->anim_number].frame_base)
 		{
 			VonCroy->LOT.is_jumping = 0;
-			VonCroy->maximum_turn = 1456;
+			VonCroy->maximum_turn = DEGREES_TO_ROTATION(8);
 		}
 
 		tilt = angle >> 1;
@@ -1398,7 +1398,7 @@ void VoncroyControl(short item_number)
 		{
 			if (enemy->flags == 32)
 				ifl3 = -1;
-			else  if (VonCroyAI.distance >= 512)
+			else  if (VonCroyAI.distance >= HALF_BLOCK_SIZE)
 				item->goal_anim_state = 1;
 			else if (enemy->flags == 40)
 			{
@@ -1433,7 +1433,7 @@ void VoncroyControl(short item_number)
 	case 5:
 		VonCroy->LOT.is_jumping = 1;
 		VonCroy->LOT.is_monkeying = 1;
-		VonCroy->maximum_turn = 1092;
+		VonCroy->maximum_turn = DEGREES_TO_ROTATION(6);
 
 		if (item->box_number == VonCroy->LOT.target_box || !VonCroy->monkey_ahead)
 		{
@@ -1511,14 +1511,14 @@ void VoncroyControl(short item_number)
 		}
 
 		VonCroy->maximum_turn = 0;
-		CreatureYRot(&item->pos, VonCroyAI.angle, 1092);
+		CreatureYRot(&item->pos, VonCroyAI.angle, DEGREES_TO_ROTATION(6));
 
 		if (!VonCroy->flags && enemy &&
 			item->frame_number > anims[item->anim_number].frame_base + 20 && item->frame_number < anims[item->anim_number].frame_base + 45)
 		{
-			if (abs(enemy->pos.x_pos - item->pos.x_pos) < 512 &&
-				abs(enemy->pos.y_pos + 768 - item->pos.y_pos) <= 512 &&
-				abs(enemy->pos.z_pos - item->pos.z_pos) < 512)
+			if (abs(enemy->pos.x_pos - item->pos.x_pos) < HALF_BLOCK_SIZE &&
+				abs(enemy->pos.y_pos + (HALF_BLOCK_SIZE + CLICK_SIZE) - item->pos.y_pos) <= HALF_BLOCK_SIZE &&
+				abs(enemy->pos.z_pos - item->pos.z_pos) < HALF_BLOCK_SIZE)
 			{
 				enemy->hit_points -= 40;
 
@@ -1538,9 +1538,9 @@ void VoncroyControl(short item_number)
 		VonCroy->maximum_turn = 0;
 
 		if (item->item_flags[2])
-			CreatureYRot(&item->pos, enemy->pos.y_rot - item->pos.y_rot, 512);
+			CreatureYRot(&item->pos, enemy->pos.y_rot - item->pos.y_rot, HALF_BLOCK_SIZE);
 		else
-			CreatureYRot(&item->pos, VonCroyLaraAI.angle, 512);
+			CreatureYRot(&item->pos, VonCroyLaraAI.angle, HALF_BLOCK_SIZE);
 
 		break;
 
@@ -1573,7 +1573,7 @@ void VoncroyControl(short item_number)
 		}
 
 		VonCroy->maximum_turn = 0;
-		CreatureYRot(&item->pos, VonCroyAI.angle, 1092);
+		CreatureYRot(&item->pos, VonCroyAI.angle, DEGREES_TO_ROTATION(6));
 
 		if (enemy && enemy->flags == 6 && item->frame_number > anims[item->anim_number].frame_base + 21)
 		{
@@ -1583,9 +1583,9 @@ void VoncroyControl(short item_number)
 		else if (!VonCroy->flags && enemy &&
 			item->frame_number > anims[item->anim_number].frame_base + 15 && item->frame_number < anims[item->anim_number].frame_base + 26)
 		{
-			if (abs(enemy->pos.x_pos - item->pos.x_pos) < 512 &&
-				abs(enemy->pos.y_pos - item->pos.y_pos) <= 512 &&
-				abs(enemy->pos.z_pos - item->pos.z_pos) < 512)
+			if (abs(enemy->pos.x_pos - item->pos.x_pos) < HALF_BLOCK_SIZE &&
+				abs(enemy->pos.y_pos - item->pos.y_pos) <= HALF_BLOCK_SIZE &&
+				abs(enemy->pos.z_pos - item->pos.z_pos) < HALF_BLOCK_SIZE)
 			{
 				enemy->hit_points -= 20;
 
@@ -1610,7 +1610,7 @@ void VoncroyControl(short item_number)
 		}
 
 		VonCroy->maximum_turn = 0;
-		CreatureYRot(&item->pos, VonCroyAI.angle, 1092);
+		CreatureYRot(&item->pos, VonCroyAI.angle, DEGREES_TO_ROTATION(6));
 
 		if (item->anim_number == objects[VON_CROY].anim_index + 47)
 		{
@@ -1642,7 +1642,7 @@ void VoncroyControl(short item_number)
 	case 36:
 	case 37:
 		VonCroy->maximum_turn = 0;
-		MoveCreature3DPos(&item->pos, &enemy->pos, 15, enemy->pos.y_rot - item->pos.y_rot, 512);
+		MoveCreature3DPos(&item->pos, &enemy->pos, 15, enemy->pos.y_rot - item->pos.y_rot, HALF_BLOCK_SIZE);
 		break;
 	}
 

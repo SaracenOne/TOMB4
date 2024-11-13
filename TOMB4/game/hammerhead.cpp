@@ -75,7 +75,7 @@ void HammerheadControl(short item_number)
 			break;
 
 		case 1:
-			shark->maximum_turn = 1274;
+			shark->maximum_turn = DEGREES_TO_ROTATION(7);
 
 			if (info.distance > 0x100000)
 				item->goal_anim_state = 2;

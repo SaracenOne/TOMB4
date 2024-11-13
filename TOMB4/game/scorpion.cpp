@@ -70,7 +70,7 @@ void ScorpionControl(short item_number)
 	floor = GetFloor(x, item->pos.y_pos, z, &room_number);
 	h = GetHeight(floor, x, item->pos.y_pos, z);
 
-	if (abs(item->pos.y_pos - h) > 512)
+	if (abs(item->pos.y_pos - h) > HALF_BLOCK_SIZE)
 		h = item->pos.y_pos;
 
 	x = item->pos.x_pos - s;
@@ -79,7 +79,7 @@ void ScorpionControl(short item_number)
 	floor = GetFloor(x, item->pos.y_pos, z, &room_number);
 	h2 = GetHeight(floor, x, item->pos.y_pos, z);
 
-	if (abs(item->pos.y_pos - h2) > 512)
+	if (abs(item->pos.y_pos - h2) > HALF_BLOCK_SIZE)
 		h2 = item->pos.y_pos;
 
 	xrot = (short)phd_atan(1364, h2 - h);
@@ -90,7 +90,7 @@ void ScorpionControl(short item_number)
 	floor = GetFloor(x, item->pos.y_pos, z, &room_number);
 	h = GetHeight(floor, x, item->pos.y_pos, z);
 
-	if (abs(item->pos.y_pos - h) > 512)
+	if (abs(item->pos.y_pos - h) > HALF_BLOCK_SIZE)
 		h = item->pos.y_pos;
 
 	x = item->pos.x_pos + c;
@@ -99,7 +99,7 @@ void ScorpionControl(short item_number)
 	floor = GetFloor(x, item->pos.y_pos, z, &room_number);
 	h2 = GetHeight(floor, x, item->pos.y_pos, z);
 
-	if (abs(item->pos.y_pos - h2) > 512)
+	if (abs(item->pos.y_pos - h2) > HALF_BLOCK_SIZE)
 		h2 = item->pos.y_pos;
 
 	zrot = (short)phd_atan(1364, h2 - h);
@@ -216,7 +216,7 @@ void ScorpionControl(short item_number)
 				item->goal_anim_state = 2;
 			else if (info.bite)
 			{
-				scorpion->maximum_turn = 364;
+				scorpion->maximum_turn = DEGREES_TO_ROTATION(2);
 
 				if (GetRandomControl() & 1 || enemy->object_number == TROOPS && enemy->hit_points <= 15)
 					item->goal_anim_state = 4;
@@ -229,7 +229,7 @@ void ScorpionControl(short item_number)
 			break;
 
 		case 2:
-			scorpion->maximum_turn = 364;
+			scorpion->maximum_turn = DEGREES_TO_ROTATION(2);
 
 			if (info.distance < 0x1C6E39)
 				item->goal_anim_state = 1;
@@ -239,7 +239,7 @@ void ScorpionControl(short item_number)
 			break;
 
 		case 3:
-			scorpion->maximum_turn = 546;
+			scorpion->maximum_turn = DEGREES_TO_ROTATION(3);
 
 			if (info.distance < 0x1C6E39)
 				item->goal_anim_state = 1;
@@ -250,12 +250,12 @@ void ScorpionControl(short item_number)
 		case 5:
 			hp = lara_item->hit_points;
 
-			if (abs(info.angle) < 364)
+			if (abs(info.angle) < DEGREES_TO_ROTATION(2))
 				item->pos.y_rot += info.angle;
 			else if (info.angle < 0)
-				item->pos.y_rot -= 364;
+				item->pos.y_rot -= DEGREES_TO_ROTATION(2);
 			else
-				item->pos.y_rot += 364;
+				item->pos.y_rot += DEGREES_TO_ROTATION(2);
 
 			if (!scorpion->flags && enemy && enemy != lara_item && info.distance < 0x1C6E39)
 			{
@@ -312,19 +312,19 @@ void ScorpionControl(short item_number)
 		}
 	}
 
-	if (abs(xrot - item->pos.x_rot) < 256)
+	if (abs(xrot - item->pos.x_rot) < CLICK_SIZE)
 		item->pos.x_rot = xrot;
 	else if (xrot > item->pos.x_rot)
-		item->pos.x_rot += 256;
+		item->pos.x_rot += CLICK_SIZE;
 	else if (xrot < item->pos.x_rot)
-		item->pos.x_rot -= 256;
+		item->pos.x_rot -= CLICK_SIZE;
 
-	if (abs(zrot - item->pos.z_rot) < 256)
+	if (abs(zrot - item->pos.z_rot) < CLICK_SIZE)
 		item->pos.z_rot = zrot;
 	else if (zrot > item->pos.z_rot)
-		item->pos.z_rot += 256;
+		item->pos.z_rot += CLICK_SIZE;
 	else if (zrot < item->pos.z_rot)
-		item->pos.z_rot -= 256;
+		item->pos.z_rot -= CLICK_SIZE;
 
 	if (!cutseq_num)
 		CreatureAnimation(item_number, angle, 0);
@@ -397,7 +397,7 @@ void SmlscorpControl(short item_number)
 				item->goal_anim_state = 2;
 			else if (info.bite)
 			{
-				scorpion->maximum_turn = 1092;
+				scorpion->maximum_turn = DEGREES_TO_ROTATION(6);
 
 				if (GetRandomControl() & 1 || enemy->object_number == TROOPS && enemy->hit_points <= 2)
 					item->goal_anim_state = 4;
@@ -410,7 +410,7 @@ void SmlscorpControl(short item_number)
 			break;
 
 		case 2:
-			scorpion->maximum_turn = 1092;
+			scorpion->maximum_turn = DEGREES_TO_ROTATION(6);
 
 			if (info.distance >= 0x1C639)
 				item->goal_anim_state = 3;
@@ -420,7 +420,7 @@ void SmlscorpControl(short item_number)
 			break;
 
 		case 3:
-			scorpion->maximum_turn = 1456;
+			scorpion->maximum_turn = DEGREES_TO_ROTATION(8);
 
 			if (info.distance < 0x1C639)
 				item->goal_anim_state = 1;
@@ -431,12 +431,12 @@ void SmlscorpControl(short item_number)
 		case 5:
 			scorpion->maximum_turn = 0;
 
-			if (abs(info.angle) < 1092)
+			if (abs(info.angle) < DEGREES_TO_ROTATION(6))
 				item->pos.y_rot += info.angle;
 			else if (info.angle < 0)
-				item->pos.y_rot -= 1092;
+				item->pos.y_rot -= DEGREES_TO_ROTATION(6);
 			else
-				item->pos.y_rot += 1092;
+				item->pos.y_rot += DEGREES_TO_ROTATION(6);
 
 			if (!scorpion->flags && item->touch_bits & 0x1B00100)
 			{

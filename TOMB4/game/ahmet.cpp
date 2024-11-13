@@ -21,7 +21,21 @@
 #include "lara.h"
 #include "../tomb4/mod_config.h"
 
-short ScalesBounds[12] = { -1408, -640, 0, 0, -512, 512, -1820, 1820, -5460, 5460, -1820, 1820 };
+short ScalesBounds[] = {
+	-(BLOCK_SIZE + CLICK_SIZE + HALF_CLICK_SIZE),
+	-(HALF_BLOCK_SIZE + HALF_CLICK_SIZE),
+	0,
+	0,
+	-HALF_BLOCK_SIZE,
+	HALF_BLOCK_SIZE,
+	-DEGREES_TO_ROTATION(10),
+	DEGREES_TO_ROTATION(10),
+	-DEGREES_TO_ROTATION(30),
+	DEGREES_TO_ROTATION(30),
+	-DEGREES_TO_ROTATION(10),
+	DEGREES_TO_ROTATION(10)
+};
+
 static BITE_INFO ahmet_bite = { 0, 0, 0, 11 };
 static BITE_INFO ahmet_left_claw = { 0, 0, 0, 16 };
 static BITE_INFO ahmet_right_claw = { 0, 0, 0, 22 };
@@ -41,9 +55,9 @@ void ScalesCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 		{
 			roty = item->pos.y_rot;
 			item->pos.y_rot = (l->pos.y_rot + 0x2000) & 0xC000;
-			ScalesBounds[0] = -1408;
-			ScalesBounds[1] = -640;
-			ScalesBounds[4] = -512;
+			ScalesBounds[0] = -(BLOCK_SIZE + CLICK_SIZE + HALF_CLICK_SIZE);
+			ScalesBounds[1] = -(HALF_BLOCK_SIZE + HALF_CLICK_SIZE);
+			ScalesBounds[4] = -HALF_BLOCK_SIZE;
 			ScalesBounds[5] = 0;
 
 			if (TestLaraPosition(ScalesBounds, item, l))
@@ -73,18 +87,18 @@ void ScalesCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 		}
 		else
 		{
-			GlobalCollisionBounds[0] = 640;
-			GlobalCollisionBounds[1] = 1280;
-			GlobalCollisionBounds[2] = -1280;
+			GlobalCollisionBounds[0] = (HALF_BLOCK_SIZE + HALF_CLICK_SIZE);
+			GlobalCollisionBounds[1] = (BLOCK_SIZE + CLICK_SIZE);
+			GlobalCollisionBounds[2] = -(BLOCK_SIZE + CLICK_SIZE);
 			GlobalCollisionBounds[3] = 0;
-			GlobalCollisionBounds[4] = -256;
-			GlobalCollisionBounds[5] = 384;
+			GlobalCollisionBounds[4] = -CLICK_SIZE;
+			GlobalCollisionBounds[5] = (CLICK_SIZE + HALF_CLICK_SIZE);
 			ItemPushLara(item, l, coll, 0, 2);
-			GlobalCollisionBounds[0] = -256;
-			GlobalCollisionBounds[1] = 256;
+			GlobalCollisionBounds[0] = -CLICK_SIZE;
+			GlobalCollisionBounds[1] = CLICK_SIZE;
 			ItemPushLara(item, l, coll, 0, 2);
-			GlobalCollisionBounds[0] = -1280;
-			GlobalCollisionBounds[1] = -640;
+			GlobalCollisionBounds[0] = -(BLOCK_SIZE + CLICK_SIZE);
+			GlobalCollisionBounds[1] = -(HALF_BLOCK_SIZE + HALF_CLICK_SIZE);
 			ItemPushLara(item, l, coll, 0, 2);
 		}
 	}
@@ -95,7 +109,7 @@ void ScalesCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 		pos.x = 0;
 		pos.y = 0;
 		pos.z = 0;
-		GetLaraJointPos(&pos, 14);
+		GetLaraJointPos(&pos, LMX_HAND_L);
 		drip = &Drips[GetFreeDrip()];
 		drip->x = pos.x;
 		drip->y = pos.y;
@@ -123,9 +137,9 @@ long ReTriggerAhmet(short item_number)
 		FlashFadeG = 64;
 		FlashFadeB = 0;
 		FlashFader = 32;
-		item->pos.x_pos = ((item->item_flags[0] & 0xFFFF) << 10) | 512;
+		item->pos.x_pos = ((item->item_flags[0] & 0xFFFF) << 10) | HALF_BLOCK_SIZE;
 		item->pos.y_pos = (item->item_flags[1] & 0xFFFF) << 8;
-		item->pos.z_pos = ((item->item_flags[2] & 0xFFFF) << 10) | 512;
+		item->pos.z_pos = ((item->item_flags[2] & 0xFFFF) << 10) | HALF_BLOCK_SIZE;
 		IsRoomOutside(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
 
 		if (item->room_number != IsRoomOutsideNo)
@@ -177,7 +191,7 @@ void ScalesControl(short item_number)
 					item2 = &items[itemNos[numTriggers - 1]];
 
 					if (item2->object_number != FLAME_EMITTER2)
-						item2->flags = 1024;
+						item2->flags = 0x400;
 				}
 
 				item->goal_anim_state = 1;
@@ -368,7 +382,7 @@ void AhmetControl(short item_number)
 			break;
 
 		case 2:
-			ahmet->maximum_turn = 910;
+			ahmet->maximum_turn = DEGREES_TO_ROTATION(5);
 
 			if (item->ai_bits & PATROL1)
 			{
@@ -383,7 +397,7 @@ void AhmetControl(short item_number)
 			break;
 
 		case 3:
-			ahmet->maximum_turn = 1456;
+			ahmet->maximum_turn = DEGREES_TO_ROTATION(8);
 
 			if (item->ai_bits & GUARD || ahmet->mood == BORED_MOOD || ahmet->mood == ESCAPE_MOOD &&
 				lara.target != item && info.ahead || info.bite && info.distance < 0x190000)
@@ -397,12 +411,12 @@ void AhmetControl(short item_number)
 		case 4:
 			ahmet->maximum_turn = 0;
 
-			if (abs(info.angle) < 910)
+			if (abs(info.angle) < DEGREES_TO_ROTATION(5))
 				item->pos.y_rot += info.angle;
 			else if (info.angle < 0)
-				item->pos.y_rot -= 910;
+				item->pos.y_rot -= DEGREES_TO_ROTATION(5);
 			else
-				item->pos.y_rot += 910;
+				item->pos.y_rot += DEGREES_TO_ROTATION(5);
 
 			if (frame > base + 7 && !(ahmet->flags & 1) && item->touch_bits & 0x3C000)
 			{
@@ -426,7 +440,7 @@ void AhmetControl(short item_number)
 
 			if (item->anim_number == objects[AHMET].anim_index + 3)
 			{
-				if (abs(info.angle) < 910)
+				if (abs(info.angle) < DEGREES_TO_ROTATION(5))
 					item->pos.y_rot += info.angle;
 			}
 			else if (!ahmet->flags && item->anim_number == objects[AHMET].anim_index + 4 && frame > base + 11 && item->touch_bits & 0xC00)
@@ -445,12 +459,12 @@ void AhmetControl(short item_number)
 
 			if (item->anim_number == objects[AHMET].anim_index + 7)
 			{
-				if (abs(info.angle) < 910)
+				if (abs(info.angle) < DEGREES_TO_ROTATION(5))
 					item->pos.y_rot += info.angle;
 				else if (info.angle < 0)
-					item->pos.y_rot -= 910;
+					item->pos.y_rot -= DEGREES_TO_ROTATION(5);
 				else
-					item->pos.y_rot += 910;
+					item->pos.y_rot += DEGREES_TO_ROTATION(5);
 			}
 			else if (frame > base + 21 && !(ahmet->flags & 1) && item->touch_bits & 0x3C000)
 			{

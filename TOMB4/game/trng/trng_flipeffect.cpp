@@ -798,7 +798,7 @@ bool lara_attract_lara_in_direction_on_ground_and_in_air_with_speed(unsigned cha
 
 // NGLE - 159
 bool distance_set_level_far_view_distance_to_x_number_of_sectors(unsigned char sectors, unsigned char _unused) {
-	ClipRange = (float)sectors * 1024.0f;
+	ClipRange = (float)sectors * float(BLOCK_SIZE);
 
 	return true;
 }
@@ -2231,7 +2231,7 @@ int NGPerformTRNGFlipEffect(uint16_t flip_number, int16_t full_timer, uint32_t f
 			break;
 		}
 		case WEATHER_SET_X_DISTANCE_FOG_VALUE: {
-			LevelFogStart = (1024.0F * 120.0F) - (1024.0F * (float)((unsigned char)timer));
+			LevelFogStart = (float(BLOCK_SIZE) * 120.0F) - (float(BLOCK_SIZE) * (float)((unsigned char)timer));
 			break;
 		}
 		case WEATHER_CHANGE_START_FOR_DISTANCE_TO_X_DISTANCE_IN_SECONDS: {
@@ -2363,7 +2363,7 @@ int NGPerformTRNGFlipEffect(uint16_t flip_number, int16_t full_timer, uint32_t f
 			break;
 		}
 		case WEATHER_SET_X_END_FOG_LIMIT_FOR_DISTANCE_FOG: {
-			LevelFogEnd = (1024.0F * 120.0F) - (1024.0F * (float)((unsigned char)timer));
+			LevelFogEnd = (float(BLOCK_SIZE) * 120.0F) - (float(BLOCK_SIZE) * (float)((unsigned char)timer));
 			break;
 		}
 		case WEATHER_CHANGE_END_LIMIT_OF_DISTANCE_FOG_IN_X_WAY_WITH_SPEED: {
@@ -3176,7 +3176,8 @@ void NGCaptureFlipEffect(uint16_t flip_number, uint16_t timer, uint32_t flip_off
 	uint16_t plugin_id = NGGetPluginIDForFloorData(NGGetFloorTriggerNow());
 	scanned_flipeffects[flipeffect_count].plugin_id = plugin_id;
 
-	if (flip_number == 118 && plugin_id == 0) {
+	if (flip_number == PERFORM_TRIGGERGROUP_FROM_SCRIPT_IN_SPECIFIC_WAY && plugin_id == 0) {
+		int16_t current_id = timer & 0xff;
 		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Captured flipeffects does not implement special behaviour for flipeffect 118");
 	}
 
@@ -3187,7 +3188,6 @@ void NGResetScanFlipEffects() {
 	uint32_t j = 0;
 	for (uint32_t i = 0; i < scanned_flipeffect_count; i++) {
 		if (scanned_flipeffects[i].flags & SCANF_YET_TO_PERFORM) {
-			// preservarlo
 			scanned_flipeffects[j++] = scanned_flipeffects[i];
 		}
 	}

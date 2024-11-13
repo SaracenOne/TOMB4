@@ -145,6 +145,86 @@ int16_t T4PlusGetMotorBoatExtraSlotID() {
 	return get_game_mod_level_objects_info(gfCurrentLevel)->motor_boat_extra_slot;
 }
 
+int16_t T4PlusGetLaraDoubleSlotID() {
+	return get_game_mod_level_objects_info(gfCurrentLevel)->lara_double_slot;
+}
+
+int16_t T4PlusGetEnemyJeepSlotID() {
+	return get_game_mod_level_objects_info(gfCurrentLevel)->enemy_jeep_slot;
+}
+
+
+void T4PlusSetupDefaultObjectCustomization() {
+	MOD_LEVEL_OBJECTS_INFO *objects_info = get_game_mod_level_objects_info(0);
+
+	for (int i = 0; i < NUMBER_OBJECTS; i++)
+	{
+		objects_info->object_customization[i].initialise_routine = "";
+		objects_info->object_customization[i].collision_routine = "";
+		objects_info->object_customization[i].control_routine = "";
+		objects_info->object_customization[i].draw_routine = "DrawAnimatingItem";
+		objects_info->object_customization[i].draw_routine_extra = "";
+		objects_info->object_customization[i].ceiling_routine = "";
+		objects_info->object_customization[i].floor_routine = "";
+
+		objects_info->object_customization[i].is_amphibious = false;
+		objects_info->object_customization[i].is_agent = false;
+		objects_info->object_customization[i].is_undead = false;
+
+		objects_info->object_customization[i].save_position = 0;
+		objects_info->object_customization[i].save_hitpoints = 0;
+		objects_info->object_customization[i].save_flags = 0;
+		objects_info->object_customization[i].save_anim = 0;
+		objects_info->object_customization[i].save_mesh = 0;
+
+		objects_info->object_customization[i].pivot_length = 0;
+		objects_info->object_customization[i].radius = 10;
+		objects_info->object_customization[i].shadow_size = 0;
+
+		objects_info->object_customization[i].explodable_meshbits = 0;
+		//obj->frame_base = (short*)((long)(size_t(obj->frame_base) & 0xffffffff) + (char*)frames);
+		//obj->object_mip = 0;
+	}
+
+	MOD_LEVEL_OBJECT_CUSTOMIZATION* obj;
+
+	obj = &objects_info->object_customization[LARA];
+	obj->initialise_routine = "InitialiseLaraLoad";
+	obj->draw_routine = "";
+	obj->shadow_size = 160;
+	obj->hit_points = 1000;
+	obj->save_hitpoints = 1;
+	obj->save_position = 1;
+	obj->save_flags = 1;
+	obj->save_anim = 1;
+
+	obj = &objects_info->object_customization[MOTORBIKE];
+	obj->initialise_routine = "InitialiseBike";
+	obj->control_routine = "BikeControl";
+	obj->collision_routine = "BikeCollision";
+	obj->draw_routine_extra = "DrawBikeExtras";
+	obj->save_hitpoints = true;
+	obj->save_position = true;
+	obj->save_flags = true;
+	obj->save_anim = true;
+	//bones[obj->bone_index + 4] |= X_ROTATION_FLAG;
+	//bones[obj->bone_index + 12] |= X_ROTATION_FLAG;
+	//bones[obj->bone_index + 28] |= X_ROTATION_FLAG;
+
+	obj = &objects_info->object_customization[JEEP];
+	obj->initialise_routine = "InitialiseJeep";
+	obj->control_routine = "JeepControl";
+	obj->collision_routine = "JeepCollision";
+	obj->draw_routine_extra = "DrawJeepExtras";
+	obj->save_hitpoints = true;
+	obj->save_position = true;
+	obj->save_flags = true;
+	obj->save_anim = true;
+	//bones[obj->bone_index + 4] |= X_ROTATION_FLAG;
+	//bones[obj->bone_index + 12] |= X_ROTATION_FLAG;
+	//bones[obj->bone_index + 28] |= X_ROTATION_FLAG;
+}
+
 bool T4ObjectControlRoutine(short object_number, short item_num) {
 	NGStoreLastItemMovedIndex(item_num);
 

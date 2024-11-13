@@ -31,8 +31,8 @@ static void GetTighRopeFallOff(long chance)
 
 void lara_as_trpose(ITEM_INFO* item, COLL_INFO* coll) {
 	// Added to better match TRNG
-	coll->enable_baddie_push = 0;
-	coll->enable_spaz = 0;
+	coll->enable_baddie_push = false;
+	coll->enable_spaz = false;
 
 	if (input & IN_LOOK)
 		LookUpDown();
@@ -65,8 +65,8 @@ void lara_as_trpose(ITEM_INFO* item, COLL_INFO* coll) {
 
 void lara_as_trwalk(ITEM_INFO* item, COLL_INFO* coll) {
 	// Added to better match TRNG
-	coll->enable_baddie_push = 0;
-	coll->enable_spaz = 0;
+	coll->enable_baddie_push = false;
+	coll->enable_spaz = false;
 
 	if (item->trigger_flags > 0) {
 		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Trigger flags are not yet supported for tightropes.");
@@ -102,8 +102,8 @@ void lara_as_trwalk(ITEM_INFO* item, COLL_INFO* coll) {
 
 void lara_as_trfall(ITEM_INFO* item, COLL_INFO* coll) {
 	// Added to better match TRNG
-	coll->enable_baddie_push = 0;
-	coll->enable_spaz = 0;
+	coll->enable_baddie_push = false;
+	coll->enable_spaz = false;
 
 	PHD_VECTOR pos;
 	long UndoInput, WrongInput, UndoAnim, UndoFrame;
@@ -169,13 +169,13 @@ void InitialiseTightRope(short item_number) {
 	item = &items[item_number];
 
 	if (!item->pos.y_rot)
-		item->pos.z_pos -= 256;
+		item->pos.z_pos -= CLICK_SIZE;
 	else if (item->pos.y_rot == 0x4000)
-		item->pos.x_pos -= 256;
+		item->pos.x_pos -= CLICK_SIZE;
 	else if (item->pos.y_rot == -0x4000)
-		item->pos.x_pos += 256;
+		item->pos.x_pos += CLICK_SIZE;
 	else if (item->pos.y_rot == -0x8000)
-		item->pos.z_pos += 256;
+		item->pos.z_pos += CLICK_SIZE;
 }
 
 void TightRopeCollision(short item_num, ITEM_INFO* l, COLL_INFO* coll) {
@@ -213,6 +213,6 @@ void TightRopeCollision(short item_num, ITEM_INFO* l, COLL_INFO* coll) {
 		item->pos.y_rot += 0x8000;
 	}
 	else if (l->current_anim_state == AS_TROPEWALK && l->goal_anim_state != AS_TROPEGETOFF && !ng_lara_extrastate.TightRopeOff &&
-		item->pos.y_rot == l->pos.y_rot && ((abs(item->pos.x_pos - l->pos.x_pos) + abs(item->pos.z_pos - l->pos.z_pos)) < 640))
+		item->pos.y_rot == l->pos.y_rot && ((abs(item->pos.x_pos - l->pos.x_pos) + abs(item->pos.z_pos - l->pos.z_pos)) < (HALF_BLOCK_SIZE + HALF_CLICK_SIZE)))
 		ng_lara_extrastate.TightRopeOff = 1;
 }

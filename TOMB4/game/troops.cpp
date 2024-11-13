@@ -176,12 +176,12 @@ void TroopControl(short item_number)
 
 			if (item->anim_number == objects[item->object_number].anim_index + 17)
 			{
-				if (abs(info.angle) < 1820)
+				if (abs(info.angle) < DEGREES_TO_ROTATION(10))
 					item->pos.y_rot += info.angle;
 				else if (info.angle < 0)
-					item->pos.y_rot -= 1820;
+					item->pos.y_rot -= DEGREES_TO_ROTATION(10);
 				else
-					item->pos.y_rot += 1820;
+					item->pos.y_rot += DEGREES_TO_ROTATION(10);
 			}
 
 			if (item->ai_bits & GUARD)
@@ -230,7 +230,7 @@ void TroopControl(short item_number)
 		case 2:
 			head = iAngle;
 			troop->flags = 0;
-			troop->maximum_turn = 910;
+			troop->maximum_turn = DEGREES_TO_ROTATION(5);
 
 			if (item->ai_bits & PATROL1)
 				item->goal_anim_state = 2;
@@ -260,7 +260,7 @@ void TroopControl(short item_number)
 			if (info.ahead)
 				head = info.angle;
 
-			troop->maximum_turn = 1820;
+			troop->maximum_turn = DEGREES_TO_ROTATION(10);
 			tilt = angle >> 1;
 
 			if (item->ai_bits & GUARD || item->ai_bits & FOLLOW && (troop->reached_goal || iDistance > 0x400000))

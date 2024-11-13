@@ -368,7 +368,7 @@ long ControlPhase(long nframes, long demo_mode)
 			{
 				BinocularRange = 0;
 				LaserSight = 0;
-				AlterFOV(14560);
+				AlterFOV(DEGREES_TO_ROTATION(DEFAULT_FOV));
 				lara_item->mesh_bits = -1;
 				lara.Busy = 0;
 				camera.type = BinocularOldCamera;
@@ -646,7 +646,7 @@ void RemoveRoomFlipItems(ROOM_INFO* r)
 
 		if (item->flags & IFL_INVISIBLE && objects[item->object_number].intelligent)
 		{
-			if (item->hit_points <= 0 && item->hit_points != -16384)
+			if (item->hit_points <= 0 && item->hit_points != INFINITE_HEALTH)
 				KillItem(item_num);
 		}
 	}
@@ -661,10 +661,10 @@ void AddRoomFlipItems(ROOM_INFO* r)
 		item = &items[item_num];
 
 		if (items[item_num].object_number == RAISING_BLOCK1 && item->item_flags[1])
-			AlterFloorHeight(item, -1024);
+			AlterFloorHeight(item, -BLOCK_SIZE);
 
 		if (item->object_number == RAISING_BLOCK2 && item->item_flags[1])
-			AlterFloorHeight(item, -2048);
+			AlterFloorHeight(item, -(BLOCK_SIZE * 2));
 	}
 }
 
@@ -711,7 +711,7 @@ void TestTriggers(short* data, bool heavy, long heavy_flags)
 	{
 		if (!heavy)
 		{
-			quad = ushort(lara_item->pos.y_rot + 8192) >> 14;
+			quad = ushort(lara_item->pos.y_rot + (BLOCK_SIZE * 8)) >> W2V_SHIFT;
 
 			if ((1 << (quad + 8)) & *data)
 				lara.climb_status = 1;
@@ -1242,14 +1242,14 @@ long CheckNoColFloorTriangle(FLOOR_INFO* floor, long x, long z)
 		{
 		case NOCOLF1T:
 
-			if (x <= 1024 - z)
+			if (x <= BLOCK_SIZE - z)
 				return -1;
 
 			break;
 
 		case NOCOLF1B:
 
-			if (x > 1024 - z)
+			if (x > BLOCK_SIZE - z)
 				return -1;
 
 			break;
@@ -1303,14 +1303,14 @@ long CheckNoColCeilingTriangle(FLOOR_INFO* floor, long x, long z)
 		{
 		case NOCOLC1T:
 
-			if (x <= 1024 - z)
+			if (x <= BLOCK_SIZE - z)
 				return -1;
 
 			break;
 
 		case NOCOLC1B:
 
-			if (x > 1024 - z)
+			if (x > BLOCK_SIZE - z)
 				return -1;
 
 			break;
@@ -1587,14 +1587,14 @@ long GetHeight(FLOOR_INFO* floor, long x, long y, long z)
 				height_type = SMALL_SLOPE;
 
 			if (xoff < 0)
-				height -= xoff * (z & 1023) >> 2;
+				height -= xoff * (z & (BLOCK_SIZE - 1)) >> 2;
 			else
-				height += xoff * ((-1 - z) & 1023) >> 2;
+				height += xoff * ((-1 - z) & (BLOCK_SIZE - 1)) >> 2;
 
 			if (yoff < 0)
-				height -= yoff * (x & 1023) >> 2;
+				height -= yoff * (x & (BLOCK_SIZE - 1)) >> 2;
 			else
-				height += yoff * ((-1 - x) & 1023) >> 2;
+				height += yoff * ((-1 - x) & (BLOCK_SIZE - 1)) >> 2;
 
 			data++;
 			break;
@@ -1689,13 +1689,13 @@ long GetHeight(FLOOR_INFO* floor, long x, long y, long z)
 			tilt1 = (tilt >> 4) & 0xF;
 			tilt2 = (tilt >> 8) & 0xF;
 			tilt3 = (tilt >> 12) & 0xF;
-			dx = x & 1023;
-			dz = z & 1023;
+			dx = x & (BLOCK_SIZE - 1);
+			dz = z & (BLOCK_SIZE - 1);
 			height_type = SPLIT_TRI;
 
 			if ((type & 0x1F) == SPLIT1 || (type & 0x1F) == NOCOLF1T || (type & 0x1F) == NOCOLF1B)
 			{
-				if (dx > (1024 - dz))
+				if (dx > (BLOCK_SIZE - dz))
 				{
 					hadj = (type >> 5) & 0x1F;
 
@@ -1752,14 +1752,14 @@ long GetHeight(FLOOR_INFO* floor, long x, long y, long z)
 				height_type = DIAGONAL;
 
 			if (xoff >= 0)
-				height += xoff * ((-1 - z) & 1023) >> 2;
+				height += xoff * ((-1 - z) & (BLOCK_SIZE - 1)) >> 2;
 			else
-				height -= xoff * (z & 1023) >> 2;
+				height -= xoff * (z & (BLOCK_SIZE - 1)) >> 2;
 
 			if (yoff >= 0)
-				height += yoff * ((-1 - x) & 1023) >> 2;
+				height += yoff * ((-1 - x) & (BLOCK_SIZE - 1)) >> 2;
 			else
-				height -= yoff * (x & 1023) >> 2;
+				height -= yoff * (x & (BLOCK_SIZE - 1)) >> 2;
 
 			data++;
 			break;
@@ -1834,7 +1834,7 @@ long GetCeiling(FLOOR_INFO* floor, long x, long y, long z)
 
 					if ((type & 0x1F) == SPLIT3 || (type & 0x1F) == NOCOLC1T || (type & 0x1F) == NOCOLC1B)
 					{
-						if (dx <= 1024 - dz)
+						if (dx <= BLOCK_SIZE - dz)
 						{
 							hadj = type >> 10 & 0x1F;
 
@@ -2027,7 +2027,7 @@ void AlterFloorHeight(ITEM_INFO* item, long height)
 
 	room_num = item->room_number;
 	floor = GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_num);
-	ceiling = GetFloor(item->pos.x_pos, item->pos.y_pos + height - 1024, item->pos.z_pos, &room_num);
+	ceiling = GetFloor(item->pos.x_pos, item->pos.y_pos + height - BLOCK_SIZE, item->pos.z_pos, &room_num);
 
 	if (floor->floor == -127)
 		floor->floor = ceiling->ceiling + char(height >> 8);
@@ -2345,8 +2345,8 @@ long xLOS(GAME_VECTOR* start, GAME_VECTOR* target)
 	if (!dx)
 		return 1;
 
-	dy = 1024 * (target->y - start->y) / dx;
-	dz = 1024 * (target->z - start->z) / dx;
+	dy = BLOCK_SIZE * (target->y - start->y) / dx;
+	dz = BLOCK_SIZE * (target->z - start->z) / dx;
 	number_los_rooms = 1;
 	los_rooms[0] = start->room_number;
 	room_number = start->room_number;
@@ -2354,7 +2354,7 @@ long xLOS(GAME_VECTOR* start, GAME_VECTOR* target)
 
 	if (dx < 0)
 	{
-		x = start->x & ~1023;
+		x = start->x & ~(BLOCK_SIZE - 1);
 		y = ((x - start->x) * dy >> 10) + start->y;
 		z = ((x - start->x) * dz >> 10) + start->z;
 
@@ -2396,14 +2396,14 @@ long xLOS(GAME_VECTOR* start, GAME_VECTOR* target)
 				return 0;
 			}
 
-			x -= 1024;
+			x -= BLOCK_SIZE;
 			y -= dy;
 			z -= dz;
 		}
 	}
 	else
 	{
-		x = start->x | 1023;
+		x = start->x | (BLOCK_SIZE - 1);
 		y = ((x - start->x) * dy >> 10) + start->y;
 		z = ((x - start->x) * dz >> 10) + start->z;
 
@@ -2445,7 +2445,7 @@ long xLOS(GAME_VECTOR* start, GAME_VECTOR* target)
 				return 0;
 			}
 
-			x += 1024;
+			x += BLOCK_SIZE;
 			y += dy;
 			z += dz;
 		}
@@ -2466,8 +2466,8 @@ long zLOS(GAME_VECTOR* start, GAME_VECTOR* target)
 	if (!dz)
 		return 1;
 
-	dx = 1024 * (target->x - start->x) / dz;
-	dy = 1024 * (target->y - start->y) / dz;
+	dx = BLOCK_SIZE * (target->x - start->x) / dz;
+	dy = BLOCK_SIZE * (target->y - start->y) / dz;
 	number_los_rooms = 1;
 	los_rooms[0] = start->room_number;
 	room_number = start->room_number;
@@ -2475,7 +2475,7 @@ long zLOS(GAME_VECTOR* start, GAME_VECTOR* target)
 
 	if (dz < 0)
 	{
-		z = start->z & ~1023;
+		z = start->z & ~(BLOCK_SIZE - 1);
 		x = ((z - start->z) * dx >> 10) + start->x;
 		y = ((z - start->z) * dy >> 10) + start->y;
 
@@ -2517,14 +2517,14 @@ long zLOS(GAME_VECTOR* start, GAME_VECTOR* target)
 				return 0;
 			}
 
-			z -= 1024;
+			z -= BLOCK_SIZE;
 			x -= dx;
 			y -= dy;
 		}
 	}
 	else
 	{
-		z = start->z | 1023;
+		z = start->z | (BLOCK_SIZE - 1);
 		x = ((z - start->z) * dx >> 10) + start->x;
 		y = ((z - start->z) * dy >> 10) + start->y;
 
@@ -2566,7 +2566,7 @@ long zLOS(GAME_VECTOR* start, GAME_VECTOR* target)
 				return 0;
 			}
 
-			z += 1024;
+			z += BLOCK_SIZE;
 			x += dx;
 			y += dy;
 		}
@@ -2642,7 +2642,7 @@ long ExplodeItemNode(ITEM_INFO* item, long Node, long NoXZVel, long bits)
 	ShatterItem.Sphere.z = Slist[Node].z;
 	ShatterItem.YRot = item->pos.y_rot;
 	ShatterItem.il = &item->il;
-	ShatterItem.Flags = item->object_number != CROSSBOW_BOLT ? 0 : 1024;
+	ShatterItem.Flags = item->object_number != CROSSBOW_BOLT ? 0 : 0x400;
 	ShatterObject(&ShatterItem, 0, (short)bits, item->room_number, NoXZVel);
 	item->mesh_bits &= ~ShatterItem.Bit;
 	return 1;
@@ -2669,8 +2669,8 @@ long IsRoomOutside(long x, long y, long z)
 		r = &room[offset & 0x7FFF];
 
 		if (y >= r->maxceiling && y <= r->minfloor &&
-			z >= r->z + 1024 && z <= ((r->x_size - 1) << 10) + r->z &&
-			x >= r->x + 1024 && x <= ((r->y_size - 1) << 10) + r->x)
+			z >= r->z + BLOCK_SIZE && z <= ((r->x_size - 1) << 10) + r->z &&
+			x >= r->x + BLOCK_SIZE && x <= ((r->y_size - 1) << 10) + r->x)
 		{
 			IsRoomOutsideNo = offset & 0x7FFF;
 			room_no = IsRoomOutsideNo;
@@ -2696,8 +2696,8 @@ long IsRoomOutside(long x, long y, long z)
 			r = &room[*pTable];
 
 			if (y >= r->maxceiling && y <= r->minfloor &&
-				z >= r->z + 1024 && z <= ((r->x_size - 1) << 10) + r->z &&
-				x >= r->x + 1024 && x <= ((r->y_size - 1) << 10) + r->x)
+				z >= r->z + BLOCK_SIZE && z <= ((r->x_size - 1) << 10) + r->z &&
+				x >= r->x + BLOCK_SIZE && x <= ((r->y_size - 1) << 10) + r->x)
 			{
 				IsRoomOutsideNo = *pTable;
 				room_no = IsRoomOutsideNo;
@@ -2890,7 +2890,7 @@ long GetTargetOnLOS(GAME_VECTOR* src, GAME_VECTOR* dest, long DrawTarget, long f
 							if (shotitem->flags & IFL_CODEBITS && (shotitem->flags & IFL_CODEBITS) != IFL_CODEBITS)
 							{
 								room_number = shotitem->room_number;
-								GetHeight(GetFloor(shotitem->pos.x_pos, shotitem->pos.y_pos - 256, shotitem->pos.z_pos, &room_number), shotitem->pos.x_pos, shotitem->pos.y_pos - 256, shotitem->pos.z_pos);
+								GetHeight(GetFloor(shotitem->pos.x_pos, shotitem->pos.y_pos - CLICK_SIZE, shotitem->pos.z_pos, &room_number), shotitem->pos.x_pos, shotitem->pos.y_pos - CLICK_SIZE, shotitem->pos.z_pos);
 								TestTriggers(trigger_index, true, shotitem->flags & IFL_CODEBITS);
 							}
 							else
@@ -3166,10 +3166,11 @@ void AnimateItem(ITEM_INFO* item)
 
 long RayBoxIntersect(PHD_VECTOR* min, PHD_VECTOR* max, PHD_VECTOR* origin, PHD_VECTOR* dir, PHD_VECTOR* Coord)
 {
-	long planes[3];
-	long dists[3];
+#define MAX_PLANES 3
+	long planes[MAX_PLANES];
+	long dists[MAX_PLANES];
 	long plane;
-	char quad[3];
+	char quad[MAX_PLANES];
 	char inside;
 
 	inside = 1;
@@ -3228,23 +3229,23 @@ long RayBoxIntersect(PHD_VECTOR* min, PHD_VECTOR* max, PHD_VECTOR* origin, PHD_V
 	}
 
 	if (quad[0] == 2 || !dir->x)
-		dists[0] = -65536;
+		dists[0] = -0x10000;
 	else
 		dists[0] = ((planes[0] - origin->x) / (dir->x >> 8)) << 8;
 
 	if (quad[1] == 2 || !dir->y)
-		dists[1] = -65536;
+		dists[1] = -0x10000;
 	else
 		dists[1] = ((planes[1] - origin->y) / (dir->y >> 8)) << 8;
 
 	if (quad[2] == 2 || !dir->z)
-		dists[2] = -65536;
+		dists[2] = -0x10000;
 	else
 		dists[2] = ((planes[2] - origin->z) / (dir->z >> 8)) << 8;
 
 	plane = 0;
 
-	for (int i = 1; i < 3; i++)
+	for (int i = 1; i < MAX_PLANES; i++)
 	{
 		if (dists[plane] < dists[i])
 			plane = i;
@@ -3485,7 +3486,7 @@ long GetMaximumFloor(FLOOR_INFO* floor, long x, long z)
 
 				if ((type & 0x1F) == SPLIT1 || (type & 0x1F) == NOCOLF1T || (type & 0x1F) == NOCOLF1B)
 				{
-					if (dx <= 1024 - dz)
+					if (dx <= BLOCK_SIZE - dz)
 					{
 						hadj = type >> 10 & 0x1F;
 						h1 = t2 - t1;
@@ -3526,7 +3527,7 @@ long GetMaximumFloor(FLOOR_INFO* floor, long x, long z)
 			h2 = *(char*)data;
 		}
 
-		height += 256 * (abs(h1) + abs(h2));
+		height += CLICK_SIZE * (abs(h1) + abs(h2));
 	}
 
 	return height;
@@ -3573,7 +3574,7 @@ long GetMinimumCeiling(FLOOR_INFO* floor, long x, long z)
 
 					if ((type & 0x1F) == SPLIT3 || (type & 0x1F) == NOCOLC1T || (type & 0x1F) == NOCOLC1B)
 					{
-						if (dx <= 1024 - dz)
+						if (dx <= BLOCK_SIZE - dz)
 						{
 							hadj = type >> 10 & 0x1F;
 							h1 = t2 - t1;
@@ -3614,7 +3615,7 @@ long GetMinimumCeiling(FLOOR_INFO* floor, long x, long z)
 				h2 = *(char*)data;
 			}
 
-			height -= 256 * (abs(h1) + abs(h2));
+			height -= CLICK_SIZE * (abs(h1) + abs(h2));
 		}
 	}
 

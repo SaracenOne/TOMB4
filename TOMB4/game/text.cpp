@@ -255,8 +255,8 @@ long GetStringLengthScaled(const char* string, long* top, long* bottom, float gl
 	s = *string++;
 	length = 0;
 	accent = 0;
-	lowest = -1024;
-	highest = 1024;
+	lowest = -BLOCK_SIZE;
+	highest = BLOCK_SIZE;
 
 	while (s)
 	{

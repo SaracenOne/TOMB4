@@ -80,29 +80,29 @@ void FireCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 
 		if (item->object_number == FLAME_EMITTER)
 		{
-			FireBounds[0] = -256;
-			FireBounds[1] = 256;
+			FireBounds[0] = -CLICK_SIZE;
+			FireBounds[1] = CLICK_SIZE;
 			FireBounds[2] = 0;
-			FireBounds[3] = 1024;
-			FireBounds[4] = -800;
-			FireBounds[5] = 800;
+			FireBounds[3] = BLOCK_SIZE;
+			FireBounds[4] = -(HALF_BLOCK_SIZE + CLICK_SIZE + (QUARTER_CLICK_SIZE / 2));
+			FireBounds[5] = (HALF_BLOCK_SIZE + CLICK_SIZE + (QUARTER_CLICK_SIZE / 2));
 		}
 		else if (item->object_number == FLAME_EMITTER2)
 		{
-			FireBounds[0] = -256;
-			FireBounds[1] = 256;
+			FireBounds[0] = -CLICK_SIZE;
+			FireBounds[1] = CLICK_SIZE;
 			FireBounds[2] = 0;
-			FireBounds[3] = 1024;
-			FireBounds[4] = -600;
-			FireBounds[5] = 600;
+			FireBounds[3] = BLOCK_SIZE;
+			FireBounds[4] = -(HALF_BLOCK_SIZE + QUARTER_CLICK_SIZE) + 24;
+			FireBounds[5] = (HALF_BLOCK_SIZE + QUARTER_CLICK_SIZE) + 24;
 		}
 		else if (item->object_number == SPRINKLER)
 		{
-			FireBounds[0] = -256;
-			FireBounds[1] = 256;
+			FireBounds[0] = -CLICK_SIZE;
+			FireBounds[1] = CLICK_SIZE;
 			FireBounds[2] = 0;
-			FireBounds[3] = 1024;
-			FireBounds[4] = -384;
+			FireBounds[3] = BLOCK_SIZE;
+			FireBounds[4] = -(CLICK_SIZE + HALF_CLICK_SIZE);
 			FireBounds[5] = 0;
 		}
 
@@ -246,10 +246,10 @@ void DoFlameTorch()
 
 	if (lara.LitTorch)
 	{
-		pos.x = -32;
-		pos.y = 64;
-		pos.z = 256;
-		GetLaraJointPos(&pos, 14);
+		pos.x = -(QUARTER_CLICK_SIZE / 2);
+		pos.y = QUARTER_CLICK_SIZE;
+		pos.z = CLICK_SIZE;
+		GetLaraJointPos(&pos, LMX_HAND_L);
 		TriggerDynamic(pos.x, pos.y, pos.z, 12 - (GetRandomControl() & 1), (GetRandomControl() & 0x3F) + 192, (GetRandomControl() & 0x1F) + 96, 0);
 
 		if (!(wibble & 7))
@@ -287,7 +287,7 @@ void FlameTorchControl(short item_number)
 	item = &items[item_number];
 
 	if (item->fallspeed)
-		item->pos.z_rot += 910;
+		item->pos.z_rot += DEGREES_TO_ROTATION(5);
 	else if (!item->speed)
 	{
 		item->pos.x_rot = 0;
@@ -297,8 +297,8 @@ void FlameTorchControl(short item_number)
 	x = item->pos.x_pos;
 	y = item->pos.y_pos;
 	z = item->pos.z_pos;
-	xv = item->speed * phd_sin(item->pos.y_rot) >> 14;
-	zv = item->speed * phd_cos(item->pos.y_rot) >> 14;
+	xv = item->speed * phd_sin(item->pos.y_rot) >> W2V_SHIFT;
+	zv = item->speed * phd_cos(item->pos.y_rot) >> W2V_SHIFT;
 	item->pos.x_pos += xv;
 	item->pos.z_pos += zv;
 
@@ -321,7 +321,7 @@ void FlameTorchControl(short item_number)
 
 	if (GetCollidedObjects(item, 0, 1, itemlist, meshlist, 0))
 	{
-		mycoll.enable_baddie_push = 1;
+		mycoll.enable_baddie_push = true;
 
 		if (itemlist[0])
 		{

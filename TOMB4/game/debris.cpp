@@ -7,7 +7,9 @@
 #include "draw.h"
 #include "../tomb4/mod_config.h"
 
-DEBRIS_STRUCT debris[256];
+#define MAX_DEBRIS 256
+
+DEBRIS_STRUCT debris[MAX_DEBRIS];
 long next_debris;
 short DebrisFlags;
 
@@ -24,7 +26,7 @@ void UpdateDebris()
 	FLOOR_INFO* floor;
 	long height, ceiling;
 
-	for (int i = 0; i < 256; i++)
+	for (int i = 0; i < MAX_DEBRIS; i++)
 	{
 		dptr = &debris[i];
 
@@ -166,7 +168,7 @@ long GetFreeDebris()
 	eldestage = -0x4000;
 	dptr = &debris[next_debris];
 
-	for (int i = 0; i < 256; i++)
+	for (int i = 0; i < MAX_DEBRIS; i++)
 	{
 		if (!dptr->On)
 		{

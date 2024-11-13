@@ -63,8 +63,8 @@ __forceinline void CalculateVertexSpecular(
 
 		if (gfLevelFlags & GF_TRAIN || get_game_mod_level_environment_info(gfCurrentLevel)->force_train_fog)
 		{
-			distance_fog_value = (vPos.z - DistanceFogStart) / 512.0F;
-			overbright_value = 1.0F - (vPos.z - DistanceFogStart) / 512.0F;
+			distance_fog_value = (vPos.z - DistanceFogStart) / float(HALF_BLOCK_SIZE);
+			overbright_value = 1.0F - (vPos.z - DistanceFogStart) / float(HALF_BLOCK_SIZE);
 			*sA -= long(distance_fog_value * (255.0F / 8.0F));
 
 			if (*sA < 0)
@@ -108,7 +108,7 @@ __forceinline void CalculateVertexSpecular(
 #ifdef FORCE_COLOURED_FOG
 			if (IsVolumetric()) {
 				if (CustomDistanceFogEnd < 0.0F) {
-					distance_fog_value = (vPos.z - CustomDistanceFogStart) / 512.0F;
+					distance_fog_value = (vPos.z - CustomDistanceFogStart) / float(HALF_BLOCK_SIZE);
 					*sA -= long(distance_fog_value * (255.0F / 8.0F));
 
 					if (*sA < 0)
@@ -192,11 +192,11 @@ void ProcessObjectMeshVertices(MESH_DATA* mesh)
 
 	if (gfLevelFlags & GF_TRAIN || environment_info->force_train_fog)
 	{
-		DistanceFogStart = 12.0F * 1024.0F;
-		DistanceFogEnd = 20.0F * 1024.0F;
-		DistanceClipRange = 1024.0F * 20.0F;
+		DistanceFogStart = float(DEFAULT_FOG_START_BLOCKS) * float(BLOCK_SIZE);
+		DistanceFogEnd = float(DEFAULT_FOG_END_BLOCKS) * float(BLOCK_SIZE);
+		DistanceClipRange = float(DEFAULT_CLIP_RANGE_BLOCKS) * float(BLOCK_SIZE);
 	} else {
-		float minimum_clip_range = tomb4.minimum_clip_range * 1024.0F;
+		float minimum_clip_range = tomb4.minimum_clip_range * float(BLOCK_SIZE);
 		DistanceFogStart = LevelFogStart;
 		DistanceFogEnd = LevelFogEnd;
 		if (environment_info->disable_distance_limit) {
@@ -400,11 +400,11 @@ void ProcessStaticMeshVertices(MESH_DATA* mesh)
 
 	if (gfLevelFlags & GF_TRAIN || environment_info->force_train_fog)
 	{
-		DistanceFogStart = 12.0F * 1024.0F;
-		DistanceFogEnd = 20.0F * 1024.0F;
-		DistanceClipRange = 1024.0F * 20.0F;
+		DistanceFogStart = float(DEFAULT_FOG_START_BLOCKS) * float(BLOCK_SIZE);
+		DistanceFogEnd = float(DEFAULT_FOG_END_BLOCKS) * float(BLOCK_SIZE);
+		DistanceClipRange = float(DEFAULT_CLIP_RANGE_BLOCKS) * float(BLOCK_SIZE);
 	} else {
-		float minimum_clip_range = tomb4.minimum_clip_range * 1024.0F;
+		float minimum_clip_range = tomb4.minimum_clip_range * float(BLOCK_SIZE);
 		DistanceFogStart = LevelFogStart;
 		DistanceFogEnd = LevelFogEnd;
 		if (environment_info->disable_distance_limit) {
@@ -560,9 +560,9 @@ void ProcessTrainMeshVertices(MESH_DATA* mesh)
 	short clipFlag;
 
 	clip = clipflags;
-	DistanceFogStart = 17.0F * 1024.0F;	//does not listen to custom distance fog
-	DistanceFogEnd = 25.0F * 1024.0F;
-	DistanceClipRange = 20.0F * 1024.0F;
+	DistanceFogStart = 17.0F * float(BLOCK_SIZE);	//does not listen to custom distance fog
+	DistanceFogEnd = 25.0F * float(BLOCK_SIZE);
+	DistanceClipRange = 20.0F * float(BLOCK_SIZE);
 	num = 255.0F / DistanceFogStart;
 #ifdef USE_BGFX
 	v = (float*)mesh->Buffer;
@@ -596,7 +596,7 @@ void ProcessTrainMeshVertices(MESH_DATA* mesh)
 		{
 			if (gfLevelFlags & GF_TRAIN || get_game_mod_level_environment_info(gfCurrentLevel)->force_train_fog)
 			{
-				val = (zbak - DistanceFogStart) / 512.0F;
+				val = (zbak - DistanceFogStart) / float(HALF_BLOCK_SIZE);
 				long fade = long(val * (255.0F / 8.0F));
 
 				sA -= fade;
@@ -863,7 +863,9 @@ void phd_PutPolygons(short* objptr, long clip)
 	if (!objptr)
 		return;
 
-	if (objptr == meshes[objects[LARA_DOUBLE].mesh_index] || objptr == meshes[objects[LARA_DOUBLE].mesh_index + 2])
+	int32_t lara_double_object_id = T4PlusGetLaraDoubleSlotID();
+	if (((lara_double_object_id >= 0 && lara_double_object_id < NUMBER_OBJECTS))
+		&& objptr == meshes[objects[lara_double_object_id].mesh_index] || objptr == meshes[objects[lara_double_object_id].mesh_index + 2])
 		envmap_sprite = &spriteinfo[objects[T4PlusGetSkyGraphicsSlotID()].mesh_index];
 	else
 		envmap_sprite = &spriteinfo[objects[T4PlusGetDefaultSpritesSlotID()].mesh_index+ get_game_mod_level_gfx_info(gfCurrentLevel)->pickup_envmap_sprite_index];
@@ -1595,7 +1597,7 @@ void S_DrawPickup(short object_number)
 {
 	long x, y;
 
-	phd_LookAt(0, 1024, 0, 0, 0, 0, 0);
+	phd_LookAt(0, BLOCK_SIZE, 0, 0, 0, 0, 0);
 	SetD3DViewMatrix();
 
 	x = phd_winwidth - GetFixedScale(80) + PickupX;

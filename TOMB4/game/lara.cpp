@@ -324,8 +324,8 @@ LARA_INFO lara;
 ITEM_INFO* lara_item;
 short DashTimer;
 
-static short LeftClimbTab[4] = { 512, 1024, 2048, 256 };
-static short RightClimbTab[4] = { 2048, 256, 512, 1024 };
+static short LeftClimbTab[4] = { HALF_BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE * 2, CLICK_SIZE };
+static short RightClimbTab[4] = { BLOCK_SIZE * 2, CLICK_SIZE, HALF_BLOCK_SIZE, BLOCK_SIZE };
 
 static void TiltHer(ITEM_INFO* item, long rad, long height)
 {
@@ -365,16 +365,16 @@ static void TiltHer(ITEM_INFO* item, long rad, long height)
 		room_number = item->room_number;
 		floor = GetFloor(wx, yT, wz, &room_number);
 		wy[2] = GetHeight(floor, wx, yT, wz);
-		plane.x = (float)(wy[1] - wy[0]) / 512;
-		plane.y = (float)(wy[2] - wy[0]) / 512;
+		plane.x = (float)(wy[1] - wy[0]) / HALF_BLOCK_SIZE;
+		plane.y = (float)(wy[2] - wy[0]) / HALF_BLOCK_SIZE;
 	}
 
 	plane.z = item->pos.y_pos - plane.x * item->pos.x_pos - plane.y * item->pos.z_pos;
 
 	for (int i = 0; i < 4; i++)
 	{
-		wx = item->pos.x_pos + (rad * phd_sin(item->pos.y_rot + 16384 * i) >> W2V_SHIFT);
-		wz = item->pos.z_pos + (rad * phd_cos(item->pos.y_rot + 16384 * i) >> W2V_SHIFT);
+		wx = item->pos.x_pos + (rad * phd_sin(item->pos.y_rot + 0x4000 * i) >> W2V_SHIFT);
+		wz = item->pos.z_pos + (rad * phd_cos(item->pos.y_rot + 0x4000 * i) >> W2V_SHIFT);
 		room_number = item->room_number;
 		floor = GetFloor(wx, yT, wz, &room_number);
 		wy[i] = GetHeight(floor, wx, yT, wz);
@@ -395,24 +395,24 @@ static void TiltHer(ITEM_INFO* item, long rad, long height)
 	if (dy > 0 && rotZ > 0 || dy < 0 && rotZ < 0)
 		rotZ = -rotZ;
 
-	if (abs(rotX - item->pos.x_rot) < 546)
+	if (abs(rotX - item->pos.x_rot) < DEGREES_TO_ROTATION(3))
 		item->pos.x_rot = rotX;
 	else if (rotX > item->pos.x_rot)
-		item->pos.x_rot += 546;
+		item->pos.x_rot += DEGREES_TO_ROTATION(3);
 	else if (rotX < item->pos.x_rot)
-		item->pos.x_rot -= 546;
+		item->pos.x_rot -= DEGREES_TO_ROTATION(3);
 
 	if (item->pos.x_rot > 8192)
 		item->pos.x_rot = 8192;
 	else if (item->pos.x_rot < -8192)
 		item->pos.x_rot = -8192;
 
-	if (abs(rotZ - item->pos.z_rot) < 546)
+	if (abs(rotZ - item->pos.z_rot) < DEGREES_TO_ROTATION(3))
 		item->pos.z_rot = rotZ;
 	else if (rotZ > item->pos.z_rot)
-		item->pos.z_rot += 546;
+		item->pos.z_rot += DEGREES_TO_ROTATION(3);
 	else if (rotZ < item->pos.z_rot)
-		item->pos.z_rot -= 546;
+		item->pos.z_rot -= DEGREES_TO_ROTATION(3);
 
 	if (item->pos.z_rot > 8192)
 		item->pos.z_rot = 8192;
@@ -438,8 +438,8 @@ void LaraAboveWater(ITEM_INFO* item, COLL_INFO* coll)
 	coll->slopes_are_walls = 0;
 	coll->slopes_are_pits = 0;
 	coll->lava_is_pit = 0;
-	coll->enable_baddie_push = 1;
-	coll->enable_spaz = 1;
+	coll->enable_baddie_push = true;
+	coll->enable_spaz = true;
 
 	if (input & IN_LOOK && lara.look)
 		LookLeftRight();
@@ -462,12 +462,12 @@ void LaraAboveWater(ITEM_INFO* item, COLL_INFO* coll)
 	{
 		if (item->pos.z_pos <= 51900 || item->pos.z_pos >= 53554)
 		{
-			ForcedFixedCamera.y = -1024;
+			ForcedFixedCamera.y = -BLOCK_SIZE;
 			ForcedFixedCamera.z = item->pos.z_pos > 51900 ? 55296 : 50176;
 		}
 		else
 		{
-			ForcedFixedCamera.y = -384;
+			ForcedFixedCamera.y = -(CLICK_SIZE + HALF_CLICK_SIZE);
 			ForcedFixedCamera.z = 52736;
 		}
 
@@ -477,7 +477,7 @@ void LaraAboveWater(ITEM_INFO* item, COLL_INFO* coll)
 		item->anim_number = ANIM_TRAINDEATH;
 		item->frame_number = anims[ANIM_TRAINDEATH].frame_base;
 		item->current_anim_state = AS_DEATH;
-		item->pos.y_rot = -16384;
+		item->pos.y_rot = -0x4000;
 		item->gravity_status = 0;
 		item->fallspeed = 0;
 		item->speed = 0;
@@ -485,22 +485,22 @@ void LaraAboveWater(ITEM_INFO* item, COLL_INFO* coll)
 
 	lara_control_routines[item->current_anim_state](item, coll);
 
-	if (item->pos.z_rot < -182)
-		item->pos.z_rot += 182;
-	else if (item->pos.z_rot > 182)
-		item->pos.z_rot -= 182;
+	if (item->pos.z_rot < -DEGREES_TO_ROTATION(1))
+		item->pos.z_rot += DEGREES_TO_ROTATION(1);
+	else if (item->pos.z_rot > DEGREES_TO_ROTATION(1))
+		item->pos.z_rot -= DEGREES_TO_ROTATION(1);
 	else item->pos.z_rot = 0;
 
-	if (item->pos.x_rot < -182)
-		item->pos.x_rot += 182;
-	else if (item->pos.x_rot > 182)
-		item->pos.x_rot -= 182;
+	if (item->pos.x_rot < -DEGREES_TO_ROTATION(1))
+		item->pos.x_rot += DEGREES_TO_ROTATION(1);
+	else if (item->pos.x_rot > DEGREES_TO_ROTATION(1))
+		item->pos.x_rot -= DEGREES_TO_ROTATION(1);
 	else item->pos.x_rot = 0;
 
-	if (lara.turn_rate < -364)
-		lara.turn_rate += 364;
-	else if (lara.turn_rate > 364)
-		lara.turn_rate -= 364;
+	if (lara.turn_rate < -DEGREES_TO_ROTATION(2))
+		lara.turn_rate += DEGREES_TO_ROTATION(2);
+	else if (lara.turn_rate > DEGREES_TO_ROTATION(2))
+		lara.turn_rate -= DEGREES_TO_ROTATION(2);
 	else
 		lara.turn_rate = 0;
 
@@ -520,8 +520,8 @@ void LaraAboveWater(ITEM_INFO* item, COLL_INFO* coll)
 void SetCornerAnim(ITEM_INFO* item, COLL_INFO* coll, short rot, short flip)
 {
 	lara.look = 0;
-	coll->enable_spaz = 0;
-	coll->enable_baddie_push = 0;
+	coll->enable_spaz = false;
+	coll->enable_baddie_push = false;
 
 	if (lara_item->hit_points > 0)
 	{
@@ -557,7 +557,7 @@ void SetCornerAnim(ITEM_INFO* item, COLL_INFO* coll, short rot, short flip)
 		item->current_anim_state = AS_FORWARDJUMP;
 		item->gravity_status = 1;
 		item->speed = 2;
-		item->pos.y_pos += 256;
+		item->pos.y_pos += CLICK_SIZE;
 		item->fallspeed = 1;
 		lara.gun_status = LG_NO_ARMS;
 		item->pos.y_rot += rot / 2;
@@ -628,10 +628,10 @@ void lara_as_hang(ITEM_INFO* item, COLL_INFO* coll)
 			item->goal_anim_state = mod_lara_info->ledge_to_down_state;
 	}
 
-	coll->enable_baddie_push = 0;
-	coll->enable_spaz = 0;
+	coll->enable_baddie_push = false;
+	coll->enable_spaz = false;
 	camera.target_angle = 0;
-	camera.target_elevation = -10920;
+	camera.target_elevation = -DEGREES_TO_ROTATION(60);
 }
 
 void lara_col_hang(ITEM_INFO* item, COLL_INFO* coll)
@@ -649,7 +649,7 @@ void lara_col_hang(ITEM_INFO* item, COLL_INFO* coll)
 	{
 		if (input & IN_LEFT || input & IN_LSTEP)
 		{
-			if (CanLaraHangSideways(item, coll, -16384))
+			if (CanLaraHangSideways(item, coll, -0x4000))
 			{
 				item->goal_anim_state = AS_HANGLEFT;
 				return;
@@ -670,7 +670,7 @@ void lara_col_hang(ITEM_INFO* item, COLL_INFO* coll)
 
 		if (input & IN_RIGHT || input & IN_RSTEP)
 		{
-			if (CanLaraHangSideways(item, coll, 16384))
+			if (CanLaraHangSideways(item, coll, 0x4000))
 			{
 				item->goal_anim_state = AS_HANGRIGHT;
 				return;
@@ -721,9 +721,9 @@ void lara_col_hang(ITEM_INFO* item, COLL_INFO* coll)
 					return;
 				}
 
-				if (coll->front_floor - coll->front_ceiling >= -256 &&
-					coll->front_floor - coll->left_ceiling2 >= -256 &&
-					coll->front_floor - coll->right_ceiling2 >= -256)
+				if (coll->front_floor - coll->front_ceiling >= -CLICK_SIZE &&
+					coll->front_floor - coll->left_ceiling2 >= -CLICK_SIZE &&
+					coll->front_floor - coll->right_ceiling2 >= -CLICK_SIZE)
 				{
 					item->goal_anim_state = AS_HANG2DUCK;
 					item->required_anim_state = AS_DUCK;
@@ -731,7 +731,7 @@ void lara_col_hang(ITEM_INFO* item, COLL_INFO* coll)
 				}
 			}
 
-			if (lara.climb_status && coll->mid_ceiling <= -256 && abs(coll->left_ceiling2 - coll->right_ceiling2) < 60)
+			if (lara.climb_status && coll->mid_ceiling <= -CLICK_SIZE && abs(coll->left_ceiling2 - coll->right_ceiling2) < 60)
 			{
 				if (LaraTestClimbStance(item, coll))
 					item->goal_anim_state = AS_CLIMBSTNC;
@@ -813,7 +813,7 @@ short LaraFloorFront(ITEM_INFO* item, short ang, long dist)
 
 long LaraFallen(ITEM_INFO* item, COLL_INFO* coll)
 {
-	if (lara.water_status == LW_WADE || coll->mid_floor <= 384)
+	if (lara.water_status == LW_WADE || coll->mid_floor <= (CLICK_SIZE + HALF_CLICK_SIZE))
 		return 0;
 
 	item->anim_number = ANIM_FALLDOWN;
@@ -836,19 +836,19 @@ long TestLaraSlide(ITEM_INFO* item, COLL_INFO* coll)
 	ang = 0;
 
 	if (coll->tilt_x > 2)
-		ang = -16384;
+		ang = -0x4000;
 	else if (coll->tilt_x < -2)
-		ang = 16384;
+		ang = 0x4000;
 
 	if (coll->tilt_z > 2 && coll->tilt_z > abs(coll->tilt_x))
-		ang = -32768;
+		ang = -0x8000;
 	else if (coll->tilt_z < -2 && (-coll->tilt_z > abs(coll->tilt_x)))
 		ang = 0;
 
 	ang_diff = ang - item->pos.y_rot;
 	ShiftItem(item, coll);
 
-	if (ang_diff >= -16384 && ang_diff <= 16384)
+	if (ang_diff >= -0x4000 && ang_diff <= 0x4000)
 	{
 		if (item->current_anim_state != AS_SLIDE || old_ang != ang)
 		{
@@ -867,7 +867,7 @@ long TestLaraSlide(ITEM_INFO* item, COLL_INFO* coll)
 			item->frame_number = anims[ANIM_SLIDEBACK].frame_base;
 			item->goal_anim_state = AS_SLIDEBACK;
 			item->current_anim_state = AS_SLIDEBACK;
-			item->pos.y_rot = ang - 32768;
+			item->pos.y_rot = ang - 0x8000;
 		}
 	}
 
@@ -899,7 +899,7 @@ void lara_as_duckl(ITEM_INFO* item, COLL_INFO* coll)
 	if ((input & (IN_DUCK | IN_LEFT)) != (IN_DUCK | IN_LEFT) || item->hit_points <= 0)
 		item->goal_anim_state = AS_DUCK;
 
-	item->pos.y_rot -= 273;
+	item->pos.y_rot -= HALF_DEGREES_TO_ROTATION(3);
 }
 
 void lara_as_duckr(ITEM_INFO* item, COLL_INFO* coll)
@@ -907,7 +907,7 @@ void lara_as_duckr(ITEM_INFO* item, COLL_INFO* coll)
 	if ((input & (IN_DUCK | IN_LEFT)) != (IN_DUCK | IN_LEFT) || item->hit_points <= 0)
 		item->goal_anim_state = AS_DUCK;
 
-	item->pos.y_rot += 273;
+	item->pos.y_rot += HALF_DEGREES_TO_ROTATION(3);
 }
 
 void lara_col_ducklr(ITEM_INFO* item, COLL_INFO* coll)
@@ -921,8 +921,8 @@ void lara_col_ducklr(ITEM_INFO* item, COLL_INFO* coll)
 	item->fallspeed = 0;
 	lara.move_angle = item->pos.y_rot;
 	coll->facing = item->pos.y_rot;
-	coll->bad_pos = 384;
-	coll->bad_neg = -384;
+	coll->bad_pos = (CLICK_SIZE + HALF_CLICK_SIZE);
+	coll->bad_neg = -(CLICK_SIZE + HALF_CLICK_SIZE);
 	coll->bad_ceiling = 0;
 	coll->slopes_are_walls = 1;
 	GetCollisionInfo(coll, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, 400);
@@ -945,8 +945,8 @@ void lara_col_ducklr(ITEM_INFO* item, COLL_INFO* coll)
 
 void lara_as_duck(ITEM_INFO* item, COLL_INFO* coll)
 {
-	coll->enable_spaz = 1;
-	coll->enable_baddie_push = 1;
+	coll->enable_spaz = true;
+	coll->enable_baddie_push = true;
 	lara.IsDucked = 1;
 
 	if (item->hit_points <= 0)
@@ -986,9 +986,9 @@ void lara_col_duck(ITEM_INFO* item, COLL_INFO* coll)
 	item->gravity_status = 0;
 	item->fallspeed = 0;
 	lara.move_angle = item->pos.y_rot;
-	coll->bad_pos = 384;
+	coll->bad_pos = (CLICK_SIZE + HALF_CLICK_SIZE);
 	coll->facing = item->pos.y_rot;
-	coll->bad_neg = -384;
+	coll->bad_neg = -(CLICK_SIZE + HALF_CLICK_SIZE);
 	coll->bad_ceiling = 0;
 	coll->slopes_are_walls = 1;
 	GetCollisionInfo(coll, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, 400);
@@ -1039,16 +1039,16 @@ void lara_as_all4s(ITEM_INFO* item, COLL_INFO* coll)
 			GAME_VECTOR d;
 			PHD_VECTOR v;
 
-			if (LaraFloorFront(item, item->pos.y_rot, 768) >= mod_lara_info->crawlspace_jump_pit_deepness_threshold && LaraCeilingFront(item, item->pos.y_rot, 768, 512) != NO_HEIGHT &&
-				LaraCeilingFront(item, item->pos.y_rot, 768, 512) <= 0)
+			if (LaraFloorFront(item, item->pos.y_rot, (HALF_BLOCK_SIZE + CLICK_SIZE)) >= mod_lara_info->crawlspace_jump_pit_deepness_threshold && LaraCeilingFront(item, item->pos.y_rot, (HALF_BLOCK_SIZE + CLICK_SIZE), HALF_BLOCK_SIZE) != NO_HEIGHT &&
+				LaraCeilingFront(item, item->pos.y_rot, (HALF_BLOCK_SIZE + CLICK_SIZE), HALF_BLOCK_SIZE) <= 0)
 			{
 				s.x = lara_item->pos.x_pos;
-				s.y = lara_item->pos.y_pos - 96;
+				s.y = lara_item->pos.y_pos - (HALF_CLICK_SIZE - (QUARTER_CLICK_SIZE / 2));
 				s.z = lara_item->pos.z_pos;
 				s.room_number = lara_item->room_number;
-				d.x = s.x + (768 * phd_sin(lara_item->pos.y_rot) >> 14);
-				d.y = s.y + 160;
-				d.z = s.z + (768 * phd_cos(lara_item->pos.y_rot) >> 14);
+				d.x = s.x + ((BLOCK_SIZE - CLICK_SIZE) * phd_sin(lara_item->pos.y_rot) >> W2V_SHIFT);
+				d.y = s.y + (HALF_CLICK_SIZE + (QUARTER_CLICK_SIZE / 2));
+				d.z = s.z + ((BLOCK_SIZE - CLICK_SIZE) * phd_cos(lara_item->pos.y_rot) >> W2V_SHIFT);
 
 				if (LOS(&s, &d))
 				{
@@ -1069,8 +1069,8 @@ void lara_as_all4s(ITEM_INFO* item, COLL_INFO* coll)
 
 	lara.torso_x_rot = 0;
 	lara.torso_y_rot = 0;
-	coll->enable_spaz = 0;
-	coll->enable_baddie_push = 1;
+	coll->enable_spaz = false;
+	coll->enable_baddie_push = true;
 
 	if (item->anim_number == ANIM_DUCK_TO_ALL4S)
 		lara.gun_status = LG_HANDS_BUSY;
@@ -1094,8 +1094,8 @@ void lara_col_all4s(ITEM_INFO* item, COLL_INFO* coll)
 	lara.move_angle = item->pos.y_rot;
 	coll->facing = item->pos.y_rot;
 	coll->radius = 200;
-	coll->bad_pos = 255;
-	coll->bad_neg = -255;
+	coll->bad_pos = (CLICK_SIZE - 1);
+	coll->bad_neg = -(CLICK_SIZE - 1);
 	coll->bad_ceiling = 400;
 	coll->slopes_are_walls = 1;
 	coll->slopes_are_pits = 1;
@@ -1110,7 +1110,7 @@ void lara_col_all4s(ITEM_INFO* item, COLL_INFO* coll)
 		lara.keep_ducked = coll->mid_ceiling >= -362;
 		ShiftItem(item, coll);
 
-		if (coll->mid_floor != NO_HEIGHT && coll->mid_floor > -256)
+		if (coll->mid_floor != NO_HEIGHT && coll->mid_floor > -CLICK_SIZE)
 			item->pos.y_pos += coll->mid_floor;
 
 		if ((input & IN_DUCK || lara.keep_ducked) && (!(input & (IN_FLARE | IN_DRAW)) || input & IN_FORWARD) && lara.water_status != LW_WADE)
@@ -1124,21 +1124,21 @@ void lara_col_all4s(ITEM_INFO* item, COLL_INFO* coll)
 			{
 				if (input & IN_FORWARD)
 				{
-					height = LaraFloorFront(item, item->pos.y_rot, 256);
+					height = LaraFloorFront(item, item->pos.y_rot, CLICK_SIZE);
 
-					if (height < 255 && height > -255 && height_type != BIG_SLOPE)
+					if (height < (CLICK_SIZE - 1) && height > -(CLICK_SIZE - 1) && height_type != BIG_SLOPE)
 						item->goal_anim_state = AS_CRAWL;
 				}
 				else if (input & IN_BACK)
 				{
-					height = LaraCeilingFront(item, item->pos.y_rot, -300, 128);
+					height = LaraCeilingFront(item, item->pos.y_rot, -300, HALF_CLICK_SIZE);
 
-					if (height == NO_HEIGHT || height > 256)
+					if (height == NO_HEIGHT || height > CLICK_SIZE)
 						return;
 
 					height = LaraFloorFront(item, item->pos.y_rot, -300);
 
-					if (height < 255 && height > -255 && height_type != BIG_SLOPE)
+					if (height < (CLICK_SIZE - 1) && height > -(CLICK_SIZE - 1) && height_type != BIG_SLOPE)
 						item->goal_anim_state = AS_CRAWLBACK;
 					else
 					{
@@ -1164,17 +1164,17 @@ void lara_col_all4s(ITEM_INFO* item, COLL_INFO* coll)
 									break;
 
 								case EAST:
-									item->pos.y_rot = 16384;
+									item->pos.y_rot = 0x4000;
 									item->pos.x_pos = (item->pos.x_pos & ~0x3FF) + 225;
 									break;
 
 								case SOUTH:
-									item->pos.y_rot = -32768;
+									item->pos.y_rot = -0x8000;
 									item->pos.z_pos = (item->pos.z_pos | 0x3FF) - 225;
 									break;
 
 								case WEST:
-									item->pos.y_rot = -16384;
+									item->pos.y_rot = -0x4000;
 									item->pos.x_pos = (item->pos.x_pos | 0x3FF) - 225;
 									break;
 								}
@@ -1218,25 +1218,25 @@ void lara_as_crawl(ITEM_INFO* item, COLL_INFO* coll)
 
 	lara.torso_x_rot = 0;
 	lara.torso_y_rot = 0;
-	coll->enable_spaz = 0;
-	coll->enable_baddie_push = 1;
+	coll->enable_spaz = false;
+	coll->enable_baddie_push = true;
 	camera.target_elevation = -4186;
 
 	if (input & IN_FORWARD && (input & IN_DUCK || lara.keep_ducked) && lara.water_status != LW_WADE)
 	{
 		if (input & IN_LEFT)
 		{
-			lara.turn_rate -= 409;
+			lara.turn_rate -= LARA_TURN_INCREMENT;
 
-			if (lara.turn_rate < -546)
-				lara.turn_rate = -546;
+			if (lara.turn_rate < -DEGREES_TO_ROTATION(3))
+				lara.turn_rate = -DEGREES_TO_ROTATION(3);
 		}
 		else if (input & IN_RIGHT)
 		{
-			lara.turn_rate += 409;
+			lara.turn_rate += LARA_TURN_INCREMENT;
 
-			if (lara.turn_rate > 546)
-				lara.turn_rate = 546;
+			if (lara.turn_rate > DEGREES_TO_ROTATION(3))
+				lara.turn_rate = DEGREES_TO_ROTATION(3);
 		}
 	}
 	else
@@ -1249,8 +1249,8 @@ void lara_col_crawl(ITEM_INFO* item, COLL_INFO* coll)
 	item->fallspeed = 0;
 	lara.move_angle = item->pos.y_rot;
 	coll->radius = 200;
-	coll->bad_pos = 255;
-	coll->bad_neg = -255;
+	coll->bad_pos = (CLICK_SIZE - 1);
+	coll->bad_neg = -(CLICK_SIZE - 1);
 	coll->bad_ceiling = 400;
 	coll->slopes_are_pits = 1;
 	coll->slopes_are_walls = 1;
@@ -1275,7 +1275,7 @@ void lara_col_crawl(ITEM_INFO* item, COLL_INFO* coll)
 	{
 		ShiftItem(item, coll);
 
-		if (coll->mid_floor != NO_HEIGHT && coll->mid_floor > -256)
+		if (coll->mid_floor != NO_HEIGHT && coll->mid_floor > -CLICK_SIZE)
 			item->pos.y_pos += coll->mid_floor;
 	}
 }
@@ -1292,12 +1292,12 @@ long LaraDeflectEdgeDuck(ITEM_INFO* item, COLL_INFO* coll)
 	else if (coll->coll_type == CT_LEFT)
 	{
 		ShiftItem(item, coll);
-		item->pos.y_rot += 364;
+		item->pos.y_rot += DEGREES_TO_ROTATION(2);
 	}
 	else if (coll->coll_type == CT_RIGHT)
 	{
 		ShiftItem(item, coll);
-		item->pos.y_rot -= 364;
+		item->pos.y_rot -= DEGREES_TO_ROTATION(2);
 	}
 
 	return 0;
@@ -1305,12 +1305,12 @@ long LaraDeflectEdgeDuck(ITEM_INFO* item, COLL_INFO* coll)
 
 void lara_as_all4turnl(ITEM_INFO* item, COLL_INFO* coll)
 {
-	coll->enable_spaz = 0;
-	coll->enable_baddie_push = 1;
+	coll->enable_spaz = false;
+	coll->enable_baddie_push = true;
 	lara.torso_y_rot = 0;
 	lara.torso_x_rot = 0;
-	camera.target_elevation = -4186;
-	item->pos.y_rot -= 273;
+	camera.target_elevation = -DEGREES_TO_ROTATION(23);
+	item->pos.y_rot -= HALF_DEGREES_TO_ROTATION(3);
 
 	if (item->hit_points <= 0 || !(input & IN_LEFT))
 		item->goal_anim_state = AS_ALL4S;
@@ -1318,12 +1318,12 @@ void lara_as_all4turnl(ITEM_INFO* item, COLL_INFO* coll)
 
 void lara_as_all4turnr(ITEM_INFO* item, COLL_INFO* coll)
 {
-	coll->enable_spaz = 0;
-	coll->enable_baddie_push = 1;
+	coll->enable_spaz = false;
+	coll->enable_baddie_push = true;
 	lara.torso_y_rot = 0;
 	lara.torso_x_rot = 0;
-	camera.target_elevation = -4186;
-	item->pos.y_rot += 273;
+	camera.target_elevation = -DEGREES_TO_ROTATION(23);
+	item->pos.y_rot += HALF_DEGREES_TO_ROTATION(3);
 
 	if (item->hit_points <= 0 || !(input & IN_RIGHT))
 		item->goal_anim_state = AS_ALL4S;
@@ -1334,7 +1334,7 @@ void lara_col_all4turnlr(ITEM_INFO* item, COLL_INFO* coll)
 	GetCollisionInfo(coll, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, 400);
 	TiltHer(item, 140, 400);
 
-	if (!TestLaraSlide(item, coll) && coll->mid_floor != NO_HEIGHT && coll->mid_floor > -256)
+	if (!TestLaraSlide(item, coll) && coll->mid_floor != NO_HEIGHT && coll->mid_floor > -CLICK_SIZE)
 		item->pos.y_pos += coll->mid_floor;
 }
 
@@ -1349,27 +1349,27 @@ void lara_as_crawlb(ITEM_INFO* item, COLL_INFO* coll)
 	if (input & IN_LOOK)
 		LookUpDown();
 
-	coll->enable_spaz = 0;
-	coll->enable_baddie_push = 1;
+	coll->enable_spaz = false;
+	coll->enable_baddie_push = true;
 	lara.torso_x_rot = 0;
 	lara.torso_y_rot = 0;
-	camera.target_elevation = -4186;
+	camera.target_elevation = -DEGREES_TO_ROTATION(23);
 
 	if (input & IN_BACK)
 	{
 		if (input & IN_RIGHT)
 		{
-			lara.turn_rate -= 409;
+			lara.turn_rate -= LARA_TURN_INCREMENT;
 
-			if (lara.turn_rate < -546)
-				lara.turn_rate = -546;
+			if (lara.turn_rate < -DEGREES_TO_ROTATION(3))
+				lara.turn_rate = -DEGREES_TO_ROTATION(3);
 		}
 		else if (input & IN_LEFT)
 		{
-			lara.turn_rate += 409;
+			lara.turn_rate += LARA_TURN_INCREMENT;
 
-			if (lara.turn_rate > 546)
-				lara.turn_rate = 546;
+			if (lara.turn_rate > DEGREES_TO_ROTATION(3))
+				lara.turn_rate = DEGREES_TO_ROTATION(3);
 		}
 	}
 	else
@@ -1381,12 +1381,12 @@ void lara_col_crawlb(ITEM_INFO* item, COLL_INFO* coll)
 	item->gravity_status = 0;
 	item->fallspeed = 0;
 	coll->radius = 250;
-	coll->bad_pos = 255;
-	coll->bad_neg = -255;
+	coll->bad_pos = (CLICK_SIZE - 1);
+	coll->bad_neg = -(CLICK_SIZE - 1);
 	coll->bad_ceiling = 400;
 	coll->slopes_are_pits = 1;
 	coll->slopes_are_walls = 1;
-	lara.move_angle = item->pos.y_rot + 32768;
+	lara.move_angle = item->pos.y_rot + 0x8000;
 	coll->facing = lara.move_angle;
 	GetCollisionInfo(coll, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, 400);
 	TiltHer(item, 140, 400);
@@ -1408,7 +1408,7 @@ void lara_col_crawlb(ITEM_INFO* item, COLL_INFO* coll)
 	{
 		ShiftItem(item, coll);
 
-		if (coll->mid_floor != NO_HEIGHT && coll->mid_floor > -256)
+		if (coll->mid_floor != NO_HEIGHT && coll->mid_floor > -CLICK_SIZE)
 			item->pos.y_pos += coll->mid_floor;
 
 		lara.move_angle = item->pos.y_rot;
@@ -1422,18 +1422,18 @@ void lara_col_crawl2hang(ITEM_INFO* item, COLL_INFO* coll)
 	short angle;
 
 	camera.target_angle = 0;
-	camera.target_elevation = -10920;
-	coll->enable_spaz = 0;
-	coll->enable_baddie_push = 0;
+	camera.target_elevation = -DEGREES_TO_ROTATION(60);
+	coll->enable_spaz = false;
+	coll->enable_baddie_push = false;
 
 	if (item->anim_number != ANIM_CRAWL_TO_HANG)
 		return;
 
-	item->fallspeed = 512;
-	item->pos.y_pos += 255;
+	item->fallspeed = HALF_BLOCK_SIZE;
+	item->pos.y_pos += (CLICK_SIZE - 1);
 	coll->bad_pos = -NO_HEIGHT;
-	coll->bad_neg = -384;
-	coll->bad_ceiling = 192;
+	coll->bad_neg = -(CLICK_SIZE + HALF_CLICK_SIZE);
+	coll->bad_ceiling = HALF_CLICK_SIZE + QUARTER_CLICK_SIZE;
 	lara.move_angle = item->pos.y_rot;
 	coll->facing = lara.move_angle;
 	GetCollisionInfo(coll, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, 870);
@@ -1447,14 +1447,14 @@ void lara_col_crawl2hang(ITEM_INFO* item, COLL_INFO* coll)
 
 	angle = item->pos.y_rot;
 
-	if (angle >= -6370 && angle <= 6370)
+	if (angle >= -DEGREES_TO_ROTATION(35) && angle <= DEGREES_TO_ROTATION(35))
 		angle = 0;
 	else if (angle >= 10014 && angle <= 22754)
-		angle = 16384;
+		angle = 0x4000;
 	else if (angle >= 26397 || angle <= -26397)
-		angle = -32768;
+		angle = -0x8000;
 	else if (angle >= -22754 && angle <= -10014)
-		angle = -16384;
+		angle = -0x4000;
 
 	if (angle & 0x3FFF)
 		return;
@@ -1515,27 +1515,27 @@ void lara_as_dash(ITEM_INFO* item, COLL_INFO* coll)
 
 	if (input & IN_LEFT)
 	{
-		lara.turn_rate -= 409;
+		lara.turn_rate -= LARA_TURN_INCREMENT;
 
-		if (lara.turn_rate < -728)
-			lara.turn_rate = -728;
+		if (lara.turn_rate < -DEGREES_TO_ROTATION(4))
+			lara.turn_rate = -DEGREES_TO_ROTATION(4);
 
-		item->pos.z_rot -= 273;
+		item->pos.z_rot -= HALF_DEGREES_TO_ROTATION(3);
 
-		if (item->pos.z_rot < -2912)
-			item->pos.z_rot = -2912;
+		if (item->pos.z_rot < -DEGREES_TO_ROTATION(16))
+			item->pos.z_rot = -DEGREES_TO_ROTATION(16);
 	}
 	else if (input & IN_RIGHT)
 	{
-		lara.turn_rate += 409;
+		lara.turn_rate += LARA_TURN_INCREMENT;
 
-		if (lara.turn_rate > 728)
-			lara.turn_rate = 728;
+		if (lara.turn_rate > DEGREES_TO_ROTATION(4))
+			lara.turn_rate = DEGREES_TO_ROTATION(4);
 
-		item->pos.z_rot += 273;
+		item->pos.z_rot += HALF_DEGREES_TO_ROTATION(3);
 
-		if (item->pos.z_rot > 2912)
-			item->pos.z_rot = 2912;
+		if (item->pos.z_rot > DEGREES_TO_ROTATION(16))
+			item->pos.z_rot = DEGREES_TO_ROTATION(16);
 	}
 
 	if (!(input & IN_JUMP) || item->gravity_status)
@@ -1558,7 +1558,7 @@ void lara_col_dash(ITEM_INFO* item, COLL_INFO* coll)
 {
 	lara.move_angle = item->pos.y_rot;
 	coll->bad_pos = -NO_HEIGHT;
-	coll->bad_neg = -384;
+	coll->bad_neg = -(CLICK_SIZE + HALF_CLICK_SIZE);
 	coll->bad_ceiling = 0;
 	coll->slopes_are_walls = 1;
 	GetLaraCollisionInfo(item, coll);
@@ -1570,7 +1570,7 @@ void lara_col_dash(ITEM_INFO* item, COLL_INFO* coll)
 	{
 		item->pos.z_rot = 0;
 
-		if (TestWall(item, 256, 0, -640))
+		if (TestWall(item, CLICK_SIZE, 0, -(HALF_BLOCK_SIZE + HALF_CLICK_SIZE)))
 		{
 			item->current_anim_state = AS_SPLAT;
 			item->anim_number = ANIM_HITWALLLEFT;
@@ -1584,7 +1584,7 @@ void lara_col_dash(ITEM_INFO* item, COLL_INFO* coll)
 	if (LaraFallen(item, coll))
 		return;
 
-	if (coll->mid_floor >= -384 && coll->mid_floor < -128)
+	if (coll->mid_floor >= -(CLICK_SIZE + HALF_CLICK_SIZE) && coll->mid_floor < -HALF_CLICK_SIZE)
 	{
 		if (item->frame_number >= 3 && item->frame_number <= 14)
 		{
@@ -1625,12 +1625,12 @@ void lara_as_dashdive(ITEM_INFO* item, COLL_INFO* coll)
 void lara_col_dashdive(ITEM_INFO* item, COLL_INFO* coll)
 {
 	if (item->speed < 0)
-		lara.move_angle = item->pos.y_rot - 32768;
+		lara.move_angle = item->pos.y_rot - 0x8000;
 	else
 		lara.move_angle = item->pos.y_rot;
 
 	coll->bad_pos = -NO_HEIGHT;
-	coll->bad_neg = -256;
+	coll->bad_neg = -CLICK_SIZE;
 	coll->bad_ceiling = 192;
 	coll->slopes_are_walls = 1;
 	GetLaraCollisionInfo(item, coll);
@@ -1690,7 +1690,7 @@ void MonkeySwingFall(ITEM_INFO* item)
 	item->speed = 2;
 	item->gravity_status = 1;
 	item->fallspeed = 1;
-	item->pos.y_pos += 256;
+	item->pos.y_pos += CLICK_SIZE;
 	lara.gun_status = LG_NO_ARMS;
 }
 
@@ -1711,8 +1711,8 @@ void lara_as_hang2(ITEM_INFO* item, COLL_INFO* coll)
 		return;
 	}
 
-	coll->enable_baddie_push = 0;
-	coll->enable_spaz = 0;
+	coll->enable_baddie_push = false;
+	coll->enable_spaz = false;
 	lara.torso_x_rot = 0;
 	lara.torso_y_rot = 0;
 
@@ -1725,7 +1725,7 @@ void lara_as_hang2(ITEM_INFO* item, COLL_INFO* coll)
 		}
 
 		camera.target_angle = 0;
-		camera.target_elevation = -10920;
+		camera.target_elevation = -DEGREES_TO_ROTATION(60);
 	}
 
 	if (input & IN_LOOK)
@@ -1799,8 +1799,8 @@ void lara_as_monkeyswing(ITEM_INFO* item, COLL_INFO* coll)
 		return;
 	}
 
-	coll->enable_spaz = 0;
-	coll->enable_baddie_push = 0;
+	coll->enable_spaz = false;
+	coll->enable_baddie_push = false;
 	lara.torso_x_rot = 0;
 	lara.torso_y_rot = 0;
 
@@ -1814,17 +1814,17 @@ void lara_as_monkeyswing(ITEM_INFO* item, COLL_INFO* coll)
 
 	if (input & IN_LEFT)
 	{
-		lara.turn_rate -= 409;
+		lara.turn_rate -= LARA_TURN_INCREMENT;
 
-		if (lara.turn_rate < -546)
-			lara.turn_rate = -546;
+		if (lara.turn_rate < -DEGREES_TO_ROTATION(3))
+			lara.turn_rate = -DEGREES_TO_ROTATION(3);
 	}
 	else if (input & IN_RIGHT)
 	{
-		lara.turn_rate += 409;
+		lara.turn_rate += LARA_TURN_INCREMENT;
 
-		if (lara.turn_rate > 546)
-			lara.turn_rate = 546;
+		if (lara.turn_rate > DEGREES_TO_ROTATION(3))
+			lara.turn_rate = DEGREES_TO_ROTATION(3);
 	}
 }
 
@@ -1840,8 +1840,8 @@ void lara_col_monkeyswing(ITEM_INFO* item, COLL_INFO* coll)
 	coll->bad_neg = NO_HEIGHT;
 	coll->bad_ceiling = 0;
 	lara.move_angle = item->pos.y_rot;
-	coll->enable_spaz = 0;
-	coll->enable_baddie_push = 0;
+	coll->enable_spaz = false;
+	coll->enable_baddie_push = false;
 	coll->facing = lara.move_angle;
 	coll->radius = 100;
 	GetCollisionInfo(coll, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, 600);
@@ -1858,15 +1858,15 @@ void lara_col_monkeyswing(ITEM_INFO* item, COLL_INFO* coll)
 		if (abs(coll->mid_ceiling - coll->left_ceiling2) > 50)
 		{
 			ShiftItem(item, coll);
-			item->pos.y_rot += 910;
+			item->pos.y_rot += DEGREES_TO_ROTATION(5);
 		}
 		else if (abs(coll->mid_ceiling - coll->right_ceiling2) > 50)
 		{
 			ShiftItem(item, coll);
-			item->pos.y_rot -= 910;
+			item->pos.y_rot -= DEGREES_TO_ROTATION(5);
 		}
 
-		camera.target_elevation = 1820;
+		camera.target_elevation = DEGREES_TO_ROTATION(10);
 		MonkeySwingSnap(item, coll);
 	}
 }
@@ -1879,8 +1879,8 @@ void lara_as_monkeyl(ITEM_INFO* item, COLL_INFO* coll)
 		return;
 	}
 
-	coll->enable_baddie_push = 0;
-	coll->enable_spaz = 0;
+	coll->enable_baddie_push = false;
+	coll->enable_spaz = false;
 	lara.torso_y_rot = 0;
 	lara.torso_x_rot = 0;
 
@@ -1889,7 +1889,7 @@ void lara_as_monkeyl(ITEM_INFO* item, COLL_INFO* coll)
 	else
 		item->goal_anim_state = AS_HANG2;
 
-	camera.target_elevation = 1820;
+	camera.target_elevation = DEGREES_TO_ROTATION(10);
 }
 
 void lara_col_monkeyl(ITEM_INFO* item, COLL_INFO* coll)
@@ -1918,8 +1918,8 @@ void lara_as_monkeyr(ITEM_INFO* item, COLL_INFO* coll)
 		return;
 	}
 
-	coll->enable_baddie_push = 0;
-	coll->enable_spaz = 0;
+	coll->enable_baddie_push = false;
+	coll->enable_spaz = false;
 	lara.torso_y_rot = 0;
 	lara.torso_x_rot = 0;
 
@@ -1928,7 +1928,7 @@ void lara_as_monkeyr(ITEM_INFO* item, COLL_INFO* coll)
 	else
 		item->goal_anim_state = AS_HANG2;
 
-	camera.target_elevation = 1820;
+	camera.target_elevation = DEGREES_TO_ROTATION(10);
 }
 
 void lara_col_monkeyr(ITEM_INFO* item, COLL_INFO* coll)
@@ -1951,10 +1951,10 @@ void lara_col_monkeyr(ITEM_INFO* item, COLL_INFO* coll)
 
 void lara_as_hangturnl(ITEM_INFO* item, COLL_INFO* coll)
 {
-	camera.target_elevation = 1820;
+	camera.target_elevation = DEGREES_TO_ROTATION(10);
 	lara.torso_y_rot = 0;
 	lara.torso_x_rot = 0;
-	item->pos.y_rot -= 273;
+	item->pos.y_rot -= HALF_DEGREES_TO_ROTATION(3);
 
 	if (item->hit_points <= 0 || !(input & IN_LEFT))
 		item->goal_anim_state = AS_HANG2;
@@ -1962,10 +1962,10 @@ void lara_as_hangturnl(ITEM_INFO* item, COLL_INFO* coll)
 
 void lara_as_hangturnr(ITEM_INFO* item, COLL_INFO* coll)
 {
-	camera.target_elevation = 1820;
+	camera.target_elevation = DEGREES_TO_ROTATION(10);
 	lara.torso_y_rot = 0;
 	lara.torso_x_rot = 0;
-	item->pos.y_rot += 273;
+	item->pos.y_rot += HALF_DEGREES_TO_ROTATION(3);
 
 	if (item->hit_points <= 0 || !(input & IN_RIGHT))
 		item->goal_anim_state = AS_HANG2;
@@ -1976,7 +1976,7 @@ void lara_col_hangturnlr(ITEM_INFO* item, COLL_INFO* coll)
 	if (input & IN_ACTION && lara.CanMonkeySwing)
 	{
 		coll->bad_pos = -NO_HEIGHT;
-		coll->bad_neg = -384;
+		coll->bad_neg = -(CLICK_SIZE + HALF_CLICK_SIZE);
 		coll->bad_ceiling = 0;
 		lara.move_angle = item->pos.y_rot;
 		coll->facing = item->pos.y_rot;
@@ -1991,8 +1991,8 @@ void lara_col_hangturnlr(ITEM_INFO* item, COLL_INFO* coll)
 
 void lara_as_monkey180(ITEM_INFO* item, COLL_INFO* coll)
 {
-	coll->enable_baddie_push = 0;
-	coll->enable_spaz = 0;
+	coll->enable_baddie_push = false;
+	coll->enable_spaz = false;
 	item->goal_anim_state = AS_HANG2;
 }
 
@@ -2003,10 +2003,10 @@ void lara_col_monkey180(ITEM_INFO* item, COLL_INFO* coll)
 
 void lara_as_hangleft(ITEM_INFO* item, COLL_INFO* coll)
 {
-	coll->enable_baddie_push = 0;
-	coll->enable_spaz = 0;
+	coll->enable_baddie_push = false;
+	coll->enable_spaz = false;
 	camera.target_angle = 0;
-	camera.target_elevation = -10920;
+	camera.target_elevation = -DEGREES_TO_ROTATION(60);
 
 	if (!(input & (IN_LEFT | IN_LSTEP)))
 		item->goal_anim_state = AS_HANG;
@@ -2014,18 +2014,18 @@ void lara_as_hangleft(ITEM_INFO* item, COLL_INFO* coll)
 
 void lara_col_hangleft(ITEM_INFO* item, COLL_INFO* coll)
 {
-	lara.move_angle = item->pos.y_rot - 16384;
+	lara.move_angle = item->pos.y_rot - 0x4000;
 	coll->radius = 102;
 	LaraHangTest(item, coll);
-	lara.move_angle = item->pos.y_rot - 16384;
+	lara.move_angle = item->pos.y_rot - 0x4000;
 }
 
 void lara_as_hangright(ITEM_INFO* item, COLL_INFO* coll)
 {
-	coll->enable_baddie_push = 0;
-	coll->enable_spaz = 0;
+	coll->enable_baddie_push = false;
+	coll->enable_spaz = false;
 	camera.target_angle = 0;
-	camera.target_elevation = -10920;
+	camera.target_elevation = -DEGREES_TO_ROTATION(60);
 
 	if (!(input & (IN_RIGHT | IN_RSTEP)))
 		item->goal_anim_state = AS_HANG;
@@ -2033,10 +2033,10 @@ void lara_as_hangright(ITEM_INFO* item, COLL_INFO* coll)
 
 void lara_col_hangright(ITEM_INFO* item, COLL_INFO* coll)
 {
-	lara.move_angle = item->pos.y_rot + 16384;
+	lara.move_angle = item->pos.y_rot + 0x4000;
 	coll->radius = 102;
 	LaraHangTest(item, coll);
-	lara.move_angle = item->pos.y_rot + 16384;
+	lara.move_angle = item->pos.y_rot + 0x4000;
 }
 
 void lara_as_extcornerl(ITEM_INFO* item, COLL_INFO* coll)
@@ -2129,13 +2129,13 @@ void lara_col_splat(ITEM_INFO* item, COLL_INFO* coll)
 	lara.move_angle = item->pos.y_rot;
 	coll->slopes_are_walls = 1;
 	coll->slopes_are_pits = 1;
-	coll->bad_pos = 384;
-	coll->bad_neg = -384;
+	coll->bad_pos = (CLICK_SIZE + HALF_CLICK_SIZE);
+	coll->bad_neg = -(CLICK_SIZE + HALF_CLICK_SIZE);
 	coll->bad_ceiling = 0;
 	GetLaraCollisionInfo(item, coll);
 	ShiftItem(item, coll);
 
-	if (coll->mid_floor >= -256 && coll->mid_floor <= 256)
+	if (coll->mid_floor >= -CLICK_SIZE && coll->mid_floor <= CLICK_SIZE)
 		item->pos.y_pos += coll->mid_floor;
 }
 
@@ -2143,25 +2143,25 @@ void lara_as_compress(ITEM_INFO* item, COLL_INFO* coll)
 {
 	if (lara.water_status != LW_WADE)
 	{
-		if (input & IN_FORWARD && LaraFloorFront(item, item->pos.y_rot, 256) >= -384)
+		if (input & IN_FORWARD && LaraFloorFront(item, item->pos.y_rot, CLICK_SIZE) >= -(CLICK_SIZE + HALF_CLICK_SIZE))
 		{
 			item->goal_anim_state = AS_FORWARDJUMP;
 			lara.move_angle = item->pos.y_rot;
 		}
-		else if (input & IN_LEFT && LaraFloorFront(item, item->pos.y_rot - 16384, 256) >= -384)
+		else if (input & IN_LEFT && LaraFloorFront(item, item->pos.y_rot - 0x4000, CLICK_SIZE) >= -(CLICK_SIZE + HALF_CLICK_SIZE))
 		{
 			item->goal_anim_state = AS_LEFTJUMP;
-			lara.move_angle = item->pos.y_rot - 16384;
+			lara.move_angle = item->pos.y_rot - 0x4000;
 		}
-		else if (input & IN_RIGHT && LaraFloorFront(item, item->pos.y_rot + 16384, 256) >= -384)
+		else if (input & IN_RIGHT && LaraFloorFront(item, item->pos.y_rot + 0x4000, CLICK_SIZE) >= -(CLICK_SIZE + HALF_CLICK_SIZE))
 		{
 			item->goal_anim_state = AS_RIGHTJUMP;
-			lara.move_angle = item->pos.y_rot + 16384;
+			lara.move_angle = item->pos.y_rot + 0x4000;
 		}
-		else if (input & IN_BACK && LaraFloorFront(item, item->pos.y_rot - 32768, 256) >= -384)
+		else if (input & IN_BACK && LaraFloorFront(item, item->pos.y_rot - 0x8000, CLICK_SIZE) >= -(CLICK_SIZE + HALF_CLICK_SIZE))
 		{
 			item->goal_anim_state = AS_BACKJUMP;
-			lara.move_angle = item->pos.y_rot + 32768;
+			lara.move_angle = item->pos.y_rot + 0x8000;
 		}
 	}
 
@@ -2195,7 +2195,7 @@ void lara_col_compress(ITEM_INFO* item, COLL_INFO* coll)
 		item->pos.z_pos = coll->old.z;
 	}
 
-	if (coll->mid_floor > -256 && coll->mid_floor < 256)
+	if (coll->mid_floor > -CLICK_SIZE && coll->mid_floor < CLICK_SIZE)
 		item->pos.y_pos += coll->mid_floor;
 }
 
@@ -2216,17 +2216,17 @@ void lara_as_back(ITEM_INFO* item, COLL_INFO* coll)
 
 		if (input & IN_LEFT)
 		{
-			lara.turn_rate -= 409;
+			lara.turn_rate -= LARA_TURN_INCREMENT;
 
-			if (lara.turn_rate < -728)
-				lara.turn_rate = -728;
+			if (lara.turn_rate < -DEGREES_TO_ROTATION(4))
+				lara.turn_rate = -DEGREES_TO_ROTATION(4);
 		}
 		else if (input & IN_RIGHT)
 		{
-			lara.turn_rate += 409;
+			lara.turn_rate += LARA_TURN_INCREMENT;
 
-			if (lara.turn_rate > 728)
-				lara.turn_rate = 728;
+			if (lara.turn_rate > DEGREES_TO_ROTATION(4))
+				lara.turn_rate = DEGREES_TO_ROTATION(4);
 		}
 	}
 }
@@ -2235,9 +2235,9 @@ void lara_col_back(ITEM_INFO* item, COLL_INFO* coll)
 {
 	item->gravity_status = 0;
 	item->fallspeed = 0;
-	lara.move_angle = item->pos.y_rot + 32768;
-	coll->bad_pos = lara.water_status == LW_WADE ? -NO_HEIGHT : 384;
-	coll->bad_neg = -384;
+	lara.move_angle = item->pos.y_rot + 0x8000;
+	coll->bad_pos = lara.water_status == LW_WADE ? -NO_HEIGHT : (CLICK_SIZE + HALF_CLICK_SIZE);
+	coll->bad_neg = -(CLICK_SIZE + HALF_CLICK_SIZE);
 	coll->bad_ceiling = 0;
 	coll->slopes_are_pits = 1;
 	coll->slopes_are_walls = 1;
@@ -2252,7 +2252,7 @@ void lara_col_back(ITEM_INFO* item, COLL_INFO* coll)
 	if (LaraFallen(item, coll))
 		return;
 
-	if (coll->mid_floor > 128 && coll->mid_floor < 384)
+	if (coll->mid_floor > HALF_CLICK_SIZE && coll->mid_floor < (CLICK_SIZE + HALF_CLICK_SIZE))
 	{
 		// T4Plus: fixed right step-down
 #if 0
@@ -2284,8 +2284,8 @@ void lara_col_back(ITEM_INFO* item, COLL_INFO* coll)
 
 void lara_as_null(ITEM_INFO* item, COLL_INFO* coll)
 {
-	coll->enable_spaz = 0;
-	coll->enable_baddie_push = 0;
+	coll->enable_spaz = false;
+	coll->enable_baddie_push = false;
 }
 
 void lara_as_fastturn(ITEM_INFO* item, COLL_INFO* coll)
@@ -2298,14 +2298,14 @@ void lara_as_fastturn(ITEM_INFO* item, COLL_INFO* coll)
 
 	if (lara.turn_rate >= 0)
 	{
-		lara.turn_rate = 1456;
+		lara.turn_rate = DEGREES_TO_ROTATION(8);
 
 		if (!(input & IN_RIGHT))
 			item->goal_anim_state = AS_STOP;
 	}
 	else
 	{
-		lara.turn_rate = -1456;
+		lara.turn_rate = -DEGREES_TO_ROTATION(8);
 
 		if (!(input & IN_LEFT))
 			item->goal_anim_state = AS_STOP;
@@ -2329,17 +2329,17 @@ void lara_as_stepright(ITEM_INFO* item, COLL_INFO* coll)
 
 		if (input & IN_LEFT)
 		{
-			lara.turn_rate -= 409;
+			lara.turn_rate -= LARA_TURN_INCREMENT;
 
-			if (lara.turn_rate < -728)
-				lara.turn_rate = -728;
+			if (lara.turn_rate < -DEGREES_TO_ROTATION(4))
+				lara.turn_rate = -DEGREES_TO_ROTATION(4);
 		}
 		else if (input & IN_RIGHT)
 		{
-			lara.turn_rate += 409;
+			lara.turn_rate += LARA_TURN_INCREMENT;
 
-			if (lara.turn_rate > 728)
-				lara.turn_rate = 728;
+			if (lara.turn_rate > DEGREES_TO_ROTATION(4))
+				lara.turn_rate = DEGREES_TO_ROTATION(4);
 		}
 	}
 }
@@ -2347,16 +2347,16 @@ void lara_as_stepright(ITEM_INFO* item, COLL_INFO* coll)
 void lara_col_stepright(ITEM_INFO* item, COLL_INFO* coll)
 {
 	if (item->current_anim_state == AS_STEPRIGHT)
-		lara.move_angle = item->pos.y_rot + 16384;
+		lara.move_angle = item->pos.y_rot + 0x4000;
 	else
-		lara.move_angle = item->pos.y_rot - 16384;
+		lara.move_angle = item->pos.y_rot - 0x4000;
 
 	item->gravity_status = 0;
 	item->fallspeed = 0;
-	coll->bad_pos = lara.water_status == LW_WADE ? -NO_HEIGHT : 128;
+	coll->bad_pos = lara.water_status == LW_WADE ? -NO_HEIGHT : HALF_CLICK_SIZE;
 	coll->slopes_are_walls = 1;
 	coll->slopes_are_pits = 1;
-	coll->bad_neg = -128;
+	coll->bad_neg = -HALF_CLICK_SIZE;
 	coll->bad_ceiling = 0;
 	GetLaraCollisionInfo(item, coll);
 
@@ -2395,17 +2395,17 @@ void lara_as_stepleft(ITEM_INFO* item, COLL_INFO* coll)
 
 		if (input & IN_LEFT)
 		{
-			lara.turn_rate -= 409;
+			lara.turn_rate -= LARA_TURN_INCREMENT;
 
-			if (lara.turn_rate < -728)
-				lara.turn_rate = -728;
+			if (lara.turn_rate < -DEGREES_TO_ROTATION(4))
+				lara.turn_rate = -DEGREES_TO_ROTATION(4);
 		}
 		else if (input & IN_RIGHT)
 		{
-			lara.turn_rate += 409;
+			lara.turn_rate += LARA_TURN_INCREMENT;
 
-			if (lara.turn_rate > 728)
-				lara.turn_rate = 728;
+			if (lara.turn_rate > DEGREES_TO_ROTATION(4))
+				lara.turn_rate = DEGREES_TO_ROTATION(4);
 		}
 	}
 }
@@ -2417,7 +2417,7 @@ void lara_col_stepleft(ITEM_INFO* item, COLL_INFO* coll)
 
 void lara_as_slide(ITEM_INFO* item, COLL_INFO* coll)
 {
-	camera.target_elevation = -8190;
+	camera.target_elevation = -DEGREES_TO_ROTATION(45);
 
 	if (input & IN_JUMP && !(input & IN_BACK))
 		item->goal_anim_state = AS_FORWARDJUMP;
@@ -2431,7 +2431,7 @@ void lara_col_slide(ITEM_INFO* item, COLL_INFO* coll)
 
 void lara_as_backjump(ITEM_INFO* item, COLL_INFO* coll)
 {
-	camera.target_angle = 24570;
+	camera.target_angle = DEGREES_TO_ROTATION(135);
 
 	if (item->fallspeed <= 131)
 	{
@@ -2446,7 +2446,7 @@ void lara_as_backjump(ITEM_INFO* item, COLL_INFO* coll)
 
 void lara_col_backjump(ITEM_INFO* item, COLL_INFO* coll)
 {
-	lara.move_angle = item->pos.y_rot + 32768;
+	lara.move_angle = item->pos.y_rot + 0x8000;
 	lara_col_jumper(item, coll);
 }
 
@@ -2465,7 +2465,7 @@ void lara_as_rightjump(ITEM_INFO* item, COLL_INFO* coll)
 
 void lara_col_rightjump(ITEM_INFO* item, COLL_INFO* coll)
 {
-	lara.move_angle = item->pos.y_rot + 16384;
+	lara.move_angle = item->pos.y_rot + 0x4000;
 	lara_col_jumper(item, coll);
 }
 
@@ -2484,7 +2484,7 @@ void lara_as_leftjump(ITEM_INFO* item, COLL_INFO* coll)
 
 void lara_col_leftjump(ITEM_INFO* item, COLL_INFO* coll)
 {
-	lara.move_angle = item->pos.y_rot - 16384;
+	lara.move_angle = item->pos.y_rot - 0x4000;
 	lara_col_jumper(item, coll);
 }
 
@@ -2499,9 +2499,9 @@ void lara_as_fallback(ITEM_INFO* item, COLL_INFO* coll)
 
 void lara_col_fallback(ITEM_INFO* item, COLL_INFO* coll)
 {
-	lara.move_angle = item->pos.y_rot - 32768;
+	lara.move_angle = item->pos.y_rot - 0x8000;
 	coll->bad_pos = -NO_HEIGHT;
-	coll->bad_neg = -384;
+	coll->bad_neg = -(CLICK_SIZE + HALF_CLICK_SIZE);
 	coll->bad_ceiling = 192;
 	GetLaraCollisionInfo(item, coll);
 	LaraDeflectEdgeJump(item, coll);
@@ -2529,14 +2529,14 @@ void lara_as_slideback(ITEM_INFO* item, COLL_INFO* coll)
 
 void lara_col_slideback(ITEM_INFO* item, COLL_INFO* coll)
 {
-	lara.move_angle = item->pos.y_rot + 32768;
+	lara.move_angle = item->pos.y_rot + 0x8000;
 	lara_slide_slope(item, coll);
 }
 
 void lara_col_roll(ITEM_INFO* item, COLL_INFO* coll) {
 	lara.move_angle = item->pos.y_rot;
 	coll->bad_pos = -NO_HEIGHT;
-	coll->bad_neg = -384;
+	coll->bad_neg = -(CLICK_SIZE + HALF_CLICK_SIZE);
 	coll->bad_ceiling = 0;
 	item->gravity_status = 0;
 	item->fallspeed = 0;
@@ -2570,10 +2570,10 @@ void lara_col_roll2(ITEM_INFO* item, COLL_INFO* coll)
 
 	item->gravity_status = 0;
 	item->fallspeed = 0;
-	lara.move_angle = item->pos.y_rot + 32768;
+	lara.move_angle = item->pos.y_rot + 0x8000;
 	coll->slopes_are_walls = 1;
 	coll->bad_pos = -NO_HEIGHT;
-	coll->bad_neg = -384;
+	coll->bad_neg = -(CLICK_SIZE + HALF_CLICK_SIZE);
 	coll->bad_ceiling = 0;
 	GetLaraCollisionInfo(item, coll);
 
@@ -2604,11 +2604,11 @@ void lara_col_roll2(ITEM_INFO* item, COLL_INFO* coll)
 void lara_as_pushblock(ITEM_INFO* item, COLL_INFO* coll)
 {
 	lara.look = 0;
-	coll->enable_baddie_push = 0;
-	coll->enable_spaz = 0;
+	coll->enable_baddie_push = false;
+	coll->enable_spaz = false;
 	camera.flags = 1;
-	camera.target_angle = 16380;
-	camera.target_elevation = -4550;
+	camera.target_angle = DEGREES_TO_ROTATION(90);
+	camera.target_elevation = -DEGREES_TO_ROTATION(25);
 	if (tr5_camera_behaviour) {
 		camera.lara_node = LM_TORSO;
 	} else {
@@ -2619,11 +2619,11 @@ void lara_as_pushblock(ITEM_INFO* item, COLL_INFO* coll)
 void lara_as_pullblock(ITEM_INFO* item, COLL_INFO* coll)
 {
 	lara.look = 0;
-	coll->enable_baddie_push = 0;
-	coll->enable_spaz = 0;
+	coll->enable_baddie_push = false;
+	coll->enable_spaz = false;
 	camera.flags = 1;
-	camera.target_angle = 6370;
-	camera.target_elevation = -4550;
+	camera.target_angle = DEGREES_TO_ROTATION(35);
+	camera.target_elevation = -DEGREES_TO_ROTATION(25);
 	if (tr5_camera_behaviour) {
 		camera.lara_node = LM_TORSO;
 	} else {
@@ -2633,9 +2633,9 @@ void lara_as_pullblock(ITEM_INFO* item, COLL_INFO* coll)
 
 void lara_as_ppready(ITEM_INFO* item, COLL_INFO* coll)
 {
-	coll->enable_baddie_push = 0;
-	coll->enable_spaz = 0;
-	camera.target_angle = 13650;
+	coll->enable_baddie_push = false;
+	coll->enable_spaz = false;
+	camera.target_angle = DEGREES_TO_ROTATION(75);
 
 	if (!(input & IN_ACTION))
 		item->goal_anim_state = AS_STOP;
@@ -2644,11 +2644,11 @@ void lara_as_ppready(ITEM_INFO* item, COLL_INFO* coll)
 void lara_as_pickup(ITEM_INFO* item, COLL_INFO* coll)
 {
 	lara.look = 0;
-	coll->enable_baddie_push = 0;
-	coll->enable_spaz = 0;
-	camera.target_angle = -23660;
-	camera.target_elevation = -2730;
-	camera.target_distance = 1024;
+	coll->enable_baddie_push = false;
+	coll->enable_spaz = false;
+	camera.target_angle = -DEGREES_TO_ROTATION(130);
+	camera.target_elevation = -DEGREES_TO_ROTATION(15);
+	camera.target_distance = BLOCK_SIZE;
 
 	if (item->frame_number == anims[ANIM_PLINTHLO].frame_end - 1 ||
 		item->frame_number == anims[ANIM_PLINTHHI].frame_end - 1 ||
@@ -2659,11 +2659,11 @@ void lara_as_pickup(ITEM_INFO* item, COLL_INFO* coll)
 void lara_as_pickupflare(ITEM_INFO* item, COLL_INFO* coll)
 {
 	lara.look = 0;
-	coll->enable_baddie_push = 0;
-	coll->enable_spaz = 0;
-	camera.target_angle = 23660;
-	camera.target_elevation = -2730;
-	camera.target_distance = 1024;
+	coll->enable_baddie_push = false;
+	coll->enable_spaz = false;
+	camera.target_angle = DEGREES_TO_ROTATION(130);
+	camera.target_elevation = -DEGREES_TO_ROTATION(15);
+	camera.target_distance = BLOCK_SIZE;
 
 	if (item->frame_number == anims[item->anim_number].frame_end - 1)
 		lara.gun_status = LG_NO_ARMS;
@@ -2672,11 +2672,11 @@ void lara_as_pickupflare(ITEM_INFO* item, COLL_INFO* coll)
 void lara_as_switchon(ITEM_INFO* item, COLL_INFO* coll)
 {
 	lara.look = 0;
-	coll->enable_baddie_push = 0;
-	coll->enable_spaz = 0;
-	camera.target_angle = 14560;
-	camera.target_elevation = -4550;
-	camera.target_distance = 1024;
+	coll->enable_baddie_push = false;
+	coll->enable_spaz = false;
+	camera.target_angle = DEGREES_TO_ROTATION(80);
+	camera.target_elevation = -DEGREES_TO_ROTATION(25);
+	camera.target_distance = BLOCK_SIZE;
 	camera.speed = 6;
 
 	if (item->frame_number == anims[ANIM_BLOCKSWITCH].frame_end - 1 ||
@@ -2687,21 +2687,21 @@ void lara_as_switchon(ITEM_INFO* item, COLL_INFO* coll)
 void lara_as_usekey(ITEM_INFO* item, COLL_INFO* coll)
 {
 	lara.look = 0;
-	coll->enable_baddie_push = 0;
-	coll->enable_spaz = 0;
-	camera.target_angle = -14560;
-	camera.target_elevation = -4550;
-	camera.target_distance = 1024;
+	coll->enable_baddie_push = false;
+	coll->enable_spaz = false;
+	camera.target_angle = -DEGREES_TO_ROTATION(80);
+	camera.target_elevation = -DEGREES_TO_ROTATION(25);
+	camera.target_distance = BLOCK_SIZE;
 }
 
 void lara_as_usepuzzle(ITEM_INFO* item, COLL_INFO* coll)
 {
 	lara.look = 0;
-	coll->enable_baddie_push = 0;
-	coll->enable_spaz = 0;
-	camera.target_angle = -14560;
-	camera.target_elevation = -4550;
-	camera.target_distance = 1024;
+	coll->enable_baddie_push = false;
+	coll->enable_spaz = false;
+	camera.target_angle = -DEGREES_TO_ROTATION(80);
+	camera.target_elevation = -DEGREES_TO_ROTATION(25);
+	camera.target_distance = BLOCK_SIZE;
 
 	if (item->frame_number == anims[item->anim_number].frame_end && item->item_flags[0])
 	{
@@ -2714,14 +2714,14 @@ void lara_as_usepuzzle(ITEM_INFO* item, COLL_INFO* coll)
 void lara_as_special(ITEM_INFO* item, COLL_INFO* coll)
 {
 	camera.flags = 1;
-	camera.target_angle = 30940;
-	camera.target_elevation = -4550;
+	camera.target_angle = DEGREES_TO_ROTATION(170);
+	camera.target_elevation = -DEGREES_TO_ROTATION(25);
 }
 
 void lara_as_swandive(ITEM_INFO* item, COLL_INFO* coll)
 {
-	coll->enable_baddie_push = 1;
-	coll->enable_spaz = 0;
+	coll->enable_baddie_push = true;
+	coll->enable_spaz = false;
 
 	if (item->fallspeed > 131 && item->goal_anim_state != AS_DIVE)
 		item->goal_anim_state = AS_FASTDIVE;
@@ -2731,8 +2731,8 @@ void lara_col_swandive(ITEM_INFO* item, COLL_INFO* coll)
 {
 	lara.move_angle = item->pos.y_rot;
 	coll->bad_pos = -NO_HEIGHT;
-	coll->bad_neg = -384;
-	coll->bad_ceiling = 192;
+	coll->bad_neg = -(CLICK_SIZE + HALF_CLICK_SIZE);
+	coll->bad_ceiling = HALF_CLICK_SIZE + QUARTER_CLICK_SIZE;
 	GetLaraCollisionInfo(item, coll);
 	LaraDeflectEdgeJump(item, coll);
 
@@ -2752,8 +2752,8 @@ void lara_as_fastdive(ITEM_INFO* item, COLL_INFO* coll)
 	if (input & IN_ROLL && item->goal_anim_state == AS_FASTDIVE)
 		item->goal_anim_state = AS_TWIST;
 
-	coll->enable_baddie_push = 1;
-	coll->enable_spaz = 0;
+	coll->enable_baddie_push = true;
+	coll->enable_spaz = false;
 	item->speed = 95 * item->speed / 100;
 }
 
@@ -2761,8 +2761,8 @@ void lara_col_fastdive(ITEM_INFO* item, COLL_INFO* coll)
 {
 	lara.move_angle = item->pos.y_rot;
 	coll->bad_pos = -NO_HEIGHT;
-	coll->bad_neg = -384;
-	coll->bad_ceiling = 192;
+	coll->bad_neg = -(CLICK_SIZE + HALF_CLICK_SIZE);
+	coll->bad_ceiling = HALF_CLICK_SIZE + QUARTER_CLICK_SIZE;
 	GetLaraCollisionInfo(item, coll);
 	LaraDeflectEdgeJump(item, coll);
 
@@ -2783,8 +2783,8 @@ void lara_col_fastdive(ITEM_INFO* item, COLL_INFO* coll)
 
 void lara_as_waterout(ITEM_INFO* item, COLL_INFO* coll)
 {
-	coll->enable_baddie_push = 0;
-	coll->enable_spaz = 0;
+	coll->enable_baddie_push = false;
+	coll->enable_spaz = false;
 	camera.flags = 1;
 	if (tr5_camera_behaviour) {
 		camera.lara_node = LM_HIPS;
@@ -2801,30 +2801,30 @@ void lara_as_wade(ITEM_INFO* item, COLL_INFO* coll)
 		return;
 	}
 
-	camera.target_elevation = -4004;
+	camera.target_elevation = -DEGREES_TO_ROTATION(22);
 
 	if (T4PlusIsRoomSwamp(&room[item->room_number])) 
 	{
 		if (input & IN_LEFT)
 		{
-			lara.turn_rate -= 409;
+			lara.turn_rate -= LARA_TURN_INCREMENT;
 
-			if (lara.turn_rate < -728)
-				lara.turn_rate = -728;
+			if (lara.turn_rate < -DEGREES_TO_ROTATION(4))
+				lara.turn_rate = -DEGREES_TO_ROTATION(4);
 
-			item->pos.z_rot -= 273;
+			item->pos.z_rot -= HALF_DEGREES_TO_ROTATION(3);
 
 			if (item->pos.z_rot < -1001)
 				item->pos.z_rot = -1001;
 		}
 		else if (input & IN_RIGHT)
 		{
-			lara.turn_rate += 409;
+			lara.turn_rate += LARA_TURN_INCREMENT;
 
-			if (lara.turn_rate > 728)
-				lara.turn_rate = 728;
+			if (lara.turn_rate > DEGREES_TO_ROTATION(4))
+				lara.turn_rate = DEGREES_TO_ROTATION(4);
 
-			item->pos.z_rot += 273;
+			item->pos.z_rot += HALF_DEGREES_TO_ROTATION(3);
 
 			if (item->pos.z_rot > 1001)
 				item->pos.z_rot = 1001;
@@ -2839,27 +2839,27 @@ void lara_as_wade(ITEM_INFO* item, COLL_INFO* coll)
 	{
 		if (input & IN_LEFT)
 		{
-			lara.turn_rate -= 409;
+			lara.turn_rate -= LARA_TURN_INCREMENT;
 
-			if (lara.turn_rate < -1456)
-				lara.turn_rate = -1456;
+			if (lara.turn_rate < -DEGREES_TO_ROTATION(8))
+				lara.turn_rate = -DEGREES_TO_ROTATION(8);
 
-			item->pos.z_rot -= 273;
+			item->pos.z_rot -= HALF_DEGREES_TO_ROTATION(3);
 
-			if (item->pos.z_rot < -2002)
-				item->pos.z_rot = -2002;
+			if (item->pos.z_rot < -DEGREES_TO_ROTATION(11))
+				item->pos.z_rot = -DEGREES_TO_ROTATION(11);
 		}
 		else if (input & IN_RIGHT)
 		{
-			lara.turn_rate += 409;
+			lara.turn_rate += LARA_TURN_INCREMENT;
 
-			if (lara.turn_rate > 1456)
-				lara.turn_rate = 1456;
+			if (lara.turn_rate > DEGREES_TO_ROTATION(8))
+				lara.turn_rate = DEGREES_TO_ROTATION(8);
 
-			item->pos.z_rot += 273;
+			item->pos.z_rot += HALF_DEGREES_TO_ROTATION(3);
 
-			if (item->pos.z_rot > 2002)
-				item->pos.z_rot = 2002;
+			if (item->pos.z_rot > DEGREES_TO_ROTATION(11))
+				item->pos.z_rot = DEGREES_TO_ROTATION(11);
 		}
 	}
 
@@ -2878,7 +2878,7 @@ void lara_col_wade(ITEM_INFO* item, COLL_INFO* coll)
 {
 	lara.move_angle = item->pos.y_rot;
 	coll->bad_pos = -NO_HEIGHT;
-	coll->bad_neg = -384;
+	coll->bad_neg = -(CLICK_SIZE + HALF_CLICK_SIZE);
 	coll->bad_ceiling = 0;
 	coll->slopes_are_walls = 1;
 	GetLaraCollisionInfo(item, coll);
@@ -2915,7 +2915,7 @@ void lara_col_wade(ITEM_INFO* item, COLL_INFO* coll)
 		LaraCollideStop(item, coll);
 	}
 
-	if (coll->mid_floor >= -384 && coll->mid_floor < -128 && !T4PlusIsRoomSwamp(&room[item->room_number]))
+	if (coll->mid_floor >= -(CLICK_SIZE + HALF_CLICK_SIZE) && coll->mid_floor < -HALF_CLICK_SIZE && !T4PlusIsRoomSwamp(&room[item->room_number]))
 	{
 		if (item->frame_number >= 3 && item->frame_number <= 14)
 		{
@@ -2953,8 +2953,8 @@ void lara_col_wade(ITEM_INFO* item, COLL_INFO* coll)
 void lara_default_col(ITEM_INFO* item, COLL_INFO* coll)
 {
 	lara.move_angle = item->pos.y_rot;
-	coll->bad_pos = 384;
-	coll->bad_neg = -384;
+	coll->bad_pos = (CLICK_SIZE + HALF_CLICK_SIZE);
+	coll->bad_neg = -(CLICK_SIZE + HALF_CLICK_SIZE);
 	coll->bad_ceiling = 0;
 	coll->slopes_are_pits = 1;
 	coll->slopes_are_walls = 1;
@@ -2966,7 +2966,7 @@ void lara_as_deathslide(ITEM_INFO* item, COLL_INFO* coll)
 	short room_number;
 
 	room_number = item->room_number;
-	camera.target_angle = 12740;
+	camera.target_angle = DEGREES_TO_ROTATION(70);
 	GetHeight(GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number), item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
 	coll->trigger_index = trigger_index;
 	
@@ -2984,8 +2984,8 @@ void lara_as_deathslide(ITEM_INFO* item, COLL_INFO* coll)
 void lara_as_controlled(ITEM_INFO* item, COLL_INFO* coll)
 {
 	lara.look = 0;
-	coll->enable_baddie_push = 0;
-	coll->enable_spaz = 0;
+	coll->enable_baddie_push = false;
+	coll->enable_spaz = false;
 
 	if (item->anim_number == ANIM_PLAYHARP && item->frame_number == anims[ANIM_PLAYHARP].frame_base + 120)
 		S_CDPlay(6, 0);
@@ -3013,8 +3013,8 @@ void lara_as_controlled(ITEM_INFO* item, COLL_INFO* coll)
 void lara_as_controlledl(ITEM_INFO* item, COLL_INFO* coll)
 {
 	lara.look = 0;
-	coll->enable_baddie_push = 0;
-	coll->enable_spaz = 0;
+	coll->enable_baddie_push = false;
+	coll->enable_spaz = false;
 }
 
 void lara_col_turnswitch(ITEM_INFO* item, COLL_INFO* coll)
@@ -3043,8 +3043,8 @@ void lara_as_pulley(ITEM_INFO* item, COLL_INFO* coll)
 
 	p = &items[lara.GeneralPtr];
 	lara.look = 0;
-	coll->enable_spaz = 0;
-	coll->enable_baddie_push = 0;
+	coll->enable_spaz = false;
+	coll->enable_baddie_push = false;
 
 	if (input & IN_ACTION && p->trigger_flags)
 		item->goal_anim_state = AS_PULLEY;
@@ -3098,17 +3098,17 @@ void lara_as_walk(ITEM_INFO* item, COLL_INFO* coll)
 
 	if (input & IN_LEFT)
 	{
-		lara.turn_rate -= 409;
+		lara.turn_rate -= LARA_TURN_INCREMENT;
 
-		if (lara.turn_rate < -728)
-			lara.turn_rate = -728;
+		if (lara.turn_rate < -DEGREES_TO_ROTATION(4))
+			lara.turn_rate = -DEGREES_TO_ROTATION(4);
 	}
 	else if (input & IN_RIGHT)
 	{
-		lara.turn_rate += 409;
+		lara.turn_rate += LARA_TURN_INCREMENT;
 
-		if (lara.turn_rate > 728)
-			lara.turn_rate = 728;
+		if (lara.turn_rate > DEGREES_TO_ROTATION(4))
+			lara.turn_rate = DEGREES_TO_ROTATION(4);
 	}
 
 	if (input & IN_FORWARD)
@@ -3129,8 +3129,8 @@ void lara_col_walk(ITEM_INFO* item, COLL_INFO* coll)
 	item->gravity_status = 0;
 	item->fallspeed = 0;
 	lara.move_angle = item->pos.y_rot;
-	coll->bad_pos = 384;
-	coll->bad_neg = -384;
+	coll->bad_pos = (CLICK_SIZE + HALF_CLICK_SIZE);
+	coll->bad_neg = -(CLICK_SIZE + HALF_CLICK_SIZE);
 	coll->bad_ceiling = 0;
 	coll->slopes_are_walls = 1;
 	coll->slopes_are_pits = 1;
@@ -3185,9 +3185,9 @@ void lara_col_walk(ITEM_INFO* item, COLL_INFO* coll)
 		}
 	}
 
-	if (coll->mid_floor >= -384 && coll->mid_floor < -128)
+	if (coll->mid_floor >= -(CLICK_SIZE + HALF_CLICK_SIZE) && coll->mid_floor < -HALF_CLICK_SIZE)
 	{
-		if (coll->front_floor == NO_HEIGHT || coll->front_floor < -384 || coll->front_floor >= -128)
+		if (coll->front_floor == NO_HEIGHT || coll->front_floor < -(CLICK_SIZE + HALF_CLICK_SIZE) || coll->front_floor >= -HALF_CLICK_SIZE)
 			coll->mid_floor = 0;
 		else
 		{
@@ -3246,27 +3246,27 @@ void lara_as_run(ITEM_INFO* item, COLL_INFO* coll)
 
 	if (input & IN_LEFT)
 	{
-		lara.turn_rate -= 409;
+		lara.turn_rate -= LARA_TURN_INCREMENT;
 
-		if (lara.turn_rate < -1456)
-			lara.turn_rate = -1456;
+		if (lara.turn_rate < -DEGREES_TO_ROTATION(8))
+			lara.turn_rate = -DEGREES_TO_ROTATION(8);
 
-		item->pos.z_rot -= 273;
+		item->pos.z_rot -= HALF_DEGREES_TO_ROTATION(3);
 
-		if (item->pos.z_rot < -2002)
-			item->pos.z_rot = -2002;
+		if (item->pos.z_rot < -DEGREES_TO_ROTATION(11))
+			item->pos.z_rot = -DEGREES_TO_ROTATION(11);
 	}
 	else if (input & IN_RIGHT)
 	{
-		lara.turn_rate += 409;
+		lara.turn_rate += LARA_TURN_INCREMENT;
 
-		if (lara.turn_rate > 1456)
-			lara.turn_rate = 1456;
+		if (lara.turn_rate > DEGREES_TO_ROTATION(8))
+			lara.turn_rate = DEGREES_TO_ROTATION(8);
 
-		item->pos.z_rot += 273;
+		item->pos.z_rot += HALF_DEGREES_TO_ROTATION(3);
 
-		if (item->pos.z_rot > 2002)
-			item->pos.z_rot = 2002;
+		if (item->pos.z_rot > DEGREES_TO_ROTATION(11))
+			item->pos.z_rot = DEGREES_TO_ROTATION(11);
 	}
 
 	if (item->anim_number == ANIM_STARTRUN)
@@ -3293,7 +3293,7 @@ void lara_col_run(ITEM_INFO* item, COLL_INFO* coll)
 {
 	lara.move_angle = item->pos.y_rot;
 	coll->bad_pos = -NO_HEIGHT;
-	coll->bad_neg = -384;
+	coll->bad_neg = -(CLICK_SIZE + HALF_CLICK_SIZE);
 	coll->bad_ceiling = 0;
 	coll->slopes_are_walls = 1;
 	GetLaraCollisionInfo(item, coll);
@@ -3308,7 +3308,7 @@ void lara_col_run(ITEM_INFO* item, COLL_INFO* coll)
 	{
 		item->pos.z_rot = 0;
 
-		if (item->anim_number != ANIM_STARTRUN && TestWall(item, 256, 0, -640))
+		if (item->anim_number != ANIM_STARTRUN && TestWall(item, CLICK_SIZE, 0, -(HALF_BLOCK_SIZE + HALF_CLICK_SIZE)))
 		{
 			item->current_anim_state = AS_SPLAT;
 
@@ -3333,9 +3333,9 @@ void lara_col_run(ITEM_INFO* item, COLL_INFO* coll)
 	if (LaraFallen(item, coll))
 		return;
 
-	if (coll->mid_floor >= -384 && coll->mid_floor < -128)
+	if (coll->mid_floor >= -(CLICK_SIZE + HALF_CLICK_SIZE) && coll->mid_floor < -HALF_CLICK_SIZE)
 	{
-		if (coll->front_floor == NO_HEIGHT || coll->front_floor < -384 || coll->front_floor >= -128)
+		if (coll->front_floor == NO_HEIGHT || coll->front_floor < -(CLICK_SIZE + HALF_CLICK_SIZE) || coll->front_floor >= -HALF_CLICK_SIZE)
 			coll->mid_floor = 0;
 		else
 		{
@@ -3370,17 +3370,17 @@ void lara_as_fastback(ITEM_INFO* item, COLL_INFO* coll)
 
 	if (input & IN_LEFT)
 	{
-		lara.turn_rate -= 409;
+		lara.turn_rate -= LARA_TURN_INCREMENT;
 
-		if (lara.turn_rate < -1092)
-			lara.turn_rate = -1092;
+		if (lara.turn_rate < -DEGREES_TO_ROTATION(6))
+			lara.turn_rate = -DEGREES_TO_ROTATION(6);
 	}
 	else if (input & IN_RIGHT)
 	{
-		lara.turn_rate += 409;
+		lara.turn_rate += LARA_TURN_INCREMENT;
 
-		if (lara.turn_rate > 1092)
-			lara.turn_rate = 1092;
+		if (lara.turn_rate > DEGREES_TO_ROTATION(6))
+			lara.turn_rate = DEGREES_TO_ROTATION(6);
 	}
 }
 
@@ -3388,11 +3388,11 @@ void lara_col_fastback(ITEM_INFO* item, COLL_INFO* coll)
 {
 	item->fallspeed = 0;
 	item->gravity_status = 0;
-	lara.move_angle = item->pos.y_rot + 32768;
+	lara.move_angle = item->pos.y_rot + 0x8000;
 	coll->slopes_are_walls = 0;
 	coll->slopes_are_pits = 1;
 	coll->bad_pos = -NO_HEIGHT;
-	coll->bad_neg = -384;
+	coll->bad_neg = -(CLICK_SIZE + HALF_CLICK_SIZE);
 	coll->bad_ceiling = 0;
 	GetLaraCollisionInfo(item, coll);
 
@@ -3428,14 +3428,14 @@ void lara_as_turn_r(ITEM_INFO* item, COLL_INFO* coll)
 		return;
 	}
 
-	lara.turn_rate += 409;
+	lara.turn_rate += LARA_TURN_INCREMENT;
 
 	if (lara.gun_status != LG_READY || lara.water_status == LW_WADE)
 	{
-		if (lara.turn_rate > 728)
+		if (lara.turn_rate > DEGREES_TO_ROTATION(4))
 		{
 			if (input & IN_WALK || lara.water_status == LW_WADE)
-				lara.turn_rate = 728;
+				lara.turn_rate = DEGREES_TO_ROTATION(4);
 			else
 				item->goal_anim_state = AS_FASTTURN;
 		}
@@ -3466,8 +3466,8 @@ void lara_col_turn_r(ITEM_INFO* item, COLL_INFO* coll)
 	lara.move_angle = item->pos.y_rot;
 	coll->slopes_are_walls = 1;
 	coll->slopes_are_pits = 1;
-	coll->bad_pos = 384;
-	coll->bad_neg = -384;
+	coll->bad_pos = (CLICK_SIZE + HALF_CLICK_SIZE);
+	coll->bad_neg = -(CLICK_SIZE + HALF_CLICK_SIZE);
 	coll->bad_ceiling = 0;
 	GetLaraCollisionInfo(item, coll);
 
@@ -3509,14 +3509,14 @@ void lara_as_turn_l(ITEM_INFO* item, COLL_INFO* coll)
 		return;
 	}
 
-	lara.turn_rate -= 409;
+	lara.turn_rate -= LARA_TURN_INCREMENT;
 
 	if (lara.gun_status != LG_READY || lara.water_status == LW_WADE)
 	{
-		if (lara.turn_rate < -728)
+		if (lara.turn_rate < -DEGREES_TO_ROTATION(4))
 		{
 			if (input & IN_WALK || lara.water_status == LW_WADE)
-				lara.turn_rate = -728;
+				lara.turn_rate = -DEGREES_TO_ROTATION(4);
 			else
 				item->goal_anim_state = AS_FASTTURN;
 		}
@@ -3548,14 +3548,14 @@ void lara_col_turn_l(ITEM_INFO* item, COLL_INFO* coll)
 void lara_as_death(ITEM_INFO* item, COLL_INFO* coll)
 {
 	lara.look = 0;
-	coll->enable_baddie_push = 0;
-	coll->enable_spaz = 0;
+	coll->enable_baddie_push = false;
+	coll->enable_spaz = false;
 
 	if (BinocularRange)
 	{
 		BinocularRange = 0;
 		LaserSight = 0;
-		AlterFOV(14560);
+		AlterFOV(DEGREES_TO_ROTATION(DEFAULT_FOV));
 		lara_item->mesh_bits = -1;
 		lara.Busy = 0;
 	}
@@ -3565,8 +3565,8 @@ void lara_col_death(ITEM_INFO* item, COLL_INFO* coll)
 {
 	StopSoundEffect(SFX_LARA_FALL);
 	lara.move_angle = item->pos.y_rot;
-	coll->bad_pos = 384;
-	coll->bad_neg = -384;
+	coll->bad_pos = (CLICK_SIZE + HALF_CLICK_SIZE);
+	coll->bad_neg = -(CLICK_SIZE + HALF_CLICK_SIZE);
 	coll->bad_ceiling = 0;
 	coll->radius = 400;
 	GetLaraCollisionInfo(item, coll);
@@ -3593,7 +3593,7 @@ void lara_col_fastfall(ITEM_INFO* item, COLL_INFO* coll)
 {
 	item->gravity_status = 1;
 	coll->bad_pos = -NO_HEIGHT;
-	coll->bad_neg = -384;
+	coll->bad_neg = -(CLICK_SIZE + HALF_CLICK_SIZE);
 	coll->bad_ceiling = 192;
 	GetLaraCollisionInfo(item, coll);
 	LaraSlideEdgeJump(item, coll);
@@ -3663,7 +3663,7 @@ void lara_as_stop(ITEM_INFO* item, COLL_INFO* coll)
 	if (input & IN_FORWARD)
 		fheight = LaraFloorFront(item, item->pos.y_rot, 104);
 	else if (input & IN_BACK)
-		rheight = LaraFloorFront(item, item->pos.y_rot + 32768, 104);
+		rheight = LaraFloorFront(item, item->pos.y_rot + 0x8000, 104);
 
 
 	if (T4PlusIsRoomSwamp(&room[item->room_number]))
@@ -3677,16 +3677,16 @@ void lara_as_stop(ITEM_INFO* item, COLL_INFO* coll)
 	{
 		if (input & IN_LSTEP)
 		{
-			height = LaraFloorFront(item, item->pos.y_rot - 16384, 116);
-			ceiling = LaraCeilingFront(item, item->pos.y_rot - 16384, 116, 762);
+			height = LaraFloorFront(item, item->pos.y_rot - 0x4000, 116);
+			ceiling = LaraCeilingFront(item, item->pos.y_rot - 0x4000, 116, 762);
 
 			if (height < 128 && height > -128 && height_type != BIG_SLOPE && ceiling <= 0)
 				item->goal_anim_state = AS_STEPLEFT;
 		}
 		else if (input & IN_RSTEP)
 		{
-			height = LaraFloorFront(item, item->pos.y_rot + 16384, 116);
-			ceiling = LaraCeilingFront(item, item->pos.y_rot + 16384, 116, 762);
+			height = LaraFloorFront(item, item->pos.y_rot + 0x4000, 116);
+			ceiling = LaraCeilingFront(item, item->pos.y_rot + 0x4000, 116, 762);
 
 			if (height < 128 && height > -128 && height_type != BIG_SLOPE && ceiling <= 0)
 				item->goal_anim_state = AS_STEPRIGHT;
@@ -3724,7 +3724,7 @@ void lara_as_stop(ITEM_INFO* item, COLL_INFO* coll)
 			{
 				lara.move_angle = item->pos.y_rot;
 				coll->bad_pos = -NO_HEIGHT;
-				coll->bad_neg = -384;
+				coll->bad_neg = -(CLICK_SIZE + HALF_CLICK_SIZE);
 				coll->bad_ceiling = 0;
 				coll->radius = 102;
 				coll->slopes_are_walls = 1;
@@ -3750,7 +3750,7 @@ void lara_as_stop(ITEM_INFO* item, COLL_INFO* coll)
 			return;
 		}
 
-		if (height >= -256 || fheight >= -256)
+		if (height >= -CLICK_SIZE || fheight >= -CLICK_SIZE)
 		{
 			if (input & IN_WALK)
 				lara_as_walk(item, coll);
@@ -3761,7 +3761,7 @@ void lara_as_stop(ITEM_INFO* item, COLL_INFO* coll)
 		{
 			lara.move_angle = item->pos.y_rot;
 			coll->bad_pos = -NO_HEIGHT;
-			coll->bad_neg = -384;
+			coll->bad_neg = -(CLICK_SIZE + HALF_CLICK_SIZE);
 			coll->bad_ceiling = 0;
 			coll->radius = 102;
 			coll->slopes_are_walls = 1;
@@ -3789,8 +3789,8 @@ void lara_as_stop(ITEM_INFO* item, COLL_INFO* coll)
 void lara_col_stop(ITEM_INFO* item, COLL_INFO* coll)
 {
 	lara.move_angle = item->pos.y_rot;
-	coll->bad_pos = 384;
-	coll->bad_neg = -384;
+	coll->bad_pos = (CLICK_SIZE + HALF_CLICK_SIZE);
+	coll->bad_neg = -(CLICK_SIZE + HALF_CLICK_SIZE);
 	coll->bad_ceiling = 0;
 	item->gravity_status = 0;
 	item->fallspeed = 0;
@@ -3845,10 +3845,10 @@ void lara_col_upjump(ITEM_INFO* item, COLL_INFO* coll)
 
 	lara.move_angle = item->pos.y_rot;
 	coll->bad_pos = -NO_HEIGHT;
-	coll->bad_neg = -384;
+	coll->bad_neg = -(CLICK_SIZE + HALF_CLICK_SIZE);
 	coll->bad_ceiling = 192;
 	coll->hit_ceiling = 0;
-	coll->facing = item->speed >= 0 ? lara.move_angle : lara.move_angle - 32768;
+	coll->facing = item->speed >= 0 ? lara.move_angle : lara.move_angle - 0x8000;
 	GetCollisionInfo(coll, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, 870);
 
 	if (input & IN_ACTION && lara.gun_status == LG_NO_ARMS && !coll->hit_static)
@@ -3867,7 +3867,7 @@ void lara_col_upjump(ITEM_INFO* item, COLL_INFO* coll)
 			return;
 		}
 
-		if (coll->coll_type == CT_FRONT && coll->mid_ceiling <= -384)
+		if (coll->coll_type == CT_FRONT && coll->mid_ceiling <= -(CLICK_SIZE + HALF_CLICK_SIZE))
 		{
 			edge_catch = LaraTestEdgeCatch(item, coll, &edge);
 
@@ -3875,14 +3875,14 @@ void lara_col_upjump(ITEM_INFO* item, COLL_INFO* coll)
 			{
 				angle = item->pos.y_rot;
 
-				if (angle >= -6370 && angle <= 6370)
+				if (angle >= -DEGREES_TO_ROTATION(35) && angle <= DEGREES_TO_ROTATION(35))
 					angle = 0;
 				else if (angle >= 10014 && angle <= 22754)
-					angle = 16384;
+					angle = 0x4000;
 				else if (angle >= 26397 || angle <= -26397)
-					angle = -32768;
+					angle = -0x8000;
 				else if (angle >= -22754 && angle <= -10014)
-					angle = -16384;
+					angle = -0x4000;
 
 				if (!(angle & 0x3FFF))
 				{
@@ -3978,29 +3978,29 @@ void lara_as_forwardjump(ITEM_INFO* item, COLL_INFO* coll)
 
 	if (input & IN_LEFT)
 	{
-		lara.turn_rate -= 409;
+		lara.turn_rate -= LARA_TURN_INCREMENT;
 
-		if (lara.turn_rate < -546)
-			lara.turn_rate = -546;
+		if (lara.turn_rate < -DEGREES_TO_ROTATION(3))
+			lara.turn_rate = -DEGREES_TO_ROTATION(3);
 	}
 	else if (input & IN_RIGHT)
 	{
-		lara.turn_rate += 409;
+		lara.turn_rate += LARA_TURN_INCREMENT;
 
-		if (lara.turn_rate >= 546)
-			lara.turn_rate = 546;
+		if (lara.turn_rate >= DEGREES_TO_ROTATION(3))
+			lara.turn_rate = DEGREES_TO_ROTATION(3);
 	}
 }
 
 void lara_col_forwardjump(ITEM_INFO* item, COLL_INFO* coll)
 {
 	if (item->speed < 0)
-		lara.move_angle = item->pos.y_rot + 32768;
+		lara.move_angle = item->pos.y_rot + 0x8000;
 	else
 		lara.move_angle = item->pos.y_rot;
 
 	coll->bad_pos = -NO_HEIGHT;
-	coll->bad_neg = -384;
+	coll->bad_neg = -(CLICK_SIZE + HALF_CLICK_SIZE);
 	coll->bad_ceiling = 192;
 	GetLaraCollisionInfo(item, coll);
 	LaraDeflectEdgeJump(item, coll);
@@ -4038,7 +4038,7 @@ void lara_col_forwardjump(ITEM_INFO* item, COLL_INFO* coll)
 
 void lara_as_reach(ITEM_INFO* item, COLL_INFO* coll)
 {
-	camera.target_angle = 15470;
+	camera.target_angle = DEGREES_TO_ROTATION(85);
 
 	if (item->fallspeed > 131)
 		item->goal_anim_state = AS_FASTFALL;
@@ -4078,7 +4078,7 @@ void lara_col_reach(ITEM_INFO* item, COLL_INFO* coll)
 			return;
 		}
 
-		if (coll->mid_ceiling <= -384 && coll->mid_floor >= 200 && coll->coll_type == CT_FRONT)
+		if (coll->mid_ceiling <= -(CLICK_SIZE + HALF_CLICK_SIZE) && coll->mid_floor >= 200 && coll->coll_type == CT_FRONT)
 		{
 			edge_catch = LaraTestEdgeCatch(item, coll, &edge);
 
@@ -4086,14 +4086,14 @@ void lara_col_reach(ITEM_INFO* item, COLL_INFO* coll)
 			{
 				angle = item->pos.y_rot;
 
-				if (angle >= -6370 && angle <= 6370)
+				if (angle >= -DEGREES_TO_ROTATION(35) && angle <= DEGREES_TO_ROTATION(35))
 					angle = 0;
 				else if (angle >= 10014 && angle <= 22754)
-					angle = 16384;
+					angle = 0x4000;
 				else if (angle >= 26397 || angle <= -26397)
-					angle = -32768;
+					angle = -0x8000;
 				else if (angle >= -22754 && angle <= -10014)
-					angle = -16384;
+					angle = -0x4000;
 
 				if (!(angle & 0x3FFF))
 				{
@@ -4189,8 +4189,8 @@ void lara_col_polestat(ITEM_INFO* item, COLL_INFO* coll)
 		return;
 	}
 
-	coll->enable_spaz = 0;
-	coll->enable_baddie_push = 0;
+	coll->enable_spaz = false;
+	coll->enable_baddie_push = false;
 
 	if (item->frame_number == anims[327].frame_end - 1)		//jumping off
 		lara.gun_status = LG_NO_ARMS;
@@ -4199,7 +4199,7 @@ void lara_col_polestat(ITEM_INFO* item, COLL_INFO* coll)
 		return;
 
 	coll->bad_pos = -NO_HEIGHT;
-	coll->bad_neg = -384;
+	coll->bad_neg = -(CLICK_SIZE + HALF_CLICK_SIZE);
 	coll->bad_ceiling = 192;
 	lara.move_angle = item->pos.y_rot;
 	coll->facing = lara.move_angle;
@@ -4224,7 +4224,7 @@ void lara_col_polestat(ITEM_INFO* item, COLL_INFO* coll)
 			room_num = item->room_number;
 
 			if (item->pos.y_pos - GetCeiling(GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_num),
-				item->pos.x_pos, item->pos.y_pos, item->pos.z_pos) > 1024)
+				item->pos.x_pos, item->pos.y_pos, item->pos.z_pos) > BLOCK_SIZE)
 				item->goal_anim_state = AS_POLEUP;
 		}
 		else if (input & IN_BACK && coll->mid_floor > 0)
@@ -4241,39 +4241,39 @@ void lara_col_polestat(ITEM_INFO* item, COLL_INFO* coll)
 	else
 	{
 		item->goal_anim_state = AS_FASTFALL;
-		item->pos.x_pos -= (64 * phd_sin(item->pos.y_rot)) >> W2V_SHIFT;
-		item->pos.z_pos -= (64 * phd_cos(item->pos.y_rot)) >> W2V_SHIFT;
+		item->pos.x_pos -= (QUARTER_CLICK_SIZE * phd_sin(item->pos.y_rot)) >> W2V_SHIFT;
+		item->pos.z_pos -= (QUARTER_CLICK_SIZE * phd_cos(item->pos.y_rot)) >> W2V_SHIFT;
 	}
 }
 
 void lara_as_poleleft(ITEM_INFO* item, COLL_INFO* coll)
 {
-	coll->enable_baddie_push = 0;
-	coll->enable_spaz = 0;
+	coll->enable_baddie_push = false;
+	coll->enable_spaz = false;
 
 	if (((input & (IN_LEFT | IN_ACTION)) != (IN_LEFT | IN_ACTION)) || input & (IN_FORWARD | IN_BACK) || item->hit_points <= 0)
 		item->goal_anim_state = AS_POLESTAT;
 	else
-		item->pos.y_rot += 256;
+		item->pos.y_rot += CLICK_SIZE;
 }
 
 void lara_as_poleright(ITEM_INFO* item, COLL_INFO* coll)
 {
-	coll->enable_baddie_push = 0;
-	coll->enable_spaz = 0;
+	coll->enable_baddie_push = false;
+	coll->enable_spaz = false;
 
 	if (((input & (IN_RIGHT | IN_ACTION)) != (IN_RIGHT | IN_ACTION)) || input & (IN_FORWARD | IN_BACK) || item->hit_points <= 0)
 		item->goal_anim_state = AS_POLESTAT;
 	else
-		item->pos.y_rot -= 256;
+		item->pos.y_rot -= CLICK_SIZE;
 }
 
 void lara_col_poleup(ITEM_INFO* item, COLL_INFO* coll)
 {
 	short room_num;
 
-	coll->enable_baddie_push = 0;
-	coll->enable_spaz = 0;
+	coll->enable_baddie_push = false;
+	coll->enable_spaz = false;
 
 	if (input & IN_LOOK)
 		LookUpDown();
@@ -4284,7 +4284,7 @@ void lara_col_poleup(ITEM_INFO* item, COLL_INFO* coll)
 	room_num = item->room_number;
 
 	if (item->pos.y_pos - GetCeiling(GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_num),
-		item->pos.x_pos, item->pos.y_pos, item->pos.z_pos) < 1024)
+		item->pos.x_pos, item->pos.y_pos, item->pos.z_pos) < BLOCK_SIZE)
 		item->goal_anim_state = AS_POLESTAT;
 }
 
@@ -4292,8 +4292,8 @@ void lara_col_poledown(ITEM_INFO* item, COLL_INFO* coll)
 {
 	short room_number;
 
-	coll->enable_spaz = 0;
-	coll->enable_baddie_push = 0;
+	coll->enable_spaz = false;
+	coll->enable_baddie_push = false;
 
 	if (input & IN_LOOK)
 		LookUpDown();
@@ -4320,24 +4320,24 @@ void lara_col_poledown(ITEM_INFO* item, COLL_INFO* coll)
 	}
 
 	if (input & IN_LEFT)
-		item->pos.y_rot += 256;
+		item->pos.y_rot += CLICK_SIZE;
 	else if (input & IN_RIGHT)
-		item->pos.y_rot -= 256;
+		item->pos.y_rot -= CLICK_SIZE;
 
 	if (item->anim_number == ANIM_POLESLIDEE)
-		item->item_flags[2] -= 1024;
+		item->item_flags[2] -= BLOCK_SIZE;
 	else
-		item->item_flags[2] += 256;
+		item->item_flags[2] += CLICK_SIZE;
 
 	SoundEffect(SFX_LARA_POLE_LOOP, &item->pos, SFX_DEFAULT);
 
-	if (item->item_flags[2] <= 16384)
+	if (item->item_flags[2] <= 0x4000)
 	{
 		if (item->item_flags[2] < 0)
 			item->item_flags[2] = 0;
 	}
 	else
-		item->item_flags[2] = 16384;
+		item->item_flags[2] = 0x4000;
 
 	item->pos.y_pos += item->item_flags[2] >> 8;
 }
@@ -4385,7 +4385,7 @@ void lara_as_ropel(ITEM_INFO* item, COLL_INFO* coll)
 	if (input & IN_ACTION)
 	{
 		if (input & IN_LEFT)
-			lara.RopeY += 256;
+			lara.RopeY += CLICK_SIZE;
 		else
 			item->goal_anim_state = AS_ROPE;
 	}
@@ -4398,7 +4398,7 @@ void lara_as_roper(ITEM_INFO* item, COLL_INFO* coll)
 	if (input & IN_ACTION)
 	{
 		if (input & IN_RIGHT)
-			lara.RopeY -= 256;
+			lara.RopeY -= CLICK_SIZE;
 		else
 			item->goal_anim_state = AS_ROPE;
 	}
@@ -4410,7 +4410,7 @@ void lara_col_ropefwd(ITEM_INFO* item, COLL_INFO* coll)
 {
 	long Vel;
 
-	camera.target_distance = 2048;
+	camera.target_distance = (BLOCK_SIZE * 2);
 	UpdateRopeSwing(item);
 
 	if (item->anim_number == ANIM_SWINGFWD)
@@ -4464,7 +4464,7 @@ void lara_as_climbrope(ITEM_INFO* item, COLL_INFO* coll)
 		FallFromRope(item);
 	else
 	{
-		camera.target_angle = 5460;
+		camera.target_angle = DEGREES_TO_ROTATION(30);
 
 		if (anims[item->anim_number].frame_end == item->frame_number)
 		{
@@ -4481,7 +4481,7 @@ void lara_as_climbroped(ITEM_INFO* item, COLL_INFO* coll)
 {
 	if (input & IN_ACTION)
 	{
-		camera.target_angle = 5460;
+		camera.target_angle = DEGREES_TO_ROTATION(30);
 
 		if (lara.RopeCount)
 		{
@@ -4547,7 +4547,7 @@ void lara_col_jumper(ITEM_INFO* item, COLL_INFO* coll)
 void lara_slide_slope(ITEM_INFO* item, COLL_INFO* coll)
 {
 	coll->bad_pos = -NO_HEIGHT;
-	coll->bad_neg = -512;
+	coll->bad_neg = -HALF_BLOCK_SIZE;
 	coll->bad_ceiling = 0;
 	GetLaraCollisionInfo(item, coll);
 
@@ -4594,12 +4594,12 @@ void ResetLook()
 {
 	if (camera.type != LOOK_CAMERA)
 	{
-		if (lara.head_x_rot > -364 && lara.head_x_rot < 364)
+		if (lara.head_x_rot > -DEGREES_TO_ROTATION(2) && lara.head_x_rot < DEGREES_TO_ROTATION(2))
 			lara.head_x_rot = 0;
 		else
 			lara.head_x_rot -= lara.head_x_rot / 8;
 
-		if (lara.head_y_rot > -364 && lara.head_y_rot < 364)
+		if (lara.head_y_rot > -DEGREES_TO_ROTATION(2) && lara.head_y_rot < DEGREES_TO_ROTATION(2))
 			lara.head_y_rot = 0;
 		else
 			lara.head_y_rot -= lara.head_y_rot / 8;
@@ -4622,24 +4622,24 @@ void LookUpDown()
 		{
 			input -= IN_FORWARD;
 
-			if (lara.head_x_rot > -6370)
+			if (lara.head_x_rot > -DEGREES_TO_ROTATION(35))
 			{
 				if (BinocularRange)
-					lara.head_x_rot -= short(364 * (1792 - BinocularRange) / 3072);
+					lara.head_x_rot -= short(DEGREES_TO_ROTATION(2) * (1792 - BinocularRange) / 3072);
 				else
-					lara.head_x_rot -= 364;
+					lara.head_x_rot -= DEGREES_TO_ROTATION(2);
 			}
 		}
 		else if (input & IN_BACK)
 		{
 			input -= IN_BACK;
 
-			if (lara.head_x_rot < 5460)
+			if (lara.head_x_rot < DEGREES_TO_ROTATION(30))
 			{
 				if (BinocularRange)
-					lara.head_x_rot += short(364 * (1792 - BinocularRange) / 3072);
+					lara.head_x_rot += short(DEGREES_TO_ROTATION(2) * (1792 - BinocularRange) / 3072);
 				else
-					lara.head_x_rot += 364;
+					lara.head_x_rot += DEGREES_TO_ROTATION(2);
 			}
 		}
 
@@ -4661,9 +4661,9 @@ void LookLeftRight()
 			if (lara.head_y_rot > -8008)
 			{
 				if (BinocularRange)
-					lara.head_y_rot -= short(364 * (1792 - BinocularRange) / 1536);
+					lara.head_y_rot -= short(DEGREES_TO_ROTATION(2) * (1792 - BinocularRange) / 1536);
 				else
-					lara.head_y_rot -= 364;
+					lara.head_y_rot -= DEGREES_TO_ROTATION(2);
 			}
 		}
 		else if (input & IN_RIGHT)
@@ -4673,9 +4673,9 @@ void LookLeftRight()
 			if (lara.head_y_rot < 8008)
 			{
 				if (BinocularRange)
-					lara.head_y_rot += short(364 * (1792 - BinocularRange) / 1536);
+					lara.head_y_rot += short(DEGREES_TO_ROTATION(2) * (1792 - BinocularRange) / 1536);
 				else
-					lara.head_y_rot += 364;
+					lara.head_y_rot += DEGREES_TO_ROTATION(2);
 			}
 		}
 
@@ -4788,14 +4788,14 @@ void LaraDeflectEdgeJump(ITEM_INFO* item, COLL_INFO* coll)
 
 		if (!lara.climb_status || item->speed != 2)
 		{
-			if (coll->mid_floor > 512)
+			if (coll->mid_floor > HALF_BLOCK_SIZE)
 			{
 				item->current_anim_state = AS_FASTFALL;
 				item->goal_anim_state = AS_FASTFALL;
 				item->anim_number = ANIM_FASTSPLAT;
 				item->frame_number = anims[ANIM_FASTSPLAT].frame_base + 1;
 			}
-			else if (coll->mid_floor <= 128)
+			else if (coll->mid_floor <= HALF_CLICK_SIZE)
 			{
 				item->current_anim_state = AS_LAND;
 				item->goal_anim_state = AS_LAND;
@@ -4813,11 +4813,11 @@ void LaraDeflectEdgeJump(ITEM_INFO* item, COLL_INFO* coll)
 		break;
 
 	case CT_LEFT:
-		item->pos.y_rot += 910;
+		item->pos.y_rot += DEGREES_TO_ROTATION(5);
 		break;
 
 	case CT_RIGHT:
-		item->pos.y_rot -= 910;
+		item->pos.y_rot -= DEGREES_TO_ROTATION(5);
 		break;
 
 	case CT_TOP:
@@ -4883,7 +4883,7 @@ static long IsValidHangPos(ITEM_INFO* item, COLL_INFO* coll)
 		}
 
 		coll->bad_pos = -NO_HEIGHT;
-		coll->bad_neg = -512;
+		coll->bad_neg = -HALF_BLOCK_SIZE;
 		coll->bad_ceiling = 0;
 		lara.move_angle = item->pos.y_rot;
 		GetLaraCollisionInfo(item, coll);
@@ -4963,13 +4963,13 @@ long LaraHangRightCornerTest(ITEM_INFO* item, COLL_INFO* coll)
 	{
 	case NORTH:
 	case SOUTH:
-		x = oldx ^ ((ushort)oldx ^ (ushort)oldz) & 1023;
-		z = oldz ^ ((ushort)oldx ^ (ushort)oldz) & 1023;
+		x = oldx ^ ((ushort)oldx ^ (ushort)oldz) & (BLOCK_SIZE - 1);
+		z = oldz ^ ((ushort)oldx ^ (ushort)oldz) & (BLOCK_SIZE - 1);
 		break;
 
 	default:
-		x = (oldx & ~1023) - (oldz & 1023) + 1024;
-		z = (oldz & ~1023) - (oldx & 1023) + 1024;
+		x = (oldx & ~(BLOCK_SIZE - 1)) - (oldz & (BLOCK_SIZE - 1)) + BLOCK_SIZE;
+		z = (oldz & ~(BLOCK_SIZE - 1)) - (oldx & (BLOCK_SIZE - 1)) + BLOCK_SIZE;
 		break;
 	}
 
@@ -5004,23 +5004,23 @@ long LaraHangRightCornerTest(ITEM_INFO* item, COLL_INFO* coll)
 		switch (angle)
 		{
 		case NORTH:
-			x = ((item->pos.x_pos + 1024) & ~1023) - (item->pos.z_pos & 1023) + 1024;
-			z = ((item->pos.z_pos + 1024) & ~1023) - (item->pos.x_pos & 1023) + 1024;
+			x = ((item->pos.x_pos + BLOCK_SIZE) & ~(BLOCK_SIZE - 1)) - (item->pos.z_pos & (BLOCK_SIZE - 1)) + BLOCK_SIZE;
+			z = ((item->pos.z_pos + BLOCK_SIZE) & ~(BLOCK_SIZE - 1)) - (item->pos.x_pos & (BLOCK_SIZE - 1)) + BLOCK_SIZE;
 			break;
 
 		case SOUTH:
-			x = ((item->pos.x_pos - 1024) & ~1023) - (item->pos.z_pos & 1023) + 1024;
-			z = ((item->pos.z_pos - 1024) & ~1023) - (item->pos.x_pos & 1023) + 1024;
+			x = ((item->pos.x_pos - BLOCK_SIZE) & ~(BLOCK_SIZE - 1)) - (item->pos.z_pos & (BLOCK_SIZE - 1)) + BLOCK_SIZE;
+			z = ((item->pos.z_pos - BLOCK_SIZE) & ~(BLOCK_SIZE - 1)) - (item->pos.x_pos & (BLOCK_SIZE - 1)) + BLOCK_SIZE;
 			break;
 
 		case WEST:
-			x = (item->pos.x_pos ^ ((ushort)item->pos.x_pos ^ (ushort)item->pos.z_pos) & 1023) - 1024;
-			z = ((ushort)item->pos.x_pos ^ (ushort)item->pos.z_pos) & 1023 ^ (item->pos.z_pos + 1024);
+			x = (item->pos.x_pos ^ ((ushort)item->pos.x_pos ^ (ushort)item->pos.z_pos) & (BLOCK_SIZE - 1)) - BLOCK_SIZE;
+			z = ((ushort)item->pos.x_pos ^ (ushort)item->pos.z_pos) & (BLOCK_SIZE - 1) ^ (item->pos.z_pos + BLOCK_SIZE);
 			break;
 
 		default:
-			x = (((ushort)item->pos.x_pos ^ (ushort)item->pos.z_pos) & 1023) ^ (item->pos.x_pos + 1024);
-			z = (item->pos.z_pos ^ (((ushort)item->pos.x_pos ^ (ushort)item->pos.z_pos) & 1023)) - 1024;
+			x = (((ushort)item->pos.x_pos ^ (ushort)item->pos.z_pos) & (BLOCK_SIZE - 1)) ^ (item->pos.x_pos + BLOCK_SIZE);
+			z = (item->pos.z_pos ^ (((ushort)item->pos.x_pos ^ (ushort)item->pos.z_pos) & (BLOCK_SIZE - 1))) - BLOCK_SIZE;
 			break;
 		}
 
@@ -5056,28 +5056,28 @@ long LaraHangRightCornerTest(ITEM_INFO* item, COLL_INFO* coll)
 					{
 					case NORTH:
 
-						if ((oldx & 1023) < 512)
+						if ((oldx & (BLOCK_SIZE - 1)) < HALF_BLOCK_SIZE)
 							flag = 0;
 
 						break;
 
 					case EAST:
 
-						if ((oldz & 1023) > 512)
+						if ((oldz & (BLOCK_SIZE - 1)) > HALF_BLOCK_SIZE)
 							flag = 0;
 
 						break;
 
 					case SOUTH:
 
-						if ((oldx & 1023) > 512)
+						if ((oldx & (BLOCK_SIZE - 1)) > HALF_BLOCK_SIZE)
 							flag = 0;
 
 						break;
 
 					case WEST:
 
-						if ((oldz & 1023) < 512)
+						if ((oldz & (BLOCK_SIZE - 1)) < HALF_BLOCK_SIZE)
 							flag = 0;
 
 						break;
@@ -5116,13 +5116,13 @@ long LaraHangLeftCornerTest(ITEM_INFO* item, COLL_INFO* coll)
 	{
 	case NORTH:
 	case SOUTH:
-		x = (oldx & ~1023) - (oldz & 1023) + 1024;
-		z = (oldz & ~1023) - (oldx & 1023) + 1024;
+		x = (oldx & ~(BLOCK_SIZE - 1)) - (oldz & (BLOCK_SIZE - 1)) + BLOCK_SIZE;
+		z = (oldz & ~(BLOCK_SIZE - 1)) - (oldx & (BLOCK_SIZE - 1)) + BLOCK_SIZE;
 		break;
 
 	default:
-		x = oldx ^ ((ushort)oldx ^ (ushort)oldz) & 1023;
-		z = oldz ^ ((ushort)oldx ^ (ushort)oldz) & 1023;
+		x = oldx ^ ((ushort)oldx ^ (ushort)oldz) & (BLOCK_SIZE - 1);
+		z = oldz ^ ((ushort)oldx ^ (ushort)oldz) & (BLOCK_SIZE - 1);
 		break;
 	}
 
@@ -5157,23 +5157,23 @@ long LaraHangLeftCornerTest(ITEM_INFO* item, COLL_INFO* coll)
 		switch (angle)
 		{
 		case NORTH:
-			x = (item->pos.x_pos ^ ((ushort)item->pos.x_pos ^ (ushort)item->pos.z_pos) & 1023) - 1024;
-			z = ((ushort)item->pos.x_pos ^ (ushort)item->pos.z_pos) & 1023 ^ (item->pos.z_pos + 1024);
+			x = (item->pos.x_pos ^ ((ushort)item->pos.x_pos ^ (ushort)item->pos.z_pos) & (BLOCK_SIZE - 1)) - BLOCK_SIZE;
+			z = ((ushort)item->pos.x_pos ^ (ushort)item->pos.z_pos) & (BLOCK_SIZE - 1) ^ (item->pos.z_pos + BLOCK_SIZE);
 			break;
 
 		case SOUTH:
-			x = (((ushort)item->pos.x_pos ^ (ushort)item->pos.z_pos) & 1023) ^ (item->pos.x_pos + 1024);
-			z = (((ushort)item->pos.x_pos ^ (ushort)item->pos.z_pos) & 1023) ^ (item->pos.z_pos - 1024);
+			x = (((ushort)item->pos.x_pos ^ (ushort)item->pos.z_pos) & (BLOCK_SIZE - 1)) ^ (item->pos.x_pos + BLOCK_SIZE);
+			z = (((ushort)item->pos.x_pos ^ (ushort)item->pos.z_pos) & (BLOCK_SIZE - 1)) ^ (item->pos.z_pos - BLOCK_SIZE);
 			break;
 
 		case WEST:
-			x = (item->pos.x_pos & ~1023) - (item->pos.z_pos & 1023);
-			z = (item->pos.z_pos & ~1023) - (item->pos.x_pos & 1023);
+			x = (item->pos.x_pos & ~(BLOCK_SIZE - 1)) - (item->pos.z_pos & (BLOCK_SIZE - 1));
+			z = (item->pos.z_pos & ~(BLOCK_SIZE - 1)) - (item->pos.x_pos & (BLOCK_SIZE - 1));
 			break;
 
 		default:
-			x = ((item->pos.x_pos + 1024) & ~1023) - (item->pos.z_pos & 1023) + 1024;
-			z = ((item->pos.z_pos + 1024) & ~1023) - (item->pos.x_pos & 1023) + 1024;
+			x = ((item->pos.x_pos + BLOCK_SIZE) & ~(BLOCK_SIZE - 1)) - (item->pos.z_pos & (BLOCK_SIZE - 1)) + BLOCK_SIZE;
+			z = ((item->pos.z_pos + BLOCK_SIZE) & ~(BLOCK_SIZE - 1)) - (item->pos.x_pos & (BLOCK_SIZE - 1)) + BLOCK_SIZE;
 			break;
 		}
 
@@ -5209,28 +5209,28 @@ long LaraHangLeftCornerTest(ITEM_INFO* item, COLL_INFO* coll)
 					{
 					case NORTH:
 
-						if ((oldx & 1023) > 512)
+						if ((oldx & (BLOCK_SIZE - 1)) > HALF_BLOCK_SIZE)
 							flag = 0;
 
 						break;
 
 					case EAST:
 
-						if ((oldz & 1023) < 512)
+						if ((oldz & (BLOCK_SIZE - 1)) < HALF_BLOCK_SIZE)
 							flag = 0;
 
 						break;
 
 					case SOUTH:
 
-						if ((oldx & 1023) < 512)
+						if ((oldx & (BLOCK_SIZE - 1)) < HALF_BLOCK_SIZE)
 							flag = 0;
 
 						break;
 
 					case WEST:
 
-						if ((oldz & 1023) > 512)
+						if ((oldz & (BLOCK_SIZE - 1)) > HALF_BLOCK_SIZE)
 							flag = 0;
 
 						break;
@@ -5258,11 +5258,11 @@ void LaraSlideEdgeJump(ITEM_INFO* item, COLL_INFO* coll)
 	switch (coll->coll_type)
 	{
 	case CT_LEFT:
-		item->pos.y_rot += 910;
+		item->pos.y_rot += DEGREES_TO_ROTATION(5);
 		break;
 
 	case CT_RIGHT:
-		item->pos.y_rot -= 910;
+		item->pos.y_rot -= DEGREES_TO_ROTATION(5);
 		break;
 
 	case CT_TOP:
@@ -5274,8 +5274,8 @@ void LaraSlideEdgeJump(ITEM_INFO* item, COLL_INFO* coll)
 		break;
 
 	case CT_CLAMP:
-		item->pos.z_pos -= (100 * phd_cos(coll->facing)) >> 14;
-		item->pos.x_pos -= (100 * phd_sin(coll->facing)) >> 14;
+		item->pos.z_pos -= (100 * phd_cos(coll->facing)) >> W2V_SHIFT;
+		item->pos.x_pos -= (100 * phd_sin(coll->facing)) >> W2V_SHIFT;
 		item->speed = 0;
 		coll->mid_floor = 0;
 
@@ -5355,7 +5355,7 @@ void UpdateRopeSwing(ITEM_INFO* item)
 			lara.RopeDFrame = (15 * lara.RopeMaxXBackward / 18000 + anims[ANIM_SWINGFWD].frame_base + 47) << 8;
 			lara.RopeFrameRate = 15 * lara.RopeMaxXBackward / 9000 + 1;
 		}
-		else if (lara.RopeFrameRate < 512)
+		else if (lara.RopeFrameRate < HALF_BLOCK_SIZE)
 			lara.RopeFrameRate += (LegsSwinging ? 31 : 7) * lara.RopeMaxXBackward / 9000 + 1;
 	}
 	else if (item->pos.x_rot < 0 && item->pos.x_rot - lara.RopeLastX > 100)
@@ -5381,7 +5381,7 @@ void UpdateRopeSwing(ITEM_INFO* item)
 		lara.RopeDFrame = (anims[ANIM_SWINGFWD].frame_base - 15 * lara.RopeMaxXForward / 18000 + 17) << 8;
 		lara.RopeFrameRate = 15 * lara.RopeMaxXForward / 9000 + 1;
 	}
-	else if (lara.RopeFrameRate < 512)
+	else if (lara.RopeFrameRate < HALF_BLOCK_SIZE)
 		lara.RopeFrameRate += (LegsSwinging ? 31 : 7) * lara.RopeMaxXForward / 9000 + 1;
 
 	lara.RopeLastX = item->pos.x_rot;
@@ -5501,9 +5501,9 @@ long LaraTestEdgeCatch(ITEM_INFO* item, COLL_INFO* coll, long* edge)
 		return 0;
 
 	if (item->fallspeed > 0)
-		*edge = (hdif + item->fallspeed) & ~255;
+		*edge = (hdif + item->fallspeed) & ~(CLICK_SIZE - 1);
 	else
-		*edge = hdif & ~255;
+		*edge = hdif & ~(CLICK_SIZE - 1);
 
 	return -1;
 }
@@ -5522,19 +5522,19 @@ long TestHangSwingIn(ITEM_INFO* item, short angle)
 	switch (angle)
 	{
 	case 0:
-		z += 256;
+		z += CLICK_SIZE;
 		break;
 
 	case 0x4000:
-		x += 256;
+		x += CLICK_SIZE;
 		break;
 
 	case -0x4000:
-		x -= 256;
+		x -= CLICK_SIZE;
 		break;
 
 	case -0x8000:
-		z -= 256;
+		z -= CLICK_SIZE;
 		break;
 	}
 
@@ -5557,13 +5557,13 @@ long LaraDeflectEdge(ITEM_INFO* item, COLL_INFO* coll)
 	else if (coll->coll_type == CT_LEFT)
 	{
 		ShiftItem(item, coll);
-		item->pos.y_rot += 910;
+		item->pos.y_rot += DEGREES_TO_ROTATION(5);
 		return 0;
 	}
 	else if (coll->coll_type == CT_RIGHT)
 	{
 		ShiftItem(item, coll);
-		item->pos.y_rot -= 910;
+		item->pos.y_rot -= DEGREES_TO_ROTATION(5);
 	}
 
 	return 0;
@@ -5579,7 +5579,7 @@ long TestLaraVault(ITEM_INFO* item, COLL_INFO* coll)
 
 	angle = item->pos.y_rot;
 
-	if (angle >= -5460 && angle <= 5460)
+	if (angle >= -DEGREES_TO_ROTATION(30) && angle <= DEGREES_TO_ROTATION(30))
 		angle = 0;
 	else if (angle >= 10924 && angle <= 21844)
 		angle = 0x4000;
@@ -5594,7 +5594,7 @@ long TestLaraVault(ITEM_INFO* item, COLL_INFO* coll)
 	hdif = coll->front_floor;
 	slope = abs(coll->left_floor2 - coll->right_floor2) >= 60;
 
-	if (hdif >= -640 && hdif <= -384)
+	if (hdif >= -(HALF_BLOCK_SIZE + HALF_CLICK_SIZE) && hdif <= -(CLICK_SIZE + HALF_CLICK_SIZE))
 	{
 		if (!slope && hdif - coll->front_ceiling >= 0 && coll->left_floor2 - coll->left_ceiling2 >= 0 && coll->right_floor2 - coll->right_ceiling2 >= 0 && !(T4PlusIsRoomSwamp(&room[item->room_number]) && lara.water_surface_dist < -768))
 		{
@@ -5602,13 +5602,13 @@ long TestLaraVault(ITEM_INFO* item, COLL_INFO* coll)
 			item->frame_number = anims[ANIM_VAULT2].frame_base;
 			item->current_anim_state = AS_NULL;
 			item->goal_anim_state = AS_STOP;
-			item->pos.y_pos += hdif + 512;
+			item->pos.y_pos += hdif + HALF_BLOCK_SIZE;
 			lara.gun_status = LG_HANDS_BUSY;
 		}
 		else
 			return 0;
 	}
-	else if (hdif >= -896 && hdif <= -640)
+	else if (hdif >= -((CLICK_SIZE * 3) + HALF_CLICK_SIZE) && hdif <= -(HALF_BLOCK_SIZE + HALF_CLICK_SIZE))
 	{
 		if (!slope && hdif - coll->front_ceiling >= 0 && coll->left_floor2 - coll->left_ceiling2 >= 0 && coll->right_floor2 - coll->right_ceiling2 >= 0 && !(T4PlusIsRoomSwamp(&room[item->room_number]) && lara.water_surface_dist < -768))
 		{
@@ -5616,15 +5616,15 @@ long TestLaraVault(ITEM_INFO* item, COLL_INFO* coll)
 			item->frame_number = anims[ANIM_VAULT3].frame_base;
 			item->current_anim_state = AS_NULL;
 			item->goal_anim_state = AS_STOP;
-			item->pos.y_pos += hdif + 768;
+			item->pos.y_pos += hdif + (HALF_BLOCK_SIZE + CLICK_SIZE);
 			lara.gun_status = LG_HANDS_BUSY;
 		}
 		else
 			return 0;
 	}
-	else if (!slope && hdif >= -1920 && hdif <= -896)
+	else if (!slope && hdif >= -1920 && hdif <= -((CLICK_SIZE * 3) + HALF_CLICK_SIZE))
 	{
-		if (T4PlusIsRoomSwamp(&room[item->room_number]) && lara.water_surface_dist < -768)
+		if (T4PlusIsRoomSwamp(&room[item->room_number]) && lara.water_surface_dist < -(HALF_BLOCK_SIZE + CLICK_SIZE))
 		{
 			return 0;
 		}
@@ -5641,7 +5641,7 @@ long TestLaraVault(ITEM_INFO* item, COLL_INFO* coll)
 		if (!lara.climb_status)
 			return 0;
 
-		if (hdif <= -1920 && lara.water_status != LW_WADE && coll->left_floor2 <= -1920 && coll->right_floor2 <= -2048 && coll->mid_ceiling <= -1158)
+		if (hdif <= -(BLOCK_SIZE + HALF_BLOCK_SIZE + CLICK_SIZE + HALF_CLICK_SIZE) && lara.water_status != LW_WADE && coll->left_floor2 <= -1920 && coll->right_floor2 <= -(BLOCK_SIZE * 2) && coll->mid_ceiling <= -(BLOCK_SIZE + HALF_CLICK_SIZE))
 		{
 			item->anim_number = ANIM_STOP;
 			item->frame_number = anims[ANIM_STOP].frame_base;
@@ -5650,7 +5650,7 @@ long TestLaraVault(ITEM_INFO* item, COLL_INFO* coll)
 			lara.calc_fallspeed = -116;
 			AnimateLara(item);
 		}
-		else if ((hdif < -1024 || coll->front_ceiling >= 506) && coll->mid_ceiling <= -518)
+		else if ((hdif < -BLOCK_SIZE || coll->front_ceiling >= 506) && coll->mid_ceiling <= -518)
 		{
 			ShiftItem(item, coll);
 
@@ -5702,10 +5702,10 @@ long LaraTestClimbStance(ITEM_INFO* item, COLL_INFO* coll)
 {
 	long shift_r, shift_l;
 
-	if (LaraTestClimbPos(item, coll->radius, coll->radius + 120, -700, 512, &shift_r) != 1)
+	if (LaraTestClimbPos(item, coll->radius, coll->radius + 120, -700, HALF_BLOCK_SIZE, &shift_r) != 1)
 		return 0;
 
-	if (LaraTestClimbPos(item, coll->radius, -120 - coll->radius, -700, 512, &shift_l) != 1)
+	if (LaraTestClimbPos(item, coll->radius, -120 - coll->radius, -700, HALF_BLOCK_SIZE, &shift_l) != 1)
 		return 0;
 
 	if (shift_r)
@@ -5947,7 +5947,7 @@ bool LaraHangTest(ITEM_INFO* item, COLL_INFO* coll)
 			item->frame_number = anims[ANIM_FALLDOWN].frame_base;
 			item->current_anim_state = AS_FORWARDJUMP;
 			item->goal_anim_state = AS_FORWARDJUMP;
-			item->pos.y_pos += 256;
+			item->pos.y_pos += CLICK_SIZE;
 			item->gravity_status = 1;
 			item->speed = 2;
 			item->fallspeed = 1;
@@ -5987,7 +5987,7 @@ bool LaraHangTest(ITEM_INFO* item, COLL_INFO* coll)
 
 		lara.move_angle = angle;
 
-		if (256 << dir & GetClimbTrigger(x, item->pos.y_pos, z, item->room_number))
+		if (CLICK_SIZE << dir & GetClimbTrigger(x, item->pos.y_pos, z, item->room_number))
 		{
 			if (!LaraTestHangOnClimbWall(item, coll))
 				hdif = 0;

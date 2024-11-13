@@ -28,15 +28,15 @@ void CreatureDie(short item_number, bool explode)
 	short pickup_number, room_number;
 
 	item = &items[item_number];
-	item->hit_points = -16384;
+	item->hit_points = INFINITE_HEALTH;
 	item->collidable = 0;
 
 	if (explode)
 	{
 		if (objects[item->object_number].HitEffect == 1)
-			ExplodingDeath2(item_number, -1, 258);
+			ExplodingDeath2(item_number, -1, CLICK_SIZE + 2);
 		else
-			ExplodingDeath2(item_number, -1, 256);
+			ExplodingDeath2(item_number, -1, CLICK_SIZE);
 
 		KillItem(item_number);
 	}
@@ -56,13 +56,13 @@ void CreatureDie(short item_number, bool explode)
 
 		if (item->object_number == TROOPS && item->trigger_flags == 1)
 		{
-			pickup->pos.x_pos = ((item->pos.x_pos + ((1024 * phd_sin(item->pos.y_rot)) >> W2V_SHIFT)) & -512) | 512;
-			pickup->pos.z_pos = ((item->pos.z_pos + ((1024 * phd_cos(item->pos.y_rot)) >> W2V_SHIFT)) & -512) | 512;
+			pickup->pos.x_pos = ((item->pos.x_pos + ((BLOCK_SIZE * phd_sin(item->pos.y_rot)) >> W2V_SHIFT)) & -HALF_BLOCK_SIZE) | HALF_BLOCK_SIZE;
+			pickup->pos.z_pos = ((item->pos.z_pos + ((BLOCK_SIZE * phd_cos(item->pos.y_rot)) >> W2V_SHIFT)) & -HALF_BLOCK_SIZE) | HALF_BLOCK_SIZE;
 		}
 		else
 		{
-			pickup->pos.x_pos = (item->pos.x_pos & -512) | 512;
-			pickup->pos.z_pos = (item->pos.z_pos & -512) | 512;
+			pickup->pos.x_pos = (item->pos.x_pos & -HALF_BLOCK_SIZE) | HALF_BLOCK_SIZE;
+			pickup->pos.z_pos = (item->pos.z_pos & -HALF_BLOCK_SIZE) | HALF_BLOCK_SIZE;
 		}
 
 		room_number = item->room_number;
@@ -183,7 +183,7 @@ void CreatureAIInfo(ITEM_INFO* item, AI_INFO* info)
 
 		if (state == AS_DUCK || state == AS_DUCKROLL || state == AS_ALL4S || state == AS_CRAWL ||
 			state == AS_ALL4TURNL|| state == AS_ALL4TURNR || state == AS_DUCKROTL || state == AS_DUCKROTR)
-			y -= 384;
+			y -= (CLICK_SIZE + HALF_CLICK_SIZE);
 	}
 
 	if (x > z)
@@ -196,7 +196,7 @@ void CreatureAIInfo(ITEM_INFO* item, AI_INFO* info)
 	else
 		info->ahead = 0;
 
-	if (info->ahead && enemy->hit_points > 0 && abs(enemy->pos.y_pos - item->pos.y_pos) <= 512)
+	if (info->ahead && enemy->hit_points > 0 && abs(enemy->pos.y_pos - item->pos.y_pos) <= HALF_BLOCK_SIZE)
 		info->bite = 1;
 	else
 		info->bite = 0;
@@ -322,12 +322,12 @@ void TargetBox(LOT_INFO* LOT, short box_number)
 	BOX_INFO* box;
 
 	box = &boxes[box_number & 0x7FF];
-	LOT->target.x = (((ulong)box->bottom - (ulong)box->top - 1) >> 5) * GetRandomControl() + ((ulong)box->top << 10) + 512;
-	LOT->target.z = (((ulong)box->right - (ulong)box->left - 1) >> 5) * GetRandomControl() + ((ulong)box->left << 10) + 512;
+	LOT->target.x = (((ulong)box->bottom - (ulong)box->top - 1) >> 5) * GetRandomControl() + ((ulong)box->top << 10) + HALF_BLOCK_SIZE;
+	LOT->target.z = (((ulong)box->right - (ulong)box->left - 1) >> 5) * GetRandomControl() + ((ulong)box->left << 10) + HALF_BLOCK_SIZE;
 	LOT->required_box = box_number & 0x7FF;
 
 	if (LOT->fly)
-		LOT->target.y = box->height - 384;
+		LOT->target.y = box->height - (CLICK_SIZE + HALF_CLICK_SIZE);
 	else
 		LOT->target.y = box->height;
 }
@@ -341,7 +341,7 @@ long EscapeBox(ITEM_INFO* item, ITEM_INFO* enemy, short box_number)
 	x = (((ulong)box->bottom + (ulong)box->top) << 9) - enemy->pos.x_pos;
 	z = (((ulong)box->left + (ulong)box->right) << 9) - enemy->pos.z_pos;
 
-	if (x > -5120 && x < 5120 && z > -5120 && z < 5120)
+	if (x > -(BLOCK_SIZE * 5) && x < (BLOCK_SIZE * 5) && z > -(BLOCK_SIZE * 5) && z < (BLOCK_SIZE * 5))
 		return 0;
 
 	return z > 0 == item->pos.z_pos > enemy->pos.z_pos || x > 0 == item->pos.x_pos > enemy->pos.x_pos;
@@ -386,7 +386,7 @@ long StalkBox(ITEM_INFO* item, ITEM_INFO* enemy, short box_number)
 	if (x > xrange || x < -xrange || z > zrange || z < -zrange)
 		return 0;
 
-	enemy_quad = (enemy->pos.y_rot >> 14) + 2;
+	enemy_quad = (enemy->pos.y_rot >> W2V_SHIFT) + 2;
 	box_quad = z <= 0 ? (x <= 0 ? 0 : 3) : (x > 0) + 1;
 
 	if (enemy_quad == box_quad)
@@ -409,7 +409,7 @@ target_type CalculateTarget(PHD_VECTOR* target, ITEM_INFO* item, LOT_INFO* LOT)
 	target->z = item->pos.z_pos;
 	box_number = item->box_number;
 
-	if (box_number == 2047)
+	if (box_number == ((BLOCK_SIZE * 2) - 1))
 		return NO_TARGET;
 
 	box = &boxes[box_number];
@@ -427,8 +427,8 @@ target_type CalculateTarget(PHD_VECTOR* target, ITEM_INFO* item, LOT_INFO* LOT)
 
 		if (LOT->fly)
 		{
-			if (target->y > box->height - 1024)
-				target->y = box->height - 1024;
+			if (target->y > box->height - BLOCK_SIZE)
+				target->y = box->height - BLOCK_SIZE;
 		}
 		else if (target->y > box->height)
 			target->y = box->height;
@@ -451,8 +451,8 @@ target_type CalculateTarget(PHD_VECTOR* target, ITEM_INFO* item, LOT_INFO* LOT)
 			{
 				if (prime_free & 1 && item->pos.x_pos >= box_top && item->pos.x_pos <= box_bottom)
 				{
-					if (target->z < box_left + 512)
-						target->z = box_left + 512;
+					if (target->z < box_left + HALF_BLOCK_SIZE)
+						target->z = box_left + HALF_BLOCK_SIZE;
 
 					if (prime_free & 16)
 						return SECONDARY_TARGET;
@@ -467,7 +467,7 @@ target_type CalculateTarget(PHD_VECTOR* target, ITEM_INFO* item, LOT_INFO* LOT)
 				}
 				else if (prime_free != 1)
 				{
-					target->z = right - 512;
+					target->z = right - HALF_BLOCK_SIZE;
 
 					if (prime_free != 15)
 						return SECONDARY_TARGET;
@@ -479,8 +479,8 @@ target_type CalculateTarget(PHD_VECTOR* target, ITEM_INFO* item, LOT_INFO* LOT)
 			{
 				if (prime_free & 2 && item->pos.x_pos >= box_top && item->pos.x_pos <= box_bottom)
 				{
-					if (target->z > box_right - 512)
-						target->z = box_right - 512;
+					if (target->z > box_right - HALF_BLOCK_SIZE)
+						target->z = box_right - HALF_BLOCK_SIZE;
 
 					if (prime_free & 16)
 						return SECONDARY_TARGET;
@@ -495,7 +495,7 @@ target_type CalculateTarget(PHD_VECTOR* target, ITEM_INFO* item, LOT_INFO* LOT)
 				}
 				else if (prime_free != 2)
 				{
-					target->z = left + 512;
+					target->z = left + HALF_BLOCK_SIZE;
 
 					if (prime_free != 15)
 						return SECONDARY_TARGET;
@@ -508,8 +508,8 @@ target_type CalculateTarget(PHD_VECTOR* target, ITEM_INFO* item, LOT_INFO* LOT)
 			{
 				if (prime_free & 4 && item->pos.z_pos >= box_left && item->pos.z_pos <= box_right)
 				{
-					if (target->x < box_top + 512)
-						target->x = box_top + 512;
+					if (target->x < box_top + HALF_BLOCK_SIZE)
+						target->x = box_top + HALF_BLOCK_SIZE;
 
 					if (prime_free & 16)
 						return SECONDARY_TARGET;
@@ -524,7 +524,7 @@ target_type CalculateTarget(PHD_VECTOR* target, ITEM_INFO* item, LOT_INFO* LOT)
 				}
 				else if (prime_free != 4)
 				{
-					target->x = bottom - 512;
+					target->x = bottom - HALF_BLOCK_SIZE;
 
 					if (prime_free != 15)
 						return SECONDARY_TARGET;
@@ -536,8 +536,8 @@ target_type CalculateTarget(PHD_VECTOR* target, ITEM_INFO* item, LOT_INFO* LOT)
 			{
 				if (prime_free & 8 && item->pos.z_pos >= box_left && item->pos.z_pos <= box_right)
 				{
-					if (target->x > box_bottom - 512)
-						target->x = box_bottom - 512;
+					if (target->x > box_bottom - HALF_BLOCK_SIZE)
+						target->x = box_bottom - HALF_BLOCK_SIZE;
 
 					if (prime_free & 16)
 						return SECONDARY_TARGET;
@@ -552,7 +552,7 @@ target_type CalculateTarget(PHD_VECTOR* target, ITEM_INFO* item, LOT_INFO* LOT)
 				}
 				else if (prime_free != 8)
 				{
-					target->x = top + 512;
+					target->x = top + HALF_BLOCK_SIZE;
 
 					if (prime_free != 15)
 						return SECONDARY_TARGET;
@@ -568,20 +568,20 @@ target_type CalculateTarget(PHD_VECTOR* target, ITEM_INFO* item, LOT_INFO* LOT)
 				target->z = LOT->target.z;
 			else if (!(prime_free & 16))
 			{
-				if (target->z < box_left + 512)
-					target->z = box_left + 512;
-				else if (target->z > box_right - 512)
-					target->z = box_right - 512;
+				if (target->z < box_left + HALF_BLOCK_SIZE)
+					target->z = box_left + HALF_BLOCK_SIZE;
+				else if (target->z > box_right - HALF_BLOCK_SIZE)
+					target->z = box_right - HALF_BLOCK_SIZE;
 			}
 
 			if (prime_free & 12)
 				target->x = LOT->target.x;
 			else if (!(prime_free & 16))
 			{
-				if (target->x < box_top + 512)
-					target->x = box_top + 512;
-				else if (target->x > box_bottom - 512)
-					target->x = box_bottom - 512;
+				if (target->x < box_top + HALF_BLOCK_SIZE)
+					target->x = box_top + HALF_BLOCK_SIZE;
+				else if (target->x > box_bottom - HALF_BLOCK_SIZE)
+					target->x = box_bottom - HALF_BLOCK_SIZE;
 			}
 
 			target->y = LOT->target.y;
@@ -597,18 +597,18 @@ target_type CalculateTarget(PHD_VECTOR* target, ITEM_INFO* item, LOT_INFO* LOT)
 
 	if (!(prime_free & 16))
 	{
-		if (target->z < box_left + 512)
-			target->z = box_left + 512;
-		else if (target->z > box_right - 512)
-			target->z = box_right - 521;
+		if (target->z < box_left + HALF_BLOCK_SIZE)
+			target->z = box_left + HALF_BLOCK_SIZE;
+		else if (target->z > box_right - HALF_BLOCK_SIZE)
+			target->z = box_right - HALF_BLOCK_SIZE; // Was set to 521, but that might have been a typo.
 	}
 
 	if (!(prime_free & 16))	//wut
 	{
-		if (target->x < box_top + 512)
-			target->x = box_top + 512;
-		else if (target->x > box_bottom - 512)
-			target->x = box_bottom - 512;
+		if (target->x < box_top + HALF_BLOCK_SIZE)
+			target->x = box_top + HALF_BLOCK_SIZE;
+		else if (target->x > box_bottom - HALF_BLOCK_SIZE)
+			target->x = box_bottom - HALF_BLOCK_SIZE;
 	}
 
 	if (LOT->fly)
@@ -809,7 +809,7 @@ void GetCreatureMood(ITEM_INFO* item, AI_INFO* info, long violent)
 
 			case ATTACK_MOOD:
 
-				if (item->hit_status && GetRandomControl() < 2048 || info->zone_number != info->enemy_zone)
+				if (item->hit_status && GetRandomControl() < (BLOCK_SIZE * 2) || info->zone_number != info->enemy_zone)
 					creature->mood = STALK_MOOD;
 				else if (info->zone_number != info->enemy_zone && info->distance > 6144)
 					creature->mood = BORED_MOOD;
@@ -818,7 +818,7 @@ void GetCreatureMood(ITEM_INFO* item, AI_INFO* info, long violent)
 
 			case ESCAPE_MOOD:
 
-				if (info->zone_number == info->enemy_zone && GetRandomControl() < 256)
+				if (info->zone_number == info->enemy_zone && GetRandomControl() < CLICK_SIZE)
 					creature->mood = STALK_MOOD;
 
 				break;
@@ -999,7 +999,7 @@ long CreatureAnimation(short item_number, short angle, short tilt)
 			else
 				xShift = rad - wx;
 		}
-		else if (wx > 1024 - rad)
+		else if (wx > BLOCK_SIZE - rad)
 		{
 			if (!BadFloor(x + rad, y, z, box_height, next_height, room_number, LOT))
 			{
@@ -1008,17 +1008,17 @@ long CreatureAnimation(short item_number, short angle, short tilt)
 					if (item->pos.y_rot > -0x2000 && item->pos.y_rot < 0x6000)
 						zShift = rad - wz;
 					else
-						xShift = 1024 - rad - wx;
+						xShift = BLOCK_SIZE - rad - wx;
 				}
 			}
 			else
-				xShift = 1024 - rad - wx;
+				xShift = BLOCK_SIZE - rad - wx;
 		}
 	}
-	else if (wz > 1024 - rad)
+	else if (wz > BLOCK_SIZE - rad)
 	{
 		if (BadFloor(x, y, z + rad, box_height, next_height, room_number, LOT))
-			zShift = 1024 - rad - wz;
+			zShift = BLOCK_SIZE - rad - wz;
 
 		if (wx < rad)
 		{
@@ -1029,27 +1029,27 @@ long CreatureAnimation(short item_number, short angle, short tilt)
 					if (item->pos.y_rot > -0x2000 && item->pos.y_rot < 0x6000)
 						xShift = rad - wx;
 					else
-						zShift = 1024 - rad - wz;
+						zShift = BLOCK_SIZE - rad - wz;
 				}
 			}
 			else
 				xShift = rad - wx;
 
 		}
-		else if (wx > 1024 - rad)
+		else if (wx > BLOCK_SIZE - rad)
 		{
 			if (!BadFloor(x + rad, y, z, box_height, next_height, room_number, LOT))
 			{
 				if (!zShift && BadFloor(x + rad, y, z + rad, box_height, next_height, room_number, LOT))
 				{
 					if (item->pos.y_rot > -0x6000 && item->pos.y_rot < 0x2000)
-						xShift = 1024 - rad - wx;
+						xShift = BLOCK_SIZE - rad - wx;
 					else
-						zShift = 1024 - rad - wz;
+						zShift = BLOCK_SIZE - rad - wz;
 				}
 			}
 			else
-				xShift = 1024 - rad - wx;
+				xShift = BLOCK_SIZE - rad - wx;
 		}
 	}
 	else if (wx < rad)
@@ -1057,10 +1057,10 @@ long CreatureAnimation(short item_number, short angle, short tilt)
 		if (BadFloor(x - rad, y, z, box_height, next_height, room_number, LOT))
 			xShift = rad - wx;
 	}
-	else if (wx > 1024 - rad)
+	else if (wx > BLOCK_SIZE - rad)
 	{
 		if (BadFloor(x + rad, y, z, box_height, next_height, room_number, LOT))
-			xShift = 1024 - rad - wx;
+			xShift = BLOCK_SIZE - rad - wx;
 	}
 
 	item->pos.x_pos += xShift;
@@ -1081,12 +1081,12 @@ long CreatureAnimation(short item_number, short angle, short tilt)
 
 		if (angle)
 		{
-			if (abs(angle) < 2048)
+			if (abs(angle) < (BLOCK_SIZE * 2))
 				item->pos.y_rot -= angle;
 			else if (angle > 0)
-				item->pos.y_rot -= 2048;
+				item->pos.y_rot -= (BLOCK_SIZE * 2);
 			else
-				item->pos.y_rot += 2048;
+				item->pos.y_rot += (BLOCK_SIZE * 2);
 
 			return 1;
 		}
@@ -1135,7 +1135,7 @@ long CreatureAnimation(short item_number, short angle, short tilt)
 		}
 		else
 		{
-			GetFloor(item->pos.x_pos, y + 256, item->pos.z_pos, &room_number);
+			GetFloor(item->pos.x_pos, y + CLICK_SIZE, item->pos.z_pos, &room_number);
 
 			if (room[room_number].flags & ROOM_UNDERWATER || T4PlusIsRoomSwamp(&room[room_number]))
 				dy = -LOT->fly;
@@ -1149,18 +1149,18 @@ long CreatureAnimation(short item_number, short angle, short tilt)
 		{
 			angle = (short)phd_atan(item->speed, -dy);
 
-			if (angle < -3640)
-				angle = -3640;
-			else if (angle > 3640)
-				angle = 3640;
+			if (angle < -DEGREES_TO_ROTATION(20))
+				angle = -DEGREES_TO_ROTATION(20);
+			else if (angle > DEGREES_TO_ROTATION(20))
+				angle = DEGREES_TO_ROTATION(20);
 		}
 		else
 			angle = 0;
 
-		if (angle < item->pos.x_rot - 182)
-			item->pos.x_rot -= 182;
-		else  if (angle > item->pos.x_rot + 182)
-			item->pos.x_rot += 182;
+		if (angle < item->pos.x_rot - DEGREES_TO_ROTATION(1))
+			item->pos.x_rot -= DEGREES_TO_ROTATION(1);
+		else  if (angle > item->pos.x_rot + DEGREES_TO_ROTATION(1))
+			item->pos.x_rot += DEGREES_TO_ROTATION(1);
 		else
 			item->pos.x_rot = angle;
 	}
@@ -1173,7 +1173,7 @@ long CreatureAnimation(short item_number, short angle, short tilt)
 			item->pos.y_pos = GetCeiling(floor, item->pos.x_pos, y, item->pos.z_pos) - bounds[2];
 		else if (item->pos.y_pos > item->floor)
 		{
-			if (item->pos.y_pos > item->floor + 256)
+			if (item->pos.y_pos > item->floor + CLICK_SIZE)
 			{
 				item->pos.x_pos = oldPos.x;
 				item->pos.z_pos = oldPos.z;
@@ -1200,8 +1200,8 @@ long CreatureAnimation(short item_number, short angle, short tilt)
 
 		if (item->pos.y_pos > item->floor)
 			item->pos.y_pos = item->floor;
-		else if (item->floor - item->pos.y_pos > 64)
-			item->pos.y_pos += 64;
+		else if (item->floor - item->pos.y_pos > QUARTER_CLICK_SIZE)
+			item->pos.y_pos += QUARTER_CLICK_SIZE;
 		else if (item->pos.y_pos < item->floor)
 			item->pos.y_pos = item->floor;
 	}
@@ -1231,16 +1231,16 @@ short CreatureTurn(ITEM_INFO* item, short maximum_turn)
 	z = item->pos.z_pos;
 	r = &room[item->room_number];
 
-	feelxplus = x + (512 * phd_sin(item->pos.y_rot + 8190) >> W2V_SHIFT);
-	feelzplus = z + (512 * phd_cos(item->pos.y_rot + 8190) >> W2V_SHIFT);
+	feelxplus = x + (HALF_BLOCK_SIZE * phd_sin(item->pos.y_rot + DEGREES_TO_ROTATION(45)) >> W2V_SHIFT);
+	feelzplus = z + (HALF_BLOCK_SIZE * phd_cos(item->pos.y_rot + DEGREES_TO_ROTATION(45)) >> W2V_SHIFT);
 	feelplus = r->floor[((feelzplus - r->z) >> 10) + r->x_size * ((feelxplus - r->x) >> 10)].stopper;
 
-	feelxminus = x + (512 * phd_sin(item->pos.y_rot - 8190) >> W2V_SHIFT);
-	feelzminus = z + (512 * phd_cos(item->pos.y_rot - 8190) >> W2V_SHIFT);
+	feelxminus = x + (HALF_BLOCK_SIZE * phd_sin(item->pos.y_rot - DEGREES_TO_ROTATION(45)) >> W2V_SHIFT);
+	feelzminus = z + (HALF_BLOCK_SIZE * phd_cos(item->pos.y_rot - DEGREES_TO_ROTATION(45)) >> W2V_SHIFT);
 	feelminus = r->floor[((feelzminus - r->z) >> 10) + r->x_size * ((feelxminus - r->x) >> 10)].stopper;
 
-	feelxmid = x + (512 * phd_sin(item->pos.y_rot) >> W2V_SHIFT);
-	feelzmid = z + (512 * phd_cos(item->pos.y_rot) >> W2V_SHIFT);
+	feelxmid = x + (HALF_BLOCK_SIZE * phd_sin(item->pos.y_rot) >> W2V_SHIFT);
+	feelzmid = z + (HALF_BLOCK_SIZE * phd_cos(item->pos.y_rot) >> W2V_SHIFT);
 	feelmid = r->floor[((feelzmid - r->z) >> 10) + r->x_size * ((feelxmid - r->x) >> 10)].stopper;
 
 	if (feelminus && feelmid)
@@ -1265,7 +1265,7 @@ short CreatureTurn(ITEM_INFO* item, short maximum_turn)
 
 	if (angle > 0x4000 || angle < -0x4000)
 	{
-		if (SQUARE(x) + SQUARE(z) < SQUARE((item->speed << 14) / maximum_turn))
+		if (SQUARE(x) + SQUARE(z) < SQUARE((item->speed << W2V_SHIFT) / maximum_turn))
 			maximum_turn >>= 1;
 	}
 
@@ -1282,10 +1282,10 @@ void CreatureTilt(ITEM_INFO* item, short angle)
 {
 	angle = (angle << 2) - item->pos.z_rot;
 
-	if (angle < -546)
-		item->pos.z_rot -= 546;
-	else if (angle > 546)
-		item->pos.z_rot += 546;
+	if (angle < -DEGREES_TO_ROTATION(3))
+		item->pos.z_rot -= DEGREES_TO_ROTATION(3);
+	else if (angle > DEGREES_TO_ROTATION(3))
+		item->pos.z_rot += DEGREES_TO_ROTATION(3);
 }
 
 void CreatureJoint(ITEM_INFO* item, short joint, short required)
@@ -1300,10 +1300,10 @@ void CreatureJoint(ITEM_INFO* item, short joint, short required)
 
 	change = required - creature->joint_rotation[joint];
 
-	if (change > 546)
-		change = 546;
-	else if (change < -546)
-		change = -546;
+	if (change > DEGREES_TO_ROTATION(3))
+		change = DEGREES_TO_ROTATION(3);
+	else if (change < -DEGREES_TO_ROTATION(3))
+		change = -DEGREES_TO_ROTATION(3);
 
 	creature->joint_rotation[joint] += change;
 
@@ -1320,7 +1320,7 @@ void CreatureFloat(short item_number)
 	short room_number;
 
 	item = &items[item_number];
-	item->hit_points = -16384;
+	item->hit_points = INFINITE_HEALTH;
 	item->pos.x_rot = 0;
 	water_level = GetWaterHeight(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number);
 
@@ -1366,8 +1366,8 @@ void CreatureUnderwater(ITEM_INFO* item, long depth)
 		if (item->pos.y_pos > floorheight)
 			item->pos.y_pos = floorheight;
 
-		if (item->pos.x_rot > 364)
-			item->pos.x_rot -= 364;
+		if (item->pos.x_rot > DEGREES_TO_ROTATION(2))
+			item->pos.x_rot -= DEGREES_TO_ROTATION(2);
 		else if (item->pos.x_rot > 0)
 			item->pos.x_rot = 0;
 	}
@@ -1409,24 +1409,23 @@ long CreatureVault(short item_number, short angle, long vault, long shift)
 	room_number = item->room_number;
 	CreatureAnimation(item_number, angle, 0);
 
-	if (item->floor > y + 1152)
+	if (item->floor > y + (BLOCK_SIZE + HALF_CLICK_SIZE))
 		vault = 0;
-	else if (item->floor > y + 896)
+	else if (item->floor > y + ((CLICK_SIZE * 3) + HALF_CLICK_SIZE))
 		vault = -4;
-	else if (item->floor > y + 640 && item->object_number == VON_CROY)
+	else if (item->floor > y + (HALF_BLOCK_SIZE + HALF_CLICK_SIZE) && item->object_number == VON_CROY)
 		vault = -3;
-	else if (item->floor > y + 384 && item->object_number == VON_CROY)
+	else if (item->floor > y + ((CLICK_SIZE) + HALF_CLICK_SIZE) && item->object_number == VON_CROY)
 		vault = -2;
 	else
 	{
-		if (item->pos.y_pos > y - 384)
+		if (item->pos.y_pos > y - ((CLICK_SIZE * 1) + HALF_CLICK_SIZE))
 			return 0;
-
-		if (item->pos.y_pos > y - 640)
+		if (item->pos.y_pos > y - (HALF_BLOCK_SIZE + HALF_CLICK_SIZE))
 			vault = 2;
-		else if (item->pos.y_pos > y - 896)
+		else if (item->pos.y_pos > y - ((CLICK_SIZE * 3) + HALF_CLICK_SIZE))
 			vault = 3;
-		else if (item->pos.y_pos > y - 1152)
+		else if (item->pos.y_pos > y - (BLOCK_SIZE + HALF_CLICK_SIZE))
 			vault = 4;
 	}
 
@@ -1500,9 +1499,9 @@ void CreatureKill(ITEM_INFO* item, short kill_anim, short kill_state, short lara
 	lara.hit_direction = -1;
 	lara.air = -1;
 	camera.pos.room_number = lara_item->room_number;
-	ForcedFixedCamera.x = item->pos.x_pos + ((2048 * phd_sin(item->pos.y_rot)) >> W2V_SHIFT);
-	ForcedFixedCamera.y = item->pos.y_pos - 1024;
-	ForcedFixedCamera.z = item->pos.z_pos + ((2048 * phd_cos(item->pos.y_rot)) >> W2V_SHIFT);
+	ForcedFixedCamera.x = item->pos.x_pos + (((BLOCK_SIZE * 2) * phd_sin(item->pos.y_rot)) >> W2V_SHIFT);
+	ForcedFixedCamera.y = item->pos.y_pos - BLOCK_SIZE;
+	ForcedFixedCamera.z = item->pos.z_pos + (((BLOCK_SIZE * 2) * phd_cos(item->pos.y_rot)) >> W2V_SHIFT);
 	ForcedFixedCamera.room_number = item->room_number;
 	UseForcedFixedCamera = 1;
 }
@@ -1566,17 +1565,17 @@ short AIGuard(CREATURE_INFO* creature)
 
 	rnd = GetRandomControl();
 
-	if (rnd < 256)
+	if (rnd < CLICK_SIZE)
 	{
 		creature->head_left = 1;
 		creature->head_right = 1;
 	}
-	else if (rnd < 384)
+	else if (rnd < (CLICK_SIZE + HALF_CLICK_SIZE))
 	{
 		creature->head_left = 1;
 		creature->head_right = 0;
 	}
-	else if (rnd < 512)
+	else if (rnd < HALF_BLOCK_SIZE)
 	{
 		creature->head_left = 0;
 		creature->head_right = 1;
@@ -1639,8 +1638,8 @@ void FindAITargetObject(CREATURE_INFO* creature, short obj_num)
 
 		if (!(enemy->flags & 0x20))
 		{
-			enemy->pos.x_pos += 256 * phd_sin(enemy->pos.y_rot) >> W2V_SHIFT;
-			enemy->pos.z_pos += 256 * phd_cos(enemy->pos.y_rot) >> W2V_SHIFT;
+			enemy->pos.x_pos += CLICK_SIZE * phd_sin(enemy->pos.y_rot) >> W2V_SHIFT;
+			enemy->pos.z_pos += CLICK_SIZE * phd_cos(enemy->pos.y_rot) >> W2V_SHIFT;
 		}
 
 		break;
@@ -1691,7 +1690,9 @@ void GetAITarget(CREATURE_INFO* creature)
 		{
 			FindAITargetObject(creature, AI_PATROL2);
 		}
-		else if (abs(enemy->pos.x_pos - item->pos.x_pos) < 640 && abs(enemy->pos.y_pos - item->pos.y_pos) < 640 && abs(enemy->pos.z_pos - item->pos.z_pos) < 640)
+		else if (abs(enemy->pos.x_pos - item->pos.x_pos) < (HALF_BLOCK_SIZE + HALF_CLICK_SIZE)
+			&& abs(enemy->pos.y_pos - item->pos.y_pos) < (HALF_BLOCK_SIZE + HALF_CLICK_SIZE)
+			&& abs(enemy->pos.z_pos - item->pos.z_pos) < (HALF_BLOCK_SIZE + HALF_CLICK_SIZE))
 		{
 			GetHeight(GetFloor(enemy->pos.x_pos, enemy->pos.y_pos, enemy->pos.z_pos, &enemy->room_number),
 				enemy->pos.x_pos, enemy->pos.y_pos, enemy->pos.z_pos);

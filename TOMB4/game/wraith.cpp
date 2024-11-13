@@ -150,7 +150,7 @@ void TriggerWraithEffect(long x, long y, long z, short vel, long objnum)
 		sptr->x = (GetRandomControl() & 0x1F) + x - 16;
 		sptr->y = (GetRandomControl() & 0x1F) + y - 16;
 		sptr->z = (GetRandomControl() & 0x1F) + z - 16;
-		rad = (GetRandomControl() & 0x3FF) + 1024;
+		rad = (GetRandomControl() & 0x3FF) + BLOCK_SIZE;
 		ang = vel + GetRandomControl() - 0x4000;
 		sptr->Xvel = short((rad * phd_sin(ang)) >> W2V_SHIFT);
 		sptr->Yvel = (GetRandomControl() & 0x7F) - 64;
@@ -190,7 +190,7 @@ void WraithControl(short item_number)
 		dx = target->pos.x_pos - item->pos.x_pos;
 		dz = target->pos.z_pos - item->pos.z_pos;
 		dist = SQUARE(dx) + SQUARE(dz);
-		dy = (target->pos.y_pos - item->pos.y_pos - 128) - abs((dist >> 13) - 512);
+		dy = (target->pos.y_pos - item->pos.y_pos - HALF_CLICK_SIZE) - abs((dist >> 13) - HALF_BLOCK_SIZE);
 	}
 	else
 	{
@@ -199,7 +199,7 @@ void WraithControl(short item_number)
 		dz = r->z + (r->x_size << 9) - item->pos.z_pos;
 		dist = SQUARE(dx) + SQUARE(dz);
 		y = r->y + ((r->minfloor - r->maxceiling) >> 1);
-		dy = y - abs((dist >> 13) - 768);
+		dy = y - abs((dist >> 13) - (HALF_BLOCK_SIZE + CLICK_SIZE));
 	}
 
 	rotY = short(phd_atan(dz, dx) - item->pos.y_rot);
@@ -324,7 +324,7 @@ void WraithControl(short item_number)
 		}
 	}
 
-	if (dist < 28900 && abs(item->pos.y_pos - (target->pos.y_pos - 384)) < 256)
+	if (dist < 28900 && abs(item->pos.y_pos - (target->pos.y_pos - (CLICK_SIZE + HALF_CLICK_SIZE))) < CLICK_SIZE)
 	{
 		if (item->speed > 32)
 			item->speed -= 12;
@@ -348,10 +348,10 @@ void WraithControl(short item_number)
 			if (item->ai_bits > 25)
 			{
 				item->pos.x_pos = target->pos.x_pos;
-				item->pos.y_pos = target->pos.y_pos - 384;
+				item->pos.y_pos = target->pos.y_pos - (CLICK_SIZE + HALF_CLICK_SIZE);
 				item->pos.z_pos = target->pos.z_pos;
-				ShockwaveExplosion(item, 0x606060, -32);
-				ShockwaveExplosion(item, 0x303030, 48);
+				ShockwaveExplosion(item, 0x606060, -(QUARTER_CLICK_SIZE / 2));
+				ShockwaveExplosion(item, 0x303030, ((QUARTER_CLICK_SIZE / 2) + (QUARTER_CLICK_SIZE / 4)));
 				target->hit_points = 0;
 				target->trigger_flags--;
 

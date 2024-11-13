@@ -433,7 +433,7 @@ void init_new_inventry()
 	compass_settle_thang = 4096;
 	examine_mode = 0;
 	stats_mode = 0;
-	AlterFOV(14560);
+	AlterFOV(DEGREES_TO_ROTATION(DEFAULT_FOV));
 	lara.Busy = 0;
 	GLOBAL_inventoryitemchosen = -1;
 	left_debounce = 0;
@@ -694,11 +694,11 @@ void DrawInventoryItemMe(INVDRAWITEM* item, long shade, long overlay, long shagf
 
 		if (item->object_number == COMPASS_ITEM)
 		{
-			compass = (compass_settle_thang * phd_sin(1024 * (GnFrameCounter & 0x3F))) >> W2V_SHIFT;
+			compass = (compass_settle_thang * phd_sin(BLOCK_SIZE * (GnFrameCounter & 0x3F))) >> W2V_SHIFT;
 			compass += lara_item->pos.y_rot;
 			phd_RotY(short(compass - 0x8000));
 
-			if (lara_item->pos.y_rot > -48 && lara_item->pos.y_rot <= 48 && tomb4.cheats)
+			if (lara_item->pos.y_rot > -0x30 && lara_item->pos.y_rot <= 0x30 && tomb4.cheats)
 			{
 				shade = 96;
 
@@ -812,7 +812,7 @@ void DrawThreeDeeObject2D(long x, long y, long num, long shade, long xrot, long 
 	item.zrot = (short)zrot + objme->zrot;
 	item.object_number = objme->object_number;
 	item.mesh_bits = objme->meshbits;
-	phd_LookAt(0, 1024, 0, 0, 0, 0, 0);
+	phd_LookAt(0, BLOCK_SIZE, 0, 0, 0, 0, 0);
 
 	if (!bright)
 		pcbright = 0x7F7F7F;
@@ -1258,18 +1258,18 @@ void spinback(ushort* cock)
 
 	if (val)
 	{
-		if (val <= 32768)
+		if (val <= 0x8000)
 		{
 			val2 = val;
 
-			if (val2 < 1022)
-				val = 1022;
-			else if (val2 > 16384)
-				val2 = 16384;
+			if (val2 < (0x400 - 2))
+				val = (0x400 - 2);
+			else if (val2 > 0x4000)
+				val2 = 0x4000;
 
 			val -= (val2 >> 3);
 
-			if (val > 32768)
+			if (val > 0x8000)
 				val = 0;
 		}
 		else
@@ -1283,7 +1283,7 @@ void spinback(ushort* cock)
 
 			val += (val2 >> 3);
 
-			if (val < 32768)
+			if (val < 0x8000)
 				val = 0;
 		}
 
@@ -2935,8 +2935,8 @@ long S_CallInventory2()
 	{
 		OBJLIST_SPACING = phd_centerx >> 1;
 
-		if (compass_settle_thang != 1024)
-			compass_settle_thang -= 32;
+		if (compass_settle_thang != BLOCK_SIZE)
+			compass_settle_thang -= (QUARTER_CLICK_SIZE / 2);
 
 		S_InitialisePolyList();
 		SetDebounce = 1;

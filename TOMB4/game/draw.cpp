@@ -195,7 +195,7 @@ void gar_RotYXZsuperpack(short** pprot, long skip)
 
 	prot = (ushort*)*pprot;
 
-	switch (prot[0] >> 14)
+	switch (prot[0] >> W2V_SHIFT)
 	{
 	case 0:
 		phd_RotYXZpack((prot[0] << 16) + prot[1]);
@@ -363,9 +363,9 @@ void CalculateObjectLightingLara()
 			pos.x = lara_item->pos.x_pos;
 
 			if (lara_item->anim_number == ANIM_BREATH)
-				pos.y = lara_item->pos.y_pos - 512;
+				pos.y = lara_item->pos.y_pos - HALF_BLOCK_SIZE;
 			else
-				pos.y = lara_item->pos.y_pos - 192;
+				pos.y = lara_item->pos.y_pos - HALF_CLICK_SIZE + QUARTER_CLICK_SIZE;
 
 			pos.z = lara_item->pos.z_pos;
 			room_no = lara_item->room_number;
@@ -469,24 +469,24 @@ void DrawAnimatingItem(ITEM_INFO* item)
 
 			for (int i = 0; i < obj->nmeshes - 1; i++, bone += 4, meshpp += 2)
 			{
-				if (bone[0] & 1)
+				if (bone[0] & POP_BONE_FLAG)
 					phd_PopMatrix_I();
 
-				if (bone[0] & 2)
+				if (bone[0] & PUSH_BONE_FLAG)
 					phd_PushMatrix_I();
 
 				phd_TranslateRel_I(bone[1], bone[2], bone[3]);
 				gar_RotYXZsuperpack_I(&rot, &rot2, 0);
 
-				if (bone[0] & 0x1C)
+				if (bone[0] & (X_ROTATION_FLAG | Y_ROTATION_FLAG | Z_ROTATION_FLAG))
 				{
-					if (bone[0] & 8)
+					if (bone[0] & Y_ROTATION_FLAG)
 						phd_RotY_I(*data++);
 
-					if (bone[0] & 4)
+					if (bone[0] & X_ROTATION_FLAG)
 						phd_RotX_I(*data++);
 
-					if (bone[0] & 16)
+					if (bone[0] & Z_ROTATION_FLAG)
 						phd_RotZ_I(*data++);
 				}
 
@@ -508,7 +508,7 @@ void DrawAnimatingItem(ITEM_INFO* item)
 					rnd = GetRandomDraw();
 					phd_PushMatrix_I();
 					phd_TranslateRel_I(bite->x, bite->y, bite->z);
-					phd_RotYXZ_I(0, -0x3FFC, short((rnd << 14) + (rnd >> 2) - 4096));
+					phd_RotYXZ_I(0, -0x3FFC, short((rnd << W2V_SHIFT) + (rnd >> 2) - 4096));
 					mInterpolateMatrix();
 					//empty func call here
 					phd_PutPolygons(meshes[objects[GUN_FLASH].mesh_index], clip);
@@ -538,24 +538,24 @@ void DrawAnimatingItem(ITEM_INFO* item)
 
 			for (int i = 0; i < obj->nmeshes - 1; i++, bone += 4, meshpp += 2)
 			{
-				if (bone[0] & 1)
+				if (bone[0] & POP_BONE_FLAG)
 					phd_PopMatrix();
 
-				if (bone[0] & 2)
+				if (bone[0] & PUSH_BONE_FLAG)
 					phd_PushMatrix();
 
 				phd_TranslateRel(bone[1], bone[2], bone[3]);
 				gar_RotYXZsuperpack(&rot, 0);
 
-				if (bone[0] & 0x1C)
+				if (bone[0] & (X_ROTATION_FLAG | Y_ROTATION_FLAG | Z_ROTATION_FLAG))
 				{
-					if (bone[0] & 8)
+					if (bone[0] & Y_ROTATION_FLAG)
 						phd_RotY(*data++);
 
-					if (bone[0] & 4)
+					if (bone[0] & X_ROTATION_FLAG)
 						phd_RotX(*data++);
 
-					if (bone[0] & 16)
+					if (bone[0] & Z_ROTATION_FLAG)
 						phd_RotZ(*data++);
 				}
 
@@ -705,7 +705,7 @@ void DrawRooms(short CurrentRoom)
 		else
 		{
 			if (BinocularRange)
-				AlterFOV(14560 - (short)BinocularRange);
+				AlterFOV(DEGREES_TO_ROTATION(DEFAULT_FOV) - (short)BinocularRange);
 
 			phd_PushMatrix();
 			phd_TranslateAbs(camera.pos.x, camera.pos.y, camera.pos.z);
@@ -942,7 +942,7 @@ void RenderIt(short CurrentRoom)
 		else
 		{
 			if (BinocularRange)
-				AlterFOV(14560 - (short)BinocularRange);
+				AlterFOV(DEGREES_TO_ROTATION(DEFAULT_FOV) - (short)BinocularRange);
 
 			phd_PushMatrix();
 			phd_TranslateAbs(camera.pos.x, camera.pos.y, camera.pos.z);
@@ -1632,11 +1632,11 @@ void calc_animating_item_clip_window(ITEM_INFO* item, short* bounds)
 	zMin = item->pos.z_pos + rotatedBounds[4];
 	zMax = item->pos.z_pos + rotatedBounds[5];
 
-	xMinR = r->x + 1024;
+	xMinR = r->x + BLOCK_SIZE;
 	xMaxR = xMinR + ((r->y_size - 2) << 10);
 	yMinR = r->maxceiling;
 	yMaxR = r->minfloor;
-	zMinR = r->z + 1024;
+	zMinR = r->z + BLOCK_SIZE;
 	zMaxR = zMinR + ((r->x_size - 2) << 10);
 
 	if (xMin >= xMinR && xMax <= xMaxR && yMin >= yMinR && yMax <= yMaxR && zMin >= zMinR && zMax <= zMaxR)
@@ -1710,12 +1710,12 @@ void calc_animating_item_clip_window(ITEM_INFO* item, short* bounds)
 			else if (door[15] > zMaxD)
 				zMaxD = door[15];
 
-			xMinD += xMinR - 1024;
-			xMaxD += xMinR - 1024;
+			xMinD += xMinR - BLOCK_SIZE;
+			xMaxD += xMinR - BLOCK_SIZE;
 			yMinD += yMinR;
 			yMaxD += yMinR;
-			zMinD += zMinR - 1024;
-			zMaxD += zMinR - 1024;
+			zMinD += zMinR - BLOCK_SIZE;
+			zMaxD += zMinR - BLOCK_SIZE;
 
 			if (xMinD <= xMax && xMaxD >= xMin && yMinD <= yMax && yMaxD >= yMin && zMinD <= zMax && zMaxD >= zMin)
 				break;

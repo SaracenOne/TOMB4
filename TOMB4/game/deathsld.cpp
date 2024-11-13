@@ -12,7 +12,20 @@
 #include "lara.h"
 #include "objects.h"
 
-static short DeathSlideBounds[12] = { -256, 256, -100, 100, 256, 512, 0, 0, -4550, 4550, 0, 0 };
+static short DeathSlideBounds[] = {
+	-CLICK_SIZE,
+	CLICK_SIZE,
+	-100,
+	100,
+	CLICK_SIZE,
+	HALF_BLOCK_SIZE,
+	0,
+	0,
+	-DEGREES_TO_ROTATION(25),
+	DEGREES_TO_ROTATION(25),
+	0,
+	0
+};
 static PHD_VECTOR DeathSlidePosition = { 0, 0, 371 };
 
 void InitialiseDeathSlide(short item_number)
@@ -100,13 +113,13 @@ void ControlDeathSlide(short item_number)
 		}
 
 		x = item->pos.x_pos + (phd_sin(item->pos.y_rot) >> 4);
-		y = item->pos.y_pos + 64;
+		y = item->pos.y_pos + QUARTER_CLICK_SIZE;
 		z = item->pos.z_pos + (phd_cos(item->pos.y_rot) >> 4);
 		floor = GetFloor(x, y, z, &room_number);
 		h = GetHeight(floor, x, y, z);
 		c = GetCeiling(floor, x, y, z);
 
-		if (h <= y + 256 || c >= y - 256)
+		if (h <= y + CLICK_SIZE || c >= y - CLICK_SIZE)
 		{
 			if (lara_item->current_anim_state == AS_DEATHSLIDE)
 			{

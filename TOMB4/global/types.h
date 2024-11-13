@@ -26,6 +26,26 @@
 #define SetCutNotPlayed(num)	(CutSceneTriggered &= ~(1 << (num)))
 #define CheckCutPlayed(num)	(CutSceneTriggered & (1 << (num)))
 
+
+#define POP_BONE_FLAG						(1 << 0)
+#define PUSH_BONE_FLAG						(1 << 1)
+#define X_ROTATION_FLAG						(1 << 2)
+#define Y_ROTATION_FLAG						(1 << 3)
+#define Z_ROTATION_FLAG						(1 << 4)
+
+#define QUARTER_CLICK_SIZE					64
+#define HALF_CLICK_SIZE						(QUARTER_CLICK_SIZE * 2)
+#define CLICK_SIZE							(HALF_CLICK_SIZE * 2)
+#define HALF_BLOCK_SIZE						(CLICK_SIZE * 2)
+#define BLOCK_SIZE							(HALF_BLOCK_SIZE * 2)
+
+#define DEFAULT_FOV							80
+#define ONE_DEGREE							182
+#define HALF_DEGREE							91
+
+#define DEGREES_TO_ROTATION(deg)			deg * ONE_DEGREE
+#define HALF_DEGREES_TO_ROTATION(half_deg)	half_deg * HALF_DEGREE
+
 #define NO_HEIGHT	-32512
 #define NO_ITEM	-1
 #define FVF (D3DFVF_TEX2 | D3DFVF_SPECULAR | D3DFVF_DIFFUSE | D3DFVF_XYZRHW)

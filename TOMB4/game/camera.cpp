@@ -50,7 +50,7 @@ static char CameraSnaps = 0;
 static GAME_VECTOR static_lookcamp;
 static GAME_VECTOR static_lookcamt;
 
-bool tr5_camera_behaviour = true;
+bool tr5_camera_behaviour = false;
 
 void InitialiseCamera()
 {
@@ -60,7 +60,7 @@ void InitialiseCamera()
 
 	last_target.x = lara_item->pos.x_pos;
 	camera.target.x = last_target.x;
-	camera.shift = lara_item->pos.y_pos - 1024;
+	camera.shift = lara_item->pos.y_pos - BLOCK_SIZE;
 	last_target.y = camera.shift;
 	camera.target.y = camera.shift;
 	last_target.z = lara_item->pos.z_pos;
@@ -80,7 +80,7 @@ void InitialiseCamera()
 	camera.bounce = 0;
 	camera.number = -1;
 	camera.fixed_camera = 0;
-	AlterFOV(14560);
+	AlterFOV(DEGREES_TO_ROTATION(DEFAULT_FOV));
 	UseForcedFixedCamera = 0;
 	CalculateCamera();
 }
@@ -169,10 +169,10 @@ void MoveCamera(GAME_VECTOR* ideal, long speed)
 	room_number = camera.pos.room_number;
 
 	// T4Plus - swamps
-	floor = GetFloor(wx, wy + 256, wz, &room_number);
+	floor = GetFloor(wx, wy + CLICK_SIZE, wz, &room_number);
 	if (T4PlusIsRoomSwamp(&room[room_number]))
 	{
-		wy = room[room_number].maxceiling - 256;
+		wy = room[room_number].maxceiling - CLICK_SIZE;
 		floor = GetFloor(wx, wy, wz, &camera.pos.room_number);
 	}
 	
@@ -222,12 +222,12 @@ void MoveCamera(GAME_VECTOR* ideal, long speed)
 	height = GetHeight(floor, wx, wy, wz);
 	ceiling = GetCeiling(floor, wx, wy, wz);
 
-	if (wy - 255 < ceiling && height < wy + 255 && ceiling < height && ceiling != NO_HEIGHT && height != NO_HEIGHT)
+	if (wy - (CLICK_SIZE - 1) < ceiling && height < wy + (CLICK_SIZE - 1) && ceiling < height && ceiling != NO_HEIGHT && height != NO_HEIGHT)
 		camera.pos.y = (height + ceiling) >> 1;
-	else if (height < wy + 255 && ceiling < height && ceiling != NO_HEIGHT && height != NO_HEIGHT)
-		camera.pos.y = height - 255;
-	else if (wy - 255 < ceiling && ceiling < height && ceiling != NO_HEIGHT && height != NO_HEIGHT)
-		camera.pos.y = ceiling + 255;
+	else if (height < wy + (CLICK_SIZE - 1) && ceiling < height && ceiling != NO_HEIGHT && height != NO_HEIGHT)
+		camera.pos.y = height - (CLICK_SIZE - 1);
+	else if (wy - (CLICK_SIZE - 1) < ceiling && ceiling < height && ceiling != NO_HEIGHT && height != NO_HEIGHT)
+		camera.pos.y = ceiling + (CLICK_SIZE - 1);
 	else if (ceiling >= height || height == NO_HEIGHT || ceiling == NO_HEIGHT)
 	{
 		camera.pos.x = ideal->x;
@@ -378,12 +378,12 @@ long CameraCollisionBounds(GAME_VECTOR* ideal, long push, long yfirst)
 		h = GetHeight(floor, wx, wy, wz);
 		c = GetCeiling(floor, wx, wy, wz);
 
-		if (c > wy - 255 && h < wy + 255 && c < h && c != NO_HEIGHT && h != NO_HEIGHT)
+		if (c > wy - (CLICK_SIZE - 1) && h < wy + (CLICK_SIZE - 1) && c < h && c != NO_HEIGHT && h != NO_HEIGHT)
 			wy = (h + c) >> 1;
-		else if (h < wy + 255 && c < h && c != NO_HEIGHT && h != NO_HEIGHT)
-			wy = h - 255;
-		else if (c > wy - 255 && c < h && c != NO_HEIGHT && h != NO_HEIGHT)
-			wy = c + 255;
+		else if (h < wy + (CLICK_SIZE - 1) && c < h && c != NO_HEIGHT && h != NO_HEIGHT)
+			wy = h - (CLICK_SIZE - 1);
+		else if (c > wy - (CLICK_SIZE - 1) && c < h && c != NO_HEIGHT && h != NO_HEIGHT)
+			wy = c + (CLICK_SIZE - 1);
 	}
 
 	room_number = ideal->room_number;
@@ -425,12 +425,12 @@ long CameraCollisionBounds(GAME_VECTOR* ideal, long push, long yfirst)
 		h = GetHeight(floor, wx, wy, wz);
 		c = GetCeiling(floor, wx, wy, wz);
 
-		if (c > wy - 255 && h < wy + 255 && c < h && c != NO_HEIGHT && h != NO_HEIGHT)
+		if (c > wy - (CLICK_SIZE - 1) && h < wy + (CLICK_SIZE - 1) && c < h && c != NO_HEIGHT && h != NO_HEIGHT)
 			wy = (h + c) >> 1;
-		else if (h < wy + 255 && c < h && c != NO_HEIGHT && h != NO_HEIGHT)
-			wy = h - 255;
-		else if (c > wy - 255 && c < h && c != NO_HEIGHT && h != NO_HEIGHT)
-			wy = c + 255;
+		else if (h < wy + (CLICK_SIZE - 1) && c < h && c != NO_HEIGHT && h != NO_HEIGHT)
+			wy = h - (CLICK_SIZE - 1);
+		else if (c > wy - (CLICK_SIZE - 1) && c < h && c != NO_HEIGHT && h != NO_HEIGHT)
+			wy = c + (CLICK_SIZE - 1);
 	}
 
 	room_number = ideal->room_number;
@@ -554,8 +554,8 @@ void UpdateCameraElevation() {
 			GetLaraJointPos(&pos, camera.lara_node);
 		}
 		pos1.x = 0;
-		pos1.y = -256;
-		pos1.z = 2048;
+		pos1.y = -CLICK_SIZE;
+		pos1.z = (BLOCK_SIZE * 2);
 		if (camera.item != NULL) {
 			GetJointAbsPosition(camera.item, &pos1, camera.lara_node);
 		} else {
@@ -575,7 +575,7 @@ void ChaseCamera(ITEM_INFO* item)
 {
 	FLOOR_INFO* floor;
 	GAME_VECTOR ideal;
-	GAME_VECTOR ideals[5];
+	GAME_VECTOR ideals[MAX_CAMERA_CHASE_IDEALS];
 	GAME_VECTOR temp[2];
 	long distance, dx, dz, farthest, farthestnum, h, c, wx, wy, wz;
 	short angle, room_number;
@@ -593,27 +593,27 @@ void ChaseCamera(ITEM_INFO* item)
 	}
 
 	if (tr5_camera_behaviour) {
-		if (camera.actual_elevation > 15470)
-			camera.actual_elevation = 15470;
-		else if (camera.actual_elevation < -15470)
-			camera.actual_elevation = -15470;
+		if (camera.actual_elevation > DEGREES_TO_ROTATION(85))
+			camera.actual_elevation = DEGREES_TO_ROTATION(85);
+		else if (camera.actual_elevation < -DEGREES_TO_ROTATION(85))
+			camera.actual_elevation = -DEGREES_TO_ROTATION(85);
 
 		distance = camera.target_distance * phd_cos(camera.actual_elevation) >> W2V_SHIFT;
 	} else {
-		if (camera.target_elevation > 15470)
-			camera.target_elevation = 15470;
-		else if (camera.target_elevation < -15470)
-			camera.target_elevation = -15470;
+		if (camera.target_elevation > DEGREES_TO_ROTATION(85))
+			camera.target_elevation = DEGREES_TO_ROTATION(85);
+		else if (camera.target_elevation < -DEGREES_TO_ROTATION(85))
+			camera.target_elevation = -DEGREES_TO_ROTATION(85);
 
 		distance = camera.target_distance * phd_cos(camera.target_elevation) >> W2V_SHIFT;
 	}
 
 	room_number = camera.target.room_number;
-	floor = GetFloor(camera.target.x, camera.target.y + 256, camera.target.z, &room_number);
+	floor = GetFloor(camera.target.x, camera.target.y + CLICK_SIZE, camera.target.z, &room_number);
 
 	if (T4PlusIsRoomSwamp(&room[room_number]))
 	{
-		camera.target.y = room[room_number].maxceiling - 256;
+		camera.target.y = room[room_number].maxceiling - CLICK_SIZE;
 	}
 
 	wx = camera.target.x;
@@ -665,20 +665,20 @@ void ChaseCamera(ITEM_INFO* item)
 	}
 
 	if (tr5_camera_behaviour) {
-		for (int i = 0; i < 5; i++)
+		for (int i = 0; i < MAX_CAMERA_CHASE_IDEALS; i++)
 			ideals[i].y = camera.target.y + (camera.target_distance * phd_sin(camera.actual_elevation) >> W2V_SHIFT);
 	} else {
-		for (int i = 0; i < 5; i++)
+		for (int i = 0; i < MAX_CAMERA_CHASE_IDEALS; i++)
 			ideals[i].y = (camera.target_distance * phd_sin(camera.target_elevation) >> W2V_SHIFT) + camera.target.y;
 	}
 
 	farthest = 0x7FFFFFFF;
 	farthestnum = 0;
 
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < MAX_CAMERA_CHASE_IDEALS; i++)
 	{
 		if (i) {
-			angle = (i - 1) << 14;
+			angle = (i - 1) << W2V_SHIFT;
 		} else {
 			if (tr5_camera_behaviour) {
 				angle = camera.actual_angle;
@@ -760,7 +760,7 @@ void ChaseCamera(ITEM_INFO* item)
 	ideal.y = ideals[farthestnum].y;
 	ideal.z = ideals[farthestnum].z;
 	ideal.room_number = ideals[farthestnum].room_number;
-	CameraCollisionBounds(&ideal, 384, 1);
+	CameraCollisionBounds(&ideal, (CLICK_SIZE + HALF_CLICK_SIZE), 1);
 
 	if (camera.old_type == FIXED_CAMERA)
 		camera.speed = 1;
@@ -772,7 +772,7 @@ void CombatCamera(ITEM_INFO* item)
 {
 	FLOOR_INFO* floor;
 	GAME_VECTOR ideal;
-	GAME_VECTOR ideals[9];
+	GAME_VECTOR ideals[MAX_CAMERA_CHASE_IDEALS];
 	GAME_VECTOR temp[2];
 	long distance, dx, dz, farthest, farthestnum, h, c, wx, wy, wz;
 	short angle, room_number;
@@ -800,7 +800,7 @@ void CombatCamera(ITEM_INFO* item)
 			} else {
 				camera.target_elevation = lara.head_x_rot + lara.torso_x_rot + item->pos.x_rot + mod_camera_info->combat_camera_vertical_orientation;
 			}
-			camera.target_elevation = lara.head_x_rot + lara.torso_x_rot + item->pos.x_rot - 2730;
+			camera.target_elevation = lara.head_x_rot + lara.torso_x_rot + item->pos.x_rot - DEGREES_TO_ROTATION(15);
 		}
 		else {
 			camera.target_angle = lara.head_y_rot + lara.torso_y_rot + item->pos.y_rot;
@@ -814,10 +814,10 @@ void CombatCamera(ITEM_INFO* item)
 
 
 	room_number = camera.target.room_number;
-	floor = GetFloor(camera.target.x, camera.target.y + 256, camera.target.z, &room_number);
+	floor = GetFloor(camera.target.x, camera.target.y + CLICK_SIZE, camera.target.z, &room_number);
 
 	if (T4PlusIsRoomSwamp(&room[room_number])) {
-		camera.target.y = room[room_number].maxceiling - 256;
+		camera.target.y = room[room_number].maxceiling - CLICK_SIZE;
 	}
 
 	wx = camera.target.x;
@@ -827,19 +827,19 @@ void CombatCamera(ITEM_INFO* item)
 	h = GetHeight(floor, wx, wy, wz);
 	c = GetCeiling(floor, wx, wy, wz);
 
-	if (c + 64 > h - 64 && h != NO_HEIGHT && c != NO_HEIGHT)
+	if (c + QUARTER_CLICK_SIZE > h - QUARTER_CLICK_SIZE && h != NO_HEIGHT && c != NO_HEIGHT)
 	{
 		camera.target.y = (c + h) >> 1;
 		camera.target_elevation = 0;
 	}
-	else if (camera.target.y > h - 64 && h != NO_HEIGHT)
+	else if (camera.target.y > h - QUARTER_CLICK_SIZE && h != NO_HEIGHT)
 	{
-		camera.target.y = h - 64;
+		camera.target.y = h - QUARTER_CLICK_SIZE;
 		camera.target_elevation = 0;
 	}
-	else if (camera.target.y < c + 64 && c != NO_HEIGHT)
+	else if (camera.target.y < c + QUARTER_CLICK_SIZE && c != NO_HEIGHT)
 	{
-		camera.target.y = c + 64;
+		camera.target.y = c + QUARTER_CLICK_SIZE;
 		camera.target_elevation = 0;
 	}
 
@@ -876,20 +876,20 @@ void CombatCamera(ITEM_INFO* item)
 	}
 
 	if (tr5_camera_behaviour) {
-		for (int i = 0; i < 5; i++)
+		for (int i = 0; i < MAX_CAMERA_CHASE_IDEALS; i++)
 			ideals[i].y = camera.target.y + (camera.target_distance * phd_sin(camera.actual_elevation) >> W2V_SHIFT);
 	} else {
-		for (int i = 0; i < 5; i++)
+		for (int i = 0; i < MAX_CAMERA_CHASE_IDEALS; i++)
 			ideals[i].y = (camera.target_distance * phd_sin(camera.target_elevation) >> W2V_SHIFT) + camera.target.y;
 	}
 
 	farthest = 0x7FFFFFFF;
 	farthestnum = 0;
 
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < MAX_CAMERA_CHASE_IDEALS; i++)
 	{
 		if (i) {
-			angle = (i - 1) << 14;
+			angle = (i - 1) << W2V_SHIFT;
 		} else {
 			if (tr5_camera_behaviour) {
 				angle = camera.actual_angle;
@@ -971,7 +971,7 @@ void CombatCamera(ITEM_INFO* item)
 	ideal.y = ideals[farthestnum].y;
 	ideal.z = ideals[farthestnum].z;
 	ideal.room_number = ideals[farthestnum].room_number;
-	CameraCollisionBounds(&ideal, 384, 1);
+	CameraCollisionBounds(&ideal, (CLICK_SIZE + HALF_CLICK_SIZE), 1);
 
 	if (camera.old_type == FIXED_CAMERA)
 		camera.speed = 1;
@@ -1000,19 +1000,19 @@ void LookCamera(ITEM_INFO* item)
 	lara.head_x_rot <<= 1;
 	lara.head_y_rot <<= 1;
 
-	if (lara.head_x_rot > 10010)
-		lara.head_x_rot = 10010;
-	else if (lara.head_x_rot < -13650)
-		lara.head_x_rot = -13650;
+	if (lara.head_x_rot > DEGREES_TO_ROTATION(55))
+		lara.head_x_rot = DEGREES_TO_ROTATION(55);
+	else if (lara.head_x_rot < -DEGREES_TO_ROTATION(75))
+		lara.head_x_rot = -DEGREES_TO_ROTATION(75);
 
-	if (lara.head_y_rot < -14560)
-		lara.head_y_rot = -14560;
-	else if (lara.head_y_rot > 14560)
-		lara.head_y_rot = 14560;
+	if (lara.head_y_rot < -DEGREES_TO_ROTATION(80))
+		lara.head_y_rot = -DEGREES_TO_ROTATION(80);
+	else if (lara.head_y_rot > DEGREES_TO_ROTATION(80))
+		lara.head_y_rot = DEGREES_TO_ROTATION(80);
 
 	pos1.x = 0;
 	pos1.y = mod_camera_info->look_camera_height;
-	pos1.z = 64;
+	pos1.z = QUARTER_CLICK_SIZE;
 	GetLaraJointPos(&pos1, LMX_HEAD);
 	room_number = lara_item->room_number;
 	floor = GetFloor(pos1.x, pos1.y, pos1.z, &room_number);
@@ -1028,9 +1028,9 @@ void LookCamera(ITEM_INFO* item)
 
 		// T4Plus - swamp
 		room_number = lara_item->room_number;
-		floor = GetFloor(pos1.x, pos1.y + 256, pos1.z, &room_number);
+		floor = GetFloor(pos1.x, pos1.y + CLICK_SIZE, pos1.z, &room_number);
 		if (T4PlusIsRoomSwamp(&room[room_number]))
-			pos1.y = room[room_number].maxceiling - 256;
+			pos1.y = room[room_number].maxceiling - CLICK_SIZE;
 
 		floor = GetFloor(pos1.x, pos1.y, pos1.z, &room_number);
 		h = GetHeight(floor, pos1.x, pos1.y, pos1.z);
@@ -1040,14 +1040,14 @@ void LookCamera(ITEM_INFO* item)
 		{
 			pos1.x = 0;
 			pos1.y = mod_camera_info->look_camera_height;
-			pos1.z = -64;
+			pos1.z = -QUARTER_CLICK_SIZE;
 			GetLaraJointPos(&pos1, LMX_HEAD);
 
 			room_number = lara_item->room_number;
-			floor = GetFloor(pos1.x, pos1.y + 256, pos1.z, &room_number);
+			floor = GetFloor(pos1.x, pos1.y + CLICK_SIZE, pos1.z, &room_number);
 
 			if (T4PlusIsRoomSwamp(&room[room_number]))
-				pos1.y = room[room_number].maxceiling - 256;
+				pos1.y = room[room_number].maxceiling - CLICK_SIZE;
 
 			floor = GetFloor(pos1.x, pos1.y, pos1.z, &room_number);
 			h = GetHeight(floor, pos1.x, pos1.y, pos1.z);
@@ -1057,7 +1057,7 @@ void LookCamera(ITEM_INFO* item)
 			{
 				pos1.x = 0;
 				pos1.y = mod_camera_info->look_camera_height;
-				pos1.z = -64;
+				pos1.z = -QUARTER_CLICK_SIZE;
 				GetLaraJointPos(&pos1, LMX_HEAD);
 			}
 		}
@@ -1069,7 +1069,7 @@ void LookCamera(ITEM_INFO* item)
 	GetLaraJointPos(&pos2, LMX_HEAD);
 	pos3.x = 0;
 	pos3.y = 0;
-	pos3.z = 2048;
+	pos3.z = (BLOCK_SIZE * 2);
 	GetLaraJointPos(&pos3, LMX_HEAD);
 	wy = pos1.y;
 	wx = pos1.x;
@@ -1084,10 +1084,10 @@ void LookCamera(ITEM_INFO* item)
 		room_number = room_number2;
 
 		// T4Plus - swamp
-		floor = GetFloor(wx, wy + 256, wz, &room_number2);
+		floor = GetFloor(wx, wy + CLICK_SIZE, wz, &room_number2);
 		if (T4PlusIsRoomSwamp(&room[room_number]))
 		{
-			wy = room[room_number2].maxceiling - 256;
+			wy = room[room_number2].maxceiling - CLICK_SIZE;
 			break;
 		}
 
@@ -1197,12 +1197,12 @@ void LookCamera(ITEM_INFO* item)
 	h = GetHeight(floor, wx, wy, wz);
 	c = GetCeiling(floor, wx, wy, wz);
 
-	if (c > wy - 255 && h<wy + 255 && h > c && c != NO_HEIGHT && h != NO_HEIGHT)
+	if (c > wy - (CLICK_SIZE - 1) && h<wy + (CLICK_SIZE - 1) && h > c && c != NO_HEIGHT && h != NO_HEIGHT)
 		camera.pos.y = (h + c) >> 1;
-	else if (h < wy + 255 && h > c && c != NO_HEIGHT && h != NO_HEIGHT)
-		camera.pos.y = h - 255;
-	else if (c > wy - 255 && h > c && c != NO_HEIGHT && h != NO_HEIGHT)
-		camera.pos.y = c + 255;
+	else if (h < wy + (CLICK_SIZE - 1) && h > c && c != NO_HEIGHT && h != NO_HEIGHT)
+		camera.pos.y = h - (CLICK_SIZE - 1);
+	else if (c > wy - (CLICK_SIZE - 1) && h > c && c != NO_HEIGHT && h != NO_HEIGHT)
+		camera.pos.y = c + (CLICK_SIZE - 1);
 
 	wx = camera.pos.x;
 	wy = camera.pos.y;
@@ -1215,7 +1215,7 @@ void LookCamera(ITEM_INFO* item)
 	// T4Plus - swamp
 	if (T4PlusIsRoomSwamp(&room[room_number]))
 	{
-		camera.pos.y = room[room_number].y - 256;
+		camera.pos.y = room[room_number].y - CLICK_SIZE;
 	}
 	else if (wy < c || wy > h || c >= h || h == NO_HEIGHT || c == NO_HEIGHT)
 		mgLOS(&camera.target, &camera.pos, 0);
@@ -1323,7 +1323,7 @@ void BinocularCamera(ITEM_INFO* item)
 		{
 			ExittingBinos = 0;
 			BinocularRange = 0;
-			AlterFOV(14560);
+			AlterFOV(DEGREES_TO_ROTATION(DEFAULT_FOV));
 			lara_item->mesh_bits = -1;
 			lara.Busy = 0;
 			lara.head_y_rot = 0;
@@ -1337,19 +1337,19 @@ void BinocularCamera(ITEM_INFO* item)
 	}
 
 	lara_item->mesh_bits = 0;
-	AlterFOV(short(7 * (2080 - BinocularRange)));
+	AlterFOV(short(7 * (((BLOCK_SIZE * 2) + (QUARTER_CLICK_SIZE / 2)) - BinocularRange)));
 	hxrot = lara.head_x_rot << 1;
 	hyrot = lara.head_y_rot;
 
-	if (hxrot > 13650)
-		hxrot = 13650;
-	else if (hxrot < -13650)
-		hxrot = -13650;
+	if (hxrot > DEGREES_TO_ROTATION(75))
+		hxrot = DEGREES_TO_ROTATION(75);
+	else if (hxrot < -DEGREES_TO_ROTATION(75))
+		hxrot = -DEGREES_TO_ROTATION(75);
 
-	if (hyrot > 14560)
-		hyrot = 14560;
-	else if (hyrot < -14560)
-		hyrot = -14560;
+	if (hyrot > DEGREES_TO_ROTATION(80))
+		hyrot = DEGREES_TO_ROTATION(80);
+	else if (hyrot < -DEGREES_TO_ROTATION(80))
+		hyrot = -DEGREES_TO_ROTATION(80);
 
 	hyrot += lara_item->pos.y_rot;
 	pos1.x = lara_item->pos.x_pos;
@@ -1359,10 +1359,10 @@ void BinocularCamera(ITEM_INFO* item)
 	floor = GetFloor(pos1.x, pos1.y, pos1.z, &room_number);
 	c = GetCeiling(floor, pos1.x, pos1.y, pos1.z);
 
-	if (c <= pos1.y - 768)
-		pos1.y -= 768;
+	if (c <= pos1.y - (HALF_CLICK_SIZE + CLICK_SIZE))
+		pos1.y -= (HALF_CLICK_SIZE + CLICK_SIZE);
 	else
-		pos1.y += 64;
+		pos1.y += QUARTER_CLICK_SIZE;
 
 	speed = (20736 * phd_cos(hxrot)) >> W2V_SHIFT;
 	pos3.x = pos1.x + (phd_sin(hyrot) * speed >> W2V_SHIFT);
@@ -1433,7 +1433,7 @@ void BinocularCamera(ITEM_INFO* item)
 		camera.mike_pos.z = camera.pos.z + (phd_cos(dx) * phd_persp >> W2V_SHIFT);
 	}
 
-	BinocStep = inputBusy & IN_WALK ? 32 : 64;
+	BinocStep = inputBusy & IN_WALK ? (QUARTER_CLICK_SIZE / 2) : QUARTER_CLICK_SIZE;
 
 	if (inputBusy & IN_SPRINT)
 		BinocularRange -= BinocStep;
@@ -1591,10 +1591,14 @@ void CalculateCamera()
 
 	bounds = GetBoundsAccurate(item);
 
-	if (fixed_camera)
-		y = item->pos.y_pos + (bounds[2] + bounds[3]) / 2;
-	else
-		y = item->pos.y_pos + bounds[3] + ((3 * (bounds[2] - bounds[3])) >> 2);
+	if (tr5_camera_behaviour) {
+		y = ((bounds[2] + bounds[3]) >> 1) + item->pos.y_pos - CLICK_SIZE;
+	} else {
+		if (fixed_camera)
+			y = item->pos.y_pos + (bounds[2] + bounds[3]) / 2;
+		else
+			y = item->pos.y_pos + bounds[3] + ((3 * (bounds[2] - bounds[3])) >> 2);
+	}
 
 	if (camera.item && !fixed_camera)
 	{
@@ -1606,24 +1610,24 @@ void CalculateCamera()
 		bounds = GetBoundsAccurate(camera.item);
 		tilt = (short)phd_atan(shift, y - (bounds[2] + bounds[3]) / 2 - camera.item->pos.y_pos) >> 1;
 
-		if (gotit > -9100 && gotit < 9100 && tilt > -15470 && tilt < 15470)
+		if (gotit > -DEGREES_TO_ROTATION(50) && gotit < DEGREES_TO_ROTATION(50) && tilt > -DEGREES_TO_ROTATION(85) && tilt < DEGREES_TO_ROTATION(85))
 		{
 			change = gotit - lara.head_y_rot;
 
-			if (change > 728)
-				lara.head_y_rot += 728;
-			else if (change < -728)
-				lara.head_y_rot -= 728;
+			if (change > DEGREES_TO_ROTATION(4))
+				lara.head_y_rot += DEGREES_TO_ROTATION(4);
+			else if (change < -DEGREES_TO_ROTATION(4))
+				lara.head_y_rot -= DEGREES_TO_ROTATION(4);
 			else
 				lara.head_y_rot = gotit;
 
 			lara.torso_y_rot = lara.head_y_rot;
 			change = tilt - lara.head_x_rot;
 
-			if (change > 728)
-				lara.head_x_rot += 728;
-			else if (change < -728)
-				lara.head_x_rot -= 728;
+			if (change > DEGREES_TO_ROTATION(4))
+				lara.head_x_rot += DEGREES_TO_ROTATION(4);
+			else if (change < -DEGREES_TO_ROTATION(4))
+				lara.head_x_rot -= DEGREES_TO_ROTATION(4);
 			else
 				lara.head_x_rot = tilt;
 

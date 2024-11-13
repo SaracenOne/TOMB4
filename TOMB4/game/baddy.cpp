@@ -57,43 +57,43 @@ void InitialiseBaddy(short item_number)
 
 	if (!flag || (flag > 4 && flag < 7))
 	{
-		item->anim_number = objects[obj_num].anim_index + 18;
+		item->anim_number = objects[obj_num].anim_index + BADDY_STAND_IDLE_ANIMATION;
 		item->current_anim_state = 0;
 		item->goal_anim_state = 0;
 	}
 	else if (flag == 1)
 	{
-		item->anim_number = objects[obj_num].anim_index + 47;
+		item->anim_number = objects[obj_num].anim_index + BADDY_STAND_TO_JUMP_RIGHT_ANIMATION;
 		item->current_anim_state = 24;
 		item->goal_anim_state = 24;
 	}
 	else if (flag == 2)
 	{
-		item->anim_number = objects[obj_num].anim_index + 24;
+		item->anim_number = objects[obj_num].anim_index + BADDY_STAND_TO_ROLL_LEFT_ANIMATION;
 		item->current_anim_state = 23;
 		item->goal_anim_state = 23;
 	}
 	else if (flag == 3)
 	{
-		item->anim_number = objects[obj_num].anim_index + 29;
+		item->anim_number = objects[obj_num].anim_index + BADDY_CROUCH_ANIMATION;
 		item->current_anim_state = 26;
 		item->goal_anim_state = 26;
 	}
 	else if (flag == 4)
 	{
-		item->anim_number = objects[obj_num].anim_index + 62;
+		item->anim_number = objects[obj_num].anim_index + BADDY_CLIMB_4_CLICKS_ANIMATION;
 		item->current_anim_state = 39;
 		item->goal_anim_state = 39;
-		item->pos.x_pos += 256 * phd_sin(item->pos.y_rot) >> W2V_SHIFT;
-		item->pos.z_pos += 256 * phd_cos(item->pos.y_rot) >> W2V_SHIFT;
+		item->pos.x_pos += CLICK_SIZE * phd_sin(item->pos.y_rot) >> W2V_SHIFT;
+		item->pos.z_pos += CLICK_SIZE * phd_cos(item->pos.y_rot) >> W2V_SHIFT;
 	}
 	else if (flag > 100)
 	{
-		item->anim_number = objects[obj_num].anim_index + 29;
+		item->anim_number = objects[obj_num].anim_index + BADDY_CROUCH_ANIMATION;
 		item->current_anim_state = 26;
 		item->goal_anim_state = 26;
-		item->pos.x_pos += 256 * phd_sin(item->pos.y_rot) >> W2V_SHIFT;
-		item->pos.z_pos += 256 * phd_cos(item->pos.y_rot) >> W2V_SHIFT;
+		item->pos.x_pos += CLICK_SIZE * phd_sin(item->pos.y_rot) >> W2V_SHIFT;
+		item->pos.z_pos += CLICK_SIZE * phd_cos(item->pos.y_rot) >> W2V_SHIFT;
 		item->item_flags[3] = flag;
 	}
 
@@ -170,13 +170,13 @@ void BaddyControl(short item_number)
 	farheight = GetHeight(floor, x, y, z);
 
 	if ((baddy->enemy && item->box_number == baddy->enemy->box_number) ||
-		y >= nearheight - 384 || y >= midheight + 256 || y <= midheight - 256)
+		y >= nearheight - (CLICK_SIZE + HALF_CLICK_SIZE) || y >= midheight + CLICK_SIZE || y <= midheight - CLICK_SIZE)
 		jump_ahead = 0;
 	else
 		jump_ahead = 1;
 
 	if ((baddy->enemy && item->box_number == baddy->enemy->box_number) ||
-		y >= nearheight - 384 || y >= midheight - 384 || y >= farheight + 256 || y <= farheight - 256)
+		y >= nearheight - (CLICK_SIZE + HALF_CLICK_SIZE) || y >= midheight - (CLICK_SIZE + HALF_CLICK_SIZE) || y >= farheight + CLICK_SIZE || y <= farheight - CLICK_SIZE)
 		long_jump_ahead = 0;
 	else
 		long_jump_ahead = 1;
@@ -223,7 +223,7 @@ void BaddyControl(short item_number)
 		case 18:
 		case 19:
 		case 20:
-			item->anim_number = objects[obj_num].anim_index + 59;
+			item->anim_number = objects[obj_num].anim_index + BADDY_MONKEY_TO_FREEFALL_ANIMATION;
 			item->frame_number = anims[item->anim_number].frame_base;
 			item->current_anim_state = 35;
 			item->speed = 0;
@@ -265,7 +265,7 @@ void BaddyControl(short item_number)
 			break;
 
 		default:
-			item->anim_number = objects[obj_num].anim_index + 45;
+			item->anim_number = objects[obj_num].anim_index + BADDY_STAND_DEATH_ANIMATION;
 			item->frame_number = anims[item->anim_number].frame_base;
 			item->current_anim_state = 32;
 			baddy->LOT.is_jumping = 1;
@@ -332,7 +332,7 @@ void BaddyControl(short item_number)
 		angle = CreatureTurn(item, baddy->maximum_turn);
 		enemy = baddy->enemy;
 
-		if (item->hit_status || (larainfo.distance < 0x100000 || TargetVisible(item, &larainfo)) && abs(lara_item->pos.y_pos - item->pos.y_pos) < 1024)
+		if (item->hit_status || (larainfo.distance < 0x100000 || TargetVisible(item, &larainfo)) && abs(lara_item->pos.y_pos - item->pos.y_pos) < BLOCK_SIZE)
 			baddy->alerted = 1;
 
 		baddy->enemy = enemy;
@@ -351,7 +351,7 @@ void BaddyControl(short item_number)
 			floor = GetFloor(x, y, z, &room_number);
 			h2 = GetHeight(floor, x, y, z);
 
-			if (abs(h2 - y) > 256 || h1 + 512 >= y)
+			if (abs(h2 - y) > CLICK_SIZE || h1 + HALF_BLOCK_SIZE >= y)
 				can_jump = 0;
 			else
 				can_jump = 1;
@@ -368,7 +368,7 @@ void BaddyControl(short item_number)
 			floor = GetFloor(x, y, z, &room_number);
 			h2 = GetHeight(floor, x, y, z);
 
-			if (abs(h2 - y) > 256 || h1 + 512 >= y)
+			if (abs(h2 - y) > CLICK_SIZE || h1 + HALF_BLOCK_SIZE >= y)
 				can_roll = 0;
 			else
 				can_roll = 1;
@@ -420,7 +420,7 @@ void BaddyControl(short item_number)
 			else if (jump_ahead || long_jump_ahead)
 			{
 				baddy->maximum_turn = 0;
-				item->anim_number = objects[obj_num].anim_index + 55;
+				item->anim_number = objects[obj_num].anim_index + BADDY_STAND_TO_JUMP_FORWARD_ANIMATION;
 				item->frame_number = anims[item->anim_number].frame_base;
 				item->current_anim_state = 33;
 
@@ -487,7 +487,7 @@ void BaddyControl(short item_number)
 		case 1:
 			baddy->LOT.is_jumping = 0;
 			baddy->LOT.is_monkeying = 0;
-			baddy->maximum_turn = 1274;
+			baddy->maximum_turn = DEGREES_TO_ROTATION(7);
 			baddy->flags = 0;
 
 			if (larainfo.ahead)
@@ -527,11 +527,11 @@ void BaddyControl(short item_number)
 			if (info.ahead)
 				head = info.angle;
 
-			baddy->maximum_turn = 2002;
+			baddy->maximum_turn = DEGREES_TO_ROTATION(11);
 			tilt = angle / 2;
 
 			if (item->object_number == BADDY_2 && item->frame_number == anims[item->anim_number].frame_base + 11 && farheight == nearheight &&
-				abs(nearheight - y) < 384 && (info.angle > -4096 && info.angle < 4096 && info.distance < 0x900000 || midheight >= nearheight + 512))
+				abs(nearheight - y) < (CLICK_SIZE + HALF_CLICK_SIZE) && (info.angle > -4096 && info.angle < 4096 && info.distance < 0x900000 || midheight >= nearheight + 512))
 			{
 				item->goal_anim_state = 30;
 				baddy->maximum_turn = 0;
@@ -549,7 +549,7 @@ void BaddyControl(short item_number)
 
 		case 8:
 			baddy->maximum_turn = 0;
-			CreatureYRot(&item->pos, info.angle, 2002);
+			CreatureYRot(&item->pos, info.angle, DEGREES_TO_ROTATION(11));
 
 			if (larainfo.distance < 0x718E4 || item != lara.target)
 				item->goal_anim_state = 9;
@@ -597,7 +597,7 @@ void BaddyControl(short item_number)
 				torso_x = info.x_angle;
 			}
 
-			CreatureYRot(&item->pos, info.angle, 1274);
+			CreatureYRot(&item->pos, info.angle, DEGREES_TO_ROTATION(7));
 
 			if (item->frame_number < anims[item->anim_number].frame_base + 13 && !((item->frame_number - anims[item->anim_number].frame_base) & 1))
 			{
@@ -631,12 +631,12 @@ void BaddyControl(short item_number)
 
 			if (item->current_anim_state != 15 || item->frame_number < anims[item->anim_number].frame_base + 12)
 			{
-				if (abs(info.angle) < 1274)
+				if (abs(info.angle) < DEGREES_TO_ROTATION(7))
 					item->pos.y_rot += info.angle;
 				else if (info.angle < 0)
-					item->pos.y_rot -= 1274;
+					item->pos.y_rot -= DEGREES_TO_ROTATION(7);
 				else
-					item->pos.y_rot += 1274;
+					item->pos.y_rot += DEGREES_TO_ROTATION(7);
 			}
 
 			if (!baddy->flags && item->touch_bits & 0x1C000)
@@ -691,7 +691,7 @@ void BaddyControl(short item_number)
 			baddy->LOT.is_jumping = 1;
 			baddy->LOT.is_monkeying = 1;
 			baddy->flags = 0;
-			baddy->maximum_turn = 1274;
+			baddy->maximum_turn = DEGREES_TO_ROTATION(7);
 
 			if (item->box_number == baddy->LOT.target_box || !baddy->monkey_ahead)
 			{
@@ -712,7 +712,7 @@ void BaddyControl(short item_number)
 			break;
 
 		case 21:
-			baddy->maximum_turn = 1274;
+			baddy->maximum_turn = DEGREES_TO_ROTATION(7);
 
 			if (!baddy->flags && item->touch_bits)
 			{
@@ -755,7 +755,7 @@ void BaddyControl(short item_number)
 			break;
 
 		case 27:
-			CreatureYRot(&item->pos, info.angle, 2002);
+			CreatureYRot(&item->pos, info.angle, DEGREES_TO_ROTATION(11));
 
 			if (item->frame_number == anims[item->anim_number].frame_base + 9 && baddy->enemy)
 			{
@@ -793,9 +793,9 @@ void BaddyControl(short item_number)
 
 		case 30:
 
-			if (item->anim_number == objects[obj_num].anim_index + 4)
-				CreatureYRot(&item->pos, info.angle, 1274);
-			else if (item->anim_number == objects[obj_num].anim_index + 18)
+			if (item->anim_number == objects[obj_num].anim_index + BADDY_SOMERSAULT_END_ANIMATION)
+				CreatureYRot(&item->pos, info.angle, DEGREES_TO_ROTATION(7));
+			else if (item->anim_number == objects[obj_num].anim_index + BADDY_STAND_IDLE_ANIMATION)
 				baddy->LOT.is_jumping = 1;
 
 			break;
@@ -821,7 +821,7 @@ void BaddyControl(short item_number)
 		case 33:
 		case 38:
 
-			if (item->item_flags[0] < 0 && item->anim_number != objects[obj_num].anim_index + 55)
+			if (item->item_flags[0] < 0 && item->anim_number != objects[obj_num].anim_index + BADDY_STAND_TO_JUMP_FORWARD_ANIMATION)
 				item->item_flags[0] += 2;
 
 			break;
@@ -840,7 +840,7 @@ void BaddyControl(short item_number)
 	CreatureJoint(item, 1, torso_x);
 	CreatureJoint(item, 2, head);
 
-	if (gfLevelFlags & GF_TRAIN && item->pos.y_pos > -256)
+	if (gfLevelFlags & GF_TRAIN && item->pos.y_pos > -CLICK_SIZE)
 	{
 		item->item_flags[0] = 0;
 		item->hit_points = 0;
@@ -856,7 +856,7 @@ void BaddyControl(short item_number)
 	else if (lara.blindTimer > 100)
 	{
 		baddy->maximum_turn = 0;
-		item->anim_number = objects[obj_num].anim_index + 68;
+		item->anim_number = objects[obj_num].anim_index + BADDY_BLIND_ANIMATION;
 		item->frame_number = anims[item->anim_number].frame_base + (GetRandomControl() & 7);
 		item->current_anim_state = 44;
 	}
@@ -866,35 +866,35 @@ void BaddyControl(short item_number)
 		{
 		case -4:
 			baddy->maximum_turn = 0;
-			item->anim_number = objects[obj_num].anim_index + 65;
+			item->anim_number = objects[obj_num].anim_index + BADDY_JUMP_OFF_4_CLICKS_ANIMATION;
 			item->frame_number = anims[item->anim_number].frame_base;
 			item->current_anim_state = 42;
 			break;
 
 		case -3:
 			baddy->maximum_turn = 0;
-			item->anim_number = objects[obj_num].anim_index + 66;
+			item->anim_number = objects[obj_num].anim_index + BADDY_JUMP_OFF_3_CLICKS_ANIMATION;
 			item->frame_number = anims[item->anim_number].frame_base;
 			item->current_anim_state = 43;
 			break;
 
 		case 2:
 			baddy->maximum_turn = 0;
-			item->anim_number = objects[obj_num].anim_index + 64;
+			item->anim_number = objects[obj_num].anim_index + BADDY_CLIMB_2_CLICKS_ANIMATION;
 			item->frame_number = anims[item->anim_number].frame_base;
 			item->current_anim_state = 41;
 			break;
 
 		case 3:
 			baddy->maximum_turn = 0;
-			item->anim_number = objects[obj_num].anim_index + 63;
+			item->anim_number = objects[obj_num].anim_index + BADDY_CLIMB_3_CLICKS_ANIMATION;
 			item->frame_number = anims[item->anim_number].frame_base;
 			item->current_anim_state = 40;
 			break;
 
 		case 4:
 			baddy->maximum_turn = 0;
-			item->anim_number = objects[obj_num].anim_index + 62;
+			item->anim_number = objects[obj_num].anim_index + BADDY_CLIMB_4_CLICKS_ANIMATION;
 			item->frame_number = anims[item->anim_number].frame_base;
 			item->current_anim_state = 39;
 			break;

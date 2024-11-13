@@ -18,11 +18,11 @@
 
 long SenetTargetX;
 long SenetTargetZ;
-short senet_item[6];
+short senet_item[SENET_ITEM_COUNT];
 char piece_moving = -1;
 char last_throw = 0;
-char senet_board[17];
-char senet_piece[6];
+char senet_board[SENET_BOARD_COUNT];
+char senet_piece[SENET_ITEM_COUNT];
 
 static short GameStixBounds[12] = { -256, 256, -200, 200, -256, 256, -1820, 1820, -5460, 5460, 0, 0 };
 static PHD_VECTOR GameStixPos = { 0, 0, -100 };
@@ -35,10 +35,10 @@ void InitialiseSenet(short item_number)
 	if (senet_item[0])
 		return;
 
-	for (lp = 0; lp < 6; lp++)
+	for (lp = 0; lp < SENET_ITEM_COUNT; lp++)
 		senet_piece[lp] = 0;
 
-	for (lp = 1; lp < 17; lp++)
+	for (lp = 1; lp < SENET_BOARD_COUNT; lp++)
 		senet_board[lp] = 0;
 
 	senet_board[0] = 3;
@@ -51,7 +51,7 @@ void InitialiseSenet(short item_number)
 		{
 		case GAME_PIECE1:
 			senet_item[0] = lp;
-			SenetTargetX = item->pos.x_pos + 1024;
+			SenetTargetX = item->pos.x_pos + BLOCK_SIZE;
 			SenetTargetZ = item->pos.z_pos;
 			break;
 
@@ -84,7 +84,7 @@ void MakeMove(long piece, long displacement)
 
 	if (!senet_piece[piece])
 	{
-		for (lp = 3 * (piece >= 3); lp < short(3 * (piece >= 3)) + 3; lp++)
+		for (lp = SENET_ITEM_MID * (piece >= SENET_ITEM_MID); lp < short(SENET_ITEM_MID * (piece >= SENET_ITEM_MID)) + SENET_ITEM_MID; lp++)
 		{
 			if (lp != piece && !senet_piece[lp])
 				senet_board[senet_piece[piece]] |= num;
@@ -98,7 +98,7 @@ void MakeMove(long piece, long displacement)
 	{
 		senet_board[spot] = 0;
 
-		for (lp = 3 - 3 * (piece >= 3); lp < short(3 - 3 * (piece >= 3)) + 3; lp++)
+		for (lp = SENET_ITEM_MID - SENET_ITEM_MID * (piece >= SENET_ITEM_MID); lp < short(SENET_ITEM_MID - SENET_ITEM_MID * (piece >= SENET_ITEM_MID)) + SENET_ITEM_MID; lp++)
 		{
 			if (senet_piece[lp] == spot)
 			{
@@ -108,12 +108,12 @@ void MakeMove(long piece, long displacement)
 		}
 	}
 
-	if (spot >= 16)
+	if (spot >= (SENET_BOARD_COUNT - 1))
 		senet_piece[piece] = -1;
 	else
 		senet_board[spot] |= num;
 
-	if (spot & 3 && last_throw != 6)
+	if (spot & 3 && last_throw != SENET_ITEM_COUNT)
 		last_throw = -1;
 	else
 		last_throw = 0;
@@ -137,7 +137,7 @@ long CheckSenetWinner(long ourPiece)
 
 	if (ourPiece == 1)
 	{
-		for (lp = 0; lp < 3; lp++)
+		for (lp = 0; lp < SENET_ITEM_MID; lp++)
 		{
 			if (senet_piece[lp] != NO_ITEM)
 				return 0;
@@ -149,7 +149,7 @@ long CheckSenetWinner(long ourPiece)
 	}
 	else
 	{
-		for (lp = 3; lp < 6; lp++)
+		for (lp = SENET_ITEM_MID; lp < SENET_ITEM_COUNT; lp++)
 		{
 			if (senet_piece[lp] != NO_ITEM)
 				return 0;
@@ -190,11 +190,11 @@ void ThrowSticks(ITEM_INFO* item)
 	}
 
 	if (!last_throw)
-		last_throw = 6;
+		last_throw = SENET_ITEM_COUNT;
 
 	item->hit_points = 120;
 
-	for (lp = 0; lp < 3; lp++)
+	for (lp = 0; lp < SENET_ITEM_MID; lp++)
 		items[senet_item[lp]].trigger_flags = 1;
 }
 
@@ -233,7 +233,7 @@ void GameStixControl(short item_number)
 
 		if (!item->hit_points)
 		{
-			for (int i = 0; i < 3; i++)
+			for (int i = 0; i < SENET_ITEM_MID; i++)
 				items[senet_item[i]].trigger_flags = 0;
 
 			item->trigger_flags = NO_ITEM;
@@ -250,7 +250,7 @@ void GameStixControl(short item_number)
 
 	if (piece_moving > -1)
 	{
-		num = (piece_moving >= 3) + 1;
+		num = (piece_moving >= SENET_ITEM_MID) + 1;
 		piece = &items[senet_item[piece_moving]];
 		piece->flags |= IFL_TRIGGERED;
 		piece->after_death = 48;
@@ -261,7 +261,7 @@ void GameStixControl(short item_number)
 
 		if (piece_num >= 5)
 		{
-			x = SenetTargetX + 1024;
+			x = SenetTargetX + BLOCK_SIZE;
 			z = SenetTargetZ + ((piece_num - 5) << 10);
 		}
 		else
@@ -270,22 +270,22 @@ void GameStixControl(short item_number)
 			z = SenetTargetZ + ((4 - piece_num) << 10);
 		}
 
-		if (abs(x - piece->pos.x_pos) < 128)
+		if (abs(x - piece->pos.x_pos) < HALF_CLICK_SIZE)
 			piece->pos.x_pos = x;
 		else if (x > piece->pos.x_pos)
-			piece->pos.x_pos += 128;
+			piece->pos.x_pos += HALF_CLICK_SIZE;
 		else
-			piece->pos.x_pos -= 128;
+			piece->pos.x_pos -= HALF_CLICK_SIZE;
 
-		if (abs(z - piece->pos.z_pos) < 128)
+		if (abs(z - piece->pos.z_pos) < HALF_CLICK_SIZE)
 			piece->pos.z_pos = z;
 		else if (z > piece->pos.z_pos)
-			piece->pos.z_pos += 128;
+			piece->pos.z_pos += HALF_CLICK_SIZE;
 		else
-			piece->pos.z_pos -= 128;
+			piece->pos.z_pos -= HALF_CLICK_SIZE;
 		
 		room_number = piece->room_number;
-		GetFloor(piece->pos.x_pos, piece->pos.y_pos - 32, piece->pos.z_pos, &room_number);
+		GetFloor(piece->pos.x_pos, piece->pos.y_pos - (QUARTER_CLICK_SIZE / 2), piece->pos.z_pos, &room_number);
 
 		if (piece->room_number != room_number)
 			ItemNewRoom(senet_item[piece_moving], room_number);
@@ -327,7 +327,7 @@ void GameStixControl(short item_number)
 			}
 			else
 			{
-				for (int i = 0; i < 6; i++)
+				for (int i = 0; i < SENET_ITEM_COUNT; i++)
 				{
 					if (piece_moving != i)
 					{
@@ -336,11 +336,11 @@ void GameStixControl(short item_number)
 						if (x == piece->pos.x_pos && z == piece->pos.z_pos)
 						{
 							if (num == 1)
-								ShockwaveExplosion(piece, 0xFF8020, -64);
+								ShockwaveExplosion(piece, 0xFF8020, -QUARTER_CLICK_SIZE);
 							else
-								ShockwaveExplosion(piece, 0x6060E0, -64);
+								ShockwaveExplosion(piece, 0x6060E0, -QUARTER_CLICK_SIZE);
 
-							piece->pos.x_pos = SenetTargetX + ((2 - num) << 12) - 1024;
+							piece->pos.x_pos = SenetTargetX + ((2 - num) << 12) - BLOCK_SIZE;
 							piece->pos.z_pos = SenetTargetZ + ((i % 3) << 10);
 
 							room_number = piece->room_number;
@@ -374,7 +374,7 @@ void GameStixControl(short item_number)
 	{
 		ThrowSticks(item);
 
-		for (int i = 3; i < 6; i++)
+		for (int i = SENET_ITEM_MID; i < SENET_ITEM_COUNT; i++)
 		{
 			MakeMove(i, last_throw);
 
@@ -392,7 +392,7 @@ void GameStixControl(short item_number)
 		ThrowSticks(item);
 		change = 0;
 
-		for (int i = 0; i < 3; i++)
+		for (int i = 0; i < SENET_ITEM_MID; i++)
 		{
 			if (senet_piece[i] != -1 && last_throw && senet_piece[i] + last_throw < 17 && !(senet_board[senet_piece[i] + last_throw] & 1))
 				change = 1;
@@ -400,7 +400,7 @@ void GameStixControl(short item_number)
 
 		if (!change)
 		{
-			if (last_throw == 6)
+			if (last_throw == SENET_ITEM_COUNT)
 				last_throw = 0;
 			else
 				last_throw = -1;
@@ -450,7 +450,7 @@ void ShockwaveExplosion(ITEM_INFO* item, ulong col, long speed)
 	PHD_VECTOR pos;
 	long InnerOuter;
 
-	item->pos.y_pos -= 384;
+	item->pos.y_pos -= (CLICK_SIZE + HALF_CLICK_SIZE);
 
 	if (speed < 0)
 		InnerOuter = 0x2000280;
@@ -464,7 +464,7 @@ void ShockwaveExplosion(ITEM_INFO* item, ulong col, long speed)
 	TriggerShockwave(&pos, InnerOuter, speed, col | 0x18000000, 0x2000);
 	TriggerShockwave(&pos, InnerOuter, speed, col | 0x18000000, 0x4000);
 	TriggerShockwave(&pos, InnerOuter, speed, col | 0x18000000, 0x6000);
-	item->pos.y_pos += 384;
+	item->pos.y_pos += (CLICK_SIZE + HALF_CLICK_SIZE);
 }
 
 void ControlGodHead(short item_number)
@@ -478,19 +478,19 @@ void ControlGodHead(short item_number)
 		switch (item->pos.y_rot)
 		{
 		case 0:
-			item->pos.z_pos &= ~1023;
+			item->pos.z_pos &= ~(BLOCK_SIZE - 1);
 			break;
 
 		case 0x4000:
-			item->pos.x_pos &= ~1023;
+			item->pos.x_pos &= ~(BLOCK_SIZE - 1);
 			break;
 
 		case -0x8000:
-			item->pos.z_pos |= 1023;
+			item->pos.z_pos |= (BLOCK_SIZE - 1);
 			break;
 
 		case -0x4000:
-			item->pos.x_pos |= 1023;
+			item->pos.x_pos |= (BLOCK_SIZE - 1);
 			break;
 		}
 

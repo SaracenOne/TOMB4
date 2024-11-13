@@ -10,7 +10,7 @@
 
 static PENDULUM NullPendulum = { {0, 0, 0}, {0, 0, 0}, 0, 0 };
 
-ROPE_STRUCT RopeList[64]; // TRLE: increased rope buffer
+ROPE_STRUCT RopeList[MAXIMUM_ROPES]; // TRLE: increased rope buffer
 PENDULUM CurrentPendulum;
 long nRope = 0;
 
@@ -32,7 +32,7 @@ void ProjectRopePoints(ROPE_STRUCT* Rope)
 	phd_PushMatrix();
 	phd_TranslateAbs(Rope->Position.x, Rope->Position.y, Rope->Position.z);
 
-	for (int i = 0; i < 24; i++)
+	for (int i = 0; i < MAX_ROPE_SEGMENTS; i++)
 	{
 		t.x = Rope->MeshSegment[i].x >> (W2V_SHIFT + 2);
 		t.y = Rope->MeshSegment[i].y >> (W2V_SHIFT + 2);
@@ -135,15 +135,15 @@ void AlignLaraToRope(ITEM_INFO* l)
 	short xyz[3];
 	static short ropeangle;
 
-	up.x = 4096;
+	up.x = (BLOCK_SIZE * 4);
 	up.y = 0;
 	up.z = 0;
 	frame = GetBestFrame(l);
-	ropeangle = lara.RopeY - 16380;
+	ropeangle = lara.RopeY - DEGREES_TO_ROTATION(90);
 	rope = &RopeList[lara.RopePtr];
 	i = lara.RopeSegment;
-	GetRopePos(rope, (i - 1) * 128 + frame[7], &x, &y, &z);
-	GetRopePos(rope, (i - 1) * 128 + frame[7] - 192, &x1, &y1, &z1);
+	GetRopePos(rope, (i - 1) * HALF_CLICK_SIZE + frame[7], &x, &y, &z);
+	GetRopePos(rope, (i - 1) * HALF_CLICK_SIZE + frame[7] - (CLICK_SIZE - QUARTER_CLICK_SIZE), &x1, &y1, &z1);
 	u.x = (x - x1) << (W2V_SHIFT + 2);
 	u.y = (y - y1) << (W2V_SHIFT + 2);
 	u.z = (z - z1) << (W2V_SHIFT + 2);
@@ -280,9 +280,9 @@ void SetPendulumVelocity(long x, long y, long z)
 {
 	long scale;
 
-	if (2 * (CurrentPendulum.node >> 1) < 24)
+	if (2 * (CurrentPendulum.node >> 1) < MAX_ROPE_SEGMENTS)
 	{
-		scale = 4096 / (24 - 2 * (CurrentPendulum.node >> 1)) * 256;
+		scale = (BLOCK_SIZE * 4) / (MAX_ROPE_SEGMENTS - 2 * (CurrentPendulum.node >> 1)) * CLICK_SIZE;
 		x = (__int64)scale * x >> (W2V_SHIFT + 2);
 		y = (__int64)scale * y >> (W2V_SHIFT + 2);
 		z = (__int64)scale * z >> (W2V_SHIFT + 2);
@@ -361,7 +361,7 @@ void CalculateRope(ROPE_STRUCT* Rope)
 			Rope->Segment[Pendulum->node].y = Pendulum->Position.y;
 			Rope->Segment[Pendulum->node].z = Pendulum->Position.z;
 
-			for (n = Pendulum->node; n < 24; n++)
+			for (n = Pendulum->node; n < MAX_ROPE_SEGMENTS; n++)
 			{
 				Rope->Segment[n].x -= dir.x;
 				Rope->Segment[n].y -= dir.y;
@@ -381,10 +381,10 @@ void CalculateRope(ROPE_STRUCT* Rope)
 		Pendulum->Velocity.z -= Pendulum->Velocity.z >> 8;
 	}
 
-	for (n = Pendulum->node; n < 23; n++)
+	for (n = Pendulum->node; n < (MAX_ROPE_SEGMENTS - 1); n++)
 		ModelRigid(&Rope->Segment[n], &Rope->Segment[n + 1], &Rope->Velocity[n], &Rope->Velocity[n + 1], Rope->SegmentLength);
 
-	for (n = 0; n < 24; n++)
+	for (n = 0; n < MAX_ROPE_SEGMENTS; n++)
 	{
 		Rope->Segment[n].x += Rope->Velocity[n].x;
 		Rope->Segment[n].y += Rope->Velocity[n].y;
@@ -414,7 +414,7 @@ void CalculateRope(ROPE_STRUCT* Rope)
 	Rope->Velocity[0].y = 0;
 	Rope->Velocity[0].z = 0;
 
-	for (n = 0; n < 23; n++)
+	for (n = 0; n < (MAX_ROPE_SEGMENTS - 1); n++)
 	{
 		Rope->NormalisedSegment[n].x = Rope->Segment[n + 1].x - Rope->Segment[n].x;
 		Rope->NormalisedSegment[n].y = Rope->Segment[n + 1].y - Rope->Segment[n].y;
@@ -431,7 +431,7 @@ void CalculateRope(ROPE_STRUCT* Rope)
 		Rope->MeshSegment[1].y = Rope->Segment[0].y + ((__int64)Rope->SegmentLength * Rope->NormalisedSegment[0].y >> 16);
 		Rope->MeshSegment[1].z = Rope->Segment[0].z + ((__int64)Rope->SegmentLength * Rope->NormalisedSegment[0].z >> 16);
 
-		for (n = 2; n < 24; n++)
+		for (n = 2; n < MAX_ROPE_SEGMENTS; n++)
 		{
 			Rope->MeshSegment[n].x = Rope->MeshSegment[n - 1].x + ((__int64)Rope->SegmentLength * Rope->NormalisedSegment[n - 1].x >> (W2V_SHIFT + 2));
 			Rope->MeshSegment[n].y = Rope->MeshSegment[n - 1].y + ((__int64)Rope->SegmentLength * Rope->NormalisedSegment[n - 1].y >> (W2V_SHIFT + 2));
@@ -447,7 +447,7 @@ void CalculateRope(ROPE_STRUCT* Rope)
 		Rope->MeshSegment[Pendulum->node + 1].y = Rope->Segment[Pendulum->node].y + ((__int64)Rope->SegmentLength * Rope->NormalisedSegment[Pendulum->node].y >> (W2V_SHIFT + 2));
 		Rope->MeshSegment[Pendulum->node + 1].z = Rope->Segment[Pendulum->node].z + ((__int64)Rope->SegmentLength * Rope->NormalisedSegment[Pendulum->node].z >> (W2V_SHIFT + 2));
 
-		for (n = Pendulum->node + 1; n < 23; n++)
+		for (n = Pendulum->node + 1; n < (MAX_ROPE_SEGMENTS - 1); n++)
 		{
 			Rope->MeshSegment[n + 1].x = Rope->MeshSegment[n].x + ((__int64)Rope->SegmentLength * Rope->NormalisedSegment[n].x >> (W2V_SHIFT + 2));
 			Rope->MeshSegment[n + 1].y = Rope->MeshSegment[n].y + ((__int64)Rope->SegmentLength * Rope->NormalisedSegment[n].y >> (W2V_SHIFT + 2));
@@ -467,7 +467,7 @@ long RopeNodeCollision(ROPE_STRUCT* rope, long x, long y, long z, long rad)
 {
 	long rx, ry, rz;
 
-	for (int i = 0; i < 22; ++i)
+	for (int i = 0; i < (MAX_ROPE_SEGMENTS - 2); ++i)
 	{
 		if (y > rope->Position.y + (rope->MeshSegment[i].y >> (W2V_SHIFT + 2)) && y < rope->Position.y + (rope->MeshSegment[i + 1].y >> (W2V_SHIFT + 2)))
 		{
@@ -475,7 +475,7 @@ long RopeNodeCollision(ROPE_STRUCT* rope, long x, long y, long z, long rad)
 			ry = y - ((rope->MeshSegment[i + 1].y + rope->MeshSegment[i].y) >> 17) - rope->Position.y;
 			rz = z - ((rope->MeshSegment[i + 1].z + rope->MeshSegment[i].z) >> 17) - rope->Position.z;
 
-			if (SQUARE(rx) + SQUARE(ry) + SQUARE(rz) < SQUARE(rad + 64))
+			if (SQUARE(rx) + SQUARE(ry) + SQUARE(rz) < SQUARE(rad + QUARTER_CLICK_SIZE))
 				return i;
 		}
 	}
@@ -511,8 +511,8 @@ void RopeCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 	{
 		bounds = GetBoundsAccurate(l);
 		x = l->pos.x_pos;
-		y = l->pos.y_pos + bounds[2] + 512;
-		z = l->pos.z_pos + (bounds[5] * phd_cos(l->pos.y_rot) >> 14);
+		y = l->pos.y_pos + bounds[2] + HALF_BLOCK_SIZE;
+		z = l->pos.z_pos + (bounds[5] * phd_cos(l->pos.y_rot) >> W2V_SHIFT);
 		rad = l->current_anim_state == AS_REACH ? 128 : 320;
 		i = RopeNodeCollision(rope, x, y, z, rad);
 

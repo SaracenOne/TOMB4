@@ -19,7 +19,7 @@
 #include "../tomb4/mod_config.h"
 #include "../tomb4/tomb4plus/t4plus_objects.h"
 
-LOCUST_STRUCT Locusts[64];
+LOCUST_STRUCT Locusts[MAX_LOCUSTS];
 
 static BITE_INFO croc_bite = { 0, -100, 500, 9 };
 static long next_locust = 0;
@@ -65,8 +65,8 @@ void CrocControl(short item_number)
 	croc = (CREATURE_INFO*)item->data;
 	angle = 0;
 	rot = 0;
-	s = (1024 * phd_sin(item->pos.y_rot)) >> W2V_SHIFT;
-	c = (1024 * phd_cos(item->pos.y_rot)) >> W2V_SHIFT;
+	s = (BLOCK_SIZE * phd_sin(item->pos.y_rot)) >> W2V_SHIFT;
+	c = (BLOCK_SIZE * phd_cos(item->pos.y_rot)) >> W2V_SHIFT;
 	x = item->pos.x_pos + s;
 	z = item->pos.z_pos + c;
 	room_number = item->room_number;
@@ -85,7 +85,7 @@ void CrocControl(short item_number)
 	if (abs(item->pos.y_pos - h2) > 512)
 		h2 = item->pos.y_pos;
 
-	roll = (short)phd_atan(2048, h2 - h);
+	roll = (short)phd_atan((BLOCK_SIZE * 2), h2 - h);
 
 	if (item->hit_points <= 0)
 	{
@@ -99,7 +99,7 @@ void CrocControl(short item_number)
 				item->frame_number = anims[item->anim_number].frame_base;
 				item->current_anim_state = 10;
 				item->goal_anim_state = 10;
-				item->hit_points = -16384;
+				item->hit_points = INFINITE_HEALTH;
 			}
 			else
 			{
@@ -159,10 +159,10 @@ void CrocControl(short item_number)
 					}
 				}
 
-				if (item->item_flags[0] > 1024)
-					item->item_flags[0] = 1024;
-				else if (item->item_flags[0] < -1024)
-					item->item_flags[0] = -1024;
+				if (item->item_flags[0] > BLOCK_SIZE)
+					item->item_flags[0] = BLOCK_SIZE;
+				else if (item->item_flags[0] < -BLOCK_SIZE)
+					item->item_flags[0] = -BLOCK_SIZE;
 			}
 			else if (info.bite && info.distance < 0x90000)
 				item->goal_anim_state = 5;
@@ -174,7 +174,7 @@ void CrocControl(short item_number)
 			break;
 
 		case 2:
-			croc->maximum_turn = 546;
+			croc->maximum_turn = DEGREES_TO_ROTATION(3);
 
 			if (item->required_anim_state)
 				item->goal_anim_state = item->required_anim_state;
@@ -186,9 +186,9 @@ void CrocControl(short item_number)
 			break;
 
 		case 3:
-			croc->maximum_turn = 546;
-			croc->LOT.step = 256;
-			croc->LOT.drop = -256;
+			croc->maximum_turn = DEGREES_TO_ROTATION(3);
+			croc->LOT.step = CLICK_SIZE;
+			croc->LOT.drop = -CLICK_SIZE;
 
 			if (item->required_anim_state)
 				item->goal_anim_state = item->required_anim_state;
@@ -220,9 +220,9 @@ void CrocControl(short item_number)
 			break;
 
 		case 8:
-			croc->maximum_turn = 546;
-			croc->LOT.step = 20480;
-			croc->LOT.drop = -20480;
+			croc->maximum_turn = DEGREES_TO_ROTATION(3);
+			croc->LOT.step = (BLOCK_SIZE * 20);
+			croc->LOT.drop = -(BLOCK_SIZE * 20);
 
 			if (item->required_anim_state)
 				item->goal_anim_state = item->required_anim_state;
@@ -261,22 +261,22 @@ void CrocControl(short item_number)
 
 	if (item->current_anim_state < 8)
 	{
-		if (abs(roll - item->pos.x_rot) < 256)
+		if (abs(roll - item->pos.x_rot) < 0x100)
 			item->pos.x_rot = roll;
 		else if (roll > item->pos.x_rot)
-			item->pos.x_rot += 256;
+			item->pos.x_rot += 0x100;
 		else if (roll < item->pos.x_rot)
-			item->pos.x_rot -= 256;
+			item->pos.x_rot -= 0x100;
 	}
 
 	CreatureAnimation(item_number, angle, 0);
 	
 	if (item->current_anim_state == 8)
-		s = (1024 * phd_sin(item->pos.y_rot)) >> W2V_SHIFT;
+		s = (0x400 * phd_sin(item->pos.y_rot)) >> W2V_SHIFT;
 	else
-		s = (512 * phd_sin(item->pos.y_rot)) >> W2V_SHIFT;
+		s = (0x200 * phd_sin(item->pos.y_rot)) >> W2V_SHIFT;
 
-	c = (1024 * phd_cos(item->pos.y_rot)) >> W2V_SHIFT;
+	c = (0x400 * phd_cos(item->pos.y_rot)) >> W2V_SHIFT;
 	x = item->pos.x_pos + s;
 	z = item->pos.z_pos + c;
 	room_number = item->room_number;
@@ -298,18 +298,18 @@ void CrocControl(short item_number)
 			}
 			else if (item->anim_number != objects[CROCODILE].anim_index + 17)
 			{
-				croc->LOT.step = 20480;
-				croc->LOT.drop = -20480;
+				croc->LOT.step = (BLOCK_SIZE * 20);
+				croc->LOT.drop = -(BLOCK_SIZE * 20);
 				croc->LOT.fly = 16;
-				CreatureUnderwater(item, 256);
+				CreatureUnderwater(item, CLICK_SIZE);
 			}
 		}
 		else
 		{
 			item->required_anim_state = 3;
 			item->goal_anim_state = 3;
-			croc->LOT.step = 256;
-			croc->LOT.drop = -256;
+			croc->LOT.step = CLICK_SIZE;
+			croc->LOT.drop = -CLICK_SIZE;
 			croc->LOT.fly = 0;
 			CreatureUnderwater(item, 0);
 		}
@@ -324,7 +324,7 @@ long GetFreeLocust()
 
 	fx = &Locusts[next_locust];
 
-	for (int free = next_locust, i = 0; i < 64; i++)
+	for (int free = next_locust, i = 0; i < MAX_LOCUSTS; i++)
 	{
 		if (fx->On)
 		{
@@ -388,8 +388,8 @@ void TriggerLocust(ITEM_INFO* item)
 	fx->pos.x_pos = vec.x;
 	fx->pos.y_pos = vec.y;
 	fx->pos.z_pos = vec.z;
-	fx->pos.x_rot = (GetRandomControl() & 0x3FF) + angles[1] - 512;
-	fx->pos.y_rot = (GetRandomControl() & 0x7FF) + angles[0] - 1024;
+	fx->pos.x_rot = (GetRandomControl() & 0x3FF) + angles[1] - HALF_BLOCK_SIZE;
+	fx->pos.y_rot = (GetRandomControl() & 0x7FF) + angles[0] - BLOCK_SIZE;
 	fx->On = 1;
 	fx->flags = 0;
 	fx->speed = (GetRandomControl() & 0x1F) + 16;
@@ -404,13 +404,13 @@ void InitialiseLocustEmitter(short item_number)
 	item = &items[item_number];
 
 	if (!item->pos.y_rot)
-		item->pos.z_pos += 512;
-	else if (item->pos.y_rot == 16384)
-		item->pos.x_pos += 512;
-	else if (item->pos.y_rot == -32768)
-		item->pos.z_pos -= 512;
-	else if (item->pos.y_rot == -16384)
-		item->pos.x_pos -= 512;
+		item->pos.z_pos += HALF_BLOCK_SIZE;
+	else if (item->pos.y_rot == 0x4000)
+		item->pos.x_pos += HALF_BLOCK_SIZE;
+	else if (item->pos.y_rot == -0x8000)
+		item->pos.z_pos -= HALF_BLOCK_SIZE;
+	else if (item->pos.y_rot == -0x4000)
+		item->pos.x_pos -= HALF_BLOCK_SIZE;
 }
 
 void ControlLocustEmitter(short item_number)
@@ -436,7 +436,7 @@ void DrawLocusts()
 	LOCUST_STRUCT* fx;
 	short** meshpp;
 
-	for (int i = 0; i < 64; i++)
+	for (int i = 0; i < MAX_LOCUSTS; i++)
 	{
 		fx = &Locusts[i];
 
@@ -473,7 +473,7 @@ void UpdateLocusts()
 
 	MOD_LEVEL_OBJECT_CUSTOMIZATION *mod_object_customization = get_game_mod_level_object_customization_for_slot(gfCurrentLevel, FISH);
 
-	for (int i = 0; i < 64; i++)
+	for (int i = 0; i < MAX_LOCUSTS; i++)
 	{
 		fx = &Locusts[i];
 
@@ -492,9 +492,9 @@ void UpdateLocusts()
 
 			if (!(GetRandomControl() & 7))
 			{
-				fx->LaraTarget = (GetRandomControl() % 640) + 128;
-				fx->XTarget = (GetRandomControl() & 0x7F) - 64;
-				fx->ZTarget = (GetRandomControl() & 0x7F) - 64;
+				fx->LaraTarget = (GetRandomControl() % (HALF_BLOCK_SIZE + HALF_CLICK_SIZE)) + HALF_CLICK_SIZE;
+				fx->XTarget = (GetRandomControl() & 0x7F) - QUARTER_CLICK_SIZE;
+				fx->ZTarget = (GetRandomControl() & 0x7F) - QUARTER_CLICK_SIZE;
 			}
 
 			phd_GetVectorAngles(
@@ -529,12 +529,12 @@ void UpdateLocusts()
 				max_turn = fx->speed << 7;
 				oy = (ushort)angles[0] - (ushort)fx->pos.y_rot;
 
-				if (abs(oy) > 32768)
+				if (abs(oy) > 0x8000)
 					oy = (ushort)fx->pos.y_rot - (ushort)angles[0];
 
 				ox = (ushort)angles[1] - (ushort)fx->pos.x_rot;
 
-				if (abs(ox) > 32768)
+				if (abs(ox) > 0x8000)
 					ox = (ushort)fx->pos.x_rot - (ushort)angles[0];
 
 				ox >>= 3;
@@ -765,9 +765,9 @@ void CrocgodControl(short item_number)
 				else
 				{
 					if (frame == 95)
-						mPos.y_rot = angles[0] - 2048;
+						mPos.y_rot = angles[0] - (BLOCK_SIZE * 2);
 					else
-						mPos.y_rot = angles[0] + 2048;
+						mPos.y_rot = angles[0] + (BLOCK_SIZE * 2);
 
 					TriggerCrocgodMissile(&mPos, item->room_number, 1);
 				}

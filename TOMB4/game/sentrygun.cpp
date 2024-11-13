@@ -15,6 +15,7 @@
 #include "control.h"
 #include "gameflow.h"
 #include "../tomb4/mod_config.h"
+#include "../specific/3dmath.h"
 
 static BITE_INFO AGOffsets = { 0, 0, 0, 8 };
 
@@ -145,9 +146,9 @@ void AutogunControl(short item_number)
 
 		if (!item->trigger_flags)
 		{
-			item->pos.y_pos -= 512;
+			item->pos.y_pos -= HALF_BLOCK_SIZE;
 			CreatureAIInfo(item, &info);
-			item->pos.y_pos += 512;
+			item->pos.y_pos += HALF_BLOCK_SIZE;
 			ahead = info.angle - autogun->joint_rotation[0];
 
 			if (ahead > -0x4000 && ahead < 0x4000)
@@ -172,16 +173,16 @@ void AutogunControl(short item_number)
 					else
 					{
 						TriggerAutogunFlamethrower(item);
-						ang = (4 * rcossin_tbl[(2048 * (GlobalCounter & 0x1F)) >> 3]) >> 2;
+						ang = (4 * rcossin_tbl[((BLOCK_SIZE * 2) * (GlobalCounter & 0x1F)) >> 3]) >> 2;
 					}
 				}
 
 				ang += info.angle - autogun->joint_rotation[0];
 
-				if (ang > 1820)
-					ang = 1820;
-				else if (ang < -1820)
-					ang = -1820;
+				if (ang > DEGREES_TO_ROTATION(10))
+					ang = DEGREES_TO_ROTATION(10);
+				else if (ang < -DEGREES_TO_ROTATION(10))
+					ang = -DEGREES_TO_ROTATION(10);
 
 				autogun->joint_rotation[0] += (short)ang;
 				CreatureJoint(item, 1, -info.x_angle);
@@ -202,7 +203,7 @@ void AutogunControl(short item_number)
 		{
 			CreatureJoint(item, 1, 0x2000);
 			CreatureJoint(item, 2, (GetRandomControl() & 0x3FFF) - 0x2000);
-			CreatureJoint(item, 0, (GetRandomControl() & 0x7FF) - 1024);
+			CreatureJoint(item, 0, (GetRandomControl() & 0x7FF) - BLOCK_SIZE);
 		}
 	}
 }

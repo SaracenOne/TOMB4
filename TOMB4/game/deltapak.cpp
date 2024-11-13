@@ -297,7 +297,7 @@ void handle_cutseq_triggering(long name)
 				cutseq_num = 0;
 				GLOBAL_playing_cutseq = 0;
 				cutseq_trig = 0;
-				AlterFOV(14560);
+				AlterFOV(DEGREES_TO_ROTATION(DEFAULT_FOV));
 				ScreenFade = 0;
 				dScreenFade = 0;
 				ScreenFadeBack = 0;
@@ -315,7 +315,7 @@ void handle_cutseq_triggering(long name)
 				if (gfCurrentLevel)
 					SetFadeClip(0, 1);
 
-				AlterFOV(14560);
+				AlterFOV(DEGREES_TO_ROTATION(DEFAULT_FOV));
 
 				if (gfCurrentLevel)
 					S_CDPlay(CurrentAtmosphere, 1);
@@ -693,7 +693,7 @@ void CalculateObjectLightingLaraCutSeq()
 	pos.x = 0;
 	pos.y = 0;
 	pos.z = 0;
-	GetLaraJointPos(&pos, 7);
+	GetLaraJointPos(&pos, LMX_TORSO);
 	room_num = lara_item->room_number;
 	IsRoomOutsideNo = -1;
 	IsRoomOutside(pos.x, pos.y, pos.z);
@@ -1462,7 +1462,7 @@ void deal_with_pistols()
 		pos.x = 4;
 		pos.y = 128;
 		pos.z = 40;
-		GetLaraJointPos(&pos, 14);
+		GetLaraJointPos(&pos, LMX_HAND_L);
 		TriggerGunSmoke(pos.x, pos.y, pos.z, 0, 0, 0, 0, SmokeWeapon, SmokeCountL);
 	}
 
@@ -1471,7 +1471,7 @@ void deal_with_pistols()
 		pos.x = -16;
 		pos.y = 128;
 		pos.z = 40;
-		GetLaraJointPos(&pos, 11);
+		GetLaraJointPos(&pos, LMX_HAND_R);
 		TriggerGunSmoke(pos.x, pos.y, pos.z, 0, 0, 0, 0, SmokeWeapon, SmokeCountR);
 	}
 

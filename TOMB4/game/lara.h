@@ -1,7 +1,11 @@
 #pragma once
 #include "../global/types.h"
 
-#define DEFAULT_LARA_MAX_AIR 1800
+#define DEFAULT_LARA_MAX_HEALTH 1000
+#define DEFAULT_LARA_MAX_OXYGEN 1800
+
+#define LARA_TURN_DECREMENT DEGREES_TO_ROTATION(2)
+#define LARA_TURN_INCREMENT ((DEGREES_TO_ROTATION(1) / 4) + LARA_TURN_DECREMENT)
 
 void lara_void_func(ITEM_INFO* item, COLL_INFO* coll);
 void LaraAboveWater(ITEM_INFO* item, COLL_INFO* coll);

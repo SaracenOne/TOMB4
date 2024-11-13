@@ -8,9 +8,9 @@
 
 float one = 33554432.0F;
 float mone = 2048.0F;
-float LevelFogStart = float(1024 * 12);
-float LevelFogEnd = float(1024 * 20);
-float ClipRange = float(1024 * 20);
+float LevelFogStart = float(BLOCK_SIZE * 12);
+float LevelFogEnd = float(BLOCK_SIZE * 20);
+float ClipRange = float(BLOCK_SIZE * 20);
 
 float* mMXPtr;
 float mW2V[indices_count];
@@ -872,7 +872,7 @@ void InitWindow(long x, long y, long w, long h, long znear, long zfar, long fov,
 	f_centerx = float(w / 2);
 	phd_zfar = zfar << W2V_SHIFT;
 	f_centery = float(h / 2);
-	AlterFOV(short(182 * fov));
+	AlterFOV(short(DEGREES_TO_ROTATION(fov)));
 	SetupZRange(phd_znear, phd_zfar);
 	phd_right = phd_winxmax;
 	phd_bottom = phd_winymax;

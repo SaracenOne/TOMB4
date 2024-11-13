@@ -55,7 +55,7 @@ void BaboonControl(short item_number)
 		if (!item->item_flags[2])
 			FindCrowbarSwitch(item, 1);
 
-		if (item->hit_points <= 0 && item->hit_points != -16384)
+		if (item->hit_points <= 0 && item->hit_points != INFINITE_HEALTH)
 		{
 			if (item->current_anim_state != 11 && item->current_anim_state != 21)
 			{
@@ -102,7 +102,7 @@ void BaboonControl(short item_number)
 			switch (item->current_anim_state)
 			{
 			case 2:
-				baboon->maximum_turn = 1274;
+				baboon->maximum_turn = DEGREES_TO_ROTATION(7);
 
 				if (item->ai_bits & PATROL1)
 					item->goal_anim_state = 2;
@@ -110,7 +110,7 @@ void BaboonControl(short item_number)
 					item->goal_anim_state = 4;
 				else if (baboon->mood == BORED_MOOD)
 				{
-					if (GetRandomControl() < 256)
+					if (GetRandomControl() < CLICK_SIZE)
 						item->goal_anim_state = 6;
 				}
 				else if (info.bite && info.distance < 465124)
@@ -191,7 +191,7 @@ void BaboonControl(short item_number)
 						item->goal_anim_state = 14;
 				}
 				else if (info.distance < 465124 && item2 != lara_item && item2 && item2->object_number != AI_PATROL1 &&
-					item2->object_number != AI_PATROL2 && abs(item->pos.y_pos - item2->pos.y_pos) < 256)
+					item2->object_number != AI_PATROL2 && abs(item->pos.y_pos - item2->pos.y_pos) < CLICK_SIZE)
 				{
 					item->pos.x_pos = item2->pos.x_pos;
 					item->pos.y_pos = item2->pos.y_pos;
@@ -215,7 +215,7 @@ void BaboonControl(short item_number)
 				break;
 
 			case 4:
-				baboon->maximum_turn = 2002;
+				baboon->maximum_turn = DEGREES_TO_ROTATION(11);
 				tilt = angle / 2;
 
 				if (item->ai_bits & GUARD)
@@ -279,12 +279,12 @@ void BaboonControl(short item_number)
 					{
 						baboon->maximum_turn = 0;
 
-						if (abs(info.angle) < 1274)
+						if (abs(info.angle) < DEGREES_TO_ROTATION(7))
 							item->pos.y_rot += info.angle;
 						else if (info.angle < 0)
-							item->pos.y_rot -= 1274;
+							item->pos.y_rot -= DEGREES_TO_ROTATION(7);
 						else
-							item->pos.y_rot += 1274;
+							item->pos.y_rot += DEGREES_TO_ROTATION(7);
 					}
 				}
 
@@ -358,12 +358,12 @@ void BaboonControl(short item_number)
 
 				baboon->maximum_turn = 0;
 				
-				if (abs(info.angle) < 1274)
+				if (abs(info.angle) < DEGREES_TO_ROTATION(7))
 					item->pos.y_rot += info.angle;
 				else if (info.angle < 0)
-					item->pos.y_rot -= 1274;
+					item->pos.y_rot -= DEGREES_TO_ROTATION(7);
 				else
-					item->pos.y_rot += 1274;
+					item->pos.y_rot += DEGREES_TO_ROTATION(7);
 
 				if (!baboon->flags && item->touch_bits & 0x90)
 				{
@@ -377,11 +377,11 @@ void BaboonControl(short item_number)
 
 			case 21:
 				objects[item->object_number].HitEffect = 0;
-				item->hit_points = -16384;
+				item->hit_points = INFINITE_HEALTH;
 
 				if (item->frame_number == anims[item->anim_number].frame_base + 212)
 				{
-					TestTriggersAtXYZ(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos + 1024, item->room_number, 1, 0);
+					TestTriggersAtXYZ(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos + BLOCK_SIZE, item->room_number, 1, 0);
 					item->trigger_flags = 1;
 				}
 

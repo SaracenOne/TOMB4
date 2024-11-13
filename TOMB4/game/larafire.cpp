@@ -293,7 +293,7 @@ void LaraTargetInfo(WEAPON_INFO* winfo)
 	src.x = 0;
 	src.y = 0;
 	src.z = 0;
-	GetLaraJointPos((PHD_VECTOR*)&src, 11);
+	GetLaraJointPos((PHD_VECTOR*)&src, LMX_HAND_R);
 	src.x = lara_item->pos.x_pos;
 	src.z = lara_item->pos.z_pos;
 	src.room_number = lara_item->room_number;
@@ -407,7 +407,7 @@ long FireWeapon(long weapon_type, ITEM_INFO* target, ITEM_INFO* src, short* angl
 	bum_view.x_pos = 0;
 	bum_view.y_pos = 0;
 	bum_view.z_pos = 0;
-	GetLaraJointPos((PHD_VECTOR*)&bum_view, 11);
+	GetLaraJointPos((PHD_VECTOR*)&bum_view, LMX_HAND_R);
 	ammo = get_current_ammo_pointer(weapon_type);
 
 	if (!*ammo)
@@ -572,7 +572,7 @@ void LaraGetNewTarget(WEAPON_INFO* winfo)
 								TargetList[targets] = item;
 								targets++;
 
-								if (abs(ang[0]) < bestyrot + 2730 && dist < bestdist)
+								if (abs(ang[0]) < bestyrot + DEGREES_TO_ROTATION(15) && dist < bestdist)
 								{
 									bestdist = dist;
 									bestyrot = abs(ang[0]);
@@ -693,7 +693,7 @@ void HitTarget(ITEM_INFO* item, GAME_VECTOR* hitpos, long damage, long grenade)
 		}
 	}
 
-	if (!obj->undead || grenade || item->hit_points == -16384)
+	if (!obj->undead || grenade || item->hit_points == -0x4000)
 	{
 		if (item->hit_points > 0 && item->hit_points <= damage)
 			savegame.Level.Kills++;
@@ -783,15 +783,15 @@ void DoProperDetection(short item_number, long x, long y, long z, long xv, long 
 		{
 			yang = (ushort)item->pos.y_rot;
 
-			if (tiltyoff < 0 && yang >= 32768 || tiltyoff > 0 && yang <= 32768 ||
-				tiltxoff < 0 && yang >= 16384 && yang <= 49152 || tiltxoff > 0 && (yang <= 16384 || yang >= 49152))
+			if (tiltyoff < 0 && yang >= 0x8000 || tiltyoff > 0 && yang <= 0x8000 ||
+				tiltxoff < 0 && yang >= 0x4000 && yang <= 0xC000 || tiltxoff > 0 && (yang <= 0x4000 || yang >= 0xC000))
 				bs = 1;
 		}
 
 		if (y > height + 32 && !bs && ((item->pos.x_pos ^ x) & ~0x3FF || (item->pos.z_pos ^ z) & ~0x3FF))
 		{
 			xs = (item->pos.x_pos ^ x) & ~0x3FF && (item->pos.z_pos ^ z) & ~0x3FF ? abs(x - item->pos.x_pos) < abs(z - item->pos.z_pos) : 1;
-			item->pos.y_rot = (item->pos.x_pos ^ x) & ~0x3FF && xs ? -item->pos.y_rot : -32768 - item->pos.y_rot;
+			item->pos.y_rot = (item->pos.x_pos ^ x) & ~0x3FF && xs ? -item->pos.y_rot : -0x8000 - item->pos.y_rot;
 			item->pos.x_pos = x;
 			item->pos.y_pos = y;
 			item->pos.z_pos = z;
@@ -839,7 +839,7 @@ void DoProperDetection(short item_number, long x, long y, long z, long xv, long 
 
 			if (tiltyoff < 0 && abs(tiltyoff) - abs(tiltxoff) >= 2)
 			{
-				if ((ushort)item->pos.y_rot > 32768)
+				if ((ushort)item->pos.y_rot > 0x8000)
 				{
 					item->pos.y_rot = -1 - item->pos.y_rot;
 
@@ -852,19 +852,19 @@ void DoProperDetection(short item_number, long x, long y, long z, long xv, long 
 					{
 						item->speed -= short(2 * tiltyoff);
 
-						if ((ushort)item->pos.y_rot > 16384 && (ushort)item->pos.y_rot < 49152)
+						if ((ushort)item->pos.y_rot > 0x4000 && (ushort)item->pos.y_rot < 0xC000)
 						{
-							item->pos.y_rot -= 4096;
+							item->pos.y_rot -= 0x1000;
 
-							if ((ushort)item->pos.y_rot < 16384)
-								item->pos.y_rot = 16384;
+							if ((ushort)item->pos.y_rot < 0x4000)
+								item->pos.y_rot = 0x4000;
 						}
-						else if ((ushort)item->pos.y_rot < 16384)
+						else if ((ushort)item->pos.y_rot < 0x4000)
 						{
-							item->pos.y_rot += 4096;
+							item->pos.y_rot += 0x1000;
 
-							if ((ushort)item->pos.y_rot > 16384)
-								item->pos.y_rot = 16384;
+							if ((ushort)item->pos.y_rot > 0x4000)
+								item->pos.y_rot = 0x4000;
 						}
 					}
 
@@ -873,7 +873,7 @@ void DoProperDetection(short item_number, long x, long y, long z, long xv, long 
 			}
 			else if (tiltyoff > 0 && abs(tiltyoff) - abs(tiltxoff) >= 2)
 			{
-				if ((ushort)item->pos.y_rot < 32768)
+				if ((ushort)item->pos.y_rot < 0x8000)
 				{
 					item->pos.y_rot = -1 - item->pos.y_rot;
 
@@ -886,19 +886,19 @@ void DoProperDetection(short item_number, long x, long y, long z, long xv, long 
 					{
 						item->speed += short(2 * tiltyoff);
 
-						if ((ushort)item->pos.y_rot > 49152 || (ushort)item->pos.y_rot < 16384)
+						if ((ushort)item->pos.y_rot > 0xC000 || (ushort)item->pos.y_rot < 16384)
 						{
-							item->pos.y_rot -= 4096;
+							item->pos.y_rot -= 0x1000;
 
-							if ((ushort)item->pos.y_rot < 49152)
-								item->pos.y_rot = -16384;
+							if ((ushort)item->pos.y_rot < 0xC000)
+								item->pos.y_rot = -0x4000;
 						}
-						else if ((ushort)item->pos.y_rot < 49152)
+						else if ((ushort)item->pos.y_rot < 0xC000)
 						{
-							item->pos.y_rot += 4096;
+							item->pos.y_rot += 0x1000;
 
-							if ((ushort)item->pos.y_rot > 49152)
-								item->pos.y_rot = -16384;
+							if ((ushort)item->pos.y_rot > 0xC000)
+								item->pos.y_rot = -0x4000;
 						}
 					}
 
@@ -907,9 +907,9 @@ void DoProperDetection(short item_number, long x, long y, long z, long xv, long 
 			}
 			else if (tiltxoff < 0 && abs(tiltxoff) - abs(tiltyoff) >= 2)
 			{
-				if ((ushort)item->pos.y_rot > 16384 && (ushort)item->pos.y_rot < 49152)
+				if ((ushort)item->pos.y_rot > 0x4000 && (ushort)item->pos.y_rot < 0xC000)
 				{
-					item->pos.y_rot = 32767 - item->pos.y_rot;
+					item->pos.y_rot = 0x8000 - item->pos.y_rot;
 
 					if (item->fallspeed > 0)
 						item->fallspeed = -(item->fallspeed >> 1);
@@ -920,16 +920,16 @@ void DoProperDetection(short item_number, long x, long y, long z, long xv, long 
 					{
 						item->speed -= short(2 * tiltxoff);
 
-						if ((ushort)item->pos.y_rot < 32768)
+						if ((ushort)item->pos.y_rot < 0x8000)
 						{
-							item->pos.y_rot -= 4096;
+							item->pos.y_rot -= 0x1000;
 
 							if ((ushort)item->pos.y_rot > 61440)
 								item->pos.y_rot = 0;
 						}
 						else
 						{
-							item->pos.y_rot += 4096;
+							item->pos.y_rot += 0x1000;
 
 							if ((ushort)item->pos.y_rot < 4096)
 								item->pos.y_rot = 0;
@@ -941,9 +941,9 @@ void DoProperDetection(short item_number, long x, long y, long z, long xv, long 
 			}
 			else if (tiltxoff > 0 && abs(tiltxoff) - abs(tiltyoff) >= 2)
 			{
-				if ((ushort)item->pos.y_rot > 49152 || (ushort)item->pos.y_rot < 16384)
+				if ((ushort)item->pos.y_rot > 0xC000 || (ushort)item->pos.y_rot < 0x4000)
 				{
-					item->pos.y_rot = 32767 - item->pos.y_rot;
+					item->pos.y_rot = (0x8000 - 1) - item->pos.y_rot;
 
 					if (item->fallspeed > 0)
 						item->fallspeed = -(item->fallspeed >> 1);
@@ -954,19 +954,19 @@ void DoProperDetection(short item_number, long x, long y, long z, long xv, long 
 					{
 						item->speed += short(2 * tiltxoff);
 
-						if ((ushort)item->pos.y_rot > 32768)
+						if ((ushort)item->pos.y_rot > 0x8000)
 						{
-							item->pos.y_rot -= 4096;
+							item->pos.y_rot -= 0x1000;
 
-							if ((ushort)item->pos.y_rot < 32768)
-								item->pos.y_rot = -32768;
+							if ((ushort)item->pos.y_rot < 0x8000)
+								item->pos.y_rot = -0x8000;
 						}
-						else if ((ushort)item->pos.y_rot < 32768)
+						else if ((ushort)item->pos.y_rot < 0x8000)
 						{
-							item->pos.y_rot += 4096;
+							item->pos.y_rot += 0x1000;
 
-							if ((ushort)item->pos.y_rot > 32768)
-								item->pos.y_rot = -32768;
+							if ((ushort)item->pos.y_rot > 0x8000)
+								item->pos.y_rot = -0x8000;
 						}
 					}
 
@@ -988,19 +988,19 @@ void DoProperDetection(short item_number, long x, long y, long z, long xv, long 
 					{
 						item->speed -= short(tiltxoff + tiltyoff);
 
-						if ((ushort)item->pos.y_rot > 8192 && (ushort)item->pos.y_rot < 40960)
+						if ((ushort)item->pos.y_rot > 0x2000 && (ushort)item->pos.y_rot < 0xa000)
 						{
-							item->pos.y_rot -= 4096;
+							item->pos.y_rot -= 0x1000;
 
-							if ((ushort)item->pos.y_rot < 8192)
-								item->pos.y_rot = 8192;
+							if ((ushort)item->pos.y_rot < 0x2000)
+								item->pos.y_rot = 0x2000;
 						}
-						else if (item->pos.y_rot != 8192)
+						else if (item->pos.y_rot != 0x2000)
 						{
-							item->pos.y_rot += 4096;
+							item->pos.y_rot += 0x1000;
 
-							if ((ushort)item->pos.y_rot > 8192)
-								item->pos.y_rot = 8192;
+							if ((ushort)item->pos.y_rot > 0x2000)
+								item->pos.y_rot = 0x2000;
 						}
 					}
 
@@ -1009,9 +1009,9 @@ void DoProperDetection(short item_number, long x, long y, long z, long xv, long 
 			}
 			else if (tiltyoff < 0 && tiltxoff > 0)
 			{
-				if ((ushort)item->pos.y_rot > 40960 || (ushort)item->pos.y_rot < 8192)
+				if ((ushort)item->pos.y_rot > 0xa000 || (ushort)item->pos.y_rot < 0x2000)
 				{
-					item->pos.y_rot = 16383 - item->pos.y_rot;
+					item->pos.y_rot = (0x4000 - 1) - item->pos.y_rot;
 
 					if (item->fallspeed > 0)
 						item->fallspeed = -(item->fallspeed >> 1);
@@ -1022,19 +1022,19 @@ void DoProperDetection(short item_number, long x, long y, long z, long xv, long 
 					{
 						item->speed += short(tiltxoff - tiltyoff);
 
-						if ((ushort)item->pos.y_rot < 57344 && (ushort)item->pos.y_rot > 24576)
+						if ((ushort)item->pos.y_rot < 0xe000 && (ushort)item->pos.y_rot > 0x6000)
 						{
-							item->pos.y_rot -= 4096;
+							item->pos.y_rot -= 0x1000;
 
-							if ((ushort)item->pos.y_rot < 24576)
-								item->pos.y_rot = 24576;
+							if ((ushort)item->pos.y_rot < 0x6000)
+								item->pos.y_rot = 0x6000;
 						}
-						else if (item->pos.y_rot != 24576)
+						else if (item->pos.y_rot != 0x6000)
 						{
-							item->pos.y_rot += 4096;
+							item->pos.y_rot += 0x1000;
 
-							if ((ushort)item->pos.y_rot > 24576)
-								item->pos.y_rot = 24576;
+							if ((ushort)item->pos.y_rot > 0x6000)
+								item->pos.y_rot = 0x6000;
 						}
 					}
 
@@ -1043,7 +1043,7 @@ void DoProperDetection(short item_number, long x, long y, long z, long xv, long 
 			}
 			else if (tiltyoff > 0 && tiltxoff > 0)
 			{
-				if ((ushort)item->pos.y_rot > 57344 || (ushort)item->pos.y_rot < 24576)
+				if ((ushort)item->pos.y_rot > 0xe000 || (ushort)item->pos.y_rot < 0x6000)
 				{
 					item->pos.y_rot = -16385 - item->pos.y_rot;
 
@@ -1056,19 +1056,19 @@ void DoProperDetection(short item_number, long x, long y, long z, long xv, long 
 					{
 						item->speed += short(tiltxoff + tiltyoff);
 
-						if ((ushort)item->pos.y_rot < 8192 || (ushort)item->pos.y_rot > 40960)
+						if ((ushort)item->pos.y_rot < 0x2000 || (ushort)item->pos.y_rot > 0xa000)
 						{
-							item->pos.y_rot -= 4096;
+							item->pos.y_rot -= 0x1000;
 
-							if ((ushort)item->pos.y_rot < 40960)
-								item->pos.y_rot = -24576;
+							if ((ushort)item->pos.y_rot < 0xa000)
+								item->pos.y_rot = -0x6000;
 						}
-						else if (item->pos.y_rot != -24576)
+						else if (item->pos.y_rot != -0x6000)
 						{
-							item->pos.y_rot += 4096;
+							item->pos.y_rot += 0x1000;
 
-							if ((ushort)item->pos.y_rot > 40960)
-								item->pos.y_rot = -24576;
+							if ((ushort)item->pos.y_rot > 0xa000)
+								item->pos.y_rot = -0x6000;
 						}
 					}
 
@@ -1077,9 +1077,9 @@ void DoProperDetection(short item_number, long x, long y, long z, long xv, long 
 			}
 			else if (tiltyoff > 0 && tiltxoff < 0)
 			{
-				if ((ushort)item->pos.y_rot > 8192 && (ushort)item->pos.y_rot < 40960)
+				if ((ushort)item->pos.y_rot > 0x2000 && (ushort)item->pos.y_rot < 0xa000)
 				{
-					item->pos.y_rot = 16383 - item->pos.y_rot;
+					item->pos.y_rot = (0x4000 - 1) - item->pos.y_rot;
 
 					if (item->fallspeed > 0)
 						item->fallspeed = -(item->fallspeed >> 1);
@@ -1090,19 +1090,19 @@ void DoProperDetection(short item_number, long x, long y, long z, long xv, long 
 					{
 						item->speed += short(tiltyoff - tiltxoff);
 
-						if ((ushort)item->pos.y_rot < 24576 || (ushort)item->pos.y_rot > 57344)
+						if ((ushort)item->pos.y_rot < 0x6000 || (ushort)item->pos.y_rot > 0xe000)
 						{
-							item->pos.y_rot -= 4096;
+							item->pos.y_rot -= 0x1000;
 
-							if ((ushort)item->pos.y_rot < 57344)
-								item->pos.y_rot = -8192;
+							if ((ushort)item->pos.y_rot < 0xe000)
+								item->pos.y_rot = -0x2000;
 						}
-						else if (item->pos.y_rot != -8192)
+						else if (item->pos.y_rot != -0x2000)
 						{
-							item->pos.y_rot += 4096;
+							item->pos.y_rot += 0x1000;
 
-							if ((ushort)item->pos.y_rot > 57344)
-								item->pos.y_rot = -8192;
+							if ((ushort)item->pos.y_rot > 0xe000)
+								item->pos.y_rot = -0x2000;
 						}
 					}
 

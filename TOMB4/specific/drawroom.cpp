@@ -97,11 +97,11 @@ void ProcessRoomVertices(ROOM_INFO* r)
 
 	if (gfLevelFlags & GF_TRAIN || environment_info->force_train_fog)
 	{
-		DistanceFogStart = 12.0F * 1024.0F;
-		DistanceFogEnd = 20.0F * 1024.0F;
-		DistanceClipRange = 1024.0F * 20.0F;
+		DistanceFogStart = float(DEFAULT_FOG_START_BLOCKS) * float(BLOCK_SIZE);
+		DistanceFogEnd = float(DEFAULT_FOG_END_BLOCKS) * float(BLOCK_SIZE);
+		DistanceClipRange = float(DEFAULT_CLIP_RANGE_BLOCKS) * float(BLOCK_SIZE);
 	} else {
-		float minimum_clip_range = tomb4.minimum_clip_range * 1024.0F;
+		float minimum_clip_range = tomb4.minimum_clip_range * float(BLOCK_SIZE);
 		DistanceFogStart = LevelFogStart;
 		DistanceFogEnd = LevelFogEnd;
 		if (environment_info->disable_distance_limit) {

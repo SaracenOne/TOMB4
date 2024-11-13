@@ -427,9 +427,9 @@ void Rich_CalcLaraMatrices_Normal(short* frame, long* bone, long flag)
 
 	if (flag == 2)
 	{
-		vec.x = -16384;
-		vec.y = -16384;
-		vec.z = -16384;
+		vec.x = -0x4000;
+		vec.y = -0x4000;
+		vec.z = -0x4000;
 		ScaleCurrentMatrix(&vec);
 	}
 
@@ -743,9 +743,9 @@ void Rich_CalcLaraMatrices_Interpolated(short* frame1, short* frame2, long frac,
 
 	if (flag == 2)
 	{
-		vec.x = -16384;
-		vec.y = -16384;
-		vec.z = -16384;
+		vec.x = -0x4000;
+		vec.y = -0x4000;
+		vec.z = -0x4000;
 		ScaleCurrentMatrix(&vec);
 	}
 

@@ -21,12 +21,35 @@
 #include "gameflow.h"
 #include "traps.h"
 
-static short StarGateBounds[24] =
+static short StarGateBounds[] =
 {
-	-512, 512, -1024, -896, -96, 96,
-	-512, 512, -128, 0, -96, 96,
-	-512, -384, -1024, 0, -96, 96,
-	384, 512, -1024, 0, -96, 96
+	-HALF_BLOCK_SIZE,
+	HALF_BLOCK_SIZE,
+	-BLOCK_SIZE,
+	-((CLICK_SIZE * 3) + HALF_CLICK_SIZE),
+	-(QUARTER_CLICK_SIZE + (QUARTER_CLICK_SIZE / 2)),
+	(QUARTER_CLICK_SIZE + (QUARTER_CLICK_SIZE / 2)),
+
+	-HALF_BLOCK_SIZE,
+	HALF_BLOCK_SIZE,
+	-(HALF_CLICK_SIZE),
+	0,
+	-(QUARTER_CLICK_SIZE + (QUARTER_CLICK_SIZE / 2)),
+	(QUARTER_CLICK_SIZE + (QUARTER_CLICK_SIZE / 2)),
+	
+	-HALF_BLOCK_SIZE,
+	-(CLICK_SIZE + HALF_CLICK_SIZE),
+	-BLOCK_SIZE,
+	0,
+	-(QUARTER_CLICK_SIZE + (QUARTER_CLICK_SIZE / 2)),
+	(QUARTER_CLICK_SIZE + (QUARTER_CLICK_SIZE / 2)),
+
+	(CLICK_SIZE + HALF_CLICK_SIZE),
+	HALF_BLOCK_SIZE,
+	-BLOCK_SIZE,
+	0,
+	-(QUARTER_CLICK_SIZE + (QUARTER_CLICK_SIZE / 2)),
+	(QUARTER_CLICK_SIZE + (QUARTER_CLICK_SIZE / 2))
 };
 
 short GlobalCollisionBounds[6];
@@ -176,7 +199,7 @@ long GetCollidedObjects(ITEM_INFO* item, long rad, long noInvisible, ITEM_INFO**
 			dy = item->pos.y_pos - item2->pos.y_pos;
 			dz = item->pos.z_pos - item2->pos.z_pos;
 
-			if (dx < -2048 || dx > 2048 || dy < -2048 || dy > 2048 || dz < -2048 || dz > 2048)	//further than 2 blocks? bye
+			if (dx < -(BLOCK_SIZE * 2) || dx > (BLOCK_SIZE * 2) || dy < -(BLOCK_SIZE * 2) || dy > (BLOCK_SIZE * 2) || dz < -(BLOCK_SIZE * 2) || dz > (BLOCK_SIZE * 2))	//further than 2 blocks? bye
 			{
 				item_number = next_item;
 				continue;
@@ -184,7 +207,7 @@ long GetCollidedObjects(ITEM_INFO* item, long rad, long noInvisible, ITEM_INFO**
 
 			bounds = GetBestFrame(item2);
 
-			if (item->pos.y_pos + rad + 128 < item2->pos.y_pos + bounds[2] || item->pos.y_pos - rad - 128 > item2->pos.y_pos + bounds[3])
+			if (item->pos.y_pos + rad + HALF_CLICK_SIZE < item2->pos.y_pos + bounds[2] || item->pos.y_pos - rad - HALF_CLICK_SIZE > item2->pos.y_pos + bounds[3])
 			{
 				item_number = next_item;
 				continue;
@@ -198,18 +221,18 @@ long GetCollidedObjects(ITEM_INFO* item, long rad, long noInvisible, ITEM_INFO**
 
 			if (item2->object_number == TURN_SWITCH)
 			{
-				switch_bounds[0] = -256;
-				switch_bounds[1] = 256;
-				switch_bounds[4] = -256;
-				switch_bounds[5] = 256;
+				switch_bounds[0] = -CLICK_SIZE;
+				switch_bounds[1] = CLICK_SIZE;
+				switch_bounds[4] = -CLICK_SIZE;
+				switch_bounds[5] = CLICK_SIZE;
 				bounds = switch_bounds;
 			}
 
-			if (rad + num + 128 >= bounds[0] && num - rad - 128 <= bounds[1])
+			if (rad + num + HALF_CLICK_SIZE >= bounds[0] && num - rad - HALF_CLICK_SIZE <= bounds[1])
 			{
 				num = (dx * sy + cy * dz) >> W2V_SHIFT;
 
-				if (rad + num + 128 >= bounds[4] && num - rad - 128 <= bounds[5])
+				if (rad + num + HALF_CLICK_SIZE >= bounds[4] && num - rad - HALF_CLICK_SIZE <= bounds[5])
 				{
 					StoredItems[items_count] = item2;
 					items_count++;
@@ -248,7 +271,7 @@ void GenericDeadlyBoundingBoxCollision(short item_number, ITEM_INFO* l, COLL_INF
 			dz -= lara_item->pos.z_pos;
 
 			if ((dx || dy || dz) && TriggerActive(item))
-				DoBloodSplat(l->pos.x_pos + (GetRandomControl() & 0x3F) - 32, l->pos.y_pos - (GetRandomControl() & 0x1FF) - 256, l->pos.z_pos + (GetRandomControl() & 0x3F) - 32, (item->item_flags[3] >> 5) + (GetRandomControl() & 0x3) + 2, (short)(2 * GetRandomControl()), l->room_number);
+				DoBloodSplat(l->pos.x_pos + (GetRandomControl() & 0x3F) - 32, l->pos.y_pos - (GetRandomControl() & 0x1FF) - CLICK_SIZE, l->pos.z_pos + (GetRandomControl() & 0x3F) - (QUARTER_CLICK_SIZE / 2), (item->item_flags[3] >> 5) + (GetRandomControl() & 0x3) + 2, (short)(2 * GetRandomControl()), l->room_number);
 
 			if (!coll->enable_baddie_push)
 			{
@@ -354,7 +377,7 @@ void CreatureCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 				rx = (l->pos.x_pos - item->pos.x_pos) - ((c * x + s * z) >> W2V_SHIFT);
 				rz = (l->pos.z_pos - item->pos.z_pos) - ((c * z - s * x) >> W2V_SHIFT);
 
-				if (bounds[3] - bounds[2] > 256)
+				if (bounds[3] - bounds[2] > CLICK_SIZE)
 				{
 					lara.hit_direction = ushort((l->pos.y_rot - phd_atan(rz, rx) - 0x6000)) >> W2V_SHIFT;
 					lara.hit_frame++;
@@ -377,10 +400,10 @@ long FindGridShift(long src, long dst)
 	if (srcw == dstw)
 		return 0;
 
-	src &= 1023;
+	src &= (BLOCK_SIZE - 1);
 
 	if (dstw > srcw)
-		return 1025 - src;
+		return (BLOCK_SIZE + 1) - src;
 	else
 		return -1 - src;
 }
@@ -424,7 +447,7 @@ short GetTiltType(FLOOR_INFO* floor, long x, long y, long z)
 
 			if (type == SPLIT1 || type == NOCOLF1T || type == NOCOLF1B)
 			{
-				if (x2 > 1024 - z2)
+				if (x2 > BLOCK_SIZE - z2)
 				{
 					x3 = t3 - t0;
 					y2 = t3 - t2;
@@ -708,7 +731,7 @@ void LaraBaddieCollision(ITEM_INFO* l, COLL_INFO* coll)
 								}
 
 								// Activate heavy trigger on collision
-								if ((mesh->Flags & 2048)) {
+								if ((mesh->Flags & (BLOCK_SIZE * 2))) {
 									TestTriggersAtXYZ(pos.x_pos, pos.y_pos, pos.z_pos, current_room_id, true, 0);
 								}
 							}
@@ -827,13 +850,13 @@ bool ItemPushLara(ITEM_INFO* item, ITEM_INFO* l, COLL_INFO* coll, long spaz, lon
 	l->pos.x_pos = item->pos.x_pos + ((c * x + s * z) >> W2V_SHIFT);
 	l->pos.z_pos = item->pos.z_pos + ((c * z - s * x) >> W2V_SHIFT);
 
-	if (spaz && bounds[3] - bounds[2] > 256 && item->object_number != VON_CROY && item->object_number != GUIDE && item->object_number != ENEMY_JEEP)
+	if (spaz && bounds[3] - bounds[2] > CLICK_SIZE && item->object_number != VON_CROY && item->object_number != GUIDE && item->object_number != T4PlusGetEnemyJeepSlotID())
 	{
 		x = (bounds[0] + bounds[1]) / 2;
 		z = (bounds[4] + bounds[5]) / 2;
 		dx -= (c * x + s * z) >> W2V_SHIFT;
 		dz -= (c * z - s * x) >> W2V_SHIFT;
-		lara.hit_direction = ushort(l->pos.y_rot - phd_atan(dz, dx) - 24576) >> W2V_SHIFT;	//hmmmmm
+		lara.hit_direction = ushort(l->pos.y_rot - phd_atan(dz, dx) - 0x6000) >> W2V_SHIFT;	//hmmmmm
 
 		if (!lara.hit_frame)
 			SoundEffect(SFX_LARA_INJURY, &l->pos, SFX_DEFAULT);
@@ -845,7 +868,7 @@ bool ItemPushLara(ITEM_INFO* item, ITEM_INFO* l, COLL_INFO* coll, long spaz, lon
 	}
 
 	coll->bad_pos = -NO_HEIGHT;
-	coll->bad_neg = -384;
+	coll->bad_neg = -(CLICK_SIZE + HALF_CLICK_SIZE);
 	coll->bad_ceiling = 0;
 	facing = coll->facing;
 	coll->facing = (short)phd_atan(l->pos.z_pos - coll->old.z, l->pos.x_pos - coll->old.x);
@@ -1065,7 +1088,7 @@ long Move3DPosTo3DPos(PHD_3DPOS* pos, PHD_3DPOS* dest, long speed, short rotatio
 	{
 		if (lara.water_status != LW_UNDERWATER)
 		{
-			switch (((ulong(mGetAngle(dest->x_pos, dest->z_pos, pos->x_pos, pos->z_pos) + 8192) >> 14) - (ushort(dest->y_rot + 8192) >> 14)) & 3)
+			switch (((ulong(mGetAngle(dest->x_pos, dest->z_pos, pos->x_pos, pos->z_pos) + (BLOCK_SIZE * 8)) >> W2V_SHIFT) - (ushort(dest->y_rot + (BLOCK_SIZE * 8)) >> W2V_SHIFT)) & 3)
 			{
 			case 0:
 				lara_item->anim_number = 65;
@@ -1169,7 +1192,7 @@ long MoveLaraPosition(PHD_VECTOR* v, ITEM_INFO* item, ITEM_INFO* l)
 			return 1;
 	}
 
-	return Move3DPosTo3DPos(&l->pos, &pos, 12, 364);
+	return Move3DPosTo3DPos(&l->pos, &pos, 12, DEGREES_TO_ROTATION(2));
 }
 
 long TestBoundsCollide2(ITEM_INFO* item, ITEM_INFO* l, long rad)
@@ -1209,7 +1232,9 @@ void StargateCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 
 	bounds = StarGateBounds;
 
-	for (int i = 0; i < 4; i++)
+#define STARGATE_PUSH_COUNT 4
+
+	for (int i = 0; i < STARGATE_PUSH_COUNT; i++)
 	{
 		GlobalCollisionBounds[0] = bounds[0];
 		GlobalCollisionBounds[1] = bounds[1];

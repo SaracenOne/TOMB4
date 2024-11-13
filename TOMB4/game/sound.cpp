@@ -36,7 +36,7 @@ void GetPanVolume(SoundSlot* slot)
 			if (distance <= SQUARE(radius))
 			{
 				if (distance >= 0x100000)
-					distance = phd_sqrt(distance) - 1024;
+					distance = phd_sqrt(distance) - BLOCK_SIZE;
 				else
 					distance = 0;
 
@@ -44,7 +44,7 @@ void GetPanVolume(SoundSlot* slot)
 				nVolume = slot->OrigVolume;
 
 				if (distance)
-					nVolume = (nVolume * (4096 - (phd_sin((distance << 14) / radius) >> 2))) >> 12;
+					nVolume = (nVolume * ((BLOCK_SIZE * 4) - (phd_sin((distance << W2V_SHIFT) / radius) >> 2))) >> 12;
 
 				if (nVolume > 0)
 				{
@@ -179,7 +179,7 @@ long SoundEffect(long sfx, PHD_3DPOS* pos, long flags)
 			return 0;
 
 		if (distance >= 0x100000)
-			distance = phd_sqrt(distance) - 1024;
+			distance = phd_sqrt(distance) - BLOCK_SIZE;
 		else
 			distance = 0;
 
@@ -203,7 +203,7 @@ long SoundEffect(long sfx, PHD_3DPOS* pos, long flags)
 	OrigVolume = volume;
 
 	if (distance)
-		volume = (volume * (4096 - (phd_sin((distance << 14) / radius) >> 2))) >> 12;
+		volume = (volume * ((BLOCK_SIZE * 4) - (phd_sin((distance << W2V_SHIFT) / radius) >> 2))) >> 12;
 
 	if (volume <= 0)
 		return 0;
@@ -219,7 +219,7 @@ long SoundEffect(long sfx, PHD_3DPOS* pos, long flags)
 	pitch += info->pitch << 9;
 
 	if (info->flags & 0x2000)
-		pitch += ((6000 * GetRandomDraw()) >> 14) - 6000;
+		pitch += ((6000 * GetRandomDraw()) >> W2V_SHIFT) - 6000;
 
 	if (info->number < 0)
 		return 0;

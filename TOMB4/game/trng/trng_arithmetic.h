@@ -27,9 +27,9 @@ enum NGSavegameMemoryValue {
 	NG_LARA_HANDS_REMAINING_TIME_WITH_LIGHTED_FLARE_IN_THE_HANDS = 0x0C, // (short)
 };
 
-extern unsigned char NGNumericOperationByte(NGNumericOperationType number_operation, unsigned char variable, unsigned int value);
-extern unsigned short NGNumericOperationShort(NGNumericOperationType number_operation, unsigned short variable, unsigned int value);
-extern unsigned long NGNumericOperationLong(NGNumericOperationType number_operation, unsigned long variable, unsigned int value);
-extern void NGNumericOperation(NGNumericOperationType number_operation, unsigned int variable, unsigned int value);
-extern int NGNumericGetVariable(unsigned int variable);
-extern int NGNumericGetSavegameValue(unsigned int variable);
+extern uint8_t NGNumericOperationByte(NGNumericOperationType number_operation, uint8_t variable, uint32_t value);
+extern uint16_t NGNumericOperationShort(NGNumericOperationType number_operation, uint16_t variable, uint32_t value);
+extern uint32_t NGNumericOperationLong(NGNumericOperationType number_operation, uint32_t variable, uint32_t value);
+extern void NGNumericOperation(NGNumericOperationType number_operation, uint32_t variable, uint32_t value);
+extern int32_t NGNumericGetVariable(uint32_t variable);
+extern int32_t NGNumericGetSavegameValue(uint32_t variable);

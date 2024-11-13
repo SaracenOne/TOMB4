@@ -49,7 +49,7 @@ void NGSetupNGObjects() {
 	obj->save_position = 1;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
-	bones[obj->bone_index + 4] |= 0x10;
+	bones[obj->bone_index + 4] |= Z_ROTATION_FLAG;
 
 	obj = &objects[MOTOR_BOAT];
 	obj->initialise = InitialiseBoat;
@@ -68,7 +68,7 @@ void NGSetupNGObjects() {
 	obj->save_position = 1;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
-	bones[obj->bone_index + 4] |= 0x10;
+	bones[obj->bone_index + 4] |= Z_ROTATION_FLAG;
 
 	obj = &objects[game_mod_config.level_info[gfCurrentLevel].objects_info.motor_boat_slot];
 	obj->initialise = InitialiseBoat;

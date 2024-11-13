@@ -27,8 +27,35 @@
 
 OBJECT_INFO objects[NUMBER_OBJECTS];
 
-static short StatuePlinthBounds[] = { 0, 0, -64, 0, 0, 0, -1820, 1820, -5460, 5460, -1820, 1820 };
-static short PoleBounds[] = { -256, 256, 0, 0, -512, 512, -1820, 1820, -5460, 5460, -1820, 1820 };
+static short StatuePlinthBounds[] = {
+	0,
+	0,
+	-QUARTER_CLICK_SIZE,
+	0,
+	0,
+	0,
+	-DEGREES_TO_ROTATION(10),
+	DEGREES_TO_ROTATION(10),
+	-DEGREES_TO_ROTATION(30),
+	DEGREES_TO_ROTATION(30),
+	-DEGREES_TO_ROTATION(10),
+	DEGREES_TO_ROTATION(10)
+};
+
+static short PoleBounds[] = {
+	-CLICK_SIZE,
+	CLICK_SIZE,
+	0,
+	0,
+	-HALF_BLOCK_SIZE,
+	HALF_BLOCK_SIZE,
+	-DEGREES_TO_ROTATION(10),
+	DEGREES_TO_ROTATION(10),
+	-DEGREES_TO_ROTATION(30),
+	DEGREES_TO_ROTATION(30),
+	-DEGREES_TO_ROTATION(10),
+	DEGREES_TO_ROTATION(10)
+};
 static PHD_VECTOR PolePos = { 0, 0, -208 };
 static PHD_VECTOR PolePosR = { 0, 0, 0 };
 
@@ -78,16 +105,16 @@ void ControlMapper(short item_number)
 			sptr->x = pos.x;
 			sptr->y = h;
 			sptr->z = pos.z;
-			sptr->Xvel = (GetRandomControl() & 0x3FF) - 512;
-			sptr->Yvel = -256 - (GetRandomControl() & 0x7F);
-			sptr->Zvel = (GetRandomControl() & 0x3FF) - 512;
+			sptr->Xvel = (GetRandomControl() & 0x3FF) - HALF_BLOCK_SIZE;
+			sptr->Yvel = -CLICK_SIZE - (GetRandomControl() & 0x7F);
+			sptr->Zvel = (GetRandomControl() & 0x3FF) - HALF_BLOCK_SIZE;
 			sptr->Friction = 4;
 			sptr->Scalar = 2;
-			sptr->sSize = (GetRandomControl() & 0xF) + 16;;
+			sptr->sSize = (GetRandomControl() & 0xF) + (QUARTER_CLICK_SIZE / 4);
 			sptr->Size = sptr->sSize;
 			sptr->dSize = (GetRandomControl() & 1) + 3;
 			sptr->MaxYvel = 0;
-			sptr->Gravity = (GetRandomControl() & 0x1F) + 32;
+			sptr->Gravity = (GetRandomControl() & 0x1F) + (QUARTER_CLICK_SIZE / 2);
 			sptr->Flags = 10;
 		}
 	}
@@ -122,7 +149,7 @@ void ControlLightningConductor(short item_number)
 		if (!item->item_flags[0])
 		{
 			item->item_flags[0] = (GetRandomControl() & 3) + 4;
-			item->item_flags[1] = (GetRandomControl() & 0x3FF) - 512;
+			item->item_flags[1] = (GetRandomControl() & 0x3FF) - 0x200;
 		}
 	}
 	else if (item->trigger_flags == 1 && flip_stats[1])
@@ -142,9 +169,9 @@ void ControlLightningConductor(short item_number)
 		if (r < 0)
 			r = 0;
 
-		pos.x = (GetRandomControl() & 0x1FF) + item->pos.x_pos - 256;
+		pos.x = (GetRandomControl() & 0x1FF) + item->pos.x_pos - CLICK_SIZE;
 		pos.y = item->pos.y_pos;
-		pos.z = (GetRandomControl() & 0x1FF) + item->pos.z_pos - 256;
+		pos.z = (GetRandomControl() & 0x1FF) + item->pos.z_pos - CLICK_SIZE;
 		TriggerLightning((PHD_VECTOR*)&item->pos, &pos, (GetRandomControl() & 0xF) + 16, RGBA(r, g, b, 24), 3, 24, 3);
 		pos2.x = item->pos.x_pos + item->item_flags[1];
 		pos2.y = item->pos.y_pos - 4096;
@@ -177,8 +204,8 @@ void ControlLightningConductor(short item_number)
 		}
 		else
 		{
-			if (item->trigger_flags == 1 && !lara.burn && !((item->pos.x_pos ^ lara_item->pos.x_pos) & -1024) &&
-				!((item->pos.z_pos ^ lara_item->pos.z_pos) & -1024) && lara_item->pos.y_pos <= item->pos.y_pos)
+			if (item->trigger_flags == 1 && !lara.burn && !((item->pos.x_pos ^ lara_item->pos.x_pos) & -BLOCK_SIZE) &&
+				!((item->pos.z_pos ^ lara_item->pos.z_pos) & -BLOCK_SIZE) && lara_item->pos.y_pos <= item->pos.y_pos)
 			{
 				LaraBurn();
 				lara_item->hit_points = 0;
@@ -189,7 +216,7 @@ void ControlLightningConductor(short item_number)
 	{
 		SoundEffect(SFX_THUNDER_CRACK, &item->pos, SFX_DEFAULT);
 		item->item_flags[0] = (GetRandomControl() & 3) + 4;
-		item->item_flags[1] = (GetRandomControl() & 0x3FF) - 512;
+		item->item_flags[1] = (GetRandomControl() & 0x3FF) - 0x200;
 	}
 }
 
@@ -206,7 +233,7 @@ void BridgeFlatFloor(ITEM_INFO* item, long x, long y, long z, long* height)
 void BridgeFlatCeiling(ITEM_INFO* item, long x, long y, long z, long* height)
 {
 	if (item->pos.y_pos < y)
-		*height = item->pos.y_pos + 256;
+		*height = item->pos.y_pos + CLICK_SIZE;
 }
 
 long GetOffset(ITEM_INFO* item, long x, long z)
@@ -242,7 +269,7 @@ void BridgeTilt1Ceiling(ITEM_INFO* item, long x, long y, long z, long* height)
 	level = item->pos.y_pos + (GetOffset(item, x, z) >> 2);
 
 	if (level < y)
-		*height = level + 256;
+		*height = level + CLICK_SIZE;
 }
 
 void BridgeTilt2Floor(ITEM_INFO* item, long x, long y, long z, long* height)
@@ -266,7 +293,7 @@ void BridgeTilt2Ceiling(ITEM_INFO* item, long x, long y, long z, long* height)
 	level = item->pos.y_pos + (GetOffset(item, x, z) >> 1);
 
 	if (level < y)
-		*height = level + 256;
+		*height = level + CLICK_SIZE;
 }
 
 void StatuePlinthCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
@@ -462,7 +489,7 @@ void ControlBurningRope(short item_number)
 		{
 			item->item_flags[1] = item->item_flags[2];
 			item->item_flags[0] = item->item_flags[2];
-			ExplodeItemNode(item, item->item_flags[2], 0, 256);
+			ExplodeItemNode(item, item->item_flags[2], 0, 0x100);
 		}
 	}
 	else if (GlobalCounter & 1)
@@ -472,7 +499,7 @@ void ControlBurningRope(short item_number)
 		if (item->item_flags[0] > 0)
 		{
 			item->item_flags[0]--;
-			ExplodeItemNode(item, item->item_flags[0], 0, 256);
+			ExplodeItemNode(item, item->item_flags[0], 0, 0x100);
 		}
 		else
 			passes++;
@@ -480,7 +507,7 @@ void ControlBurningRope(short item_number)
 		if (item->item_flags[1] < nmeshes)
 		{
 			item->item_flags[1]++;
-			ExplodeItemNode(item, item->item_flags[1], 0, 256);
+			ExplodeItemNode(item, item->item_flags[1], 0, 0x100);
 		}
 		else
 			passes++;
@@ -517,10 +544,10 @@ void BurningRopeCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 	if (dx > 0x1000 || dx < -0x1000 || dy > 0x800 || dy < -0x800 || dz > 0x1000 || dz < -0x1000)
 		return;
 
-	pos.x = -32;
-	pos.y = 64;
-	pos.z = 256;
-	GetLaraJointPos(&pos, 14);
+	pos.x = -(QUARTER_CLICK_SIZE / 2);
+	pos.y = QUARTER_CLICK_SIZE;
+	pos.z = CLICK_SIZE;
+	GetLaraJointPos(&pos, LMX_HAND_L);
 
 	for (int i = 0; i < nSpheres; i++)
 	{
@@ -761,7 +788,7 @@ void SmashObjectControl(short item_number)
 
 	if (lara.vehicle != NO_ITEM)
 	{
-		if (ItemNearLara(&item->pos, 512))
+		if (ItemNearLara(&item->pos, HALF_BLOCK_SIZE))
 			SmashObject(item_number);
 	}
 	else if (item->touch_bits)
@@ -798,7 +825,7 @@ void SmashObject(short item_number)
 	SoundEffect(SFX_EXPLOSION2, &item->pos, SFX_DEFAULT);
 	item->collidable = 0;
 	item->mesh_bits = 0xFFFE;
-	ExplodingDeath2(item_number, -1, 256);
+	ExplodingDeath2(item_number, -1, 0x100);
 	item->flags |= IFL_INVISIBLE;
 
 	if (item->status == ITEM_ACTIVE)
@@ -820,7 +847,7 @@ void EarthQuake(short item_number)
 
 	if (item->trigger_flags == 888)
 	{
-		camera.bounce = -64 - (GetRandomControl() & 0x1F);
+		camera.bounce = -QUARTER_CLICK_SIZE - (GetRandomControl() & 0x1F);
 		SoundEffect(SFX_EARTHQUAKE_LOOP, 0, SFX_DEFAULT);
 		item->item_flags[3]++;
 

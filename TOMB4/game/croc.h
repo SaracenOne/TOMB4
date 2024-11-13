@@ -1,6 +1,8 @@
 #pragma once
 #include "../global/types.h"
 
+#define MAX_LOCUSTS 64
+
 void InitialiseCroc(short item_number);
 void CrocControl(short item_number);
 long GetFreeLocust();
@@ -14,4 +16,4 @@ void TriggerCrocgodMissileFlame(short fx_number, long xv, long yv, long zv);
 void InitialiseCrocgod(short item_number);
 void CrocgodControl(short item_number);
 
-extern LOCUST_STRUCT Locusts[64];
+extern LOCUST_STRUCT Locusts[MAX_LOCUSTS];

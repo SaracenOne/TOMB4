@@ -171,10 +171,10 @@ void SkeletonControl(short item_number)
 	farheight = GetHeight(floor, x, y, z);
 
 	jump_ahead = (item->box_number != lara_item->box_number || !(item->mesh_bits & 0x200)) &&
-		y < nearheight - 384 && y < midheight + 256 && y > midheight - 256;
+		y < nearheight - (CLICK_SIZE + HALF_CLICK_SIZE) && y < midheight + CLICK_SIZE && y > midheight - CLICK_SIZE;
 
 	long_jump_ahead = (item->box_number != lara_item->box_number || !(item->mesh_bits & 0x200)) &&
-		y < nearheight - 384 && y < midheight - 384 && y < farheight + 256 && y > farheight - 256;
+		y < nearheight - (CLICK_SIZE + HALF_CLICK_SIZE) && y < midheight - (CLICK_SIZE + HALF_CLICK_SIZE) && y < farheight + CLICK_SIZE && y > farheight - CLICK_SIZE;
 
 	if (item->ai_bits)
 		GetAITarget(skelly);
@@ -250,7 +250,7 @@ void SkeletonControl(short item_number)
 		z = item->pos.z_pos + (870 * phd_cos(item->pos.y_rot + 0x3800) >> W2V_SHIFT);
 		floor = GetFloor(x, y, z, &room_number);
 		h2 = GetHeight(floor, x, y, z);
-		jump_right = abs(h2 - y) <= 256 && h1 + 512 < y;
+		jump_right = abs(h2 - y) <= CLICK_SIZE && h1 + HALF_BLOCK_SIZE < y;
 
 		room_number = item->room_number;
 		x = item->pos.x_pos + (870 * phd_sin(item->pos.y_rot - 0x2000) >> W2V_SHIFT);
@@ -263,7 +263,7 @@ void SkeletonControl(short item_number)
 		z = item->pos.z_pos + (870 * phd_cos(item->pos.y_rot - 0x3800) >> W2V_SHIFT);
 		floor = GetFloor(x, y, z, &room_number);
 		h2 = GetHeight(floor, x, y, z);
-		jump_left = abs(h2 - y) <= 256 && h1 + 512 < y;
+		jump_left = abs(h2 - y) <= CLICK_SIZE && h1 + HALF_BLOCK_SIZE < y;
 	}
 	else
 	{
@@ -294,7 +294,7 @@ void SkeletonControl(short item_number)
 		if (skelly->mood == BORED_MOOD)
 			skelly->maximum_turn = 0;
 		else
-			skelly->maximum_turn = 364;
+			skelly->maximum_turn = DEGREES_TO_ROTATION(2);
 
 		if (!(item->ai_bits & GUARD) && (GetRandomControl() & 0x1F || info.distance <= 0x100000 && skelly->mood == ATTACK_MOOD))
 		{
@@ -397,12 +397,12 @@ void SkeletonControl(short item_number)
 	case 18:
 		skelly->maximum_turn = 0;
 
-		if (abs(info.angle) < 1092)
+		if (abs(info.angle) < DEGREES_TO_ROTATION(6))
 			item->pos.y_rot += info.angle;
 		else if (info.angle < 0)
-			item->pos.y_rot -= 1092;
+			item->pos.y_rot -= DEGREES_TO_ROTATION(6);
 		else
-			item->pos.y_rot += 1092;
+			item->pos.y_rot += DEGREES_TO_ROTATION(6);
 
 		if (item->frame_number > anims[item->anim_number].frame_base + 15)
 		{
@@ -450,12 +450,12 @@ void SkeletonControl(short item_number)
 	case 10:
 		skelly->maximum_turn = 0;
 
-		if (abs(info.angle) < 1092)
+		if (abs(info.angle) < DEGREES_TO_ROTATION(6))
 			item->pos.y_rot += info.angle;
 		else if (info.angle < 0)
-			item->pos.y_rot -= 1092;
+			item->pos.y_rot -= DEGREES_TO_ROTATION(6);
 		else
-			item->pos.y_rot += 1092;
+			item->pos.y_rot += DEGREES_TO_ROTATION(6);
 
 		if (!skelly->flags && item->touch_bits & 0x18000)
 		{
@@ -494,7 +494,7 @@ void SkeletonControl(short item_number)
 		floor = GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
 		h = GetHeight(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
 
-		if (h > item->pos.y_pos + 1024)
+		if (h > item->pos.y_pos + BLOCK_SIZE)
 		{
 			skelly->maximum_turn = 0;
 			item->anim_number = objects[SKELETON].anim_index + 47;
@@ -512,9 +512,9 @@ void SkeletonControl(short item_number)
 		skelly->flags = 0;
 
 		if (skelly->mood == BORED_MOOD)
-			skelly->maximum_turn = 364;
+			skelly->maximum_turn = DEGREES_TO_ROTATION(2);
 		else
-			skelly->maximum_turn = 1092;
+			skelly->maximum_turn = DEGREES_TO_ROTATION(6);
 
 		if (item->ai_bits & PATROL1)
 			item->goal_anim_state = 15;
@@ -551,7 +551,7 @@ void SkeletonControl(short item_number)
 		break;
 
 	case 16:
-		skelly->maximum_turn = 1274;
+		skelly->maximum_turn = DEGREES_TO_ROTATION(7);
 		skelly->LOT.is_jumping = 0;
 
 		if (item->ai_bits & GUARD || jump_ahead || long_jump_ahead)
@@ -567,7 +567,7 @@ void SkeletonControl(short item_number)
 				floor = GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
 				h = GetHeight(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
 
-				if (h > item->pos.y_pos + 1024)
+				if (h > item->pos.y_pos + BLOCK_SIZE)
 				{
 					skelly->maximum_turn = 0;
 					item->anim_number = objects[SKELETON].anim_index + 44;

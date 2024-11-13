@@ -12,8 +12,8 @@
 
 void lara_as_parallelbars(ITEM_INFO* item, COLL_INFO* coll) {
 	// Added to better match TRNG
-	coll->enable_baddie_push = 0;
-	coll->enable_spaz = 0;
+	coll->enable_baddie_push = false;
+	coll->enable_spaz = false;
 
 	if (!(input & IN_ACTION))
 		item->goal_anim_state = AS_PBLEAP;
@@ -102,13 +102,13 @@ void ParallelBarsCollision(short item_num, ITEM_INFO* l, COLL_INFO* coll)
 		l->pos.y_rot = item->pos.y_rot + 0x8000;
 
 	pos.x = 0;
-	pos.y = -128;
-	pos.z = 512;
+	pos.y = -HALF_CLICK_SIZE;
+	pos.z = HALF_BLOCK_SIZE;
 	GetLaraJointPos(&pos, LMX_HAND_L);
 
 	pos2.x = 0;
-	pos2.y = -128;
-	pos2.z = 512;
+	pos2.y = -HALF_CLICK_SIZE;
+	pos2.z = HALF_BLOCK_SIZE;
 	GetLaraJointPos(&pos2, LMX_HAND_R);
 
 	if (l->pos.y_rot & 0x4000)

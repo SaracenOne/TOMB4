@@ -8,16 +8,17 @@
 #include "../specific/input.h"
 
 #include "trng/trng.h"
+#include "../specific/3dmath.h"
 
-static short LeftIntRightExtTab[4] = { 2048, 256, 512, 1024 };
-static short LeftExtRightIntTab[4] = { 512, 1024, 2048, 256 };
+static short LeftIntRightExtTab[4] = { BLOCK_SIZE * 2, CLICK_SIZE, HALF_BLOCK_SIZE, BLOCK_SIZE };
+static short LeftExtRightIntTab[4] = { HALF_BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE * 2, CLICK_SIZE };
 
 void lara_as_climbstnc(ITEM_INFO* item, COLL_INFO* coll)
 {
 	lara.IsClimbing = 1;
-	coll->enable_spaz = 0;
-	coll->enable_baddie_push = 0;
-	camera.target_elevation = -3640;
+	coll->enable_spaz = false;
+	coll->enable_baddie_push = false;
+	camera.target_elevation = -DEGREES_TO_ROTATION(20);
 
 	if (input & IN_LOOK)
 		LookUpDown();
@@ -25,12 +26,12 @@ void lara_as_climbstnc(ITEM_INFO* item, COLL_INFO* coll)
 	if (input & IN_LEFT || input & IN_LSTEP)
 	{
 		item->goal_anim_state = AS_CLIMBLEFT;
-		lara.move_angle = item->pos.y_rot - 16384;
+		lara.move_angle = item->pos.y_rot - 0x4000;
 	}
 	else if (input & IN_RIGHT || input & IN_RSTEP)
 	{
 		item->goal_anim_state = AS_CLIMBRIGHT;
-		lara.move_angle = item->pos.y_rot + 16384;
+		lara.move_angle = item->pos.y_rot + 0x4000;
 	}
 	else if (input & IN_JUMP)
 	{
@@ -38,17 +39,17 @@ void lara_as_climbstnc(ITEM_INFO* item, COLL_INFO* coll)
 		{
 			item->goal_anim_state = AS_BACKJUMP;
 			lara.gun_status = LG_NO_ARMS;
-			lara.move_angle = item->pos.y_rot + 32768;
+			lara.move_angle = item->pos.y_rot + 0x8000;
 		}
 	}
 }
 
 void lara_as_climbleft(ITEM_INFO* item, COLL_INFO* coll)
 {
-	coll->enable_baddie_push = 0;
-	coll->enable_spaz = 0;
-	camera.target_angle = -5460;
-	camera.target_elevation = -2730;
+	coll->enable_baddie_push = false;
+	coll->enable_spaz = false;
+	camera.target_angle = -DEGREES_TO_ROTATION(30);
+	camera.target_elevation = -DEGREES_TO_ROTATION(15);
 
 	if (!(input & (IN_LEFT | IN_LSTEP)))
 		item->goal_anim_state = AS_CLIMBSTNC;
@@ -60,18 +61,18 @@ void lara_col_climbleft(ITEM_INFO* item, COLL_INFO* coll)
 
 	if (!LaraCheckForLetGo(item, coll))
 	{
-		lara.move_angle = item->pos.y_rot - 16384;
-		res = LaraTestClimbPos(item, coll->radius, -(coll->radius + 120), -512, 512, &shift);
+		lara.move_angle = item->pos.y_rot - 0x4000;
+		res = LaraTestClimbPos(item, coll->radius, -(coll->radius + 120), -HALF_BLOCK_SIZE, HALF_BLOCK_SIZE, &shift);
 		LaraDoClimbLeftRight(item, coll, res, shift);
 	}
 }
 
 void lara_as_climbright(ITEM_INFO* item, COLL_INFO* coll)
 {
-	coll->enable_baddie_push = 0;
-	coll->enable_spaz = 0;
-	camera.target_angle = 5460;
-	camera.target_elevation = -2730;
+	coll->enable_baddie_push = false;
+	coll->enable_spaz = false;
+	camera.target_angle = DEGREES_TO_ROTATION(30);
+	camera.target_elevation = -DEGREES_TO_ROTATION(15);
 
 	if (!(input & (IN_RIGHT | IN_RSTEP)))
 		item->goal_anim_state = AS_CLIMBSTNC;
@@ -83,32 +84,32 @@ void lara_col_climbright(ITEM_INFO* item, COLL_INFO* coll)
 
 	if (!LaraCheckForLetGo(item, coll))
 	{
-		lara.move_angle = item->pos.y_rot + 16384;
-		res = LaraTestClimbPos(item, coll->radius, coll->radius + 120, -512, 512, &shift);
+		lara.move_angle = item->pos.y_rot + 0x4000;
+		res = LaraTestClimbPos(item, coll->radius, coll->radius + 120, -HALF_BLOCK_SIZE, HALF_BLOCK_SIZE, &shift);
 		LaraDoClimbLeftRight(item, coll, res, shift);
 	}
 }
 
 void lara_as_climbing(ITEM_INFO* item, COLL_INFO* coll)
 {
-	coll->enable_baddie_push = 0;
-	coll->enable_spaz = 0;
-	camera.target_elevation = 5460;
+	coll->enable_baddie_push = false;
+	coll->enable_spaz = false;
+	camera.target_elevation = DEGREES_TO_ROTATION(30);
 }
 
 void lara_as_climbdown(ITEM_INFO* item, COLL_INFO* coll)
 {
-	coll->enable_baddie_push = 0;
-	coll->enable_spaz = 0;
-	camera.target_elevation = -8190;
+	coll->enable_baddie_push = false;
+	coll->enable_spaz = false;
+	camera.target_elevation = -DEGREES_TO_ROTATION(45);
 }
 
 void lara_as_climbend(ITEM_INFO* item, COLL_INFO* coll)
 {
-	coll->enable_baddie_push = 0;
-	coll->enable_spaz = 0;
+	coll->enable_baddie_push = false;
+	coll->enable_spaz = false;
 	camera.flags = 1;
-	camera.target_angle = -8190;
+	camera.target_angle = -DEGREES_TO_ROTATION(45);
 }
 
 void lara_col_climbstnc(ITEM_INFO* item, COLL_INFO* coll)
@@ -135,7 +136,7 @@ void lara_col_climbstnc(ITEM_INFO* item, COLL_INFO* coll)
 			if (abs(ledge_l - ledge_r) <= 120)
 			{
 				item->goal_anim_state = AS_NULL;
-				item->pos.y_pos += (ledge_l + ledge_r) / 2 - 256;
+				item->pos.y_pos += (ledge_l + ledge_r) / 2 - CLICK_SIZE;
 				return;
 			}
 		}
@@ -165,10 +166,10 @@ void lara_col_climbstnc(ITEM_INFO* item, COLL_INFO* coll)
 			return;
 
 		item->goal_anim_state = AS_CLIMBSTNC;
-		item->pos.y_pos += 256;
-		result_r = LaraTestClimbPos(item, coll->radius, coll->radius + 120, -512, 512, &shift_r);
-		result_l = LaraTestClimbPos(item, coll->radius, coll->radius - 120, -512, 512, &shift_l);
-		item->pos.y_pos -= 256;
+		item->pos.y_pos += CLICK_SIZE;
+		result_r = LaraTestClimbPos(item, coll->radius, coll->radius + 120, -HALF_BLOCK_SIZE, HALF_BLOCK_SIZE, &shift_r);
+		result_l = LaraTestClimbPos(item, coll->radius, coll->radius - 120, -HALF_BLOCK_SIZE, HALF_BLOCK_SIZE, &shift_l);
+		item->pos.y_pos -= CLICK_SIZE;
 
 		if (!result_r || !result_l)
 			return;
@@ -207,16 +208,16 @@ void lara_col_climbing(ITEM_INFO* item, COLL_INFO* coll)
 	if (!frame)
 		yshift = 0;
 	else if (frame == 28 || frame == 29)
-		yshift = -256;
+		yshift = -CLICK_SIZE;
 	else if (frame == 57)
-		yshift = -512;
+		yshift = -HALF_BLOCK_SIZE;
 	else
 		return;
 
-	item->pos.y_pos += yshift - 256;
+	item->pos.y_pos += yshift - CLICK_SIZE;
 	result_r = LaraTestClimbUpPos(item, coll->radius, coll->radius + 120, &shift_r, &ledge_r);
 	result_l = LaraTestClimbUpPos(item, coll->radius, -(coll->radius + 120), &shift_l, &ledge_l);
-	item->pos.y_pos += 256;
+	item->pos.y_pos += CLICK_SIZE;
 
 	if (result_r && result_l && input & IN_FORWARD)
 	{
@@ -228,7 +229,7 @@ void lara_col_climbing(ITEM_INFO* item, COLL_INFO* coll)
 			if (abs(ledge_r - ledge_l) <= 120)
 			{
 				item->goal_anim_state = AS_NULL;
-				item->pos.y_pos += (ledge_r + ledge_l) / 2 - 256;
+				item->pos.y_pos += (ledge_r + ledge_l) / 2 - CLICK_SIZE;
 			}
 		}
 		else
@@ -261,16 +262,16 @@ void lara_col_climbdown(ITEM_INFO* item, COLL_INFO* coll)
 	if (!frame)
 		yshift = 0;
 	else if (frame == 28 || frame == 29)
-		yshift = 256;
+		yshift = CLICK_SIZE;
 	else if (frame == 57)
-		yshift = 512;
+		yshift = HALF_BLOCK_SIZE;
 	else
 		return;
 
-	item->pos.y_pos += yshift + 256;
-	result_r = LaraTestClimbPos(item, coll->radius, coll->radius + 120, -512, 512, &shift_r);
-	result_l = LaraTestClimbPos(item, coll->radius, -(coll->radius + 120), -512, 512, &shift_l);
-	item->pos.y_pos -= 256;
+	item->pos.y_pos += yshift + CLICK_SIZE;
+	result_r = LaraTestClimbPos(item, coll->radius, coll->radius + 120, -HALF_BLOCK_SIZE, HALF_BLOCK_SIZE, &shift_r);
+	result_l = LaraTestClimbPos(item, coll->radius, -(coll->radius + 120), -HALF_BLOCK_SIZE, HALF_BLOCK_SIZE, &shift_l);
+	item->pos.y_pos -= CLICK_SIZE;
 
 	if (result_r && result_l && input & IN_BACK)
 	{
@@ -382,7 +383,7 @@ long LaraTestClimb(long x, long y, long z, long xfront, long zfront, long item_h
 	{
 		c = GetCeiling(floor, xfront + x, y, zfront + z) - y;
 
-		if (c >= 512)
+		if (c >= HALF_BLOCK_SIZE)
 			return 1;
 
 		if (c > 442)
@@ -395,7 +396,7 @@ long LaraTestClimb(long x, long y, long z, long xfront, long zfront, long item_h
 					return 0;
 			}
 
-			*shift = c - 512;
+			*shift = c - HALF_BLOCK_SIZE;
 			return 1;
 		}
 
@@ -435,7 +436,7 @@ long LaraTestClimb(long x, long y, long z, long xfront, long zfront, long item_h
 
 	c -= y;
 
-	if (c <= h || c >= 512)
+	if (c <= h || c >= HALF_BLOCK_SIZE)
 		return 1;
 
 	if (c <= 442)
@@ -454,7 +455,7 @@ long LaraTestClimb(long x, long y, long z, long xfront, long zfront, long item_h
 			return 0;
 	}
 
-	*shift = c - 512;
+	*shift = c - HALF_BLOCK_SIZE;
 	return 1;
 }
 
@@ -471,25 +472,25 @@ long LaraTestClimbPos(ITEM_INFO* item, long front, long right, long origin, long
 	case NORTH:
 		x = right + item->pos.x_pos;
 		z = front + item->pos.z_pos;
-		zfront = 256;
+		zfront = CLICK_SIZE;
 		break;
 
 	case EAST:
 		x = front + item->pos.x_pos;
 		z = item->pos.z_pos - right;
-		xfront = 256;
+		xfront = CLICK_SIZE;
 		break;
 
 	case SOUTH:
 		x = item->pos.x_pos - right;
 		z = item->pos.z_pos - front;
-		zfront = -256;
+		zfront = -CLICK_SIZE;
 		break;
 
 	default:
 		x = item->pos.x_pos - front;
 		z = right + item->pos.z_pos;
-		xfront = -256;
+		xfront = -CLICK_SIZE;
 		break;
 	}
 
@@ -504,7 +505,7 @@ long LaraTestClimbUpPos(ITEM_INFO* item, long front, long right, long* shift, lo
 
 	xfront = 0;
 	zfront = 0;
-	y = item->pos.y_pos - 768;
+	y = item->pos.y_pos - HALF_BLOCK_SIZE + CLICK_SIZE;
 	angle = ushort(item->pos.y_rot + 0x2000) / 0x4000;
 
 	switch (angle)
@@ -537,7 +538,7 @@ long LaraTestClimbUpPos(ITEM_INFO* item, long front, long right, long* shift, lo
 	*shift = 0;
 	room_number = item->room_number;
 	floor = GetFloor(x, y, z, &room_number);
-	c = 256 - y + GetCeiling(floor, x, y, z);
+	c = CLICK_SIZE - y + GetCeiling(floor, x, y, z);
 
 	if (c > 70)
 		return 0;
@@ -561,10 +562,10 @@ long LaraTestClimbUpPos(ITEM_INFO* item, long front, long right, long* shift, lo
 	{
 		c = GetCeiling(floor, x+xfront, y, z+zfront) - y;
 
-		if (c >= 512)
+		if (c >= HALF_BLOCK_SIZE)
 			return 1;
 
-		if (h - c > 762)
+		if (h - c > (HALF_BLOCK_SIZE + CLICK_SIZE))
 		{
 			*shift = h;
 			return -1;
@@ -576,11 +577,11 @@ long LaraTestClimbUpPos(ITEM_INFO* item, long front, long right, long* shift, lo
 			*shift = h;
 
 		room_number = item->room_number;
-		GetFloor(x, y + 512, z, &room_number);
-		floor = GetFloor(x + xfront, y + 512, z + zfront, &room_number);
-		c = GetCeiling(floor, x + xfront, y + 512, z + zfront) - y;
+		GetFloor(x, y + HALF_BLOCK_SIZE, z, &room_number);
+		floor = GetFloor(x + xfront, y + HALF_BLOCK_SIZE, z + zfront, &room_number);
+		c = GetCeiling(floor, x + xfront, y + HALF_BLOCK_SIZE, z + zfront) - y;
 
-		if (c <= h || c >= 512)
+		if (c <= h || c >= HALF_BLOCK_SIZE)
 			return 1;
 	}
 
@@ -638,8 +639,8 @@ long LaraClimbLeftCornerTest(ITEM_INFO* item, COLL_INFO* coll)
 	{
 	case NORTH:
 	case SOUTH:
-		x = (oldX & ~0x3FF) - (oldZ & 0x3FF) + 1024;
-		z = (oldZ & ~0x3FF) - (oldX & 0x3FF) + 1024;
+		x = (oldX & ~0x3FF) - (oldZ & 0x3FF) + BLOCK_SIZE;
+		z = (oldZ & ~0x3FF) - (oldX & 0x3FF) + BLOCK_SIZE;
 		break;
 
 	default:
@@ -656,7 +657,7 @@ long LaraClimbLeftCornerTest(ITEM_INFO* item, COLL_INFO* coll)
 		lara.CornerZ = (void*)(size_t(z) & 0xffffffff);
 		item->pos.y_rot -= 0x4000;
 		lara.move_angle = item->pos.y_rot;
-		flag = LaraTestClimbPos(item, coll->radius, -120 - coll->radius, -512, 512, &shift);
+		flag = LaraTestClimbPos(item, coll->radius, -120 - coll->radius, -HALF_BLOCK_SIZE, HALF_BLOCK_SIZE, &shift);
 		item->item_flags[3] = (short)flag;
 
 		if (flag)
@@ -673,13 +674,13 @@ long LaraClimbLeftCornerTest(ITEM_INFO* item, COLL_INFO* coll)
 		switch (angle)
 		{
 		case NORTH:
-			x= (item->pos.x_pos ^ (((ushort)item->pos.z_pos ^ (ushort)item->pos.x_pos) & 0x3FF)) - 1024;
-			z = (((ushort)item->pos.z_pos ^ (ushort)item->pos.x_pos) & 0x3FF) ^ (item->pos.z_pos + 1024);
+			x= (item->pos.x_pos ^ (((ushort)item->pos.z_pos ^ (ushort)item->pos.x_pos) & 0x3FF)) - BLOCK_SIZE;
+			z = (((ushort)item->pos.z_pos ^ (ushort)item->pos.x_pos) & 0x3FF) ^ (item->pos.z_pos + BLOCK_SIZE);
 			break;
 
 		case SOUTH:
-			x = (((ushort)item->pos.z_pos ^ (ushort)item->pos.x_pos) & 0x3FF) ^ (item->pos.x_pos + 1024);
-			z = (((ushort)item->pos.z_pos ^ (ushort)item->pos.x_pos) & 0x3FF) ^ (item->pos.z_pos - 1024);
+			x = (((ushort)item->pos.z_pos ^ (ushort)item->pos.x_pos) & 0x3FF) ^ (item->pos.x_pos + BLOCK_SIZE);
+			z = (((ushort)item->pos.z_pos ^ (ushort)item->pos.x_pos) & 0x3FF) ^ (item->pos.z_pos - BLOCK_SIZE);
 			break;
 
 		case WEST:
@@ -688,8 +689,8 @@ long LaraClimbLeftCornerTest(ITEM_INFO* item, COLL_INFO* coll)
 			break;
 
 		default:
-			x = ((item->pos.x_pos + 1024) & ~0x3FF) - (item->pos.z_pos & 0x3FF) + 1024;
-			z = ((item->pos.z_pos + 1024) & ~0x3FF) - (item->pos.x_pos & 0x3FF) + 1024;
+			x = ((item->pos.x_pos + BLOCK_SIZE) & ~0x3FF) - (item->pos.z_pos & 0x3FF) + BLOCK_SIZE;
+			z = ((item->pos.z_pos + BLOCK_SIZE) & ~0x3FF) - (item->pos.x_pos & 0x3FF) + BLOCK_SIZE;
 			break;
 		}
 
@@ -701,7 +702,7 @@ long LaraClimbLeftCornerTest(ITEM_INFO* item, COLL_INFO* coll)
 			lara.CornerX = (void*)(size_t(z) & 0xffffffff);
 			item->pos.y_rot += 0x4000;
 			lara.move_angle = item->pos.y_rot;
-			flag = LaraTestClimbPos(item, coll->radius, -120 - coll->radius, -512, 512, &shift);
+			flag = LaraTestClimbPos(item, coll->radius, -120 - coll->radius, -HALF_BLOCK_SIZE, HALF_BLOCK_SIZE, &shift);
 			item->item_flags[3] = (short)flag;
 			
 			if (flag)
@@ -740,8 +741,8 @@ long LaraClimbRightCornerTest(ITEM_INFO* item, COLL_INFO* coll)
 		break;
 
 	default:
-		x = (oldX & ~0x3FF) - (oldZ & 0x3FF) + 1024;
-		z = (oldZ & ~0x3FF) - (oldX & 0x3FF) + 1024;
+		x = (oldX & ~0x3FF) - (oldZ & 0x3FF) + BLOCK_SIZE;
+		z = (oldZ & ~0x3FF) - (oldX & 0x3FF) + BLOCK_SIZE;
 		break;
 	}
 
@@ -753,7 +754,7 @@ long LaraClimbRightCornerTest(ITEM_INFO* item, COLL_INFO* coll)
 		lara.CornerX = (void*)(size_t(z) & 0xffffffff);
 		item->pos.y_rot += 0x4000;
 		lara.move_angle = item->pos.y_rot;
-		flag = LaraTestClimbPos(item, coll->radius, coll->radius+120, -512, 512, &shift);
+		flag = LaraTestClimbPos(item, coll->radius, coll->radius + 120, -HALF_BLOCK_SIZE, HALF_BLOCK_SIZE, &shift);
 
 		if (flag)
 			flag = -1;
@@ -769,23 +770,23 @@ long LaraClimbRightCornerTest(ITEM_INFO* item, COLL_INFO* coll)
 		switch (angle)
 		{
 		case NORTH:
-			x = ((item->pos.x_pos + 1024) & ~0x3FF) - (item->pos.z_pos & 0x3FF) + 1024;
-			z = ((item->pos.z_pos + 1024) & ~0x3FF) - (item->pos.x_pos & 0x3FF) + 1024;
+			x = ((item->pos.x_pos + BLOCK_SIZE) & ~0x3FF) - (item->pos.z_pos & 0x3FF) + BLOCK_SIZE;
+			z = ((item->pos.z_pos + BLOCK_SIZE) & ~0x3FF) - (item->pos.x_pos & 0x3FF) + BLOCK_SIZE;
 			break;
 
 		case SOUTH:
-			x = ((item->pos.x_pos - 1024) & ~0x3FF) - (item->pos.z_pos & 0x3FF) + 1024;
-			z = ((item->pos.z_pos - 1024) & ~0x3FF) - (item->pos.x_pos & 0x3FF) + 1024;
+			x = ((item->pos.x_pos - BLOCK_SIZE) & ~0x3FF) - (item->pos.z_pos & 0x3FF) + BLOCK_SIZE;
+			z = ((item->pos.z_pos - BLOCK_SIZE) & ~0x3FF) - (item->pos.x_pos & 0x3FF) + BLOCK_SIZE;
 			break;
 
 		case WEST:
-			x = (item->pos.x_pos ^ ((ushort)item->pos.z_pos ^ (ushort)item->pos.x_pos) & 0x3FF) - 1024;
-			z = ((ushort)item->pos.z_pos ^ (ushort)item->pos.x_pos) & 0x3FF ^ (item->pos.z_pos + 1024);
+			x = (item->pos.x_pos ^ ((ushort)item->pos.z_pos ^ (ushort)item->pos.x_pos) & 0x3FF) - BLOCK_SIZE;
+			z = ((ushort)item->pos.z_pos ^ (ushort)item->pos.x_pos) & 0x3FF ^ (item->pos.z_pos + BLOCK_SIZE);
 			break;
 
 		default:
-			x = (((ushort)item->pos.z_pos ^ (ushort)item->pos.x_pos) & 0x3FF) ^ (item->pos.x_pos + 1024);
-			z = (item->pos.z_pos ^ (((ushort)item->pos.z_pos ^ (ushort)item->pos.x_pos) & 0x3FF)) - 1024;
+			x = (((ushort)item->pos.z_pos ^ (ushort)item->pos.x_pos) & 0x3FF) ^ (item->pos.x_pos + BLOCK_SIZE);
+			z = (item->pos.z_pos ^ (((ushort)item->pos.z_pos ^ (ushort)item->pos.x_pos) & 0x3FF)) - BLOCK_SIZE;
 			break;
 		}
 
@@ -797,7 +798,7 @@ long LaraClimbRightCornerTest(ITEM_INFO* item, COLL_INFO* coll)
 			lara.CornerZ = (void*)(size_t(z) & 0xffffffff);
 			item->pos.y_rot -= 0x4000;
 			lara.move_angle = item->pos.y_rot;
-			flag = LaraTestClimbPos(item, coll->radius, coll->radius + 120, -512, 512, &shift);
+			flag = LaraTestClimbPos(item, coll->radius, coll->radius + 120, -HALF_BLOCK_SIZE, HALF_BLOCK_SIZE, &shift);
 
 			if (flag)
 				flag = 1;

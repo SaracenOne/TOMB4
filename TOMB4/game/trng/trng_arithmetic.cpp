@@ -8,7 +8,7 @@
 
 
 // TODO: Investigate whether numeric operations operate as signed or unsigned.
-unsigned char NGNumericOperationByte(NGNumericOperationType number_operation_type, unsigned char variable, unsigned int value) {
+unsigned char NGNumericOperationByte(NGNumericOperationType number_operation_type, uint8_t variable, uint32_t value) {
 	switch (number_operation_type) {
 		case NG_SET: {
 			return value;
@@ -36,14 +36,14 @@ unsigned char NGNumericOperationByte(NGNumericOperationType number_operation_typ
 			return variable & ~(1 << value);
 		}
 		case NG_INVERT_SIGN: {
-			return (unsigned char)(-(signed char)value);
+			return (uint8_t)(-(int8_t)value);
 		}
 	}
 
 	return 0;
 }
 
-unsigned short NGNumericOperationShort(NGNumericOperationType number_operation_type, unsigned short variable, unsigned int value) {
+uint16_t NGNumericOperationShort(NGNumericOperationType number_operation_type, uint16_t variable, uint32_t value) {
 	switch (number_operation_type) {
 		case NG_SET: {
 			return value;
@@ -72,14 +72,14 @@ unsigned short NGNumericOperationShort(NGNumericOperationType number_operation_t
 			return variable & ~(1 << value);
 		}
 		case NG_INVERT_SIGN: {
-			return (unsigned short)(-(signed short)value);
+			return (uint16_t)(-(int16_t)value);
 		}
 	}
 	
 	return 0;
 }
 
-unsigned long NGNumericOperationLong(NGNumericOperationType number_operation_type, unsigned long variable, unsigned int value) {
+uint32_t NGNumericOperationLong(NGNumericOperationType number_operation_type, uint32_t variable, uint32_t value) {
 	switch (number_operation_type) {
 		case NG_SET: {
 			return value;
@@ -108,14 +108,14 @@ unsigned long NGNumericOperationLong(NGNumericOperationType number_operation_typ
 			return variable & ~(1 << value);
 		}
 		case NG_INVERT_SIGN: {
-			return (unsigned int)(-(signed int)value);
+			return (uint32_t)(-(int32_t)value);
 		}
 	}
 
 	return 0;
 }
 
-void NGNumericOperation(NGNumericOperationType number_operation, unsigned int variable, unsigned int value) {
+void NGNumericOperation(NGNumericOperationType number_operation, uint32_t variable, uint32_t value) {
 	switch (variable) {
 		case 0xffffffff: {
 			ng_current_value = NGNumericOperationByte(number_operation, ng_current_value, value);
@@ -209,39 +209,39 @@ void NGNumericOperation(NGNumericOperationType number_operation, unsigned int va
 		}
 		// Global Short Alfa
 		case 0x10: {
-			unsigned short ng_global_short_alfa_1 = (ng_global_alfa & 0xffff);
+			uint16_t ng_global_short_alfa_1 = (ng_global_alfa & 0xffff);
 			ng_global_short_alfa_1 = NGNumericOperationShort(number_operation, ng_global_short_alfa_1, value);
 			ng_global_alfa = (ng_global_alfa & ~0xffff) | (((int)ng_global_short_alfa_1)) & 0xffff;
 			break;
 		}
 		case 0x11: {
-			unsigned short ng_global_short_alfa_2 = (ng_global_alfa & 0xffff0000);
+			uint16_t ng_global_short_alfa_2 = (ng_global_alfa & 0xffff0000);
 			ng_global_short_alfa_2 = NGNumericOperationShort(number_operation, ng_global_short_alfa_2, value);
 			ng_global_alfa = (ng_global_alfa & ~0xffff0000) | (((int)ng_global_short_alfa_2)) & 0xffff0000;
 			break;
 		}
 		// Global Short Beta
 		case 0x12: {
-			unsigned short ng_global_short_beta_1 = (ng_global_beta & 0xffff);
+			uint16_t ng_global_short_beta_1 = (ng_global_beta & 0xffff);
 			ng_global_short_beta_1 = NGNumericOperationShort(number_operation, ng_global_short_beta_1, value);
 			ng_global_beta = (ng_global_beta & ~0xffff) | (((int)ng_global_short_beta_1)) & 0xffff;
 			break;
 		}
 		case 0x13: {
-			unsigned short ng_global_short_beta_2 = (ng_global_beta & 0xffff0000);
+			uint16_t ng_global_short_beta_2 = (ng_global_beta & 0xffff0000);
 			ng_global_short_beta_2 = NGNumericOperationShort(number_operation, ng_global_short_beta_2, value);
 			ng_global_beta = (ng_global_beta & ~0xffff0000) | (((int)ng_global_short_beta_2)) & 0xffff0000;
 			break;
 		}
 		// Global Short Delta
 		case 0x14: {
-			unsigned short ng_global_short_delta_1 = (ng_global_delta & 0xffff);
+			uint16_t ng_global_short_delta_1 = (ng_global_delta & 0xffff);
 			ng_global_short_delta_1 = NGNumericOperationShort(number_operation, ng_global_short_delta_1, value);
 			ng_global_delta = (ng_global_delta & ~0xffff) | (((int)ng_global_short_delta_1)) & 0xffff;
 			break;
 		}
 		case 0x15: {
-			unsigned short ng_global_short_delta_2 = (ng_global_delta & 0xffff0000);
+			uint16_t ng_global_short_delta_2 = (ng_global_delta & 0xffff0000);
 			ng_global_short_delta_2 = NGNumericOperationShort(number_operation, ng_global_short_delta_2, value);
 			ng_global_delta = (ng_global_delta & ~0xffff0000) | (((int)ng_global_short_delta_2)) & 0xffff0000;
 			break;
@@ -352,39 +352,39 @@ void NGNumericOperation(NGNumericOperationType number_operation, unsigned int va
 		}
 		// Local Short Alfa
 		case 0x50: {
-			unsigned short ng_local_short_alfa_1 = (ng_local_alfa & 0xffff);
+			uint16_t ng_local_short_alfa_1 = (ng_local_alfa & 0xffff);
 			ng_local_short_alfa_1 = NGNumericOperationShort(number_operation, ng_local_short_alfa_1, value);
 			ng_local_alfa = (ng_local_alfa & ~0xffff) | (((int)ng_local_short_alfa_1)) & 0xffff;
 			break;
 		}
 		case 0x51: {
-			unsigned short ng_local_short_alfa_2 = (ng_local_alfa & 0xffff0000);
+			uint16_t ng_local_short_alfa_2 = (ng_local_alfa & 0xffff0000);
 			ng_local_short_alfa_2 = NGNumericOperationShort(number_operation, ng_local_short_alfa_2, value);
 			ng_local_alfa = (ng_local_alfa & ~0xffff0000) | (((int)ng_local_short_alfa_2)) & 0xffff0000;
 			break;
 		}
 		// Local Short Beta
 		case 0x52: {
-			unsigned short ng_local_short_beta_1 = (ng_local_beta & 0xffff);
+			uint16_t ng_local_short_beta_1 = (ng_local_beta & 0xffff);
 			ng_local_short_beta_1 = NGNumericOperationShort(number_operation, ng_local_short_beta_1, value);
 			ng_local_beta = (ng_local_beta & ~0xffff) | (((int)ng_local_short_beta_1)) & 0xffff;
 			break;
 		}
 		case 0x53: {
-			unsigned short ng_local_short_beta_2 = (ng_local_beta & 0xffff0000);
+			uint16_t ng_local_short_beta_2 = (ng_local_beta & 0xffff0000);
 			ng_local_short_beta_2 = NGNumericOperationShort(number_operation, ng_local_short_beta_2, value);
 			ng_local_beta = (ng_local_beta & ~0xffff0000) | (((int)ng_local_short_beta_2)) & 0xffff0000;
 			break;
 		}
 		// Local Short Delta
 		case 0x54: {
-			unsigned short ng_local_short_delta_1 = (ng_local_delta & 0xffff);
+			uint16_t ng_local_short_delta_1 = (ng_local_delta & 0xffff);
 			ng_local_short_delta_1 = NGNumericOperationShort(number_operation, ng_local_short_delta_1, value);
 			ng_local_delta = (ng_local_delta & ~0xffff) | (((int)ng_local_short_delta_1)) & 0xffff;
 			break;
 		}
 		case 0x55: {
-			unsigned short ng_local_short_delta_2 = (ng_local_delta & 0xffff0000);
+			uint16_t ng_local_short_delta_2 = (ng_local_delta & 0xffff0000);
 			ng_local_short_delta_2 = NGNumericOperationShort(number_operation, ng_local_short_delta_2, value);
 			ng_local_delta = (ng_local_delta & ~0xffff0000) | (((int)ng_local_short_delta_2)) & 0xffff0000;
 			break;
@@ -413,7 +413,7 @@ void NGNumericOperation(NGNumericOperationType number_operation, unsigned int va
 	}
 }
 
-int NGNumericGetVariable(unsigned int variable) {
+int32_t NGNumericGetVariable(uint32_t variable) {
 	switch (variable) {
 		case 0xffffffff: {
 			return ng_current_value;
@@ -480,29 +480,29 @@ int NGNumericGetVariable(unsigned int variable) {
 		}
 		// Global Short Alfa
 		case 0x10: {
-			unsigned short ng_global_short_alfa_1 = (ng_global_alfa & 0xffff);
+			uint16_t ng_global_short_alfa_1 = (ng_global_alfa & 0xffff);
 			return ng_global_short_alfa_1;
 		}
 		case 0x11: {
-			unsigned short ng_global_short_alfa_2 = (ng_global_alfa & 0xffff0000);
+			uint16_t ng_global_short_alfa_2 = (ng_global_alfa & 0xffff0000);
 			return ng_global_short_alfa_2;
 		}
 		// Global Short Beta
 		case 0x12: {
-			unsigned short ng_global_short_beta_1 = (ng_global_beta & 0xffff);
+			uint16_t ng_global_short_beta_1 = (ng_global_beta & 0xffff);
 			return ng_global_short_beta_1;
 		}
 		case 0x13: {
-			unsigned short ng_global_short_beta_2 = (ng_global_beta & 0xffff0000);
+			uint16_t ng_global_short_beta_2 = (ng_global_beta & 0xffff0000);
 			return ng_global_short_beta_2;
 		}
 		// Global Short Delta
 		case 0x14: {
-			unsigned short ng_global_short_delta_1 = (ng_global_delta & 0xffff);
+			uint16_t ng_global_short_delta_1 = (ng_global_delta & 0xffff);
 			return ng_global_short_delta_1;
 		}
 		case 0x15: {
-			unsigned short ng_global_short_delta_2 = (ng_global_delta & 0xffff0000);
+			uint16_t ng_global_short_delta_2 = (ng_global_delta & 0xffff0000);
 			return ng_global_short_delta_2;
 		}
 
@@ -582,29 +582,29 @@ int NGNumericGetVariable(unsigned int variable) {
 		}
 		// Local Short Alfa
 		case 0x50: {
-			unsigned short ng_local_short_alfa_1 = (ng_local_alfa & 0xffff);
+			uint16_t ng_local_short_alfa_1 = (ng_local_alfa & 0xffff);
 			return ng_local_short_alfa_1;
 		}
 		case 0x51: {
-			unsigned short ng_local_short_alfa_2 = (ng_local_alfa & 0xffff0000);
+			uint16_t ng_local_short_alfa_2 = (ng_local_alfa & 0xffff0000);
 			return ng_local_short_alfa_2;
 		}
 		// Local Short Beta
 		case 0x52: {
-			unsigned short ng_local_short_beta_1 = (ng_local_beta & 0xffff);
+			uint16_t ng_local_short_beta_1 = (ng_local_beta & 0xffff);
 			return ng_local_short_beta_1;
 		}
 		case 0x53: {
-			unsigned short ng_local_short_beta_2 = (ng_local_beta & 0xffff0000);
+			uint16_t ng_local_short_beta_2 = (ng_local_beta & 0xffff0000);
 			return ng_local_short_beta_2;
 		}
 		// Local Short Delta
 		case 0x54: {
-			unsigned short ng_local_short_delta_1 = (ng_local_delta & 0xffff);
+			uint16_t ng_local_short_delta_1 = (ng_local_delta & 0xffff);
 			return ng_local_short_delta_1;
 		}
 		case 0x55: {
-			unsigned short ng_local_short_delta_2 = (ng_local_delta & 0xffff0000);
+			uint16_t ng_local_short_delta_2 = (ng_local_delta & 0xffff0000);
 			return ng_local_short_delta_2;
 		}
 
@@ -631,7 +631,7 @@ int NGNumericGetVariable(unsigned int variable) {
 	}
 }
 
-int NGNumericGetSavegameValue(unsigned int variable) {
+int32_t NGNumericGetSavegameValue(uint32_t variable) {
 	switch (variable) {
 		case 0x00: {
 			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGNumericGetSavegameValue: TRNG Index: Index of last item found with testposition or condition unimplemented");

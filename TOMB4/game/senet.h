@@ -13,10 +13,14 @@ void ShockwaveExplosion(ITEM_INFO* item, ulong col, long speed);
 void ControlGodHead(short item_number);
 void DrawGodHead(ITEM_INFO* item);
 
+#define SENET_ITEM_MID 3
+#define SENET_ITEM_COUNT 6
+#define SENET_BOARD_COUNT 17
+
 extern long SenetTargetX;
 extern long SenetTargetZ;
-extern short senet_item[6];
+extern short senet_item[SENET_ITEM_COUNT];
 extern char piece_moving;
 extern char last_throw;
-extern char senet_board[17];
-extern char senet_piece[6];
+extern char senet_board[SENET_BOARD_COUNT];
+extern char senet_piece[SENET_ITEM_COUNT];

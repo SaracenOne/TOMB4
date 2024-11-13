@@ -123,7 +123,7 @@ void GuideControl(short item_number)
 			{
 				candidate = &items[baddie_slots[i].item_num];
 
-				if (candidate->object_number != GUIDE && abs(candidate->pos.y_pos - item->pos.y_pos) <= 512)
+				if (candidate->object_number != GUIDE && abs(candidate->pos.y_pos - item->pos.y_pos) <= HALF_BLOCK_SIZE)
 				{
 					x = candidate->pos.x_pos - item->pos.x_pos;
 					z = candidate->pos.z_pos - item->pos.z_pos;
@@ -279,7 +279,7 @@ void GuideControl(short item_number)
 
 	case 2:
 		guide->LOT.is_jumping = 0;
-		guide->maximum_turn = 1274;
+		guide->maximum_turn = DEGREES_TO_ROTATION(7);
 
 		if (iAhead)
 			head = iAngle;
@@ -332,7 +332,7 @@ void GuideControl(short item_number)
 		if (info.ahead)
 			head = info.angle;
 
-		guide->maximum_turn = 2002;
+		guide->maximum_turn = DEGREES_TO_ROTATION(11);
 		tilt = angle / 2;
 
 		if (info.distance < 0x400000 || lara.location < item->item_flags[3])
@@ -379,11 +379,11 @@ void GuideControl(short item_number)
 			r = 192 - ((rnd >> 4) & 0x1F);
 			g = 128 - ((rnd >> 6) & 0x1F);
 			b = rnd & 0x1F;
-			TriggerDynamic(pos.x - 32, pos.y - 64, pos.z - 32, 10, r, g, b);
+			TriggerDynamic(pos.x - (QUARTER_CLICK_SIZE / 2), pos.y - QUARTER_CLICK_SIZE, pos.z - (QUARTER_CLICK_SIZE / 2), 10, r, g, b);
 
-			x = (rnd & 0x3F) + pos.x - 64;
-			y = ((rnd >> 5) & 0x3F) + pos.y - 96;
-			z = ((rnd >> 10) & 0x3F) + pos.z - 64;
+			x = (rnd & 0x3F) + pos.x - QUARTER_CLICK_SIZE;
+			y = ((rnd >> 5) & 0x3F) + pos.y - (QUARTER_CLICK_SIZE + (QUARTER_CLICK_SIZE / 2));
+			z = ((rnd >> 10) & 0x3F) + pos.z - QUARTER_CLICK_SIZE;
 			TriggerFireFlame(x, y, z, -1, 7);
 		}
 		else if (frame > 159 && frame < 164)
@@ -396,15 +396,15 @@ void GuideControl(short item_number)
 		}
 		else if (frame > 163 && frame < 181)
 		{
-			x = (rnd & 0x3F) + pos.x - 64;
-			y = ((rnd >> 5) & 0x3F) + pos.y - 96;
-			z = ((rnd >> 10) & 0x3F) + pos.z - 64;
+			x = (rnd & 0x3F) + pos.x - QUARTER_CLICK_SIZE;
+			y = ((rnd >> 5) & 0x3F) + pos.y - (QUARTER_CLICK_SIZE + (QUARTER_CLICK_SIZE / 2));
+			z = ((rnd >> 10) & 0x3F) + pos.z - QUARTER_CLICK_SIZE;
 			TriggerFireFlame(x, y, z, -1, 7);
 
 			r = 192 - ((rnd >> 4) & 0x1F);
 			g = 128 - ((rnd >> 6) & 0x1F);
 			b = rnd & 0x1F;
-			TriggerDynamic(pos.x - 32, pos.y - 64, pos.z - 32, 10, r, g, b);
+			TriggerDynamic(pos.x - 32, pos.y - QUARTER_CLICK_SIZE, pos.z - (QUARTER_CLICK_SIZE / 2), 10, r, g, b);
 			item->item_flags[1] = 2;
 		}
 
@@ -429,12 +429,12 @@ void GuideControl(short item_number)
 
 		guide->maximum_turn = 0;
 
-		if (abs(info.angle) < 1274)
+		if (abs(info.angle) < DEGREES_TO_ROTATION(7))
 			item->pos.y_rot += info.angle;
 		else if (info.angle < 0)
-			item->pos.y_rot -= 1274;
+			item->pos.y_rot -= DEGREES_TO_ROTATION(7);
 		else
-			item->pos.y_rot += 1274;
+			item->pos.y_rot += DEGREES_TO_ROTATION(7);
 
 		if (guide->flags || !enemy)
 			break;
@@ -445,7 +445,7 @@ void GuideControl(short item_number)
 			y = abs(enemy->pos.y_pos - item->pos.y_pos);
 			z = abs(enemy->pos.z_pos - item->pos.z_pos);
 
-			if (x < 512 && y <= 512 && z < 512)
+			if (x < HALF_BLOCK_SIZE && y <= HALF_BLOCK_SIZE && z < HALF_BLOCK_SIZE)
 			{
 				enemy->hit_points -= 20;
 
@@ -475,10 +475,10 @@ void GuideControl(short item_number)
 		{
 			dy = enemy->pos.y_rot - item->pos.y_rot;
 
-			if (dy > 364)
-				item->pos.y_rot += 364;
-			else if (dy < -364)
-				item->pos.y_rot -= 364;
+			if (dy > DEGREES_TO_ROTATION(2))
+				item->pos.y_rot += DEGREES_TO_ROTATION(2);
+			else if (dy < -DEGREES_TO_ROTATION(2))
+				item->pos.y_rot -= DEGREES_TO_ROTATION(2);
 		}
 
 		if (item->required_anim_state == 43)
@@ -557,10 +557,10 @@ void GuideControl(short item_number)
 		{
 			dy = enemy->pos.y_rot - item->pos.y_rot;
 
-			if (dy > 364)
-				item->pos.y_rot += 364;
-			else if (dy < -364)
-				item->pos.y_rot -= 364;
+			if (dy > DEGREES_TO_ROTATION(2))
+				item->pos.y_rot += DEGREES_TO_ROTATION(2);
+			else if (dy < -DEGREES_TO_ROTATION(2))
+				item->pos.y_rot -= DEGREES_TO_ROTATION(2);
 		}
 
 		break;
@@ -571,10 +571,10 @@ void GuideControl(short item_number)
 		{
 			dy = enemy->pos.y_rot - item->pos.y_rot;
 
-			if (dy > 364)
-				item->pos.y_rot += 364;
-			else if (dy < -364)
-				item->pos.y_rot -= 364;
+			if (dy > DEGREES_TO_ROTATION(2))
+				item->pos.y_rot += DEGREES_TO_ROTATION(2);
+			else if (dy < -DEGREES_TO_ROTATION(2))
+				item->pos.y_rot -= DEGREES_TO_ROTATION(2);
 		}
 		else if (item->frame_number == anims[item->anim_number].frame_base + 20)
 		{
@@ -596,7 +596,7 @@ void GuideControl(short item_number)
 
 	case 40:
 		guide->LOT.is_jumping = 0;
-		guide->maximum_turn = 1274;
+		guide->maximum_turn = DEGREES_TO_ROTATION(7);
 
 		if (iAhead)
 			head = iAngle;
@@ -637,7 +637,7 @@ void GuideControl(short item_number)
 	case 41:
 	case 42:
 		guide->maximum_turn = 0;
-		MoveCreature3DPos(&item->pos, &enemy->pos, 15, enemy->pos.y_rot - item->pos.y_rot, 1820);
+		MoveCreature3DPos(&item->pos, &enemy->pos, 15, enemy->pos.y_rot - item->pos.y_rot, DEGREES_TO_ROTATION(10));
 		break;
 	}
 

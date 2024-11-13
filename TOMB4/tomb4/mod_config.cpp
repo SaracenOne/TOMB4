@@ -1,3 +1,5 @@
+#include <string>
+
 #include "../tomb4/pch.h"
 #include "mod_config.h"
 #include "../specific/file.h"
@@ -5,6 +7,8 @@
 #include "libs/tiny-json/tiny-json.h"
 #include "../specific/function_stubs.h"
 #include "../game/gameflow.h"
+#include "../game/sound.h"
+#include "../game/control.h"
 #include "../game/trng/trng.h"
 #include "tomb4plus/t4plus_mirror.h"
 #include "tomb4plus/t4plus_inventory.h"
@@ -19,9 +23,6 @@
 #include "../specific/platform.h"
 #include "../specific/registry.h"
 
-#include <string>
-#include "../game/sound.h"
-
 int global_string_table_size = 0;
 char** global_string_table = nullptr;
 
@@ -32,32 +33,32 @@ char** global_string_table = nullptr;
 
 #define READ_JSON_SINT8(value_name, json, my_struct) { const json_t* value_name = json_getProperty(json, #value_name); \
     if (value_name && JSON_INTEGER == json_getType(value_name)) { \
-        (my_struct)->value_name = (signed char)json_getInteger(value_name); } \
+        (my_struct)->value_name = (int8_t)json_getInteger(value_name); } \
     }
 
 #define READ_JSON_SINT16(value_name, json, my_struct) { const json_t* value_name = json_getProperty(json, #value_name); \
     if (value_name && JSON_INTEGER == json_getType(value_name)) { \
-        (my_struct)->value_name = (signed short)json_getInteger(value_name); } \
+        (my_struct)->value_name = (int16_t)json_getInteger(value_name); } \
     }
 
 #define READ_JSON_SINT32(value_name, json, my_struct) { const json_t* value_name = json_getProperty(json, #value_name); \
     if (value_name && JSON_INTEGER == json_getType(value_name)) { \
-        (my_struct)->value_name = (signed int)json_getInteger(value_name); } \
+        (my_struct)->value_name = (int32_t)json_getInteger(value_name); } \
     }
 
 #define READ_JSON_UINT8(value_name, json, my_struct) { const json_t* value_name = json_getProperty(json, #value_name); \
     if (value_name && JSON_INTEGER == json_getType(value_name)) { \
-        (my_struct)->value_name = (unsigned char)json_getInteger(value_name); } \
+        (my_struct)->value_name = (uint8_t)json_getInteger(value_name); } \
     }
 
 #define READ_JSON_UINT16(value_name, json, my_struct) { const json_t* value_name = json_getProperty(json, #value_name); \
     if (value_name && JSON_INTEGER == json_getType(value_name)) { \
-        (my_struct)->value_name = (unsigned short)json_getInteger(value_name); } \
+        (my_struct)->value_name = (uint16_t)json_getInteger(value_name); } \
     }
 
 #define READ_JSON_UINT32(value_name, json, my_struct) { const json_t* value_name = json_getProperty(json, #value_name); \
     if (value_name && JSON_INTEGER == json_getType(value_name)) { \
-        (my_struct)->value_name = (unsigned int)json_getInteger(value_name); } \
+        (my_struct)->value_name = (uint32_t)json_getInteger(value_name); } \
     }
 
 #define READ_JSON_BOOL(value_name, json, my_struct) { const json_t* value_name = json_getProperty(json, #value_name); \
@@ -559,6 +560,8 @@ void LoadGameModLevelCreatureInfo(const json_t* creature, MOD_LEVEL_CREATURE_INF
     READ_JSON_BOOL_AND_SET_FLAG(small_scorpion_is_poisonous, creature, creature_info, scorpion_poison_override_found);
     READ_JSON_SINT32(small_scorpion_poison_strength, creature, creature_info);
 
+    READ_JSON_BOOL(use_voncroy_racing_behaviour, creature, creature_info);
+
     READ_JSON_BOOL(remove_knights_templar_sparks, creature, creature_info);
 
     READ_JSON_BOOL(remove_ahmet_death_flames, creature, creature_info);
@@ -623,7 +626,7 @@ void LoadGameModObjectCustomizationInfo(const json_t* object_customization_json,
         const json_t* prop = json_getProperty(object_customization_json, "hit_points");
         if (prop && JSON_INTEGER == json_getType(prop)) {
             (object_customization)->override_hit_points = true;
-            (object_customization)->hit_points = (signed int)json_getInteger(prop);
+            (object_customization)->hit_points = (int32_t)json_getInteger(prop);
         }
     };
 
@@ -687,7 +690,7 @@ void LoadGameModLevelObjectsInfo(const json_t* objects, MOD_LEVEL_OBJECTS_INFO* 
             int object_customization_index = -1;
             const json_t* prop = json_getProperty(object_customization_json, "object_id");
             if (prop && JSON_INTEGER == json_getType(prop)) {
-                object_customization_index = (signed int)json_getInteger(prop);
+                object_customization_index = (int32_t)json_getInteger(prop);
             }
             
             if (object_customization_index >= NUMBER_OBJECTS || object_customization_index < 0)
@@ -855,6 +858,9 @@ void SetupDefaultStaticsInfoForLevel(MOD_LEVEL_INFO* level_info) {
             if (i <= SHATTER9) {
                 level_info->statics_info.static_info[i].large_objects_can_shatter = true;
             }
+            if (i <= SHATTER8) {
+                level_info->statics_info.static_info[i].explosion_can_shatter = true;
+            }
             if (i < SHATTER8) {
                 level_info->statics_info.static_info[i].lara_guns_can_shatter = true;
             }
@@ -970,7 +976,7 @@ void SetupDefaultObjectInfoForLevel(MOD_LEVEL_INFO* level_info) {
 
     for (int i = 0; i < NUMBER_OBJECTS; i++) {
         MOD_LEVEL_OBJECT_CUSTOMIZATION* cust = &level_object_customization[i];
-        cust->hit_points = -16384;
+        cust->hit_points = INFINITE_HEALTH;
         cust->damage_1 = 0;
         cust->damage_2 = 0;
         cust->damage_3 = 0;
@@ -1259,6 +1265,12 @@ void SetupDefaultStatInfoForLevel(MOD_LEVEL_INFO* level_info) {
 
 void SetupLevelDefaults() {
     for (int i = 0; i < MOD_LEVEL_COUNT; i++) {
+        if (i != 1) {
+            game_mod_config.level_info[i].creature_info.use_voncroy_racing_behaviour = true;
+        } else {
+            game_mod_config.level_info[i].creature_info.use_voncroy_racing_behaviour = false;
+        }
+
         if (i <= 3) {
             if (!scorpion_poison_override_found)
                 game_mod_config.level_info[i].creature_info.small_scorpion_is_poisonous = false;

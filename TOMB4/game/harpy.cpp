@@ -207,17 +207,17 @@ void DoHarpyEffects(ITEM_INFO* item, short item_number)
 	{
 		for (int i = 0; i < 2; i++)
 		{
-			pos.x = (GetRandomControl() & 0x7FF) + rh.x - 1024;
-			pos.y = (GetRandomControl() & 0x7FF) + rh.y - 1024;
-			pos.z = (GetRandomControl() & 0x7FF) + rh.z - 1024;
+			pos.x = (GetRandomControl() & 0x7FF) + rh.x - BLOCK_SIZE;
+			pos.y = (GetRandomControl() & 0x7FF) + rh.y - BLOCK_SIZE;
+			pos.z = (GetRandomControl() & 0x7FF) + rh.z - BLOCK_SIZE;
 			xv = short((rh.x - pos.x) << 3);
 			yv = short((rh.y - pos.y) << 3);
 			zv = short((rh.z - pos.z) << 3);
 			TriggerHarpySparks(pos.x, pos.y, pos.z, xv, yv, zv);
 
-			pos.x = (GetRandomControl() & 0x7FF) + lh.x - 1024;
-			pos.y = (GetRandomControl() & 0x7FF) + lh.y - 1024;
-			pos.z = (GetRandomControl() & 0x7FF) + lh.z - 1024;
+			pos.x = (GetRandomControl() & 0x7FF) + lh.x - BLOCK_SIZE;
+			pos.y = (GetRandomControl() & 0x7FF) + lh.y - BLOCK_SIZE;
+			pos.z = (GetRandomControl() & 0x7FF) + lh.z - BLOCK_SIZE;
 			xv = short((lh.x - pos.x) << 3);
 			yv = short((lh.y - pos.y) << 3);
 			zv = short((lh.z - pos.z) << 3);
@@ -227,8 +227,8 @@ void DoHarpyEffects(ITEM_INFO* item, short item_number)
 
 	size = item->item_flags[0] * 2;
 
-	if (size > 64)
-		size = 64;
+	if (size > QUARTER_CLICK_SIZE)
+		size = QUARTER_CLICK_SIZE;
 
 	if (item->item_flags[0] < 80)
 	{
@@ -358,7 +358,7 @@ void HarpyControl(short item_number)
 			{
 				enemy = &items[baddie->item_num];
 
-				if (enemy->object_number == LARA_DOUBLE)
+				if (enemy->object_number == T4PlusGetLaraDoubleSlotID())
 				{
 					dx = enemy->pos.x_pos - item->pos.x_pos;
 					dz = enemy->pos.z_pos - item->pos.z_pos;
@@ -394,11 +394,11 @@ void HarpyControl(short item_number)
 		{
 		case 1:
 			harpy->flags = 0;
-			harpy->maximum_turn = 1274;
+			harpy->maximum_turn = DEGREES_TO_ROTATION(7);
 
 			if (enemy)
 			{
-				dy = item->pos.y_pos + 2048;
+				dy = item->pos.y_pos + (BLOCK_SIZE * 2);
 
 				if (enemy->pos.y_pos > dy && item->floor > dy)
 				{
@@ -411,13 +411,13 @@ void HarpyControl(short item_number)
 			{
 				dy = abs(enemy->pos.y_pos - item->pos.y_pos);
 
-				if (dy <= 1024 && info.distance < 0x1C639)
+				if (dy <= BLOCK_SIZE && info.distance < 0x1C639)
 				{
 					item->goal_anim_state = 6;
 					break;
 				}
 
-				if (dy <= 1024 && info.distance < 0x400000)
+				if (dy <= BLOCK_SIZE && info.distance < 0x400000)
 				{
 					item->goal_anim_state = 4;
 					break;
@@ -435,7 +435,7 @@ void HarpyControl(short item_number)
 			break;
 
 		case 2:
-			harpy->maximum_turn = 1274;
+			harpy->maximum_turn = DEGREES_TO_ROTATION(7);
 			harpy->flags = 0;
 
 			if (item->required_anim_state)
@@ -467,7 +467,7 @@ void HarpyControl(short item_number)
 			break;
 
 		case 3:
-			dy = item->pos.y_pos + 2048;
+			dy = item->pos.y_pos + (BLOCK_SIZE * 2);
 
 			if (!enemy || enemy->pos.y_pos < dy || item->floor < dy)
 				item->goal_anim_state = 1;
@@ -475,7 +475,7 @@ void HarpyControl(short item_number)
 			break;
 
 		case 4:
-			harpy->maximum_turn = 364;
+			harpy->maximum_turn = DEGREES_TO_ROTATION(2);
 
 			if (info.ahead && info.distance < 0x400000)
 				item->goal_anim_state = 5;
@@ -485,11 +485,11 @@ void HarpyControl(short item_number)
 			break;
 
 		case 5:
-			harpy->maximum_turn = 364;
+			harpy->maximum_turn = DEGREES_TO_ROTATION(2);
 			item->goal_anim_state = 2;
 			dy = abs(enemy->pos.y_pos - item->pos.y_pos);
 
-			if (item->touch_bits & 0x14 || enemy && enemy != lara_item && dy <= 1024 && info.distance < 0x40000)
+			if (item->touch_bits & 0x14 || enemy && enemy != lara_item && dy <= BLOCK_SIZE && info.distance < 0x40000)
 			{
 				lara_item->hit_points -= mod_object_customization->damage_1;
 				lara_item->hit_status = 1;
@@ -503,13 +503,13 @@ void HarpyControl(short item_number)
 			break;
 
 		case 6:
-			harpy->maximum_turn = 364;
+			harpy->maximum_turn = DEGREES_TO_ROTATION(2);
 
 			if (!harpy->flags)
 			{
 				dy = abs(enemy->pos.y_pos - item->pos.y_pos);
 
-				if (item->touch_bits & 0x300000 || enemy && enemy != lara_item && dy <= 1024 && info.distance < 0x40000)
+				if (item->touch_bits & 0x300000 || enemy && enemy != lara_item && dy <= BLOCK_SIZE && info.distance < 0x40000)
 				{
 					lara_item->hit_points -= mod_object_customization->damage_2;
 					lara_item->hit_status = 1;
