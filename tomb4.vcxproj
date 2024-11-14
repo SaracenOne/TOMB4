@@ -239,7 +239,6 @@
     <ClInclude Include="TOMB4\game\lara1gun.h" />
     <ClInclude Include="TOMB4\game\lara2gun.h" />
     <ClInclude Include="TOMB4\game\laraclmb.h" />
-    <ClInclude Include="TOMB4\game\laradouble.h" />
     <ClInclude Include="TOMB4\game\larafire.h" />
     <ClInclude Include="TOMB4\game\laraflar.h" />
     <ClInclude Include="TOMB4\game\laramisc.h" />
@@ -258,6 +257,7 @@
     <ClInclude Include="TOMB4\game\objects\creatures\bat.h" />
     <ClInclude Include="TOMB4\game\objects\creatures\big_scarab.h" />
     <ClInclude Include="TOMB4\game\objects\creatures\big_scorpion.h" />
+    <ClInclude Include="TOMB4\game\objects\creatures\chef.h" />
     <ClInclude Include="TOMB4\game\objects\creatures\croc.h" />
     <ClInclude Include="TOMB4\game\objects\creatures\crocgod.h" />
     <ClInclude Include="TOMB4\game\objects\creatures\demigod.h" />
@@ -269,6 +269,7 @@
     <ClInclude Include="TOMB4\game\objects\creatures\harpy.h" />
     <ClInclude Include="TOMB4\game\objects\creatures\horse.h" />
     <ClInclude Include="TOMB4\game\objects\creatures\jean.h" />
+    <ClInclude Include="TOMB4\game\objects\creatures\laradouble.h" />
     <ClInclude Include="TOMB4\game\objects\creatures\mummy.h" />
     <ClInclude Include="TOMB4\game\objects\creatures\sas.h" />
     <ClInclude Include="TOMB4\game\objects\creatures\sentrygun.h" />
@@ -475,7 +476,6 @@
     <ClCompile Include="TOMB4\game\lara1gun.cpp" />
     <ClCompile Include="TOMB4\game\lara2gun.cpp" />
     <ClCompile Include="TOMB4\game\laraclmb.cpp" />
-    <ClCompile Include="TOMB4\game\laradouble.cpp" />
     <ClCompile Include="TOMB4\game\larafire.cpp" />
     <ClCompile Include="TOMB4\game\laraflar.cpp" />
     <ClCompile Include="TOMB4\game\laramisc.cpp" />
@@ -522,6 +522,12 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\objects\creatures\chef.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="TOMB4\game\objects\creatures\croc.cpp">
@@ -588,6 +594,12 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\objects\creatures\laradouble.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="TOMB4\game\objects\creatures\mummy.cpp">

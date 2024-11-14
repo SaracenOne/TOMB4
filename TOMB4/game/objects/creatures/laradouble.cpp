@@ -1,12 +1,12 @@
-#include "../tomb4/pch.h"
+#include "../../../tomb4/pch.h"
 #include "laradouble.h"
-#include "box.h"
-#include "sound.h"
-#include "control.h"
-#include "lara.h"
+#include "../../box.h"
+#include "../../sound.h"
+#include "../../control.h"
+#include "../../lara.h"
 
-#include "gameflow.h"
-#include "../tomb4/mod_config.h"
+#include "../../gameflow.h"
+#include "../../../tomb4/mod_config.h"
 
 void InitialiseLaraDouble(short item_number)
 {
