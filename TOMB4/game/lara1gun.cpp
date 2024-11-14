@@ -868,8 +868,7 @@ void ControlCrossbow(short item_number)
 			{
 				if (exploded)
 				{
-					MOD_LEVEL_STATIC_INFO *static_info = &get_game_mod_level_statics_info(gfCurrentLevel)->static_info[target->object_number];
-					if (static_info->explosion_can_shatter)
+					if (target->object_number >= SMASH_OBJECT1 && target->object_number <= SMASH_OBJECT8)
 					{
 						TriggerExplosionSparks(target->pos.x_pos, target->pos.y_pos, target->pos.z_pos, 3, -2, 0, target->room_number);
 						target->pos.y_pos -= 128;
@@ -1187,8 +1186,7 @@ void ControlGrenade(short item_number)
 
 				while (target)
 				{
-					MOD_LEVEL_STATIC_INFO* static_info = &get_game_mod_level_statics_info(gfCurrentLevel)->static_info[target->object_number];
-					if (static_info->explosion_can_shatter)
+					if (target->object_number >= SMASH_OBJECT1 && target->object_number <= SMASH_OBJECT8)
 					{
 						TriggerExplosionSparks(target->pos.x_pos, target->pos.y_pos, target->pos.z_pos, 3, -2, 0, target->room_number);
 						target->pos.y_pos -= 128;

@@ -238,7 +238,6 @@ struct MOD_LEVEL_OBJECTS_INFO {
 
 struct MOD_LEVEL_STATIC_INFO {
 	bool lara_guns_can_shatter = false;
-	bool explosion_can_shatter = false;
 	bool large_objects_can_shatter = false;
 	bool creatures_can_shatter = false;
 	bool record_shatter_state_in_savegames = false;

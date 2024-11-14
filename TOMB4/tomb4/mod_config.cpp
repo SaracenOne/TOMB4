@@ -859,9 +859,6 @@ void SetupDefaultStaticsInfoForLevel(MOD_LEVEL_INFO* level_info) {
             if (i <= SHATTER9) {
                 level_info->statics_info.static_info[i].large_objects_can_shatter = true;
             }
-            if (i <= SHATTER8) {
-                level_info->statics_info.static_info[i].explosion_can_shatter = true;
-            }
             if (i < SHATTER8) {
                 level_info->statics_info.static_info[i].lara_guns_can_shatter = true;
             }
