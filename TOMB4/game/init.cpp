@@ -1,4 +1,8 @@
 #include "../tomb4/pch.h"
+
+#include "objects/effects/locusts.h"
+#include "objects/effects/scarabs.h"
+
 #include "init.h"
 #include "objects.h"
 #include "../specific/function_stubs.h"
@@ -8,11 +12,9 @@
 #include "traps.h"
 #include "draw.h"
 #include "rope.h"
-#include "scarab.h"
 #include "../specific/3dmath.h"
 #include "debris.h"
 #include "box.h"
-#include "croc.h"
 #include "effect2.h"
 #include "tomb4fx.h"
 #include "pickup.h"

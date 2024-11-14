@@ -6,6 +6,12 @@
 #include "newinv.h"
 #include "../specific/LoadSave.h"
 #include "../specific/3dmath.h"
+
+#include "objects/creatures/voncroy.h"
+
+#include "objects/effects/locusts.h"
+#include "objects/effects/scarabs.h"
+
 #include "effect2.h"
 #include "tomb4fx.h"
 #include "items.h"
@@ -19,8 +25,6 @@
 #include "spotcam.h"
 #include "camera.h"
 #include "objects.h"
-#include "scarab.h"
-#include "croc.h"
 #include "traps.h"
 #include "switch.h"
 #include "lara_states.h"
@@ -34,7 +38,6 @@
 #include "draw.h"
 #include "larafire.h"
 #include "rope.h"
-#include "voncroy.h"
 #include "../specific/gamemain.h"
 #include "lara.h"
 #include "deltapak.h"

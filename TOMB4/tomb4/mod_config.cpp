@@ -22,6 +22,7 @@
 #include "../specific/output.h"
 #include "../specific/platform.h"
 #include "../specific/registry.h"
+#include "../game/objects/general/tightrope.h"
 
 int global_string_table_size = 0;
 char** global_string_table = nullptr;
@@ -1622,6 +1623,8 @@ void T4PlusLevelSetup(int current_level) {
     MOD_LEVEL_ENVIRONMENT_INFO *environment_info = get_game_mod_level_environment_info(current_level);
 
     using_multi_color_fog_bulbs = environment_info->enable_multi_color_fog_bulbs;
+
+    SetupLaraTightropeExtraState();
 
     NGLevelSetup();
 

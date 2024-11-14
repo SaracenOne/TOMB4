@@ -5,60 +5,70 @@
 #include "collide.h"
 #include "init.h"
 #include "elements.h"
-#include "ahmet.h"
+
+#include "objects/creatures/ahmet.h"
+#include "objects/creatures/baboon.h"
+#include "objects/creatures/baddy.h"
+#include "objects/creatures/bat.h"
+#include "objects/creatures/big_scarab.h"
+#include "objects/creatures/big_scorpion.h"
+#include "objects/creatures/croc.h"
+#include "objects/creatures/crocgod.h"
+#include "objects/creatures/demigod.h"
+#include "objects/creatures/dog.h"
+#include "objects/creatures/enemy_jeep.h"
+#include "objects/creatures/guide.h"
+#include "objects/creatures/hammerhead.h"
+#include "objects/creatures/harpy.h"
+#include "objects/creatures/horse.h"
+#include "objects/creatures/jean.h"
+#include "objects/creatures/mummy.h"
+#include "objects/creatures/sas.h"
+#include "objects/creatures/small_scorpion.h"
+#include "objects/creatures/sentrygun.h"
+#include "objects/creatures/seth.h"
+#include "objects/creatures/skeleton.h"
+#include "objects/creatures/sphinx.h"
+#include "objects/creatures/templar.h"
+#include "objects/creatures/troops.h"
+#include "objects/creatures/voncroy.h"
+#include "objects/creatures/wildboar.h"
+#include "objects/creatures/wraith.h"
+
+#include "objects/general/clockworkbeetle.h"
+#include "objects/general/deathsld.h"
+
+#include "objects/effects/locusts.h"
+#include "objects/effects/scarabs.h"
+
+#include "objects/vehicles/bike.h"
+#include "objects/vehicles/jeep.h"
+
 #include "effect2.h"
 #include "effects.h"
-#include "clockworkbeetle.h"
 #include "traps.h"
-#include "deathsld.h"
 #include "../specific/specificfx.h"
 #include "door.h"
-#include "bike.h"
-#include "jeep.h"
-#include "voncroy.h"
-#include "sphinx.h"
 #include "laradouble.h"
-#include "croc.h"
-#include "demigod.h"
-#include "wildboar.h"
-#include "baboon.h"
 #include "train.h"
-#include "bat.h"
-#include "jean.h"
 #include "senet.h"
-#include "wraith.h"
-#include "harpy.h"
 #include "rope.h"
 #include "moveblok.h"
 #include "objlight.h"
 #include "laraflar.h"
-#include "troops.h"
-#include "mummy.h"
 #include "laramisc.h"
-#include "sas.h"
-#include "hammerhead.h"
 #include "tomb4fx.h"
 #include "draw.h"
 #include "hair.h"
 #include "items.h"
 #include "../specific/function_stubs.h"
 #include "flmtorch.h"
-#include "scarab.h"
-#include "sentrygun.h"
 #include "lara1gun.h"
 #include "switch.h"
 #include "missile.h"
-#include "dog.h"
-#include "seth.h"
-#include "baddy.h"
-#include "templar.h"
-#include "skeleton.h"
-#include "scorpion.h"
 #include "footprnt.h"
-#include "guide.h"
 #include "control.h"
 #include "camera.h"
-#include "horse.h"
 #include "../specific/3dmath.h"
 #include "lara.h"
 #include "deltapak.h"
@@ -1062,8 +1072,8 @@ void BaddyObjects()
 
 	if (obj->loaded)
 	{
-		obj->initialise = InitialiseScorpion;
-		obj->control = ScorpionControl;
+		obj->initialise = InitialiseBigScorpion;
+		obj->control = BigScorpionControl;
 		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
 		obj->hit_points = 80;
@@ -1082,8 +1092,8 @@ void BaddyObjects()
 
 	if (obj->loaded)
 	{
-		obj->initialise = InitialiseSmlscorp;
-		obj->control = SmlscorpControl;
+		obj->initialise = InitialiseSmallScorpion;
+		obj->control = SmallScorpionControl;
 		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
 		obj->hit_points = 8;
@@ -1594,8 +1604,8 @@ void BaddyObjects()
 
 	if (obj->loaded)
 	{
-		obj->initialise = InitialiseScarab;
-		obj->control = ScarabControl;
+		obj->initialise = InitialiseBigScarab;
+		obj->control = BigScarabControl;
 		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
 		obj->hit_points = 30;

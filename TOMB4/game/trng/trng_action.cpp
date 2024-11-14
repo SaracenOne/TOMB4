@@ -10,6 +10,8 @@
 
 #include "../../tomb4/tomb4plus/t4plus_items.h"
 
+#include "../objects/creatures/baboon.h"
+
 #include "../control.h"
 #include "../effects.h"
 #include "../objects.h"
@@ -23,7 +25,6 @@
 #include "../camera.h"
 #include "../spotcam.h"
 #include "../lara.h"
-#include "../baboon.h"
 #include "../traps.h"
 #include "../gameflow.h"
 

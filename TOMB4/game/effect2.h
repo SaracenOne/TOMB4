@@ -1,6 +1,9 @@
 #pragma once
 #include "../global/types.h"
 
+#define MAX_SPLASHES 4
+#define MAX_RIPPLES 16
+
 void ControlSmokeEmitter(short item_number);
 void TriggerExplosionSmokeEnd(long x, long y, long z, long uw);
 void TriggerExplosionSmoke(long x, long y, long z, long uw);
@@ -28,8 +31,8 @@ void SetupSplash(SPLASH_SETUP* setup);
 void UpdateSplashes();
 
 extern DYNAMIC dynamics[MAX_DYNAMICS * 2];
-extern SPLASH_STRUCT splashes[4];
-extern RIPPLE_STRUCT ripples[16];
+extern SPLASH_STRUCT splashes[MAX_SPLASHES];
+extern RIPPLE_STRUCT ripples[MAX_RIPPLES];
 extern SPLASH_SETUP splash_setup;
 extern SPARKS spark[MAX_SPARKS];
 extern long wibble;

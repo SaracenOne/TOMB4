@@ -24,7 +24,7 @@
 #include "camera.h"
 #include "lara.h"
 #include "debris.h"
-#include "jeep.h"
+#include "objects/vehicles/jeep.h"
 
 #include "../tomb4/mod_config.h"
 

@@ -8,7 +8,7 @@
 #include "items.h"
 #include "lot.h"
 #include "hair.h"
-#include "scarab.h"
+#include "objects/effects/scarabs.h"
 #include "tomb4fx.h"
 #include "footprnt.h"
 #include "effect2.h"

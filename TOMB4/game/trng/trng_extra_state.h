@@ -9,14 +9,6 @@ extern bool ng_loaded_savegame;
 
 extern short ng_camera_target_id;
 
-struct NG_LARA_EXTRASTATE {
-	uchar TightRopeOnCount;
-	uchar TightRopeOff;
-	uchar TightRopeFall;
-};
-
-extern NG_LARA_EXTRASTATE ng_lara_extrastate;
-
 enum NGTimerTrackerType {
 	TTT_ONLY_SHOW_SECONDS = 0,
 	TTT_SECONDS_AND_ONE_DECIMAL_POINT_SEPERATOR,

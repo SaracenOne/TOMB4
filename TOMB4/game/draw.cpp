@@ -3,6 +3,10 @@
 #include "../specific/3dmath.h"
 #include "../specific/output.h"
 #include "../specific/lighting.h"
+
+#include "objects/effects/locusts.h"
+#include "objects/effects/scarabs.h"
+
 #include "deltapak.h"
 #include "lara_states.h"
 #include "control.h"
@@ -16,8 +20,6 @@
 #include "sound.h"
 #include "../specific/polyinsert.h"
 #include "mirror.h"
-#include "scarab.h"
-#include "croc.h"
 #include "health.h"
 #include "items.h"
 #include "effect2.h"

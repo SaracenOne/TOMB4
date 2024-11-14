@@ -1,4 +1,10 @@
 #include "../tomb4/pch.h"
+
+#include "objects/creatures/crocgod.h"
+#include "objects/creatures/demigod.h"
+#include "objects/creatures/seth.h"
+#include "objects/creatures/harpy.h"
+
 #include "effect2.h"
 #include "control.h"
 #include "objects.h"
@@ -9,10 +15,6 @@
 #include "items.h"
 #include "effects.h"
 #include "traps.h"
-#include "seth.h"
-#include "demigod.h"
-#include "harpy.h"
-#include "croc.h"
 #include "draw.h"
 #include "sound.h"
 #include "lara.h"
@@ -22,8 +24,8 @@
 #include "../tomb4/tomb4plus/t4plus_objects.h"
 
 DYNAMIC dynamics[MAX_DYNAMICS * 2];
-SPLASH_STRUCT splashes[4];
-RIPPLE_STRUCT ripples[16];
+SPLASH_STRUCT splashes[MAX_SPLASHES];
+RIPPLE_STRUCT ripples[MAX_RIPPLES];
 SPLASH_SETUP splash_setup;
 SPARKS spark[MAX_SPARKS];
 long wibble = 0;
@@ -704,7 +706,7 @@ void SetupRipple(long x, long y, long z, long size, long flags)
 	{
 		num++;
 
-		if (num >= 16)
+		if (num >= MAX_RIPPLES)
 			return;
 	}
 
@@ -737,7 +739,7 @@ void TriggerUnderwaterBlood(long x, long y, long z, long size)
 		ripple++;
 		n++;
 
-		if (n >= 16)
+		if (n >= MAX_RIPPLES)
 			return;
 	}
 
@@ -1871,7 +1873,7 @@ void SetupSplash(SPLASH_SETUP* setup)
 		splash++;
 		n++;
 
-		if (n >= 4)
+		if (n >= MAX_SPLASHES)
 		{
 			SoundEffect(SFX_LARA_SPLASH, (PHD_3DPOS*)setup, SFX_DEFAULT);
 			return;
@@ -1904,7 +1906,7 @@ void UpdateSplashes()	//(and ripples)
 	SPLASH_STRUCT* splash;
 	RIPPLE_STRUCT* ripple;
 
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < MAX_SPLASHES; i++)
 	{
 		splash = &splashes[i];
 
@@ -1959,7 +1961,7 @@ void UpdateSplashes()	//(and ripples)
 		}
 	}
 
-	for (int i = 0; i < 16; i++)
+	for (int i = 0; i < MAX_RIPPLES; i++)
 	{
 		ripple = &ripples[i];
 

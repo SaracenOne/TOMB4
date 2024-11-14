@@ -1,22 +1,28 @@
 #include "../tomb4/pch.h"
+
+#include "objects/general/clockworkbeetle.h"
+
+#include "objects/vehicles/bike.h"
+#include "objects/vehicles/jeep.h"
+
 #include "savegame.h"
 #include "objects.h"
 #include "traps.h"
 #include "items.h"
 #include "laramisc.h"
 #include "control.h"
-#include "bike.h"
-#include "jeep.h"
 #include "lot.h"
 #include "pickup.h"
-#include "clockworkbeetle.h"
 #include "spotcam.h"
 #include "../specific/function_stubs.h"
 #include "camera.h"
-#include "voncroy.h"
+
+#include "objects/creatures/voncroy.h"
+
+#include "objects/effects/scarabs.h"
+
 #include "lara.h"
 #include "newinv.h"
-#include "scarab.h"
 #include "senet.h"
 #include "switch.h"
 #include "rope.h"

@@ -29,9 +29,6 @@ bool ng_loaded_savegame = false;
 
 short ng_camera_target_id = NO_ITEM;
 
-// Includes tightrope state variables
-NG_LARA_EXTRASTATE ng_lara_extrastate;
-
 unsigned int ng_room_offset_table[0xff];
 
 struct NG_MOVEMENT_INFO {
@@ -1555,10 +1552,6 @@ int NGGetCurrentDrawItemNumber() {
 
 void NGSetupLevelExtraState() {
 	ng_camera_target_id = NO_ITEM;
-
-	ng_lara_extrastate.TightRopeFall = 0;
-	ng_lara_extrastate.TightRopeOff = 0;
-	ng_lara_extrastate.TightRopeOnCount = 0;
 
 	ng_draw_item_number = NO_ITEM;
 	ng_lara_infinite_air = false;

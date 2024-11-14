@@ -216,23 +216,13 @@
   <ItemGroup>
     <ClInclude Include="resource.h" />
     <ClInclude Include="TOMB4\game\lara_states.h" />
-    <ClInclude Include="TOMB4\game\ahmet.h" />
-    <ClInclude Include="TOMB4\game\baboon.h" />
-    <ClInclude Include="TOMB4\game\baddy.h" />
-    <ClInclude Include="TOMB4\game\bat.h" />
-    <ClInclude Include="TOMB4\game\bike.h" />
     <ClInclude Include="TOMB4\game\box.h" />
     <ClInclude Include="TOMB4\game\camera.h" />
-    <ClInclude Include="TOMB4\game\clockworkbeetle.h" />
     <ClInclude Include="TOMB4\game\collide.h" />
     <ClInclude Include="TOMB4\game\control.h" />
-    <ClInclude Include="TOMB4\game\croc.h" />
-    <ClInclude Include="TOMB4\game\deathsld.h" />
     <ClInclude Include="TOMB4\game\debris.h" />
     <ClInclude Include="TOMB4\game\delstuff.h" />
     <ClInclude Include="TOMB4\game\deltapak.h" />
-    <ClInclude Include="TOMB4\game\demigod.h" />
-    <ClInclude Include="TOMB4\game\dog.h" />
     <ClInclude Include="TOMB4\game\door.h" />
     <ClInclude Include="TOMB4\game\draw.h" />
     <ClInclude Include="TOMB4\game\effect2.h" />
@@ -241,16 +231,10 @@
     <ClInclude Include="TOMB4\game\flmtorch.h" />
     <ClInclude Include="TOMB4\game\footprnt.h" />
     <ClInclude Include="TOMB4\game\gameflow.h" />
-    <ClInclude Include="TOMB4\game\guide.h" />
     <ClInclude Include="TOMB4\game\hair.h" />
-    <ClInclude Include="TOMB4\game\hammerhead.h" />
-    <ClInclude Include="TOMB4\game\harpy.h" />
     <ClInclude Include="TOMB4\game\health.h" />
-    <ClInclude Include="TOMB4\game\horse.h" />
     <ClInclude Include="TOMB4\game\init.h" />
     <ClInclude Include="TOMB4\game\items.h" />
-    <ClInclude Include="TOMB4\game\jean.h" />
-    <ClInclude Include="TOMB4\game\jeep.h" />
     <ClInclude Include="TOMB4\game\lara.h" />
     <ClInclude Include="TOMB4\game\lara1gun.h" />
     <ClInclude Include="TOMB4\game\lara2gun.h" />
@@ -266,38 +250,63 @@
     <ClInclude Include="TOMB4\game\mirror.h" />
     <ClInclude Include="TOMB4\game\missile.h" />
     <ClInclude Include="TOMB4\game\moveblok.h" />
-    <ClInclude Include="TOMB4\game\mummy.h" />
     <ClInclude Include="TOMB4\game\newinv.h" />
     <ClInclude Include="TOMB4\game\objects.h" />
+    <ClInclude Include="TOMB4\game\objects\creatures\ahmet.h" />
+    <ClInclude Include="TOMB4\game\objects\creatures\baboon.h" />
+    <ClInclude Include="TOMB4\game\objects\creatures\baddy.h" />
+    <ClInclude Include="TOMB4\game\objects\creatures\bat.h" />
+    <ClInclude Include="TOMB4\game\objects\creatures\big_scarab.h" />
+    <ClInclude Include="TOMB4\game\objects\creatures\big_scorpion.h" />
+    <ClInclude Include="TOMB4\game\objects\creatures\croc.h" />
+    <ClInclude Include="TOMB4\game\objects\creatures\crocgod.h" />
+    <ClInclude Include="TOMB4\game\objects\creatures\demigod.h" />
+    <ClInclude Include="TOMB4\game\objects\creatures\dog.h" />
+    <ClInclude Include="TOMB4\game\objects\creatures\enemy_jeep.h" />
+    <ClInclude Include="TOMB4\game\objects\creatures\guardian.h" />
+    <ClInclude Include="TOMB4\game\objects\creatures\guide.h" />
+    <ClInclude Include="TOMB4\game\objects\creatures\hammerhead.h" />
+    <ClInclude Include="TOMB4\game\objects\creatures\harpy.h" />
+    <ClInclude Include="TOMB4\game\objects\creatures\horse.h" />
+    <ClInclude Include="TOMB4\game\objects\creatures\jean.h" />
+    <ClInclude Include="TOMB4\game\objects\creatures\mummy.h" />
+    <ClInclude Include="TOMB4\game\objects\creatures\sas.h" />
+    <ClInclude Include="TOMB4\game\objects\creatures\sentrygun.h" />
+    <ClInclude Include="TOMB4\game\objects\creatures\seth.h" />
+    <ClInclude Include="TOMB4\game\objects\creatures\skeleton.h" />
+    <ClInclude Include="TOMB4\game\objects\creatures\small_scorpion.h" />
+    <ClInclude Include="TOMB4\game\objects\creatures\sphinx.h" />
+    <ClInclude Include="TOMB4\game\objects\creatures\templar.h" />
+    <ClInclude Include="TOMB4\game\objects\creatures\troops.h" />
+    <ClInclude Include="TOMB4\game\objects\creatures\voncroy.h" />
+    <ClInclude Include="TOMB4\game\objects\creatures\wildboar.h" />
+    <ClInclude Include="TOMB4\game\objects\creatures\wraith.h" />
+    <ClInclude Include="TOMB4\game\objects\effects\locusts.h" />
+    <ClInclude Include="TOMB4\game\objects\effects\scarabs.h" />
+    <ClInclude Include="TOMB4\game\objects\general\clockworkbeetle.h" />
+    <ClInclude Include="TOMB4\game\objects\general\deathsld.h" />
+    <ClInclude Include="TOMB4\game\objects\general\parallel_bars.h" />
+    <ClInclude Include="TOMB4\game\objects\general\tightrope.h" />
+    <ClInclude Include="TOMB4\game\objects\vehicles\bike.h" />
+    <ClInclude Include="TOMB4\game\objects\vehicles\boat.h" />
+    <ClInclude Include="TOMB4\game\objects\vehicles\jeep.h" />
     <ClInclude Include="TOMB4\game\objlight.h" />
     <ClInclude Include="TOMB4\game\people.h" />
     <ClInclude Include="TOMB4\game\pickup.h" />
     <ClInclude Include="TOMB4\game\rope.h" />
-    <ClInclude Include="TOMB4\game\sas.h" />
     <ClInclude Include="TOMB4\game\savegame.h" />
-    <ClInclude Include="TOMB4\game\scarab.h" />
-    <ClInclude Include="TOMB4\game\scorpion.h" />
     <ClInclude Include="TOMB4\game\senet.h" />
-    <ClInclude Include="TOMB4\game\sentrygun.h" />
-    <ClInclude Include="TOMB4\game\seth.h" />
     <ClInclude Include="TOMB4\game\setup.h" />
-    <ClInclude Include="TOMB4\game\skeleton.h" />
     <ClInclude Include="TOMB4\game\sound.h" />
     <ClInclude Include="TOMB4\game\sphere.h" />
-    <ClInclude Include="TOMB4\game\sphinx.h" />
     <ClInclude Include="TOMB4\game\spotcam.h" />
     <ClInclude Include="TOMB4\game\switch.h" />
-    <ClInclude Include="TOMB4\game\templar.h" />
     <ClInclude Include="TOMB4\game\text.h" />
     <ClInclude Include="TOMB4\game\tomb4fx.h" />
     <ClInclude Include="TOMB4\game\train.h" />
     <ClInclude Include="TOMB4\game\traps.h" />
     <ClInclude Include="TOMB4\game\trep\furr.h" />
     <ClInclude Include="TOMB4\game\trep\trepsave.h" />
-    <ClInclude Include="TOMB4\game\trng\objects\trng_boat.h" />
-    <ClInclude Include="TOMB4\game\trng\objects\trng_guardian.h" />
-    <ClInclude Include="TOMB4\game\trng\objects\trng_parallel_bars.h" />
-    <ClInclude Include="TOMB4\game\trng\objects\trng_tightrope.h" />
     <ClInclude Include="TOMB4\game\trng\trng.h" />
     <ClInclude Include="TOMB4\game\trng\trng_action.h" />
     <ClInclude Include="TOMB4\game\trng\trng_animation.h" />
@@ -315,10 +324,6 @@
     <ClInclude Include="TOMB4\game\trng\trng_script_parser.h" />
     <ClInclude Include="TOMB4\game\trng\trng_test_position.h" />
     <ClInclude Include="TOMB4\game\trng\trng_triggergroup.h" />
-    <ClInclude Include="TOMB4\game\troops.h" />
-    <ClInclude Include="TOMB4\game\voncroy.h" />
-    <ClInclude Include="TOMB4\game\wildboar.h" />
-    <ClInclude Include="TOMB4\game\wraith.h" />
     <ClInclude Include="TOMB4\global\math_tbls.h" />
     <ClInclude Include="TOMB4\global\types.h" />
     <ClInclude Include="TOMB4\specific\3dmath.h" />
@@ -447,23 +452,13 @@
     <ClInclude Include="TOMB4\tomb4\troyestuff.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="TOMB4\game\ahmet.cpp" />
-    <ClCompile Include="TOMB4\game\baboon.cpp" />
-    <ClCompile Include="TOMB4\game\baddy.cpp" />
-    <ClCompile Include="TOMB4\game\bat.cpp" />
-    <ClCompile Include="TOMB4\game\bike.cpp" />
     <ClCompile Include="TOMB4\game\box.cpp" />
     <ClCompile Include="TOMB4\game\camera.cpp" />
-    <ClCompile Include="TOMB4\game\clockworkbeetle.cpp" />
     <ClCompile Include="TOMB4\game\collide.cpp" />
     <ClCompile Include="TOMB4\game\control.cpp" />
-    <ClCompile Include="TOMB4\game\croc.cpp" />
-    <ClCompile Include="TOMB4\game\deathsld.cpp" />
     <ClCompile Include="TOMB4\game\debris.cpp" />
     <ClCompile Include="TOMB4\game\delstuff.cpp" />
     <ClCompile Include="TOMB4\game\deltapak.cpp" />
-    <ClCompile Include="TOMB4\game\demigod.cpp" />
-    <ClCompile Include="TOMB4\game\dog.cpp" />
     <ClCompile Include="TOMB4\game\door.cpp" />
     <ClCompile Include="TOMB4\game\draw.cpp" />
     <ClCompile Include="TOMB4\game\effect2.cpp" />
@@ -472,16 +467,10 @@
     <ClCompile Include="TOMB4\game\flmtorch.cpp" />
     <ClCompile Include="TOMB4\game\footprnt.cpp" />
     <ClCompile Include="TOMB4\game\gameflow.cpp" />
-    <ClCompile Include="TOMB4\game\guide.cpp" />
     <ClCompile Include="TOMB4\game\hair.cpp" />
-    <ClCompile Include="TOMB4\game\hammerhead.cpp" />
-    <ClCompile Include="TOMB4\game\harpy.cpp" />
     <ClCompile Include="TOMB4\game\health.cpp" />
-    <ClCompile Include="TOMB4\game\horse.cpp" />
     <ClCompile Include="TOMB4\game\init.cpp" />
     <ClCompile Include="TOMB4\game\items.cpp" />
-    <ClCompile Include="TOMB4\game\jean.cpp" />
-    <ClCompile Include="TOMB4\game\jeep.cpp" />
     <ClCompile Include="TOMB4\game\lara.cpp" />
     <ClCompile Include="TOMB4\game\lara1gun.cpp" />
     <ClCompile Include="TOMB4\game\lara2gun.cpp" />
@@ -497,28 +486,247 @@
     <ClCompile Include="TOMB4\game\mirror.cpp" />
     <ClCompile Include="TOMB4\game\missile.cpp" />
     <ClCompile Include="TOMB4\game\moveblok.cpp" />
-    <ClCompile Include="TOMB4\game\mummy.cpp" />
     <ClCompile Include="TOMB4\game\newinv.cpp" />
     <ClCompile Include="TOMB4\game\objects.cpp" />
+    <ClCompile Include="TOMB4\game\objects\creatures\ahmet.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\objects\creatures\baboon.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\objects\creatures\baddy.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\objects\creatures\bat.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\objects\creatures\big_scarab.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\objects\creatures\big_scorpion.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\objects\creatures\croc.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\objects\creatures\crocgod.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\objects\creatures\demigod.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\objects\creatures\dog.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\objects\creatures\enemy_jeep.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\objects\creatures\guardian.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\objects\creatures\guide.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\objects\creatures\hammerhead.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\objects\creatures\harpy.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\objects\creatures\horse.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\objects\creatures\jean.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\objects\creatures\mummy.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\objects\creatures\sas.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\objects\creatures\sentrygun.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\objects\creatures\seth.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\objects\creatures\skeleton.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\objects\creatures\small_scorpion.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\objects\creatures\sphinx.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\objects\creatures\templar.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\objects\creatures\troops.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\objects\creatures\voncroy.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\objects\creatures\wildboar.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\objects\creatures\wraith.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\objects\effects\locusts.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\objects\effects\scarabs.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\objects\general\clockworkbeetle.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\objects\general\deathsld.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\objects\general\parallel_bars.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\objects\general\tightrope.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\objects\vehicles\bike.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\objects\vehicles\boat.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\objects\vehicles\jeep.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
     <ClCompile Include="TOMB4\game\objlight.cpp" />
     <ClCompile Include="TOMB4\game\people.cpp" />
     <ClCompile Include="TOMB4\game\pickup.cpp" />
     <ClCompile Include="TOMB4\game\rope.cpp" />
-    <ClCompile Include="TOMB4\game\sas.cpp" />
     <ClCompile Include="TOMB4\game\savegame.cpp" />
-    <ClCompile Include="TOMB4\game\scarab.cpp" />
-    <ClCompile Include="TOMB4\game\scorpion.cpp" />
     <ClCompile Include="TOMB4\game\senet.cpp" />
-    <ClCompile Include="TOMB4\game\sentrygun.cpp" />
-    <ClCompile Include="TOMB4\game\seth.cpp" />
     <ClCompile Include="TOMB4\game\setup.cpp" />
-    <ClCompile Include="TOMB4\game\skeleton.cpp" />
     <ClCompile Include="TOMB4\game\sound.cpp" />
     <ClCompile Include="TOMB4\game\sphere.cpp" />
-    <ClCompile Include="TOMB4\game\sphinx.cpp" />
     <ClCompile Include="TOMB4\game\spotcam.cpp" />
     <ClCompile Include="TOMB4\game\switch.cpp" />
-    <ClCompile Include="TOMB4\game\templar.cpp" />
     <ClCompile Include="TOMB4\game\text.cpp" />
     <ClCompile Include="TOMB4\game\tomb4fx.cpp" />
     <ClCompile Include="TOMB4\game\train.cpp" />
@@ -536,30 +744,6 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../tomb4/pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../tomb4/pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../tomb4/pch.h</PrecompiledHeaderFile>
-    </ClCompile>
-    <ClCompile Include="TOMB4\game\trng\objects\trng_boat.cpp">
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
-    </ClCompile>
-    <ClCompile Include="TOMB4\game\trng\objects\trng_guardian.cpp">
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
-    </ClCompile>
-    <ClCompile Include="TOMB4\game\trng\objects\trng_parallel_bars.cpp">
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
-    </ClCompile>
-    <ClCompile Include="TOMB4\game\trng\objects\trng_tightrope.cpp">
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="TOMB4\game\trng\trng.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../tomb4/pch.h</PrecompiledHeaderFile>
@@ -675,10 +859,6 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../tomb4/pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../tomb4/pch.h</PrecompiledHeaderFile>
     </ClCompile>
-    <ClCompile Include="TOMB4\game\troops.cpp" />
-    <ClCompile Include="TOMB4\game\voncroy.cpp" />
-    <ClCompile Include="TOMB4\game\wildboar.cpp" />
-    <ClCompile Include="TOMB4\game\wraith.cpp" />
     <ClCompile Include="TOMB4\specific\3dmath.cpp" />
     <ClCompile Include="TOMB4\specific\audio.cpp" />
     <ClCompile Include="TOMB4\specific\bgfx.cpp" />

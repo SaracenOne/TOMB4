@@ -6,10 +6,11 @@
 #include "../gameflow.h"
 #include "../objects.h"
 
+#include "../objects/creatures/guardian.h"
+#include "../objects/vehicles/boat.h"
+
 #include "objects/trng_tightrope.h"
 #include "objects/trng_parallel_bars.h"
-#include "objects/trng_boat.h"
-#include "objects/trng_guardian.h"
 
 #include "../../tomb4/mod_config.h"
 

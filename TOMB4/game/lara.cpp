@@ -1,4 +1,12 @@
 #include "../tomb4/pch.h"
+
+#include "objects/general/clockworkbeetle.h"
+#include "objects/general/parallel_bars.h"
+#include "objects/general/tightrope.h"
+
+#include "objects/vehicles/bike.h"
+#include "objects/vehicles/jeep.h"
+
 #include "lara.h"
 #include "lara_states.h"
 #include "objects.h"
@@ -6,8 +14,6 @@
 #include "collide.h"
 #include "larafire.h"
 #include "control.h"
-#include "bike.h"
-#include "jeep.h"
 #include "draw.h"
 #include "../specific/audio.h"
 #include "../specific/3dmath.h"
@@ -16,7 +22,6 @@
 #include "larasurf.h"
 #include "laraclmb.h"
 #include "newinv.h"
-#include "clockworkbeetle.h"
 #include "rope.h"
 #include "delstuff.h"
 #include "camera.h"
@@ -26,8 +31,6 @@
 #include "../tomb4/tomb4.h"
 
 #include "trng/trng.h"
-#include "trng/objects/trng_tightrope.h"
-#include "trng/objects/trng_parallel_bars.h"
 #include "../tomb4/mod_config.h"
 #include "../tomb4/tomb4plus/t4plus_objects.h"
 #include "../tomb4/tomb4plus/t4plus_environment.h"
