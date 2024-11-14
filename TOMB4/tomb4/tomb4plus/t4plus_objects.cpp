@@ -153,6 +153,9 @@ int16_t T4PlusGetEnemyJeepSlotID() {
 	return get_game_mod_level_objects_info(gfCurrentLevel)->enemy_jeep_slot;
 }
 
+int16_t T4PlusGetChefSlotID() {
+	return get_game_mod_level_objects_info(gfCurrentLevel)->chef_slot;
+}
 
 void T4PlusSetupDefaultObjectCustomization() {
 	MOD_LEVEL_OBJECTS_INFO *objects_info = get_game_mod_level_objects_info(0);

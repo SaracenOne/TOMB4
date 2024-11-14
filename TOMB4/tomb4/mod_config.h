@@ -225,6 +225,8 @@ struct MOD_LEVEL_OBJECTS_INFO {
 	int16_t lara_double_slot = LARA_DOUBLE;
 	int16_t enemy_jeep_slot = ENEMY_JEEP;
 
+	int16_t chef_slot = -1;
+
 	int16_t darts_interval = 24;
 	int16_t darts_speed = 256;
 	int16_t falling_block_timer = 60;

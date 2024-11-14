@@ -47,6 +47,8 @@ extern int16_t T4PlusGetLaraDoubleSlotID();
 
 extern int16_t T4PlusGetEnemyJeepSlotID();
 
+extern int16_t T4PlusGetChefSlotID();
+
 extern void T4PlusSetupDefaultObjectCustomization();
 
 bool T4ObjectControlRoutine(short object_number, short item_num);
