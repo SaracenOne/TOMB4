@@ -201,13 +201,13 @@ void ScalesControl(short item_number)
 		{
 			if (item->current_anim_state == 2)
 			{
-				flags = -512;
+				flags = -0x200;
 				RemoveActiveItem(item_number);
 				item->status = ITEM_INACTIVE;
 			}
 			else
 			{
-				flags = -1024;
+				flags = -0x400;
 				item->item_flags[1] = 1;
 			}
 

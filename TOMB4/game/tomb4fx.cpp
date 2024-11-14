@@ -27,15 +27,14 @@ float SnowSizes[MAX_SNOW_SIZES]
 
 NODEOFFSET_INFO NodeOffsets[MAX_NODE_OFFSETS] =
 {
-	{ -16, 40, 160, -14, 0 },
-	{ -16, -8, 160, 0, 0 },
-	{ 16, 200, 32, 17, 0 },
-	{ -16, 200, 32, 13, 0 },
-	{ 0, 128, 0, 4, 0 },
-	{ 0, 128, 0, 2, 0 },
-	{ -200, -30, 8, 7, 0 },
-
-	{ 0, 0, 0, 0, 0 },
+	{ -16, 40, 160, -LMX_HAND_L, 0 }, // Lara Flame
+	{ -16, -8, 160, 0, 0 }, // Guide Flame ?
+	{ 16, 200, 32, 17, 0 }, // Seth A
+	{ -16, 200, 32, 13, 0 }, // Seth B
+	{ 0, 128, 0, 4, 0 }, // Harpy A
+	{ 0, 128, 0, 2, 0 }, // Harpy B
+	{ -200, -30, 8, 7, 0 }, // ???
+	{ 0, 144, 40, 10, 0 }, // Hydra
 	{ 0, 0, 0, 0, 0 },
 	{ 0, 0, 0, 0, 0 },
 	{ 0, 0, 0, 0, 0 },
@@ -342,22 +341,22 @@ void TriggerGunSmoke(long x, long y, long z, long xVel, long yVel, long zVel, lo
 	if (GetRandomControl() & 1)
 	{
 		if (room[lara_item->room_number].flags & ROOM_NOT_INSIDE)
-			sptr->Flags = 272;
+			sptr->Flags = SF_OUTSIDE | SF_ROTATE;
 
 		else
-			sptr->Flags = 16;
+			sptr->Flags = SF_ROTATE;
 
 		sptr->RotAng = GetRandomControl() & 0xFFF;
 
 		if (GetRandomControl() & 1)
-			sptr->RotAdd = -16 - (GetRandomControl() & 0xF);
+			sptr->RotAdd = -0x10 - (GetRandomControl() & 0xF);
 		else
-			sptr->RotAdd = (GetRandomControl() & 0xF) + 16;
+			sptr->RotAdd = (GetRandomControl() & 0xF) + 0x10;
 	}
 	else if (room[lara_item->room_number].flags & ROOM_NOT_INSIDE)
-		sptr->Flags = 256;
+		sptr->Flags = SF_OUTSIDE;
 	else
-		sptr->Flags = 0;
+		sptr->Flags = SF_NONE;
 
 	sptr->Gravity = -2 - (GetRandomControl() & 1);
 	sptr->MaxYvel = -2 - (GetRandomControl() & 1);
@@ -522,7 +521,7 @@ void TriggerGlobalStaticFlame()
 	sptr->Xvel = 0;
 	sptr->Yvel = 0;
 	sptr->Zvel = 0;
-	sptr->Flags = 0;
+	sptr->Flags = SF_NONE;
 	sptr->dSize = (GetRandomControl() & 0x1F) + 0x80;
 	sptr->sSize = sptr->dSize;
 	sptr->Size = sptr->dSize;
@@ -556,7 +555,7 @@ void TriggerGlobalFireFlame()
 
 	if (GetRandomControl() & 1)
 	{
-		sptr->Flags = 16;
+		sptr->Flags = SF_ROTATE;
 		sptr->RotAng = GetRandomControl() & 0xFFF;
 
 		if (GetRandomControl() & 1)
@@ -565,9 +564,9 @@ void TriggerGlobalFireFlame()
 			sptr->RotAdd = (GetRandomControl() & 0xF) + 16;
 	}
 	else
-		sptr->Flags = 0;
+		sptr->Flags = SF_NONE;
 
-	sptr->Size = (GetRandomControl() & 0x1F) + 128;
+	sptr->Size = (GetRandomControl() & 0x1F) + HALF_CLICK_SIZE;
 	sptr->sSize = sptr->Size;
 	sptr->dSize = sptr->Size >> 4;
 }
@@ -596,7 +595,7 @@ void TriggerGlobalFireSmoke()
 
 	if (GetRandomControl() & 1)
 	{
-		sptr->Flags = 16;
+		sptr->Flags = SF_ROTATE;
 		sptr->RotAng = GetRandomControl() & 0xFFF;
 
 		if (GetRandomControl() & 1)
@@ -605,7 +604,7 @@ void TriggerGlobalFireSmoke()
 			sptr->RotAdd = (GetRandomControl() & 0xF) + 16;
 	}
 	else
-		sptr->Flags = 0;
+		sptr->Flags = SF_NONE;
 
 	sptr->Gravity = -16 - (GetRandomControl() & 0xF);
 	sptr->MaxYvel = -8 - (GetRandomControl() & 7);
@@ -678,7 +677,7 @@ void UpdateFireSparks()
 			sptr->B = sptr->dB;
 		}
 
-		if (sptr->Flags & 0x10)
+		if (sptr->Flags & SF_ROTATE)
 			sptr->RotAng = (sptr->RotAng + sptr->RotAdd) & 0xFFF;
 
 		if (sptr->R < 24 && sptr->G < 24 && sptr->B < 24)
@@ -887,7 +886,7 @@ void UpdateSmokeSparks()
 		else
 			sptr->Def = (uchar)objects[T4PlusGetDefaultSpritesSlotID()].mesh_index;
 
-		if (sptr->Flags & 0x10)
+		if (sptr->Flags & SF_ROTATE)
 			sptr->RotAng = (sptr->RotAng + sptr->RotAdd) & 0xFFF;
 
 		fade = ((sptr->sLife - sptr->Life) << 16) / sptr->sLife;
@@ -912,7 +911,7 @@ void UpdateSmokeSparks()
 		sptr->y += sptr->Yvel >> 5;
 		sptr->z += sptr->Zvel >> 5;
 
-		if (sptr->Flags & 0x100)
+		if (sptr->Flags & SF_OUTSIDE)
 		{
 			sptr->x += SmokeWindX >> 1;
 			sptr->z += SmokeWindZ >> 1;
@@ -945,18 +944,18 @@ void TriggerShatterSmoke(long x, long y, long z)
 	
 	if (GetRandomControl() & 1)
 	{
-		sptr->Flags = 16;
+		sptr->Flags = SF_ROTATE;
 		sptr->RotAng = GetRandomControl() & 0xFFF;
 
 		if (GetRandomControl() & 1)
 			sptr->RotAdd = -64 - (GetRandomControl() & 0x3F);
 		else
-			sptr->RotAdd = (GetRandomControl() & 0x3F) + 64;
+			sptr->RotAdd = (GetRandomControl() & 0x3F) + 0x40;
 	}
 	else if (room[lara_item->room_number].flags & ROOM_NOT_INSIDE)
-		sptr->Flags = 256;
+		sptr->Flags = SF_OUTSIDE;
 	else
-		sptr->Flags = 0;
+		sptr->Flags = SF_NONE;
 
 	sptr->Gravity = -4 - (GetRandomControl() & 3);
 	sptr->MaxYvel = -4 - (GetRandomControl() & 3);
@@ -1256,7 +1255,7 @@ void TriggerSmallSplash(long x, long y, long z, long num)
 		sptr->y = y - (sptr->Yvel >> 5);
 		sptr->z = z + (sptr->Zvel >> 3);
 		sptr->Friction = 5;
-		sptr->Flags = 0;
+		sptr->Flags = SF_NONE;
 		sptr->MaxYvel = 0;
 		sptr->Gravity = (GetRandomControl() & 0xF) + 64;
 		num--;
@@ -1819,7 +1818,7 @@ void TriggerShockwaveHitEffect(long x, long y, long z, long rgb, short dir, long
 	sptr->Yvel = -HALF_BLOCK_SIZE - (GetRandomControl() & 0x1FF);
 	sptr->Zvel = (short)zvel;
 	sptr->Friction = 3;
-	sptr->Flags = 538;
+	sptr->Flags = SF_SCALE | SF_DEF | SF_ROTATE | SF_UNUSED2;
 	sptr->RotAng = GetRandomControl() & 0xFFF;
 
 	if (GetRandomControl() & 1)
@@ -2011,7 +2010,7 @@ void TriggerLightningGlow(long x, long y, long z, long rgb)
 	sptr->Zvel = 0;
 	sptr->Yvel = 0;
 	sptr->Xvel = 0;
-	sptr->Flags = 10;
+	sptr->Flags = SF_SCALE | SF_DEF;
 	sptr->Scalar = 3;
 	sptr->MaxYvel = 0;
 	sptr->Def = objects[T4PlusGetDefaultSpritesSlotID()].mesh_index + 11;
@@ -2062,10 +2061,11 @@ void TriggerFlashSmoke(long x, long y, long z, short room_number)
 		sptr->Friction = 85;
 	}
 
+
 	if (room[room_number].flags & ROOM_NOT_INSIDE)
-		sptr->Flags = 272;
+		sptr->Flags = SF_ROTATE | SF_OUTSIDE;
 	else
-		sptr->Flags = 16;
+		sptr->Flags = SF_ROTATE;
 
 	sptr->RotAng = GetRandomControl() & 0xFFF;
 
@@ -2115,7 +2115,7 @@ void S_DrawSparks()
 		if (!sptr->On)
 			continue;
 
-		if (sptr->Flags & 0x40)
+		if (sptr->Flags & SF_FX)
 		{
 			fx = &effects[sptr->FxObj];
 			x = sptr->x + fx->pos.x_pos;
@@ -2127,14 +2127,14 @@ void S_DrawSparks()
 				sptr->x = x;
 				sptr->y = y;
 				sptr->z = z;
-				sptr->Flags &= ~0x40;
+				sptr->Flags &= ~SF_FX;
 			}
 		}
-		else if (sptr->Flags & 0x80)
+		else if (sptr->Flags & SF_ITEM)
 		{
 			item = &items[sptr->FxObj];
 
-			if (sptr->Flags & 0x1000)
+			if (sptr->Flags & SF_ATTACHEDNODE)
 			{
 				if (sptr->NodeNumber < MAX_NODE_OFFSETS) {
 					if (NodeOffsets[sptr->NodeNumber].GotIt)
@@ -2170,7 +2170,7 @@ void S_DrawSparks()
 					sptr->x = x;
 					sptr->y = y;
 					sptr->z = z;
-					sptr->Flags &= ~0x1080;
+					sptr->Flags &= ~(SF_ATTACHEDNODE | SF_ITEM);
 				}
 			}
 			else
@@ -2208,9 +2208,9 @@ void S_DrawSparks()
 		XY[1] = long(fPos.y * perspz + f_centery);
 		Z[0] = (long)fPos.z;
 
-		if (sptr->Flags & 8)
+		if (sptr->Flags & SF_DEF)
 		{
-			if (sptr->Flags & 2)
+			if (sptr->Flags & SF_SCALE)
 				smallest_size = 4;
 		}
 		else

@@ -647,7 +647,7 @@ void S_DrawDrawSparks(SPARKS* sptr, long smallest_size, long* xyptr, long* zptr)
 
 	v = MyVertexBuffer;
 
-	if (sptr->Flags & 8)
+	if (sptr->Flags & SF_DEF)
 	{
 		z1 = zptr[0];
 		
@@ -660,7 +660,7 @@ void S_DrawDrawSparks(SPARKS* sptr, long smallest_size, long* xyptr, long* zptr)
 			return;
 		}
 
-		if (sptr->Flags & 2)
+		if (sptr->Flags & SF_SCALE)
 		{
 			scale = sptr->Size << sptr->Scalar;
 			s1 = ((phd_persp * sptr->Size) << sptr->Scalar) / z1;
@@ -689,7 +689,7 @@ void S_DrawDrawSparks(SPARKS* sptr, long smallest_size, long* xyptr, long* zptr)
 
 		if (x1 + s1h >= phd_winxmin && x1 - s1h < phd_winxmax && y1 + s2h >= phd_winymin && y1 - s2h < phd_winymax)
 		{
-			if (sptr->Flags & 0x10)
+			if (sptr->Flags & SF_ROTATE)
 			{
 				sin = rcossin_tbl[sptr->RotAng << 1];
 				cos = rcossin_tbl[(sptr->RotAng << 1) + 1];
@@ -3552,7 +3552,7 @@ void S_DrawFireSparks(long size, long life)
 		if (XY[0] + newSize < phd_winxmin || XY[0] - newSize >= phd_winxmax || XY[1] + newSize < phd_winymin || XY[1] - newSize >= phd_winymax)
 			continue;
 
-		if (sptr->Flags & 0x10)
+		if (sptr->Flags & SF_ROTATE)
 		{
 			ang = sptr->RotAng << 1;
 			s = rcossin_tbl[ang];
@@ -3945,7 +3945,7 @@ void S_DrawSmokeSparks()
 			continue;
 		}
 
-		if (sptr->Flags & 0x10)
+		if (sptr->Flags & SF_ROTATE)
 		{
 			ang = sptr->RotAng << 1;
 			s = rcossin_tbl[ang];

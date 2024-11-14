@@ -599,7 +599,7 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 			// Damage (WIP)
 			unsigned short damage_flags = NG_READ_16(gfScriptFile, offset);
 			unsigned short seconds_for_death = NG_READ_16(gfScriptFile, offset);
-			unsigned short seconds_for_bar_restore = NG_READ_16(gfScriptFile, offset);
+			unsigned short seconds_for_barbar_restore = NG_READ_16(gfScriptFile, offset);
 			unsigned int bar_color = NG_READ_32(gfScriptFile, offset);
 			unsigned short bar_name = NG_READ_16(gfScriptFile, offset);
 			unsigned short blink_percentage = NG_READ_16(gfScriptFile, offset);
@@ -1204,7 +1204,7 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 							get_game_mod_level_misc_info(i)->damage_static_interaction = damage;
 						}
 						if (poison_intensity != -1) {
-							get_game_mod_level_misc_info(i)->posion_static_interaction = poison_intensity;
+							get_game_mod_level_misc_info(i)->poison_static_interaction = poison_intensity;
 						}
 					}
 					break;

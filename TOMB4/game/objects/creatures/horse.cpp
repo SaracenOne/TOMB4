@@ -549,7 +549,7 @@ void TriggerHorsemanRicochets(PHD_VECTOR* pos, long yrot, long num)
 		sptr->Yvel = (random & 0xFFF) - (BLOCK_SIZE * 2);
 		sptr->Zvel = rcossin_tbl[rot + 1] >> 2;
 		sptr->Friction = 34;
-		sptr->Flags = 0;
+		sptr->Flags = SF_NONE;
 		sptr->MaxYvel = 0;
 	}
 
@@ -574,7 +574,7 @@ void TriggerHorsemanRicochets(PHD_VECTOR* pos, long yrot, long num)
 		sptr->z = pos->z;
 		rot = 2 * ((random >> 3 & 0x7FF) + yrot - BLOCK_SIZE & 0xFFF);
 		sptr->Xvel = -rcossin_tbl[rot] >> 2;
-		sptr->Yvel = (random & 0xFFF) - 2048;
+		sptr->Yvel = (random & 0xFFF) - (BLOCK_SIZE * 2);
 		sptr->Zvel = rcossin_tbl[rot + 1] >> 2;
 		sptr->Gravity = random >> 7 & 0x1F;
 		sptr->RotAng = short(random >> 3);
@@ -582,14 +582,14 @@ void TriggerHorsemanRicochets(PHD_VECTOR* pos, long yrot, long num)
 		if (random & 1)
 			sptr->RotAdd = 240 - (random & 0xF);
 		else
-			sptr->RotAdd = (random & 0xF) + 16;
+			sptr->RotAdd = (random & 0xF) + 0x10;
 
 		sptr->Scalar = 3;
 		sptr->sSize = (random >> 5 & 0x7) + 4;
 		sptr->Size = sptr->sSize;
 		sptr->dSize = sptr->sSize >> 1;
 		sptr->Friction = 34;
-		sptr->Flags = 26;
+		sptr->Flags = SF_SCALE | SF_DEF | SF_ROTATE;
 		sptr->MaxYvel = 0;
 	}
 }

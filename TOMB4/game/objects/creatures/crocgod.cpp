@@ -80,7 +80,7 @@ void TriggerCrocgodMissileFlame(short fx_number, long xv, long yv, long zv)
 	sptr->Yvel = (short)yv;
 	sptr->Zvel = (short)zv;
 	sptr->Friction = 34;
-	sptr->Flags = 538;
+	sptr->Flags = SF_SCALE | SF_DEF | SF_ROTATE | SF_UNUSED2;
 	sptr->RotAng = GetRandomControl() & 0xFFF;
 
 	if (GetRandomControl() & 1)

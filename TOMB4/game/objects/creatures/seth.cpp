@@ -51,7 +51,8 @@ void TriggerSethMissileFlame(short fx_number, long xv, long yv, long zv)
 	sptr->Yvel = (short)yv;
 	sptr->Zvel = (short)zv;
 	sptr->Friction = 68;
-	sptr->Flags = 602;
+
+	sptr->Flags = SF_SCALE | SF_DEF | SF_ROTATE | SF_FX | SF_UNUSED2;
 	sptr->RotAng = GetRandomControl() & 0xFFF;
 
 	if (GetRandomControl() & 1)
@@ -135,7 +136,7 @@ void TriggerSethSparks(long x, long y, long z, short xv, short yv, short zv)
 	sptr->dSize = (GetRandomControl() & 1) + 1;
 	sptr->MaxYvel = 0;
 	sptr->Gravity = 0;
-	sptr->Flags = 0;
+	sptr->Flags = SF_NONE;
 }
 
 void TriggerSethFlame(short item_number, uchar NodeNumber, short size)
@@ -169,7 +170,7 @@ void TriggerSethFlame(short item_number, uchar NodeNumber, short size)
 	sptr->Yvel = 0;
 	sptr->Zvel = (GetRandomControl() & 0xFF) - 128;
 	sptr->Friction = 5;
-	sptr->Flags = 4762;
+	sptr->Flags = SF_SCALE | SF_DEF | SF_ROTATE | SF_ITEM | SF_UNUSED2 | SF_ATTACHEDNODE;
 	sptr->RotAng = GetRandomControl() & 0xFFF;
 
 	if (GetRandomControl() & 1)
@@ -199,15 +200,15 @@ void DoSethEffects(short item_number)
 	item = &items[item_number];
 	item->item_flags[0]++;
 
-	r.x = NodeOffsets[3].x;
-	r.y = NodeOffsets[3].y;
-	r.z = NodeOffsets[3].z;
-	GetJointAbsPosition(item, &r, NodeOffsets[3].mesh_num);
+	r.x = NodeOffsets[NODE_ID_SETH_B].x;
+	r.y = NodeOffsets[NODE_ID_SETH_B].y;
+	r.z = NodeOffsets[NODE_ID_SETH_B].z;
+	GetJointAbsPosition(item, &r, NodeOffsets[NODE_ID_SETH_B].mesh_num);
 
-	l.x = NodeOffsets[2].x;
-	l.y = NodeOffsets[2].y;
-	l.z = NodeOffsets[2].z;
-	GetJointAbsPosition(item, &l, NodeOffsets[2].mesh_num);
+	l.x = NodeOffsets[NODE_ID_SETH_A].x;
+	l.y = NodeOffsets[NODE_ID_SETH_A].y;
+	l.z = NodeOffsets[NODE_ID_SETH_A].z;
+	GetJointAbsPosition(item, &l, NodeOffsets[NODE_ID_SETH_A].mesh_num);
 
 	switch (item->current_anim_state)
 	{
@@ -245,18 +246,18 @@ void DoSethEffects(short item_number)
 
 		if ((wibble & 0xF) == 8)
 		{
-			if (item->item_flags[0] < 127)
-				TriggerSethFlame(item_number, 2, size);
+			if (item->item_flags[0] < 0x7F)
+				TriggerSethFlame(item_number, NODE_ID_SETH_A, size);
 		}
-		else if (!(wibble & 0xF) && item->item_flags[0] < 103)
-			TriggerSethFlame(item_number, 3, size);
+		else if (!(wibble & 0xF) && item->item_flags[0] < 0x67)
+			TriggerSethFlame(item_number, NODE_ID_SETH_B, size);
 
-		if (item->item_flags[0] >= 96 && item->item_flags[0] <= 99)
+		if (item->item_flags[0] >= 0x60 && item->item_flags[0] <= 0x63)
 		{
-			vec.x = NodeOffsets[3].x;
-			vec.y = NodeOffsets[3].y << 1;
-			vec.z = NodeOffsets[3].z;
-			GetJointAbsPosition(item, &vec, NodeOffsets[3].mesh_num);
+			vec.x = NodeOffsets[NODE_ID_SETH_B].x;
+			vec.y = NodeOffsets[NODE_ID_SETH_B].y << 1;
+			vec.z = NodeOffsets[NODE_ID_SETH_B].z;
+			GetJointAbsPosition(item, &vec, NodeOffsets[NODE_ID_SETH_B].mesh_num);
 			pos.x_pos = r.x;
 			pos.y_pos = r.y;
 			pos.z_pos = r.z;
@@ -268,10 +269,10 @@ void DoSethEffects(short item_number)
 
 		if (item->item_flags[0] >= 122 && item->item_flags[0] <= 125)
 		{
-			vec.x = NodeOffsets[2].x;
-			vec.y = NodeOffsets[2].y << 1;
-			vec.z = NodeOffsets[2].z;
-			GetJointAbsPosition(item, &vec, NodeOffsets[2].mesh_num);
+			vec.x = NodeOffsets[NODE_ID_SETH_A].x;
+			vec.y = NodeOffsets[NODE_ID_SETH_A].y << 1;
+			vec.z = NodeOffsets[NODE_ID_SETH_A].z;
+			GetJointAbsPosition(item, &vec, NodeOffsets[NODE_ID_SETH_A].mesh_num);
 			pos.x_pos = l.x;
 			pos.y_pos = l.y;
 			pos.z_pos = l.z;
@@ -300,10 +301,10 @@ void DoSethEffects(short item_number)
 
 		if ((item->item_flags[0] >= 60 && item->item_flags[0] <= 74 || item->item_flags[0] >= 112 && item->item_flags[0] <= 124) && wibble & 4)
 		{
-			vec.x = NodeOffsets[3].x;
-			vec.y = NodeOffsets[3].y << 1;
-			vec.z = NodeOffsets[3].z;
-			GetJointAbsPosition(item, &vec, NodeOffsets[3].mesh_num);
+			vec.x = NodeOffsets[NODE_ID_SETH_B].x;
+			vec.y = NodeOffsets[NODE_ID_SETH_B].y << 1;
+			vec.z = NodeOffsets[NODE_ID_SETH_B].z;
+			GetJointAbsPosition(item, &vec, NodeOffsets[NODE_ID_SETH_B].mesh_num);
 			pos.x_pos = r.x;
 			pos.y_pos = r.y;
 			pos.z_pos = r.z;
@@ -312,10 +313,10 @@ void DoSethEffects(short item_number)
 			pos.y_rot = angles[0];
 			TriggerSethMissile(&pos, item->room_number, 0);
 
-			vec.x = NodeOffsets[2].x;
-			vec.y = NodeOffsets[2].y << 1;
-			vec.z = NodeOffsets[2].z;
-			GetJointAbsPosition(item, &vec, NodeOffsets[2].mesh_num);
+			vec.x = NodeOffsets[NODE_ID_SETH_A].x;
+			vec.y = NodeOffsets[NODE_ID_SETH_A].y << 1;
+			vec.z = NodeOffsets[NODE_ID_SETH_A].z;
+			GetJointAbsPosition(item, &vec, NodeOffsets[NODE_ID_SETH_A].mesh_num);
 			pos.x_pos = l.x;
 			pos.y_pos = l.y;
 			pos.z_pos = l.z;
@@ -366,12 +367,12 @@ void DoSethEffects(short item_number)
 		else if (!(wibble & 0xF) && item->item_flags[0] < 103)
 			TriggerSethFlame(item_number, 3, size);
 
-		if (item->item_flags[0] == 102)
+		if (item->item_flags[0] == 0x66)
 		{
-			vec.x = NodeOffsets[3].x;
-			vec.y = NodeOffsets[3].y << 1;
-			vec.z = NodeOffsets[3].z;
-			GetJointAbsPosition(item, &vec, NodeOffsets[3].mesh_num);
+			vec.x = NodeOffsets[NODE_ID_SETH_B].x;
+			vec.y = NodeOffsets[NODE_ID_SETH_B].y << 1;
+			vec.z = NodeOffsets[NODE_ID_SETH_B].z;
+			GetJointAbsPosition(item, &vec, NodeOffsets[NODE_ID_SETH_B].mesh_num);
 			pos.x_pos = r.x;
 			pos.y_pos = r.y;
 			pos.z_pos = r.z;

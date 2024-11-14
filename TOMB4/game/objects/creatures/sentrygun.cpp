@@ -62,12 +62,12 @@ void TriggerAutogunFlamethrower(ITEM_INFO* item)
 		sptr->Friction = 85;
 		sptr->MaxYvel = 0;
 		sptr->Gravity = -16 - (GetRandomControl() & 0x1F);
-		sptr->Flags = 538;
+		sptr->Flags = SF_SCALE | SF_DEF | SF_ROTATE | SF_UNUSED2;
 
 		if (GlobalCounter & 1)
 		{
 			v = 255;
-			sptr->Flags = 539;
+			sptr->Flags = SF_FIRE | SF_SCALE | SF_DEF | SF_ROTATE | SF_UNUSED2;
 		}
 
 		sptr->Scalar = 3;

@@ -115,7 +115,7 @@ void ControlMapper(short item_number)
 			sptr->dSize = (GetRandomControl() & 1) + 3;
 			sptr->MaxYvel = 0;
 			sptr->Gravity = (GetRandomControl() & 0x1F) + (QUARTER_CLICK_SIZE / 2);
-			sptr->Flags = 10;
+			sptr->Flags = SF_DEF | SF_SCALE;
 		}
 	}
 
@@ -394,10 +394,10 @@ void TriggerRopeFlame(PHD_VECTOR* pos)
 	sptr->Xvel = (GetRandomControl() & 0xFF) - 128;
 	sptr->Zvel = (GetRandomControl() & 0xFF) - 128;
 	sptr->Friction = 5;
-	sptr->Flags = 538;
+	sptr->Flags = SF_SCALE | SF_DEF | SF_ROTATE | SF_UNUSED2;
 
 	if (!(GetRandomControl() & 3))
-		sptr->Flags |= 0x20;
+		sptr->Flags |= SF_NOKILL;
 
 	sptr->RotAng = GetRandomControl() & 0xFFF;
 

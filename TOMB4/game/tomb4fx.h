@@ -53,7 +53,6 @@ void SetScreenFadeIn(short speed);
 void Fade();
 
 #define MAX_SNOW_SIZES 32
-#define MAX_NODE_OFFSETS 16
 #define MAX_LIGHTNING 16
 #define MAX_GUNSHELLS 24
 #define MAX_DRIPS 32
@@ -66,6 +65,16 @@ void Fade();
 #define MAX_FIRES 32
 
 #define TSV_BUFFER_SIZE 16384
+
+#define NODE_ID_LARA_TORCH 0
+#define NODE_ID_GUIDE_TORCH 1
+#define NODE_ID_SETH_A 2
+#define NODE_ID_SETH_B 3
+#define NODE_ID_HARPY_A 4
+#define NODE_ID_HARPY_B 5
+#define NODE_ID_UNKNOWN_2 6
+#define NODE_ID_HYDRA 7
+#define MAX_NODE_OFFSETS 16
 
 extern float SnowSizes[MAX_SNOW_SIZES]; // TRLE
 extern NODEOFFSET_INFO NodeOffsets[MAX_NODE_OFFSETS];

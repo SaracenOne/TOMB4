@@ -163,7 +163,7 @@ long DoFlareLight(PHD_VECTOR* pos, long flare_age)
 		sptr->Zvel = 0;
 		sptr->Yvel = 0;
 		sptr->Xvel = 0;
-		sptr->Flags = 10;
+		sptr->Flags = SF_SCALE | SF_DEF;
 		sptr->Scalar = 3;
 		sptr->MaxYvel = 0;
 		sptr->Def = objects[T4PlusGetDefaultSpritesSlotID()].mesh_index + 11;

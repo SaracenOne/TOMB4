@@ -121,7 +121,7 @@ void TriggerGuardianSparks(GAME_VECTOR* pos, long size, long rgb, long power)
 		sptr->Zvel = ((GetRandomControl() & 0xFFF) - (BLOCK_SIZE * 2)) << power;
 
 		sptr->Gravity = rnd >> 7 & 0x1F;
-		sptr->Flags = 0;
+		sptr->Flags = SF_NONE;
 		sptr->MaxYvel = 0;
 		sptr->Friction = 34 << power;
 	}
@@ -260,14 +260,14 @@ void GuardianControl(short item_number)
 			{
 				item->item_flags[0]++;
 				item->item_flags[1] = (short)item->pos.y_pos;
-				item->item_flags[2] = 2640;
+				item->item_flags[2] = 0xA50;
 			}
 		}
 	}
 	else if (item->item_flags[0] <= 2)
 	{
 		item->trigger_flags++;
-		item->pos.y_pos = item->item_flags[1] - (128 * phd_sin(item->item_flags[2]) >> W2V_SHIFT);
+		item->pos.y_pos = item->item_flags[1] - (HALF_CLICK_SIZE * phd_sin(item->item_flags[2]) >> W2V_SHIFT);
 		item->item_flags[2] += DEGREES_TO_ROTATION(3);
 		s.x = 0;
 		s.y = 168;
@@ -393,8 +393,8 @@ void GuardianControl(short item_number)
 
 			if (item->item_flags[3] >= 90)
 			{
-				a1 = (GetRandomControl() & 0x1F) + 128;
-				a2 = (GetRandomControl() & 0x1F) + 64;
+				a1 = (GetRandomControl() & 0x1F) + HALF_CLICK_SIZE;
+				a2 = (GetRandomControl() & 0x1F) + QUARTER_CLICK_SIZE;
 				lptr = gt.elptr[0];
 
 				if (!lptr)
@@ -531,8 +531,10 @@ void GuardianControl(short item_number)
 									if (lp1 == 999)
 									{
 										LaraBurn();
-										//lara.BurnCount = 48;
-										//lara.BurnBlue = 2;
+#ifdef TR5_BEHAVIOUR
+										lara.BurnCount = 48;
+										lara.BurnBlue = 2;
+#endif
 										lara_item->hit_points = 0;
 									}
 								}
@@ -556,7 +558,11 @@ void GuardianControl(short item_number)
 	}
 	else
 	{
+#ifdef TR5_BEHAVIOUR
 		if (!(GlobalCounter & 7) && item->current_anim_state < 8)
+#else
+		if (item->current_anim_state < 8)
+#endif
 		{
 			items[aptr[item->current_anim_state + 1]].goal_anim_state = 2;
 			item->current_anim_state++;
@@ -609,11 +615,15 @@ void GuardianControl(short item_number)
 			SoundEffect(SFX_EXPLOSION1, &item->pos, 0);
 			SoundEffect(SFX_EXPLOSION1, &item->pos, 0x400000 | SFX_SETPITCH);
 			KillItem(item_number);
+#ifndef TR5_BEHAVIOUR
+			item->after_death = 128;
+#endif
 		}
 	}
 
 	if (item->item_flags[0] < 3)
 	{
+#ifdef TR5_BEHAVIOUR
 		for (lp = 0; lp < 8; lp++)
 		{
 			item2 = &items[aptr[lp + 1]];
@@ -621,6 +631,9 @@ void GuardianControl(short item_number)
 			if (item2->anim_number == objects[item2->object_number].anim_index && item2->frame_number != anims[item2->anim_number].frame_end)
 				break;
 		}
+#else
+		lp = 8;
+#endif
 
 		if (lp == 8 && !(item->mesh_bits & 6))
 		{

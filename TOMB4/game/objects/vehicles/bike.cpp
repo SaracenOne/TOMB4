@@ -296,7 +296,7 @@ static void TriggerExhaustSmoke(long x, long y, long z, short angle, long veloci
 
 	if (GetRandomControl() & 1)
 	{
-		sptr->Flags = 538;
+		sptr->Flags = SF_SCALE | SF_DEF | SF_ROTATE | SF_UNUSED2;
 		sptr->RotAng = GetRandomControl() & 0xFFF;
 
 		if (GetRandomControl() & 1)
@@ -305,7 +305,7 @@ static void TriggerExhaustSmoke(long x, long y, long z, short angle, long veloci
 			sptr->RotAdd = (GetRandomControl() & 7) + 24;
 	}
 	else
-		sptr->Flags = 522;
+		sptr->Flags = SF_SCALE | SF_DEF | SF_UNUSED2;
 
 	sptr->Scalar = 1;
 	sptr->Def = (uchar)objects[T4PlusGetDefaultSpritesSlotID()].mesh_index;

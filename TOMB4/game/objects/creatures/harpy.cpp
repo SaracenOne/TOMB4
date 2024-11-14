@@ -15,6 +15,7 @@
 #include "../../gameflow.h"
 #include "../../../tomb4/mod_config.h"
 #include "../../../tomb4/tomb4plus/t4plus_objects.h"
+#include "../../tomb4fx.h"
 
 static BITE_INFO right_hand = { 0, 128, 0, 2 };
 static BITE_INFO left_hand = { 0, 128, 0, 4 };
@@ -53,7 +54,8 @@ void TriggerHarpyMissileFlame(short fx_number, long xv, long yv, long zv)
 	sptr->Yvel = (short)yv;
 	sptr->Zvel = (short)zv;
 	sptr->Friction = 68;
-	sptr->Flags = 602;
+
+	sptr->Flags = SF_UNUSED2 | SF_FX | SF_ROTATE | SF_DEF | SF_SCALE;
 	sptr->RotAng = GetRandomControl() & 0xFFF;
 
 	if (GetRandomControl() & 1)
@@ -132,7 +134,7 @@ void TriggerHarpySparks(long x, long y, long z, short xv, short yv, short zv)
 	sptr->dSize = (GetRandomControl() & 1) + 1;
 	sptr->MaxYvel = 0;
 	sptr->Gravity = 0;
-	sptr->Flags = 0;
+	sptr->Flags = SF_NONE;
 }
 
 void TriggerHarpyFlame(short item_number, uchar NodeNumber, short size)
@@ -162,17 +164,17 @@ void TriggerHarpyFlame(short item_number, uchar NodeNumber, short size)
 	sptr->x = (GetRandomControl() & 0xF) - 8;
 	sptr->y = 0;
 	sptr->z = (GetRandomControl() & 0xF) - 8;
-	sptr->Xvel = (GetRandomControl() & 0xFF) - 128;
+	sptr->Xvel = (GetRandomControl() & 0xFF) - HALF_CLICK_SIZE;
 	sptr->Yvel = 0;
-	sptr->Zvel = (GetRandomControl() & 0xFF) - 128;
+	sptr->Zvel = (GetRandomControl() & 0xFF) - HALF_CLICK_SIZE;
 	sptr->Friction = 5;
-	sptr->Flags = 4762;
+	sptr->Flags = SF_SCALE | SF_DEF | SF_ROTATE | SF_ITEM | SF_UNUSED2 | SF_ATTACHEDNODE;
 	sptr->RotAng = GetRandomControl() & 0xFFF;
 
 	if (GetRandomControl() & 1)
-		sptr->RotAdd = -32 - (GetRandomControl() & 0x1F);
+		sptr->RotAdd = -0x20 - (GetRandomControl() & 0x1F);
 	else
-		sptr->RotAdd = (GetRandomControl() & 0x1F) + 32;
+		sptr->RotAdd = (GetRandomControl() & 0x1F) + 0x20;
 
 	sptr->MaxYvel = 0;
 	sptr->Gravity = (GetRandomControl() & 0x1F) + 16;
@@ -233,9 +235,9 @@ void DoHarpyEffects(ITEM_INFO* item, short item_number)
 	if (item->item_flags[0] < 80)
 	{
 		if ((wibble & 0xF) == 8)
-			TriggerHarpyFlame(item_number, 4, size);
+			TriggerHarpyFlame(item_number, NODE_ID_HARPY_A, size);
 		else if (!(wibble & 0xF))
-			TriggerHarpyFlame(item_number, 5, size);
+			TriggerHarpyFlame(item_number, NODE_ID_HARPY_B, size);
 	}
 
 	if (item->item_flags[0] >= 61 && item->item_flags[0] <= 65 && GlobalCounter & 1)

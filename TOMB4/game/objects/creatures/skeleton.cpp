@@ -72,7 +72,7 @@ void TriggerRiseEffect(ITEM_INFO* item)
 	sptr->Zvel = phd_cos(fx->pos.y_rot) >> 2;
 	sptr->TransType = 2;
 	sptr->Friction = 68;
-	sptr->Flags = 26;
+	sptr->Flags = SF_ROTATE | SF_DEF | SF_SCALE;
 	sptr->RotAng = GetRandomControl() & 0xFFF;
 
 	if (GetRandomControl() & 1)

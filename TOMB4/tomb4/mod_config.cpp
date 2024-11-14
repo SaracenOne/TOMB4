@@ -24,7 +24,7 @@
 #include "../specific/registry.h"
 #include "../game/objects/general/tightrope.h"
 
-int global_string_table_size = 0;
+int32_t global_string_table_size = 0;
 char** global_string_table = nullptr;
 
 #define READ_JSON_INTEGER_CAST(value_name, json, my_struct, my_type) { const json_t* value_name = json_getProperty(json, #value_name); \

@@ -18,6 +18,7 @@
 #include "effect2.h"
 #include "tomb4fx.h"
 #include "pickup.h"
+#include "../tomb4/tomb4plus/t4plus_objects.h"
 
 void InitialiseMapper(short item_number)
 {
@@ -35,9 +36,10 @@ void InitialiseLightningConductor(short item_number)
 	{
 		pack = 0;
 
+		int16_t lightning_conductor_target = T4PlusGetLightningConductorTargetSlotID();
 		for (int i = 0; i < level_items; i++)
 		{
-			if (items[i].object_number == ANIMATING8)
+			if (items[i].object_number == lightning_conductor_target)
 			{
 				item->item_flags[2] |= i << (pack != 0 ? 8 : 0);
 				pack++;

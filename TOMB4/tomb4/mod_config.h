@@ -29,7 +29,7 @@
 #define MAX_VAPOR_OCB_CUSTOMIZATIONS 16
 
 #define MAX_T4PLUS_STRINGS 4096
-extern int global_string_table_size;
+extern int32_t global_string_table_size;
 extern char **global_string_table;
 
 struct MOD_GLOBAL_PLUGIN {
@@ -39,51 +39,51 @@ struct MOD_GLOBAL_PLUGIN {
 };
 
 struct MOD_LEVEL_ENVIRONMENT_INFO {
-	int fog_start_range = DEFAULT_FOG_START_VALUE;
-	int fog_end_range = DEFAULT_FOG_END_VALUE;
-	int far_view = DEFAULT_FAR_VIEW_VALUE;
+	int32_t fog_start_range = DEFAULT_FOG_START_VALUE;
+	int32_t fog_end_range = DEFAULT_FOG_END_VALUE;
+	int32_t far_view = DEFAULT_FAR_VIEW_VALUE;
 	bool force_train_fog = false;
 	bool disable_distance_limit = false;
 	bool enable_multi_color_fog_bulbs = false;
 
-	unsigned int room_swamp_flag = 0;
-	unsigned int room_cold_flag = ROOM_COLD;
-	unsigned int room_damage_flag = 0;
+	uint32_t room_swamp_flag = 0;
+	uint32_t room_cold_flag = ROOM_COLD;
+	uint32_t room_damage_flag = 0;
 };
 
 struct MOD_LEVEL_FONT_INFO {
-	int custom_glyph_scale_width = DEFAULT_GLYPH_SCALE_WIDTH;
-	int custom_glyph_scale_height = DEFAULT_GLYPH_SCALE_HEIGHT;
+	int32_t custom_glyph_scale_width = DEFAULT_GLYPH_SCALE_WIDTH;
+	int32_t custom_glyph_scale_height = DEFAULT_GLYPH_SCALE_HEIGHT;
 	float custom_vertical_spacing = 0.075F;
 
-	int main_font_main_color = 0xff808080;
-	int main_font_fade_color = 0xff808080;
+	int32_t main_font_main_color = 0xff808080;
+	int32_t main_font_fade_color = 0xff808080;
 
-	int options_title_font_main_color = 0xffc08040;
-	int options_title_font_fade_color = 0xff401000;
+	int32_t options_title_font_main_color = 0xffc08040;
+	int32_t options_title_font_fade_color = 0xff401000;
 
-	int inventory_title_font_main_color = 0xffe0c000;
-	int inventory_title_font_fade_color = 0xff402000;
+	int32_t inventory_title_font_main_color = 0xffe0c000;
+	int32_t inventory_title_font_fade_color = 0xff402000;
 
-	int inventory_item_font_main_color = 0xff808080;
-	int inventory_item_font_fade_color = 0xff101010;
+	int32_t inventory_item_font_main_color = 0xff808080;
+	int32_t inventory_item_font_fade_color = 0xff101010;
 
 	CHARDEF custom_font_table[CHAR_TABLE_COUNT] = {};
 };
 
 struct MOD_LEVEL_CAMERA_INFO {
-	int chase_camera_distance = BLOCK_SIZE + HALF_BLOCK_SIZE;
-	int chase_camera_vertical_orientation = -DEGREES_TO_ROTATION(10);
-	int chase_camera_horizontal_orientation = 0;
+	int32_t chase_camera_distance = BLOCK_SIZE + HALF_BLOCK_SIZE;
+	int32_t chase_camera_vertical_orientation = -DEGREES_TO_ROTATION(10);
+	int32_t chase_camera_horizontal_orientation = 0;
 
-	int combat_camera_distance = BLOCK_SIZE + HALF_BLOCK_SIZE;
-	int combat_camera_vertical_orientation = -DEGREES_TO_ROTATION(15);
+	int32_t combat_camera_distance = BLOCK_SIZE + HALF_BLOCK_SIZE;
+	int32_t combat_camera_vertical_orientation = -DEGREES_TO_ROTATION(15);
 
-	int look_camera_distance = -BLOCK_SIZE;
-	int look_camera_height = (QUARTER_CLICK_SIZE / 4);
+	int32_t look_camera_distance = -BLOCK_SIZE;
+	int32_t look_camera_height = (QUARTER_CLICK_SIZE / 4);
 
-	int camera_speed = 10;
-	int add_on_battle_camera_top = CLICK_SIZE;
+	int32_t camera_speed = 10;
+	int32_t add_on_battle_camera_top = CLICK_SIZE;
 	bool disable_battle_camera = false;
 };
 
@@ -111,8 +111,8 @@ enum SLOT_HIT_TYPE {
 #define MAX_BONE_CUSTOMIZATIONS 4
 
 struct MOD_LEVEL_OBJECT_BONE_CUSTOMIZATION {
-	unsigned char bone_id = -1;
-	unsigned char bone_data = 0;
+	uint8_t bone_id = -1;
+	uint8_t bone_data = 0;
 };
 
 struct MOD_LEVEL_OBJECT_CUSTOMIZATION {
@@ -210,6 +210,8 @@ struct MOD_LEVEL_OBJECTS_INFO {
 	int16_t binocular_graphics_slot = BINOCULAR_GRAPHICS;
 	int16_t target_graphics_slot = TARGET_GRAPHICS;
 
+	int16_t lightning_conductor_target_slot = ANIMATING8;
+
 	int16_t nitrous_oxide_feeder_slot = PUZZLE_ITEM1;
 	int16_t jeep_key_slot = PUZZLE_ITEM1;
 	
@@ -221,6 +223,9 @@ struct MOD_LEVEL_OBJECTS_INFO {
 	int16_t laser_head_slot = LASER_HEAD;
 	int16_t laser_head_base_slot = LASER_HEAD_BASE;
 	int16_t laser_head_tentacle_slot = LASER_HEAD_TENTACLE;
+
+	int16_t hydra_slot = HYDRA;
+	int16_t hydra_missile_slot = HYDRA_MISSLE;
 
 	int16_t lara_double_slot = LARA_DOUBLE;
 	int16_t enemy_jeep_slot = ENEMY_JEEP;
@@ -280,8 +285,8 @@ struct MOD_LEVEL_VAPOR_CUSTOMIZATION {
 struct MOD_LEVEL_GFX_INFO {
 	T4PColdBreath cold_breath = COLD_BREATH_DISABLED;
 	
-	short default_envmap_sprite_index = 11;
-	short pickup_envmap_sprite_index = 11;
+	int16_t default_envmap_sprite_index = 11;
+	int16_t pickup_envmap_sprite_index = 11;
 
 	MOD_LEVEL_MIRROR_CUSTOMIZATION mirror_customization[MAX_MIRRORS-1];
 
@@ -294,53 +299,55 @@ struct MOD_LEVEL_AUDIO_INFO {
 	bool new_audio_system = false;
 	bool old_cd_trigger_system = true;
 
-	int sample_rate = 22050;
+	int32_t sample_rate = 22050;
 
-	short first_looped_audio_track = 105;
-	short last_looped_audio_track = 111;
+	int16_t first_looped_audio_track = 105;
+	int16_t last_looped_audio_track = 111;
 
-	short boat_track = 12;
-	short inside_jeep_track = 98;
-	short outside_jeep_track = 110;
-	short secret_track = 5;
+	int16_t boat_track = 12;
+	int16_t inside_jeep_track = 98;
+	int16_t outside_jeep_track = 110;
+	int16_t secret_track = 5;
 
 	// SFX
-	short pour_sfx_id = SFX_POUR;
-	short loop_for_small_fires_sfx_id = SFX_LOOP_FOR_SMALL_FIRES;
-	short flame_emitter_sfx_id = SFX_FLAME_EMITTER;
-	short underwater_sfx_id = SFX_UNDERWATER;
-	short explosion_1_sfx_id = SFX_EXPLOSION1;
-	short explosion_2_sfx_id = SFX_EXPLOSION2;
-	short lara_bubbles_sfx_id = SFX_LARA_BUBBLES;
+	int16_t pour_sfx_id = SFX_POUR;
+	int16_t loop_for_small_fires_sfx_id = SFX_LOOP_FOR_SMALL_FIRES;
+	int16_t flame_emitter_sfx_id = SFX_FLAME_EMITTER;
+	int16_t underwater_sfx_id = SFX_UNDERWATER;
+	int16_t explosion_1_sfx_id = SFX_EXPLOSION1;
+	int16_t explosion_2_sfx_id = SFX_EXPLOSION2;
+	int16_t lara_bubbles_sfx_id = SFX_LARA_BUBBLES;
 
-	short lara_no_sfx_id = SFX_LARA_NO;
-	short lara_richochet_sfx_id = SFX_LARA_RICOCHET;
-	short lara_pistols_overlay_sfx_id = SFX_EXPLOSION1;
+	int16_t lara_no_sfx_id = SFX_LARA_NO;
+	int16_t lara_richochet_sfx_id = SFX_LARA_RICOCHET;
+	int16_t lara_pistols_overlay_sfx_id = SFX_EXPLOSION1;
 
-	short lara_pistol_shell_sfx_id = SFX_LARA_SHOTGUN_SHELL; 
-	short lara_shotgun_shell_sfx_id = SFX_LARA_SHOTGUN_SHELL;
-	short lara_rope_creak_sfx_id = SFX_LARA_ROPE_CREAK;
-	short sample_test_sfx_id = SFX_LARA_BREATH;
-	short menu_select_sfx_id = SFX_MENU_SELECT;
-	short menu_choose_sfx_id = SFX_MENU_CHOOSE;
-	short menu_combine_sfx_id = SFX_MENU_COMBINE;
-	short menu_large_medipack_sfx_id = SFX_MENU_MEDI;
-	short menu_small_medipack_sfx_id = SFX_MENU_MEDI;
+	int16_t lara_pistol_shell_sfx_id = SFX_LARA_SHOTGUN_SHELL;
+	int16_t lara_shotgun_shell_sfx_id = SFX_LARA_SHOTGUN_SHELL;
+	int16_t lara_rope_creak_sfx_id = SFX_LARA_ROPE_CREAK;
+	int16_t sample_test_sfx_id = SFX_LARA_BREATH;
+	int16_t menu_select_sfx_id = SFX_MENU_SELECT;
+	int16_t menu_choose_sfx_id = SFX_MENU_CHOOSE;
+	int16_t menu_combine_sfx_id = SFX_MENU_COMBINE;
+	int16_t menu_large_medipack_sfx_id = SFX_MENU_MEDI;
+	int16_t menu_small_medipack_sfx_id = SFX_MENU_MEDI;
 
-	short bike_idle_sfx_id = SFX_BIKE_IDLE;
-	short bike_moving_sfx_id = SFX_BIKE_MOVING;
-	short jeep_idle_sfx_id = SFX_JEEP_IDLE;
-	short jeep_moving_sfx_id = SFX_JEEP_MOVE;
+	int16_t bike_idle_sfx_id = SFX_BIKE_IDLE;
+	int16_t bike_moving_sfx_id = SFX_BIKE_MOVING;
+	int16_t jeep_idle_sfx_id = SFX_JEEP_IDLE;
+	int16_t jeep_moving_sfx_id = SFX_JEEP_MOVE;
 
-	short motorboat_idle_sfx_id = 308;
-	short motorboat_moving_sfx_id = 307;
-	short rubber_boat_idle_sfx_id = 308;
-	short rubber_boat_moving_sfx_id = 307;
+	int16_t motorboat_idle_sfx_id = 308;
+	int16_t motorboat_moving_sfx_id = 307;
+	int16_t rubber_boat_idle_sfx_id = 308;
+	int16_t rubber_boat_moving_sfx_id = 307;
 
-	short god_head_charge_sfx_id = SFX_GENERIC_NRG_CHARGE;
-	short god_head_laser_loop_sfx_id = SFX_BAZOOKA_FIRE;
-	short god_head_blast_sfx_id = SFX_DEMIGOD_FALCON_PLAS;
-	short god_head_smash_sfx_id = SFX_EXPLOSION2;
+	int16_t god_head_charge_sfx_id = SFX_GENERIC_NRG_CHARGE;
+	int16_t god_head_laser_loop_sfx_id = SFX_BAZOOKA_FIRE;
+	int16_t god_head_blast_sfx_id = SFX_DEMIGOD_FALCON_PLAS;
+	int16_t god_head_smash_sfx_id = SFX_EXPLOSION2;
+
+	int16_t hydra_smash_sfx_id = SFX_THUNDER_CRACK;
 };
 
 struct MOD_LEVEL_RECT_COLOR_INFO {
@@ -380,47 +387,47 @@ enum LARA_HAIR_TYPE {
 
 struct MOD_LEVEL_LARA_INFO {
 	LARA_HAIR_TYPE hair_type = LARA_HAIR_TYPE_DEFAULT;
-	long hair_gravity = 10;
+	int32_t hair_gravity = 10;
 
-	long braid_x = -4;
-	long braid_y = -4;
-	long braid_z = -48;
+	int32_t braid_x = -4;
+	int32_t braid_y = -4;
+	int32_t braid_z = -48;
 
-	long pigtail_left_x = -52;
-	long pigtail_left_y = -48;
-	long pigtail_left_z = -50;
+	int32_t pigtail_left_x = -52;
+	int32_t pigtail_left_y = -48;
+	int32_t pigtail_left_z = -50;
 
-	long pigtail_right_x = 44;
-	long pigtail_right_y = -48;
-	long pigtail_right_z = -50;
+	int32_t pigtail_right_x = 44;
+	int32_t pigtail_right_y = -48;
+	int32_t pigtail_right_z = -50;
 
-	int crawlspace_jump_animation = 421;
-	int crawlspace_jump_pit_deepness_threshold = 768;
+	int32_t crawlspace_jump_animation = 421;
+	int32_t crawlspace_jump_pit_deepness_threshold = 768;
 
 	bool use_tr5_swimming_collision = false;
 	bool disable_hardcoded_breath_sound = false;
 
-	int ledge_to_jump_state = -1;
-	int ledge_to_down_state = -1;
+	int32_t ledge_to_jump_state = -1;
+	int32_t ledge_to_down_state = -1;
 
 	bool use_look_transparency = true;
 };
 
 struct TRNG_ENGINE_VERSION {
-	unsigned char trng_version_major = 1;
-	unsigned char trng_version_minor = 3;
-	unsigned char trng_version_maintainence = 0;
-	unsigned char trng_version_build = 7;
+	uint8_t trng_version_major = 1;
+	uint8_t trng_version_minor = 3;
+	uint8_t trng_version_maintainence = 0;
+	uint8_t trng_version_build = 7;
 };
 
 
 struct MOD_GLOBAL_INFO {
-	int manifest_compatibility_version = -1;
+	int32_t manifest_compatibility_version = -1;
 	char *game_name = nullptr;
 	char *authors = nullptr;
 	char *game_user_dir_name = nullptr;
 
-	unsigned int tr_engine_version = 4;
+	uint32_t tr_engine_version = 4;
 	bool tr_level_editor = true;
 	bool tr_times_exclusive = false;
 	bool tr_use_adpcm_audio = false;
@@ -458,16 +465,16 @@ struct MOD_GLOBAL_INFO {
 
 	bool show_logo_in_title = true;
 	bool show_lara_in_title = false;
-	unsigned short max_particles = 256;
+	uint16_t max_particles = 256;
 };
 
 struct MOD_EQUIPMENT_MODIFIER {
-	int object_id = -1;
-	int amount = -1;
+	int32_t object_id = -1;
+	int32_t amount = -1;
 };
 
 struct MOD_LEVEL_STAT_INFO {
-	unsigned int secret_count = 70;
+	uint32_t secret_count = 70;
 
 	MOD_EQUIPMENT_MODIFIER equipment_modifiers[MAX_EQUIPMENT_MODIFIERS];
 };
@@ -483,16 +490,16 @@ struct MOD_LEVEL_LOCALIZED_STRINGS_OVERWRITE_INFO {
 };
 
 struct MOD_LEVEL_STRINGS_OVERWRITE_INFO {
-	int localized_strings_info_count = 0;
+	int32_t localized_strings_info_count = 0;
 	MOD_LEVEL_LOCALIZED_STRINGS_OVERWRITE_INFO *localized_strings_info;
 };
 
 struct MOD_LEVEL_FLARE_INFO {
-	unsigned char light_color_r = 128;
-	unsigned char light_color_g = 192;
-	unsigned char light_color_b = 0;
-	int flare_lifetime_in_ticks = 30 * 30;
-	int light_intensity = 16;
+	uint8_t light_color_r = 128;
+	uint8_t light_color_g = 192;
+	uint8_t light_color_b = 0;
+	int32_t flare_lifetime_in_ticks = 30 * 30;
+	int32_t light_intensity = 16;
 	bool has_sparks = false;
 	bool has_fire = false; // Unimplemented
 	bool sparks_include_smoke = false;
@@ -503,22 +510,22 @@ struct MOD_LEVEL_FLARE_INFO {
 struct MOD_LEVEL_AMMO_INFO {
 	bool disable_explosion_sfx = false;
 
-	short damage = 0;
-	short poison_damage = 0;
-	short explosion_damage = 0;
+	int16_t damage = 0;
+	int16_t poison_damage = 0;
+	int16_t explosion_damage = 0;
 	
-	short speed = 0;
-	short gravity = 0;
+	int16_t speed = 0;
+	int16_t gravity = 0;
 
-	short shots = 1;
-	short fire_rate = 0;
-	short dispertion = 0;
-	short flash_duration = 0;
+	int16_t shots = 1;
+	int16_t fire_rate = 0;
+	int16_t dispertion = 0;
+	int16_t flash_duration = 0;
 
-	short weapon_pickup_amount = 0;
-	short ammo_pickup_amount = 0;
+	int16_t weapon_pickup_amount = 0;
+	int16_t ammo_pickup_amount = 0;
 	
-	short grenade_timer = 0;
+	int16_t grenade_timer = 0;
 
 	bool add_pistol_shell = false;
 	bool add_shotgun_shell = false;
@@ -526,13 +533,13 @@ struct MOD_LEVEL_AMMO_INFO {
 	bool creates_explosion = false;
 	bool creates_super_explosion = false;
 
-	short push_lara_amount = 0;
-	short push_target_amount = 0;
+	int16_t push_lara_amount = 0;
+	int16_t push_target_amount = 0;
 
 	// TRNG-specific
-	short trng_trigger_id_when_enemy_hit = -1;
-	short trng_trigger_id_at_end = -1;
-	short trng_effect = -1;
+	int16_t trng_trigger_id_when_enemy_hit = -1;
+	int16_t trng_trigger_id_at_end = -1;
+	int16_t trng_effect = -1;
 };
 
 struct MOD_LEVEL_WEAPON_INFO {
@@ -560,7 +567,7 @@ struct MOD_LEVEL_MISC_INFO {
 	T4PWeatherType snow_type = T4P_WEATHER_DISABLED;
 
 	bool draw_legend_on_flyby = false;
-	unsigned int legend_timer = 150;
+	int32_t legend_timer = 150;
 	bool lara_impales_on_spikes = false;
 	bool enable_ricochet_sound_effect = false;
 	bool enable_smashing_and_killing_rolling_balls = false;
@@ -575,25 +582,25 @@ struct MOD_LEVEL_MISC_INFO {
 	bool fix_vertical_water_warp = false;
 	// TREP
 	bool trep_switch_maker = false;
-	int trep_switch_on_ocb_1_anim = 0;
-	int trep_switch_off_ocb_1_anim = 0;
-	int trep_switch_on_ocb_2_anim = 0;
-	int trep_switch_off_ocb_2_anim = 0;
-	int trep_switch_on_ocb_3_anim = 0;
-	int trep_switch_off_ocb_3_anim = 0;
-	int trep_switch_on_ocb_4_anim = 0;
-	int trep_switch_off_ocb_4_anim = 0;
-	int trep_switch_on_ocb_5_anim = 0;
-	int trep_switch_off_ocb_5_anim = 0;
-	int trep_switch_on_ocb_6_anim = 0;
-	int trep_switch_off_ocb_6_anim = 0;
+	int32_t trep_switch_on_ocb_1_anim = 0;
+	int32_t trep_switch_off_ocb_1_anim = 0;
+	int32_t trep_switch_on_ocb_2_anim = 0;
+	int32_t trep_switch_off_ocb_2_anim = 0;
+	int32_t trep_switch_on_ocb_3_anim = 0;
+	int32_t trep_switch_off_ocb_3_anim = 0;
+	int32_t trep_switch_on_ocb_4_anim = 0;
+	int32_t trep_switch_off_ocb_4_anim = 0;
+	int32_t trep_switch_on_ocb_5_anim = 0;
+	int32_t trep_switch_off_ocb_5_anim = 0;
+	int32_t trep_switch_on_ocb_6_anim = 0;
+	int32_t trep_switch_off_ocb_6_anim = 0;
 
 	bool enable_teeth_spikes_kill_enemies = false;
 
-	short static_transparency_glass = 128;
-	short static_transparency_ice = 208;
-	short damage_static_interaction = 10;
-	short posion_static_interaction = 256;
+	int16_t static_transparency_glass = 128;
+	int16_t static_transparency_ice = 208;
+	int16_t damage_static_interaction = 10;
+	int16_t poison_static_interaction = 256;
 };
 
 struct MOD_LEVEL_INFO {

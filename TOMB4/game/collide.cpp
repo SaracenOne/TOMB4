@@ -830,7 +830,7 @@ void LaraBaddieCollision(ITEM_INFO* l, COLL_INFO* coll)
 								if ((mesh->Flags & 256)) {
 									if (lara.poisoned == 0 && lara.dpoisoned == 0) {
 										lara.poisoned = 0;
-										lara.dpoisoned = get_game_mod_level_misc_info(gfCurrentLevel)->posion_static_interaction;
+										lara.dpoisoned = get_game_mod_level_misc_info(gfCurrentLevel)->poison_static_interaction;
 									}
 								}
 

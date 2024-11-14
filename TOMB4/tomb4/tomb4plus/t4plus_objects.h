@@ -39,15 +39,20 @@ extern int16_t T4PlusGetSkyGraphicsSlotID();
 extern int16_t T4PlusGetBinocularGraphicsSlotID();
 extern int16_t T4PlusGetTargetGraphicsSlotID();
 
+extern int16_t T4PlusGetLightningConductorTargetSlotID();
+
 extern int16_t T4PlusGetRubberBoatSlotID();
 extern int16_t T4PlusGetMotorBoatSlotID();
 extern int16_t T4PlusGetRubberBoatExtraSlotID();
 extern int16_t T4PlusGetMotorBoatExtraSlotID();
 extern int16_t T4PlusGetLaraDoubleSlotID();
 
-extern int16_t T4PlusGetEnemyJeepSlotID();
-
 extern int16_t T4PlusGetChefSlotID();
+
+extern int16_t T4PlusGetHydraSlotID();
+extern int16_t T4PlusGetHydraMissileSlotID();
+
+extern int16_t T4PlusGetEnemyJeepSlotID();
 
 extern void T4PlusSetupDefaultObjectCustomization();
 

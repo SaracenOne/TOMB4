@@ -507,7 +507,7 @@ void ControlSprinkler(short item_number)
 			sptr->y = (sptr->Yvel >> 5) + item->pos.y_pos - 928;
 			sptr->z = item->pos.z_pos + (sptr->Zvel >> 3);
 			sptr->Friction = 4;
-			sptr->Flags = GetRandomControl() & 0x20;
+			sptr->Flags = GetRandomControl() & SF_NOKILL;
 			sptr->Gravity = (GetRandomControl() & 0x3F) + 64;
 			sptr->MaxYvel = 0;
 		}

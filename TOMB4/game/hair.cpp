@@ -496,7 +496,7 @@ void DrawHair()
 {
 	HAIR_STRUCT* hair;
 	short** meshpp;
-	long ii;
+	int ii;
 
 	size_t hair_count = 0;
 	switch (get_game_mod_level_lara_info(gfCurrentLevel)->hair_type) {
@@ -521,7 +521,7 @@ void DrawHair()
 		}
 	}
 
-	for (size_t i = 0; i < hair_count; i++)
+	for (int i = 0; i < hair_count; i++)
 	{
 		ii = i * 6;
 		meshpp = &meshes[objects[T4PlusGetLaraHairSlotID()].mesh_index];

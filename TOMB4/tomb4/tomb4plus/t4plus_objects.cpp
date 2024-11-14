@@ -129,6 +129,10 @@ int16_t T4PlusGetTargetGraphicsSlotID() {
 	return get_game_mod_level_objects_info(gfCurrentLevel)->target_graphics_slot;
 }
 
+int16_t T4PlusGetLightningConductorTargetSlotID() {
+	return get_game_mod_level_objects_info(gfCurrentLevel)->lightning_conductor_target_slot;
+}
+
 int16_t T4PlusGetRubberBoatSlotID() {
 	return get_game_mod_level_objects_info(gfCurrentLevel)->rubber_boat_slot;
 }
@@ -145,16 +149,24 @@ int16_t T4PlusGetMotorBoatExtraSlotID() {
 	return get_game_mod_level_objects_info(gfCurrentLevel)->motor_boat_extra_slot;
 }
 
+int16_t T4PlusGetHydraSlotID() {
+	return get_game_mod_level_objects_info(gfCurrentLevel)->hydra_slot;
+}
+
+int16_t T4PlusGetHydraMissileSlotID() {
+	return get_game_mod_level_objects_info(gfCurrentLevel)->hydra_missile_slot;
+}
+
+int16_t T4PlusGetChefSlotID() {
+	return get_game_mod_level_objects_info(gfCurrentLevel)->chef_slot;
+}
+
 int16_t T4PlusGetLaraDoubleSlotID() {
 	return get_game_mod_level_objects_info(gfCurrentLevel)->lara_double_slot;
 }
 
 int16_t T4PlusGetEnemyJeepSlotID() {
 	return get_game_mod_level_objects_info(gfCurrentLevel)->enemy_jeep_slot;
-}
-
-int16_t T4PlusGetChefSlotID() {
-	return get_game_mod_level_objects_info(gfCurrentLevel)->chef_slot;
 }
 
 void T4PlusSetupDefaultObjectCustomization() {
