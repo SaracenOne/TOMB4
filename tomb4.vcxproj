@@ -441,6 +441,7 @@
     <ClInclude Include="TOMB4\tomb4\tomb4plus\t4plus_objects.h" />
     <ClInclude Include="TOMB4\tomb4\tomb4plus\t4plus_plugin.h" />
     <ClInclude Include="TOMB4\tomb4\tomb4plus\t4plus_savegame.h" />
+    <ClInclude Include="TOMB4\tomb4\tomb4plus\t4plus_strings.h" />
     <ClInclude Include="TOMB4\tomb4\tomb4plus\t4plus_teleporter.h" />
     <ClInclude Include="TOMB4\tomb4\tomb4plus\t4plus_weather.h" />
     <ClInclude Include="TOMB4\tomb4\troyestuff.h" />
@@ -823,6 +824,9 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../tomb4/pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../tomb4/pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TOMB4\tomb4\tomb4plus\t4plus_strings.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../tomb4/pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="TOMB4\tomb4\tomb4plus\t4plus_teleporter.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../tomb4/pch.h</PrecompiledHeaderFile>

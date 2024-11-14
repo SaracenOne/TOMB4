@@ -3105,7 +3105,7 @@ void AnimateItem(ITEM_INFO* item)
 					else if (item->room_number == 255)
 					{
 						item->pos.x_pos = lara_item->pos.x_pos;
-						item->pos.y_pos = lara_item->pos.y_pos - 762;
+						item->pos.y_pos = lara_item->pos.y_pos - (HALF_BLOCK_SIZE + CLICK_SIZE);
 						item->pos.z_pos = lara_item->pos.z_pos;
 						SoundEffect(num, &item->pos, SFX_DEFAULT);
 					}

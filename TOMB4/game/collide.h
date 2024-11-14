@@ -8,7 +8,7 @@ void GenericSphereBoxCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 void CreatureCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);
 long FindGridShift(long src, long dst);
 short GetTiltType(FLOOR_INFO* floor, long x, long y, long z);
-long CollideStaticObjects(COLL_INFO* coll, long x, long y, long z, short room_number, long hite);
+bool CollideStaticObjects(COLL_INFO* coll, long x, long y, long z, short room_number, long hite);
 void UpdateLaraRoom(ITEM_INFO* item, long height);
 void LaraBaddieCollision(ITEM_INFO* l, COLL_INFO* coll);
 void ObjectCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);

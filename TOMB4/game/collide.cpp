@@ -476,7 +476,7 @@ short GetTiltType(FLOOR_INFO* floor, long x, long y, long z)
 	return 0;
 }
 
-long CollideStaticObjects(COLL_INFO* coll, long x, long y, long z, short room_number, long hite)
+bool CollideStaticObjects(COLL_INFO* coll, long x, long y, long z, short room_number, long hite)
 {
 	ROOM_INFO* r;
 	MESH_INFO* mesh;
@@ -566,12 +566,113 @@ long CollideStaticObjects(COLL_INFO* coll, long x, long y, long z, short room_nu
 			if (lxmax <= xmin || lxmin >= xmax || lymax <= ymin || lymin >= ymax || lzmax <= zmin || lzmin >= zmax)
 				continue;
 
+			// T4Plus - Hard collision:
+			bool uses_hard_collision = get_game_mod_level_statics_info(gfCurrentLevel)->static_info[mesh->static_number].hard_collision;
+			if (uses_hard_collision) {
+				long ls, rs, xs, zs;
+
+				ls = lxmax - xmin;
+				rs = xmax - lxmin;
+				xs = ls >= rs ? rs : -ls;
+
+				ls = lzmax - zmin;
+				rs = zmax - lzmin;
+				zs = ls >= rs ? rs : -ls;
+
+				switch (coll->quadrant)
+				{
+				case NORTH:
+					if (xs > coll->radius || xs < -coll->radius)
+					{
+						coll->shift.x = coll->old.x - x;
+						coll->shift.z = zs;
+						coll->coll_type = CT_FRONT;
+					}
+					else if (xs > 0)
+					{
+						coll->shift.x = xs;
+						coll->shift.z = 0;
+						coll->coll_type = CT_LEFT;
+					}
+					else if (xs < 0)
+					{
+						coll->shift.x = xs;
+						coll->shift.z = 0;
+						coll->coll_type = CT_RIGHT;
+					}
+
+					break;
+				case EAST:
+					if (zs > coll->radius || zs < -coll->radius)
+					{
+						coll->shift.x = xs;
+						coll->shift.z = coll->old.z - z;
+						coll->coll_type = CT_FRONT;
+					}
+					else if (zs > 0)
+					{
+						coll->shift.x = 0;
+						coll->shift.z = zs;
+						coll->coll_type = CT_RIGHT;
+					}
+					else if (zs < 0)
+					{
+						coll->shift.x = 0;
+						coll->shift.z = zs;
+						coll->coll_type = CT_LEFT;
+					}
+					break;
+				case SOUTH:
+					if (xs > coll->radius || xs < -coll->radius)
+					{
+						coll->shift.x = coll->old.x - x;
+						coll->shift.z = zs;
+						coll->coll_type = CT_FRONT;
+					}
+					else if (xs > 0)
+					{
+						coll->shift.x = xs;
+						coll->shift.z = 0;
+						coll->coll_type = CT_RIGHT;
+					}
+					else if (xs < 0)
+					{
+						coll->shift.x = xs;
+						coll->shift.z = 0;
+						coll->coll_type = CT_LEFT;
+					}
+					break;
+				case WEST:
+					if (zs > coll->radius || zs < -coll->radius)
+					{
+						coll->shift.x = xs;
+						coll->shift.z = coll->old.z - z;
+						coll->coll_type = CT_FRONT;
+					}
+					else if (zs > 0)
+					{
+						coll->shift.x = 0;
+						coll->shift.z = zs;
+						coll->coll_type = CT_LEFT;
+					}
+					else if (zs < 0)
+					{
+						coll->shift.x = 0;
+						coll->shift.z = zs;
+						coll->coll_type = CT_RIGHT;
+					}
+
+					break;
+				}
+			}
+
 			coll->hit_static = 1;
-			return 1;
+			return uses_hard_collision;
+
 		}
 	}
 
-	return 0;
+	return false;
 }
 
 void UpdateLaraRoom(ITEM_INFO* item, long height)
@@ -697,7 +798,10 @@ void LaraBaddieCollision(ITEM_INFO* l, COLL_INFO* coll)
 					pos.y_rot = mesh->y_rot;
 
 					if (TestBoundsCollideStatic(bounds, &pos, coll->radius)) {
-						ItemPushLaraStatic(l, bounds, &pos, coll);
+						bool uses_hard_collision = get_game_mod_level_statics_info(gfCurrentLevel)->static_info[mesh->static_number].hard_collision;
+						if (!uses_hard_collision) {
+							ItemPushLaraStatic(l, bounds, &pos, coll);
+						}
 						NGAddLaraStaticCollision(current_room_id, j); // TRNG
 
 						// TRNG
@@ -872,7 +976,7 @@ bool ItemPushLara(ITEM_INFO* item, ITEM_INFO* l, COLL_INFO* coll, long spaz, lon
 	coll->bad_ceiling = 0;
 	facing = coll->facing;
 	coll->facing = (short)phd_atan(l->pos.z_pos - coll->old.z, l->pos.x_pos - coll->old.x);
-	GetCollisionInfo(coll, l->pos.x_pos, l->pos.y_pos, l->pos.z_pos, l->room_number, 762);
+	GetCollisionInfo(coll, l->pos.x_pos, l->pos.y_pos, l->pos.z_pos, l->room_number, (HALF_BLOCK_SIZE + CLICK_SIZE));
 	coll->facing = facing;
 
 	if (coll->coll_type == CT_NONE)
@@ -988,7 +1092,7 @@ long ItemPushLaraStatic(ITEM_INFO* l, short* bounds, PHD_3DPOS* pos, COLL_INFO* 
 	coll->bad_ceiling = 0;
 	facing = coll->facing;
 	coll->facing = (short)phd_atan(l->pos.z_pos - coll->old.z, l->pos.x_pos - coll->old.x);
-	GetCollisionInfo(coll, l->pos.x_pos, l->pos.y_pos, l->pos.z_pos, l->room_number, 762);
+	GetCollisionInfo(coll, l->pos.x_pos, l->pos.y_pos, l->pos.z_pos, l->room_number, (HALF_BLOCK_SIZE + CLICK_SIZE));
 	coll->facing = facing;
 
 	if (coll->coll_type == CT_NONE)
@@ -1442,11 +1546,11 @@ void GetCollisionInfo(COLL_INFO* coll, long x, long y, long z, short room_number
 
 	if (coll->slopes_are_walls && (coll->front_type == BIG_SLOPE || coll->front_type == DIAGONAL) &&
 		coll->front_floor < coll->mid_floor && h < coll->front_floor && coll->front_floor < 0)
-		coll->front_floor = -32767;
+		coll->front_floor = -(0x8000 - 1);
 	else if (coll->slopes_are_pits && (coll->front_type == BIG_SLOPE || coll->front_type == DIAGONAL) && coll->front_floor > coll->mid_floor)
-		coll->front_floor = 512;
+		coll->front_floor = HALF_BLOCK_SIZE;
 	else if (coll->lava_is_pit && coll->front_floor > 0 && trigger_index && (trigger_index[0] & 0x1F) == LAVA_TYPE)
-		coll->front_floor = 512;
+		coll->front_floor = HALF_BLOCK_SIZE;
 
 	/*left*/
 	room_num2 = room_number;
@@ -1468,11 +1572,11 @@ void GetCollisionInfo(COLL_INFO* coll, long x, long y, long z, short room_number
 	coll->left_type = height_type;
 
 	if (coll->slopes_are_walls == 1 && (coll->left_type == BIG_SLOPE || coll->left_type == DIAGONAL) && coll->left_floor < 0)
-		coll->left_floor = -32767;
+		coll->left_floor = -(0x8000 - 1);
 	else if (coll->slopes_are_pits && (coll->left_type == BIG_SLOPE || coll->left_type == DIAGONAL) && coll->left_floor > 0)
-		coll->left_floor = 512;
+		coll->left_floor = HALF_BLOCK_SIZE;
 	else if (coll->lava_is_pit && coll->left_floor > 0 && trigger_index && (trigger_index[0] & 0x1F) == LAVA_TYPE)
-		coll->left_floor = 512;
+		coll->left_floor = HALF_BLOCK_SIZE;
 
 	floor = GetFloor(tx, yT, tz, &room_num);
 	h = GetHeight(floor, tx, yT, tz);
@@ -1490,11 +1594,11 @@ void GetCollisionInfo(COLL_INFO* coll, long x, long y, long z, short room_number
 	coll->left_type2 = height_type;
 
 	if (coll->slopes_are_walls == 1 && (coll->left_type2 == BIG_SLOPE || coll->left_type2 == DIAGONAL) && coll->left_floor2 < 0)
-		coll->left_floor2 = -32767;
+		coll->left_floor2 = -(0x8000 - 1);
 	else if (coll->slopes_are_pits && (coll->left_type2 == BIG_SLOPE || coll->left_type2 == DIAGONAL) && coll->left_floor2 > 0)
-		coll->left_floor2 = 512;
+		coll->left_floor2 = HALF_BLOCK_SIZE;
 	else if (coll->lava_is_pit && coll->left_floor2 > 0 && trigger_index && (trigger_index[0] & 0x1F) == LAVA_TYPE)
-		coll->left_floor2 = 512;
+		coll->left_floor2 = HALF_BLOCK_SIZE;
 
 	/*right*/
 	room_num2 = room_number;
@@ -1516,11 +1620,11 @@ void GetCollisionInfo(COLL_INFO* coll, long x, long y, long z, short room_number
 	coll->right_type = height_type;
 
 	if (coll->slopes_are_walls == 1 && (coll->right_type == BIG_SLOPE || coll->right_type == DIAGONAL) && coll->right_floor < 0)
-		coll->right_floor = -32767;
+		coll->right_floor = -(0x8000 - 1);
 	else if (coll->slopes_are_pits && (coll->right_type == BIG_SLOPE || coll->right_type == DIAGONAL) && coll->right_floor > 0)
-		coll->right_floor = 512;
+		coll->right_floor = HALF_BLOCK_SIZE;
 	else if (coll->lava_is_pit && coll->right_floor > 0 && trigger_index && (trigger_index[0] & 0x1F) == LAVA_TYPE)
-		coll->right_floor = 512;
+		coll->right_floor = HALF_BLOCK_SIZE;
 
 	floor = GetFloor(tx, yT, tz, &room_num);
 	h = GetHeight(floor, tx, yT, tz);
@@ -1558,7 +1662,18 @@ void GetCollisionInfo(COLL_INFO* coll, long x, long y, long z, short room_number
 	GetHeight(floor, tx, yT, tz);
 	GetCeiling(floor, tx, yT, tz);
 
-	CollideStaticObjects(coll, x, y, z, room_number, hite);
+	if (CollideStaticObjects(coll, x, y, z, room_number, hite)) {
+		tx = x + coll->shift.x;
+		tz = z + coll->shift.z;
+		floor = GetFloor(tx, y, tz, &room_num);
+		h = GetHeight(floor, tx, y, tz);
+		c = GetCeiling(floor, tx, y, tz);
+
+		if (h < y - HALF_BLOCK_SIZE || c > y - hite) {
+			coll->shift.x = -coll->shift.x;
+			coll->shift.z = -coll->shift.z;
+		}
+	}
 
 	if (coll->mid_floor == NO_HEIGHT)
 	{

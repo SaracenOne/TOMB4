@@ -321,9 +321,9 @@ static long TestBlockPull(ITEM_INFO* item, long height, ushort quadrant)
 	if (GetHeight(floor, x, y - CLICK_SIZE, z) != y)
 		return 0;
 
-	floor = GetFloor(x, y - 762, z, &room_number);
+	floor = GetFloor(x, y - (HALF_BLOCK_SIZE + CLICK_SIZE), z, &room_number);
 
-	if (floor->ceiling << 8 > y - 762)
+	if (floor->ceiling << 8 > y - (HALF_BLOCK_SIZE + CLICK_SIZE))
 		return 0;
 
 	x = lara_item->pos.x_pos + destx;

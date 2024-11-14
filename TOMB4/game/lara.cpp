@@ -801,7 +801,7 @@ short LaraFloorFront(ITEM_INFO* item, short ang, long dist)
 
 	room_num = item->room_number;
 	x = item->pos.x_pos + ((dist * phd_sin(ang)) >> W2V_SHIFT);
-	y = item->pos.y_pos - 762;
+	y = item->pos.y_pos - (HALF_BLOCK_SIZE + CLICK_SIZE);
 	z = item->pos.z_pos + ((dist * phd_cos(ang)) >> W2V_SHIFT);
 	height = GetHeight(GetFloor(x, y, z, &room_num), x, y, z);
 
@@ -1613,7 +1613,7 @@ void lara_col_dash(ITEM_INFO* item, COLL_INFO* coll)
 void GetLaraCollisionInfo(ITEM_INFO* item, COLL_INFO* coll)
 {
 	coll->facing = lara.move_angle;
-	GetCollisionInfo(coll, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, 762);
+	GetCollisionInfo(coll, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, HALF_BLOCK_SIZE + CLICK_SIZE);
 }
 
 void lara_as_dashdive(ITEM_INFO* item, COLL_INFO* coll)
@@ -3678,17 +3678,17 @@ void lara_as_stop(ITEM_INFO* item, COLL_INFO* coll)
 		if (input & IN_LSTEP)
 		{
 			height = LaraFloorFront(item, item->pos.y_rot - 0x4000, 116);
-			ceiling = LaraCeilingFront(item, item->pos.y_rot - 0x4000, 116, 762);
+			ceiling = LaraCeilingFront(item, item->pos.y_rot - 0x4000, 116, (HALF_BLOCK_SIZE + CLICK_SIZE));
 
-			if (height < 128 && height > -128 && height_type != BIG_SLOPE && ceiling <= 0)
+			if (height < HALF_CLICK_SIZE && height > -128 && height_type != BIG_SLOPE && ceiling <= 0)
 				item->goal_anim_state = AS_STEPLEFT;
 		}
 		else if (input & IN_RSTEP)
 		{
 			height = LaraFloorFront(item, item->pos.y_rot + 0x4000, 116);
-			ceiling = LaraCeilingFront(item, item->pos.y_rot + 0x4000, 116, 762);
+			ceiling = LaraCeilingFront(item, item->pos.y_rot + 0x4000, 116, (HALF_BLOCK_SIZE + CLICK_SIZE));
 
-			if (height < 128 && height > -128 && height_type != BIG_SLOPE && ceiling <= 0)
+			if (height < HALF_CLICK_SIZE && height > -128 && height_type != BIG_SLOPE && ceiling <= 0)
 				item->goal_anim_state = AS_STEPRIGHT;
 		}
 		else if (input & IN_LEFT)
@@ -3741,7 +3741,7 @@ void lara_as_stop(ITEM_INFO* item, COLL_INFO* coll)
 		item->goal_anim_state = AS_COMPRESS;
 	else if (input & IN_FORWARD)
 	{
-		ceiling = LaraCeilingFront(item, item->pos.y_rot, 104, 762);
+		ceiling = LaraCeilingFront(item, item->pos.y_rot, 104, (HALF_BLOCK_SIZE + CLICK_SIZE));
 		height = LaraFloorFront(item, item->pos.y_rot, 104);
 
 		if ((height_type == BIG_SLOPE || height_type == DIAGONAL) && height < 0 || ceiling > 0)
@@ -4314,7 +4314,7 @@ void lara_col_poledown(ITEM_INFO* item, COLL_INFO* coll)
 	{
 		room_number = item->room_number;
 		item->floor = GetHeight(GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number),
-			item->pos.x_pos, item->pos.y_pos - 762, item->pos.z_pos);
+			item->pos.x_pos, item->pos.y_pos - (HALF_BLOCK_SIZE + CLICK_SIZE), item->pos.z_pos);
 		item->goal_anim_state = AS_POLESTAT;
 		item->item_flags[2] = 0;
 	}

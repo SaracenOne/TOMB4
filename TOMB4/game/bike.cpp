@@ -340,12 +340,12 @@ static long CanGetOff(short num)	//always called with num = 1
 
 	c = GetCeiling(floor, x, y, z);
 
-	if (c - item->pos.y_pos > -762 || h - c < 762)
+	if (c - item->pos.y_pos > -(HALF_BLOCK_SIZE + CLICK_SIZE) || h - c < (HALF_BLOCK_SIZE + CLICK_SIZE))
 		return 0;
 
-	x = item->pos.x_pos + (128 * phd_sin(yrot) >> W2V_SHIFT);
+	x = item->pos.x_pos + (HALF_CLICK_SIZE * phd_sin(yrot) >> W2V_SHIFT);
 	y = item->pos.y_pos;
-	z = item->pos.z_pos + (128 * phd_sin(yrot) >> W2V_SHIFT);
+	z = item->pos.z_pos + (HALF_CLICK_SIZE * phd_sin(yrot) >> W2V_SHIFT);
 	floor = GetFloor(x, y, z, &room_number);
 	h = GetHeight(floor, x, y, z);
 

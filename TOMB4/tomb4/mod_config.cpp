@@ -867,9 +867,10 @@ void SetupDefaultStaticsInfoForLevel(MOD_LEVEL_INFO* level_info) {
 
             level_info->statics_info.static_info[i].creatures_can_shatter = true;
             level_info->statics_info.static_info[i].record_shatter_state_in_savegames = true;
-            level_info->statics_info.static_info[i].hard_collision = false;
             level_info->statics_info.static_info[i].shatter_sound_id = SFX_HIT_ROCK;
         }
+
+        level_info->statics_info.static_info[i].hard_collision = false;
     }
 }
 
