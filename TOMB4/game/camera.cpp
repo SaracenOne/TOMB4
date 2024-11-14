@@ -1359,8 +1359,8 @@ void BinocularCamera(ITEM_INFO* item)
 	floor = GetFloor(pos1.x, pos1.y, pos1.z, &room_number);
 	c = GetCeiling(floor, pos1.x, pos1.y, pos1.z);
 
-	if (c <= pos1.y - (HALF_CLICK_SIZE + CLICK_SIZE))
-		pos1.y -= (HALF_CLICK_SIZE + CLICK_SIZE);
+	if (c <= pos1.y - (HALF_BLOCK_SIZE + CLICK_SIZE))
+		pos1.y -= (HALF_BLOCK_SIZE + CLICK_SIZE);
 	else
 		pos1.y += QUARTER_CLICK_SIZE;
 
