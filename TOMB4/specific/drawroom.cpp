@@ -363,6 +363,15 @@ void ProcessRoomData(ROOM_INFO* r, bool multi_colour_fog)
 		data_ptr[1] = faces[data_ptr[1]] & 0x7FFF;
 		data_ptr[2] = faces[data_ptr[2]] & 0x7FFF;
 		data_ptr[3] = faces[data_ptr[3]] & 0x7FFF;
+
+		// TRNG: texture fix
+		if (data_ptr[0] < nWaterVerts + nShoreVerts ||
+			data_ptr[1] < nWaterVerts + nShoreVerts ||
+			data_ptr[2] < nWaterVerts + nShoreVerts ||
+			data_ptr[3] < nWaterVerts + nShoreVerts) {
+			data_ptr[4] = data_ptr[4] & 0xBFFF;
+		}
+
 		data_ptr += 5;	//onto the next quad
 	}
 
@@ -373,6 +382,14 @@ void ProcessRoomData(ROOM_INFO* r, bool multi_colour_fog)
 		data_ptr[0] = faces[data_ptr[0]] & 0x7FFF;
 		data_ptr[1] = faces[data_ptr[1]] & 0x7FFF;
 		data_ptr[2] = faces[data_ptr[2]] & 0x7FFF;
+
+		// TRNG: texture fix
+		if (data_ptr[0] < nWaterVerts + nShoreVerts ||
+			data_ptr[1] < nWaterVerts + nShoreVerts ||
+			data_ptr[2] < nWaterVerts + nShoreVerts) {
+			data_ptr[3] = data_ptr[3] & 0xBFFF;
+		}
+
 		data_ptr += 4;
 	}
 
@@ -549,7 +566,8 @@ void InsertRoom(ROOM_INFO* r)
 
 		for (int i = 0; i < numQuads; i++, data += 5)
 		{
-			pTex = &textinfo[data[4] & 0x3FFF];
+			// TRNG: use full textinfo mask range.
+			pTex = &textinfo[data[4] & 0x7FFF];
 			doublesided = (data[4] >> 15) & 1;
 
 			if (!pTex->drawtype)
@@ -562,7 +580,8 @@ void InsertRoom(ROOM_INFO* r)
 
 		for (int i = 0; i < numTris; i++, data += 4)
 		{
-			pTex = &textinfo[data[3] & 0x3FFF];
+			// TRNG: use full textinfo mask range.
+			pTex = &textinfo[data[3] & 0x7FFF];
 			doublesided = (data[3] >> 15) & 1;
 
 			if (!pTex->drawtype)
