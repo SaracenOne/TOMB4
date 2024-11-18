@@ -7,7 +7,7 @@
 #define MAX_NG_PLUGINS 256
 
 #define NG_DEFINE_RECORD(CLASS_NAME) struct CLASS_NAME##_RECORD { \
-	unsigned short record_id = 0; \
+	uint16_t record_id = 0; \
 	CLASS_NAME record; \
 };
 
@@ -16,8 +16,8 @@
 
 struct NG_PLUGIN {
 	bool is_enabled = false;
-	int ng_plugin_string_id = 0;
-	int t4plus_plugin = -1;
+	int32_t ng_plugin_string_id = 0;
+	int32_t t4plus_plugin = -1;
 };
 
 enum NG_PARAM_ENUMS {
@@ -201,7 +201,7 @@ struct NG_TRIGGER_GROUP_DATA {
 
 #define NG_TRIGGER_GROUP_DATA_SIZE 0xff
 struct NG_TRIGGER_GROUP {
-	int data_size = 0;
+	int32_t data_size = 0;
 	NG_TRIGGER_GROUP_DATA data[NG_TRIGGER_GROUP_DATA_SIZE] = {};
 
 	bool oneshot_triggered = false;
@@ -209,88 +209,88 @@ struct NG_TRIGGER_GROUP {
 };
 
 struct NG_ORGANIZER_APPOINTMENT {
-	unsigned int time = 0;
-	unsigned short trigger_group = 0;
+	int32_t time = 0;
+	int16_t trigger_group = 0;
 };
 
 #define NG_ORGANIZER_MAX_APPOINTMENTS 4096
 struct NG_ORGANIZER {
-	short flags = 0;
-	short parameters = 0; // Unused
-	unsigned int appointment_count = 0;
+	int16_t flags = 0;
+	int16_t parameters = 0; // Unused
+	uint32_t appointment_count = 0;
 	NG_ORGANIZER_APPOINTMENT appointments[NG_ORGANIZER_MAX_APPOINTMENTS] = {};
 };
 
 #define NG_ITEM_GROUP_MAX_LIST 4096
 struct NG_ITEM_GROUP {
-	short item_count = 0;
-	short item_list[NG_ITEM_GROUP_MAX_LIST] = {};
+	int16_t item_count = 0;
+	int16_t item_list[NG_ITEM_GROUP_MAX_LIST] = {};
 };
 
 #define NG_ANIMATION_CONDTION_MAX_SIZE 4096
 struct NG_ANIMATION {
-	unsigned short animation_index = 0;
-	unsigned short key_1 = 0;
-	unsigned short key_2 = 0;
-	unsigned short fan_flags = 0;
+	uint16_t animation_index = 0;
+	uint16_t key_1 = 0;
+	uint16_t key_2 = 0;
+	uint16_t fan_flags = 0;
 	NG_MULTI_ENV_TRIPLET environment = {};
-	unsigned short state_or_animation_condition_count = 0;
-	short state_or_animation_condition_array[NG_ANIMATION_CONDTION_MAX_SIZE] = {};
+	uint16_t state_or_animation_condition_count = 0;
+	int16_t state_or_animation_condition_array[NG_ANIMATION_CONDTION_MAX_SIZE] = {};
 };
 
 #define NG_MULTI_ENV_CONDITION_MAX_TRIPLETS 128
 struct NG_MULTI_ENV_CONDITION {
-	int env_condition_triplet_count = 0;
+	int32_t env_condition_triplet_count = 0;
 	NG_MULTI_ENV_TRIPLET env_condition_triplet_array[NG_MULTI_ENV_CONDITION_MAX_TRIPLETS] = {};
 };
 
 struct NG_TEST_POSITION {
-	unsigned short flags = 0;
-	unsigned short moveable_slot = 0;
-	short x_distance_min = 0;
-	short x_distance_max = 0;
-	short y_distance_min = 0;
-	short y_distance_max = 0;
-	short z_distance_min = 0;
-	short z_distance_max = 0;
-	short h_orient_diff_min = 0;
-	short h_orient_diff_max = 0;
-	short v_orient_diff_min = 0;
-	short v_orient_diff_max = 0;
-	short r_orient_diff_min = 0;
-	short r_orient_diff_max = 0;
+	uint16_t flags = 0;
+	uint16_t moveable_slot = 0;
+	int16_t x_distance_min = 0;
+	int16_t x_distance_max = 0;
+	int16_t y_distance_min = 0;
+	int16_t y_distance_max = 0;
+	int16_t z_distance_min = 0;
+	int16_t z_distance_max = 0;
+	int16_t h_orient_diff_min = 0;
+	int16_t h_orient_diff_max = 0;
+	int16_t v_orient_diff_min = 0;
+	int16_t v_orient_diff_max = 0;
+	int16_t r_orient_diff_min = 0;
+	int16_t r_orient_diff_max = 0;
 };
 
 // Params
 struct NG_MOVE_ITEM {
-	unsigned short flags = 0;
-	unsigned short index_item = 0;
-	unsigned short direction = 0;
-	unsigned short distance = 0;
-	unsigned short speed = 0;
-	short moving_sound = 0;
-	short final_sound = 0;
-	short extra = 0;
+	uint16_t flags = 0;
+	uint16_t index_item = 0;
+	uint16_t direction = 0;
+	uint16_t distance = 0;
+	uint16_t speed = 0;
+	int16_t moving_sound = 0;
+	int16_t final_sound = 0;
+	int16_t extra = 0;
 };
 
 struct NG_ROTATE_ITEM {
-	unsigned short flags = 0;
-	unsigned short index_item = 0;
+	uint16_t flags = 0;
+	uint16_t index_item = 0;
 
-	unsigned short dir_h_rotation = 0;
-	unsigned short h_rotation_angle = 0;
-	unsigned short speed_h_rotation = 0;
+	uint16_t dir_h_rotation = 0;
+	uint16_t h_rotation_angle = 0;
+	uint16_t speed_h_rotation = 0;
 
-	unsigned short dir_v_rotation = 0;
-	unsigned short v_rotation_angle = 0;
-	unsigned short speed_v_rotation = 0;
+	uint16_t dir_v_rotation = 0;
+	uint16_t v_rotation_angle = 0;
+	uint16_t speed_v_rotation = 0;
 
-	short moving_sound = 0;
-	short final_sound = 0;
+	int16_t moving_sound = 0;
+	int16_t final_sound = 0;
 };
 
 struct NG_BIG_NUMBER {
-	unsigned short big_number = 0;
+	uint16_t big_number = 0;
 };
 
 NG_DEFINE_RECORD(NG_GLOBAL_TRIGGER);
@@ -322,18 +322,18 @@ struct NG_LEVEL_RECORD_DATA {
 };
 
 struct NG_LEVEL_RECORD_TABLES {
-	unsigned int level_global_trigger_count = 0;
-	unsigned int level_trigger_group_count = 0;
-	unsigned int level_organizer_count = 0;
-	unsigned int level_item_group_count = 0;
-	unsigned int level_animation_count = 0;
-	unsigned int level_multi_env_condition_count = 0;
-	unsigned int level_test_position_count = 0;
+	uint32_t level_global_trigger_count = 0;
+	uint32_t level_trigger_group_count = 0;
+	uint32_t level_organizer_count = 0;
+	uint32_t level_item_group_count = 0;
+	uint32_t level_animation_count = 0;
+	uint32_t level_multi_env_condition_count = 0;
+	uint32_t level_test_position_count = 0;
 
 	// Params
-	unsigned int level_move_item_count = 0;
-	unsigned int level_rotate_item_count = 0;
-	unsigned int level_big_number_count = 0;
+	uint32_t level_move_item_count = 0;
+	uint32_t level_rotate_item_count = 0;
+	uint32_t level_big_number_count = 0;
 
 	NG_GLOBAL_TRIGGER_RECORD* level_global_triggers_table = NULL;
 	NG_TRIGGER_GROUP_RECORD* level_trigger_group_table = NULL;
@@ -384,12 +384,12 @@ extern NG_MOVE_ITEM current_move_items[MAX_NG_MOVE_ITEMS];
 extern NG_ROTATE_ITEM current_rotate_items[MAX_NG_ROTATE_ITEMS];
 extern NG_BIG_NUMBER current_big_numbers[MAX_NG_BIG_NUMBERS];
 
-extern char *NGGetString(short string_id);
-extern char *NGGetPluginString(short plugin_id);
-extern int NGGetT4PluginID(short plugin_id);
+extern char *NGGetString(int16_t string_id);
+extern char *NGGetPluginString(int16_t plugin_id);
+extern int32_t NGGetT4PluginID(int16_t plugin_id);
 
 extern void NGScriptInit(char* gfScriptFile, size_t offset, size_t len);
 extern void NGScriptCleanup();
-extern void NGLoadTablesForLevel(unsigned int level);
+extern void NGLoadTablesForLevel(uint32_t level);
 extern void NGReadNGGameflowInfo(char* gfScriptFile, size_t offset, size_t len);
 extern void NGReadNGExtraStrings(char* gfLanguageFile, size_t offset, size_t len);

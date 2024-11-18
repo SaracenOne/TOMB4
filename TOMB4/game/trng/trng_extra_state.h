@@ -7,7 +7,7 @@
 #define NG_MAX_TRIGGERED_ITEMS 128
 extern bool ng_loaded_savegame;
 
-extern short ng_camera_target_id;
+extern int16_t ng_camera_target_id;
 
 enum NGTimerTrackerType {
 	TTT_ONLY_SHOW_SECONDS = 0,
@@ -38,14 +38,14 @@ struct NG_TRIGGER_GROUP_STATE {
 
 struct NG_ORGANIZER_STATE {
 	bool is_enabled = false;
-	int current_tick = 0;
+	int32_t current_tick = 0;
 };
 
 extern NG_GLOBAL_TRIGGER_STATE ng_global_trigger_states[MAX_NG_GLOBAL_TRIGGERS];
 extern NG_TRIGGER_GROUP_STATE ng_trigger_group_states[MAX_NG_TRIGGER_GROUPS];
 extern NG_ORGANIZER_STATE ng_organizer_states[MAX_NG_ORGANIZERS];
 
-extern int ng_looped_sound_state[NumSamples];
+extern int32_t ng_looped_sound_state[NumSamples];
 
 extern bool ng_lara_infinite_air;
 
@@ -65,38 +65,38 @@ enum NGTimerPosition {
 	NG_TIMER_POSITION_DOWN_RIGHT_BARS,
 };
 
-extern int ng_animation_current_animation;
-extern short ng_animation_prev_hands_state;
-extern int ng_animation_target_item;
-extern int ng_animation_target_test_position;
+extern int32_t ng_animation_current_animation;
+extern int16_t ng_animation_prev_hands_state;
+extern int32_t ng_animation_target_item;
+extern int32_t ng_animation_target_test_position;
 
-extern int ng_global_timer;
-extern char ng_global_timer_frame_increment;
+extern int32_t ng_global_timer;
+extern int8_t ng_global_timer_frame_increment;
 extern NGTimerPosition ng_global_timer_position;
-extern int ng_global_timer_time_until_hide;
+extern int32_t ng_global_timer_time_until_hide;
 
-extern int ng_local_timer;
-extern char ng_local_timer_frame_increment;
+extern int32_t ng_local_timer;
+extern int8_t ng_local_timer_frame_increment;
 extern NGTimerPosition ng_local_timer_position;
-extern int ng_local_timer_time_until_hide;
+extern int32_t ng_local_timer_time_until_hide;
 
 // Level
-extern int pending_level_load_timer;
-extern int pending_level_load_id;
+extern int32_t pending_level_load_timer;
+extern int32_t pending_level_load_id;
 
 // Variables
-extern int ng_current_value;
-extern int ng_global_alfa;
-extern int ng_global_beta;
-extern int ng_global_delta;
-extern int ng_local_alfa;
-extern int ng_local_beta;
-extern int ng_local_delta;
-extern int ng_last_input_number;
+extern int32_t ng_current_value;
+extern int32_t ng_global_alfa;
+extern int32_t ng_global_beta;
+extern int32_t ng_global_delta;
+extern int32_t ng_local_alfa;
+extern int32_t ng_local_beta;
+extern int32_t ng_local_delta;
+extern int32_t ng_last_input_number;
 
 // Inventory
-extern unsigned char ng_selected_inventory_item_memory;
-extern int ng_used_inventory_object_for_frame;
+extern uint8_t ng_selected_inventory_item_memory;
+extern int32_t ng_used_inventory_object_for_frame;
 extern bool ng_used_large_medipack;
 extern bool ng_used_small_medipack;
 
@@ -105,114 +105,114 @@ extern void NGSetupLevelExtraState();
 extern void NGFrameStartExtraState();
 extern void NGFrameFinishExtraState();
 
-extern int NGValidateInputAgainstLockTimers(int32_t input);
-extern int NGApplySimulatedInput(int32_t input);
+extern int32_t NGValidateInputAgainstLockTimers(int32_t input);
+extern int32_t NGApplySimulatedInput(int32_t input);
 extern bool NGValidateInputSavegame();
 extern bool NGValidateInputLoadgame();
 extern bool NGValidateInputWeaponHotkeys();
 
-extern void NGDisableInputForTime(unsigned char input, int ticks);
-extern void NGSimulateInputForTime(unsigned char input, int ticks);
-extern void NGEnableInput(unsigned char input);
+extern void NGDisableInputForTime(uint8_t input, int32_t ticks);
+extern void NGSimulateInputForTime(uint8_t input, int32_t ticks);
+extern void NGEnableInput(uint8_t input);
 
-extern bool NGIsItemFrozen(unsigned int item_num);
-extern void NGSetItemFreezeTimer(unsigned int item_num, int ticks);
+extern bool NGIsItemFrozen(uint32_t item_num);
+extern void NGSetItemFreezeTimer(uint32_t item_num, int32_t ticks);
 
 // Moveables
 
-extern bool NGIsItemPerformingContinousAction(unsigned int item_num);
-extern bool NGIsItemPerformingRotation(unsigned int item_num);
-extern bool NGIsItemPerformingMovement(unsigned int item_num);
+extern bool NGIsItemPerformingContinousAction(uint32_t item_num);
+extern bool NGIsItemPerformingRotation(uint32_t item_num);
+extern bool NGIsItemPerformingMovement(uint32_t item_num);
 
-extern short NGGetItemHorizontalRotationSpeed(unsigned int item_num);
-extern void NGSetItemHorizontalRotationSpeed(unsigned int item_num, short speed);
-extern short NGGetItemVerticalRotationSpeed(unsigned int item_num);
-extern void NGSetItemVerticalRotationSpeed(unsigned int item_num, short speed);
+extern int16_t NGGetItemHorizontalRotationSpeed(uint32_t item_num);
+extern void NGSetItemHorizontalRotationSpeed(uint32_t item_num, int16_t speed);
+extern int16_t NGGetItemVerticalRotationSpeed(uint32_t item_num);
+extern void NGSetItemVerticalRotationSpeed(uint32_t item_num, int16_t speed);
 
-extern int NGGetItemHorizontalRotationRemaining(unsigned int item_num);
-extern void NGSetItemHorizontalRotationRemaining(unsigned int item_num, int remaining);
-extern int NGGetItemVerticalRotationRemaining(unsigned int item_num);
-extern void NGSetItemVerticalRotationRemaining(unsigned int item_num, int remaining);
+extern int32_t NGGetItemHorizontalRotationRemaining(uint32_t item_num);
+extern void NGSetItemHorizontalRotationRemaining(uint32_t item_num, int32_t remaining);
+extern int32_t NGGetItemVerticalRotationRemaining(uint32_t item_num);
+extern void NGSetItemVerticalRotationRemaining(uint32_t item_num, int32_t remaining);
 
-extern void NGSetItemHorizontalMovementAngle(unsigned int item_num, short angle);
-extern short NGGetItemHorizontalMovementAngle(unsigned int item_num);
+extern void NGSetItemHorizontalMovementAngle(uint32_t item_num, int16_t angle);
+extern int16_t NGGetItemHorizontalMovementAngle(uint32_t item_num);
 
-extern int NGGetItemHorizontalMovementRemainingUnits(unsigned int item_num);
-extern void NGSetItemHorizontalMovementRemainingUnits(unsigned int item_num, int units);
+extern int32_t NGGetItemHorizontalMovementRemainingUnits(uint32_t item_num);
+extern void NGSetItemHorizontalMovementRemainingUnits(uint32_t item_num, int32_t units);
 
-extern int NGGetItemVerticalMovementRemainingUnits(unsigned int item_num);
-extern void NGSetItemVerticalMovementRemainingUnits(unsigned int item_num, int units);
+extern int32_t NGGetItemVerticalMovementRemainingUnits(uint32_t item_num);
+extern void NGSetItemVerticalMovementRemainingUnits(uint32_t item_num, int32_t units);
 
-extern int NGGetItemHorizontalMovementRepeatUnits(unsigned int item_num);
-extern void NGSetItemHorizontalMovementRepeatUnits(unsigned int item_num, int units);
+extern int32_t NGGetItemHorizontalMovementRepeatUnits(uint32_t item_num);
+extern void NGSetItemHorizontalMovementRepeatUnits(uint32_t item_num, int32_t units);
 
-extern int NGGetItemVerticalMovementRepeatUnits(unsigned int item_num);
-extern void NGSetItemVerticalMovementRepeatUnits(unsigned int item_num, int units);
+extern int32_t NGGetItemVerticalMovementRepeatUnits(uint32_t item_num);
+extern void NGSetItemVerticalMovementRepeatUnits(uint32_t item_num, int32_t units);
 
-extern int NGGetItemHorizontalMovementSpeed(unsigned int item_num);
-extern void NGSetItemHorizontalMovementSpeed(unsigned int item_num, unsigned int movement_speed);
-extern int NGGetItemVerticalMovementSpeed(unsigned int item_num);
-extern void NGSetItemVerticalMovementSpeed(unsigned int item_num, unsigned int movement_speed);
+extern int32_t NGGetItemHorizontalMovementSpeed(uint32_t item_num);
+extern void NGSetItemHorizontalMovementSpeed(uint32_t item_num, uint32_t movement_speed);
+extern int32_t NGGetItemVerticalMovementSpeed(uint32_t item_num);
+extern void NGSetItemVerticalMovementSpeed(uint32_t item_num, uint32_t movement_speed);
 
-extern int NGGetItemMovementInProgressSound(unsigned int item_num);
-extern void NGSetItemMovementInProgressSound(unsigned int item_num, int sound_effect_id);
-extern void NGSetItemMovementFinishedSound(unsigned int item_num, int sound_effect_id);
-extern int NGGetItemMovementFinishedSound(unsigned int item_num);
+extern int32_t NGGetItemMovementInProgressSound(uint32_t item_num);
+extern void NGSetItemMovementInProgressSound(uint32_t item_num, int32_t sound_effect_id);
+extern void NGSetItemMovementFinishedSound(uint32_t item_num, int32_t sound_effect_id);
+extern int32_t NGGetItemMovementFinishedSound(uint32_t item_num);
 
-extern bool NGGetItemMovementTriggerHeavyAtEnd(unsigned int item_num);
-extern void NGSetItemMovementTriggerHeavyAtEnd(unsigned int item_num, bool trigger_heavy_at_end);
-extern bool NGGetItemMovementTriggerNormalWhenMoving(unsigned int item_num);
-extern void NGSetItemMovementTriggerNormalWhenMoving(unsigned int item_num, bool trigger_normal_when_moving);
-extern bool NGGetItemMovementTriggerHeavyWhenMoving(unsigned int item_num);
-extern void NGSetItemMovementTriggerHeavyWhenMoving(unsigned int item_num, bool trigger_heavy_when_moving);
+extern bool NGGetItemMovementTriggerHeavyAtEnd(uint32_t item_num);
+extern void NGSetItemMovementTriggerHeavyAtEnd(uint32_t item_num, bool trigger_heavy_at_end);
+extern bool NGGetItemMovementTriggerNormalWhenMoving(uint32_t item_num);
+extern void NGSetItemMovementTriggerNormalWhenMoving(uint32_t item_num, bool trigger_normal_when_moving);
+extern bool NGGetItemMovementTriggerHeavyWhenMoving(uint32_t item_num);
+extern void NGSetItemMovementTriggerHeavyWhenMoving(uint32_t item_num, bool trigger_heavy_when_moving);
 
 // Statics
 
-extern bool NGIsStaticPerformingContinousAction(unsigned int static_num);
-extern bool NGIsStaticPerformingRotation(unsigned int static_num);
-extern bool NGIsStaticPerformingMovement(unsigned int static_num);
+extern bool NGIsStaticPerformingContinousAction(uint32_t static_num);
+extern bool NGIsStaticPerformingRotation(uint32_t static_num);
+extern bool NGIsStaticPerformingMovement(uint32_t static_num);
 
-extern short NGGetStaticHorizontalRotationSpeed(unsigned int static_num);
-extern void NGSetStaticHorizontalRotationSpeed(unsigned int static_num, short speed);
-extern short NGGetStaticVerticalRotationSpeed(unsigned int static_num);
-extern void NGSetStaticVerticalRotationSpeed(unsigned int static_num, short speed);
+extern int16_t NGGetStaticHorizontalRotationSpeed(uint32_t static_num);
+extern void NGSetStaticHorizontalRotationSpeed(uint32_t static_num, int16_t speed);
+extern int16_t NGGetStaticVerticalRotationSpeed(uint32_t static_num);
+extern void NGSetStaticVerticalRotationSpeed(uint32_t static_num, int16_t speed);
 
-extern int NGGetStaticHorizontalRotationRemaining(unsigned int static_num);
-extern void NGSetStaticHorizontalRotationRemaining(unsigned int static_num, int remaining);
-extern int NGGetStaticVerticalRotationRemaining(unsigned int static_num);
-extern void NGSetStaticVerticalRotationRemaining(unsigned int static_num, int remaining);
+extern int32_t NGGetStaticHorizontalRotationRemaining(uint32_t static_num);
+extern void NGSetStaticHorizontalRotationRemaining(uint32_t static_num, int32_t remaining);
+extern int32_t NGGetStaticVerticalRotationRemaining(uint32_t static_num);
+extern void NGSetStaticVerticalRotationRemaining(uint32_t static_num, int32_t remaining);
 
-extern void NGSetStaticHorizontalMovementAngle(unsigned int static_num, short angle);
-extern short NGGetStaticHorizontalMovementAngle(unsigned int static_num);
+extern void NGSetStaticHorizontalMovementAngle(uint32_t static_num, int16_t angle);
+extern int16_t NGGetStaticHorizontalMovementAngle(uint32_t static_num);
 
-extern int NGGetStaticHorizontalMovementRemainingUnits(unsigned int static_num);
-extern void NGSetStaticHorizontalMovementRemainingUnits(unsigned int static_num, int units);
+extern int32_t NGGetStaticHorizontalMovementRemainingUnits(uint32_t static_num);
+extern void NGSetStaticHorizontalMovementRemainingUnits(uint32_t static_num, int32_t units);
 
-extern int NGGetStaticVerticalMovementRemainingUnits(unsigned int static_num);
-extern void NGSetStaticVerticalMovementRemainingUnits(unsigned int static_num, int units);
+extern int32_t NGGetStaticVerticalMovementRemainingUnits(uint32_t static_num);
+extern void NGSetStaticVerticalMovementRemainingUnits(uint32_t static_num, int32_t units);
 
-extern int NGGetStaticHorizontalMovementRepeatUnits(unsigned int static_num);
-extern void NGSetStaticHorizontalMovementRepeatUnits(unsigned int static_num, int units);
+extern int32_t NGGetStaticHorizontalMovementRepeatUnits(uint32_t static_num);
+extern void NGSetStaticHorizontalMovementRepeatUnits(uint32_t static_num, int32_t units);
 
-extern int NGGetStaticVerticalMovementRepeatUnits(unsigned int static_num);
-extern void NGSetStaticVerticalMovementRepeatUnits(unsigned int static_num, int units);
+extern int32_t NGGetStaticVerticalMovementRepeatUnits(uint32_t static_num);
+extern void NGSetStaticVerticalMovementRepeatUnits(uint32_t static_num, int32_t units);
 
-extern int NGGetStaticHorizontalMovementSpeed(unsigned int static_num);
-extern void NGSetStaticHorizontalMovementSpeed(unsigned int static_num, unsigned int movement_speed);
-extern int NGGetStaticVerticalMovementSpeed(unsigned int static_num);
-extern void NGSetStaticVerticalMovementSpeed(unsigned int static_num, unsigned int movement_speed);
+extern int32_t NGGetStaticHorizontalMovementSpeed(uint32_t static_num);
+extern void NGSetStaticHorizontalMovementSpeed(uint32_t static_num, uint32_t movement_speed);
+extern int32_t NGGetStaticVerticalMovementSpeed(uint32_t static_num);
+extern void NGSetStaticVerticalMovementSpeed(uint32_t static_num, uint32_t movement_speed);
 
-extern int NGGetStaticMovementInProgressSound(unsigned int static_num);
-extern void NGSetStaticMovementInProgressSound(unsigned int static_num, int sound_effect_id);
-extern void NGSetStaticMovementFinishedSound(unsigned int static_num, int sound_effect_id);
-extern int NGGetStaticMovementFinishedSound(unsigned int static_num);
+extern int32_t NGGetStaticMovementInProgressSound(uint32_t static_num);
+extern void NGSetStaticMovementInProgressSound(uint32_t static_num, int32_t sound_effect_id);
+extern void NGSetStaticMovementFinishedSound(uint32_t static_num, int32_t sound_effect_id);
+extern int32_t NGGetStaticMovementFinishedSound(uint32_t static_num);
 
-extern bool NGGetStaticMovementTriggerHeavyAtEnd(unsigned int static_num);
-extern void NGSetStaticMovementTriggerHeavyAtEnd(unsigned int static_num, bool trigger_heavy_at_end);
-extern bool NGGetStaticMovementTriggerNormalWhenMoving(unsigned int static_num);
-extern void NGSetStaticMovementTriggerNormalWhenMoving(unsigned int static_num, bool trigger_normal_when_moving);
-extern bool NGGetStaticMovementTriggerHeavyWhenMoving(unsigned int static_num);
-extern void NGSetStaticMovementTriggerHeavyWhenMoving(unsigned int static_num, bool trigger_heavy_when_moving);
+extern bool NGGetStaticMovementTriggerHeavyAtEnd(uint32_t static_num);
+extern void NGSetStaticMovementTriggerHeavyAtEnd(uint32_t static_num, bool trigger_heavy_at_end);
+extern bool NGGetStaticMovementTriggerNormalWhenMoving(uint32_t static_num);
+extern void NGSetStaticMovementTriggerNormalWhenMoving(uint32_t static_num, bool trigger_normal_when_moving);
+extern bool NGGetStaticMovementTriggerHeavyWhenMoving(uint32_t static_num);
+extern void NGSetStaticMovementTriggerHeavyWhenMoving(uint32_t static_num, bool trigger_heavy_when_moving);
 
 //
 
@@ -242,31 +242,31 @@ enum NGCreatureType {
 };
 
 ITEM_INFO *NGIsLaraCollidingWithCreature(NGCreatureType creature_type, int32_t mask);
-extern int NGIsLaraCollidingWithStaticID(int id);
-extern int NGIsLaraCollidingWithStaticSlot(int slot);
+extern int32_t NGIsLaraCollidingWithStaticID(int32_t id);
+extern int32_t NGIsLaraCollidingWithStaticSlot(int32_t slot);
 
-extern bool NGIsItemCollisionDisabled(unsigned int item_num);
-extern void NGDisableItemCollision(unsigned int item_num);
-extern void NGEnableItemCollision(unsigned int item_num);
+extern bool NGIsItemCollisionDisabled(uint32_t item_num);
+extern void NGDisableItemCollision(uint32_t item_num);
+extern void NGEnableItemCollision(uint32_t item_num);
 
-extern void NGToggleItemMeshVisibilityMaskBit(unsigned int item_num, unsigned int mask_bit, bool enabled);
-extern unsigned int NGGetItemMeshVisibilityMask(unsigned int item_num);
+extern void NGToggleItemMeshVisibilityMaskBit(uint32_t item_num, uint32_t mask_bit, bool enabled);
+extern uint32_t NGGetItemMeshVisibilityMask(uint32_t item_num);
 
-extern void NGSetFadeOverride(int item_id, short fade_override);
-extern short NGGetFadeOverride(int item_id);
+extern void NGSetFadeOverride(int32_t item_id, int16_t fade_override);
+extern int16_t NGGetFadeOverride(int32_t item_id);
 
-extern void NGSetFullscreenCurtainTimer(int ticks);
-extern void NGSetCinemaTypeAndTimer(int type, int ticks);
+extern void NGSetFullscreenCurtainTimer(int32_t ticks);
+extern void NGSetCinemaTypeAndTimer(int32_t type, int32_t ticks);
 
-extern bool NGIsTriggerGroupContinuous(int trigger_group_id);
-extern void NGSetTriggerGroupContinuous(int trigger_group_id, bool is_continuous);
+extern bool NGIsTriggerGroupContinuous(int32_t trigger_group_id);
+extern void NGSetTriggerGroupContinuous(int32_t trigger_group_id, bool is_continuous);
 
-extern void NGToggleOrganizer(int organizer_id, bool is_enabled);
-extern bool NGIsOrganizerEnabled(int organizer_id);
-extern void NGResetOrganizer(int organizer_id);
+extern void NGToggleOrganizer(int32_t organizer_id, bool is_enabled);
+extern bool NGIsOrganizerEnabled(int32_t organizer_id);
+extern void NGResetOrganizer(int32_t organizer_id);
 
-extern void NGSetDisplayTimerForMoveableWithType(int item_id, NGTimerTrackerType timer_type);
+extern void NGSetDisplayTimerForMoveableWithType(int32_t item_id, NGTimerTrackerType timer_type);
 
-extern bool NGProcessGlobalTriggers(int selected_inventory_object_id);
+extern bool NGProcessGlobalTriggers(int32_t selected_inventory_object_id);
 
 extern void NGDrawPhase();

@@ -362,7 +362,7 @@ extern NGScannedFlipEffect scanned_flipeffects[NG_MAX_SCANNED_FLIPEFFECTS];
 extern uint32_t old_flipeffect_count;
 extern NGOldTrigger old_flipeffects[NG_MAX_OLD_FLIPEFFECTS];
 
-extern int NGExecuteFlipEffect(uint16_t plugin_id, uint16_t flip_number, int16_t full_timer, uint32_t flags);
+extern int32_t NGExecuteFlipEffect(uint16_t plugin_id, uint16_t flip_number, int16_t full_timer, uint32_t flags);
 extern void NGExecuteFlipEffects();
 extern void NGCaptureFlipEffect(uint16_t flip_number, uint16_t timer, uint32_t flip_offset);
 extern void NGResetScanFlipEffects();

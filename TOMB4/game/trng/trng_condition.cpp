@@ -45,7 +45,7 @@ enum GRID_FRAGMENT_TYPE {
 };
 
 bool NGIsCreatureActive(short item_num) {
-	ITEM_INFO* item = T4PlusGetItemInfoForID(item_num);
+	ITEM_INFO *item = T4PlusGetItemInfoForID(item_num);
 
 	if (item->flags & IFL_CLEARBODY) {
 		return false;
@@ -58,7 +58,7 @@ bool NGIsCreatureActive(short item_num) {
 	return true;
 }
 
-bool NGIsTriggerActive(ITEM_INFO* item) {
+bool NGIsTriggerActive(ITEM_INFO *item) {
 	if (!(item->flags & IFL_CODEBITS)) {
 		return false;
 	}
@@ -540,7 +540,7 @@ int32_t NGPerformTRNGCondition(uint16_t condition_number, uint16_t main_argument
 		}
 		case LARA_IS_TOUCHING_MOVEABLE_ID: {
 			*test_skip = true;
-			ITEM_INFO* item = NGIsLaraCollidingWithItem(T4PlusGetItemInfoForID(main_argument), NG_COLLISION_TYPE_PUSH);
+			ITEM_INFO *item = NGIsLaraCollidingWithItem(T4PlusGetItemInfoForID(main_argument), NG_COLLISION_TYPE_PUSH);
 			if (item) {
 				NGStoreItemIndexConditional(T4PlusGetIDForItemInfo(item));
 				result = 1;
@@ -548,7 +548,7 @@ int32_t NGPerformTRNGCondition(uint16_t condition_number, uint16_t main_argument
 			break;
 		}
 		case LARA_IS_TOUCHING_MOVEABLE_SLOT: {
-			ITEM_INFO* item = NGIsLaraCollidingWithMoveableSlot(main_argument, NG_COLLISION_TYPE_PUSH);
+			ITEM_INFO *item = NGIsLaraCollidingWithMoveableSlot(main_argument, NG_COLLISION_TYPE_PUSH);
 			if (item) {
 				NGStoreItemIndexConditional(T4PlusGetIDForItemInfo(item));
 				result = 1;
@@ -568,7 +568,7 @@ int32_t NGPerformTRNGCondition(uint16_t condition_number, uint16_t main_argument
 				}
 				// Immortal creatures
 				case 0x01: {
-					ITEM_INFO* item = NGIsLaraCollidingWithCreature(NG_CREATURE_TYPE_IMMORTAL, NG_COLLISION_TYPE_PUSH);
+					ITEM_INFO *item = NGIsLaraCollidingWithCreature(NG_CREATURE_TYPE_IMMORTAL, NG_COLLISION_TYPE_PUSH);
 					if (item) {
 						NGStoreItemIndexConditional(T4PlusGetIDForItemInfo(item));
 						result = 1;
@@ -577,7 +577,7 @@ int32_t NGPerformTRNGCondition(uint16_t condition_number, uint16_t main_argument
 				}
 				// Friends
 				case 0x02: {
-					ITEM_INFO* item = NGIsLaraCollidingWithCreature(NG_CREATURE_TYPE_FRIEND, NG_COLLISION_TYPE_PUSH);
+					ITEM_INFO *item = NGIsLaraCollidingWithCreature(NG_CREATURE_TYPE_FRIEND, NG_COLLISION_TYPE_PUSH);
 					if (item) {
 						NGStoreItemIndexConditional(T4PlusGetIDForItemInfo(item));
 						result = 1;

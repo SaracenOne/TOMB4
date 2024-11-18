@@ -2,4 +2,4 @@
 
 bool NGIsNGSavegame();
 void NGReadNGSavegameInfo();
-void NGReadNGSavegameBuffer(FILE* file);
+void NGReadNGSavegameBuffer(FILE *file);

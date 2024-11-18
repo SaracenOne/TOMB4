@@ -261,6 +261,7 @@
     <ClInclude Include="TOMB4\game\objects\creatures\croc.h" />
     <ClInclude Include="TOMB4\game\objects\creatures\crocgod.h" />
     <ClInclude Include="TOMB4\game\objects\creatures\demigod.h" />
+    <ClInclude Include="TOMB4\game\objects\creatures\doberman.h" />
     <ClInclude Include="TOMB4\game\objects\creatures\dog.h" />
     <ClInclude Include="TOMB4\game\objects\creatures\enemy_jeep.h" />
     <ClInclude Include="TOMB4\game\objects\creatures\guardian.h" />
@@ -548,6 +549,12 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\objects\creatures\doberman.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../tomb4/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../tomb4/pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="TOMB4\game\objects\creatures\dog.cpp">

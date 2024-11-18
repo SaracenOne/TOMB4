@@ -7,6 +7,8 @@
 #define LARA_TURN_DECREMENT DEGREES_TO_ROTATION(2)
 #define LARA_TURN_INCREMENT ((DEGREES_TO_ROTATION(1) / 4) + LARA_TURN_DECREMENT)
 
+const int foo = LARA_TURN_INCREMENT;
+
 void lara_void_func(ITEM_INFO* item, COLL_INFO* coll);
 void LaraAboveWater(ITEM_INFO* item, COLL_INFO* coll);
 void SetCornerAnim(ITEM_INFO* item, COLL_INFO* coll, short rot, short flip);

@@ -42,7 +42,7 @@ bool T4PlusIsRoomDamage(ROOM_INFO *r) {
 	return false;
 }
 
-bool T4PlusDoesRoomCauseColdBreath(ROOM_INFO* r) {
+bool T4PlusDoesRoomCauseColdBreath(ROOM_INFO *r) {
 	if (get_game_mod_level_gfx_info(gfCurrentLevel)->cold_breath != COLD_BREATH_DISABLED) {
 		if (get_game_mod_level_gfx_info(gfCurrentLevel)->cold_breath == COLD_BREATH_ENABLED_OUTSIDE_AND_IN_COLD_ROOMS) {
 			if (r->flags & ROOM_OUTSIDE) {

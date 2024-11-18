@@ -43,7 +43,7 @@ void NGReadNGSavegameInfo() {
 			switch (block_type) {
 				case 0x8003: { // OLD_EFFECTS
 					old_flipeffect_count = NG_READ_16(ng_savegame_buffer, offset);
-					for (int i = 0; i < old_flipeffect_count; i++) {
+					for (int32_t i = 0; i < old_flipeffect_count; i++) {
 						if (i < NG_MAX_OLD_FLIPEFFECTS) {
 							old_flipeffects[i].flags = NG_READ_16(ng_savegame_buffer, offset);
 							old_flipeffects[i].offset_floor_data = NG_READ_32(ng_savegame_buffer, offset);
@@ -54,20 +54,20 @@ void NGReadNGSavegameInfo() {
 					break;
 				}
 				case 0x8004: { // OLD_FMV
-					for (int i = 0; i < 128; i++) {
+					for (int32_t i = 0; i < 128; i++) {
 						uint8_t performed_fmv = NG_READ_8(ng_savegame_buffer, offset);
 					}
 					break;
 				}
 				case 0x8007: { // PROGR_ACTIONS
 					uint32_t progressive_action_count = NG_READ_16(ng_savegame_buffer, offset);
-					for (int i = 0; i < progressive_action_count; i++) {
+					for (int32_t i = 0; i < progressive_action_count; i++) {
 					}
 					break;
 				}
 				case 0x8008: { // OLD_ACTIONS
 					old_action_count = NG_READ_16(ng_savegame_buffer, offset);
-					for (int i = 0; i < old_action_count; i++) {
+					for (int32_t i = 0; i < old_action_count; i++) {
 						if (i < NG_MAX_OLD_ACTIONS) {
 							old_actions[i].flags = NG_READ_16(ng_savegame_buffer, offset);
 							old_actions[i].offset_floor_data = NG_READ_32(ng_savegame_buffer, offset);
@@ -79,7 +79,7 @@ void NGReadNGSavegameInfo() {
 				}
 				case 0x800E: { // OLD_CONDITION
 					old_condition_count = NG_READ_16(ng_savegame_buffer, offset);
-					for (int i = 0; i < old_condition_count; i++) {
+					for (int32_t i = 0; i < old_condition_count; i++) {
 						if (i < NG_MAX_OLD_CONDITIONS) {
 							old_conditions[i].flags = NG_READ_16(ng_savegame_buffer, offset);
 							old_conditions[i].offset_floor_data = NG_READ_32(ng_savegame_buffer, offset);
@@ -133,19 +133,19 @@ void NGReadNGSavegameInfo() {
 					uint16_t lara_hp = NG_READ_16(ng_savegame_buffer, offset);
 
 					char tr4_name[32];
-					for (int i = 0; i < sizeof(tr4_name); i++) {
+					for (int32_t i = 0; i < sizeof(tr4_name); i++) {
 						tr4_name[i] = NG_READ_8(ng_savegame_buffer, offset);
 					}
 
 					int16_t vehicle = NG_READ_16(ng_savegame_buffer, offset);
 
 					int8_t buffer_a[157];
-					for (int i = 0; i < sizeof(buffer_a); i++) {
+					for (int32_t i = 0; i < sizeof(buffer_a); i++) {
 						buffer_a[i] = NG_READ_8(ng_savegame_buffer, offset);
 					}
 
 					int8_t buffer_b[68];
-					for (int i = 0; i < sizeof(buffer_b); i++) {
+					for (int32_t i = 0; i < sizeof(buffer_b); i++) {
 						buffer_b[i] = NG_READ_8(ng_savegame_buffer, offset);
 					}
 
@@ -191,8 +191,8 @@ void NGReadNGSavegameInfo() {
 void NGReadNGSavegameBuffer(FILE *file) {
 	ng_savegame_buffer_size = 0;
 
-	long original_file_position = ftell(file);
-	if (fseek(file, -long((sizeof(uint32_t) * 2)), SEEK_END) == 0) {
+	int32_t original_file_position = ftell(file);
+	if (fseek(file, -int32_t((sizeof(uint32_t) * 2)), SEEK_END) == 0) {
 		uint32_t ngle_ident = 0;
 		fread(&ngle_ident, sizeof(uint32_t), 1, file);
 		if (ngle_ident == NGLE_END_SIGNATURE) {
@@ -200,12 +200,12 @@ void NGReadNGSavegameBuffer(FILE *file) {
 
 			uint32_t footer_offset = 0;
 			fread(&footer_offset, sizeof(uint32_t), 1, file);
-			if (fseek(file, -long(footer_offset), SEEK_END) == 0) {
+			if (fseek(file, -int32_t(footer_offset), SEEK_END) == 0) {
 				int ngle_buffer_start = ftell(file);
 				uint16_t header_ident;
 				fread(&header_ident, sizeof(uint16_t), 1, file);
 				if (header_ident == 0x474e) {
-					if (fseek(file, -long(sizeof(uint16_t)), SEEK_CUR) == 0) {
+					if (fseek(file, -int32_t(sizeof(uint16_t)), SEEK_CUR) == 0) {
 						uint32_t buffer_size = ngle_buffer_end - ngle_buffer_start;
 						if (buffer_size < MAX_NG_SAVEGAME_BUFFER_SIZE) {
 							if (fread(ng_savegame_buffer, sizeof(char), buffer_size, file) == buffer_size) {

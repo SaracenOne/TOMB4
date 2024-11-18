@@ -41,7 +41,7 @@ NGScannedFlipEffect scanned_flipeffects[NG_MAX_SCANNED_FLIPEFFECTS];
 uint32_t old_flipeffect_count;
 NGOldTrigger old_flipeffects[NG_MAX_OLD_FLIPEFFECTS];
 
-void NGAttractLaraInDirection(unsigned char direction, unsigned char speed) {
+void NGAttractLaraInDirection(uint8_t direction, uint8_t speed) {
 	switch (direction) {
 		// West
 	case 0x00:
@@ -85,18 +85,18 @@ void NGAttractLaraInDirection(unsigned char direction, unsigned char speed) {
 	}
 }
 
-bool NGTriggerItemGroupWithTimer(unsigned char item_group, unsigned char timer, bool anti) {
+bool NGTriggerItemGroupWithTimer(uint8_t item_group, uint8_t timer, bool anti) {
 	NG_ITEM_GROUP current_item_group = current_item_groups[item_group];
 	int32_t index = 0;
 	for (int32_t i = 0; i < current_item_group.item_count; i++) {
-		short current_script_item = current_item_group.item_list[i];
+		int16_t current_script_item = current_item_group.item_list[i];
 
 		if (current_script_item >= NG_SCRIPT_ID_TABLE_SIZE || current_script_item < 0) {
 			NGLog(NG_LOG_TYPE_ERROR, "Item group IDs (%u) contains and invalid script item index (%s).", i, current_script_item);
 			continue;
 		}
 
-		short current_item_id = ng_script_id_table[current_script_item].script_index;
+		int16_t current_item_id = ng_script_id_table[current_script_item].script_index;
 		if (current_item_id < 0) {
 			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "Negative item group IDs (statics) not yet supported!");
 			continue;
@@ -106,7 +106,10 @@ bool NGTriggerItemGroupWithTimer(unsigned char item_group, unsigned char timer, 
 			continue;
 		}
 
-		items[current_item_id].timer = ((short)timer) * 30;
+		ITEM_INFO *item = T4PlusGetItemInfoForID(current_item_id);
+		if (item) {
+			item->timer = ((int16_t)timer) * NG_TICKS_PER_SECOND;
+		}
 		T4PlusActivateItem(current_item_id, anti);
 
 		index++;
@@ -114,7 +117,7 @@ bool NGTriggerItemGroupWithTimer(unsigned char item_group, unsigned char timer, 
 	return true;
 }
 
-short NGGetInventoryObjectIDForByte(unsigned char inventory_id) {
+int16_t NGGetInventoryObjectIDForByte(uint8_t inventory_id) {
 	if (inventory_id >= 0x6B) {
 		return ((inventory_id - 0x6B) + SIXSHOOTER_ITEM);
 	} else if (inventory_id >= 0x67) {
@@ -127,8 +130,8 @@ short NGGetInventoryObjectIDForByte(unsigned char inventory_id) {
 }
 
 // NGLE - 47
-bool inventory_remove_inventory_item(unsigned char inventory_id, unsigned char _unused) {
-	short object_number = NGGetInventoryObjectIDForByte(inventory_id);
+bool inventory_remove_inventory_item(uint8_t inventory_id, uint8_t _unused) {
+	int16_t object_number = NGGetInventoryObjectIDForByte(inventory_id);
 
 	T4PlusSetInventoryCount(object_number, 0, true);
 
@@ -136,13 +139,13 @@ bool inventory_remove_inventory_item(unsigned char inventory_id, unsigned char _
 }
 
 // NGLE - 48
-bool inventory_increase_inventory_items_by_one_in_x_way(unsigned char inventory_id, unsigned char show_popup) {
-	short object_number = NGGetInventoryObjectIDForByte(inventory_id);
+bool inventory_increase_inventory_items_by_one_in_x_way(uint8_t inventory_id, uint8_t show_popup) {
+	int16_t object_number = NGGetInventoryObjectIDForByte(inventory_id);
 
 	if (show_popup)
 		T4ShowObjectPickup(object_number, MAX_PICKUP_DISPLAYABLE_LIFETIME);
 
-	int current_inventory_count = T4PlusGetInventoryCount(object_number);
+	int32_t current_inventory_count = T4PlusGetInventoryCount(object_number);
 	current_inventory_count++;
 	T4PlusSetInventoryCount(object_number, current_inventory_count, true);
 
@@ -150,10 +153,10 @@ bool inventory_increase_inventory_items_by_one_in_x_way(unsigned char inventory_
 }
 
 // NGLE - 49
-bool inventory_decrease_inventory_items_by_one_in_x_way(unsigned char inventory_id, unsigned char _unused) {
-	short object_number = NGGetInventoryObjectIDForByte(inventory_id);
+bool inventory_decrease_inventory_items_by_one_in_x_way(uint8_t inventory_id, uint8_t _unused) {
+	int16_t object_number = NGGetInventoryObjectIDForByte(inventory_id);
 
-	int current_inventory_count = T4PlusGetInventoryCount(object_number);
+	int32_t current_inventory_count = T4PlusGetInventoryCount(object_number);
 	current_inventory_count--;
 	if (current_inventory_count < 0)
 		current_inventory_count = 0;
@@ -164,8 +167,8 @@ bool inventory_decrease_inventory_items_by_one_in_x_way(unsigned char inventory_
 }
 
 // NGLE - 50
-bool inventory_set_inventory_items(unsigned char inventory_id, unsigned char count) {
-	short object_number = NGGetInventoryObjectIDForByte(inventory_id);
+bool inventory_set_inventory_items(uint8_t inventory_id, uint8_t count) {
+	int16_t object_number = NGGetInventoryObjectIDForByte(inventory_id);
 
 	T4PlusSetInventoryCount(object_number, count, true);
 
@@ -173,22 +176,22 @@ bool inventory_set_inventory_items(unsigned char inventory_id, unsigned char cou
 }
 
 // NGLE - 51
-bool disable_input_for_time(unsigned char input, unsigned char timer) {
-	NGDisableInputForTime(input, (int)timer * 30);
+bool disable_input_for_time(uint8_t input, uint8_t timer) {
+	NGDisableInputForTime(input, (int32_t)timer * NG_TICKS_PER_SECOND);
 	
 	return true;
 }
 
 // NGLE - 52
-bool keyboard_enable_input(unsigned char input, unsigned char _unused) {
+bool keyboard_enable_input(uint8_t input, uint8_t _unused) {
 	NGEnableInput(input);
 	
 	return true;
 }
 
 // NGLE - 53
-bool keyboard_simulate_receivement_of_keyboard_command(unsigned char input, unsigned char timer) {
-	const int SIMULATION_TIMES[] = {
+bool keyboard_simulate_receivement_of_keyboard_command(uint8_t input, uint8_t timer) {
+	const int32_t SIMULATION_TIMES[] = {
 		0,
 		100,
 		200,
@@ -213,7 +216,7 @@ bool keyboard_simulate_receivement_of_keyboard_command(unsigned char input, unsi
 		35000
 	};
 
-	if (timer < (sizeof(SIMULATION_TIMES) / sizeof(int))) {
+	if (timer < (sizeof(SIMULATION_TIMES) / sizeof(int32_t))) {
 		NGSimulateInputForTime(input, SIMULATION_TIMES[timer]);
 	} else {
 		NGLog(NG_LOG_TYPE_ERROR, "Invalid simulation time for simulated keyboard command!");
@@ -223,7 +226,7 @@ bool keyboard_simulate_receivement_of_keyboard_command(unsigned char input, unsi
 }
 
 // NGLE - 63
-bool kill_and_or_set_lara_on_fire(unsigned char death_type, unsigned char extra_timer) {
+bool kill_and_or_set_lara_on_fire(uint8_t death_type, uint8_t extra_timer) {
 	switch (death_type) {
 		case 0x00: // Zero Lara hitpoints
 			lara_item->hit_points = 0;
@@ -245,26 +248,26 @@ bool kill_and_or_set_lara_on_fire(unsigned char death_type, unsigned char extra_
 }
 
 // NGLE - 65
-bool print_standard_x_string_on_screen_for_e_seconds(unsigned char string_id, unsigned char timer) {
+bool print_standard_x_string_on_screen_for_e_seconds(uint8_t string_id, uint8_t timer) {
 	gfLegend = string_id;
 	if (timer == 0) {
 		gfLegendTime = -1;
 	} else {
-		gfLegendTime = timer * 30;
+		gfLegendTime = timer * NG_TICKS_PER_SECOND;
 	}
 
 	return true;
 }
 
 // NGLE - 68
-bool play_cd_track_channel_1(unsigned char track_id, unsigned char looping) {
+bool play_cd_track_channel_1(uint8_t track_id, uint8_t looping) {
 	S_CDPlayExt(track_id, 0, looping, false);
 
 	return true;
 }
 
 // NGLE - 69
-bool stop_all_cd_tracks(unsigned char _unused_1, unsigned char _unused_2) {
+bool stop_all_cd_tracks(uint8_t _unused_1, uint8_t _unused_2) {
 	S_CDStopExt(0);
 	S_CDStopExt(1);
 
@@ -272,8 +275,8 @@ bool stop_all_cd_tracks(unsigned char _unused_1, unsigned char _unused_2) {
 }
 
 // NGLE - 70
-bool play_sound_from_first_group(unsigned char sound_sample, unsigned char timer) {
-	int indexed_sound_sample = sound_sample;
+bool play_sound_from_first_group(uint8_t sound_sample, uint8_t timer) {
+	int32_t indexed_sound_sample = sound_sample;
 
 	if (timer == 0) {
 		// INFINITE LOOP
@@ -282,7 +285,7 @@ bool play_sound_from_first_group(unsigned char sound_sample, unsigned char timer
 		// ONESHOT
 		ng_looped_sound_state[indexed_sound_sample] = 0;
 	} else {
-		ng_looped_sound_state[indexed_sound_sample] = timer * 30;
+		ng_looped_sound_state[indexed_sound_sample] = timer * NG_TICKS_PER_SECOND;
 	}
 
 	SoundEffect(indexed_sound_sample, NULL, SFX_ALWAYS);
@@ -291,8 +294,8 @@ bool play_sound_from_first_group(unsigned char sound_sample, unsigned char timer
 }
 
 // NGLE - 71
-bool play_sound_from_second_group(unsigned char sound_sample, unsigned char timer) {
-	int indexed_sound_sample = 256 + sound_sample;
+bool play_sound_from_second_group(uint8_t sound_sample, uint8_t timer) {
+	int32_t indexed_sound_sample = 256 + sound_sample;
 
 	if (timer == 0) {
 		// INFINITE LOOP
@@ -301,7 +304,7 @@ bool play_sound_from_second_group(unsigned char sound_sample, unsigned char time
 		// ONESHOT
 		ng_looped_sound_state[indexed_sound_sample] = 0;
 	} else {
-		ng_looped_sound_state[indexed_sound_sample] = timer * 30;
+		ng_looped_sound_state[indexed_sound_sample] = timer * NG_TICKS_PER_SECOND;
 	}
 
 	SoundEffect(indexed_sound_sample, NULL, SFX_ALWAYS);
@@ -310,8 +313,8 @@ bool play_sound_from_second_group(unsigned char sound_sample, unsigned char time
 }
 
 // NGLE - 72
-bool stop_sound_from_first_group(unsigned char sound_sample, unsigned char _unused_2) {
-	int indexed_sound_sample = sound_sample;
+bool stop_sound_from_first_group(uint8_t sound_sample, uint8_t _unused_2) {
+	int32_t indexed_sound_sample = sound_sample;
 
 	StopSoundEffect(indexed_sound_sample);
 	ng_looped_sound_state[indexed_sound_sample] = 0;
@@ -320,8 +323,8 @@ bool stop_sound_from_first_group(unsigned char sound_sample, unsigned char _unus
 }
 
 // NGLE - 73
-bool stop_sound_from_second_group(unsigned char sound_sample, unsigned char _unused_2) {
-	int indexed_sound_sample = 256 + sound_sample;
+bool stop_sound_from_second_group(uint8_t sound_sample, uint8_t _unused_2) {
+	int32_t indexed_sound_sample = 256 + sound_sample;
 
 	StopSoundEffect(indexed_sound_sample);
 	ng_looped_sound_state[indexed_sound_sample] = 0;
@@ -330,17 +333,17 @@ bool stop_sound_from_second_group(unsigned char sound_sample, unsigned char _unu
 }
 
 // NGLE - 74
-bool stop_all_sound_samples(unsigned char _unused_1, unsigned char _unused_2) {
+bool stop_all_sound_samples(uint8_t _unused_1, uint8_t _unused_2) {
 	S_SoundStopAllSamples();
 
-	memset(ng_looped_sound_state, 0x00, NumSamples * sizeof(int));
+	memset(ng_looped_sound_state, 0x00, NumSamples * sizeof(int32_t));
 
 	return true;
 }
 
 // NGLE - 77
-bool force_lara_animation_0_255_of_slot_animation(unsigned char animation_index, unsigned char object_id) {
-	int animation_index_offset = objects[object_id].anim_index + animation_index;
+bool force_lara_animation_0_255_of_slot_animation(uint8_t animation_index, uint8_t object_id) {
+	int32_t animation_index_offset = objects[object_id].anim_index + animation_index;
 
 	NGSetItemAnimation(lara.item_number, animation_index_offset, true, false, false, true);
 
@@ -348,23 +351,26 @@ bool force_lara_animation_0_255_of_slot_animation(unsigned char animation_index,
 }
 
 // NGLE - 78
-bool lara_force_x_state_id_and_e_next_state_id_for_lara(unsigned char state_id, unsigned char next_state_id) {
-	items[lara.item_number].current_anim_state = state_id;
-	items[lara.item_number].goal_anim_state = next_state_id;
+bool lara_force_x_state_id_and_e_next_state_id_for_lara(uint8_t state_id, uint8_t next_state_id) {
+	ITEM_INFO *item = T4PlusGetItemInfoForID(lara.item_number);
+	if (item) {
+		item->current_anim_state = state_id;
+		item->goal_anim_state = next_state_id;
+	}
 
 	return true;
 }
 
 // NGLE - 79
-bool move_lara_to_lara_start_pos_in_x_way(unsigned char ocb, unsigned char teleport_type) {
-	int lara_start_pos_id = NGFindIndexForLaraStartPosWithMatchingOCB(ocb);
+bool move_lara_to_lara_start_pos_in_x_way(uint8_t ocb, uint8_t teleport_type) {
+	int32_t lara_start_pos_id = NGFindIndexForLaraStartPosWithMatchingOCB(ocb);
 	if (lara_start_pos_id >= 0) {
 		AIOBJECT* ai = &AIObjects[lara_start_pos_id];
 		if (ai) {
 			if (teleport_type == 1) {
 				// Keep sector displacement
 				lara_item->pos.x_pos = (ai->x & ~0x3ff) | (lara_item->pos.x_pos & 0x3ff);
-				int lara_y_offset =  lara_item->floor - lara_item->pos.y_pos;
+				int32_t lara_y_offset =  lara_item->floor - lara_item->pos.y_pos;
 				lara_item->pos.z_pos = (ai->z & ~0x3ff) | (lara_item->pos.z_pos & 0x3ff);
 
 				FLOOR_INFO* ai_floor_info = GetFloor(lara_item->pos.x_pos, ai->y, lara_item->pos.z_pos, &ai->room_number);
@@ -397,8 +403,8 @@ bool move_lara_to_lara_start_pos_in_x_way(unsigned char ocb, unsigned char telep
 }
 
 // NGLE - 80
-bool force_lara_animation_256_512_of_slot_animation(unsigned char animation_index, unsigned char object_id) {
-	int animation_index_offset = objects[object_id].anim_index + animation_index + 256;
+bool force_lara_animation_256_512_of_slot_animation(uint8_t animation_index, uint8_t object_id) {
+	int32_t animation_index_offset = objects[object_id].anim_index + animation_index + 256;
 
 	NGSetItemAnimation(lara.item_number, animation_index_offset, true, false, false, true);
 
@@ -406,9 +412,9 @@ bool force_lara_animation_256_512_of_slot_animation(unsigned char animation_inde
 }
 
 // NGLE - 82
-bool delay_load_x_level_in_seconds(unsigned char level_id, unsigned char level_timer) {
+bool delay_load_x_level_in_seconds(uint8_t level_id, uint8_t level_timer) {
 	if (level_timer < 0x1f) {
-		pending_level_load_timer = level_timer * 30;
+		pending_level_load_timer = level_timer * NG_TICKS_PER_SECOND;
 	} else {
 		// Not sure how this works. Editor calls it 'perform one single time', but it doesn't seem to do anything.
 		pending_level_load_timer = -1;
@@ -420,43 +426,43 @@ bool delay_load_x_level_in_seconds(unsigned char level_id, unsigned char level_t
 
 
 // NGLE - 83
-bool remove_weapons_or_flares_from_laras_hands(unsigned char _unused1, unsigned char _unused2) {
+bool remove_weapons_or_flares_from_laras_hands(uint8_t _unused1, uint8_t _unused2) {
 	lara.request_gun_type = WEAPON_NONE;
 
 	return true;
 }
 
 // NGLE - 84
-bool cutscene_set_fade_in_for_x_time(unsigned char fade_time, unsigned char _unused2) {
+bool cutscene_set_fade_in_for_x_time(uint8_t fade_time, uint8_t _unused2) {
 	SetScreenFadeIn(fade_time);
 
 	return true;
 }
 
 // NGLE - 85
-bool cutscene_set_fade_out_for_x_time_in_way(unsigned char fade_time, unsigned char fade_type) {
+bool cutscene_set_fade_out_for_x_time_in_way(uint8_t fade_time, uint8_t fade_type) {
 	SetScreenFadeOut(fade_time, fade_type);
 
 	return true;
 }
 
 // NGLE - 89
-bool damage_lara_life_by_percentage(unsigned char timer, unsigned char _unused2) {
-	const int MAX_LARA_HEALTH = 1000; // May need this to be customizable.
+bool damage_lara_life_by_percentage(uint8_t timer, uint8_t _unused2) {
+	const int32_t MAX_LARA_HEALTH = 1000; // May need this to be customizable.
 
 	if (lara_item->hit_points > 0) {
-		int new_hit_points = lara_item->hit_points;
+		int32_t new_hit_points = lara_item->hit_points;
 		if (timer <= 9) {
-			int health_multiple = (MAX_LARA_HEALTH / 1000);
-			new_hit_points -= (int)(health_multiple * (timer + 1));
+			int32_t health_multiple = (MAX_LARA_HEALTH / 1000);
+			new_hit_points -= (int32_t)(health_multiple * (timer + 1));
 		}
 		else if (timer <= 18) {
-			int health_multiple = (MAX_LARA_HEALTH / 100);
-			new_hit_points -= (int)(health_multiple * (timer - 8));
+			int32_t health_multiple = (MAX_LARA_HEALTH / 100);
+			new_hit_points -= (int32_t)(health_multiple * (timer - 8));
 		}
 		else {
-			int health_multiple = (MAX_LARA_HEALTH / 10);
-			new_hit_points -= (int)(health_multiple * (timer - 17));
+			int32_t health_multiple = (MAX_LARA_HEALTH / 10);
+			new_hit_points -= (int32_t)(health_multiple * (timer - 17));
 		}
 
 		if (new_hit_points < 0)
@@ -470,22 +476,22 @@ bool damage_lara_life_by_percentage(unsigned char timer, unsigned char _unused2)
 }
 
 // NGLE - 90
-bool recharge_lara_life_by_percentage(unsigned char timer, unsigned char _unused2) {
-	const int MAX_LARA_HEALTH = 1000; // May need this to be customizable.
+bool recharge_lara_life_by_percentage(uint8_t timer, uint8_t _unused2) {
+	const int32_t MAX_LARA_HEALTH = 1000; // May need this to be customizable.
 
 	if (lara_item->hit_points > 0) {
-		int new_hit_points = lara_item->hit_points;
+		int32_t new_hit_points = lara_item->hit_points;
 		if (timer <= 9) {
-			int health_multiple = (MAX_LARA_HEALTH / 1000);
-			new_hit_points += (int)(health_multiple * (timer + 1));
+			int32_t health_multiple = (MAX_LARA_HEALTH / 1000);
+			new_hit_points += (int32_t)(health_multiple * (timer + 1));
 		}
 		else if (timer <= 18) {
-			int health_multiple = (MAX_LARA_HEALTH / 100);
-			new_hit_points += (int)(health_multiple * (timer - 8));
+			int32_t health_multiple = (MAX_LARA_HEALTH / 100);
+			new_hit_points += (int32_t)(health_multiple * (timer - 8));
 		}
 		else {
-			int health_multiple = (MAX_LARA_HEALTH / 10);
-			new_hit_points += (int)(health_multiple * (timer - 17));
+			int32_t health_multiple = (MAX_LARA_HEALTH / 10);
+			new_hit_points += (int32_t)(health_multiple * (timer - 17));
 		}
 
 		if (new_hit_points > MAX_LARA_HEALTH)
@@ -499,7 +505,7 @@ bool recharge_lara_life_by_percentage(unsigned char timer, unsigned char _unused
 }
 
 // NGLE - 96
-bool lara_disarm_lara(unsigned char remove_weapons_only, unsigned char _unusued) {
+bool lara_disarm_lara(uint8_t remove_weapons_only, uint8_t _unusued) {
 	lara.request_gun_type = WEAPON_NONE;
 	lara.last_gun_type = WEAPON_NONE;
 	lara.gun_status = LG_NO_ARMS;
@@ -541,21 +547,21 @@ bool lara_disarm_lara(unsigned char remove_weapons_only, unsigned char _unusued)
 }
 
 // NGLE - 104
-bool lara_toggle_infinite_air(unsigned char enabled, unsigned char _unused) {
+bool lara_toggle_infinite_air(uint8_t enabled, uint8_t _unused) {
 	ng_lara_infinite_air = enabled;
 
 	return true;
 }
 
 // NGLE - 109
-bool global_trigger_enable_disable(unsigned char enable, unsigned char global_trigger_id) {
+bool global_trigger_enable_disable(uint8_t enable, uint8_t global_trigger_id) {
 	ng_global_trigger_states[global_trigger_id].is_disabled = enable > 0 ? false : true;
 
 	return true;
 }
 
 // NGLE - 115
-bool set_room_type(unsigned char room_number, unsigned char room_type) {
+bool set_room_type(uint8_t room_number, uint8_t room_type) {
 	ROOM_INFO* r = &room[room_number];
 	if (r) {
 		switch (room_type) {
@@ -622,7 +628,7 @@ bool set_room_type(unsigned char room_number, unsigned char room_type) {
 }
 
 // NGLE - 116
-bool remove_room_type(unsigned char room_number, unsigned char room_type) {
+bool remove_room_type(uint8_t room_number, uint8_t room_type) {
 	ROOM_INFO* r = &room[room_number];
 	if (r) {
 		switch (room_type) {
@@ -689,12 +695,12 @@ bool remove_room_type(unsigned char room_number, unsigned char room_type) {
 }
 
 // NGLE - 118
-bool perform_triggergroup_from_script_in_specific_way(unsigned char trigger_group_id, unsigned char execution_type) {
+bool perform_triggergroup_from_script_in_specific_way(uint8_t trigger_group_id, uint8_t execution_type) {
 	return NGTriggerGroupFunction(trigger_group_id, execution_type);
 }
 
 // NGLE - 125
-bool flipmap_on(unsigned char flipmap_id, unsigned char _unused_2) {
+bool flipmap_on(uint8_t flipmap_id, uint8_t _unused_2) {
 	flipmap[flipmap_id] |= IFL_CODEBITS;
 
 	if (!flip_stats[flipmap_id])
@@ -704,7 +710,7 @@ bool flipmap_on(unsigned char flipmap_id, unsigned char _unused_2) {
 }
 
 // NGLE - 126
-bool flipmap_off(unsigned char flipmap_id, unsigned char _unused_2) {
+bool flipmap_off(uint8_t flipmap_id, uint8_t _unused_2) {
 	flipmap[flipmap_id] &= ~(IFL_CODEBITS);
 
 	if (flip_stats[flipmap_id])
@@ -714,8 +720,8 @@ bool flipmap_off(unsigned char flipmap_id, unsigned char _unused_2) {
 }
 
 // NGLE - 127
-bool organizer_enable(unsigned char organizer_id_lower, unsigned char organizer_id_upper) {
-	unsigned short organizer_id = ((short)organizer_id_upper << 8) | (short)organizer_id_lower;
+bool organizer_enable(uint8_t organizer_id_lower, uint8_t organizer_id_upper) {
+	uint16_t organizer_id = ((int16_t)organizer_id_upper << 8) | (int16_t)organizer_id_lower;
 	bool should_reset = NGIsOrganizerEnabled(organizer_id) == false;
 
 	NGToggleOrganizer(organizer_id, true);
@@ -728,22 +734,22 @@ bool organizer_enable(unsigned char organizer_id_lower, unsigned char organizer_
 }
 
 // NGLE - 128
-bool organizer_disable(unsigned char organizer_id_lower, unsigned char organizer_id_upper) {
-	unsigned short organizer_id = ((short)organizer_id_upper << 8) | (short)organizer_id_lower;
+bool organizer_disable(uint8_t organizer_id_lower, uint8_t organizer_id_upper) {
+	uint16_t organizer_id = ((int16_t)organizer_id_upper << 8) | (int16_t)organizer_id_lower;
 	NGToggleOrganizer(organizer_id, false);
 
 	return true;
 }
 
 // NGLE - 129
-bool sound_play_cd_track_channel_2(unsigned char track_id, unsigned char looping) {
+bool sound_play_cd_track_channel_2(uint8_t track_id, uint8_t looping) {
 	S_CDPlayExt(track_id, 1, looping, false);
 
 	return true;
 }
 
 // NGLE - 130
-bool sound_stop_cd_track_on_channel(unsigned char channel_id, unsigned char _unused) {
+bool sound_stop_cd_track_on_channel(uint8_t channel_id, uint8_t _unused) {
 	S_CDStopExt(channel_id);
 
 	return true;
@@ -751,7 +757,7 @@ bool sound_stop_cd_track_on_channel(unsigned char channel_id, unsigned char _unu
 
 
 // NGLE - 133
-bool sound_set_x_volume_for_audio_track_on_channel(unsigned char volume, unsigned char channel) {
+bool sound_set_x_volume_for_audio_track_on_channel(uint8_t volume, uint8_t channel) {
 	// Not sure how accurate this behaviour is.
 	if (!is_mod_trng_version_equal_or_greater_than_target(1, 1, 8, 7)) {
 		if (volume == 0) {
@@ -764,7 +770,7 @@ bool sound_set_x_volume_for_audio_track_on_channel(unsigned char volume, unsigne
 }
 
 // NGLE - 134
-bool lara_attract_lara_in_direction_on_ground_with_speed(unsigned char direction, unsigned char speed) {
+bool lara_attract_lara_in_direction_on_ground_with_speed(uint8_t direction, uint8_t speed) {
 	if (lara_item->pos.y_pos >= lara_item->floor)
 		NGAttractLaraInDirection(direction, speed);
 
@@ -772,7 +778,7 @@ bool lara_attract_lara_in_direction_on_ground_with_speed(unsigned char direction
 }
 
 // NGLE - 135
-bool lara_attract_lara_in_direction_in_air_with_speed(unsigned char direction, unsigned char speed) {
+bool lara_attract_lara_in_direction_in_air_with_speed(uint8_t direction, uint8_t speed) {
 	if (lara_item->pos.y_pos < lara_item->floor)
 		NGAttractLaraInDirection(direction, speed);
 
@@ -780,35 +786,35 @@ bool lara_attract_lara_in_direction_in_air_with_speed(unsigned char direction, u
 }
 
 // NGLE - 145
-bool itemgroup_activate_item_group_with_timer(unsigned char item_group, unsigned char timer) {
+bool itemgroup_activate_item_group_with_timer(uint8_t item_group, uint8_t timer) {
 	return NGTriggerItemGroupWithTimer(item_group, timer, false);
 }
 
 // NGLE - 146
-bool itemgroup_untrigger_item_group_with_timer(unsigned char item_group, unsigned char timer) {
+bool itemgroup_untrigger_item_group_with_timer(uint8_t item_group, uint8_t timer) {
 	return NGTriggerItemGroupWithTimer(item_group, timer, true);
 }
 
 // NGLE - 158
-bool lara_attract_lara_in_direction_on_ground_and_in_air_with_speed(unsigned char direction, unsigned char speed) {
+bool lara_attract_lara_in_direction_on_ground_and_in_air_with_speed(uint8_t direction, uint8_t speed) {
 	NGAttractLaraInDirection(direction, speed);
 
 	return true;
 }
 
 // NGLE - 159
-bool distance_set_level_far_view_distance_to_x_number_of_sectors(unsigned char sectors, unsigned char _unused) {
+bool distance_set_level_far_view_distance_to_x_number_of_sectors(uint8_t sectors, uint8_t _unused) {
 	ClipRange = (float)sectors * float(BLOCK_SIZE);
 
 	return true;
 }
 
 // NGLE - 160
-bool static_shatter(unsigned char static_id_lower, unsigned char static_id_upper) {
-	unsigned short static_id = ((short)static_id_upper << 8) | (short)static_id_lower;
+bool static_shatter(uint8_t static_id_lower, uint8_t static_id_upper) {
+	uint16_t static_id = ((int16_t)static_id_upper << 8) | (int16_t)static_id_lower;
 
 	NGStaticTableEntry* entry = &ng_static_id_table[static_id];
-	int room_number = ng_room_remap_table[entry->remapped_room_index].room_index;
+	int32_t room_number = ng_room_remap_table[entry->remapped_room_index].room_index;
 	if (room_number >= 0 && room_number < number_rooms) {
 		MESH_INFO* mesh = &room[room_number].mesh[entry->mesh_id];
 
@@ -835,11 +841,11 @@ bool static_shatter(unsigned char static_id_lower, unsigned char static_id_upper
 }
 
 // NGLE - 161
-bool static_remove_collision_for_x_static(unsigned char static_id_lower, unsigned char static_id_upper) {
-	unsigned short static_id = ((short)static_id_upper << 8) | (short)static_id_lower;
+bool static_remove_collision_for_x_static(uint8_t static_id_lower, uint8_t static_id_upper) {
+	uint16_t static_id = ((int16_t)static_id_upper << 8) | (int16_t)static_id_lower;
 
 	NGStaticTableEntry* entry = &ng_static_id_table[static_id];
-	int room_number = ng_room_remap_table[entry->remapped_room_index].room_index;
+	int32_t room_number = ng_room_remap_table[entry->remapped_room_index].room_index;
 	if (room_number >= 0 && room_number < number_rooms) {
 		MESH_INFO* mesh = &room[room_number].mesh[entry->mesh_id];
 
@@ -850,11 +856,11 @@ bool static_remove_collision_for_x_static(unsigned char static_id_lower, unsigne
 }
 
 // NGLE - 162
-bool static_restore_collision_for_x_static(unsigned char static_id_lower, unsigned char static_id_upper) {
-	unsigned short static_id = ((short)static_id_upper << 8) | (short)static_id_lower;
+bool static_restore_collision_for_x_static(uint8_t static_id_lower, uint8_t static_id_upper) {
+	uint16_t static_id = ((int16_t)static_id_upper << 8) | (int16_t)static_id_lower;
 
 	NGStaticTableEntry *entry = &ng_static_id_table[static_id];
-	int room_number = ng_room_remap_table[entry->remapped_room_index].room_index;
+	int32_t room_number = ng_room_remap_table[entry->remapped_room_index].room_index;
 	if (room_number >= 0 && room_number < number_rooms) {
 		MESH_INFO* mesh = &room[room_number].mesh[entry->mesh_id];
 
@@ -865,8 +871,8 @@ bool static_restore_collision_for_x_static(unsigned char static_id_lower, unsign
 }
 
 // NGLE - 166
-bool static_move_static_with_data_in_x_parameter_list(unsigned char move_param_id_lower, unsigned char move_param_id_upper) {
-	unsigned short move_param_id = ((short)move_param_id_upper << 8) | (short)move_param_id_lower;
+bool static_move_static_with_data_in_x_parameter_list(uint8_t move_param_id_lower, uint8_t move_param_id_upper) {
+	uint16_t move_param_id = ((int16_t)move_param_id_upper << 8) | (int16_t)move_param_id_lower;
 
 	if (move_param_id >= MAX_NG_MOVE_ITEMS)
 		return false;
@@ -874,8 +880,8 @@ bool static_move_static_with_data_in_x_parameter_list(unsigned char move_param_i
 	bool is_valid = false;
 
 	NG_MOVE_ITEM *move_item = &current_move_items[move_param_id];
-	int direction = move_item->direction & 0xff;
-	int script_static = move_item->index_item;
+	int32_t direction = move_item->direction & 0xff;
+	int32_t script_static = move_item->index_item;
 
 	if (move_item->flags != 0xffff) {
 		if (move_item->flags & ~(FMOV_INFINITE_LOOP | FMOV_HEAVY_AT_END | FMOV_TRIGGERS_ALL | FMOV_HEAVY_ALL)) {
@@ -887,11 +893,11 @@ bool static_move_static_with_data_in_x_parameter_list(unsigned char move_param_i
 	switch (direction) {
 		case DIR_NORTH: {
 			if (!NGGetStaticHorizontalMovementRemainingUnits(script_static)) {
-				short current_angle = (short)0xC000;
+				int16_t current_angle = (int16_t)0xC000;
 				if (move_item->direction & DIR_INVERT_DIRECTION) {
-					current_angle += (short)0x8000;
+					current_angle += (int16_t)0x8000;
 				}
-				NGSetStaticHorizontalMovementAngle(script_static, (short)current_angle);
+				NGSetStaticHorizontalMovementAngle(script_static, (int16_t)current_angle);
 				NGSetStaticHorizontalMovementRemainingUnits(script_static, move_item->distance);
 				NGSetStaticHorizontalMovementSpeed(script_static, move_item->speed);
 				if (move_item->flags & FMOV_INFINITE_LOOP) {
@@ -905,11 +911,11 @@ bool static_move_static_with_data_in_x_parameter_list(unsigned char move_param_i
 		}
 		case DIR_EAST: {
 			if (!NGGetStaticHorizontalMovementRemainingUnits(script_static)) {
-				short current_angle = 0x0000;
+				int16_t current_angle = 0x0000;
 				if (move_item->direction & DIR_INVERT_DIRECTION) {
 					current_angle += 0x8000;
 				}
-				NGSetStaticHorizontalMovementAngle(script_static, (short)current_angle);
+				NGSetStaticHorizontalMovementAngle(script_static, (int16_t)current_angle);
 				NGSetStaticHorizontalMovementRemainingUnits(script_static, move_item->distance);
 				NGSetStaticHorizontalMovementSpeed(script_static, move_item->speed);
 				if (move_item->flags & FMOV_INFINITE_LOOP) {
@@ -923,11 +929,11 @@ bool static_move_static_with_data_in_x_parameter_list(unsigned char move_param_i
 		}
 		case DIR_SOUTH: {
 			if (!NGGetStaticHorizontalMovementRemainingUnits(script_static)) {
-				short current_angle = 0x4000;
+				int16_t current_angle = 0x4000;
 				if (move_item->direction & DIR_INVERT_DIRECTION) {
 					current_angle += 0x8000;
 				}
-				NGSetStaticHorizontalMovementAngle(script_static, (short)current_angle);
+				NGSetStaticHorizontalMovementAngle(script_static, (int16_t)current_angle);
 				NGSetStaticHorizontalMovementRemainingUnits(script_static, move_item->distance);
 				NGSetStaticHorizontalMovementSpeed(script_static, move_item->speed);
 				if (move_item->flags & FMOV_INFINITE_LOOP) {
@@ -941,11 +947,11 @@ bool static_move_static_with_data_in_x_parameter_list(unsigned char move_param_i
 		}
 		case DIR_WEST: {
 			if (!NGGetStaticHorizontalMovementRemainingUnits(script_static)) {
-				short current_angle = (short)0x8000;
+				int16_t current_angle = (int16_t)0x8000;
 				if (move_item->direction & DIR_INVERT_DIRECTION) {
 					current_angle += 0x8000;
 				}
-				NGSetStaticHorizontalMovementAngle(script_static, (short)current_angle);
+				NGSetStaticHorizontalMovementAngle(script_static, (int16_t)current_angle);
 				NGSetStaticHorizontalMovementRemainingUnits(script_static, move_item->distance);
 				NGSetStaticHorizontalMovementSpeed(script_static, move_item->speed);
 				if (move_item->flags & FMOV_INFINITE_LOOP) {
@@ -990,8 +996,8 @@ bool static_move_static_with_data_in_x_parameter_list(unsigned char move_param_i
 }
 
 // NGLE - 167
-bool moveable_move_moveable_with_data_in_x_parameter_list(unsigned char move_param_id_lower, unsigned char move_param_id_upper) {
-	unsigned short move_param_id = ((short)move_param_id_upper << 8) | (short)move_param_id_lower;
+bool moveable_move_moveable_with_data_in_x_parameter_list(uint8_t move_param_id_lower, uint8_t move_param_id_upper) {
+	uint16_t move_param_id = ((int16_t)move_param_id_upper << 8) | (int16_t)move_param_id_lower;
 
 	if (move_param_id >= MAX_NG_MOVE_ITEMS)
 		return false;
@@ -999,8 +1005,12 @@ bool moveable_move_moveable_with_data_in_x_parameter_list(unsigned char move_par
 	bool is_valid = false;
 
 	NG_MOVE_ITEM *move_item = &current_move_items[move_param_id];
-	int direction = move_item->direction & 0xff;
-	int script_item = ng_script_id_table[move_item->index_item].script_index;
+	int32_t direction = move_item->direction & 0xff;
+	int32_t script_item = ng_script_id_table[move_item->index_item].script_index;
+	if (script_item == -1) {
+		NGLog(NG_LOG_TYPE_ERROR, "Invalid script ID!");
+		return false;
+	}
 
 	if (move_item->flags != 0xffff) {
 		if (move_item->flags & ~(FMOV_INFINITE_LOOP | FMOV_HEAVY_AT_END | FMOV_TRIGGERS_ALL | FMOV_HEAVY_ALL)) {
@@ -1012,11 +1022,11 @@ bool moveable_move_moveable_with_data_in_x_parameter_list(unsigned char move_par
 	switch (direction) {
 		case DIR_NORTH: {
 			if (!NGGetItemHorizontalMovementRemainingUnits(script_item)) {
-				short current_angle = (short)0xC000;
+				int16_t current_angle = (int16_t)0xC000;
 				if (move_item->direction & DIR_INVERT_DIRECTION) {
-					current_angle += (short)0x8000;
+					current_angle += (int16_t)0x8000;
 				}
-				NGSetItemHorizontalMovementAngle(script_item, (short)current_angle);
+				NGSetItemHorizontalMovementAngle(script_item, (int16_t)current_angle);
 				NGSetItemHorizontalMovementRemainingUnits(script_item, move_item->distance);
 				NGSetItemHorizontalMovementSpeed(script_item, move_item->speed);
 				if (move_item->flags & FMOV_INFINITE_LOOP) {
@@ -1030,11 +1040,11 @@ bool moveable_move_moveable_with_data_in_x_parameter_list(unsigned char move_par
 		}
 		case DIR_EAST: {
 			if (!NGGetItemHorizontalMovementRemainingUnits(script_item)) {
-				short current_angle = (short)0x0000;
+				int16_t current_angle = (int16_t)0x0000;
 				if (move_item->direction & DIR_INVERT_DIRECTION) {
-					current_angle += (short)0x8000;
+					current_angle += (int16_t)0x8000;
 				}
-				NGSetItemHorizontalMovementAngle(script_item, (short)current_angle);
+				NGSetItemHorizontalMovementAngle(script_item, (int16_t)current_angle);
 				NGSetItemHorizontalMovementRemainingUnits(script_item, move_item->distance);
 				NGSetItemHorizontalMovementSpeed(script_item, move_item->speed);
 				if (move_item->flags & FMOV_INFINITE_LOOP) {
@@ -1048,11 +1058,11 @@ bool moveable_move_moveable_with_data_in_x_parameter_list(unsigned char move_par
 		}
 		case DIR_SOUTH: {
 			if (!NGGetItemHorizontalMovementRemainingUnits(script_item)) {
-				short current_angle = (short)0x4000;
+				int16_t current_angle = (int16_t)0x4000;
 				if (move_item->direction & DIR_INVERT_DIRECTION) {
-					current_angle += (short)0x8000;
+					current_angle += (int16_t)0x8000;
 				}
-				NGSetItemHorizontalMovementAngle(script_item, (short)current_angle);
+				NGSetItemHorizontalMovementAngle(script_item, (int16_t)current_angle);
 				NGSetItemHorizontalMovementRemainingUnits(script_item, move_item->distance);
 				NGSetItemHorizontalMovementSpeed(script_item, move_item->speed);
 				if (move_item->flags & FMOV_INFINITE_LOOP) {
@@ -1066,11 +1076,11 @@ bool moveable_move_moveable_with_data_in_x_parameter_list(unsigned char move_par
 		}
 		case DIR_WEST: {
 			if (!NGGetItemHorizontalMovementRemainingUnits(script_item)) {
-				short current_angle = (short)0x8000;
+				int16_t current_angle = (int16_t)0x8000;
 				if (move_item->direction & DIR_INVERT_DIRECTION) {
-					current_angle += (short)0x8000;
+					current_angle += (int16_t)0x8000;
 				}
-				NGSetItemHorizontalMovementAngle(script_item, (short)current_angle);
+				NGSetItemHorizontalMovementAngle(script_item, (int16_t)current_angle);
 				NGSetItemHorizontalMovementRemainingUnits(script_item, move_item->distance);
 				NGSetItemHorizontalMovementSpeed(script_item, move_item->speed);
 				if (move_item->flags & FMOV_INFINITE_LOOP) {
@@ -1115,18 +1125,18 @@ bool moveable_move_moveable_with_data_in_x_parameter_list(unsigned char move_par
 }
 
 // NGLE - 168
-bool sound_play_sound_single_playback_of_global_sound_map(unsigned char lower_sample_id, unsigned char upper_sample_id) {
-	int indexed_sound_sample = (int)lower_sample_id | ((int)(upper_sample_id) << 8 & 0xff00);
+bool sound_play_sound_single_playback_of_global_sound_map(uint8_t lower_sample_id, uint8_t upper_sample_id) {
+	int32_t indexed_sound_sample = (int32_t)lower_sample_id | ((int32_t)(upper_sample_id) << 8 & 0xff00);
 	
 	SoundEffect(indexed_sound_sample, NULL, SFX_ALWAYS);
 	return true;
 }
 
 // NGLE - 169
-bool lara_force_x_animation_for_lara_preserve_state_id(unsigned char lower_anim_id, unsigned char upper_anim_id) {
-	int animation_index = (int)lower_anim_id | ((int)(upper_anim_id) << 8 & 0xff00);
+bool lara_force_x_animation_for_lara_preserve_state_id(uint8_t lower_anim_id, uint8_t upper_anim_id) {
+	int32_t animation_index = (int32_t)lower_anim_id | ((int32_t)(upper_anim_id) << 8 & 0xff00);
 
-	int animation_index_offset = objects[T4PlusGetLaraSlotID()].anim_index + animation_index;
+	int32_t animation_index_offset = objects[T4PlusGetLaraSlotID()].anim_index + animation_index;
 
 	NGSetItemAnimation(lara.item_number, animation_index_offset, false, false, true, false);
 
@@ -1134,9 +1144,9 @@ bool lara_force_x_animation_for_lara_preserve_state_id(unsigned char lower_anim_
 }
 
 // NGLE - 170
-bool lara_force_x_animation_for_lara_set_new_state_id(unsigned char lower_anim_id, unsigned char upper_anim_id) {
-	int animation_index = (int)lower_anim_id | ((int)(upper_anim_id) << 8 & 0xff00);
-	int animation_index_offset = objects[T4PlusGetLaraSlotID()].anim_index + animation_index;
+bool lara_force_x_animation_for_lara_set_new_state_id(uint8_t lower_anim_id, uint8_t upper_anim_id) {
+	int32_t animation_index = (int32_t)lower_anim_id | ((int32_t)(upper_anim_id) << 8 & 0xff00);
+	int32_t animation_index_offset = objects[T4PlusGetLaraSlotID()].anim_index + animation_index;
 
 	NGSetItemAnimation(lara.item_number, animation_index_offset, true, false, true, false);
 
@@ -1144,23 +1154,26 @@ bool lara_force_x_animation_for_lara_set_new_state_id(unsigned char lower_anim_i
 }
 
 // NGLE - 171
-bool lara_force_x_animation_for_lara_set_neutral_state_id(unsigned char lower_anim_id, unsigned char upper_anim_id) {
-	int animation_index = (int)lower_anim_id | ((int)(upper_anim_id) << 8 & 0xff00);
-	int animation_index_offset = objects[T4PlusGetLaraSlotID()].anim_index + animation_index;
+bool lara_force_x_animation_for_lara_set_neutral_state_id(uint8_t lower_anim_id, uint8_t upper_anim_id) {
+	int32_t animation_index = (int32_t)lower_anim_id | ((int32_t)(upper_anim_id) << 8 & 0xff00);
+	int32_t animation_index_offset = objects[T4PlusGetLaraSlotID()].anim_index + animation_index;
 
 	NGSetItemAnimation(lara.item_number, animation_index_offset, false, false, true, false);
-	items[lara.item_number].current_anim_state = 69;
+	ITEM_INFO* item = T4PlusGetItemInfoForID(lara.item_number);
+	if (item) {
+		item->current_anim_state = 69;
+	}
 
 	return true;
 }
 
 
 // NGLE - 180
-bool static_explode(unsigned char static_id_lower, unsigned char static_id_upper) {
-	unsigned short static_id = ((short)static_id_upper << 8) | (short)static_id_lower;
+bool static_explode(uint8_t static_id_lower, uint8_t static_id_upper) {
+	uint16_t static_id = ((int16_t)static_id_upper << 8) | (int16_t)static_id_lower;
 
 	NGStaticTableEntry* entry = &ng_static_id_table[static_id];
-	int room_number = ng_room_remap_table[entry->remapped_room_index].room_index;
+	int32_t room_number = ng_room_remap_table[entry->remapped_room_index].room_index;
 	if (room_number >= 0 && room_number < number_rooms) {
 		MESH_INFO* mesh = &room[room_number].mesh[entry->mesh_id];
 
@@ -1178,7 +1191,7 @@ bool static_explode(unsigned char static_id_lower, unsigned char static_id_upper
 			
 			// TODO: explosion effect is not accurate
 			TriggerExplosionSparks(pos.x_pos, pos.y_pos, pos.z_pos, 3, -2, 0, room_number);
-			for (int i = 0; i < 3; i++)
+			for (int32_t i = 0; i < 3; i++)
 				TriggerExplosionSparks(pos.x_pos, pos.y_pos, pos.z_pos, 3, -1, 0, room_number);
 
 			SoundEffect(SFX_EXPLOSION1, 0, SFX_DEFAULT);
@@ -1191,11 +1204,11 @@ bool static_explode(unsigned char static_id_lower, unsigned char static_id_upper
 
 
 // NGLE - 189
-bool static_visibility_set_as_invisible(unsigned char static_id_lower, unsigned char static_id_upper) {
-	unsigned short static_id = ((short)static_id_upper << 8) | (short)static_id_lower;
+bool static_visibility_set_as_invisible(uint8_t static_id_lower, uint8_t static_id_upper) {
+	uint16_t static_id = ((int16_t)static_id_upper << 8) | (int16_t)static_id_lower;
 
 	NGStaticTableEntry* entry = &ng_static_id_table[static_id];
-	int room_number = ng_room_remap_table[entry->remapped_room_index].room_index;
+	int32_t room_number = ng_room_remap_table[entry->remapped_room_index].room_index;
 	if (room_number >= 0 && room_number < number_rooms) {
 		MESH_INFO* mesh = &room[room_number].mesh[entry->mesh_id];
 		if (mesh)
@@ -1208,11 +1221,11 @@ bool static_visibility_set_as_invisible(unsigned char static_id_lower, unsigned 
 }
 
 // NGLE - 190
-bool static_visibility_render_newly_visible(unsigned char static_id_lower, unsigned char static_id_upper) {
-	unsigned short static_id = ((short)static_id_upper << 8) | (short)static_id_lower;
+bool static_visibility_render_newly_visible(uint8_t static_id_lower, uint8_t static_id_upper) {
+	uint16_t static_id = ((int16_t)static_id_upper << 8) | (int16_t)static_id_lower;
 
 	NGStaticTableEntry* entry = &ng_static_id_table[static_id];
-	int room_number = ng_room_remap_table[entry->remapped_room_index].room_index;
+	int32_t room_number = ng_room_remap_table[entry->remapped_room_index].room_index;
 	if (room_number >= 0 && room_number < number_rooms) {
 		MESH_INFO* mesh = &room[room_number].mesh[entry->mesh_id];
 		if (mesh)
@@ -1225,19 +1238,19 @@ bool static_visibility_render_newly_visible(unsigned char static_id_lower, unsig
 }
 
 // NGLE - 193
-bool play_track_on_channel_with_restore(unsigned char track_id, unsigned char channel_id) {
+bool play_track_on_channel_with_restore(uint8_t track_id, uint8_t channel_id) {
 	S_CDPlayExt(track_id, channel_id, false, true);
 	return true;
 }
 
 // NGLE - 199
-bool lara_light_or_put_out_torch_in_laras_hand(unsigned char light_torch, unsigned char _unused) {
+bool lara_light_or_put_out_torch_in_laras_hand(uint8_t light_torch, uint8_t _unused) {
 	lara.LitTorch = light_torch;
 	return true;
 }
 
 // NGLE - 200
-bool lara_give_or_remove_torch_to_or_from_hand_of_lara(unsigned char give_torch, unsigned char _unused) {
+bool lara_give_or_remove_torch_to_or_from_hand_of_lara(uint8_t give_torch, uint8_t _unused) {
 	if (give_torch) {
 		if (lara.gun_type != WEAPON_TORCH) {
 			lara.request_gun_type = WEAPON_TORCH;
@@ -1265,61 +1278,61 @@ bool lara_give_or_remove_torch_to_or_from_hand_of_lara(unsigned char give_torch,
 }
 
 // NGLE - 231
-bool variables_add_value_to_x_variable(unsigned char variable, unsigned char value) {
+bool variables_add_value_to_x_variable(uint8_t variable, uint8_t value) {
 	NGNumericOperation(NG_ADD, variable, value);
 	return true;
 }
 
 // NGLE - 232
-bool variables_set_x_variable_to_value(unsigned char variable, unsigned char value) {
+bool variables_set_x_variable_to_value(uint8_t variable, uint8_t value) {
 	NGNumericOperation(NG_SET, variable, value);
 	return true;
 }
 
 // NGLE - 233
-bool variables_subtract_value_from_x_variable(unsigned char variable, unsigned char value) {
+bool variables_subtract_value_from_x_variable(uint8_t variable, uint8_t value) {
 	NGNumericOperation(NG_SUBTRACT, variable, value);
 	return true;
 }
 
 // NGLE - 234
-bool variables_set_in_x_variable_the_bit(unsigned char variable, unsigned char bit) {
+bool variables_set_in_x_variable_the_bit(uint8_t variable, uint8_t bit) {
 	NGNumericOperation(NG_BIT_SET, variable, bit);
 	return true;
 }
 
 // NGLE - 235
-bool variables_clear_in_x_variable_the_bit(unsigned char variable, unsigned char bit) {
+bool variables_clear_in_x_variable_the_bit(uint8_t variable, uint8_t bit) {
 	NGNumericOperation(NG_BIT_CLEAR, variable, bit);
 	return true;
 }
 
 // NGLE - 244
-bool variables_copy_to_x_numeric_variable_the_savegame_memory_value(unsigned char variable, unsigned char savegame_value) {
+bool variables_copy_to_x_numeric_variable_the_savegame_memory_value(uint8_t variable, uint8_t savegame_value) {
 	NGNumericOperation(NG_SET, variable, NGNumericGetSavegameValue(savegame_value));
 	return true;
 }
 
 // NGLE - 251
-bool variables_multiply_x_variable_by_value(unsigned char variable, unsigned char value) {
+bool variables_multiply_x_variable_by_value(uint8_t variable, uint8_t value) {
 	NGNumericOperation(NG_MULTIPLY, variable, value);
 	return true;
 }
 
 // NGLE - 252
-bool variables_set_in_x_numeric_variable_the_negative_value(unsigned char variable, unsigned char value) {
+bool variables_set_in_x_numeric_variable_the_negative_value(uint8_t variable, uint8_t value) {
 	NGNumericOperation(NG_SET, variable, -128 + value);
 	return true;
 }
 
 // NGLE - 253
-bool variables_divide_x_variable_by_value(unsigned char variable, unsigned char value) {
+bool variables_divide_x_variable_by_value(uint8_t variable, uint8_t value) {
 	NGNumericOperation(NG_DIVIDE, variable, value);
 	return true;
 }
 
 // NGLE - 264
-bool variables_start_the_x_trng_timer_in_mode(unsigned char set_global_timer, unsigned char countdown_timer) {
+bool variables_start_the_x_trng_timer_in_mode(uint8_t set_global_timer, uint8_t countdown_timer) {
 	if (set_global_timer) {
 		if (countdown_timer)
 			ng_global_timer_frame_increment = -1;
@@ -1336,7 +1349,7 @@ bool variables_start_the_x_trng_timer_in_mode(unsigned char set_global_timer, un
 }
 
 // NGLE - 265
-bool variables_stop_the_x_trng_timer(unsigned char set_global_timer, unsigned char _unused) {
+bool variables_stop_the_x_trng_timer(uint8_t set_global_timer, uint8_t _unused) {
 	if (set_global_timer) {
 		ng_global_timer_frame_increment = 0;
 	} else {
@@ -1347,33 +1360,33 @@ bool variables_stop_the_x_trng_timer(unsigned char set_global_timer, unsigned ch
 }
 
 // NGLE - 266
-bool variables_initialize_the_x_trng_timer_to_seconds(unsigned char set_global_timer, unsigned char seconds) {
+bool variables_initialize_the_x_trng_timer_to_seconds(uint8_t set_global_timer, uint8_t seconds) {
 	if (set_global_timer)
-		ng_global_timer = (int)(seconds) * 30;
+		ng_global_timer = (int32_t)(seconds) * NG_TICKS_PER_SECOND;
 	else
-		ng_local_timer = (int)(seconds) * 30;
+		ng_local_timer = (int32_t)(seconds) * NG_TICKS_PER_SECOND;
 
 	return true;
 }
 
 // NGLE - 267
-bool variables_initialize_the_x_trng_timer_to_big_number_seconds(unsigned char set_global_timer, unsigned char big_number_id) {
+bool variables_initialize_the_x_trng_timer_to_big_number_seconds(uint8_t set_global_timer, uint8_t big_number_id) {
 	NGLog(NG_LOG_TYPE_ERROR, "variables_initialize_the_x_trng_timer_to_big_number_seconds: unimplemented!");
 	return true;
 }
 
 // NGLE - 268
-bool variables_initialize_the_x_trng_timer_to_frame_ticks(unsigned char set_global_timer, unsigned char frame_ticks) {
+bool variables_initialize_the_x_trng_timer_to_frame_ticks(uint8_t set_global_timer, uint8_t frame_ticks) {
 	if (set_global_timer)
-		ng_global_timer = (int)(frame_ticks);
+		ng_global_timer = (int32_t)(frame_ticks);
 	else
-		ng_local_timer = (int)(frame_ticks);
+		ng_local_timer = (int32_t)(frame_ticks);
 
 	return true;
 }
 
 // NGLE - 269
-bool variables_show_x_trng_timer_in_position(unsigned char set_global_timer, unsigned char position) {
+bool variables_show_x_trng_timer_in_position(uint8_t set_global_timer, uint8_t position) {
 
 	if (position == NGTimerPosition::NG_TIMER_POSITION_DOWN_DAMAGE_BAR) {
 		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NG_TIMER_POSITION_DOWN_DAMAGE_BAR unimplemented!");
@@ -1397,14 +1410,14 @@ bool variables_show_x_trng_timer_in_position(unsigned char set_global_timer, uns
 }
 
 // NGLE - 270
-bool variables_hide_the_x_trng_timer_in_seconds(unsigned char set_global_timer, unsigned char seconds) {
+bool variables_hide_the_x_trng_timer_in_seconds(uint8_t set_global_timer, uint8_t seconds) {
 	if (set_global_timer) {
 		if (ng_global_timer_time_until_hide < 0) {
-			ng_global_timer_time_until_hide = (int)(seconds) * 30;
+			ng_global_timer_time_until_hide = (int32_t)(seconds) * NG_TICKS_PER_SECOND;
 		}
 	} else {
 		if (ng_local_timer_time_until_hide < 0) {
-			ng_local_timer_time_until_hide = (int)(seconds) * 30;
+			ng_local_timer_time_until_hide = (int32_t)(seconds) * NG_TICKS_PER_SECOND;
 		}
 	}
 
@@ -1412,20 +1425,20 @@ bool variables_hide_the_x_trng_timer_in_seconds(unsigned char set_global_timer, 
 }
 
 // NGLE - 284
-bool variables_numeric_invert_the_sign_of_x_numeric_value(unsigned char variable, unsigned char _unused) {
+bool variables_numeric_invert_the_sign_of_x_numeric_value(uint8_t variable, uint8_t _unused) {
 	NGNumericOperation(NG_INVERT_SIGN, variable, NGNumericGetVariable(variable));
 	return true;
 }
 
 // NGLE - 335
-bool variables_set_the_x_inventory_item_as_selected_inventory_memory(unsigned char inventory_item, unsigned char _unused) {
+bool variables_set_the_x_inventory_item_as_selected_inventory_memory(uint8_t inventory_item, uint8_t _unused) {
 	ng_selected_inventory_item_memory = inventory_item;
 	return true;
 }
 
 // NGLE - 345
-bool triggergroup_enable_newly_the_oneshot_x_triggergroup_already_performed(unsigned char trigger_group_id_upper, unsigned char trigger_group_id_lower) {
-	unsigned short trigger_group_id = (trigger_group_id_upper << 8) | trigger_group_id_lower;
+bool triggergroup_enable_newly_the_oneshot_x_triggergroup_already_performed(uint8_t trigger_group_id_upper, uint8_t trigger_group_id_lower) {
+	uint16_t trigger_group_id = (trigger_group_id_upper << 8) | trigger_group_id_lower;
 	if (trigger_group_id >= MAX_NG_TRIGGER_GROUPS) {
 		NGLog(NG_LOG_TYPE_ERROR, "Invalid trigger group.");
 		return false;
@@ -1437,7 +1450,7 @@ bool triggergroup_enable_newly_the_oneshot_x_triggergroup_already_performed(unsi
 }
 
 // NGLE - 355
-bool screen_flash_screen_with_light_color_for_duration(unsigned char flash_color, unsigned char duration) {
+bool screen_flash_screen_with_light_color_for_duration(uint8_t flash_color, uint8_t duration) {
 	switch (flash_color) {
 		case 0:{
 			// Red Light
@@ -1530,60 +1543,60 @@ bool screen_flash_screen_with_light_color_for_duration(unsigned char flash_color
 
 
 // NGLE - 367
-bool camera_show_black_screen_for_seconds_with_final_curtain_effect(unsigned char timer, unsigned char _unused) {
-	NGSetFullscreenCurtainTimer(timer * 30);
+bool camera_show_black_screen_for_seconds_with_final_curtain_effect(uint8_t timer, uint8_t _unused) {
+	NGSetFullscreenCurtainTimer(timer * NG_TICKS_PER_SECOND);
 
 	return true;
 }
 
 // NGLE - 369
-bool camera_set_cinema_effect_type_for_seconds(unsigned char timer, unsigned char extra_timer) {
-	NGSetCinemaTypeAndTimer(timer, extra_timer * 30);
+bool camera_set_cinema_effect_type_for_seconds(uint8_t timer, uint8_t extra_timer) {
+	NGSetCinemaTypeAndTimer(timer, extra_timer * NG_TICKS_PER_SECOND);
 
 	return true;
 }
 
 // NGLE - 371
-bool perform_triggergroup_from_script_in_single_execution_mode(unsigned char trigger_group_id_lower, unsigned char trigger_group_id_upper) {
-	unsigned short trigger_group_id = (trigger_group_id_upper << 8) | trigger_group_id_lower;
+bool perform_triggergroup_from_script_in_single_execution_mode(uint8_t trigger_group_id_lower, uint8_t trigger_group_id_upper) {
+	uint16_t trigger_group_id = (trigger_group_id_upper << 8) | trigger_group_id_lower;
 	return NGTriggerGroupFunction(trigger_group_id, TRIGGER_GROUP_EXECUTION_SINGLE);
 }
 
 // NGLE - 372
-bool perform_triggergroup_from_script_in_multi_execution_mode(unsigned char trigger_group_id_lower, unsigned char trigger_group_id_upper) {
-	unsigned short trigger_group_id = (trigger_group_id_upper << 8) | trigger_group_id_lower;
+bool perform_triggergroup_from_script_in_multi_execution_mode(uint8_t trigger_group_id_lower, uint8_t trigger_group_id_upper) {
+	uint16_t trigger_group_id = (trigger_group_id_upper << 8) | trigger_group_id_lower;
 	return NGTriggerGroupFunction(trigger_group_id, TRIGGER_GROUP_EXECUTION_MULTIPLE);
 }
 
 // NGLE - 373
-bool perform_triggergroup_from_script_in_continuous_mode(unsigned char trigger_group_id_lower, unsigned char trigger_group_id_upper) {
-	unsigned short trigger_group_id = (trigger_group_id_upper << 8) | trigger_group_id_lower;
+bool perform_triggergroup_from_script_in_continuous_mode(uint8_t trigger_group_id_lower, uint8_t trigger_group_id_upper) {
+	uint16_t trigger_group_id = (trigger_group_id_upper << 8) | trigger_group_id_lower;
 	return NGTriggerGroupFunction(trigger_group_id, TRIGGER_GROUP_EXECUTION_CONTINUOUS);
 }
 
 
 // NGLE - 374
-bool enable_global_trigger_with_id(unsigned char global_trigger_id_lower, unsigned char global_trigger_id_upper) {
-	unsigned short global_trigger_id = (global_trigger_id_upper << 8) | global_trigger_id_lower;
+bool enable_global_trigger_with_id(uint8_t global_trigger_id_lower, uint8_t global_trigger_id_upper) {
+	uint16_t global_trigger_id = (global_trigger_id_upper << 8) | global_trigger_id_lower;
 	ng_global_trigger_states[global_trigger_id].is_disabled = false;
 	return true;
 }
 
 // NGLE - 375
-bool disable_global_trigger_with_id(unsigned char global_trigger_id_lower, unsigned char global_trigger_id_upper) {
-	unsigned short global_trigger_id = (global_trigger_id_upper << 8) | global_trigger_id_lower;
+bool disable_global_trigger_with_id(uint8_t global_trigger_id_lower, uint8_t global_trigger_id_upper) {
+	uint16_t global_trigger_id = (global_trigger_id_upper << 8) | global_trigger_id_lower;
 	ng_global_trigger_states[global_trigger_id].is_disabled = true;
 	return true;
 }
 
 // NGLE - 404
-bool trigger_secret(unsigned char secret_number, unsigned char _unused) {
+bool trigger_secret(uint8_t secret_number, uint8_t _unused) {
 	T4PTriggerSecret(secret_number);
 	return true;
 }
 
 // NGLE - 407
-bool set_lara_holsters(unsigned char holster_type, unsigned char _unused) {
+bool set_lara_holsters(uint8_t holster_type, uint8_t _unused) {
 	switch (holster_type) {
 	case 0x0d: {
 		lara.holster = T4PlusGetLaraHolstersSlotID();
@@ -1613,15 +1626,15 @@ bool set_lara_holsters(unsigned char holster_type, unsigned char _unused) {
 }
 
 // NGLE - 411
-bool lara_set_x_opacity_for_lara_for_seconds(unsigned char opacity, unsigned char seconds) {
+bool lara_set_x_opacity_for_lara_for_seconds(uint8_t opacity, uint8_t seconds) {
 	return false;
 }
 
-int NGPerformTRNGFlipEffect(uint16_t flip_number, int16_t full_timer, uint32_t flags) {
+int32_t NGPerformTRNGFlipEffect(uint16_t flip_number, int16_t full_timer, uint32_t flags) {
 	char timer = (char)full_timer & 0xff;
 	char extra_timer = (char)(full_timer >> 8) & 0xff;
 
-	int repeat_type = 1;
+	int32_t repeat_type = 1;
 
 	switch (flip_number) {
 		case INVENTORY_REMOVE_INVENTORY_ITEM: {
@@ -1852,7 +1865,7 @@ int NGPerformTRNGFlipEffect(uint16_t flip_number, int16_t full_timer, uint32_t f
 			break;
 		}
 		case ANIMCOMMAND_ACTIVATE_HEAVY_TRIGGERS_IN_SECTOR_WHERE_LARA_IS: {
-			short room_num = lara_item->room_number;
+			int16_t room_num = lara_item->room_number;
 			FLOOR_INFO* floor_info = GetFloor(lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos, &room_num);
 			GetHeight(floor_info, lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos);
 			TestTriggers(trigger_index, true, 0);
@@ -2231,7 +2244,7 @@ int NGPerformTRNGFlipEffect(uint16_t flip_number, int16_t full_timer, uint32_t f
 			break;
 		}
 		case WEATHER_SET_X_DISTANCE_FOG_VALUE: {
-			LevelFogStart = (float(BLOCK_SIZE) * 120.0F) - (float(BLOCK_SIZE) * (float)((unsigned char)timer));
+			LevelFogStart = (float(BLOCK_SIZE) * 120.0F) - (float(BLOCK_SIZE) * (float)((uint8_t)timer));
 			break;
 		}
 		case WEATHER_CHANGE_START_FOR_DISTANCE_TO_X_DISTANCE_IN_SECONDS: {
@@ -2363,7 +2376,7 @@ int NGPerformTRNGFlipEffect(uint16_t flip_number, int16_t full_timer, uint32_t f
 			break;
 		}
 		case WEATHER_SET_X_END_FOG_LIMIT_FOR_DISTANCE_FOG: {
-			LevelFogEnd = (float(BLOCK_SIZE) * 120.0F) - (float(BLOCK_SIZE) * (float)((unsigned char)timer));
+			LevelFogEnd = (float(BLOCK_SIZE) * 120.0F) - (float(BLOCK_SIZE) * (float)((uint8_t)timer));
 			break;
 		}
 		case WEATHER_CHANGE_END_LIMIT_OF_DISTANCE_FOG_IN_X_WAY_WITH_SPEED: {
@@ -3041,8 +3054,8 @@ int NGPerformTRNGFlipEffect(uint16_t flip_number, int16_t full_timer, uint32_t f
 	return repeat_type;
 }
 
-int NGExecuteFlipEffect(uint16_t plugin_id, uint16_t flip_number, int16_t full_timer, uint32_t flags) {
-	int repeat_type = 0;
+int32_t NGExecuteFlipEffect(uint16_t plugin_id, uint16_t flip_number, int16_t full_timer, uint32_t flags) {
+	int32_t repeat_type = 0;
 
 	if (plugin_id > 0) {
 		if (plugin_id == 0xffff) {
@@ -3107,7 +3120,7 @@ void NGExecuteFlipEffects() {
 				NGStoreItemIndexCurrent(lara.item_number);
 			}
 
-			int repeat_type = NGExecuteFlipEffect(current_flipeffect->plugin_id, current_flipeffect->number, current_flipeffect->timer, current_flipeffect->flags);
+			int32_t repeat_type = NGExecuteFlipEffect(current_flipeffect->plugin_id, current_flipeffect->number, current_flipeffect->timer, current_flipeffect->flags);
 			if (repeat_type > 0 && !NGGetIsInsideDummyTrigger()) {
 				uint32_t last_flipeffect = 0;
 				for (last_flipeffect = 0; last_flipeffect < old_flipeffect_count; last_flipeffect++) {

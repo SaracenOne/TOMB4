@@ -500,10 +500,10 @@ void LaraAboveWater(ITEM_INFO* item, COLL_INFO* coll)
 		item->pos.x_rot -= DEGREES_TO_ROTATION(1);
 	else item->pos.x_rot = 0;
 
-	if (lara.turn_rate < -DEGREES_TO_ROTATION(2))
-		lara.turn_rate += DEGREES_TO_ROTATION(2);
-	else if (lara.turn_rate > DEGREES_TO_ROTATION(2))
-		lara.turn_rate -= DEGREES_TO_ROTATION(2);
+	if (lara.turn_rate < -LARA_TURN_DECREMENT)
+		lara.turn_rate += LARA_TURN_DECREMENT;
+	else if (lara.turn_rate > LARA_TURN_DECREMENT)
+		lara.turn_rate -= LARA_TURN_DECREMENT;
 	else
 		lara.turn_rate = 0;
 

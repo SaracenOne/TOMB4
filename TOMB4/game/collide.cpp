@@ -756,7 +756,12 @@ void LaraBaddieCollision(ITEM_INFO* l, COLL_INFO* coll)
 						dy = l->pos.y_pos - item->pos.y_pos;
 						dz = l->pos.z_pos - item->pos.z_pos;
 
-						if (dx > -3072 && dx < 3072 && dy > -3072 && dy < 3072 && dz > -3072 && dz < 3072)
+						if (dx > -COLLISION_RANGE &&
+							dx < COLLISION_RANGE &&
+							dy > -COLLISION_RANGE &&
+							dy < COLLISION_RANGE &&
+							dz > -COLLISION_RANGE &&
+							dz < COLLISION_RANGE)
 							objects[item->object_number].collision(item_number, l, coll);
 					}
 				}
@@ -789,7 +794,12 @@ void LaraBaddieCollision(ITEM_INFO* l, COLL_INFO* coll)
 				dy = l->pos.y_pos - mesh->y;
 				dz = l->pos.z_pos - mesh->z;
 
-				if (dx > -3072 && dx < 3072 && dy > -3072 && dy < 3072 && dz > -3072 && dz < 3072)
+				if (dx > -COLLISION_RANGE &&
+					dx < COLLISION_RANGE &&
+					dy > -COLLISION_RANGE &&
+					dy < COLLISION_RANGE &&
+					dz > -COLLISION_RANGE &&
+					dz < COLLISION_RANGE)
 				{
 					bounds = &static_objects[mesh->static_number].x_minc;
 					pos.x_pos = mesh->x;

@@ -13,6 +13,7 @@
 #include "../lara_states.h"
 #include "../../specific/3dmath.h"
 #include "../../tomb4/mod_config.h"
+#include "../../tomb4/tomb4plus/t4plus_items.h"
 
 #define NG_ANIM_TEST_INPUT(animation_flag, input_flag, key_number, return_variable) \
 if (animation->key_number & animation_flag) { \
@@ -86,7 +87,7 @@ void NGTestAnimation(NG_ANIMATION *animation) {
 		if (animation->state_or_animation_condition_count == 0) {
 			is_valid = true;
 		} else {
-			for (int i = 0; i < animation->state_or_animation_condition_count; i++) {
+			for (int32_t i = 0; i < animation->state_or_animation_condition_count; i++) {
 				if (animation->state_or_animation_condition_array[i] < 0) {
 					// Animation indicies
 					if (lara_item->anim_number == -animation->state_or_animation_condition_array[i]) {
@@ -140,14 +141,15 @@ void NGTestAnimation(NG_ANIMATION *animation) {
 						lara.GeneralPtr = 0;
 
 						{
-							ITEM_INFO* item = &items[ng_animation_target_item];
-							if (!NGTestLaraDistance(&target_position, item, lara_item)) {
-								if (!NGMoveLara(false)) {
-									result.is_valid = false;
+							ITEM_INFO* item = T4PlusGetItemInfoForID(ng_animation_target_item);
+							if (item) {
+								if (!NGTestLaraDistance(&target_position, item, lara_item)) {
+									if (!NGMoveLara(false)) {
+										result.is_valid = false;
+									}
+								} else {
+									AlignLaraPosition(&target_position, item, lara_item);
 								}
-							}
-							else {
-								AlignLaraPosition(&target_position, item, lara_item);
 							}
 						}
 					} else {
@@ -201,9 +203,9 @@ void NGProcessAnimations() {
 	NGMoveLara(true);
 
 	if (ng_levels[gfCurrentLevel].records) {
-		int animation_count = ng_levels[gfCurrentLevel].records->animation_count;
-		for (int i = 0; i < animation_count; i++) {
-			int record_id = ng_levels[gfCurrentLevel].records->animation_table[i].record_id;
+		int32_t animation_count = ng_levels[gfCurrentLevel].records->animation_count;
+		for (int32_t i = 0; i < animation_count; i++) {
+			int32_t record_id = ng_levels[gfCurrentLevel].records->animation_table[i].record_id;
 			NG_ANIMATION *animation = &ng_levels[gfCurrentLevel].records->animation_table[record_id].record;
 			NGTestAnimation(animation);
 		}

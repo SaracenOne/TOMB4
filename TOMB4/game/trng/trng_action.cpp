@@ -33,13 +33,16 @@ NGScannedAction scanned_actions[NG_MAX_SCANNED_ACTIONS];
 uint32_t old_action_count;
 NGOldTrigger old_actions[NG_MAX_OLD_ACTIONS];
 
-void NGHurtEnemy(unsigned short item_id, unsigned short damage) {
-	if (items[item_id].hit_points > 0) {
-		items[item_id].hit_points -= damage;
+void NGHurtEnemy(uint16_t item_id, uint16_t damage) {
+	ITEM_INFO *item = T4PlusGetItemInfoForID(item_id);
+	if (item) {
+		if (item->hit_points > 0) {
+			item->hit_points -= damage;
+		}
 	}
 }
 
-void NGTurnItemBy45DegreeHorizontalIncrements(int item_id,  int increments, int speed) {
+void NGTurnItemBy45DegreeHorizontalIncrements(int32_t item_id, int32_t increments, int32_t speed) {
 	NGSetItemHorizontalRotationSpeed(item_id, NG_DEGREE(speed));
 
 	switch (increments) {
@@ -99,7 +102,7 @@ void NGTurnItemBy45DegreeHorizontalIncrements(int item_id,  int increments, int 
 	}
 }
 
-void NGTurnItemBy45DegreeVerticalIncrements(int item_id, int increments, int speed) {
+void NGTurnItemBy45DegreeVerticalIncrements(int32_t item_id, int32_t increments, int32_t speed) {
 	NGSetItemVerticalRotationSpeed(item_id, NG_DEGREE(speed));
 
 	switch (increments) {
@@ -163,7 +166,7 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 	unsigned char action_type = (unsigned char)action_timer & 0xff;
 	unsigned char extra_timer = (unsigned char)(action_timer >> 8) & 0xff;
 
-	int repeat_type = 1;
+	int32_t repeat_type = 1;
 
 	if (item_id < 0) {
 		NGLog(NG_LOG_TYPE_ERROR, "ActionNG: Negative item ID!");
@@ -288,7 +291,10 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 			// TODO extra item routine
 			flipeffect = extra_timer;
 
-			effect_routines[extra_timer](&items[item_id]);
+			ITEM_INFO *item = T4PlusGetItemInfoForID(item_id);
+			if (item) {
+				effect_routines[extra_timer](item);
+			}
 
 			if (flipeffect == -1) {
 				repeat_type = 1;
@@ -297,89 +303,91 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 			break;
 		}
 		case KILL_OBJECT: {
-			ITEM_INFO* item = &items[item_id];
-			if (item->object_number != get_game_mod_level_objects_info(gfCurrentLevel)->lara_slot
-				&& !item->active
-				&& item->status == ITEM_ACTIVE) {
+			ITEM_INFO *item = T4PlusGetItemInfoForID(item_id);
+			if (item) {
+				if (item->object_number != get_game_mod_level_objects_info(gfCurrentLevel)->lara_slot
+					&& !item->active
+					&& item->status == ITEM_ACTIVE) {
 
-				if (item->collidable) {
-					repeat_type = 0;
-				}
-				break;
-			}
-
-			switch (extra_timer) {
-				// 0 vitality
-				case 0x00: {
-					item->hit_points = 0;
-					break;
-				}
-				// Remove immediately
-				case 0x01: {
-					KillItem(item_id);
-					break;
-				}
-				// Explosion / Underwater Explosion
-				case 0x02:
-				case 0x03: {
-					if (extra_timer == 0x02) {
-						TriggerExplosionSparks(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, 3, -2, 0, item->room_number);
-						for (int i = 0; i < 3; i++)
-							TriggerExplosionSparks(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, 3, -1, 0, item->room_number);
-
-					} else {
-						TriggerUnderwaterExplosion(item, 0);
+					if (item->collidable) {
+						repeat_type = 0;
 					}
+					break;
+				}
 
-					KillItem(item_id);
+				switch (extra_timer) {
+					// 0 vitality
+					case 0x00: {
+						item->hit_points = 0;
+						break;
+					}
+					// Remove immediately
+					case 0x01: {
+						KillItem(item_id);
+						break;
+					}
+					// Explosion / Underwater Explosion
+					case 0x02:
+					case 0x03: {
+						if (extra_timer == 0x02) {
+							TriggerExplosionSparks(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, 3, -2, 0, item->room_number);
+							for (int32_t i = 0; i < 3; i++) {
+								TriggerExplosionSparks(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, 3, -1, 0, item->room_number);
+							}
+						} else {
+							TriggerUnderwaterExplosion(item, 0);
+						}
 
-					item->status = ITEM_DEACTIVATED;
+						KillItem(item_id);
 
-					SoundEffect(SFX_EXPLOSION1, nullptr, 0);
-					SoundEffect(SFX_EXPLOSION2, nullptr, 0);
+						item->status = ITEM_DEACTIVATED;
 
-					item->hit_points = INFINITE_HEALTH;
-					break;
-				}
-				// Explode Creature
-				case 0x04: {
-					CreatureDie(item_id, true);
-					SoundEffect(SFX_EXPLOSION1, nullptr, 0);
-					SoundEffect(SFX_EXPLOSION2, nullptr, 0);
-					item->hit_points = INFINITE_HEALTH;
-					break;
-				}
-				// Creature Die
-				case 0x05: {
-					// We may not want to set this if using persistent enemy bodies.
-					// T4Plus' implementation is different though.
-					item->after_death = 1;
-					item->status = ITEM_DEACTIVATED;
-					item->hit_points = 0;
+						SoundEffect(SFX_EXPLOSION1, nullptr, 0);
+						SoundEffect(SFX_EXPLOSION2, nullptr, 0);
 
-					break;
-				}
-				// Hide
-				case 0x06: {
-					// Seems accurate but WTF?
-					item->pos.x_pos = 0;
-					break;
-				}
-				// Antitrigger
-				case 0x07: {
-					// Accurate!
-					item->flags |= IFL_CLEARBODY;
-					item->item_flags[0] = 0;
-					break;
-				}
-				// Smoke emitter
-				case 0x08: {
-					RemoveActiveItem(item_id);
-					break;
-				}
-				default: {
-					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "KILL_OBJECT: action data %u unimplemented!", extra_timer);
-					break;
+						item->hit_points = INFINITE_HEALTH;
+						break;
+					}
+					// Explode Creature
+					case 0x04: {
+						CreatureDie(item_id, true);
+						SoundEffect(SFX_EXPLOSION1, nullptr, 0);
+						SoundEffect(SFX_EXPLOSION2, nullptr, 0);
+						item->hit_points = INFINITE_HEALTH;
+						break;
+					}
+					// Creature Die
+					case 0x05: {
+						// We may not want to set this if using persistent enemy bodies.
+						// T4Plus' implementation is different though.
+						item->after_death = 1;
+						item->status = ITEM_DEACTIVATED;
+						item->hit_points = 0;
+
+						break;
+					}
+					// Hide
+					case 0x06: {
+						// Seems accurate but WTF?
+						item->pos.x_pos = 0;
+						break;
+					}
+					// Antitrigger
+					case 0x07: {
+						// Accurate!
+						item->flags |= IFL_CLEARBODY;
+						item->item_flags[0] = 0;
+						break;
+					}
+					// Smoke emitter
+					case 0x08: {
+						RemoveActiveItem(item_id);
+						break;
+					}
+					default: {
+						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "KILL_OBJECT: action data %u unimplemented!", extra_timer);
+						break;
+					}
 				}
 			}
 			break;
@@ -431,41 +439,47 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 		case OPEN_OR_CLOSE_DOOR_ITEM: {
 			repeat_type = 0;
 
-			T4PlusActivateItem(item_id, false);
-			items[item_id].timer = 0;
+			ITEM_INFO *item = T4PlusGetItemInfoForID(item_id);
+			if (item) {
+				T4PlusActivateItem(item_id, false);
+				item->timer = 0;
 
-			bool reverse = (items[item_id].flags & IFL_REVERSE) ? true : false;
+				bool reverse = (item->flags & IFL_REVERSE) ? true : false;
 
-			if (extra_timer) {
-				if (reverse) {
-					items[item_id].flags &= ~(IFL_CODEBITS);
-				} else {
-					items[item_id].flags |= IFL_CODEBITS;
-					items[item_id].timer = (short)(NGGetLastTriggerTimer() & 0xffff) * 30;
+				if (extra_timer) {
+					if (reverse) {
+						item->flags &= ~(IFL_CODEBITS);
+					} else {
+						item->flags |= IFL_CODEBITS;
+						item->timer = (int16_t)(NGGetLastTriggerTimer() & 0xffff) * NG_TICKS_PER_SECOND;
+					}
 				}
-			} else {
-				if (reverse) {
-					items[item_id].flags |= IFL_CODEBITS;
-					items[item_id].timer = (short)(NGGetLastTriggerTimer() & 0xffff) * 30;
-				} else {
-					items[item_id].flags &= ~(IFL_CODEBITS);
+				else {
+					if (reverse) {
+						item->flags |= IFL_CODEBITS;
+						item->timer = (int16_t)(NGGetLastTriggerTimer() & 0xffff) * NG_TICKS_PER_SECOND;
+					} else {
+						item->flags &= ~(IFL_CODEBITS);
+					}
 				}
 			}
-
 			break;
 		}
 		case MOVE_CONTINUOUSLY_FORWARD_BACKWARD_X_ANIMATING_FOR_CLICKS:
 			NGLog(NG_LOG_TYPE_POSSIBLE_INACCURACY, "NGAction: MOVE_CONTINUOUSLY_FORWARD_BACKWARD_X_ANIMATING_FOR_CLICKS may not be accurate.");
 			if (!NGGetItemHorizontalMovementRemainingUnits(item_id)) {
-				NGSetItemHorizontalMovementAngle(item_id, items[item_id].pos.y_rot);
-				NGSetItemHorizontalMovementRemainingUnits(item_id, (extra_timer + 1) * CLICK_SIZE);
-				NGSetItemHorizontalMovementRepeatUnits(item_id, (extra_timer + 1) * CLICK_SIZE);
-				NGSetItemHorizontalMovementSpeed(item_id, 32);
-				NGSetItemMovementInProgressSound(item_id, -1);
-				NGSetItemMovementFinishedSound(item_id, -1);
-				NGSetItemMovementTriggerHeavyAtEnd(item_id, false);
-				NGSetItemMovementTriggerNormalWhenMoving(item_id, false);
-				NGSetItemMovementTriggerHeavyWhenMoving(item_id, false);
+				ITEM_INFO *item = T4PlusGetItemInfoForID(item_id);
+				if (item) {
+					NGSetItemHorizontalMovementAngle(item_id, item->pos.y_rot);
+					NGSetItemHorizontalMovementRemainingUnits(item_id, (extra_timer + 1) * CLICK_SIZE);
+					NGSetItemHorizontalMovementRepeatUnits(item_id, (extra_timer + 1) * CLICK_SIZE);
+					NGSetItemHorizontalMovementSpeed(item_id, 32);
+					NGSetItemMovementInProgressSound(item_id, -1);
+					NGSetItemMovementFinishedSound(item_id, -1);
+					NGSetItemMovementTriggerHeavyAtEnd(item_id, false);
+					NGSetItemMovementTriggerNormalWhenMoving(item_id, false);
+					NGSetItemMovementTriggerHeavyWhenMoving(item_id, false);
+				}
 			}
 			break;
 		case MOVE_ITEM_UP_FOR_CLICKS:
@@ -506,7 +520,7 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 			}
 
 			if (!NGGetItemHorizontalMovementRemainingUnits(item_id)) {
-				NGSetItemHorizontalMovementAngle(item_id, (short)0xC000);
+				NGSetItemHorizontalMovementAngle(item_id, (int16_t)0xC000);
 				NGSetItemHorizontalMovementRemainingUnits(item_id, (extra_timer + 1) * CLICK_SIZE);
 				NGSetItemHorizontalMovementRepeatUnits(item_id, 0);
 				NGSetItemHorizontalMovementSpeed(item_id, 32);
@@ -523,7 +537,7 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 			}
 
 			if (!NGGetItemHorizontalMovementRemainingUnits(item_id)) {
-				NGSetItemHorizontalMovementAngle(item_id, (short)0x0000);
+				NGSetItemHorizontalMovementAngle(item_id, (int16_t)0x0000);
 				NGSetItemHorizontalMovementRemainingUnits(item_id, (extra_timer + 1) * CLICK_SIZE);
 				NGSetItemHorizontalMovementRepeatUnits(item_id, 0);
 				NGSetItemHorizontalMovementSpeed(item_id, 32);
@@ -540,7 +554,7 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 			}
 
 			if (!NGGetItemHorizontalMovementRemainingUnits(item_id)) {
-				NGSetItemHorizontalMovementAngle(item_id, (short)0x4000);
+				NGSetItemHorizontalMovementAngle(item_id, (int16_t)0x4000);
 				NGSetItemHorizontalMovementRemainingUnits(item_id, (extra_timer + 1) * CLICK_SIZE);
 				NGSetItemHorizontalMovementRepeatUnits(item_id, 0);
 				NGSetItemHorizontalMovementSpeed(item_id, 32);
@@ -557,7 +571,7 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 			}
 
 			if (!NGGetItemHorizontalMovementRemainingUnits(item_id)) {
-				NGSetItemHorizontalMovementAngle(item_id, (short)0x8000);
+				NGSetItemHorizontalMovementAngle(item_id, (int16_t)0x8000);
 				NGSetItemHorizontalMovementRemainingUnits(item_id, (extra_timer + 1) * CLICK_SIZE);
 				NGSetItemHorizontalMovementRepeatUnits(item_id, 0);
 				NGSetItemHorizontalMovementSpeed(item_id, 32);
@@ -585,15 +599,18 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 			break;
 		}
 		case MOVE_ITEM_IMMEDIATELY_TO_LARA_START_POS_WITH_MATCHING_OCB_SETTINGS: {
-			int lara_start_pos_id = NGFindIndexForLaraStartPosWithMatchingOCB(extra_timer & 0x7f);
+			int32_t lara_start_pos_id = NGFindIndexForLaraStartPosWithMatchingOCB(extra_timer & 0x7f);
 			if (lara_start_pos_id >= 0) {
 				AIOBJECT *ai = &AIObjects[lara_start_pos_id];
 				if (ai) {
-					items[item_id].pos.x_pos = ai->x;
-					items[item_id].pos.y_pos = ai->y;
-					items[item_id].pos.z_pos = ai->z;
-					items[item_id].pos.y_rot = ai->y_rot;
-					items[item_id].room_number = ai->room_number;
+					ITEM_INFO *item = T4PlusGetItemInfoForID(item_id);
+					if (item) {
+						item->pos.x_pos = ai->x;
+						item->pos.y_pos = ai->y;
+						item->pos.z_pos = ai->z;
+						item->pos.y_rot = ai->y_rot;
+						item->room_number = ai->room_number;
+					}
 				}
 			}
 			break;
@@ -616,9 +633,9 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 			}
 
 			if (NGGetLastTriggerTimer() != 0) {
-				camera.timer = NGGetLastTriggerTimer() * 30;
+				camera.timer = NGGetLastTriggerTimer() * NG_TICKS_PER_SECOND;
 			} else {
-				camera.timer = extra_timer * 30;
+				camera.timer = extra_timer * NG_TICKS_PER_SECOND;
 			}
 
 			camera.speed = 1;
@@ -626,7 +643,10 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 				ng_camera_target_id = lara.item_number;
 			}
 			
-			camera.item = &items[ng_camera_target_id];
+			ITEM_INFO *camera_item = T4PlusGetItemInfoForID(ng_camera_target_id);
+			if (camera_item) {
+				camera.item = camera_item;
+			}
 
 			if (flags & SCANF_BUTTON_ONE_SHOT) {
 				camera.flags |= 0x100;
@@ -650,13 +670,19 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 			break;
 		}
 		case TRIGGER_MOVEABLE_ACTIVATE_WITH_TIMER: {
-			items[item_id].timer = ((short)(extra_timer & 0x7f)) * 30;
-			T4PlusActivateItem(item_id, false);
+			ITEM_INFO *item = T4PlusGetItemInfoForID(item_id);
+			if (item) {
+				item->timer = ((int16_t)(extra_timer & 0x7f)) * NG_TICKS_PER_SECOND;
+				T4PlusActivateItem(item_id, false);
+			}
 			break;
 		}
 		case UNTRIGGER_MOVEABLE_ACTIVATE_WITH_TIMER: {
-			items[item_id].timer = ((short)(extra_timer & 0x7f)) * 30;
-			T4PlusActivateItem(item_id, true);
+			ITEM_INFO *item = T4PlusGetItemInfoForID(item_id);
+			if (item) {
+				item->timer = ((int16_t)(extra_timer & 0x7f)) * NG_TICKS_PER_SECOND;
+				T4PlusActivateItem(item_id, true);
+			}
 			break;
 		}
 		case ACTIVATE_OR_UNTRIGGER_FLYBY_SEQUENCE: {
@@ -708,7 +734,10 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 		}
 		case SET_ENEMY_TRANSPARENCY_LEVEL: {
 			NGSetFadeOverride(item_id, extra_timer);
-			items[item_id].after_death = extra_timer;
+			ITEM_INFO *item = T4PlusGetItemInfoForID(item_id);
+			if (item) {
+				item->after_death = extra_timer;
+			}
 			break;
 		}
 		case FREEZE_ENEMY_FOR_SECONDS: {
@@ -719,7 +748,7 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 					NGSetItemFreezeTimer(item_id, -1);
 				}
 				else {
-					NGSetItemFreezeTimer(item_id, extra_timer * 30);
+					NGSetItemFreezeTimer(item_id, extra_timer * NG_TICKS_PER_SECOND);
 				}
 			}
 			break;
@@ -774,13 +803,14 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 			break;
 		}
 		case ENEMY_EFFECTS_APPLY_ON_X_MOVEABLE_THE_E_EFFECT: {
+			ITEM_INFO *item = T4PlusGetItemInfoForID(item_id);
 			switch (extra_timer) {
 				case 0:
-					items[item_id].after_death = 100;
-					ExplodeBaboon(&items[item_id]);
+					item->after_death = 100;
+					ExplodeBaboon(item);
 					break;
 				case 1:
-					items[item_id].item_flags[0] = 150;
+					item->item_flags[0] = 150;
 					ControlMineHelicopter(item_id);
 					CreatureDie(item_id, false);
 					break;
@@ -790,14 +820,14 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 			break;
 		}
 		case CREATURE_FORCE_FRAME_OF_CURRENT_ANIMATION: {
-			ITEM_INFO* item = &items[item_id];
+			ITEM_INFO *item = T4PlusGetItemInfoForID(item_id);
 			if (item) {
 				item->frame_number = anims[item->anim_number].frame_base + extra_timer;
 			}
 			break;
 		}
 		case CREATURE_FORCE_STATE_ID: {
-			ITEM_INFO* item = &items[item_id];
+			ITEM_INFO *item = T4PlusGetItemInfoForID(item_id);
 			if (item) {
 				item->current_anim_state = extra_timer;
 				item->goal_anim_state = extra_timer; // Do we need to change the goal state too or not?
@@ -864,7 +894,7 @@ void NGCaptureAction(uint16_t item_index, uint16_t extra_timer, uint32_t floor_o
 		}
 	}
 
-	int current_action_id = scanned_action_count;
+	int32_t current_action_id = scanned_action_count;
 	scanned_actions[current_action_id].flags = SCANF_YET_TO_PERFORM;
 
 	if (NGGetIsHeavyTesting()) {

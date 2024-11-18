@@ -7,7 +7,7 @@
 #include "../../game/items.h"
 
 void ControlTeleporter(short item_number) {
-	ITEM_INFO* item = &items[item_number];
+	ITEM_INFO *item = &items[item_number];
 
 	if (TriggerActive(item)) {
 		item->flags &= ~(IFL_CODEBITS);

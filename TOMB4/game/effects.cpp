@@ -33,6 +33,7 @@
 #include "../tomb4/tomb4plus/t4plus_environment.h"
 #include "trng/trng.h"
 #include "trng/trng_condition.h"
+#include "collide.h"
 
 FX_INFO* effects;
 OBJECT_VECTOR* sound_effects;
@@ -1156,7 +1157,7 @@ long ItemNearLara(PHD_3DPOS* pos, long rad)
 	dy = pos->y_pos - lara_item->pos.y_pos;
 	dz = pos->z_pos - lara_item->pos.z_pos;
 
-	if (dx >= -rad && dx <= rad && dz >= -rad && dz <= rad && dy >= -3072 && dy <= 3072 && SQUARE(dx) + SQUARE(dz) <= SQUARE(rad))
+	if (dx >= -rad && dx <= rad && dz >= -rad && dz <= rad && dy >= -COLLISION_RANGE && dy <= COLLISION_RANGE && SQUARE(dx) + SQUARE(dz) <= SQUARE(rad))
 	{
 		bounds = GetBoundsAccurate(lara_item);
 

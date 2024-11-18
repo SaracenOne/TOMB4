@@ -85,25 +85,25 @@ char** global_string_table = nullptr;
     if (r && JSON_INTEGER == json_getType(r)) { \
         unsigned char r8 = (unsigned char)json_getInteger(r); \
         (my_struct)->value_name &= ~(0x00ff0000); \
-        (my_struct)->value_name |= (((unsigned int)r8) << 16) & 0x00ff0000; \
+        (my_struct)->value_name |= (((uint32_t)r8) << 16) & 0x00ff0000; \
     } \
     const json_t* g = json_getProperty(value_name, "g"); \
     if (g && JSON_INTEGER == json_getType(g)) { \
         unsigned char g8 = (unsigned char)json_getInteger(g); \
         (my_struct)->value_name &= ~(0x0000ff00); \
-        (my_struct)->value_name |= (((unsigned int)g8) << 8) & 0x0000ff00; \
+        (my_struct)->value_name |= (((uint32_t)g8) << 8) & 0x0000ff00; \
     } \
     const json_t* b = json_getProperty(value_name, "b"); \
     if (b && JSON_INTEGER == json_getType(b)) { \
         unsigned char b8 = (unsigned char)json_getInteger(b); \
         (my_struct)->value_name &= ~(0x000000ff); \
-        (my_struct)->value_name |= (((unsigned int)b8)) & 0x000000ff; \
+        (my_struct)->value_name |= (((uint32_t)b8)) & 0x000000ff; \
     } \
     const json_t* a = json_getProperty(value_name, "a"); \
     if (a && JSON_INTEGER == json_getType(a)) { \
         unsigned char a8 = (unsigned char)json_getInteger(a); \
         (my_struct)->value_name &= ~(0xff000000); \
-        (my_struct)->value_name |= (((unsigned int)a8) << 24) & 0xff000000; \
+        (my_struct)->value_name |= (((uint32_t)a8) << 24) & 0xff000000; \
     } \
     } \
     }
@@ -1685,17 +1685,29 @@ extern void T4PlusInit() {
 }
 
 bool is_source_trng_version_equal_or_greater_than_target(TRNG_ENGINE_VERSION source_version, TRNG_ENGINE_VERSION target_version) {
-    if (source_version.trng_version_major < target_version.trng_version_major)
+    if (source_version.trng_version_major < target_version.trng_version_major) {
         return false;
+    } else if (source_version.trng_version_major > target_version.trng_version_major) {
+        return true;
+    }
 
-    if (source_version.trng_version_minor < target_version.trng_version_minor)
+    if (source_version.trng_version_minor < target_version.trng_version_minor) {
         return false;
+    } else if (source_version.trng_version_minor > target_version.trng_version_minor) {
+        return true;
+    }
 
-    if (source_version.trng_version_maintainence < target_version.trng_version_maintainence)
+    if (source_version.trng_version_maintainence < target_version.trng_version_maintainence) {
         return false;
+    } else if (source_version.trng_version_maintainence > target_version.trng_version_maintainence) {
+        return true;
+    }
 
-    if (source_version.trng_version_build < target_version.trng_version_build)
+    if (source_version.trng_version_build < target_version.trng_version_build) {
         return false;
+    } else if (source_version.trng_version_build > target_version.trng_version_build) {
+        return true;
+    }
 
     return true;
 }

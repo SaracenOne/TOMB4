@@ -16,13 +16,13 @@
 #include "../newinv.h"
 #include "../../tomb4/tomb4plus/t4plus_items.h"
 
-bool NGExecuteSingleGlobalTrigger(int global_trigger_id, int selected_inventory_object_id) {
+bool NGExecuteSingleGlobalTrigger(int32_t global_trigger_id, int32_t selected_inventory_object_id) {
 	NG_GLOBAL_TRIGGER* global_trigger = &ng_levels[gfCurrentLevel].records->global_trigger_table[global_trigger_id].record;
-	int record_id = ng_levels[gfCurrentLevel].records->global_trigger_table[global_trigger_id].record_id;
+	int32_t record_id = ng_levels[gfCurrentLevel].records->global_trigger_table[global_trigger_id].record_id;
 
 	bool global_trigger_condition_passed = false;
 
-	unsigned short condition_trigger_group_id = global_trigger->condition_trigger_group;
+	uint16_t condition_trigger_group_id = global_trigger->condition_trigger_group;
 
 	if (selected_inventory_object_id == NO_ITEM) {
 		// What the difference between GT_CONDITION_GROUP and GT_ALWAYS?
@@ -47,9 +47,12 @@ bool NGExecuteSingleGlobalTrigger(int global_trigger_id, int selected_inventory_
 			break;
 		}
 		case GT_ENEMY_KILLED: {
-			int enemy_id = ng_script_id_table[global_trigger->parameter].script_index;
-			if (items[enemy_id].after_death > 0)
-				global_trigger_condition_passed = true;
+			int32_t enemy_id = ng_script_id_table[global_trigger->parameter].script_index;
+			ITEM_INFO *item = T4PlusGetItemInfoForID(enemy_id);
+			if (item) {
+				if (item->after_death > 0)
+					global_trigger_condition_passed = true;
+			}
 			break;
 		}
 		case GT_LARA_HP_LESS_THAN: {
@@ -71,8 +74,23 @@ bool NGExecuteSingleGlobalTrigger(int global_trigger_id, int selected_inventory_
 			global_trigger_condition_passed = true;
 			break;
 		}
+		case GT_DISTANCE_FROM_ITEM: {
+			if (is_mod_trng_version_equal_or_greater_than_target(1, 2, 2, 4)) {
+				NGScriptIDTableEntry *entry = &ng_script_id_table[global_trigger->parameter  & 0x1fff];
+				int32_t distance = (global_trigger->parameter >> 13) & 0x1ffff;
+				if (entry->script_index != -1) {
+					ITEM_INFO *item = T4PlusGetItemInfoForID(entry->script_index);
+					if (item) {
+						global_trigger_condition_passed = NGIsSourcePositionLessThanDistanceToTargetPosition(&lara_item->pos, &item->pos, distance, global_trigger->parameter & GTD_IGNORE_HEIGHT);
+					}
+				}
+			} else {
+				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "GT_DISTANCE_FROM_ITEM for version prior to (1, 2, 2, 4) is unimplemented.");
+			}
+			break;
+		}
 		case GT_COLLIDE_ITEM: {
-			ITEM_INFO *item = &items[ng_script_id_table[global_trigger->parameter].script_index];
+			ITEM_INFO *item = T4PlusGetItemInfoForID(ng_script_id_table[global_trigger->parameter].script_index);
 
 			ITEM_INFO* collided_item = NGIsLaraCollidingWithItem(item, global_trigger->flags & FGT_PUSHING_COLLISION ? NG_COLLISION_TYPE_PUSH : NG_COLLISION_TYPE_BOUNDS);
 			if (collided_item) {
@@ -90,7 +108,7 @@ bool NGExecuteSingleGlobalTrigger(int global_trigger_id, int selected_inventory_
 			break;
 		}
 		case GT_COLLIDE_CREATURE: {
-			ITEM_INFO* collided_item = NGIsLaraCollidingWithCreature(NG_CREATURE_TYPE_ANY, global_trigger->flags & FGT_PUSHING_COLLISION ? NG_COLLISION_TYPE_PUSH : NG_COLLISION_TYPE_BOUNDS);
+			ITEM_INFO *collided_item = NGIsLaraCollidingWithCreature(NG_CREATURE_TYPE_ANY, global_trigger->flags & FGT_PUSHING_COLLISION ? NG_COLLISION_TYPE_PUSH : NG_COLLISION_TYPE_BOUNDS);
 			if (collided_item) {
 				global_trigger_condition_passed = true;
 				NGStoreItemIndexConditional(T4PlusGetIDForItemInfo(collided_item));
@@ -98,14 +116,14 @@ bool NGExecuteSingleGlobalTrigger(int global_trigger_id, int selected_inventory_
 			break;
 		}
 		case GT_LOADED_SAVEGAME: {
-			int result = ng_loaded_savegame == true;
+			int32_t result = ng_loaded_savegame == true;
 			if (result >= 0) {
 				global_trigger_condition_passed = true;
 			}
 			break;
 		}
 		case GT_COLLIDE_STATIC_SLOT: {
-			int result = NGIsLaraCollidingWithStaticSlot(global_trigger->parameter);
+			int32_t result = NGIsLaraCollidingWithStaticSlot(global_trigger->parameter);
 			if (result >= 0) {
 				global_trigger_condition_passed = true;
 			}
@@ -179,7 +197,7 @@ bool NGExecuteSingleGlobalTrigger(int global_trigger_id, int selected_inventory_
 	if (global_trigger_condition_passed) {
 		if ((condition_trigger_group_id == 0xffff || NGTriggerGroupFunction(condition_trigger_group_id, TRIGGER_GROUP_EXECUTION_MULTIPLE))) {
 			if (!ng_global_trigger_states[record_id].is_halted) {
-				unsigned int perform_trigger_group_id = global_trigger->perform_trigger_group;
+				uint32_t perform_trigger_group_id = global_trigger->perform_trigger_group;
 
 				if (perform_trigger_group_id != 0xffff) {
 					NGTriggerGroupFunction(perform_trigger_group_id, TRIGGER_GROUP_EXECUTION_MULTIPLE);
@@ -204,7 +222,7 @@ bool NGExecuteSingleGlobalTrigger(int global_trigger_id, int selected_inventory_
 	}
 
 	if (global_trigger_should_on_false_triggergroup) {
-		unsigned int on_false_trigger_group_id = global_trigger->on_false_trigger_group;
+		uint32_t on_false_trigger_group_id = global_trigger->on_false_trigger_group;
 		if (on_false_trigger_group_id != 0xffff) {
 			NGTriggerGroupFunction(on_false_trigger_group_id, TRIGGER_GROUP_EXECUTION_MULTIPLE);
 		}

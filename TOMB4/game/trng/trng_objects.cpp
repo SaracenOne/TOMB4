@@ -16,7 +16,7 @@
 
 #include "../../tomb4/mod_config.h"
 
-int NGGetObjectIDForInventoryItemMemoryID(int id) {
+int32_t NGGetObjectIDForInventoryItemMemoryID(int32_t id) {
 	switch (id) {
 		case 0:
 			return UZI_ITEM;

@@ -42,6 +42,8 @@ enum NGGlobalTriggerTypes {
 	GT_SELECTED_INVENTORY_ITEM = 0x0027,
 };
 
+#define GTD_IGNORE_HEIGHT 0x40000000
+
 enum NGGlobalTriggerFlags {
 	FGT_SINGLE_SHOT = 0x0001,
 	FGT_NOT_TRUE = 0x0002,
@@ -53,4 +55,4 @@ enum NGGlobalTriggerFlags {
 	FGT_HIDE_IN_DEBUG = 0x2000
 };
 
-extern bool NGExecuteSingleGlobalTrigger(int global_trigger_id, int selected_inventory_object_id);
+extern bool NGExecuteSingleGlobalTrigger(int32_t global_trigger_id, int32_t selected_inventory_object_id);

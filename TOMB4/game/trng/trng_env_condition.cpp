@@ -6,6 +6,7 @@
 #include "../control.h"
 #include "trng_test_position.h"
 #include "trng_triggergroup.h"
+#include "../../tomb4/tomb4plus/t4plus_items.h"
 
 int32_t NGAbsDiffO(int16_t first, int16_t second) {
 	if (first > second) {
@@ -22,8 +23,7 @@ int32_t NGAbsDiffO(int16_t first, int16_t second) {
 	return abs(first - second);
 }
 
-uint16_t NGGetAlignedOrient(uint16_t orient, bool test_force_horthogonal, int *gap)
-{
+uint16_t NGGetAlignedOrient(uint16_t orient, bool test_force_horthogonal, int32_t *gap) {
 	int32_t min_diff;
 
 	if (!test_force_horthogonal) {
@@ -83,13 +83,13 @@ uint16_t NGGetAlignedOrient(uint16_t orient, bool test_force_horthogonal, int *g
 	return 0x0000;
 }
 
-int NGProportionDistance(int increment, int distance) {
-	return (int)((float)increment * ((float)distance / float(BLOCK_SIZE)));
+int32_t NGProportionDistance(int32_t increment, int32_t distance) {
+	return (int32_t)((float)increment * ((float)distance / float(BLOCK_SIZE)));
 }
 
-void NGCalculateIncrement(short orientation, int* inc_x_out, int* inc_z_out, int distance) {
-	int inc_x, inc_z;
-	int Indice;
+void NGCalculateIncrement(short orientation, int32_t* inc_x_out, int32_t* inc_z_out, int32_t distance) {
+	int32_t inc_x, inc_z;
+	int32_t indice;
 
 	if (distance == 0) {
 		*inc_x_out = 0;
@@ -97,11 +97,11 @@ void NGCalculateIncrement(short orientation, int* inc_x_out, int* inc_z_out, int
 		return;
 	}
 
-	Indice = orientation >> 3;
-	Indice &= 0x1FFE;
+	indice = orientation >> 3;
+	indice &= 0x1FFE;
 
-	inc_x = rcossin_tbl[Indice] << 12;
-	inc_z = rcossin_tbl[Indice + 1] << 12;
+	inc_x = rcossin_tbl[indice] << 12;
+	inc_z = rcossin_tbl[indice + 1] << 12;
 	inc_x = inc_x >> W2V_SHIFT;
 	inc_z = inc_z >> W2V_SHIFT;
 	if (distance != BLOCK_SIZE) {
@@ -168,7 +168,7 @@ TestEnvConditionTripletResult TestEnvConditionTriplet(NG_MULTI_ENV_TRIPLET* trip
 		if (item_index >= ITEM_COUNT) {
 			NGLog(NG_LOG_TYPE_ERROR, "Item out of range!");
 		}
-		current_item = &items[item_index];
+		current_item = T4PlusGetItemInfoForID(item_index);
 	}
 
 	uint16_t orientation = current_item->pos.y_rot;
@@ -176,7 +176,7 @@ TestEnvConditionTripletResult TestEnvConditionTriplet(NG_MULTI_ENV_TRIPLET* trip
 	uint32_t coord_y = current_item->pos.y_pos;
 	uint32_t coord_z = current_item->pos.z_pos;
 
-	unsigned int env_condition_switch_value = triplet->env_condition & 0x7f;
+	uint32_t env_condition_switch_value = triplet->env_condition & 0x7f;
 	switch (env_condition_switch_value) {
 		case 0: {
 			result.is_valid = true;
@@ -209,8 +209,8 @@ TestEnvConditionTripletResult TestEnvConditionTriplet(NG_MULTI_ENV_TRIPLET* trip
 					break;
 			}
 
-			int inc_x;
-			int inc_z;
+			int32_t inc_x;
+			int32_t inc_z;
 			NGCalculateIncrement(orientation, &inc_x, &inc_z, BLOCK_SIZE);
 
 			coord_x += inc_x;
@@ -229,7 +229,7 @@ TestEnvConditionTripletResult TestEnvConditionTriplet(NG_MULTI_ENV_TRIPLET* trip
 				break;
 			}
 
-			int ceiling = GetCeiling(floor_info, coord_x, coord_y, coord_z);
+			int32_t ceiling = GetCeiling(floor_info, coord_x, coord_y, coord_z);
 			if ((lara_item->pos.y_pos - distance_test) < ceiling) {
 				result.is_valid = false;
 				break;
@@ -259,8 +259,8 @@ TestEnvConditionTripletResult TestEnvConditionTriplet(NG_MULTI_ENV_TRIPLET* trip
 					break;
 			}
 
-			int inc_x;
-			int inc_z;
+			int32_t inc_x;
+			int32_t inc_z;
 			NGCalculateIncrement(orientation, &inc_x, &inc_z, BLOCK_SIZE);
 
 			coord_x += inc_x;
@@ -269,7 +269,7 @@ TestEnvConditionTripletResult TestEnvConditionTriplet(NG_MULTI_ENV_TRIPLET* trip
 			short room_num = lara_item->room_number;
 
 			FLOOR_INFO* floor_info = GetFloor(coord_x, coord_y, coord_z, &room_num);
-			int height = GetHeight(floor_info, coord_x, coord_y, coord_z);
+			int32_t height = GetHeight(floor_info, coord_x, coord_y, coord_z);
 
 			if (height == NO_HEIGHT) {
 				result.is_valid = false;
@@ -281,7 +281,7 @@ TestEnvConditionTripletResult TestEnvConditionTriplet(NG_MULTI_ENV_TRIPLET* trip
 				break;
 			}
 
-			int ceiling = GetCeiling(floor_info, coord_x, coord_y, coord_z);
+			int32_t ceiling = GetCeiling(floor_info, coord_x, coord_y, coord_z);
 			if ((lara_item->pos.y_pos - distance_test) < ceiling) {
 				result.is_valid = false;
 				break;
@@ -297,7 +297,7 @@ TestEnvConditionTripletResult TestEnvConditionTriplet(NG_MULTI_ENV_TRIPLET* trip
 				result.is_valid = true;
 			}
 
-			for (int i = 0; i < multi_env_cond->env_condition_triplet_count; i++) {
+			for (int32_t i = 0; i < multi_env_cond->env_condition_triplet_count; i++) {
 				TestEnvConditionTripletResult sub_result = TestEnvConditionTriplet(&multi_env_cond->env_condition_triplet_array[i], set_alignment_variables, item_index);
 
 				if (!sub_result.is_valid) {
@@ -335,7 +335,7 @@ TestEnvConditionTripletResult TestEnvConditionTriplet(NG_MULTI_ENV_TRIPLET* trip
 			result.is_valid = false;
 
 			NG_MULTI_ENV_CONDITION* multi_env_cond = &current_multi_env_conditions[triplet->distance_for_env];
-			for (int i = 0; i < multi_env_cond->env_condition_triplet_count; i++) {
+			for (int32_t i = 0; i < multi_env_cond->env_condition_triplet_count; i++) {
 				TestEnvConditionTripletResult sub_result = TestEnvConditionTriplet(&multi_env_cond->env_condition_triplet_array[i], set_alignment_variables, item_index);
 
 				if (sub_result.is_valid) {
@@ -501,8 +501,8 @@ TestEnvConditionTripletResult TestEnvConditionTriplet(NG_MULTI_ENV_TRIPLET* trip
 
 			result.is_valid = false;
 			for (item_number = room[lara_item->room_number].item_number; item_number != NO_ITEM; item_number = item->next_item) {
-				item = &items[item_number];
-				int test_position_id = triplet->distance_for_env;
+				item = T4PlusGetItemInfoForID(item_number);
+				int32_t test_position_id = triplet->distance_for_env;
 
 				NG_TEST_POSITION &test_position = current_test_positions[test_position_id];
 
@@ -567,7 +567,7 @@ TestEnvConditionTripletResult TestEnvConditionTriplet(NG_MULTI_ENV_TRIPLET* trip
 	return result;
 }
 
-bool TestMultiEnvCondition(int multi_env_condition_id, bool evaluate_as_or, int32_t item_index) {
+bool TestMultiEnvCondition(int32_t multi_env_condition_id, bool evaluate_as_or, int32_t item_index) {
 	bool is_valid;
 	if (evaluate_as_or)
 		is_valid = false;
@@ -575,7 +575,7 @@ bool TestMultiEnvCondition(int multi_env_condition_id, bool evaluate_as_or, int3
 		is_valid = true;
 
 	NG_MULTI_ENV_CONDITION* multi_env_cond = &current_multi_env_conditions[multi_env_condition_id];
-	for (int i = 0; i < multi_env_cond->env_condition_triplet_count; i++) {
+	for (int32_t i = 0; i < multi_env_cond->env_condition_triplet_count; i++) {
 		TestEnvConditionTripletResult sub_result = TestEnvConditionTriplet(&multi_env_cond->env_condition_triplet_array[i], false, item_index);
 
 		if (evaluate_as_or) {

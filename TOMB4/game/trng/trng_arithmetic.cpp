@@ -8,7 +8,7 @@
 
 
 // TODO: Investigate whether numeric operations operate as signed or unsigned.
-unsigned char NGNumericOperationByte(NGNumericOperationType number_operation_type, uint8_t variable, uint32_t value) {
+uint8_t NGNumericOperationByte(NGNumericOperationType number_operation_type, uint8_t variable, uint32_t value) {
 	switch (number_operation_type) {
 		case NG_SET: {
 			return value;
@@ -134,116 +134,116 @@ void NGNumericOperation(NGNumericOperationType number_operation, uint32_t variab
 
 		// Global Alfa Byte
 		case 0x00: {
-			unsigned char ng_global_alfa_1 = (ng_global_alfa & 0xff);
+			uint8_t ng_global_alfa_1 = (ng_global_alfa & 0xff);
 			ng_global_alfa_1 = NGNumericOperationByte(number_operation, ng_global_alfa_1, value);
-			ng_global_alfa = (ng_global_alfa & ~0xff) | (((int)ng_global_alfa_1)) & 0xff;
+			ng_global_alfa = (ng_global_alfa & ~0xff) | (((int32_t)ng_global_alfa_1)) & 0xff;
 			break;
 		}
 		case 0x01: {
-			unsigned char ng_global_alfa_2 = (ng_global_alfa >> 8) & 0xff;
+			uint8_t ng_global_alfa_2 = (ng_global_alfa >> 8) & 0xff;
 			ng_global_alfa_2 = NGNumericOperationByte(number_operation, ng_global_alfa_2, value);
-			ng_global_alfa = (ng_global_alfa & ~0xff00) | (((int)ng_global_alfa_2) << 8) & 0xff00;
+			ng_global_alfa = (ng_global_alfa & ~0xff00) | (((int32_t)ng_global_alfa_2) << 8) & 0xff00;
 			break;
 		}
 		case 0x02: {
-			unsigned char ng_global_alfa_3 = (ng_global_alfa >> 16) & 0xff;
+			uint8_t ng_global_alfa_3 = (ng_global_alfa >> 16) & 0xff;
 			ng_global_alfa_3 = NGNumericOperationByte(number_operation, ng_global_alfa_3, value);
-			ng_global_alfa = (ng_global_alfa & ~0xff0000) | (((int)ng_global_alfa_3) << 16) & 0xff0000;
+			ng_global_alfa = (ng_global_alfa & ~0xff0000) | (((int32_t)ng_global_alfa_3) << 16) & 0xff0000;
 			break;
 		}
 		case 0x03: {
-			unsigned char ng_global_alfa_4 = (ng_global_alfa >> 24) & 0xff;
+			uint8_t ng_global_alfa_4 = (ng_global_alfa >> 24) & 0xff;
 			ng_global_alfa_4 = NGNumericOperationByte(number_operation, ng_global_alfa_4, value);
-			ng_global_alfa = (ng_global_alfa & ~0xff000000) | (((int)ng_global_alfa_4) << 24) & 0xff000000;
+			ng_global_alfa = (ng_global_alfa & ~0xff000000) | (((int32_t)ng_global_alfa_4) << 24) & 0xff000000;
 			break;
 		}
 		// Global Beta Byte
 		case 0x04: {
-			unsigned char ng_global_beta_1 = (ng_global_beta & 0xff);
+			uint8_t ng_global_beta_1 = (ng_global_beta & 0xff);
 			ng_global_beta_1 = NGNumericOperationByte(number_operation, ng_global_beta_1, value);
-			ng_global_beta = (ng_global_beta & ~0xff) | (((int)ng_global_beta_1)) & 0xff;
+			ng_global_beta = (ng_global_beta & ~0xff) | (((int32_t)ng_global_beta_1)) & 0xff;
 			break;
 		}
 		case 0x05: {
-			unsigned char ng_global_beta_2 = (ng_global_beta >> 8) & 0xff;
+			uint8_t ng_global_beta_2 = (ng_global_beta >> 8) & 0xff;
 			ng_global_beta_2 = NGNumericOperationByte(number_operation, ng_global_beta_2, value);
-			ng_global_beta = (ng_global_beta & ~0xff00) | (((int)ng_global_beta_2) << 8) & 0xff00;
+			ng_global_beta = (ng_global_beta & ~0xff00) | (((int32_t)ng_global_beta_2) << 8) & 0xff00;
 			break;
 		}
 		case 0x06: {
-			unsigned char ng_global_beta_3 = (ng_global_beta >> 16) & 0xff;
+			uint8_t ng_global_beta_3 = (ng_global_beta >> 16) & 0xff;
 			ng_global_beta_3 = NGNumericOperationByte(number_operation, ng_global_beta_3, value);
-			ng_global_beta = (ng_global_beta & ~0xff0000) | (((int)ng_global_beta_3) << 16) & 0xff0000;
+			ng_global_beta = (ng_global_beta & ~0xff0000) | (((int32_t)ng_global_beta_3) << 16) & 0xff0000;
 			break;
 		}
 		case 0x07: {
-			unsigned char ng_global_beta_4 = (ng_global_beta >> 24) & 0xff;
+			uint8_t ng_global_beta_4 = (ng_global_beta >> 24) & 0xff;
 			ng_global_beta_4 = NGNumericOperationByte(number_operation, ng_global_beta_4, value);
-			ng_global_beta = (ng_global_beta & ~0xff000000) | (((int)ng_global_beta_4) << 24) & 0xff000000;
+			ng_global_beta = (ng_global_beta & ~0xff000000) | (((int32_t)ng_global_beta_4) << 24) & 0xff000000;
 			break;
 		}
 		// Global Delta Byte
 		case 0x08: {
-			unsigned char ng_global_delta_1 = (ng_global_delta & 0xff);
+			uint8_t ng_global_delta_1 = (ng_global_delta & 0xff);
 			ng_global_delta_1 = NGNumericOperationByte(number_operation, ng_global_delta_1, value);
-			ng_global_delta = (ng_global_delta & ~0xff) | (((int)ng_global_delta_1)) & 0xff;
+			ng_global_delta = (ng_global_delta & ~0xff) | (((int32_t)ng_global_delta_1)) & 0xff;
 			break;
 		}
 		case 0x09: {
-			unsigned char ng_global_delta_2 = (ng_global_delta >> 8) & 0xff;
+			uint8_t ng_global_delta_2 = (ng_global_delta >> 8) & 0xff;
 			ng_global_delta_2 = NGNumericOperationByte(number_operation, ng_global_delta_2, value);
-			ng_global_delta = (ng_global_delta & ~0xff00) | (((int)ng_global_delta_2) << 8) & 0xff00;
+			ng_global_delta = (ng_global_delta & ~0xff00) | (((int32_t)ng_global_delta_2) << 8) & 0xff00;
 			break;
 		}
 		case 0x0a: {
-			unsigned char ng_global_delta_3 = (ng_global_delta >> 16) & 0xff;
+			uint8_t ng_global_delta_3 = (ng_global_delta >> 16) & 0xff;
 			ng_global_delta_3 = NGNumericOperationByte(number_operation, ng_global_delta_3, value);
-			ng_global_delta = (ng_global_delta & ~0xff0000) | (((int)ng_global_delta_3) << 16) & 0xff0000;
+			ng_global_delta = (ng_global_delta & ~0xff0000) | (((int32_t)ng_global_delta_3) << 16) & 0xff0000;
 			break;
 		}
 		case 0x0b: {
-			unsigned char ng_global_delta_4 = (ng_global_delta >> 24) & 0xff;
+			uint8_t ng_global_delta_4 = (ng_global_delta >> 24) & 0xff;
 			ng_global_delta_4 = NGNumericOperationByte(number_operation, ng_global_delta_4, value);
-			ng_global_delta = (ng_global_delta & ~0xff000000) | (((int)ng_global_delta_4) << 24) & 0xff000000;
+			ng_global_delta = (ng_global_delta & ~0xff000000) | (((int32_t)ng_global_delta_4) << 24) & 0xff000000;
 			break;
 		}
 		// Global Short Alfa
 		case 0x10: {
 			uint16_t ng_global_short_alfa_1 = (ng_global_alfa & 0xffff);
 			ng_global_short_alfa_1 = NGNumericOperationShort(number_operation, ng_global_short_alfa_1, value);
-			ng_global_alfa = (ng_global_alfa & ~0xffff) | (((int)ng_global_short_alfa_1)) & 0xffff;
+			ng_global_alfa = (ng_global_alfa & ~0xffff) | (((int32_t)ng_global_short_alfa_1)) & 0xffff;
 			break;
 		}
 		case 0x11: {
 			uint16_t ng_global_short_alfa_2 = (ng_global_alfa & 0xffff0000);
 			ng_global_short_alfa_2 = NGNumericOperationShort(number_operation, ng_global_short_alfa_2, value);
-			ng_global_alfa = (ng_global_alfa & ~0xffff0000) | (((int)ng_global_short_alfa_2)) & 0xffff0000;
+			ng_global_alfa = (ng_global_alfa & ~0xffff0000) | (((int32_t)ng_global_short_alfa_2)) & 0xffff0000;
 			break;
 		}
 		// Global Short Beta
 		case 0x12: {
 			uint16_t ng_global_short_beta_1 = (ng_global_beta & 0xffff);
 			ng_global_short_beta_1 = NGNumericOperationShort(number_operation, ng_global_short_beta_1, value);
-			ng_global_beta = (ng_global_beta & ~0xffff) | (((int)ng_global_short_beta_1)) & 0xffff;
+			ng_global_beta = (ng_global_beta & ~0xffff) | (((int32_t)ng_global_short_beta_1)) & 0xffff;
 			break;
 		}
 		case 0x13: {
 			uint16_t ng_global_short_beta_2 = (ng_global_beta & 0xffff0000);
 			ng_global_short_beta_2 = NGNumericOperationShort(number_operation, ng_global_short_beta_2, value);
-			ng_global_beta = (ng_global_beta & ~0xffff0000) | (((int)ng_global_short_beta_2)) & 0xffff0000;
+			ng_global_beta = (ng_global_beta & ~0xffff0000) | (((int32_t)ng_global_short_beta_2)) & 0xffff0000;
 			break;
 		}
 		// Global Short Delta
 		case 0x14: {
 			uint16_t ng_global_short_delta_1 = (ng_global_delta & 0xffff);
 			ng_global_short_delta_1 = NGNumericOperationShort(number_operation, ng_global_short_delta_1, value);
-			ng_global_delta = (ng_global_delta & ~0xffff) | (((int)ng_global_short_delta_1)) & 0xffff;
+			ng_global_delta = (ng_global_delta & ~0xffff) | (((int32_t)ng_global_short_delta_1)) & 0xffff;
 			break;
 		}
 		case 0x15: {
 			uint16_t ng_global_short_delta_2 = (ng_global_delta & 0xffff0000);
 			ng_global_short_delta_2 = NGNumericOperationShort(number_operation, ng_global_short_delta_2, value);
-			ng_global_delta = (ng_global_delta & ~0xffff0000) | (((int)ng_global_short_delta_2)) & 0xffff0000;
+			ng_global_delta = (ng_global_delta & ~0xffff0000) | (((int32_t)ng_global_short_delta_2)) & 0xffff0000;
 			break;
 		}
 
@@ -277,116 +277,116 @@ void NGNumericOperation(NGNumericOperationType number_operation, uint32_t variab
 
 		// Local Alfa Byte
 		case 0x40: {
-			unsigned char ng_local_alfa_1 = (ng_local_alfa & 0xff);
+			uint8_t ng_local_alfa_1 = (ng_local_alfa & 0xff);
 			ng_local_alfa_1 = NGNumericOperationByte(number_operation, ng_local_alfa_1, value);
-			ng_local_alfa = (ng_local_alfa & ~0xff) | (((int)ng_local_alfa_1)) & 0xff;
+			ng_local_alfa = (ng_local_alfa & ~0xff) | (((int32_t)ng_local_alfa_1)) & 0xff;
 			break;
 		}
 		case 0x41: {
-			unsigned char ng_local_alfa_2 = (ng_local_alfa >> 8) & 0xff;
+			uint8_t ng_local_alfa_2 = (ng_local_alfa >> 8) & 0xff;
 			ng_local_alfa_2 = NGNumericOperationByte(number_operation, ng_local_alfa_2, value);
-			ng_local_alfa = (ng_local_alfa & ~0xff00) | (((int)ng_local_alfa_2) << 8) & 0xff00;
+			ng_local_alfa = (ng_local_alfa & ~0xff00) | (((int32_t)ng_local_alfa_2) << 8) & 0xff00;
 			break;
 		}
 		case 0x42: {
-			unsigned char ng_local_alfa_3 = (ng_local_alfa >> 16) & 0xff;
+			uint8_t ng_local_alfa_3 = (ng_local_alfa >> 16) & 0xff;
 			ng_local_alfa_3 = NGNumericOperationByte(number_operation, ng_local_alfa_3, value);
-			ng_local_alfa = (ng_local_alfa & ~0xff0000) | (((int)ng_local_alfa_3) << 16) & 0xff0000;
+			ng_local_alfa = (ng_local_alfa & ~0xff0000) | (((int32_t)ng_local_alfa_3) << 16) & 0xff0000;
 			break;
 		}
 		case 0x43: {
-			unsigned char ng_local_alfa_4 = (ng_local_alfa >> 24) & 0xff;
+			uint8_t ng_local_alfa_4 = (ng_local_alfa >> 24) & 0xff;
 			ng_local_alfa_4 = NGNumericOperationByte(number_operation, ng_local_alfa_4, value);
-			ng_local_alfa = (ng_local_alfa & ~0xff000000) | (((int)ng_local_alfa_4) << 24) & 0xff000000;
+			ng_local_alfa = (ng_local_alfa & ~0xff000000) | (((int32_t)ng_local_alfa_4) << 24) & 0xff000000;
 			break;
 		}
 		// Local Beta Byte
 		case 0x44: {
-			unsigned char ng_local_beta_1 = (ng_local_beta & 0xff);
+			uint8_t ng_local_beta_1 = (ng_local_beta & 0xff);
 			ng_local_beta_1 = NGNumericOperationByte(number_operation, ng_local_beta_1, value);
-			ng_local_beta = (ng_local_beta & ~0xff) | (((int)ng_local_beta_1)) & 0xff;
+			ng_local_beta = (ng_local_beta & ~0xff) | (((int32_t)ng_local_beta_1)) & 0xff;
 			break;
 		}
 		case 0x45: {
-			unsigned char ng_local_beta_2 = (ng_local_beta >> 8) & 0xff;
+			uint8_t ng_local_beta_2 = (ng_local_beta >> 8) & 0xff;
 			ng_local_beta_2 = NGNumericOperationByte(number_operation, ng_local_beta_2, value);
-			ng_local_beta = (ng_local_beta & ~0xff00) | (((int)ng_local_beta_2) << 8) & 0xff00;
+			ng_local_beta = (ng_local_beta & ~0xff00) | (((int32_t)ng_local_beta_2) << 8) & 0xff00;
 			break;
 		}
 		case 0x46: {
-			unsigned char ng_local_beta_3 = (ng_local_beta >> 16) & 0xff;
+			uint8_t ng_local_beta_3 = (ng_local_beta >> 16) & 0xff;
 			ng_local_beta_3 = NGNumericOperationByte(number_operation, ng_local_beta_3, value);
-			ng_local_beta = (ng_local_beta & ~0xff0000) | (((int)ng_local_beta_3) << 16) & 0xff0000;
+			ng_local_beta = (ng_local_beta & ~0xff0000) | (((int32_t)ng_local_beta_3) << 16) & 0xff0000;
 			break;
 		}
 		case 0x47: {
-			unsigned char ng_local_beta_4 = (ng_local_beta >> 24) & 0xff;
+			uint8_t ng_local_beta_4 = (ng_local_beta >> 24) & 0xff;
 			ng_local_beta_4 = NGNumericOperationByte(number_operation, ng_local_beta_4, value);
-			ng_local_beta = (ng_local_beta & ~0xff000000) | (((int)ng_local_beta_4) << 24) & 0xff000000;
+			ng_local_beta = (ng_local_beta & ~0xff000000) | (((int32_t)ng_local_beta_4) << 24) & 0xff000000;
 			break;
 		}
 		// Local Delta Byte
 		case 0x48: {
-			unsigned char ng_local_delta_1 = (ng_local_delta & 0xff);
+			uint8_t ng_local_delta_1 = (ng_local_delta & 0xff);
 			ng_local_delta_1 = NGNumericOperationByte(number_operation, ng_local_delta_1, value);
-			ng_local_delta = (ng_local_delta & ~0xff) | (((int)ng_local_delta_1)) & 0xff;
+			ng_local_delta = (ng_local_delta & ~0xff) | (((int32_t)ng_local_delta_1)) & 0xff;
 			break;
 		}
 		case 0x49: {
-			unsigned char ng_local_delta_2 = (ng_local_delta >> 8) & 0xff;
+			uint8_t ng_local_delta_2 = (ng_local_delta >> 8) & 0xff;
 			ng_local_delta_2 = NGNumericOperationByte(number_operation, ng_local_delta_2, value);
-			ng_local_delta = (ng_local_delta & ~0xff00) | (((int)ng_local_delta_2) << 8) & 0xff00;
+			ng_local_delta = (ng_local_delta & ~0xff00) | (((int32_t)ng_local_delta_2) << 8) & 0xff00;
 			break;
 		}
 		case 0x4a: {
-			unsigned char ng_local_delta_3 = (ng_local_delta >> 16) & 0xff;
+			uint8_t ng_local_delta_3 = (ng_local_delta >> 16) & 0xff;
 			ng_local_delta_3 = NGNumericOperationByte(number_operation, ng_local_delta_3, value);
-			ng_local_delta = (ng_local_delta & ~0xff0000) | (((int)ng_local_delta_3) << 16) & 0xff0000;
+			ng_local_delta = (ng_local_delta & ~0xff0000) | (((int32_t)ng_local_delta_3) << 16) & 0xff0000;
 			break;
 		}
 		case 0x4b: {
-			unsigned char ng_local_delta_4 = (ng_local_delta >> 24) & 0xff;
+			uint8_t ng_local_delta_4 = (ng_local_delta >> 24) & 0xff;
 			ng_local_delta_4 = NGNumericOperationByte(number_operation, ng_local_delta_4, value);
-			ng_local_delta = (ng_local_delta & ~0xff000000) | (((int)ng_local_delta_4) << 24) & 0xff000000;
+			ng_local_delta = (ng_local_delta & ~0xff000000) | (((int32_t)ng_local_delta_4) << 24) & 0xff000000;
 			break;
 		}
 		// Local Short Alfa
 		case 0x50: {
 			uint16_t ng_local_short_alfa_1 = (ng_local_alfa & 0xffff);
 			ng_local_short_alfa_1 = NGNumericOperationShort(number_operation, ng_local_short_alfa_1, value);
-			ng_local_alfa = (ng_local_alfa & ~0xffff) | (((int)ng_local_short_alfa_1)) & 0xffff;
+			ng_local_alfa = (ng_local_alfa & ~0xffff) | (((int32_t)ng_local_short_alfa_1)) & 0xffff;
 			break;
 		}
 		case 0x51: {
 			uint16_t ng_local_short_alfa_2 = (ng_local_alfa & 0xffff0000);
 			ng_local_short_alfa_2 = NGNumericOperationShort(number_operation, ng_local_short_alfa_2, value);
-			ng_local_alfa = (ng_local_alfa & ~0xffff0000) | (((int)ng_local_short_alfa_2)) & 0xffff0000;
+			ng_local_alfa = (ng_local_alfa & ~0xffff0000) | (((int32_t)ng_local_short_alfa_2)) & 0xffff0000;
 			break;
 		}
 		// Local Short Beta
 		case 0x52: {
 			uint16_t ng_local_short_beta_1 = (ng_local_beta & 0xffff);
 			ng_local_short_beta_1 = NGNumericOperationShort(number_operation, ng_local_short_beta_1, value);
-			ng_local_beta = (ng_local_beta & ~0xffff) | (((int)ng_local_short_beta_1)) & 0xffff;
+			ng_local_beta = (ng_local_beta & ~0xffff) | (((int32_t)ng_local_short_beta_1)) & 0xffff;
 			break;
 		}
 		case 0x53: {
 			uint16_t ng_local_short_beta_2 = (ng_local_beta & 0xffff0000);
 			ng_local_short_beta_2 = NGNumericOperationShort(number_operation, ng_local_short_beta_2, value);
-			ng_local_beta = (ng_local_beta & ~0xffff0000) | (((int)ng_local_short_beta_2)) & 0xffff0000;
+			ng_local_beta = (ng_local_beta & ~0xffff0000) | (((int32_t)ng_local_short_beta_2)) & 0xffff0000;
 			break;
 		}
 		// Local Short Delta
 		case 0x54: {
 			uint16_t ng_local_short_delta_1 = (ng_local_delta & 0xffff);
 			ng_local_short_delta_1 = NGNumericOperationShort(number_operation, ng_local_short_delta_1, value);
-			ng_local_delta = (ng_local_delta & ~0xffff) | (((int)ng_local_short_delta_1)) & 0xffff;
+			ng_local_delta = (ng_local_delta & ~0xffff) | (((int32_t)ng_local_short_delta_1)) & 0xffff;
 			break;
 		}
 		case 0x55: {
 			uint16_t ng_local_short_delta_2 = (ng_local_delta & 0xffff0000);
 			ng_local_short_delta_2 = NGNumericOperationShort(number_operation, ng_local_short_delta_2, value);
-			ng_local_delta = (ng_local_delta & ~0xffff0000) | (((int)ng_local_short_delta_2)) & 0xffff0000;
+			ng_local_delta = (ng_local_delta & ~0xffff0000) | (((int32_t)ng_local_short_delta_2)) & 0xffff0000;
 			break;
 		}
 
@@ -429,53 +429,53 @@ int32_t NGNumericGetVariable(uint32_t variable) {
 
 		// Global Alfa Byte
 		case 0x00: {
-			unsigned char ng_global_alfa_1 = (ng_global_alfa & 0xff);
+			uint8_t ng_global_alfa_1 = (ng_global_alfa & 0xff);
 			return ng_global_alfa_1;
 		}
 		case 0x01: {
-			unsigned char ng_global_alfa_2 = (ng_global_alfa >> 8) & 0xff;
+			uint8_t ng_global_alfa_2 = (ng_global_alfa >> 8) & 0xff;
 			return ng_global_alfa_2;
 		}
 		case 0x02: {
-			unsigned char ng_global_alfa_3 = (ng_global_alfa >> 16) & 0xff;
+			uint8_t ng_global_alfa_3 = (ng_global_alfa >> 16) & 0xff;
 			return ng_global_alfa_3;
 		}
 		case 0x03: {
-			unsigned char ng_global_alfa_4 = (ng_global_alfa >> 24) & 0xff;
+			uint8_t ng_global_alfa_4 = (ng_global_alfa >> 24) & 0xff;
 			return ng_global_alfa_4;
 		}
 		// Global Beta Byte
 		case 0x04: {
-			unsigned char ng_global_beta_1 = (ng_global_beta & 0xff);
+			uint8_t ng_global_beta_1 = (ng_global_beta & 0xff);
 			return ng_global_beta_1;
 		}
 		case 0x05: {
-			unsigned char ng_global_beta_2 = (ng_global_beta >> 8) & 0xff;
+			uint8_t ng_global_beta_2 = (ng_global_beta >> 8) & 0xff;
 			return ng_global_beta_2;
 		}
 		case 0x06: {
-			unsigned char ng_global_beta_3 = (ng_global_beta >> 16) & 0xff;
+			uint8_t ng_global_beta_3 = (ng_global_beta >> 16) & 0xff;
 			return ng_global_beta_3;
 		}
 		case 0x07: {
-			unsigned char ng_global_beta_4 = (ng_global_beta >> 24) & 0xff;
+			uint8_t ng_global_beta_4 = (ng_global_beta >> 24) & 0xff;
 			return ng_global_beta_4;
 		}
 		// Global Delta Byte
 		case 0x08: {
-			unsigned char ng_global_delta_1 = (ng_global_delta & 0xff);
+			uint8_t ng_global_delta_1 = (ng_global_delta & 0xff);
 			return ng_global_delta_1;
 		}
 		case 0x09: {
-			unsigned char ng_global_delta_2 = (ng_global_delta >> 8) & 0xff;
+			uint8_t ng_global_delta_2 = (ng_global_delta >> 8) & 0xff;
 			return ng_global_delta_2;
 		}
 		case 0x0a: {
-			unsigned char ng_global_delta_3 = (ng_global_delta >> 16) & 0xff;
+			uint8_t ng_global_delta_3 = (ng_global_delta >> 16) & 0xff;
 			return ng_global_delta_3;
 		}
 		case 0x0b: {
-			unsigned char ng_global_delta_4 = (ng_global_delta >> 24) & 0xff;
+			uint8_t ng_global_delta_4 = (ng_global_delta >> 24) & 0xff;
 			return ng_global_delta_4;
 		}
 		// Global Short Alfa
@@ -531,53 +531,53 @@ int32_t NGNumericGetVariable(uint32_t variable) {
 
 		// Local Alfa Byte
 		case 0x40: {
-			unsigned char ng_local_alfa_1 = (ng_local_alfa & 0xff);
+			uint8_t ng_local_alfa_1 = (ng_local_alfa & 0xff);
 			return ng_local_alfa_1;
 		}
 		case 0x41: {
-			unsigned char ng_local_alfa_2 = (ng_local_alfa >> 8) & 0xff;
+			uint8_t ng_local_alfa_2 = (ng_local_alfa >> 8) & 0xff;
 			return ng_local_alfa_2;
 		}
 		case 0x42: {
-			unsigned char ng_local_alfa_3 = (ng_local_alfa >> 16) & 0xff;
+			uint8_t ng_local_alfa_3 = (ng_local_alfa >> 16) & 0xff;
 			return ng_local_alfa_3;
 		}
 		case 0x43: {
-			unsigned char ng_local_alfa_4 = (ng_local_alfa >> 24) & 0xff;
+			uint8_t ng_local_alfa_4 = (ng_local_alfa >> 24) & 0xff;
 			return ng_local_alfa_4;
 		}
 		// Local Beta Byte
 		case 0x44: {
-			unsigned char ng_local_beta_1 = (ng_local_beta & 0xff);
+			uint8_t ng_local_beta_1 = (ng_local_beta & 0xff);
 			return ng_local_beta_1;
 		}
 		case 0x45: {
-			unsigned char ng_local_beta_2 = (ng_local_beta >> 8) & 0xff;
+			uint8_t ng_local_beta_2 = (ng_local_beta >> 8) & 0xff;
 			return ng_local_beta_2;
 		}
 		case 0x46: {
-			unsigned char ng_local_beta_3 = (ng_local_beta >> 16) & 0xff;
+			uint8_t ng_local_beta_3 = (ng_local_beta >> 16) & 0xff;
 			return ng_local_beta_3;
 		}
 		case 0x47: {
-			unsigned char ng_local_beta_4 = (ng_local_beta >> 24) & 0xff;
+			uint8_t ng_local_beta_4 = (ng_local_beta >> 24) & 0xff;
 			return ng_local_beta_4;
 		}
 		// Local Delta Byte
 		case 0x48: {
-			unsigned char ng_local_delta_1 = (ng_local_delta & 0xff);
+			uint8_t ng_local_delta_1 = (ng_local_delta & 0xff);
 			return ng_local_delta_1;
 		}
 		case 0x49: {
-			unsigned char ng_local_delta_2 = (ng_local_delta >> 8) & 0xff;
+			uint8_t ng_local_delta_2 = (ng_local_delta >> 8) & 0xff;
 			return ng_local_delta_2;
 		}
 		case 0x4a: {
-			unsigned char ng_local_delta_3 = (ng_local_delta >> 16) & 0xff;
+			uint8_t ng_local_delta_3 = (ng_local_delta >> 16) & 0xff;
 			return ng_local_delta_3;
 		}
 		case 0x4b: {
-			unsigned char ng_local_delta_4 = (ng_local_delta >> 24) & 0xff;
+			uint8_t ng_local_delta_4 = (ng_local_delta >> 24) & 0xff;
 			return ng_local_delta_4;
 		}
 		// Local Short Alfa

@@ -24,27 +24,28 @@
 #include "trng_globaltrigger.h"
 #include "../../specific/file.h"
 #include "../../tomb4/tomb4plus/t4plus_environment.h"
+#include "../../tomb4/tomb4plus/t4plus_items.h"
 
 bool ng_loaded_savegame = false;
 
-short ng_camera_target_id = NO_ITEM;
+int16_t ng_camera_target_id = NO_ITEM;
 
-unsigned int ng_room_offset_table[0xff];
+uint32_t ng_room_offset_table[0xff];
 
 struct NG_MOVEMENT_INFO {
-	short horizontal_rotation_speed = 0;
-	short vertical_rotation_speed = 0;
-	int horizontal_rotation_remaining = 0;
-	int vertical_rotation_remaining = 0;
-	short horizontal_movement_speed = 0;
-	short vertical_movement_speed = 0;
-	short movement_in_progress_sound = -1;
-	short movement_finished_sound = -1;
-	short move_horizontal_angle = 0;
-	int move_horizontal_remaining_units = 0;
-	int move_vertical_remaining_units = 0;
-	int move_horizontal_repeat_units = 0;
-	int move_vertical_repeat_units = 0;
+	int16_t horizontal_rotation_speed = 0;
+	int16_t vertical_rotation_speed = 0;
+	int32_t horizontal_rotation_remaining = 0;
+	int32_t vertical_rotation_remaining = 0;
+	int16_t horizontal_movement_speed = 0;
+	int16_t vertical_movement_speed = 0;
+	int16_t movement_in_progress_sound = -1;
+	int16_t movement_finished_sound = -1;
+	int16_t move_horizontal_angle = 0;
+	int32_t move_horizontal_remaining_units = 0;
+	int32_t move_vertical_remaining_units = 0;
+	int32_t move_horizontal_repeat_units = 0;
+	int32_t move_vertical_repeat_units = 0;
 	bool trigger_heavy_at_end = false;
 	bool trigger_normal_when_moving = false;
 	bool trigger_heavy_when_moving = false;
@@ -53,10 +54,10 @@ struct NG_MOVEMENT_INFO {
 // NG_ITEM_EXTRADATA is persistent supllementary data used by TRNG triggers.
 // The state here can subseqeuently be serialized as additional data for savegames.
 struct NG_ITEM_EXTRADATA {
-	short frozen_ticks = 0;
+	int16_t frozen_ticks = 0;
 	bool collison_disabled = false; // Will only disable the ObjectCollision routine. Doors and enemies stll have collision.
-	unsigned int mesh_visibility_mask = 0xffffffff;
-	short fade_override = 0;
+	uint32_t mesh_visibility_mask = 0xffffffff;
+	int16_t fade_override = 0;
 
 	NG_MOVEMENT_INFO movement_info;
 };
@@ -80,7 +81,7 @@ void NGResetMovementInfo(NG_MOVEMENT_INFO* movement_info) {
 	movement_info->move_vertical_repeat_units = 0;
 }
 
-void NGResetItemExtraData(int item_number) {
+void NGResetItemExtraData(int32_t item_number) {
 	NG_ITEM_EXTRADATA *current_extradata = &ng_items_extradata[item_number];
 
 	if (current_extradata) {
@@ -96,10 +97,10 @@ void NGResetItemExtraData(int item_number) {
 	}
 }
 
-int ng_animation_current_animation = -1;
-short ng_animation_prev_hands_state = LG_NO_ARMS;
-int ng_animation_target_item = -1;
-int ng_animation_target_test_position = -1;
+int32_t ng_animation_current_animation = -1;
+int16_t ng_animation_prev_hands_state = LG_NO_ARMS;
+int32_t ng_animation_target_item = -1;
+int32_t ng_animation_target_test_position = -1;
 
 NG_GLOBAL_TRIGGER_STATE ng_global_trigger_states[MAX_NG_GLOBAL_TRIGGERS];
 NG_TRIGGER_GROUP_STATE ng_trigger_group_states[MAX_NG_TRIGGER_GROUPS];
@@ -109,44 +110,44 @@ NG_ORGANIZER_STATE ng_organizer_states[MAX_NG_ORGANIZERS];
 // at once, displaying the last activated on until it runs out. Needs investigation.
 #define TIMER_TRACKER_TIMEOUT 30
 NGTimerTrackerType timer_tracker_type = TTT_ONLY_SHOW_SECONDS;
-int timer_tracker = -1;
-int timer_tracker_remaining_until_timeout = 0;
+int32_t timer_tracker = -1;
+int32_t timer_tracker_remaining_until_timeout = 0;
 
-int ng_cinema_timer = -1;
-int ng_cinema_type = 0;
+int32_t ng_cinema_timer = -1;
+int32_t ng_cinema_type = 0;
 
-int lara_damage_resistence = 1000;
+int32_t lara_damage_resistence = 1000;
 
 bool ng_lara_infinite_air = false;
 
 // Timers
-int ng_global_timer = 0;
-char ng_global_timer_frame_increment = 0;
+int32_t ng_global_timer = 0;
+int8_t ng_global_timer_frame_increment = 0;
 NGTimerPosition ng_global_timer_position = NG_TIMER_POSITION_INVISIBLE;
-int ng_global_timer_time_until_hide = 0;
+int32_t ng_global_timer_time_until_hide = 0;
 
-int ng_local_timer = 0;
-char ng_local_timer_frame_increment = 0;
+int32_t ng_local_timer = 0;
+int8_t ng_local_timer_frame_increment = 0;
 NGTimerPosition ng_local_timer_position = NG_TIMER_POSITION_INVISIBLE;
-int ng_local_timer_time_until_hide = 0;
+int32_t ng_local_timer_time_until_hide = 0;
 
 // Level
-int pending_level_load_timer = -1;
-int pending_level_load_id = 0;
+int32_t pending_level_load_timer = -1;
+int32_t pending_level_load_id = 0;
 
 // Variables
-int ng_current_value = 0;
-int ng_global_alfa = 0;
-int ng_global_beta = 0;
-int ng_global_delta = 0;
-int ng_local_alfa = 0;
-int ng_local_beta = 0;
-int ng_local_delta = 0;
-int ng_last_input_number = 0;
+int32_t ng_current_value = 0;
+int32_t ng_global_alfa = 0;
+int32_t ng_global_beta = 0;
+int32_t ng_global_delta = 0;
+int32_t ng_local_alfa = 0;
+int32_t ng_local_beta = 0;
+int32_t ng_local_delta = 0;
+int32_t ng_last_input_number = 0;
 
 // Inventory
-unsigned char ng_selected_inventory_item_memory = 0;
-int ng_used_inventory_object_for_frame = NO_ITEM;
+uint8_t ng_selected_inventory_item_memory = 0;
+int32_t ng_used_inventory_object_for_frame = NO_ITEM;
 bool ng_used_large_medipack = false;
 bool ng_used_small_medipack = false;
 
@@ -174,19 +175,19 @@ enum TRNG_INPUT {
 	TRNG_INPUT_COUNT
 };
 
-int ng_looped_sound_state[NumSamples];
+int32_t ng_looped_sound_state[NumSamples];
 
 #define NG_INPUT_TIMER_COUNT TRNG_INPUT_COUNT
 
-int ng_input_simulate_oneshot = -1;
-int ng_input_lock_timers[NG_INPUT_TIMER_COUNT];
-int ng_input_simulate_timers[NG_INPUT_TIMER_COUNT];
+int32_t ng_input_simulate_oneshot = -1;
+int32_t ng_input_lock_timers[NG_INPUT_TIMER_COUNT];
+int32_t ng_input_simulate_timers[NG_INPUT_TIMER_COUNT];
 
-int NGGetPluginIDForFloorData(short *floor_data_ptr) {
-	int index = int(floor_data_ptr - floor_data);
+int32_t NGGetPluginIDForFloorData(int16_t *floor_data_ptr) {
+	int32_t index = int32_t(floor_data_ptr - floor_data);
 	if (ng_floor_id_table) {
 		if (index < ng_floor_id_size) {
-			int plugin_id = ng_floor_id_table[index];
+			int32_t plugin_id = ng_floor_id_table[index];
 			return plugin_id;
 		} else {
 			NGLog(NG_LOG_TYPE_ERROR, "NGGetPluginIDForFloorData: Overflow!");
@@ -195,8 +196,8 @@ int NGGetPluginIDForFloorData(short *floor_data_ptr) {
 	return 0;
 }
 
-int NGValidateInputAgainstLockTimers(int32_t input) {
-	for (int i = 0; i < TRNG_SAVE_GAME; i++) {
+int32_t NGValidateInputAgainstLockTimers(int32_t input) {
+	for (int32_t i = 0; i < TRNG_SAVE_GAME; i++) {
 		if (ng_input_lock_timers[i] != 0) {
 			switch (i) {
 				case TRNG_INPUT_UP:
@@ -319,8 +320,8 @@ void NGApplyNGInputEnumToMask(uint32_t ng_input_type, int32_t *input_mask) {
 	}
 }
 
-int NGApplySimulatedInput(int32_t input) {
-	for (int i = 0; i < TRNG_SAVE_GAME; i++) {
+int32_t NGApplySimulatedInput(int32_t input) {
+	for (int32_t i = 0; i < TRNG_SAVE_GAME; i++) {
 		if (ng_input_simulate_timers[i] != 0) {
 			NGApplyNGInputEnumToMask(i, &input);
 		}
@@ -346,19 +347,19 @@ bool NGValidateInputWeaponHotkeys() {
 	return ng_input_lock_timers[TRNG_WEAPON_KEYS] == 0;
 }
 
-void NGDisableInputForTime(unsigned char input, int ticks) {
+void NGDisableInputForTime(uint8_t input, int32_t ticks) {
 	if (input > NG_INPUT_TIMER_COUNT) {
 		NGLog(NG_LOG_TYPE_ERROR, "NGDisableInputForTime: Invalid input type %u!", input);
 		return;
 	}
 
-	int final_ticks = -1;
+	int32_t final_ticks = -1;
 	if (ticks > 0) {
 		final_ticks = ticks;
 	}
 
 	if (input == 0) {
-		for (int i = 0; i < NG_INPUT_TIMER_COUNT; i++) {
+		for (int32_t i = 0; i < NG_INPUT_TIMER_COUNT; i++) {
 			ng_input_lock_timers[i] = final_ticks;
 		}
 	} else {
@@ -366,7 +367,7 @@ void NGDisableInputForTime(unsigned char input, int ticks) {
 	}
 }
 
-void NGSimulateInputForTime(unsigned char input, int ticks) {
+void NGSimulateInputForTime(uint8_t input, int32_t ticks) {
 	if (input > NG_INPUT_TIMER_COUNT) {
 		NGLog(NG_LOG_TYPE_ERROR, "NGSimulateInputForTime: Invalid input type %u!", input);
 		return;
@@ -374,7 +375,7 @@ void NGSimulateInputForTime(unsigned char input, int ticks) {
 
 	if (ticks > 0) {
 		if (input == 0) {
-			for (int i = 0; i < NG_INPUT_TIMER_COUNT; i++) {
+			for (int32_t i = 0; i < NG_INPUT_TIMER_COUNT; i++) {
 				if (ng_input_simulate_timers[i] < ticks) {
 					ng_input_simulate_timers[i] = ticks / 30;
 				}
@@ -389,9 +390,9 @@ void NGSimulateInputForTime(unsigned char input, int ticks) {
 	}
 }
 
-void NGEnableInput(unsigned char input) {
+void NGEnableInput(uint8_t input) {
 	if (input == 0) {
-		for (int i = 0; i < NG_INPUT_TIMER_COUNT; i++) {
+		for (int32_t i = 0; i < NG_INPUT_TIMER_COUNT; i++) {
 			ng_input_lock_timers[i] = 0;
 		}
 	} else {
@@ -399,10 +400,10 @@ void NGEnableInput(unsigned char input) {
 	}
 }
 
-void NGHandleItemRotation(unsigned int item_num) {
+void NGHandleItemRotation(uint32_t item_num) {
 	if (NGGetItemHorizontalRotationRemaining(item_num)) {
-		int rotate_by_amount = NGGetItemHorizontalRotationSpeed(item_num);
-		int remaining_rotation_units = NGGetItemHorizontalRotationRemaining(item_num);
+		int32_t rotate_by_amount = NGGetItemHorizontalRotationSpeed(item_num);
+		int32_t remaining_rotation_units = NGGetItemHorizontalRotationRemaining(item_num);
 		if (
 			(remaining_rotation_units >= 0 && rotate_by_amount > remaining_rotation_units) || 
 			(remaining_rotation_units < 0 && rotate_by_amount < remaining_rotation_units)) {
@@ -421,8 +422,8 @@ void NGHandleItemRotation(unsigned int item_num) {
 	}
 
 	if (NGGetItemVerticalRotationRemaining(item_num)) {
-		int rotate_by_amount = NGGetItemVerticalRotationSpeed(item_num);
-		int remaining_rotation_units = NGGetItemVerticalRotationRemaining(item_num);
+		int32_t rotate_by_amount = NGGetItemVerticalRotationSpeed(item_num);
+		int32_t remaining_rotation_units = NGGetItemVerticalRotationRemaining(item_num);
 		if (
 			(remaining_rotation_units >= 0 && rotate_by_amount > remaining_rotation_units) ||
 			(remaining_rotation_units < 0 && rotate_by_amount < remaining_rotation_units)) {
@@ -441,105 +442,109 @@ void NGHandleItemRotation(unsigned int item_num) {
 	}
 }
 
-void NGHandleItemMovement(unsigned int item_num) {
+void NGHandleItemMovement(uint32_t item_num) {
 	if (NGGetItemHorizontalMovementRemainingUnits(item_num)) {
-		ITEM_INFO* item = &items[item_num];
-		int move_by_amount = NGGetItemHorizontalMovementSpeed(item_num);
-		int remaining_movement_units = NGGetItemHorizontalMovementRemainingUnits(item_num);
-		if (
-			(remaining_movement_units >= 0 && move_by_amount > remaining_movement_units) ||
-			(remaining_movement_units < 0 && move_by_amount < remaining_movement_units)) {
-			move_by_amount = remaining_movement_units;
-		}
-
-		NGMoveItemHorizontalByUnits(item_num, ng_items_extradata[item_num].movement_info.move_horizontal_angle, move_by_amount);
-		NGSetItemHorizontalMovementRemainingUnits(item_num, remaining_movement_units - move_by_amount);
-
-		if (NGGetItemHorizontalMovementRemainingUnits(item_num) == 0) {
-			if (NGGetItemMovementFinishedSound(item_num) != -1) {
-				SoundEffect(NGGetItemMovementFinishedSound(item_num), &items[item_num].pos, 0);
+		ITEM_INFO* item = T4PlusGetItemInfoForID(item_num);
+		if (item) {
+			int32_t move_by_amount = NGGetItemHorizontalMovementSpeed(item_num);
+			int32_t remaining_movement_units = NGGetItemHorizontalMovementRemainingUnits(item_num);
+			if (
+				(remaining_movement_units >= 0 && move_by_amount > remaining_movement_units) ||
+				(remaining_movement_units < 0 && move_by_amount < remaining_movement_units)) {
+				move_by_amount = remaining_movement_units;
 			}
 
-			if (NGGetItemMovementTriggerHeavyAtEnd(item_num)) {
-				TestTriggersAtXYZ(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, true, 0);
-			}
+			NGMoveItemHorizontalByUnits(item_num, ng_items_extradata[item_num].movement_info.move_horizontal_angle, move_by_amount);
+			NGSetItemHorizontalMovementRemainingUnits(item_num, remaining_movement_units - move_by_amount);
 
-			// Reset everything or loop
-			if (NGGetItemHorizontalMovementRepeatUnits(item_num) != 0) {
-				NGSetItemHorizontalMovementRemainingUnits(item_num, NGGetItemHorizontalMovementRepeatUnits(item_num));
-				NGSetItemHorizontalMovementAngle(item_num, NGGetItemHorizontalMovementAngle(item_num) + NG_DEGREE(180));
+			if (NGGetItemHorizontalMovementRemainingUnits(item_num) == 0) {
+				if (NGGetItemMovementFinishedSound(item_num) != -1) {
+					SoundEffect(NGGetItemMovementFinishedSound(item_num), &item->pos, 0);
+				}
+
+				if (NGGetItemMovementTriggerHeavyAtEnd(item_num)) {
+					TestTriggersAtXYZ(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, true, 0);
+				}
+
+				// Reset everything or loop
+				if (NGGetItemHorizontalMovementRepeatUnits(item_num) != 0) {
+					NGSetItemHorizontalMovementRemainingUnits(item_num, NGGetItemHorizontalMovementRepeatUnits(item_num));
+					NGSetItemHorizontalMovementAngle(item_num, NGGetItemHorizontalMovementAngle(item_num) + NG_DEGREE(180));
+				} else {
+					NGSetItemHorizontalMovementSpeed(item_num, 0);
+				}
 			} else {
-				NGSetItemHorizontalMovementSpeed(item_num, 0);
-			}
-		} else {
-			if (NGGetItemMovementInProgressSound(item_num) != -1) {
-				SoundEffect(NGGetItemMovementInProgressSound(item_num), &items[item_num].pos, 0);
-			}
+				if (NGGetItemMovementInProgressSound(item_num) != -1) {
+					SoundEffect(NGGetItemMovementInProgressSound(item_num), &item->pos, 0);
+				}
 
-			if (NGGetItemMovementTriggerNormalWhenMoving(item_num)) {
-				TestTriggersAtXYZ(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, false, 0);
-			}
+				if (NGGetItemMovementTriggerNormalWhenMoving(item_num)) {
+					TestTriggersAtXYZ(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, false, 0);
+				}
 
-			if (NGGetItemMovementTriggerHeavyWhenMoving(item_num)) {
-				TestTriggersAtXYZ(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, true, 0);
+				if (NGGetItemMovementTriggerHeavyWhenMoving(item_num)) {
+					TestTriggersAtXYZ(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, true, 0);
+				}
 			}
+			UpdateItemRoom(item_num, -128);
 		}
-		UpdateItemRoom(item_num, -128);
 	}
 
 	if (NGGetItemVerticalMovementRemainingUnits(item_num)) {
-		ITEM_INFO* item = &items[item_num];
-		int move_by_amount = NGGetItemVerticalMovementSpeed(item_num);
-		int remaining_movement_units = NGGetItemVerticalMovementRemainingUnits(item_num);
-		if (
-			(remaining_movement_units >= 0 && move_by_amount > remaining_movement_units) ||
-			(remaining_movement_units < 0 && move_by_amount < remaining_movement_units)) {
-			move_by_amount = remaining_movement_units;
-		}
-
-		NGMoveItemVerticalByUnits(item_num, move_by_amount);
-		NGSetItemVerticalMovementRemainingUnits(item_num, remaining_movement_units - move_by_amount);
-
-		if (NGGetItemVerticalMovementRemainingUnits(item_num) == 0) {
-			if (NGGetItemMovementFinishedSound(item_num) != -1) {
-				SoundEffect(NGGetItemMovementFinishedSound(item_num), &items[item_num].pos, 0);
+		ITEM_INFO *item = T4PlusGetItemInfoForID(item_num);
+		if (item) {
+			int32_t move_by_amount = NGGetItemVerticalMovementSpeed(item_num);
+			int32_t remaining_movement_units = NGGetItemVerticalMovementRemainingUnits(item_num);
+			if (
+				(remaining_movement_units >= 0 && move_by_amount > remaining_movement_units) ||
+				(remaining_movement_units < 0 && move_by_amount < remaining_movement_units)) {
+				move_by_amount = remaining_movement_units;
 			}
 
-			if (NGGetItemMovementTriggerHeavyAtEnd(item_num)) {
-				TestTriggersAtXYZ(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, true, 0);
-			}
+			NGMoveItemVerticalByUnits(item_num, move_by_amount);
+			NGSetItemVerticalMovementRemainingUnits(item_num, remaining_movement_units - move_by_amount);
 
-			// Reset everything or loop
-			if (NGGetItemVerticalMovementRepeatUnits(item_num) != 0) {
-				NGSetItemVerticalMovementSpeed(item_num, -NGGetItemVerticalMovementSpeed(item_num));
-				NGSetItemVerticalMovementRemainingUnits(item_num, NGGetItemVerticalMovementRepeatUnits(item_num));
-				NGSetItemVerticalMovementRepeatUnits(item_num, -NGGetItemVerticalMovementRepeatUnits(item_num));
+			if (NGGetItemVerticalMovementRemainingUnits(item_num) == 0) {
+				if (NGGetItemMovementFinishedSound(item_num) != -1) {
+					SoundEffect(NGGetItemMovementFinishedSound(item_num), &item->pos, 0);
+				}
+
+				if (NGGetItemMovementTriggerHeavyAtEnd(item_num)) {
+					TestTriggersAtXYZ(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, true, 0);
+				}
+
+				// Reset everything or loop
+				if (NGGetItemVerticalMovementRepeatUnits(item_num) != 0) {
+					NGSetItemVerticalMovementSpeed(item_num, -NGGetItemVerticalMovementSpeed(item_num));
+					NGSetItemVerticalMovementRemainingUnits(item_num, NGGetItemVerticalMovementRepeatUnits(item_num));
+					NGSetItemVerticalMovementRepeatUnits(item_num, -NGGetItemVerticalMovementRepeatUnits(item_num));
+				} else {
+					NGSetItemVerticalMovementSpeed(item_num, 0);
+				}
 			} else {
-				NGSetItemVerticalMovementSpeed(item_num, 0);
-			}
-		} else {
-			if (NGGetItemMovementInProgressSound(item_num) != -1) {
-				SoundEffect(NGGetItemMovementInProgressSound(item_num), &items[item_num].pos, 0);
-			}
+				if (NGGetItemMovementInProgressSound(item_num) != -1) {
+					SoundEffect(NGGetItemMovementInProgressSound(item_num), &item->pos, 0);
+				}
 
-			if (NGGetItemMovementTriggerNormalWhenMoving(item_num)) {
-				TestTriggersAtXYZ(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, false, 0);
-			}
+				if (NGGetItemMovementTriggerNormalWhenMoving(item_num)) {
+					TestTriggersAtXYZ(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, false, 0);
+				}
 
-			if (NGGetItemMovementTriggerHeavyWhenMoving(item_num)) {
-				TestTriggersAtXYZ(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, true, 0);
+				if (NGGetItemMovementTriggerHeavyWhenMoving(item_num)) {
+					TestTriggersAtXYZ(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, true, 0);
+				}
 			}
+			UpdateItemRoom(item_num, -128);
 		}
-		UpdateItemRoom(item_num, -128);
 	}
 }
 
 // Statics
 
-void NGHandleStaticRotation(unsigned int static_num) {
+void NGHandleStaticRotation(uint32_t static_num) {
 	if (NGGetStaticHorizontalRotationRemaining(static_num)) {
-		int rotate_by_amount = NGGetStaticHorizontalRotationSpeed(static_num);
-		int remaining_rotation_units = NGGetStaticHorizontalRotationRemaining(static_num);
+		int32_t rotate_by_amount = NGGetStaticHorizontalRotationSpeed(static_num);
+		int32_t remaining_rotation_units = NGGetStaticHorizontalRotationRemaining(static_num);
 		if (
 			(remaining_rotation_units >= 0 && rotate_by_amount > remaining_rotation_units) ||
 			(remaining_rotation_units < 0 && rotate_by_amount < remaining_rotation_units)) {
@@ -559,8 +564,8 @@ void NGHandleStaticRotation(unsigned int static_num) {
 	}
 
 	if (NGGetStaticVerticalRotationRemaining(static_num)) {
-		int rotate_by_amount = NGGetStaticVerticalRotationSpeed(static_num);
-		int remaining_rotation_units = NGGetStaticVerticalRotationRemaining(static_num);
+		int32_t rotate_by_amount = NGGetStaticVerticalRotationSpeed(static_num);
+		int32_t remaining_rotation_units = NGGetStaticVerticalRotationRemaining(static_num);
 		if (
 			(remaining_rotation_units >= 0 && rotate_by_amount > remaining_rotation_units) ||
 			(remaining_rotation_units < 0 && rotate_by_amount < remaining_rotation_units)) {
@@ -580,12 +585,12 @@ void NGHandleStaticRotation(unsigned int static_num) {
 	}
 }
 
-void NGHandleStaticMovement(unsigned int static_num) {
+void NGHandleStaticMovement(uint32_t static_num) {
 	if (NGGetStaticHorizontalMovementRemainingUnits(static_num)) {
 		GAME_VECTOR game_vector = NGGetGameVectorForStatic(static_num);
 
-		int move_by_amount = NGGetStaticHorizontalMovementSpeed(static_num);
-		int remaining_movement_units = NGGetStaticHorizontalMovementRemainingUnits(static_num);
+		int32_t move_by_amount = NGGetStaticHorizontalMovementSpeed(static_num);
+		int32_t remaining_movement_units = NGGetStaticHorizontalMovementRemainingUnits(static_num);
 		if (
 			(remaining_movement_units >= 0 && move_by_amount > remaining_movement_units) ||
 			(remaining_movement_units < 0 && move_by_amount < remaining_movement_units)) {
@@ -638,8 +643,8 @@ void NGHandleStaticMovement(unsigned int static_num) {
 	if (NGGetStaticVerticalMovementRemainingUnits(static_num)) {
 		GAME_VECTOR game_vector = NGGetGameVectorForStatic(static_num);
 
-		int move_by_amount = NGGetStaticVerticalMovementSpeed(static_num);
-		int remaining_movement_units = NGGetStaticVerticalMovementRemainingUnits(static_num);
+		int32_t move_by_amount = NGGetStaticVerticalMovementSpeed(static_num);
+		int32_t remaining_movement_units = NGGetStaticVerticalMovementRemainingUnits(static_num);
 		if (
 			(remaining_movement_units >= 0 && move_by_amount > remaining_movement_units) ||
 			(remaining_movement_units < 0 && move_by_amount < remaining_movement_units)) {
@@ -692,7 +697,7 @@ void NGHandleStaticMovement(unsigned int static_num) {
 }
 
 void NGUpdateAllItems() {
-	for (int i = 0; i < ITEM_COUNT; i++) {
+	for (int32_t i = 0; i < ITEM_COUNT; i++) {
 		if (ng_items_extradata[i].frozen_ticks > 0) {
 			ng_items_extradata[i].frozen_ticks--;
 		}
@@ -708,7 +713,7 @@ void NGUpdateAllItems() {
 }
 
 void NGUpdateAllStatics() {
-	for (int i = 0; i < ng_static_id_count; i++) {
+	for (int32_t i = 0; i < ng_static_id_count; i++) {
 		if (NGGetStaticHorizontalRotationSpeed(i) || NGGetStaticVerticalRotationSpeed(i)) {
 			NGHandleStaticRotation(i);
 		}
@@ -730,7 +735,7 @@ void NGAddLaraItemCollision(ITEM_INFO *item_info, int32_t flags) {
 	if (ng_lara_moveable_collision_size >= MAX_LARA_COLLISONS-1)
 		return;
 	
-	for (int i = 0; i < ng_lara_moveable_collision_size; i++) {
+	for (int32_t i = 0; i < ng_lara_moveable_collision_size; i++) {
 		if (ng_lara_moveable_collisions[i].item_info == item_info) {
 			ng_lara_moveable_collisions[i].flags |= flags;
 			return;
@@ -746,10 +751,10 @@ extern void NGAddLaraStaticCollision(int32_t room_number, int32_t mesh_number) {
 	if (ng_lara_static_collision_size >= MAX_LARA_STATIC_COLLISONS-1)
 		return;
 
-	int current_static_id = -1;
+	int32_t current_static_id = -1;
 
 	// Very slow, replace this with caching
-	for (int i = 0; i < NG_STATIC_ID_TABLE_SIZE; i++) {
+	for (int32_t i = 0; i < NG_STATIC_ID_TABLE_SIZE; i++) {
 		if (ng_room_remap_table[ng_static_id_table[i].remapped_room_index].room_index == room_number && ng_static_id_table[i].mesh_id == mesh_number) {
 			current_static_id = i;
 			break;
@@ -757,7 +762,7 @@ extern void NGAddLaraStaticCollision(int32_t room_number, int32_t mesh_number) {
 	}
 
 	if (current_static_id >= 0) {
-		for (int i = 0; i < ng_lara_static_collision_size; i++) {
+		for (int32_t i = 0; i < ng_lara_static_collision_size; i++) {
 			if (ng_lara_static_collisions[i] == current_static_id) {
 				return;
 			}
@@ -777,7 +782,7 @@ ITEM_INFO * NGIsLaraCollidingWithItem(ITEM_INFO *item, int32_t mask) {
 	if (!item)
 		return nullptr;
 
-	for (int i = 0; i < ng_lara_moveable_collision_size; i++) {
+	for (int32_t i = 0; i < ng_lara_moveable_collision_size; i++) {
 		if (ng_lara_moveable_collisions[i].item_info == item) {
 			if ((ng_lara_moveable_collisions[i].flags & mask) != 0)
 				return ng_lara_moveable_collisions[i].item_info;
@@ -790,7 +795,7 @@ ITEM_INFO * NGIsLaraCollidingWithItem(ITEM_INFO *item, int32_t mask) {
 }
 
 ITEM_INFO *NGIsLaraCollidingWithMoveableSlot(int32_t slot_number, int32_t mask) {
-	for (int i = 0; i < ng_lara_moveable_collision_size; i++) {
+	for (int32_t i = 0; i < ng_lara_moveable_collision_size; i++) {
 		if (ng_lara_moveable_collisions[i].item_info->object_number == slot_number) {
 			if ((ng_lara_moveable_collisions[i].flags & mask) != 0)
 				return ng_lara_moveable_collisions[i].item_info;
@@ -800,7 +805,7 @@ ITEM_INFO *NGIsLaraCollidingWithMoveableSlot(int32_t slot_number, int32_t mask) 
 	return nullptr;
 }
 
-bool NGIsObjectMortalType(int object_id) {
+bool NGIsObjectMortalType(int32_t object_id) {
 	if (object_id == BADDY_1 ||
 		object_id == BADDY_2 ||
 		(object_id >= CROCODILE && object_id <= SCORPION) ||
@@ -821,7 +826,7 @@ bool NGIsObjectMortalType(int object_id) {
 	}
 }
 
-bool NGIsObjectImmortalType(int object_id) {
+bool NGIsObjectImmortalType(int32_t object_id) {
 	if (object_id == SKELETON ||
 		object_id == SETHA ||
 		object_id == MUMMY ||
@@ -843,7 +848,7 @@ bool NGIsObjectImmortalType(int object_id) {
 	}
 }
 
-bool NGIsObjectFriendType(int object_id) {
+bool NGIsObjectFriendType(int32_t object_id) {
 	if (object_id == VON_CROY || object_id == GUIDE || object_id == JEAN_YVES) {
 		return true;
 	} else {
@@ -896,8 +901,8 @@ ITEM_INFO *NGIsLaraCollidingWithCreature(NGCreatureType creature_type, int32_t m
 	return nullptr;
 }
 
-int NGIsLaraCollidingWithStaticID(int id) {
-	for (int i = 0; i < ng_lara_static_collision_size; i++) {
+int32_t NGIsLaraCollidingWithStaticID(int32_t id) {
+	for (int32_t i = 0; i < ng_lara_static_collision_size; i++) {
 		if (ng_lara_static_collisions[i] == id) {
 			return ng_lara_static_collisions[i];
 		}
@@ -906,9 +911,9 @@ int NGIsLaraCollidingWithStaticID(int id) {
 	return -1;
 }
 
-int NGIsLaraCollidingWithStaticSlot(int slot) {
-	for (int i = 0; i < ng_lara_static_collision_size; i++) {
-		int static_id = ng_lara_static_collisions[i];
+int32_t NGIsLaraCollidingWithStaticSlot(int32_t slot) {
+	for (int32_t i = 0; i < ng_lara_static_collision_size; i++) {
+		int32_t static_id = ng_lara_static_collisions[i];
 
 		if (static_id >= 0) {
 			NGStaticTableEntry* entry = &ng_static_id_table[static_id];
@@ -930,11 +935,11 @@ int NGIsLaraCollidingWithStaticSlot(int slot) {
 	return -1;
 }
 
-bool NGProcessGlobalTriggers(int selected_inventory_object_id) {
+bool NGProcessGlobalTriggers(int32_t selected_inventory_object_id) {
 	bool management_replaced = false;
 	if (ng_levels[gfCurrentLevel].records) {
-		int global_trigger_count = ng_levels[gfCurrentLevel].records->global_trigger_count;
-		for (int i = 0; i < global_trigger_count; i++) {
+		int32_t global_trigger_count = ng_levels[gfCurrentLevel].records->global_trigger_count;
+		for (int32_t i = 0; i < global_trigger_count; i++) {
 			if (NGExecuteSingleGlobalTrigger(i, selected_inventory_object_id)) {
 				management_replaced = true;
 			}
@@ -1001,7 +1006,7 @@ void NGFrameStartExtraState() {
 
 	// Input Locks and Input Simulators
 	ng_input_simulate_oneshot = -1;
-	for (int i = 0; i < NG_INPUT_TIMER_COUNT; i++) {
+	for (int32_t i = 0; i < NG_INPUT_TIMER_COUNT; i++) {
 		if (ng_input_lock_timers[i] > 0) {
 			ng_input_lock_timers[i] -= 1;
 		}
@@ -1011,7 +1016,7 @@ void NGFrameStartExtraState() {
 	}
 
 	// Looping sounds
-	for (int i = 0; i < NumSamples; i++) {
+	for (int32_t i = 0; i < NumSamples; i++) {
 		if (ng_looped_sound_state[i] > 0) {
 			SoundEffect(i, NULL, SFX_ALWAYS);
 			ng_looped_sound_state[i] -= 1;
@@ -1054,12 +1059,12 @@ void NGFrameStartExtraState() {
 		ng_local_timer_time_until_hide--;
 }
 
-void NGDrawTimer(int timer, NGTimerPosition timer_position, int timer_time_until_hide) {
+void NGDrawTimer(int32_t timer, NGTimerPosition timer_position, int32_t timer_time_until_hide) {
 	if (timer_time_until_hide != 0) {
 		if (timer_position != NG_TIMER_POSITION_INVISIBLE) {
 			char format_buffer[80];
-			int remainder = timer % 30;
-			int seconds = timer / 30;
+			int32_t remainder = timer % 30;
+			int32_t seconds = timer / 30;
 
 			sprintf(format_buffer, "%.2d:%.2d:%.1d", seconds / 60, seconds % 60, (334 * (remainder)) / 1000);
 
@@ -1105,44 +1110,47 @@ void NGDrawTimer(int timer, NGTimerPosition timer_position, int timer_time_until
 
 void NGDrawPhase() {
 	if (timer_tracker >= 0) {
-		if (items[timer_tracker].timer <= 0) {
-			if (timer_tracker_remaining_until_timeout > 0)
-				timer_tracker_remaining_until_timeout--;
-		}
-
-		if (items[timer_tracker].timer > 0 || timer_tracker_remaining_until_timeout > 0) {
-			char format_buffer[64];
-			int current_timer = items[timer_tracker].timer;
-			if (current_timer < 0)
-				current_timer = 0;
-
-			int remainder = (current_timer % 30) * (100 / 30);
-			int seconds = current_timer / 30;
-
-			switch (timer_tracker_type) {
-				case TTT_ONLY_SHOW_SECONDS:
-					sprintf(format_buffer, "%d", seconds);
-					break;
-				case TTT_SECONDS_AND_ONE_DECIMAL_POINT_SEPERATOR:
-					sprintf(format_buffer, "%d.%01d", seconds, remainder);
-					break;
-				case TTT_SECONDS_AND_TWO_DECIMAL_POINT_SEPERATOR:
-					sprintf(format_buffer, "%d.%02d", seconds, remainder);
-					break;
-				case TTT_SECONDS_AND_ONE_DECIMAL_COLON_SEPERATOR:
-					sprintf(format_buffer, "%d:%01d", seconds, remainder);
-					break;
-				case TTT_SECONDS_AND_TWO_DECIMAL_COLON_SEPERATOR:
-					sprintf(format_buffer, "%d:%02d", seconds, remainder);
-					break;
-				case TTT_SECONDS_WITH_THREE_NOUGHTS:
-					sprintf(format_buffer, "%03d", seconds);
-					break;
-				default:
-					sprintf(format_buffer, "%d", items[timer_tracker].timer);
-					break;
+		ITEM_INFO *time_tracker_item = T4PlusGetItemInfoForID(timer_tracker);
+		if (time_tracker_item) {
+			if (time_tracker_item->timer <= 0) {
+				if (timer_tracker_remaining_until_timeout > 0)
+					timer_tracker_remaining_until_timeout--;
 			}
-			PrintString(phd_centerx, long(phd_winymax - font_height * 0.25), 0, format_buffer, FF_CENTER);
+
+			if (time_tracker_item->timer > 0 || timer_tracker_remaining_until_timeout > 0) {
+				char format_buffer[64];
+				int32_t current_timer = time_tracker_item->timer;
+				if (current_timer < 0)
+					current_timer = 0;
+
+				int32_t remainder = (current_timer % 30) * (100 / 30);
+				int32_t seconds = current_timer / 30;
+
+				switch (timer_tracker_type) {
+					case TTT_ONLY_SHOW_SECONDS:
+						sprintf(format_buffer, "%d", seconds);
+						break;
+					case TTT_SECONDS_AND_ONE_DECIMAL_POINT_SEPERATOR:
+						sprintf(format_buffer, "%d.%01d", seconds, remainder);
+						break;
+					case TTT_SECONDS_AND_TWO_DECIMAL_POINT_SEPERATOR:
+						sprintf(format_buffer, "%d.%02d", seconds, remainder);
+						break;
+					case TTT_SECONDS_AND_ONE_DECIMAL_COLON_SEPERATOR:
+						sprintf(format_buffer, "%d:%01d", seconds, remainder);
+						break;
+					case TTT_SECONDS_AND_TWO_DECIMAL_COLON_SEPERATOR:
+						sprintf(format_buffer, "%d:%02d", seconds, remainder);
+						break;
+					case TTT_SECONDS_WITH_THREE_NOUGHTS:
+						sprintf(format_buffer, "%03d", seconds);
+						break;
+					default:
+						sprintf(format_buffer, "%d", time_tracker_item->timer);
+						break;
+				}
+				PrintString(phd_centerx, long(phd_winymax - font_height * 0.25), 0, format_buffer, FF_CENTER);
+			}
 		}
 	}
 
@@ -1151,348 +1159,348 @@ void NGDrawPhase() {
 	NGDrawTimer(ng_global_timer, ng_global_timer_position, ng_global_timer_time_until_hide);
 }
 
-bool NGIsItemFrozen(unsigned int item_num) {
-	if ((unsigned short)(ng_items_extradata[item_num].frozen_ticks) > 0) {
+bool NGIsItemFrozen(uint32_t item_num) {
+	if ((uint16_t)(ng_items_extradata[item_num].frozen_ticks) > 0) {
 		return true;
 	}
 
 	return false;
 }
 
-void NGSetItemFreezeTimer(unsigned int item_num, int ticks) {
+void NGSetItemFreezeTimer(uint32_t item_num, int32_t ticks) {
 	ng_items_extradata[item_num].frozen_ticks = ticks;
 }
 
 // Items
 
-bool NGIsItemPerformingContinousAction(unsigned int item_num) {
+bool NGIsItemPerformingContinousAction(uint32_t item_num) {
 	return NGGetItemHorizontalRotationRemaining(item_num) ||
 		NGGetItemVerticalRotationRemaining(item_num) ||
 		NGGetItemHorizontalMovementRemainingUnits(item_num) ||
 		NGGetItemVerticalMovementRemainingUnits(item_num);
 }
 
-bool NGIsItemPerformingRotation(unsigned int item_num) {
+bool NGIsItemPerformingRotation(uint32_t item_num) {
 	return NGGetItemHorizontalRotationRemaining(item_num) ||
 		NGGetItemVerticalRotationRemaining(item_num);
 }
 
-bool NGIsItemPerformingMovement(unsigned int item_num) {
+bool NGIsItemPerformingMovement(uint32_t item_num) {
 	return NGGetItemHorizontalMovementRemainingUnits(item_num) ||
 		NGGetItemVerticalMovementRemainingUnits(item_num);
 }
 
-short NGGetItemHorizontalRotationSpeed(unsigned int item_num) {
+int16_t NGGetItemHorizontalRotationSpeed(uint32_t item_num) {
 	return ng_items_extradata[item_num].movement_info.horizontal_rotation_speed;
 }
 
-void NGSetItemHorizontalRotationSpeed(unsigned int item_num, short speed) {
+void NGSetItemHorizontalRotationSpeed(uint32_t item_num, int16_t speed) {
 	ng_items_extradata[item_num].movement_info.horizontal_rotation_speed = speed;
 }
 
-short NGGetItemVerticalRotationSpeed(unsigned int item_num) {
+int16_t NGGetItemVerticalRotationSpeed(uint32_t item_num) {
 	return ng_items_extradata[item_num].movement_info.vertical_rotation_speed;
 }
 
-void NGSetItemVerticalRotationSpeed(unsigned int item_num, short speed) {
+void NGSetItemVerticalRotationSpeed(uint32_t item_num, int16_t speed) {
 	ng_items_extradata[item_num].movement_info.vertical_rotation_speed = speed;
 }
 
-int NGGetItemHorizontalRotationRemaining(unsigned int item_num) {
+int32_t NGGetItemHorizontalRotationRemaining(uint32_t item_num) {
 	return ng_items_extradata[item_num].movement_info.horizontal_rotation_remaining;
 }
 
-extern void NGSetItemHorizontalRotationRemaining(unsigned int item_num, int remaining) {
+extern void NGSetItemHorizontalRotationRemaining(uint32_t item_num, int32_t remaining) {
 	ng_items_extradata[item_num].movement_info.horizontal_rotation_remaining = remaining;
 }
 
-extern int NGGetItemVerticalRotationRemaining(unsigned int item_num) {
+extern int32_t NGGetItemVerticalRotationRemaining(uint32_t item_num) {
 	return ng_items_extradata[item_num].movement_info.vertical_rotation_remaining;
 }
 
-extern void NGSetItemVerticalRotationRemaining(unsigned int item_num, int remaining) {
+extern void NGSetItemVerticalRotationRemaining(uint32_t item_num, int32_t remaining) {
 	ng_items_extradata[item_num].movement_info.vertical_rotation_remaining = remaining;
 }
 
 //
-void NGSetItemHorizontalMovementAngle(unsigned int item_num, short angle) {
+void NGSetItemHorizontalMovementAngle(uint32_t item_num, int16_t angle) {
 	ng_items_extradata[item_num].movement_info.move_horizontal_angle = angle;
 }
 
-short NGGetItemHorizontalMovementAngle(unsigned int item_num) {
+int16_t NGGetItemHorizontalMovementAngle(uint32_t item_num) {
 	return ng_items_extradata[item_num].movement_info.move_horizontal_angle;
 }
 
-int NGGetItemHorizontalMovementRemainingUnits(unsigned int item_num) {
+int32_t NGGetItemHorizontalMovementRemainingUnits(uint32_t item_num) {
 	return ng_items_extradata[item_num].movement_info.move_horizontal_remaining_units;
 }
 
-void NGSetItemHorizontalMovementRemainingUnits(unsigned int item_num, int units) {
+void NGSetItemHorizontalMovementRemainingUnits(uint32_t item_num, int32_t units) {
 	ng_items_extradata[item_num].movement_info.move_horizontal_remaining_units = units;
 }
 
-int NGGetItemVerticalMovementRemainingUnits(unsigned int item_num) {
+int32_t NGGetItemVerticalMovementRemainingUnits(uint32_t item_num) {
 	return ng_items_extradata[item_num].movement_info.move_vertical_remaining_units;
 }
 
-void NGSetItemVerticalMovementRemainingUnits(unsigned int item_num, int units) {
+void NGSetItemVerticalMovementRemainingUnits(uint32_t item_num, int32_t units) {
 	ng_items_extradata[item_num].movement_info.move_vertical_remaining_units = units;
 }
 
-int NGGetItemHorizontalMovementRepeatUnits(unsigned int item_num) {
+int32_t NGGetItemHorizontalMovementRepeatUnits(uint32_t item_num) {
 	return ng_items_extradata[item_num].movement_info.move_horizontal_repeat_units;
 }
 
-void NGSetItemHorizontalMovementRepeatUnits(unsigned int item_num, int units) {
+void NGSetItemHorizontalMovementRepeatUnits(uint32_t item_num, int32_t units) {
 	ng_items_extradata[item_num].movement_info.move_horizontal_repeat_units = units;
 }
 
-int NGGetItemVerticalMovementRepeatUnits(unsigned int item_num) {
+int32_t NGGetItemVerticalMovementRepeatUnits(uint32_t item_num) {
 	return ng_items_extradata[item_num].movement_info.move_vertical_repeat_units;
 }
 
-void NGSetItemVerticalMovementRepeatUnits(unsigned int item_num, int units) {
+void NGSetItemVerticalMovementRepeatUnits(uint32_t item_num, int32_t units) {
 	ng_items_extradata[item_num].movement_info.move_vertical_repeat_units = units;
 }
 
-int NGGetItemHorizontalMovementSpeed(unsigned int item_num) {
+int32_t NGGetItemHorizontalMovementSpeed(uint32_t item_num) {
 	return ng_items_extradata[item_num].movement_info.horizontal_movement_speed;
 }
 
-void NGSetItemHorizontalMovementSpeed(unsigned int item_num, unsigned int movement_speed) {
+void NGSetItemHorizontalMovementSpeed(uint32_t item_num, uint32_t movement_speed) {
 	ng_items_extradata[item_num].movement_info.horizontal_movement_speed = movement_speed;
 }
 
-int NGGetItemVerticalMovementSpeed(unsigned int item_num) {
+int32_t NGGetItemVerticalMovementSpeed(uint32_t item_num) {
 	return ng_items_extradata[item_num].movement_info.vertical_movement_speed;
 }
 
-void NGSetItemVerticalMovementSpeed(unsigned int item_num, unsigned int movement_speed) {
+void NGSetItemVerticalMovementSpeed(uint32_t item_num, uint32_t movement_speed) {
 	ng_items_extradata[item_num].movement_info.vertical_movement_speed = movement_speed;
 }
 
-int NGGetItemMovementInProgressSound(unsigned int item_num) {
+int32_t NGGetItemMovementInProgressSound(uint32_t item_num) {
 	return ng_items_extradata[item_num].movement_info.movement_in_progress_sound;
 }
 
-void NGSetItemMovementInProgressSound(unsigned int item_num, int sound_effect_id) {
+void NGSetItemMovementInProgressSound(uint32_t item_num, int32_t sound_effect_id) {
 	ng_items_extradata[item_num].movement_info.movement_in_progress_sound = sound_effect_id;
 }
 
-int NGGetItemMovementFinishedSound(unsigned int item_num) {
+int32_t NGGetItemMovementFinishedSound(uint32_t item_num) {
 	return ng_items_extradata[item_num].movement_info.movement_finished_sound;
 }
 
-void NGSetItemMovementFinishedSound(unsigned int item_num, int sound_effect_id) {
+void NGSetItemMovementFinishedSound(uint32_t item_num, int32_t sound_effect_id) {
 	ng_items_extradata[item_num].movement_info.movement_finished_sound = sound_effect_id;
 }
 
-bool NGGetItemMovementTriggerHeavyAtEnd(unsigned int item_num) {
+bool NGGetItemMovementTriggerHeavyAtEnd(uint32_t item_num) {
 	return ng_items_extradata[item_num].movement_info.trigger_heavy_at_end;
 }
 
-void NGSetItemMovementTriggerHeavyAtEnd(unsigned int item_num, bool trigger_heavy_at_end) {
+void NGSetItemMovementTriggerHeavyAtEnd(uint32_t item_num, bool trigger_heavy_at_end) {
 	ng_items_extradata[item_num].movement_info.trigger_heavy_at_end = trigger_heavy_at_end;
 }
 
-bool NGGetItemMovementTriggerNormalWhenMoving(unsigned int item_num) {
+bool NGGetItemMovementTriggerNormalWhenMoving(uint32_t item_num) {
 	return ng_items_extradata[item_num].movement_info.trigger_normal_when_moving;
 }
 
-void NGSetItemMovementTriggerNormalWhenMoving(unsigned int item_num, bool trigger_normal_when_moving) {
+void NGSetItemMovementTriggerNormalWhenMoving(uint32_t item_num, bool trigger_normal_when_moving) {
 	ng_items_extradata[item_num].movement_info.trigger_normal_when_moving = trigger_normal_when_moving;
 }
 
-bool NGGetItemMovementTriggerHeavyWhenMoving(unsigned int item_num) {
+bool NGGetItemMovementTriggerHeavyWhenMoving(uint32_t item_num) {
 	return ng_items_extradata[item_num].movement_info.trigger_heavy_when_moving;
 }
 
-void NGSetItemMovementTriggerHeavyWhenMoving(unsigned int item_num, bool trigger_heavy_when_moving) {
+void NGSetItemMovementTriggerHeavyWhenMoving(uint32_t item_num, bool trigger_heavy_when_moving) {
 	ng_items_extradata[item_num].movement_info.trigger_heavy_when_moving = trigger_heavy_when_moving;
 }
 
 
 // Statics
 
-bool NGIsStaticPerformingContinousAction(unsigned int static_num) {
+bool NGIsStaticPerformingContinousAction(uint32_t static_num) {
 	return NGGetStaticHorizontalRotationRemaining(static_num) ||
 		NGGetStaticVerticalRotationRemaining(static_num) ||
 		NGGetStaticHorizontalMovementRemainingUnits(static_num) ||
 		NGGetStaticVerticalMovementRemainingUnits(static_num);
 }
 
-bool NGIsStaticPerformingRotation(unsigned int static_num) {
+bool NGIsStaticPerformingRotation(uint32_t static_num) {
 	return NGGetStaticHorizontalRotationRemaining(static_num) ||
 		NGGetStaticVerticalRotationRemaining(static_num);
 }
 
-bool NGIsStaticPerformingMovement(unsigned int static_num) {
+bool NGIsStaticPerformingMovement(uint32_t static_num) {
 	return NGGetStaticHorizontalMovementRemainingUnits(static_num) ||
 		NGGetStaticVerticalMovementRemainingUnits(static_num);
 }
 
-short NGGetStaticHorizontalRotationSpeed(unsigned int static_num) {
+int16_t NGGetStaticHorizontalRotationSpeed(uint32_t static_num) {
 	return ng_statics_movement_info[static_num].horizontal_rotation_speed;
 }
 
-void NGSetStaticHorizontalRotationSpeed(unsigned int static_num, short speed) {
+void NGSetStaticHorizontalRotationSpeed(uint32_t static_num, int16_t speed) {
 	ng_statics_movement_info[static_num].horizontal_rotation_speed = speed;
 }
 
-short NGGetStaticVerticalRotationSpeed(unsigned int static_num) {
+int16_t NGGetStaticVerticalRotationSpeed(uint32_t static_num) {
 	return ng_statics_movement_info[static_num].vertical_rotation_speed;
 }
 
-void NGSetStaticVerticalRotationSpeed(unsigned int static_num, short speed) {
+void NGSetStaticVerticalRotationSpeed(uint32_t static_num, int16_t speed) {
 	ng_statics_movement_info[static_num].vertical_rotation_speed = speed;
 }
 
-int NGGetStaticHorizontalRotationRemaining(unsigned int static_num) {
+int32_t NGGetStaticHorizontalRotationRemaining(uint32_t static_num) {
 	return ng_statics_movement_info[static_num].horizontal_rotation_remaining;
 }
 
-extern void NGSetStaticHorizontalRotationRemaining(unsigned int static_num, int remaining) {
+extern void NGSetStaticHorizontalRotationRemaining(uint32_t static_num, int32_t remaining) {
 	ng_statics_movement_info[static_num].horizontal_rotation_remaining = remaining;
 }
 
-extern int NGGetStaticVerticalRotationRemaining(unsigned int static_num) {
+extern int32_t NGGetStaticVerticalRotationRemaining(uint32_t static_num) {
 	return ng_statics_movement_info[static_num].vertical_rotation_remaining;
 }
 
-extern void NGSetStaticVerticalRotationRemaining(unsigned int static_num, int remaining) {
+extern void NGSetStaticVerticalRotationRemaining(uint32_t static_num, int32_t remaining) {
 	ng_statics_movement_info[static_num].vertical_rotation_remaining = remaining;
 }
 
 //
-void NGSetStaticHorizontalMovementAngle(unsigned int static_num, short angle) {
+void NGSetStaticHorizontalMovementAngle(uint32_t static_num, int16_t angle) {
 	ng_statics_movement_info[static_num].move_horizontal_angle = angle;
 }
 
-short NGGetStaticHorizontalMovementAngle(unsigned int static_num) {
+int16_t NGGetStaticHorizontalMovementAngle(uint32_t static_num) {
 	return ng_statics_movement_info[static_num].move_horizontal_angle;
 }
 
-int NGGetStaticHorizontalMovementRemainingUnits(unsigned int static_num) {
+int32_t NGGetStaticHorizontalMovementRemainingUnits(uint32_t static_num) {
 	return ng_statics_movement_info[static_num].move_horizontal_remaining_units;
 }
 
-void NGSetStaticHorizontalMovementRemainingUnits(unsigned int static_num, int units) {
+void NGSetStaticHorizontalMovementRemainingUnits(uint32_t static_num, int32_t units) {
 	ng_statics_movement_info[static_num].move_horizontal_remaining_units = units;
 }
 
-int NGGetStaticVerticalMovementRemainingUnits(unsigned int static_num) {
+int32_t NGGetStaticVerticalMovementRemainingUnits(uint32_t static_num) {
 	return ng_statics_movement_info[static_num].move_vertical_remaining_units;
 }
 
-void NGSetStaticVerticalMovementRemainingUnits(unsigned int static_num, int units) {
+void NGSetStaticVerticalMovementRemainingUnits(uint32_t static_num, int32_t units) {
 	ng_statics_movement_info[static_num].move_vertical_remaining_units = units;
 }
 
-int NGGetStaticHorizontalMovementRepeatUnits(unsigned int static_num) {
+int32_t NGGetStaticHorizontalMovementRepeatUnits(uint32_t static_num) {
 	return ng_statics_movement_info[static_num].move_horizontal_repeat_units;
 }
 
-void NGSetStaticHorizontalMovementRepeatUnits(unsigned int static_num, int units) {
+void NGSetStaticHorizontalMovementRepeatUnits(uint32_t static_num, int32_t units) {
 	ng_statics_movement_info[static_num].move_horizontal_repeat_units = units;
 }
 
-int NGGetStaticVerticalMovementRepeatUnits(unsigned int static_num) {
+int32_t NGGetStaticVerticalMovementRepeatUnits(uint32_t static_num) {
 	return ng_statics_movement_info[static_num].move_vertical_repeat_units;
 }
 
-void NGSetStaticVerticalMovementRepeatUnits(unsigned int static_num, int units) {
+void NGSetStaticVerticalMovementRepeatUnits(uint32_t static_num, int32_t units) {
 	ng_statics_movement_info[static_num].move_vertical_repeat_units = units;
 }
 
-int NGGetStaticHorizontalMovementSpeed(unsigned int static_num) {
+int32_t NGGetStaticHorizontalMovementSpeed(uint32_t static_num) {
 	return ng_statics_movement_info[static_num].horizontal_movement_speed;
 }
 
-void NGSetStaticHorizontalMovementSpeed(unsigned int static_num, unsigned int movement_speed) {
+void NGSetStaticHorizontalMovementSpeed(uint32_t static_num, uint32_t movement_speed) {
 	ng_statics_movement_info[static_num].horizontal_movement_speed = movement_speed;
 }
 
-int NGGetStaticVerticalMovementSpeed(unsigned int static_num) {
+int32_t NGGetStaticVerticalMovementSpeed(uint32_t static_num) {
 	return ng_statics_movement_info[static_num].vertical_movement_speed;
 }
 
-void NGSetStaticVerticalMovementSpeed(unsigned int static_num, unsigned int movement_speed) {
+void NGSetStaticVerticalMovementSpeed(uint32_t static_num, uint32_t movement_speed) {
 	ng_statics_movement_info[static_num].vertical_movement_speed = movement_speed;
 }
 
-int NGGetStaticMovementInProgressSound(unsigned int static_num) {
+int32_t NGGetStaticMovementInProgressSound(uint32_t static_num) {
 	return ng_statics_movement_info[static_num].movement_in_progress_sound;
 }
 
-void NGSetStaticMovementInProgressSound(unsigned int static_num, int sound_effect_id) {
+void NGSetStaticMovementInProgressSound(uint32_t static_num, int32_t sound_effect_id) {
 	ng_statics_movement_info[static_num].movement_in_progress_sound = sound_effect_id;
 }
 
-int NGGetStaticMovementFinishedSound(unsigned int static_num) {
+int32_t NGGetStaticMovementFinishedSound(uint32_t static_num) {
 	return ng_statics_movement_info[static_num].movement_finished_sound;
 }
 
-void NGSetStaticMovementFinishedSound(unsigned int static_num, int sound_effect_id) {
+void NGSetStaticMovementFinishedSound(uint32_t static_num, int32_t sound_effect_id) {
 	ng_statics_movement_info[static_num].movement_finished_sound = sound_effect_id;
 }
 
-bool NGGetStaticMovementTriggerHeavyAtEnd(unsigned int static_num) {
+bool NGGetStaticMovementTriggerHeavyAtEnd(uint32_t static_num) {
 	return ng_statics_movement_info[static_num].trigger_heavy_at_end;
 }
 
-void NGSetStaticMovementTriggerHeavyAtEnd(unsigned int static_num, bool trigger_heavy_at_end) {
+void NGSetStaticMovementTriggerHeavyAtEnd(uint32_t static_num, bool trigger_heavy_at_end) {
 	ng_statics_movement_info[static_num].trigger_heavy_at_end = trigger_heavy_at_end;
 }
 
-bool NGGetStaticMovementTriggerNormalWhenMoving(unsigned int static_num) {
+bool NGGetStaticMovementTriggerNormalWhenMoving(uint32_t static_num) {
 	return ng_statics_movement_info[static_num].trigger_normal_when_moving;
 }
 
-void NGSetStaticMovementTriggerNormalWhenMoving(unsigned int static_num, bool trigger_normal_when_moving) {
+void NGSetStaticMovementTriggerNormalWhenMoving(uint32_t static_num, bool trigger_normal_when_moving) {
 	ng_statics_movement_info[static_num].trigger_normal_when_moving = trigger_normal_when_moving;
 }
 
-bool NGGetStaticMovementTriggerHeavyWhenMoving(unsigned int static_num) {
+bool NGGetStaticMovementTriggerHeavyWhenMoving(uint32_t static_num) {
 	return ng_statics_movement_info[static_num].trigger_heavy_when_moving;
 }
 
-void NGSetStaticMovementTriggerHeavyWhenMoving(unsigned int static_num, bool trigger_heavy_when_moving) {
+void NGSetStaticMovementTriggerHeavyWhenMoving(uint32_t static_num, bool trigger_heavy_when_moving) {
 	ng_statics_movement_info[static_num].trigger_heavy_when_moving = trigger_heavy_when_moving;
 }
 
 //
 
-bool NGIsItemCollisionDisabled(unsigned int item_num) {
+bool NGIsItemCollisionDisabled(uint32_t item_num) {
 	return ng_items_extradata[item_num].collison_disabled;
 }
 
-void NGDisableItemCollision(unsigned int item_num) {
+void NGDisableItemCollision(uint32_t item_num) {
 	ng_items_extradata[item_num].collison_disabled = true;
 }
 
-void NGEnableItemCollision(unsigned int item_num) {
+void NGEnableItemCollision(uint32_t item_num) {
 	ng_items_extradata[item_num].collison_disabled = false;
 }
 
-void NGToggleItemMeshVisibilityMaskBit(unsigned int item_num, unsigned int mask_bit, bool enabled) {
+void NGToggleItemMeshVisibilityMaskBit(uint32_t item_num, uint32_t mask_bit, bool enabled) {
 	if (enabled)
 		ng_items_extradata[item_num].mesh_visibility_mask |= (1 << mask_bit);
 	else
 		ng_items_extradata[item_num].mesh_visibility_mask &= ~(1 << mask_bit);
 }
 
-unsigned int NGGetItemMeshVisibilityMask(unsigned int item_num) {
+uint32_t NGGetItemMeshVisibilityMask(uint32_t item_num) {
 	return ng_items_extradata[item_num].mesh_visibility_mask;
 }
 
-void NGSetFullscreenCurtainTimer(int ticks) {
+void NGSetFullscreenCurtainTimer(int32_t ticks) {
 	if (ng_cinema_timer <= 0) {
 		ng_cinema_type = -1;
 		ng_cinema_timer = ticks;
 	}
 }
 
-void NGSetCinemaTypeAndTimer(int type, int ticks) {
+void NGSetCinemaTypeAndTimer(int32_t type, int32_t ticks) {
 	ng_cinema_type = type;
 	ng_cinema_timer = ticks;
 	if (ng_cinema_type == 0 && ng_cinema_timer == 0) {
@@ -1500,27 +1508,27 @@ void NGSetCinemaTypeAndTimer(int type, int ticks) {
 	}
 }
 
-void NGToggleOrganizer(int organizer_id, bool is_enabled) {
+void NGToggleOrganizer(int32_t organizer_id, bool is_enabled) {
 	ng_organizer_states[organizer_id].is_enabled = is_enabled;
 }
 
-bool NGIsOrganizerEnabled(int organizer_id) {
+bool NGIsOrganizerEnabled(int32_t organizer_id) {
 	return ng_organizer_states[organizer_id].is_enabled;
 }
 
-void NGResetOrganizer(int organizer_id) {
+void NGResetOrganizer(int32_t organizer_id) {
 	ng_organizer_states[organizer_id].current_tick = 0;
 }
 
-extern bool NGIsTriggerGroupContinuous(int trigger_group_id) {
+extern bool NGIsTriggerGroupContinuous(int32_t trigger_group_id) {
 	return ng_trigger_group_states[trigger_group_id].continuous;
 }
 
-extern void NGSetTriggerGroupContinuous(int trigger_group_id, bool is_continuous) {
+extern void NGSetTriggerGroupContinuous(int32_t trigger_group_id, bool is_continuous) {
 	ng_trigger_group_states[trigger_group_id].continuous = is_continuous;
 }
 
-void NGSetDisplayTimerForMoveableWithType(int item_id, NGTimerTrackerType new_timer_tracker_type) {
+void NGSetDisplayTimerForMoveableWithType(int32_t item_id, NGTimerTrackerType new_timer_tracker_type) {
 	timer_tracker = item_id;
 	timer_tracker_type = new_timer_tracker_type;
 #if 0
@@ -1532,21 +1540,21 @@ void NGSetDisplayTimerForMoveableWithType(int item_id, NGTimerTrackerType new_ti
 #endif
 }
 
-extern void NGSetFadeOverride(int item_id, short fade_override) {
+extern void NGSetFadeOverride(int32_t item_id, int16_t fade_override) {
 	ng_items_extradata[item_id].fade_override = fade_override;
 }
 
-extern short NGGetFadeOverride(int item_id) {
+extern int16_t NGGetFadeOverride(int32_t item_id) {
 	return ng_items_extradata[item_id].fade_override;
 }
 
-int ng_draw_item_number = NO_ITEM;
+int32_t ng_draw_item_number = NO_ITEM;
 
-void NGSetCurrentDrawItemNumber(int item_num) {
+void NGSetCurrentDrawItemNumber(int32_t item_num) {
 	ng_draw_item_number = item_num;
 }
 
-int NGGetCurrentDrawItemNumber() {
+int32_t NGGetCurrentDrawItemNumber() {
 	return ng_draw_item_number;
 }
 
@@ -1600,13 +1608,13 @@ void NGSetupLevelExtraState() {
 
 	// Items
 	ng_items_extradata = (NG_ITEM_EXTRADATA*)game_malloc(ITEM_COUNT * sizeof(NG_ITEM_EXTRADATA));
-	for (int i = 0; i < ITEM_COUNT; i++) {
+	for (int32_t i = 0; i < ITEM_COUNT; i++) {
 		NGResetItemExtraData(i);
 	}
 
 	// Statics
 	ng_statics_movement_info = (NG_MOVEMENT_INFO*)game_malloc(NG_STATIC_ID_TABLE_SIZE * sizeof(NG_MOVEMENT_INFO));
-	for (int i = 0; i < NG_STATIC_ID_TABLE_SIZE; i++) {
+	for (int32_t i = 0; i < NG_STATIC_ID_TABLE_SIZE; i++) {
 		NGResetMovementInfo(&ng_statics_movement_info[i]);
 	}
 
@@ -1615,16 +1623,16 @@ void NGSetupLevelExtraState() {
 
 	// Global triggers
 	{
-		for (int i = 0; i < MAX_NG_GLOBAL_TRIGGERS; i++) {
+		for (int32_t i = 0; i < MAX_NG_GLOBAL_TRIGGERS; i++) {
 			ng_global_trigger_states[i].is_disabled = false;
 			ng_global_trigger_states[i].is_halted = false;
 		}
 
 		if (current_record_data) {
-			int global_trigger_count = current_record_data->global_trigger_count;
-			for (int i = 0; i < global_trigger_count; i++) {
+			int32_t global_trigger_count = current_record_data->global_trigger_count;
+			for (int32_t i = 0; i < global_trigger_count; i++) {
 				NG_GLOBAL_TRIGGER* global_trigger = &current_record_data->global_trigger_table[i].record;
-				int record_id = current_record_data->global_trigger_table[i].record_id;
+				int32_t record_id = current_record_data->global_trigger_table[i].record_id;
 				if (global_trigger->flags != 0xffff) {
 					// FGT_DISABLED
 					if (global_trigger->flags & 0x0008) {
@@ -1637,7 +1645,7 @@ void NGSetupLevelExtraState() {
 
 	// Trigger groups
 	{
-		for (int i = 0; i < MAX_NG_TRIGGER_GROUPS; i++) {
+		for (int32_t i = 0; i < MAX_NG_TRIGGER_GROUPS; i++) {
 			ng_trigger_group_states[i].continuous = false;
 			ng_trigger_group_states[i].one_shot = false;
 		}
@@ -1645,16 +1653,16 @@ void NGSetupLevelExtraState() {
 
 	// Organizers
 	{
-		for (int i = 0; i < MAX_NG_ORGANIZERS; i++) {
+		for (int32_t i = 0; i < MAX_NG_ORGANIZERS; i++) {
 			ng_organizer_states[i].is_enabled = false;
 			ng_organizer_states[i].current_tick = 0;
 		}
 
 		if (current_record_data) {
-			int organizer_count = current_record_data->organizer_count;
-			for (int i = 0; i < organizer_count; i++) {
+			int32_t organizer_count = current_record_data->organizer_count;
+			for (int32_t i = 0; i < organizer_count; i++) {
 				NG_ORGANIZER* organizer = &current_record_data->organizer_table[i].record;
-				int record_id = current_record_data->organizer_table[i].record_id;
+				int32_t record_id = current_record_data->organizer_table[i].record_id;
 				if (organizer->flags != 0xffff) {
 					// FO_ENABLED
 					if (organizer->flags & 0x0001) {
@@ -1675,7 +1683,7 @@ void NGSetupLevelExtraState() {
 	memset(ng_input_simulate_timers, 0x00, sizeof(ng_input_simulate_timers));
 
 	// Looped samples
-	memset(ng_looped_sound_state, 0x00, NumSamples * sizeof(int));
+	memset(ng_looped_sound_state, 0x00, NumSamples * sizeof(int32_t));
 
 	ng_lara_moveable_collision_size = 0;
 	ng_lara_static_collision_size = 0;

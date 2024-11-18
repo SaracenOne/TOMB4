@@ -994,7 +994,7 @@ void TestTriggers(short* data, bool heavy, long heavy_flags)
 
 			if (camera.number != camera.last || type == SWITCH)
 			{
-				camera.timer = camera_timer * 30;
+				camera.timer = camera_timer * NG_TICKS_PER_SECOND;
 
 				if (camera_flags & IFL_INVISIBLE)
 					camera.fixed[camera.number].flags |= IFL_INVISIBLE;

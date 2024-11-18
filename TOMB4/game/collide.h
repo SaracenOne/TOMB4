@@ -1,6 +1,8 @@
 #pragma once
 #include "../global/types.h"
 
+#define COLLISION_RANGE (BLOCK_SIZE * 3)
+
 void ShiftItem(ITEM_INFO* item, COLL_INFO* coll);
 long GetCollidedObjects(ITEM_INFO* item, long rad, long noInvisible, ITEM_INFO** StoredItems, MESH_INFO** StoredStatics, long StoreLara);
 void GenericDeadlyBoundingBoxCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);
