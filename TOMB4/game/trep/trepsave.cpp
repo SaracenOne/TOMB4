@@ -30,7 +30,7 @@ void S_TREPLoadgame(long slot_num) {
 			memcpy(furr_oneshot_buffer, buffer, LAST_FURR_FLIPEFFECT);
 
 			char weather = 0;
-			memcpy(&weather, buffer + 0x270, sizeof(char));
+			memcpy(&weather, buffer + (LAST_FURR_FLIPEFFECT + 0x70), sizeof(char));
 			switch (weather) {
 				case 1:
 					t4p_rain_type = T4P_WEATHER_ENABLED_ALL_OUTSIDE;

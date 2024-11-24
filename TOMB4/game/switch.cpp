@@ -455,6 +455,14 @@ void SwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 									l->anim_number = misc_info->trep_switch_off_ocb_2_anim;
 									l->current_anim_state = AS_SWITCHOFF;
 									break;
+								case 3:
+									l->anim_number = misc_info->trep_switch_off_ocb_3_anim;
+									l->current_anim_state = AS_SWITCHOFF;
+									break;
+								case 4:
+									l->anim_number = misc_info->trep_switch_off_ocb_4_anim;
+									l->current_anim_state = AS_SWITCHOFF;
+									break;
 								case 5:
 									l->anim_number = misc_info->trep_switch_off_ocb_5_anim;
 									l->current_anim_state = AS_SWITCHOFF;
@@ -464,8 +472,8 @@ void SwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 									l->current_anim_state = AS_SWITCHOFF;
 									break;
 								default:
-									l->anim_number = ANIM_HIDDENPICKUP;
-									l->current_anim_state = AS_HIDDENPICKUP;
+									l->anim_number = item->trigger_flags + 1;
+									l->current_anim_state = AS_SWITCHOFF;
 									break;
 							}
 						} else {
@@ -510,8 +518,7 @@ void SwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 					else
 					{
 						// TREP switch maker
-						if (misc_info->trep_switch_maker)
-						{
+						if (misc_info->trep_switch_maker) {
 							switch (item->trigger_flags)
 							{
 								case 1:
@@ -520,6 +527,14 @@ void SwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 									break;
 								case 2:
 									l->anim_number = misc_info->trep_switch_on_ocb_2_anim;
+									l->current_anim_state = AS_SWITCHON;
+									break;
+								case 3:
+									l->anim_number = misc_info->trep_switch_on_ocb_3_anim;
+									l->current_anim_state = AS_SWITCHON;
+									break;
+								case 4:
+									l->anim_number = misc_info->trep_switch_on_ocb_4_anim;
 									l->current_anim_state = AS_SWITCHON;
 									break;
 								case 5:
@@ -531,8 +546,8 @@ void SwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 									l->current_anim_state = AS_SWITCHON;
 									break;
 								default:
-									l->anim_number = ANIM_HIDDENPICKUP;
-									l->current_anim_state = AS_HIDDENPICKUP;
+									l->anim_number = item->trigger_flags;
+									l->current_anim_state = AS_SWITCHOFF;
 									break;
 							}
 						} else {

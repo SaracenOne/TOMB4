@@ -639,13 +639,13 @@ void LoadGameModObjectCustomizationInfo(const json_t* object_customization_json,
 void LoadGameModLevelObjectsInfo(const json_t* objects, MOD_LEVEL_OBJECTS_INFO* objects_info) {
     READ_JSON_SINT16(lara_slot, objects, objects_info);
 
-    READ_JSON_SINT16(pistols_anim, objects, objects_info);
-    READ_JSON_SINT16(uzi_anim, objects, objects_info);
-    READ_JSON_SINT16(shotgun_anim, objects, objects_info);
-    READ_JSON_SINT16(crossbow_anim, objects, objects_info);
-    READ_JSON_SINT16(grenade_gun_anim, objects, objects_info);
-    READ_JSON_SINT16(revolver_anim, objects, objects_info);
-    READ_JSON_SINT16(flare_anim, objects, objects_info);
+    READ_JSON_SINT16(lara_pistols_animations, objects, objects_info);
+    READ_JSON_SINT16(lara_uzi_animations, objects, objects_info);
+    READ_JSON_SINT16(lara_shotgun_animations, objects, objects_info);
+    READ_JSON_SINT16(lara_crossbow_animations, objects, objects_info);
+    READ_JSON_SINT16(lara_grenade_gun_animations, objects, objects_info);
+    READ_JSON_SINT16(lara_revolver_animations, objects, objects_info);
+    READ_JSON_SINT16(lara_flare_animations, objects, objects_info);
 
     READ_JSON_SINT16(lara_skin_slot, objects, objects_info);
     READ_JSON_SINT16(lara_skin_joints_slot, objects, objects_info);

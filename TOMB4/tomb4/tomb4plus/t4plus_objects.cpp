@@ -10,31 +10,31 @@ int16_t T4PlusGetLaraSlotID() {
 }
 
 int16_t T4PlusGetPistolsAnimSlotID() {
-	return get_game_mod_level_objects_info(gfCurrentLevel)->pistols_anim;
+	return get_game_mod_level_objects_info(gfCurrentLevel)->lara_pistols_animations;
 }
 
 int16_t T4PlusGetUziAnimSlotID() {
-	return get_game_mod_level_objects_info(gfCurrentLevel)->uzi_anim;
+	return get_game_mod_level_objects_info(gfCurrentLevel)->lara_uzi_animations;
 }
 
 int16_t T4PlusGetShotgunAnimSlotID() {
-	return get_game_mod_level_objects_info(gfCurrentLevel)->shotgun_anim;
+	return get_game_mod_level_objects_info(gfCurrentLevel)->lara_shotgun_animations;
 }
 
 int16_t T4PlusGetCrossbowAnimSlotID() {
-	return get_game_mod_level_objects_info(gfCurrentLevel)->crossbow_anim;
+	return get_game_mod_level_objects_info(gfCurrentLevel)->lara_crossbow_animations;
 }
 
 int16_t T4PlusGetGrenadeGunAnimSlotID() {
-	return get_game_mod_level_objects_info(gfCurrentLevel)->grenade_gun_anim;
+	return get_game_mod_level_objects_info(gfCurrentLevel)->lara_grenade_gun_animations;
 }
 
 int16_t T4PlusGetRevolverAnimSlotID() {
-	return get_game_mod_level_objects_info(gfCurrentLevel)->revolver_anim;
+	return get_game_mod_level_objects_info(gfCurrentLevel)->lara_revolver_animations;
 }
 
 int16_t T4PlusGetFlareAnimSlotID() {
-	return get_game_mod_level_objects_info(gfCurrentLevel)->flare_anim;
+	return get_game_mod_level_objects_info(gfCurrentLevel)->lara_flare_animations;
 }
 
 int16_t T4PlusGetLaraSkinSlotID() {

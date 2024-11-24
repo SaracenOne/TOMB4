@@ -8,6 +8,7 @@
 #include "tomb4plus/t4plus_weather.h"
 #include "tomb4plus/t4plus_mirror.h"
 #include "tomb4plus/t4plus_environment.h"
+#include "../game/lara_states.h"
 
 #define MOD_LEVEL_COUNT 64
 
@@ -173,13 +174,13 @@ struct MOD_LEVEL_OBJECTS_INFO {
 	// Metadata slots
 	int16_t lara_slot = LARA;
 
-	int16_t pistols_anim = PISTOLS_ANIM;
-	int16_t uzi_anim = UZI_ANIM;
-	int16_t shotgun_anim = SHOTGUN_ANIM;
-	int16_t crossbow_anim = CROSSBOW_ANIM;
-	int16_t grenade_gun_anim = GRENADE_GUN_ANIM;
-	int16_t revolver_anim = SIXSHOOTER_ANIM;
-	int16_t flare_anim = FLARE_ANIM;
+	int16_t lara_pistols_animations = PISTOLS_ANIM;
+	int16_t lara_uzi_animations = UZI_ANIM;
+	int16_t lara_shotgun_animations = SHOTGUN_ANIM;
+	int16_t lara_crossbow_animations = CROSSBOW_ANIM;
+	int16_t lara_grenade_gun_animations = GRENADE_GUN_ANIM;
+	int16_t lara_revolver_animations = SIXSHOOTER_ANIM;
+	int16_t lara_flare_animations = FLARE_ANIM;
 
 	int16_t lara_skin_slot = LARA_SKIN;
 	int16_t lara_skin_joints_slot = LARA_SKIN_JOINTS;
@@ -582,18 +583,18 @@ struct MOD_LEVEL_MISC_INFO {
 	bool fix_vertical_water_warp = false;
 	// TREP
 	bool trep_switch_maker = false;
-	int32_t trep_switch_on_ocb_1_anim = 0;
-	int32_t trep_switch_off_ocb_1_anim = 0;
-	int32_t trep_switch_on_ocb_2_anim = 0;
-	int32_t trep_switch_off_ocb_2_anim = 0;
-	int32_t trep_switch_on_ocb_3_anim = 0;
-	int32_t trep_switch_off_ocb_3_anim = 0;
-	int32_t trep_switch_on_ocb_4_anim = 0;
-	int32_t trep_switch_off_ocb_4_anim = 0;
-	int32_t trep_switch_on_ocb_5_anim = 0;
-	int32_t trep_switch_off_ocb_5_anim = 0;
-	int32_t trep_switch_on_ocb_6_anim = 0;
-	int32_t trep_switch_off_ocb_6_anim = 0;
+	int32_t trep_switch_on_ocb_1_anim = ANIM_HIDDENPICKUP;
+	int32_t trep_switch_off_ocb_1_anim = ANIM_HIDDENPICKUP;
+	int32_t trep_switch_on_ocb_2_anim = ANIM_HIDDENPICKUP;
+	int32_t trep_switch_off_ocb_2_anim = ANIM_HIDDENPICKUP;
+	int32_t trep_switch_on_ocb_3_anim = ANIM_SMALLSWITCH;
+	int32_t trep_switch_off_ocb_3_anim = ANIM_SMALLSWITCH;
+	int32_t trep_switch_on_ocb_4_anim = ANIM_GENERATORSW_ON;
+	int32_t trep_switch_off_ocb_4_anim = ANIM_GENERATORSW_OFF;
+	int32_t trep_switch_on_ocb_5_anim = ANIM_ONEHANDPUSHSW;
+	int32_t trep_switch_off_ocb_5_anim = ANIM_ONEHANDPUSHSW;
+	int32_t trep_switch_on_ocb_6_anim = 470;
+	int32_t trep_switch_off_ocb_6_anim = 471;
 
 	bool enable_teeth_spikes_kill_enemies = false;
 

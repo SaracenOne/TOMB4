@@ -5,6 +5,7 @@
 #include "../../tomb4/tomb4plus/t4plus_inventory.h"
 #include "../control.h"
 #include "../../specific/function_stubs.h"
+#include "../../specific/input.h"
 #include "../lara.h"
 #include "../objects.h"
 #include "../effects.h"
@@ -157,7 +158,9 @@ FURRResult furr_cmd_dec_air(FURRParameters params) {
 // AMOUNT
 // LIMIT
 FURRResult furr_cmd_inc_sprint(FURRParameters params) {
-	return FURR_RESULT_UNIMPLEMENTED;
+	DashTimer += params.first_parameter;
+
+	return FURR_RESULT_OK;
 }
 
 // Params:
@@ -178,8 +181,7 @@ FURRResult furr_cmd_set_poison(FURRParameters params) {
 
 // Params:
 FURRResult furr_cmd_kill_lara(FURRParameters params) {
-	if (items[lara.item_number].hit_points >= 0 && lara.water_status != LW_FLYCHEAT)
-	{
+	if (items[lara.item_number].hit_points >= 0 && lara.water_status != LW_FLYCHEAT) {
 		items[lara.item_number].hit_status = 1;
 		items[lara.item_number].hit_points = -1;
 	}
@@ -199,8 +201,7 @@ FURRResult furr_cmd_remove_pistols(FURRParameters params) {
 FURRResult furr_cmd_set_binoculars(FURRParameters params) {
 	if (params.first_parameter == 0) {
 		lara.binoculars = 0;
-	}
-	else {
+	} else {
 		lara.binoculars = 1;
 	}
 
@@ -212,8 +213,7 @@ FURRResult furr_cmd_set_binoculars(FURRParameters params) {
 FURRResult furr_cmd_set_crowbar(FURRParameters params) {
 	if (params.first_parameter == 0) {
 		lara.crowbar = 0;
-	}
-	else {
+	} else {
 		lara.crowbar = 1;
 	}
 
@@ -455,7 +455,7 @@ FURRResult furr_cmd_set_puzzleitem(FURRParameters params) {
 // Params:
 // PUZZLEITEM_ID, AMOUNT
 FURRResult furr_cmd_add_puzzleitem(FURRParameters params) {
-	if (params.first_parameter >= 175 && params.first_parameter <= 186) {
+	if (params.first_parameter >= PUZZLE_ITEM1 && params.first_parameter <= PUZZLE_ITEM12) {
 		lara.puzzleitems[params.first_parameter - 175] += (int8_t)params.second_parameter & 0xff;
 		return FURR_RESULT_OK;
 	} else {
@@ -478,46 +478,46 @@ FURRResult furr_cmd_add_puzzlecombo(FURRParameters params) {
 // SUPPLY_ID
 FURRResult furr_cmd_set_supply(FURRParameters params) {
 	switch (params.first_parameter) {
-		case 8445951: // (Pistol Ammo)
+		case 0x80DFFF: // (Pistol Ammo)
 			lara.num_pistols_ammo = params.second_parameter;
 			break;
-		case 8445953: // (Uzi Ammo)
+		case 0x80E001: // (Uzi Ammo)
 			lara.num_uzi_ammo = params.second_parameter;
 			break;
-		case 8445957: // (Shotgun Normal Ammo)
+		case 0x80E005: // (Shotgun Normal Ammo)
 			lara.num_shotgun_ammo1 = params.second_parameter;
 			break;
-		case 8445959: // (Shotgun Wideshot Ammo)
+		case 0x80E007: // (Shotgun Wideshot Ammo)
 			lara.num_shotgun_ammo1 = params.second_parameter;
 			break;
-		case 8445955: // (Revolver Ammo)
+		case 0x80E003: // (Revolver Ammo)
 			lara.num_revolver_ammo = params.second_parameter;
 			break;
-		case 8445961: // (Grenade Normal Ammo)
+		case 0x80E009: // (Grenade Normal Ammo)
 			lara.num_grenade_ammo1 = params.second_parameter;
 			break;
-		case 8445963: // (Grenade Super Ammo)
+		case 0x80E00B: // (Grenade Super Ammo)
 			lara.num_grenade_ammo2 = params.second_parameter;
 			break;
-		case 8445965: // (Grenade Flash Ammo)
+		case 0x80E00D: // (Grenade Flash Ammo)
 			lara.num_grenade_ammo3 = params.second_parameter;
 			break;
-		case 8445967: // (Crossbow Normal Ammo)
+		case 0x80E00F: // (Crossbow Normal Ammo)
 			lara.num_crossbow_ammo1 = params.second_parameter;
 			break;
-		case 8445969: // (Crossbow Poison Ammo)
+		case 0x80E011: // (Crossbow Poison Ammo)
 			lara.num_crossbow_ammo2 = params.second_parameter;
 			break;
-		case 8445971: // (Crossbow Explosive Ammo)
+		case 0x80E013: // (Crossbow Explosive Ammo)
 			lara.num_crossbow_ammo3 = params.second_parameter;
 			break;
-		case 8445945: // (Small Medkit)
+		case 0x80DFF9: // (Small Medkit)
 			lara.num_small_medipack = params.second_parameter;
 			break;
-		case 8445947: // (Large Medkit)
+		case 0x80DFFB: // (Large Medkit)
 			lara.num_large_medipack = params.second_parameter;
 			break;
-		case 8445949: // (Flares)
+		case 0x80DFFD: // (Flares)
 			lara.num_flares = params.second_parameter;
 			break;
 		default:
@@ -531,46 +531,46 @@ FURRResult furr_cmd_set_supply(FURRParameters params) {
 // SUPPLY_ID
 FURRResult furr_cmd_add_supply(FURRParameters params) {
 	switch (params.first_parameter) {
-		case 8445951: // (Pistol Ammo)
+		case 0x80DFFF: // (Pistol Ammo)
 			lara.num_pistols_ammo += params.second_parameter;
 			break;
-		case 8445953: // (Uzi Ammo)
+		case 0x80E001: // (Uzi Ammo)
 			lara.num_uzi_ammo += params.second_parameter;
 			break;
-		case 8445957: // (Shotgun Normal Ammo)
+		case 0x80E005: // (Shotgun Normal Ammo)
 			lara.num_shotgun_ammo1 += params.second_parameter;
 			break;
-		case 8445959: // (Shotgun Wideshot Ammo)
+		case 0x80E007: // (Shotgun Wideshot Ammo)
 			lara.num_shotgun_ammo1 += params.second_parameter;
 			break;
-		case 8445955: // (Revolver Ammo)
+		case 0x80E003: // (Revolver Ammo)
 			lara.num_revolver_ammo += params.second_parameter;
 			break;
-		case 8445961: // (Grenade Normal Ammo)
+		case 0x80E009: // (Grenade Normal Ammo)
 			lara.num_grenade_ammo1 += params.second_parameter;
 			break;
-		case 8445963: // (Grenade Super Ammo)
+		case 0x80E00B: // (Grenade Super Ammo)
 			lara.num_grenade_ammo2 += params.second_parameter;
 			break;
-		case 8445965: // (Grenade Flash Ammo)
+		case 0x80E00D: // (Grenade Flash Ammo)
 			lara.num_grenade_ammo3 += params.second_parameter;
 			break;
-		case 8445967: // (Crossbow Normal Ammo)
+		case 0x80E00F: // (Crossbow Normal Ammo)
 			lara.num_crossbow_ammo1 += params.second_parameter;
 			break;
-		case 8445969: // (Crossbow Poison Ammo)
+		case 0x80E011: // (Crossbow Poison Ammo)
 			lara.num_crossbow_ammo2 += params.second_parameter;
 			break;
-		case 8445971: // (Crossbow Explosive Ammo)
+		case 0x80E013: // (Crossbow Explosive Ammo)
 			lara.num_crossbow_ammo3 += params.second_parameter;
 			break;
-		case 8445945: // (Small Medkit)
+		case 0x80DFF9: // (Small Medkit)
 			lara.num_small_medipack += params.second_parameter;
 			break;
-		case 8445947: // (Large Medkit)
+		case 0x80DFFB: // (Large Medkit)
 			lara.num_large_medipack += params.second_parameter;
 			break;
-		case 8445949: // (Flares)
+		case 0x80DFFD: // (Flares)
 			lara.num_flares += params.second_parameter;
 			break;
 		default:
@@ -584,22 +584,22 @@ FURRResult furr_cmd_add_supply(FURRParameters params) {
 // WEAPON_ID
 FURRResult furr_cmd_add_weapon(FURRParameters params) {
 	switch (params.first_parameter) {
-		case 8445906: // (Pistol)
+		case 0x80DFD2: // (Pistol)
 			lara.pistols_type_carried |= W_PRESENT;
 			break;
-		case 8445907: // (Uzi)
+		case 0x80DFD3: // (Uzi)
 			lara.uzis_type_carried |= W_PRESENT;
 			break;
-		case 8445908: // (Shotgun)
+		case 0x80DFD4: // (Shotgun)
 			lara.shotgun_type_carried |= W_PRESENT;
 			break;
-		case 8445909: // (Crossbow)
+		case 0x80DFD5: // (Crossbow)
 			lara.crossbow_type_carried |= W_PRESENT;
 			break;
-		case 8445910: // (Grenade Gun)
+		case 0x80DFD6: // (Grenade Gun)
 			lara.grenade_type_carried |= W_PRESENT;
 			break;
-		case 8445911: // (Revolver)
+		case 0x80DFD7: // (Revolver)
 			lara.sixshooter_type_carried |= W_PRESENT;
 			break;
 		default:
@@ -613,22 +613,22 @@ FURRResult furr_cmd_add_weapon(FURRParameters params) {
 // WEAPON_ID
 FURRResult furr_cmd_remove_weapon(FURRParameters params) {
 	switch (params.first_parameter) {
-	case 8445906: // (Pistol)
+	case 0x80DFD2: // (Pistol)
 		lara.pistols_type_carried = W_NONE;
 		break;
-	case 8445907: // (Uzi)
+	case 0x80DFD3: // (Uzi)
 		lara.uzis_type_carried = W_NONE;
 		break;
-	case 8445908: // (Shotgun)
+	case 0x80DFD4: // (Shotgun)
 		lara.shotgun_type_carried = W_NONE;
 		break;
-	case 8445909: // (Crossbow)
+	case 0x80DFD5: // (Crossbow)
 		lara.crossbow_type_carried = W_NONE;
 		break;
-	case 8445910: // (Grenade Gun)
+	case 0x80DFD6: // (Grenade Gun)
 		lara.grenade_type_carried = W_NONE;
 		break;
-	case 8445911: // (Revolver)
+	case 0x80DFD7: // (Revolver)
 		lara.sixshooter_type_carried = W_NONE;
 		break;
 	default:
@@ -765,7 +765,10 @@ FURRResult furr_cmd_shake_camera_heavy(FURRParameters params) {
 // Params:
 // DRIP_AMOUNT
 FURRResult furr_cmd_lara_drips(FURRParameters params) {
-	return FURR_RESULT_UNIMPLEMENTED;
+	for (int i = 0; i < WET_COUNT; i++) {
+		lara.wet[i] = (uint8_t)params.first_parameter;
+	}
+	return FURR_RESULT_OK;
 }
 
 
@@ -1177,7 +1180,11 @@ FURRResult furr_cmd_only_on_land(FURRParameters params) {
 // Params:
 // ENVIRONMENT
 FURRResult furr_cmd_environment(FURRParameters params) {
-	return FURR_RESULT_UNIMPLEMENTED;
+	if (lara.water_status == params.first_parameter) {
+		return FURR_RESULT_OK;
+	}
+
+	return FURR_RESULT_RET;
 }
 
 // Params:
@@ -1188,7 +1195,21 @@ FURRResult furr_cmd_no_fadeout(FURRParameters params) {
 // Params:
 // BUTTON
 FURRResult furr_cmd_if_pressed(FURRParameters params) {
-	return FURR_RESULT_UNIMPLEMENTED;
+	if (input & params.first_parameter) {
+		return FURR_RESULT_OK;
+	}
+	
+	return FURR_RESULT_RET;
+}
+
+// Params:
+// BUTTON
+FURRResult furr_cmd_if_not_pressed(FURRParameters params) {
+	if (!(input & params.first_parameter)) {
+		return FURR_RESULT_OK;
+	}
+
+	return FURR_RESULT_RET;
 }
 //
 
@@ -1257,6 +1278,23 @@ FURRResult furr_cmd_if_lara_equal_or_greater_than(FURRParameters params) {
 // VALUE
 FURRResult furr_cmd_if_lara_equal_or_less_than(FURRParameters params) {
 	if (furr_get_state_field(lara_item, params.first_parameter) <= params.second_parameter) {
+		return FURR_RESULT_OK;
+	}
+
+	return FURR_RESULT_RET;
+}
+
+// Params:
+FURRResult furr_cmd_if_carry_guns(FURRParameters params) {
+	if (lara.gun_status == LG_READY) {
+		return FURR_RESULT_OK;
+	}
+
+	return FURR_RESULT_RET;
+}
+
+FURRResult furr_cmd_if_not_carry_guns(FURRParameters params) {
+	if (lara.gun_status != LG_READY) {
 		return FURR_RESULT_OK;
 	}
 
@@ -1393,12 +1431,16 @@ FURRNameTableEntry furr_name_table[] = {
 	{"ENVIRONMENT", FURR_ENVIRONMENT},
 	{"NO_FADEOUT", FURR_NO_FADEOUT},
 	{"IF_PRESSED", FURR_IF_PRESSED},
+	{"IF_NOT_PRESSED", FURR_IF_NOT_PRESSED},
 	{"IF_LARA=", FURR_IF_LARA_EQUAL},
 	{"IF_LARA!=", FURR_IF_LARA_NOT},
 	{"IF_LARA>", FURR_IF_LARA_GREATER_THAN},
 	{"IF_LARA<", FURR_IF_LARA_LESS_THAN},
 	{"IF_LARA>=", FURR_IF_LARA_EQUAL_OR_GREATER_THAN},
 	{"IF_LARA<=", FURR_IF_LARA_EQUAL_OR_LESS_THAN},
+	{"IF_CARRY_GUNS", FURR_IF_CARRY_GUNS},
+	{"IF_NOT_CARRY_GUNS", FURR_IF_NOT_CARRY_GUNS },
+
 	{"BYTE_IF_EQL", FURR_BYTE_IF_EQL},
 	{"BYTE_IF_NOT", FURR_BYTE_IF_NOT},
 	{"BYTE_IF_GT", FURR_BYTE_IF_GT},
@@ -1416,7 +1458,7 @@ FURRNameTableEntry furr_name_table[] = {
 	{"DWORD_IF_GT", FURR_DWORD_IF_GT},
 	{"DWORD_IF_LT", FURR_DWORD_IF_LT},
 	{"DWORD_IF_ELT", FURR_DWORD_IF_ELT},
-	{"DWORD_IF_EGT", FURR_DWORD_IF_EGT}
+	{"DWORD_IF_EGT", FURR_DWORD_IF_EGT},
 };
 
 
@@ -1550,6 +1592,7 @@ FURRDataTable furr_data_table[] = {
 	{1, furr_cmd_no_fadeout}, // FURR_NO_FADEOUT,
 
 	{1, furr_cmd_if_pressed }, // FURR_IF_PRESSED,
+	{1, furr_cmd_if_not_pressed }, // FURR_IF_NOT_PRESSED,
 
 	{2, furr_cmd_if_lara_equals }, // FURR_IF_LARA_EQUAL,
 	{2, furr_cmd_if_lara_not }, // FURR_IF_LARA_NOT,
@@ -1557,6 +1600,10 @@ FURRDataTable furr_data_table[] = {
 	{2, furr_cmd_if_lara_less_than }, // FURR_IF_LARA_LESS_THAN,
 	{2, furr_cmd_if_lara_equal_or_greater_than }, // FURR_IF_LARA_EQUAL_OR_GREATER_THAN,
 	{2, furr_cmd_if_lara_equal_or_less_than }, // FURR_IF_LARA_EQUAL_OR_LESS_THAN,
+
+	{0, furr_cmd_if_carry_guns }, // FURR_IF_CARRY_GUNS,
+	{0, furr_cmd_if_not_carry_guns }, // FURR_IF_NOT_CARRY_GUNS,
+
 
 	// FURR_BYTE_IF_EQL, // ==
 	// FURR_BYTE_IF_NOT, // !=
