@@ -314,7 +314,7 @@ int32_t NGPerformTRNGCondition(uint16_t condition_number, uint16_t main_argument
 					break;
 				case 19: { // Dripping
 						bool is_dripping = false;
-						for (int i = 0; i < 16; i++) {
+						for (int i = 0; i < WET_COUNT; i++) {
 							if (lara.wet[i]) {
 								is_dripping = true;
 							}

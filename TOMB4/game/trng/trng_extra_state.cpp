@@ -51,11 +51,11 @@ struct NG_MOVEMENT_INFO {
 	bool trigger_heavy_when_moving = false;
 };
 
-// NG_ITEM_EXTRADATA is persistent supllementary data used by TRNG triggers.
-// The state here can subseqeuently be serialized as additional data for savegames.
+// NG_ITEM_EXTRADATA is persistent supplementary data used by TRNG triggers.
+// The state here can subsequently be serialized as additional data for save games.
 struct NG_ITEM_EXTRADATA {
 	int16_t frozen_ticks = 0;
-	bool collison_disabled = false; // Will only disable the ObjectCollision routine. Doors and enemies stll have collision.
+	bool collison_disabled = false; // Will only disable the ObjectCollision routine. Doors and enemies still have collision.
 	uint32_t mesh_visibility_mask = 0xffffffff;
 	int16_t fade_override = 0;
 
@@ -86,7 +86,7 @@ void NGResetItemExtraData(int32_t item_number) {
 
 	if (current_extradata) {
 		current_extradata->frozen_ticks = 0;
-		current_extradata->collison_disabled = false; // Will only disable the ObjectCollision routine. Doors and enemies stll have collision.
+		current_extradata->collison_disabled = false; // Will only disable the ObjectCollision routine. Doors and enemies still have collision.
 
 		current_extradata->mesh_visibility_mask = 0xffffffff;
 		current_extradata->fade_override = 0;

@@ -75,7 +75,7 @@ void NGScriptInit(char* gfScriptFile, size_t offset, size_t len) {
 	bool ng_header_found = false;
 
 	uint32_t footer_ident = NG_READ_32(gfScriptFile, offset);
-	if (footer_ident != 0x454c474e) { // NGLE
+	if (footer_ident != NGLE_END_SIGNATURE) { // NGLE
 		return;
 	}
 
@@ -1781,7 +1781,9 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 				global_trigger_type != GT_COLLIDE_ITEM &&
 				global_trigger_type != GT_COLLIDE_SLOT &&
 				global_trigger_type != GT_COLLIDE_CREATURE &&
+				global_trigger_type != GT_LOADED_SAVEGAME &&
 				global_trigger_type != GT_COLLIDE_STATIC_SLOT &&
+				global_trigger_type != GT_KEYBOARD_CODE &&
 				global_trigger_type != GT_ALWAYS &&
 				global_trigger_type != GT_TRNG_G_TIMER_EQUALS &&
 				global_trigger_type != GT_TRNG_L_TIMER_EQUALS &&
@@ -2457,7 +2459,7 @@ void NGReadNGGameflowInfo(char *gfScriptFile, size_t offset, size_t len) {
 	bool ng_header_found = false;
 
 	uint32_t footer_ident = NG_READ_32(gfScriptFile, offset);
-	if (footer_ident != 0x454c474e) { // NGLE
+	if (footer_ident != NGLE_END_SIGNATURE) { // NGLE
 		return;
 	}
 
@@ -2675,7 +2677,7 @@ void NGReadNGGameflowInfo(char *gfScriptFile, size_t offset, size_t len) {
 
 void NGReadNGExtraStrings(char *gfLanguageFile, size_t offset, size_t len) {
 	uint32_t footer_ident = NG_READ_32(gfLanguageFile, offset);
-	if (footer_ident != 0x454c474e) { // NGLE
+	if (footer_ident != NGLE_END_SIGNATURE) { // NGLE
 		return;
 	}
 
