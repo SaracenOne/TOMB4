@@ -89,7 +89,7 @@ void DrawGameInfo(long timed)
 		{
 			seconds = savegame.Level.Timer / 30;
 			sprintf(buf, "%.2d:%.2d:%.2d", seconds / 60, seconds % 60, (334 * (savegame.Level.Timer % 30)) / 100);
-			PrintString(phd_winwidth >> 1, font_height, 0, buf, 0x8000);
+			PrintString(phd_winwidth >> 1, font_height, 0, buf, FF_CENTER);
 		}
 
 		if (tomb4.ammo_counter)
@@ -113,7 +113,7 @@ void DrawGameInfo(long timed)
 		if (ammo_change_timer)
 		{
 			ammo_change_timer--;
-			PrintString(phd_winwidth >> 1, font_height, 5, ammo_change_buf, 0x8000);
+			PrintString(phd_winwidth >> 1, font_height, 5, ammo_change_buf, FF_CENTER);
 
 			if (ammo_change_timer <= 0)
 				ammo_change_timer = 0;
