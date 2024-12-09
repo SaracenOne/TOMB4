@@ -1079,6 +1079,8 @@ void LoadGameflow()
 		return;
 	}
 
+	NGReadNGExtraStrings((char*)d, language_len - (sizeof(unsigned int) * 2), language_len);
+
 	gfStringOffset = (ushort*)d;
 	gfLanguageFile = (uchar*)d;
 	Gameflow->Language = l;
@@ -1186,7 +1188,6 @@ void LoadGameflow()
 	}
 
 	NGPreloadAllLevelInfo(detected_level_count);
-	NGReadNGExtraStrings(d, language_len - (sizeof(unsigned int) * 2), language_len);
 	NGReadNGGameflowInfo((char*)gfScriptFile, gameflow_len - (sizeof(unsigned int) * 2), gameflow_len);
 }
 
