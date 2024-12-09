@@ -133,7 +133,7 @@ struct MOD_LEVEL_OBJECT_CUSTOMIZATION {
 	uint16_t save_position : 1;
 	uint16_t save_hitpoints : 1;
 	uint16_t save_flags : 1;
-	uint16_t save_anim : 1;
+	uint16_t save_animation : 1;
 	uint16_t save_mesh : 1;
 
 	uint16_t override_hit_points : 1;
@@ -174,13 +174,13 @@ struct MOD_LEVEL_OBJECTS_INFO {
 	// Metadata slots
 	int16_t lara_slot = LARA;
 
-	int16_t lara_pistols_animations = PISTOLS_ANIM;
-	int16_t lara_uzi_animations = UZI_ANIM;
-	int16_t lara_shotgun_animations = SHOTGUN_ANIM;
-	int16_t lara_crossbow_animations = CROSSBOW_ANIM;
-	int16_t lara_grenade_gun_animations = GRENADE_GUN_ANIM;
-	int16_t lara_revolver_animations = SIXSHOOTER_ANIM;
-	int16_t lara_flare_animations = FLARE_ANIM;
+	int16_t lara_pistols_animations_slot = PISTOLS_ANIM;
+	int16_t lara_uzi_animations_slot = UZI_ANIM;
+	int16_t lara_shotgun_animations_slot = SHOTGUN_ANIM;
+	int16_t lara_crossbow_animations_slot = CROSSBOW_ANIM;
+	int16_t lara_grenade_gun_animations_slot = GRENADE_GUN_ANIM;
+	int16_t lara_revolver_animations_slot = SIXSHOOTER_ANIM;
+	int16_t lara_flare_animations_slot = FLARE_ANIM;
 
 	int16_t lara_skin_slot = LARA_SKIN;
 	int16_t lara_skin_joints_slot = LARA_SKIN_JOINTS;

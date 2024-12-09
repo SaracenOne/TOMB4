@@ -10,31 +10,31 @@ int16_t T4PlusGetLaraSlotID() {
 }
 
 int16_t T4PlusGetPistolsAnimSlotID() {
-	return get_game_mod_level_objects_info(gfCurrentLevel)->lara_pistols_animations;
+	return get_game_mod_level_objects_info(gfCurrentLevel)->lara_pistols_animations_slot;
 }
 
 int16_t T4PlusGetUziAnimSlotID() {
-	return get_game_mod_level_objects_info(gfCurrentLevel)->lara_uzi_animations;
+	return get_game_mod_level_objects_info(gfCurrentLevel)->lara_uzi_animations_slot;
 }
 
 int16_t T4PlusGetShotgunAnimSlotID() {
-	return get_game_mod_level_objects_info(gfCurrentLevel)->lara_shotgun_animations;
+	return get_game_mod_level_objects_info(gfCurrentLevel)->lara_shotgun_animations_slot;
 }
 
 int16_t T4PlusGetCrossbowAnimSlotID() {
-	return get_game_mod_level_objects_info(gfCurrentLevel)->lara_crossbow_animations;
+	return get_game_mod_level_objects_info(gfCurrentLevel)->lara_crossbow_animations_slot;
 }
 
 int16_t T4PlusGetGrenadeGunAnimSlotID() {
-	return get_game_mod_level_objects_info(gfCurrentLevel)->lara_grenade_gun_animations;
+	return get_game_mod_level_objects_info(gfCurrentLevel)->lara_grenade_gun_animations_slot;
 }
 
 int16_t T4PlusGetRevolverAnimSlotID() {
-	return get_game_mod_level_objects_info(gfCurrentLevel)->lara_revolver_animations;
+	return get_game_mod_level_objects_info(gfCurrentLevel)->lara_revolver_animations_slot;
 }
 
 int16_t T4PlusGetFlareAnimSlotID() {
-	return get_game_mod_level_objects_info(gfCurrentLevel)->lara_flare_animations;
+	return get_game_mod_level_objects_info(gfCurrentLevel)->lara_flare_animations_slot;
 }
 
 int16_t T4PlusGetLaraSkinSlotID() {
@@ -189,7 +189,7 @@ void T4PlusSetupDefaultObjectCustomization() {
 		objects_info->object_customization[i].save_position = 0;
 		objects_info->object_customization[i].save_hitpoints = 0;
 		objects_info->object_customization[i].save_flags = 0;
-		objects_info->object_customization[i].save_anim = 0;
+		objects_info->object_customization[i].save_animation = 0;
 		objects_info->object_customization[i].save_mesh = 0;
 
 		objects_info->object_customization[i].pivot_length = 0;
@@ -211,7 +211,7 @@ void T4PlusSetupDefaultObjectCustomization() {
 	obj->save_hitpoints = 1;
 	obj->save_position = 1;
 	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_animation = 1;
 
 	obj = &objects_info->object_customization[MOTORBIKE];
 	obj->initialise_routine = "InitialiseBike";
@@ -221,7 +221,7 @@ void T4PlusSetupDefaultObjectCustomization() {
 	obj->save_hitpoints = true;
 	obj->save_position = true;
 	obj->save_flags = true;
-	obj->save_anim = true;
+	obj->save_animation = true;
 	//bones[obj->bone_index + 4] |= X_ROTATION_FLAG;
 	//bones[obj->bone_index + 12] |= X_ROTATION_FLAG;
 	//bones[obj->bone_index + 28] |= X_ROTATION_FLAG;
@@ -234,7 +234,7 @@ void T4PlusSetupDefaultObjectCustomization() {
 	obj->save_hitpoints = true;
 	obj->save_position = true;
 	obj->save_flags = true;
-	obj->save_anim = true;
+	obj->save_animation = true;
 	//bones[obj->bone_index + 4] |= X_ROTATION_FLAG;
 	//bones[obj->bone_index + 12] |= X_ROTATION_FLAG;
 	//bones[obj->bone_index + 28] |= X_ROTATION_FLAG;
