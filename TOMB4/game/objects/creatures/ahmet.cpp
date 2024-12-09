@@ -327,8 +327,8 @@ void AhmetControl(short item_number)
 			larainfo.distance = SQUARE(dx) + SQUARE(dz);
 		}
 
-		GetCreatureMood(item, &info, 1);
-		CreatureMood(item, &info, 1);
+		GetCreatureMood(item, &info, true);
+		CreatureMood(item, &info, true);
 		angle = CreatureTurn(item, ahmet->maximum_turn);
 		enemy = ahmet->enemy;
 		ahmet->enemy = lara_item;

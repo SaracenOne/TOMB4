@@ -323,12 +323,12 @@ void BaddyControl(short item_number)
 			larainfo.distance = SQUARE(dx) + SQUARE(dz);
 		}
 
-		GetCreatureMood(item, &info, 1);
+		GetCreatureMood(item, &info, true);
 
 		if (lara.vehicle != NO_ITEM && info.bite)
 			baddy->mood = ESCAPE_MOOD;
 
-		CreatureMood(item, &info, 1);
+		CreatureMood(item, &info, true);
 		angle = CreatureTurn(item, baddy->maximum_turn);
 		enemy = baddy->enemy;
 

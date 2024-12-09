@@ -63,8 +63,8 @@ void HammerheadControl(short item_number)
 		if (shark->enemy != lara_item)
 			phd_atan(lara_item->pos.z_pos - item->pos.z_pos, lara_item->pos.x_pos - item->pos.x_pos);
 
-		GetCreatureMood(item, &info, 1);
-		CreatureMood(item, &info, 1);
+		GetCreatureMood(item, &info, true);
+		CreatureMood(item, &info, true);
 		angle = CreatureTurn(item, shark->maximum_turn);
 
 		switch (item->current_anim_state)

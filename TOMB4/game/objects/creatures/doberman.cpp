@@ -68,8 +68,8 @@ void DobermanControl(short item_number)
 		if (info.ahead)
 			head = info.angle;
 
-		GetCreatureMood(item, &info, 0);
-		CreatureMood(item, &info, 0);
+		GetCreatureMood(item, &info, false);
+		CreatureMood(item, &info, false);
 		angle = CreatureTurn(item, dog->maximum_turn);
 
 		switch (item->current_anim_state)

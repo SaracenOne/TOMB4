@@ -105,8 +105,8 @@ void HydraControl(short item_number)
 			hydra->enemy = lara_item;
 
 		CreatureAIInfo(item, &info);
-		GetCreatureMood(item, &info, 1);
-		CreatureMood(item, &info, 1);
+		GetCreatureMood(item, &info, true);
+		CreatureMood(item, &info, true);
 
 		if (item->current_anim_state != 5 && item->current_anim_state != 10 && item->current_anim_state != 11)
 		{

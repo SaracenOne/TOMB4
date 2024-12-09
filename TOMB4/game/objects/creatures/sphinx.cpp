@@ -91,8 +91,8 @@ void SphinxControl(short item_number)
 	if (sphinx->enemy != lara_item)
 		phd_atan(lara_item->pos.z_pos - item->pos.z_pos, lara_item->pos.x_pos - item->pos.x_pos);
 
-	GetCreatureMood(item, &info, 1);
-	CreatureMood(item, &info, 1);
+	GetCreatureMood(item, &info, true);
+	CreatureMood(item, &info, true);
 	angle = CreatureTurn(item, sphinx->maximum_turn);
 	x = abs(item->item_flags[2] - (short)item->pos.x_pos);
 	z = abs(item->item_flags[3] - (short)item->pos.z_pos);

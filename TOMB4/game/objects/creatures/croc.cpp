@@ -118,8 +118,8 @@ void CrocControl(short item_number)
 			croc->enemy = lara_item;
 
 		CreatureAIInfo(item, &info);
-		GetCreatureMood(item, &info, 1);
-		CreatureMood(item, &info, 1);
+		GetCreatureMood(item, &info, true);
+		CreatureMood(item, &info, true);
 		angle = CreatureTurn(item, croc->maximum_turn);
 
 		if (item->hit_status || info.distance < 0x240000 || (TargetVisible(item, &info) && info.distance < 0x1900000))

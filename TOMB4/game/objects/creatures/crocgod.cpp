@@ -145,8 +145,8 @@ void CrocgodControl(short item_number)
 		if (crocgod->enemy != lara_item)
 			phd_atan(lara_item->pos.z_pos - item->pos.z_pos, lara_item->pos.x_pos - item->pos.x_pos);
 
-		GetCreatureMood(item, &info, 1);
-		CreatureMood(item, &info, 1);
+		GetCreatureMood(item, &info, true);
+		CreatureMood(item, &info, true);
 		crocgod->maximum_turn = 0;
 		angle = CreatureTurn(item, 0);
 

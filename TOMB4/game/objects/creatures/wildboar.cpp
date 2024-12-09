@@ -98,12 +98,12 @@ void WildboarControl(short item_number)
 		}
 
 		CreatureAIInfo(item, &info);
-		GetCreatureMood(item, &info, 1);
+		GetCreatureMood(item, &info, true);
 
 		if (item->flags)
 			boar->mood = ESCAPE_MOOD;
 
-		CreatureMood(item, &info, 1);
+		CreatureMood(item, &info, true);
 		angle = CreatureTurn(item, boar->maximum_turn);
 		dx = abs(item->item_flags[2] - item->pos.x_pos);
 		dz = abs(item->item_flags[3] - item->pos.z_pos);

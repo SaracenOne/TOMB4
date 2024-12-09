@@ -445,8 +445,8 @@ void VoncroyRaceControl(short item_number)
 	else
 		CreatureAIInfo(item, &info);
 
-	GetCreatureMood(item, &info, 1);
-	CreatureMood(item, &info, 1);
+	GetCreatureMood(item, &info, true);
+	CreatureMood(item, &info, true);
 
 	if (VonCroy->enemy == lara_item)
 	{
@@ -1046,8 +1046,8 @@ void VoncroyControl(short item_number)
 	else
 		CreatureAIInfo(item, &VonCroyAI);
 
-	GetCreatureMood(item, &VonCroyAI, 1);
-	CreatureMood(item, &VonCroyAI, 1);
+	GetCreatureMood(item, &VonCroyAI, true);
+	CreatureMood(item, &VonCroyAI, true);
 
 	if (VonCroy->enemy == lara_item)
 		memcpy(&VonCroyLaraAI, &VonCroyAI, sizeof(VonCroyLaraAI));

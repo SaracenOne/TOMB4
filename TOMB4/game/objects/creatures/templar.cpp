@@ -81,8 +81,8 @@ void TemplarControl(short item_number)
 	if (knight->enemy != lara_item)
 		phd_atan(lara_item->pos.z_pos - item->pos.z_pos, lara_item->pos.x_pos - item->pos.x_pos);
 
-	GetCreatureMood(item, &info, 1);
-	CreatureMood(item, &info, 1);
+	GetCreatureMood(item, &info, true);
+	CreatureMood(item, &info, true);
 	angle = CreatureTurn(item, knight->maximum_turn);
 
 	if (info.ahead)

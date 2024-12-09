@@ -160,8 +160,8 @@ void TroopControl(short item_number)
 		if (!troop->hurt_by_lara && troop->enemy == lara_item)
 			troop->enemy = 0;
 
-		GetCreatureMood(item, &info, 0);
-		CreatureMood(item, &info, 0);
+		GetCreatureMood(item, &info, false);
+		CreatureMood(item, &info, false);
 		angle = CreatureTurn(item, troop->maximum_turn);
 
 		if (item->hit_status)

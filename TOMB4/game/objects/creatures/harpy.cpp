@@ -381,8 +381,8 @@ void HarpyControl(short item_number)
 		if (enemy != lara_item)
 			phd_atan(lara_item->pos.z_pos - item->pos.z_pos, lara_item->pos.x_pos - item->pos.x_pos);
 
-		GetCreatureMood(item, &info, 1);
-		CreatureMood(item, &info, 1);
+		GetCreatureMood(item, &info, true);
+		CreatureMood(item, &info, true);
 		angle = CreatureTurn(item, harpy->maximum_turn);
 
 		if (info.ahead)

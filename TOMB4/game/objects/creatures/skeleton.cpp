@@ -222,12 +222,12 @@ void SkeletonControl(short item_number)
 	
 	// T4Plus: initialize this
 	larainfo.ahead = larainfo.angle > -0x4000 && larainfo.angle < 0x4000;
-	GetCreatureMood(item, &info, 1);
+	GetCreatureMood(item, &info, true);
 
 	if (!(item->mesh_bits & 0x200))
 		skelly->mood = ESCAPE_MOOD;
 
-	CreatureMood(item, &info, 1);
+	CreatureMood(item, &info, true);
 	angle = CreatureTurn(item, skelly->maximum_turn);
 	enemy = skelly->enemy;
 	skelly->enemy = lara_item;

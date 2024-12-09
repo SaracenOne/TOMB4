@@ -88,7 +88,7 @@ void BaboonControl(short item_number)
 				distance = SQUARE(dx) + SQUARE(dz);
 			}
 
-			GetCreatureMood(item, &info, 1);
+			GetCreatureMood(item, &info, true);
 
 			if (item->ai_bits & FOLLOW && distance > 1048576)
 			{
@@ -96,7 +96,7 @@ void BaboonControl(short item_number)
 				baboon->mood = BORED_MOOD;
 			}
 
-			CreatureMood(item, &info, 1);
+			CreatureMood(item, &info, true);
 			angle = CreatureTurn(item, baboon->maximum_turn);
 
 			switch (item->current_anim_state)

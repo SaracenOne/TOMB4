@@ -71,8 +71,8 @@ void ChefControl(short item_number)
 		larainfo.distance = SQUARE(dz) + SQUARE(dx);
 	}
 
-	GetCreatureMood(item, &info, 1);
-	CreatureMood(item, &info, 1);
+	GetCreatureMood(item, &info, true);
+	CreatureMood(item, &info, true);
 	angle = CreatureTurn(item, chef->maximum_turn);
 
 	if (info.ahead)

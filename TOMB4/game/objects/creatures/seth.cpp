@@ -462,8 +462,8 @@ void SethControl(short item_number)
 			seth->enemy = lara_item;
 
 		CreatureAIInfo(item, &info);
-		GetCreatureMood(item, &info, 1);
-		CreatureMood(item, &info, 1);
+		GetCreatureMood(item, &info, true);
+		CreatureMood(item, &info, true);
 		angle = CreatureTurn(item, seth->maximum_turn);
 
 		switch (item->current_anim_state)

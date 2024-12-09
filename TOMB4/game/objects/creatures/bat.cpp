@@ -104,12 +104,12 @@ void BatControl(short item_number)
 		}
 
 		CreatureAIInfo(item, &info);
-		GetCreatureMood(item, &info, 0);
+		GetCreatureMood(item, &info, false);
 
 		if (bat->flags)
 			bat->mood = ESCAPE_MOOD;
 
-		CreatureMood(item, &info, 0);
+		CreatureMood(item, &info, false);
 		angle = CreatureTurn(item, DEGREES_TO_ROTATION(20));
 
 		switch (item->current_anim_state)

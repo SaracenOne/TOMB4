@@ -619,7 +619,7 @@ target_type CalculateTarget(PHD_VECTOR* target, ITEM_INFO* item, LOT_INFO* LOT)
 	return NO_TARGET;
 }
 
-void CreatureMood(ITEM_INFO* item, AI_INFO* info, long violent)
+void CreatureMood(ITEM_INFO* item, AI_INFO* info, bool violent)
 {
 	CREATURE_INFO* creature;
 	ITEM_INFO* enemy;
@@ -654,13 +654,15 @@ void CreatureMood(ITEM_INFO* item, AI_INFO* info, long violent)
 		break;
 
 	case ATTACK_MOOD:
-		creature->LOT.target.x = enemy->pos.x_pos;
-		creature->LOT.target.y = enemy->pos.y_pos;
-		creature->LOT.target.z = enemy->pos.z_pos;
-		creature->LOT.required_box = enemy->box_number;
+		if (GetRandomControl() < objects[item->object_number].aggression) {
+			creature->LOT.target.x = enemy->pos.x_pos;
+			creature->LOT.target.y = enemy->pos.y_pos;
+			creature->LOT.target.z = enemy->pos.z_pos;
+			creature->LOT.required_box = enemy->box_number;
 
-		if (creature->LOT.fly && lara.water_status == LW_ABOVE_WATER)
-			creature->LOT.target.y += GetBestFrame(enemy)[2];
+			if (creature->LOT.fly && lara.water_status == LW_ABOVE_WATER)
+				creature->LOT.target.y += GetBestFrame(enemy)[2];
+		}
 
 		break;
 
@@ -727,7 +729,7 @@ void CreatureMood(ITEM_INFO* item, AI_INFO* info, long violent)
 	}
 }
 
-void GetCreatureMood(ITEM_INFO* item, AI_INFO* info, long violent)
+void GetCreatureMood(ITEM_INFO* item, AI_INFO* info, bool violent)
 {
 	CREATURE_INFO* creature;
 	ITEM_INFO* enemy;

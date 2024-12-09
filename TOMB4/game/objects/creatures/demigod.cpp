@@ -355,8 +355,8 @@ void DemigodControl(short item_number)
 				info.x_angle = (short)phd_atan(dz + (dx >> 1), item->pos.y_pos - lara_item->pos.y_pos);
 		}
 
-		GetCreatureMood(item, &info, 1);
-		CreatureMood(item, &info, 1);
+		GetCreatureMood(item, &info, true);
+		CreatureMood(item, &info, true);
 		angle = CreatureTurn(item, god->maximum_turn);
 		torso_x = -info.x_angle;
 

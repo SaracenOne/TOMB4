@@ -202,17 +202,17 @@ void SasControl(short item_number)
 		}
 
 		if (sas->enemy == lara_item)
-			GetCreatureMood(item, &info, 0);
+			GetCreatureMood(item, &info, false);
 		else
-			GetCreatureMood(item, &info, 1);
+			GetCreatureMood(item, &info, true);
 
 		if (lara.vehicle != NO_ITEM && info.bite)
 			sas->mood = ESCAPE_MOOD;
 
 		if (sas->enemy == lara_item)
-			CreatureMood(item, &info, 0);
+			CreatureMood(item, &info, false);
 		else
-			CreatureMood(item, &info, 1);
+			CreatureMood(item, &info, true);
 
 		angle = CreatureTurn(item, sas->maximum_turn);
 

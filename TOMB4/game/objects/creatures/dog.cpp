@@ -88,8 +88,8 @@ void DogControl(short item_number)
 			head_x = info.x_angle;
 		}
 
-		GetCreatureMood(item, &info, 1);
-		CreatureMood(item, &info, 1);
+		GetCreatureMood(item, &info, true);
+		CreatureMood(item, &info, true);
 
 		if (dog->mood == BORED_MOOD)
 			dog->maximum_turn >>= 1;

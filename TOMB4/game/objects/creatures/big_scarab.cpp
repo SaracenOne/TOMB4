@@ -79,12 +79,12 @@ void BigScarabControl(short item_number)
 	else
 	{
 		CreatureAIInfo(item, &info);
-		GetCreatureMood(item, &info, 1);
+		GetCreatureMood(item, &info, true);
 
 		if (beetle->flags)
 			beetle->mood = ESCAPE_MOOD;
 
-		CreatureMood(item, &info, 1);
+		CreatureMood(item, &info, true);
 		angle = CreatureTurn(item, beetle->maximum_turn);
 
 		if (info.distance > 0x900000 || !(GetRandomControl() & 0x7F) || item->hit_status)

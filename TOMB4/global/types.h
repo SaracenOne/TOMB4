@@ -982,6 +982,7 @@ struct OBJECT_INFO
 	short hit_points;
 	short pivot_length;
 	short radius;
+	ushort aggression = 0xFFFF;
 	short shadow_size;
 	ushort bite_offset;
 	ushort loaded : 1;
@@ -1000,6 +1001,7 @@ struct OBJECT_INFO
 	void (*draw_routine_extra)(ITEM_INFO* item);
 	ulong explodable_meshbits;
 	ulong pad;
+	ushort pad2;
 };
 
 struct FLOOR_INFO

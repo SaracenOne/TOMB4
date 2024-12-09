@@ -1999,6 +1999,7 @@ void InitialiseObjects()
 		obj->floor = 0;
 		obj->pivot_length = 0;
 		obj->radius = 10;
+		obj->aggression = 0xffff;
 		obj->shadow_size = 0;
 		obj->hit_points = INFINITE_HEALTH;
 		obj->explodable_meshbits = 0;
