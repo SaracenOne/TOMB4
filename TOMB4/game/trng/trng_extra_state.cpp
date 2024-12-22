@@ -57,7 +57,6 @@ struct NG_MOVEMENT_INFO {
 struct NG_ITEM_EXTRADATA {
 	int16_t frozen_ticks = 0;
 	bool collison_disabled = false; // Will only disable the ObjectCollision routine. Doors and enemies still have collision.
-	uint32_t mesh_visibility_mask = 0xffffffff;
 	int16_t fade_override = 0;
 
 	NG_MOVEMENT_INFO movement_info;
@@ -85,7 +84,6 @@ void NGResetItemExtraData(int32_t item_number) {
 		current_extradata->frozen_ticks = 0;
 		current_extradata->collison_disabled = false; // Will only disable the ObjectCollision routine. Doors and enemies still have collision.
 
-		current_extradata->mesh_visibility_mask = 0xffffffff;
 		current_extradata->fade_override = 0;
 
 		NGResetMovementInfo(&current_extradata->movement_info);
@@ -1287,14 +1285,24 @@ void NGEnableItemCollision(uint32_t item_num) {
 }
 
 void NGToggleItemMeshVisibilityMaskBit(uint32_t item_num, uint32_t mask_bit, bool enabled) {
+	ITEM_INFO *item = T4PlusGetItemInfoForID(item_num);
+	if (!item) {
+		return;
+	}
+	
 	if (enabled)
-		ng_items_extradata[item_num].mesh_visibility_mask |= (1 << mask_bit);
+		item->mesh_bits |= (1 << mask_bit);
 	else
-		ng_items_extradata[item_num].mesh_visibility_mask &= ~(1 << mask_bit);
+		item->mesh_bits &= ~(1 << mask_bit);
 }
 
 uint32_t NGGetItemMeshVisibilityMask(uint32_t item_num) {
-	return ng_items_extradata[item_num].mesh_visibility_mask;
+	ITEM_INFO* item = T4PlusGetItemInfoForID(item_num);
+	if (!item) {
+		return;
+	}
+
+	return item->mesh_bits;
 }
 
 void NGSetFullscreenCurtainTimer(int32_t ticks) {

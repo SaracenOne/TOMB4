@@ -406,9 +406,6 @@ void DrawAnimatingItem(ITEM_INFO* item)
 		return;
 	}
 
-	// NGLE
-	unsigned int mesh_visibility_mask = NGGetItemMeshVisibilityMask(NGGetCurrentDrawItemNumber());
-
 	frac = GetFrames(item, frm, &rate);
 	obj = &objects[item->object_number];
 	bite = &EnemyBites[obj->bite_offset];
@@ -456,15 +453,12 @@ void DrawAnimatingItem(ITEM_INFO* item)
 			rot2 = frm[1] + 9;
 			gar_RotYXZsuperpack_I(&rot, &rot2, 0);
 
-			// NGLE
-			if (bit & mesh_visibility_mask) {
-				if (item->mesh_bits & 1)
-				{
-					if (item->meshswap_meshbits & 1)
-						phd_PutPolygons_I(meshpp[1], clip);
-					else
-						phd_PutPolygons_I(meshpp[0], clip);
-				}
+			if (item->mesh_bits & 1)
+			{
+				if (item->meshswap_meshbits & 1)
+					phd_PutPolygons_I(meshpp[1], clip);
+				else
+					phd_PutPolygons_I(meshpp[0], clip);
 			}
 
 			meshpp += 2;
@@ -494,15 +488,13 @@ void DrawAnimatingItem(ITEM_INFO* item)
 
 				bit <<= 1;
 
-				// NGLE
-				if (bit & mesh_visibility_mask) {
-					if (bit & item->mesh_bits)
-					{
-						if (bit & item->meshswap_meshbits)
-							phd_PutPolygons_I(meshpp[1], clip);
-						else
-							phd_PutPolygons_I(meshpp[0], clip);
-					}
+
+				if (bit & item->mesh_bits)
+				{
+					if (bit & item->meshswap_meshbits)
+						phd_PutPolygons_I(meshpp[1], clip);
+					else
+						phd_PutPolygons_I(meshpp[0], clip);
 				}
 
 				if (item->fired_weapon && i == bite->mesh_num - 1)
@@ -525,15 +517,12 @@ void DrawAnimatingItem(ITEM_INFO* item)
 			rot = frm[0] + 9;
 			gar_RotYXZsuperpack(&rot, 0);
 
-			// NGLE
-			if (bit & mesh_visibility_mask) {
-				if (item->mesh_bits & 1)
-				{
-					if (item->meshswap_meshbits & 1)
-						phd_PutPolygons(meshpp[1], clip);
-					else
-						phd_PutPolygons(meshpp[0], clip);
-				}
+			if (item->mesh_bits & 1)
+			{
+				if (item->meshswap_meshbits & 1)
+					phd_PutPolygons(meshpp[1], clip);
+				else
+					phd_PutPolygons(meshpp[0], clip);
 			}
 
 			meshpp += 2;
@@ -563,15 +552,12 @@ void DrawAnimatingItem(ITEM_INFO* item)
 
 				bit <<= 1;
 
-				// NGLE
-				if (bit & mesh_visibility_mask) {
-					if (bit & item->mesh_bits)
-					{
-						if (bit & item->meshswap_meshbits)
-							phd_PutPolygons(meshpp[1], clip);
-						else
-							phd_PutPolygons(meshpp[0], clip);
-					}
+				if (bit & item->mesh_bits)
+				{
+					if (bit & item->meshswap_meshbits)
+						phd_PutPolygons(meshpp[1], clip);
+					else
+						phd_PutPolygons(meshpp[0], clip);
 				}
 
 				if (item->fired_weapon && i == bite->mesh_num - 1)
