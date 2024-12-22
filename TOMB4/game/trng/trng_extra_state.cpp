@@ -1299,7 +1299,7 @@ void NGToggleItemMeshVisibilityMaskBit(uint32_t item_num, uint32_t mask_bit, boo
 uint32_t NGGetItemMeshVisibilityMask(uint32_t item_num) {
 	ITEM_INFO* item = T4PlusGetItemInfoForID(item_num);
 	if (!item) {
-		return;
+		return 0;
 	}
 
 	return item->mesh_bits;
