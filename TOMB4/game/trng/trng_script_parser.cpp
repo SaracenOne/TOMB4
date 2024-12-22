@@ -2487,7 +2487,7 @@ void NGReadNGGameflowInfo(char *gfScriptFile, size_t offset, size_t len) {
 		get_game_mod_global_info()->trng_rollingball_extended_ocb = true;
 		get_game_mod_global_info()->trng_statics_extended_ocb = true;
 		get_game_mod_global_info()->trng_pushable_extended_ocb = true;
-		if (!is_mod_trng_version_equal_or_greater_than_target(1, 2, 2, 3)) {
+		if (is_mod_trng_version_equal_or_greater_than_target(1, 2, 2, 3)) {
 			get_game_mod_global_info()->trng_switch_extended_ocb = true;
 		}
 		get_game_mod_global_info()->trng_hack_allow_meshes_with_exactly_256_vertices = true;
