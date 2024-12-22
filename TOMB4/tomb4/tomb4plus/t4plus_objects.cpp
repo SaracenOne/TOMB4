@@ -172,7 +172,7 @@ int16_t T4PlusGetEnemyJeepSlotID() {
 void T4PlusSetupDefaultObjectCustomization() {
 	MOD_LEVEL_OBJECTS_INFO *objects_info = get_game_mod_level_objects_info(0);
 
-	for (int i = 0; i < NUMBER_OBJECTS; i++)
+	for (int32_t i = 0; i < NUMBER_OBJECTS; i++)
 	{
 		objects_info->object_customization[i].initialise_routine = "";
 		objects_info->object_customization[i].collision_routine = "";

@@ -594,6 +594,7 @@ long ControlPhase(long nframes, long demo_mode)
 
 		UpdateFadeClip();
 
+		NGPreFrameFinish();
 		NGFrameFinish(); // NGLE
 	}
 

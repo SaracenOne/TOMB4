@@ -38,17 +38,6 @@ struct NGOldTrigger {
 	uint32_t offset_floor_data;
 };
 
-enum NG_DEGREES_CODE {
-	DEGREES_CODE_45 = 0,
-	DEGREES_CODE_90,
-	DEGREES_CODE_135,
-	DEGREES_CODE_180,
-	DEGREES_CODE_225,
-	DEGREES_CODE_270,
-	DEGREES_CODE_315,
-	DEGREES_CODE_360
-};
-
 enum NG_DIRECTIONS {
 	NG_NORTH = 0,
 	NG_EAST,
@@ -146,6 +135,7 @@ extern void NGDrawPhase();
 extern bool NGIsItemFrozen(uint32_t item_num);
 
 extern void NGFrameStart();
+extern void NGPreFrameFinish();
 extern void NGFrameFinish();
 
 extern bool NGIsUsingNGNewTriggers();
@@ -231,3 +221,5 @@ extern bool stored_test_dummy_failed;
 
 extern int32_t NGCalculateTriggerTimer(int16_t *data, int32_t timer);
 extern bool NGUsingLegacyNGTriggerBehaviour();
+
+extern void NGAddItemMoved(int32_t item_id);

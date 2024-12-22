@@ -20,6 +20,7 @@
 #include "trng_flipeffect.h"
 #include "trng_action.h"
 #include "trng_condition.h"
+#include "trng_progressive_action.h"
 #include "../../tomb4/tomb4plus/t4plus_items.h"
 
 NGLevelInfo ng_level_info[MOD_LEVEL_COUNT];
@@ -579,6 +580,24 @@ void NGLevelSetup() {
 	for (int32_t i = 0; i < NG_MAX_OLD_CONDITIONS; i++) {
 		memset(&old_conditions[i], 0, sizeof(NGOldTrigger));
 	}
+
+	// Progressive Actions
+	progressive_action_count = 0;
+	for (int32_t i = 0; i < NG_MAX_PROGRESSIVE_ACTIONS; i++) {
+		memset(&progressive_actions[i], 0, sizeof(NGProgressiveAction));
+	}
+
+	// Resumed TriggerGroups;
+	resumed_trigger_group_count = 0;
+	for (int32_t i = 0; i < NG_MAX_PROGRESSIVE_ACTIONS; i++) {
+		resumed_trigger_groups[i] = -1;
+	}
+
+	// Performed TriggerGroups;
+	last_performed_trigger_group = -1;
+	for (int32_t i = 0; i < NG_MAX_PROGRESSIVE_ACTIONS; i++) {
+		performed_trigger_groups[i] = -1;
+	}
 }
 
 void NGSignalForManagementCreatedItems() {
@@ -602,14 +621,14 @@ void NGFrameStart() {
 	//
 }
 
-void NGExecuteProgressiveActions() {
+void NGPreFrameFinish() {
 	// TODO: replace with actual progressive action system.
 	NGProcessTriggerGroups();
+
+	NGExecuteProgressiveActions();
 }
 
 void NGFrameFinish() {
-	NGExecuteProgressiveActions();
-
 	NGSignalForManagementCreatedItems();
 
 	// TODO: FMV stuff
@@ -921,4 +940,8 @@ int32_t NGCalculateTriggerTimer(int16_t* data, int32_t timer) {
 
 bool NGUsingLegacyNGTriggerBehaviour() {
 	return get_game_mod_global_info()->trng_legacy_ng_trigger_behaviour;
+}
+
+void NGAddItemMoved(int32_t item_id) {
+
 }

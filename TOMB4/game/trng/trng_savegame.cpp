@@ -201,7 +201,7 @@ void NGReadNGSavegameBuffer(FILE *file) {
 			uint32_t footer_offset = 0;
 			fread(&footer_offset, sizeof(uint32_t), 1, file);
 			if (fseek(file, -int32_t(footer_offset), SEEK_END) == 0) {
-				int ngle_buffer_start = ftell(file);
+				int32_t ngle_buffer_start = ftell(file);
 				uint16_t header_ident;
 				fread(&header_ident, sizeof(uint16_t), 1, file);
 				if (header_ident == 0x474e) {

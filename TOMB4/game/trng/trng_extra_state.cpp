@@ -26,6 +26,11 @@
 #include "../../tomb4/tomb4plus/t4plus_environment.h"
 #include "../../tomb4/tomb4plus/t4plus_items.h"
 
+int32_t resumed_trigger_group_count;
+uint16_t resumed_trigger_groups[MAX_NG_TRIGGER_GROUPS];
+int32_t last_performed_trigger_group = -1;
+uint16_t performed_trigger_groups[MAX_NG_TRIGGER_GROUPS];
+
 bool ng_loaded_savegame = false;
 
 int16_t ng_camera_target_id = NO_ITEM;
@@ -33,10 +38,6 @@ int16_t ng_camera_target_id = NO_ITEM;
 uint32_t ng_room_offset_table[0xff];
 
 struct NG_MOVEMENT_INFO {
-	int16_t horizontal_rotation_speed = 0;
-	int16_t vertical_rotation_speed = 0;
-	int32_t horizontal_rotation_remaining = 0;
-	int32_t vertical_rotation_remaining = 0;
 	int16_t horizontal_movement_speed = 0;
 	int16_t vertical_movement_speed = 0;
 	int16_t movement_in_progress_sound = -1;
@@ -66,10 +67,6 @@ NG_ITEM_EXTRADATA *ng_items_extradata = NULL;
 NG_MOVEMENT_INFO *ng_statics_movement_info = NULL;
 
 void NGResetMovementInfo(NG_MOVEMENT_INFO* movement_info) {
-	movement_info->horizontal_rotation_speed = 0;
-	movement_info->vertical_rotation_speed = 0;
-	movement_info->horizontal_rotation_remaining = 0;
-	movement_info->vertical_rotation_remaining = 0;
 	movement_info->horizontal_movement_speed = 0;
 	movement_info->vertical_movement_speed = 0;
 	movement_info->movement_in_progress_sound = -1;
@@ -400,48 +397,6 @@ void NGEnableInput(uint8_t input) {
 	}
 }
 
-void NGHandleItemRotation(uint32_t item_num) {
-	if (NGGetItemHorizontalRotationRemaining(item_num)) {
-		int32_t rotate_by_amount = NGGetItemHorizontalRotationSpeed(item_num);
-		int32_t remaining_rotation_units = NGGetItemHorizontalRotationRemaining(item_num);
-		if (
-			(remaining_rotation_units >= 0 && rotate_by_amount > remaining_rotation_units) || 
-			(remaining_rotation_units < 0 && rotate_by_amount < remaining_rotation_units)) {
-			rotate_by_amount = remaining_rotation_units;
-		}
-
-		NGRotateItemY(item_num, NGGetItemHorizontalRotationSpeed(item_num));
-		NGSetItemHorizontalRotationRemaining(item_num, remaining_rotation_units - rotate_by_amount);
-
-		if (NGGetItemHorizontalRotationRemaining(item_num) == 0) {
-			// Reset everything
-			NGSetItemHorizontalRotationSpeed(item_num, 0);
-		}
-	} else {
-		NGRotateItemY(item_num, NGGetItemHorizontalRotationSpeed(item_num));
-	}
-
-	if (NGGetItemVerticalRotationRemaining(item_num)) {
-		int32_t rotate_by_amount = NGGetItemVerticalRotationSpeed(item_num);
-		int32_t remaining_rotation_units = NGGetItemVerticalRotationRemaining(item_num);
-		if (
-			(remaining_rotation_units >= 0 && rotate_by_amount > remaining_rotation_units) ||
-			(remaining_rotation_units < 0 && rotate_by_amount < remaining_rotation_units)) {
-			rotate_by_amount = remaining_rotation_units;
-		}
-
-		NGRotateItemX(item_num, NGGetItemVerticalRotationSpeed(item_num));
-		NGSetItemVerticalRotationRemaining(item_num, remaining_rotation_units - rotate_by_amount);
-
-		if (NGGetItemVerticalRotationRemaining(item_num) == 0) {
-			// Reset everything
-			NGSetItemVerticalRotationSpeed(item_num, 0);
-		}
-	} else {
-		NGRotateItemX(item_num, NGGetItemVerticalRotationSpeed(item_num));
-	}
-}
-
 void NGHandleItemMovement(uint32_t item_num) {
 	if (NGGetItemHorizontalMovementRemainingUnits(item_num)) {
 		ITEM_INFO* item = T4PlusGetItemInfoForID(item_num);
@@ -540,50 +495,6 @@ void NGHandleItemMovement(uint32_t item_num) {
 }
 
 // Statics
-
-void NGHandleStaticRotation(uint32_t static_num) {
-	if (NGGetStaticHorizontalRotationRemaining(static_num)) {
-		int32_t rotate_by_amount = NGGetStaticHorizontalRotationSpeed(static_num);
-		int32_t remaining_rotation_units = NGGetStaticHorizontalRotationRemaining(static_num);
-		if (
-			(remaining_rotation_units >= 0 && rotate_by_amount > remaining_rotation_units) ||
-			(remaining_rotation_units < 0 && rotate_by_amount < remaining_rotation_units)) {
-			rotate_by_amount = remaining_rotation_units;
-		}
-
-		NGRotateStaticY(static_num, NGGetStaticHorizontalRotationSpeed(static_num));
-		NGSetStaticHorizontalRotationRemaining(static_num, remaining_rotation_units - rotate_by_amount);
-
-		if (NGGetStaticHorizontalRotationRemaining(static_num) == 0) {
-			// Reset everything
-			NGSetStaticHorizontalRotationSpeed(static_num, 0);
-		}
-	}
-	else {
-		NGRotateStaticY(static_num, NGGetStaticHorizontalRotationSpeed(static_num));
-	}
-
-	if (NGGetStaticVerticalRotationRemaining(static_num)) {
-		int32_t rotate_by_amount = NGGetStaticVerticalRotationSpeed(static_num);
-		int32_t remaining_rotation_units = NGGetStaticVerticalRotationRemaining(static_num);
-		if (
-			(remaining_rotation_units >= 0 && rotate_by_amount > remaining_rotation_units) ||
-			(remaining_rotation_units < 0 && rotate_by_amount < remaining_rotation_units)) {
-			rotate_by_amount = remaining_rotation_units;
-		}
-
-		NGRotateStaticX(static_num, NGGetStaticVerticalRotationSpeed(static_num));
-		NGSetStaticVerticalRotationRemaining(static_num, remaining_rotation_units - rotate_by_amount);
-
-		if (NGGetStaticVerticalRotationRemaining(static_num) == 0) {
-			// Reset everything
-			NGSetStaticVerticalRotationSpeed(static_num, 0);
-		}
-	}
-	else {
-		NGRotateStaticX(static_num, NGGetStaticVerticalRotationSpeed(static_num));
-	}
-}
 
 void NGHandleStaticMovement(uint32_t static_num) {
 	if (NGGetStaticHorizontalMovementRemainingUnits(static_num)) {
@@ -702,10 +613,6 @@ void NGUpdateAllItems() {
 			ng_items_extradata[i].frozen_ticks--;
 		}
 
-		if (NGGetItemHorizontalRotationSpeed(i) || NGGetItemVerticalRotationSpeed(i)) {
-			NGHandleItemRotation(i);
-		}
-
 		if (NGGetItemHorizontalMovementRemainingUnits(i) || NGGetItemVerticalMovementRemainingUnits(i)) {
 			NGHandleItemMovement(i);
 		}
@@ -714,10 +621,6 @@ void NGUpdateAllItems() {
 
 void NGUpdateAllStatics() {
 	for (int32_t i = 0; i < ng_static_id_count; i++) {
-		if (NGGetStaticHorizontalRotationSpeed(i) || NGGetStaticVerticalRotationSpeed(i)) {
-			NGHandleStaticRotation(i);
-		}
-
 		if (NGGetStaticHorizontalMovementRemainingUnits(i) || NGGetStaticVerticalMovementRemainingUnits(i)) {
 			NGHandleStaticMovement(i);
 		}
@@ -1173,56 +1076,6 @@ void NGSetItemFreezeTimer(uint32_t item_num, int32_t ticks) {
 
 // Items
 
-bool NGIsItemPerformingContinousAction(uint32_t item_num) {
-	return NGGetItemHorizontalRotationRemaining(item_num) ||
-		NGGetItemVerticalRotationRemaining(item_num) ||
-		NGGetItemHorizontalMovementRemainingUnits(item_num) ||
-		NGGetItemVerticalMovementRemainingUnits(item_num);
-}
-
-bool NGIsItemPerformingRotation(uint32_t item_num) {
-	return NGGetItemHorizontalRotationRemaining(item_num) ||
-		NGGetItemVerticalRotationRemaining(item_num);
-}
-
-bool NGIsItemPerformingMovement(uint32_t item_num) {
-	return NGGetItemHorizontalMovementRemainingUnits(item_num) ||
-		NGGetItemVerticalMovementRemainingUnits(item_num);
-}
-
-int16_t NGGetItemHorizontalRotationSpeed(uint32_t item_num) {
-	return ng_items_extradata[item_num].movement_info.horizontal_rotation_speed;
-}
-
-void NGSetItemHorizontalRotationSpeed(uint32_t item_num, int16_t speed) {
-	ng_items_extradata[item_num].movement_info.horizontal_rotation_speed = speed;
-}
-
-int16_t NGGetItemVerticalRotationSpeed(uint32_t item_num) {
-	return ng_items_extradata[item_num].movement_info.vertical_rotation_speed;
-}
-
-void NGSetItemVerticalRotationSpeed(uint32_t item_num, int16_t speed) {
-	ng_items_extradata[item_num].movement_info.vertical_rotation_speed = speed;
-}
-
-int32_t NGGetItemHorizontalRotationRemaining(uint32_t item_num) {
-	return ng_items_extradata[item_num].movement_info.horizontal_rotation_remaining;
-}
-
-extern void NGSetItemHorizontalRotationRemaining(uint32_t item_num, int32_t remaining) {
-	ng_items_extradata[item_num].movement_info.horizontal_rotation_remaining = remaining;
-}
-
-extern int32_t NGGetItemVerticalRotationRemaining(uint32_t item_num) {
-	return ng_items_extradata[item_num].movement_info.vertical_rotation_remaining;
-}
-
-extern void NGSetItemVerticalRotationRemaining(uint32_t item_num, int32_t remaining) {
-	ng_items_extradata[item_num].movement_info.vertical_rotation_remaining = remaining;
-}
-
-//
 void NGSetItemHorizontalMovementAngle(uint32_t item_num, int16_t angle) {
 	ng_items_extradata[item_num].movement_info.move_horizontal_angle = angle;
 }
@@ -1321,55 +1174,6 @@ void NGSetItemMovementTriggerHeavyWhenMoving(uint32_t item_num, bool trigger_hea
 
 
 // Statics
-
-bool NGIsStaticPerformingContinousAction(uint32_t static_num) {
-	return NGGetStaticHorizontalRotationRemaining(static_num) ||
-		NGGetStaticVerticalRotationRemaining(static_num) ||
-		NGGetStaticHorizontalMovementRemainingUnits(static_num) ||
-		NGGetStaticVerticalMovementRemainingUnits(static_num);
-}
-
-bool NGIsStaticPerformingRotation(uint32_t static_num) {
-	return NGGetStaticHorizontalRotationRemaining(static_num) ||
-		NGGetStaticVerticalRotationRemaining(static_num);
-}
-
-bool NGIsStaticPerformingMovement(uint32_t static_num) {
-	return NGGetStaticHorizontalMovementRemainingUnits(static_num) ||
-		NGGetStaticVerticalMovementRemainingUnits(static_num);
-}
-
-int16_t NGGetStaticHorizontalRotationSpeed(uint32_t static_num) {
-	return ng_statics_movement_info[static_num].horizontal_rotation_speed;
-}
-
-void NGSetStaticHorizontalRotationSpeed(uint32_t static_num, int16_t speed) {
-	ng_statics_movement_info[static_num].horizontal_rotation_speed = speed;
-}
-
-int16_t NGGetStaticVerticalRotationSpeed(uint32_t static_num) {
-	return ng_statics_movement_info[static_num].vertical_rotation_speed;
-}
-
-void NGSetStaticVerticalRotationSpeed(uint32_t static_num, int16_t speed) {
-	ng_statics_movement_info[static_num].vertical_rotation_speed = speed;
-}
-
-int32_t NGGetStaticHorizontalRotationRemaining(uint32_t static_num) {
-	return ng_statics_movement_info[static_num].horizontal_rotation_remaining;
-}
-
-extern void NGSetStaticHorizontalRotationRemaining(uint32_t static_num, int32_t remaining) {
-	ng_statics_movement_info[static_num].horizontal_rotation_remaining = remaining;
-}
-
-extern int32_t NGGetStaticVerticalRotationRemaining(uint32_t static_num) {
-	return ng_statics_movement_info[static_num].vertical_rotation_remaining;
-}
-
-extern void NGSetStaticVerticalRotationRemaining(uint32_t static_num, int32_t remaining) {
-	ng_statics_movement_info[static_num].vertical_rotation_remaining = remaining;
-}
 
 //
 void NGSetStaticHorizontalMovementAngle(uint32_t static_num, int16_t angle) {

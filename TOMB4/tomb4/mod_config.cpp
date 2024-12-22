@@ -742,7 +742,7 @@ void LoadGameModLevelMiscInfo(const json_t *misc, MOD_LEVEL_MISC_INFO *misc_info
 void LoadGameModLevelStatInfo(const json_t* stats, MOD_LEVEL_STAT_INFO* stat_info) {
     READ_JSON_UINT32(secret_count, stats, stat_info);
 
-    int equipment_modifier_index = 0;
+    int32_t equipment_modifier_index = 0;
     const json_t* equipment_modifiers = json_getProperty(stats, "equipment_modifiers");
     if (equipment_modifiers && JSON_ARRAY == json_getType(equipment_modifiers)) {
         const json_t* equipment_modifier;
@@ -848,13 +848,13 @@ void SetupDefaultFontInfoForLevel(MOD_LEVEL_INFO* level_info) {
 }
 
 void SetupDefaultSlotInfoForLevel(MOD_LEVEL_INFO* level_info) {
-    for (int i = 0; i < NUMBER_OBJECTS; i++) {
+    for (int32_t i = 0; i < NUMBER_OBJECTS; i++) {
         level_info->objects_info.slot_override[i] = i;
     }
 }
 
 void SetupDefaultStaticsInfoForLevel(MOD_LEVEL_INFO* level_info) {
-    for (int i = 0; i < NUMBER_STATIC_OBJECTS; i++) {
+    for (int32_t i = 0; i < NUMBER_STATIC_OBJECTS; i++) {
         if (i >= SHATTER0) {
             if (i <= SHATTER9) {
                 level_info->statics_info.static_info[i].large_objects_can_shatter = true;

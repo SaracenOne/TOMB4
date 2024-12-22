@@ -26,6 +26,11 @@ enum NGTimerTrackerType {
 #define MAX_NG_MULTI_ENV_CONDITIONS 9999
 #define MAX_NG_TEST_POSITIONS 9999
 
+extern int32_t resumed_trigger_group_count;
+extern uint16_t resumed_trigger_groups[MAX_NG_TRIGGER_GROUPS];
+extern int32_t last_performed_trigger_group;
+extern uint16_t performed_trigger_groups[MAX_NG_TRIGGER_GROUPS];
+
 struct NG_GLOBAL_TRIGGER_STATE {
 	bool is_disabled = false;
 	bool is_halted = false;
@@ -120,20 +125,6 @@ extern void NGSetItemFreezeTimer(uint32_t item_num, int32_t ticks);
 
 // Moveables
 
-extern bool NGIsItemPerformingContinousAction(uint32_t item_num);
-extern bool NGIsItemPerformingRotation(uint32_t item_num);
-extern bool NGIsItemPerformingMovement(uint32_t item_num);
-
-extern int16_t NGGetItemHorizontalRotationSpeed(uint32_t item_num);
-extern void NGSetItemHorizontalRotationSpeed(uint32_t item_num, int16_t speed);
-extern int16_t NGGetItemVerticalRotationSpeed(uint32_t item_num);
-extern void NGSetItemVerticalRotationSpeed(uint32_t item_num, int16_t speed);
-
-extern int32_t NGGetItemHorizontalRotationRemaining(uint32_t item_num);
-extern void NGSetItemHorizontalRotationRemaining(uint32_t item_num, int32_t remaining);
-extern int32_t NGGetItemVerticalRotationRemaining(uint32_t item_num);
-extern void NGSetItemVerticalRotationRemaining(uint32_t item_num, int32_t remaining);
-
 extern void NGSetItemHorizontalMovementAngle(uint32_t item_num, int16_t angle);
 extern int16_t NGGetItemHorizontalMovementAngle(uint32_t item_num);
 
@@ -167,20 +158,6 @@ extern bool NGGetItemMovementTriggerHeavyWhenMoving(uint32_t item_num);
 extern void NGSetItemMovementTriggerHeavyWhenMoving(uint32_t item_num, bool trigger_heavy_when_moving);
 
 // Statics
-
-extern bool NGIsStaticPerformingContinousAction(uint32_t static_num);
-extern bool NGIsStaticPerformingRotation(uint32_t static_num);
-extern bool NGIsStaticPerformingMovement(uint32_t static_num);
-
-extern int16_t NGGetStaticHorizontalRotationSpeed(uint32_t static_num);
-extern void NGSetStaticHorizontalRotationSpeed(uint32_t static_num, int16_t speed);
-extern int16_t NGGetStaticVerticalRotationSpeed(uint32_t static_num);
-extern void NGSetStaticVerticalRotationSpeed(uint32_t static_num, int16_t speed);
-
-extern int32_t NGGetStaticHorizontalRotationRemaining(uint32_t static_num);
-extern void NGSetStaticHorizontalRotationRemaining(uint32_t static_num, int32_t remaining);
-extern int32_t NGGetStaticVerticalRotationRemaining(uint32_t static_num);
-extern void NGSetStaticVerticalRotationRemaining(uint32_t static_num, int32_t remaining);
 
 extern void NGSetStaticHorizontalMovementAngle(uint32_t static_num, int16_t angle);
 extern int16_t NGGetStaticHorizontalMovementAngle(uint32_t static_num);

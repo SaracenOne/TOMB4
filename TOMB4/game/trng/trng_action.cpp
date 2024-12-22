@@ -27,6 +27,7 @@
 #include "../lara.h"
 #include "../traps.h"
 #include "../gameflow.h"
+#include "trng_progressive_action.h"
 
 uint32_t scanned_action_count;
 NGScannedAction scanned_actions[NG_MAX_SCANNED_ACTIONS];
@@ -42,127 +43,10 @@ void NGHurtEnemy(uint16_t item_id, uint16_t damage) {
 	}
 }
 
-void NGTurnItemBy45DegreeHorizontalIncrements(int32_t item_id, int32_t increments, int32_t speed) {
-	NGSetItemHorizontalRotationSpeed(item_id, NG_DEGREE(speed));
-
-	switch (increments) {
-		// Clockwise slowly (one degree per frame)
-	case 0x00:
-		if (speed > 0)
-			NGSetItemHorizontalRotationRemaining(item_id, NG_DEGREE(45));
-		else
-			NGSetItemHorizontalRotationRemaining(item_id, NG_DEGREE(-45));
-		break;
-	case 0x01:
-		if (speed > 0)
-			NGSetItemHorizontalRotationRemaining(item_id, NG_DEGREE(90));
-		else
-			NGSetItemHorizontalRotationRemaining(item_id, NG_DEGREE(-90));
-		break;
-	case 0x02:
-		if (speed > 0)
-			NGSetItemHorizontalRotationRemaining(item_id, NG_DEGREE(135));
-		else
-			NGSetItemHorizontalRotationRemaining(item_id, NG_DEGREE(-135));
-		break;
-	case 0x03:
-		if (speed > 0)
-			NGSetItemHorizontalRotationRemaining(item_id, NG_DEGREE(180));
-		else
-			NGSetItemHorizontalRotationRemaining(item_id, NG_DEGREE(-180));
-		break;
-	case 0x04:
-		if (speed > 0)
-			NGSetItemHorizontalRotationRemaining(item_id, NG_DEGREE(225));
-		else
-			NGSetItemHorizontalRotationRemaining(item_id, NG_DEGREE(-225));
-		break;
-	case 0x05:
-		if (speed > 0)
-			NGSetItemHorizontalRotationRemaining(item_id, NG_DEGREE(270));
-		else
-			NGSetItemHorizontalRotationRemaining(item_id, NG_DEGREE(-270));
-		break;
-	case 0x06:
-		if (speed > 0)
-			NGSetItemHorizontalRotationRemaining(item_id, NG_DEGREE(315));
-		else
-			NGSetItemHorizontalRotationRemaining(item_id, NG_DEGREE(-315));
-		break;
-	case 0x07:
-		if (speed > 0)
-			NGSetItemHorizontalRotationRemaining(item_id, NG_DEGREE(360));
-		else
-			NGSetItemHorizontalRotationRemaining(item_id, NG_DEGREE(-360));
-		break;
-		break;
-	default:
-		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGTurnItemBy45DegreeHorizontalIncrements: increment count %u unimplemented!", increments);
-		break;
-	}
-}
-
-void NGTurnItemBy45DegreeVerticalIncrements(int32_t item_id, int32_t increments, int32_t speed) {
-	NGSetItemVerticalRotationSpeed(item_id, NG_DEGREE(speed));
-
-	switch (increments) {
-		// Clockwise slowly (one degree per frame)
-	case 0x00:
-		if (speed > 0)
-			NGSetItemVerticalRotationRemaining(item_id, NG_DEGREE(45));
-		else
-			NGSetItemVerticalRotationRemaining(item_id, NG_DEGREE(-45));
-		break;
-	case 0x01:
-		if (speed > 0)
-			NGSetItemVerticalRotationRemaining(item_id, NG_DEGREE(90));
-		else
-			NGSetItemVerticalRotationRemaining(item_id, NG_DEGREE(-90));
-		break;
-	case 0x02:
-		if (speed > 0)
-			NGSetItemVerticalRotationRemaining(item_id, NG_DEGREE(135));
-		else
-			NGSetItemVerticalRotationRemaining(item_id, NG_DEGREE(-135));
-		break;
-	case 0x03:
-		if (speed > 0)
-			NGSetItemVerticalRotationRemaining(item_id, NG_DEGREE(180));
-		else
-			NGSetItemVerticalRotationRemaining(item_id, NG_DEGREE(-180));
-		break;
-	case 0x04:
-		if (speed > 0)
-			NGSetItemVerticalRotationRemaining(item_id, NG_DEGREE(225));
-		else
-			NGSetItemVerticalRotationRemaining(item_id, NG_DEGREE(-225));
-		break;
-	case 0x05:
-		if (speed > 0)
-			NGSetItemVerticalRotationRemaining(item_id, NG_DEGREE(270));
-		else
-			NGSetItemVerticalRotationRemaining(item_id, NG_DEGREE(-270));
-		break;
-	case 0x06:
-		if (speed > 0)
-			NGSetItemVerticalRotationRemaining(item_id, NG_DEGREE(315));
-		else
-			NGSetItemVerticalRotationRemaining(item_id, NG_DEGREE(-315));
-		break;
-	case 0x07:
-		if (speed > 0)
-			NGSetItemVerticalRotationRemaining(item_id, NG_DEGREE(360));
-		else
-			NGSetItemVerticalRotationRemaining(item_id, NG_DEGREE(-360));
-		break;
-		break;
-	default:
-		NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGTurnItemBy45DegreeVerticalIncrements: increment count %u unimplemented!", increments);
-		break;
-	}
-}
-
 int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t flags) {
+	static uint16_t degrees_table[] = { 0x2000,0x4000,0x6000,0x8000,0xA000,0xC000,0xE000,0x0000 };
+	const int32_t DEGREES_TABLE_COUNT = sizeof(degrees_table) / sizeof(uint16_t);
+	
 	unsigned char action_type = (unsigned char)action_timer & 0xff;
 	unsigned char extra_timer = (unsigned char)(action_timer >> 8) & 0xff;
 
@@ -181,107 +65,197 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 	switch (action_type) {
 		// TODO: values are estimated and may not be accurate.
 		// Also need to check the behaviour when an action is already 
-		case TURN_X_ANIMATING_MOVING_SLOWLY_IN_CLOCKWISE_OF_DEGREES: {
-			if (!NGGetItemHorizontalRotationRemaining(item_id)) {
-				NGTurnItemBy45DegreeHorizontalIncrements(item_id, extra_timer, 1);
-			}
-			break;
-		}
-		case TURN_X_ANIMATING_MOVING_SLOWLY_IN_INVERSE_CLOCKWISE_OF_DEGREES: {
-			if (!NGGetItemHorizontalRotationRemaining(item_id)) {
-				NGTurnItemBy45DegreeHorizontalIncrements(item_id, extra_timer, -1);
-			}
-			break;
-		}
-		case TURN_X_ANIMATING_MOVING_FASTLY_IN_CLOCKWISE_OF_DEGREES: {
-			if (!NGGetItemHorizontalRotationRemaining(item_id)) {
-				NGTurnItemBy45DegreeHorizontalIncrements(item_id, extra_timer, 2);
-			}
-			break;
-		}
+		case TURN_X_ANIMATING_MOVING_SLOWLY_IN_CLOCKWISE_OF_DEGREES:
+		case TURN_X_ANIMATING_MOVING_SLOWLY_IN_INVERSE_CLOCKWISE_OF_DEGREES:
+		case TURN_X_ANIMATING_MOVING_FASTLY_IN_CLOCKWISE_OF_DEGREES:
 		case TURN_X_ANIMATING_MOVING_FASTLY_IN_INVERSE_CLOCKWISE_OF_DEGREES: {
-			if (!NGGetItemHorizontalRotationRemaining(item_id)) {
-				NGTurnItemBy45DegreeHorizontalIncrements(item_id, extra_timer, -2);
+			if (extra_timer >= DEGREES_TABLE_COUNT) {
+				break;
 			}
+
+			bool test_abort = false;
+			for (int32_t i = 0; i < progressive_action_count; i++) {
+				NGProgressiveAction* progressive_action = &progressive_actions[i];
+				if (progressive_action->item_index == item_id &&
+					progressive_action->type == action_type) {
+					test_abort = true;
+					break;
+				}
+			}
+
+			if (test_abort) {
+				repeat_type = 1;
+				break;
+			}
+
+			NGProgressiveAction* progressive_action = NGCreateProgressiveAction();
+			if (!progressive_action) {
+				break;
+			}
+
+			int32_t speed = 352;
+			if (action_type == TURN_X_ANIMATING_MOVING_SLOWLY_IN_CLOCKWISE_OF_DEGREES ||
+				action_type == TURN_X_ANIMATING_MOVING_SLOWLY_IN_INVERSE_CLOCKWISE_OF_DEGREES) {
+				speed = 160;
+			}
+
+			progressive_action->type = AZ_ROTATE_ITEM_HORIZONTAL;
+			progressive_action->duration = (degrees_table[extra_timer] / speed) & 0xffff;
+			if (progressive_action->duration < 1) {
+				progressive_action->duration = 1;
+			}
+			progressive_action->argument1_u16 = speed;
+
+			NGAddItemMoved(item_id);
+
+			progressive_action->item_index = item_id;
+			if (action_type == TURN_X_ANIMATING_MOVING_SLOWLY_IN_CLOCKWISE_OF_DEGREES ||
+				action_type == TURN_X_ANIMATING_MOVING_FASTLY_IN_CLOCKWISE_OF_DEGREES) {
+				progressive_action->argument2_i32[0] = 1;
+			} else {
+				progressive_action->argument2_i32[0] = -1;
+			}
+
+			repeat_type = 1;
+
 			break;
 		}
 		case TURN_X_ANIMATING_MOVING_ENDLESSLY_IN_WAY: {
-			switch (extra_timer) {
-			// Clockwise slowly (one degree per frame)
-			case 0x00:
-				NGSetItemHorizontalRotationSpeed(item_id, NG_DEGREE(1));
-				NGSetItemHorizontalRotationRemaining(item_id, 0);
-				break;
-			// Clockwise fastly (two degrees per frame)
-			case 0x01:
-				NGSetItemHorizontalRotationSpeed(item_id, NG_DEGREE(2));
-				NGSetItemHorizontalRotationRemaining(item_id, 0);
-				break;
-			// Inverse Clockwise slowly (one degree per frame)
-			case 0x02:
-				NGSetItemHorizontalRotationSpeed(item_id, NG_DEGREE(-1));
-				NGSetItemHorizontalRotationRemaining(item_id, 0);
-				break;
-			// Inverse Clockwise fastly (two degrees per frame)
-			case 0x03:
-				NGSetItemHorizontalRotationSpeed(item_id, NG_DEGREE(-2));
-				NGSetItemHorizontalRotationRemaining(item_id, 0);
-				break;
-			default:
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TURN_X_ANIMATING_MOVING_ENDLESSLY_IN_WAY: action data %u unimplemented!", extra_timer);
-				break;
+			NGProgressiveAction *progressive_action = nullptr;
+			for (int32_t i = 0; i < progressive_action_count; i++) {
+				if (progressive_actions[i].item_index == item_id &&
+					(progressive_actions[i].type == AZ_ROTATE_ITEM_HORIZONTAL || progressive_actions[i].type == AZ_TURN_FACING_HORIZONTAL)) {
+					progressive_action = &progressive_actions[i];
+					break;
+				}
 			}
+
+			if (!progressive_action) {
+				progressive_action = NGCreateProgressiveAction();
+				if (!progressive_action) {
+					break;
+				}
+			}
+
+			int32_t speed = 352;
+			if ((extra_timer & 1) == 0)
+				speed = 160;
+
+			progressive_action->duration = 0xffff;
+			progressive_action->argument1_u16 = speed;
+			progressive_action->type = AZ_ROTATE_ITEM_HORIZONTAL;
+
+			NGAddItemMoved(item_id);
+
+			if (extra_timer & 2)
+				progressive_action->argument2_i32[0] = -1;
+			else
+				progressive_action->argument2_i32[0] = 1;
+
+			repeat_type = 1;
+
 			break;
 		}
-		case TURN_VERTICALLY_X_ANIMATING_MOVING_SLOWLY_IN_CLOCKWISE_OF_DEGREES: {
-			if (!NGGetItemVerticalRotationRemaining(item_id)) {
-				NGTurnItemBy45DegreeVerticalIncrements(item_id, extra_timer, 1);
-			}
-			break;
-		}
-		case TURN_VERTICALLY_X_ANIMATING_MOVING_SLOWLY_IN_INVERSE_CLOCKWISE_OF_DEGREES: {
-			if (!NGGetItemVerticalRotationRemaining(item_id)) {
-				NGTurnItemBy45DegreeVerticalIncrements(item_id, extra_timer, -1);
-			}
-			break;
-		}
-		case TURN_VERTICALLY_X_ANIMATING_MOVING_FASTLY_IN_CLOCKWISE_OF_DEGREES: {
-			if (!NGGetItemVerticalRotationRemaining(item_id)) {
-				NGTurnItemBy45DegreeVerticalIncrements(item_id, extra_timer, 2);
-			}
-			break;
-		}
+		case TURN_VERTICALLY_X_ANIMATING_MOVING_SLOWLY_IN_CLOCKWISE_OF_DEGREES:
+		case TURN_VERTICALLY_X_ANIMATING_MOVING_SLOWLY_IN_INVERSE_CLOCKWISE_OF_DEGREES:
+		case TURN_VERTICALLY_X_ANIMATING_MOVING_FASTLY_IN_CLOCKWISE_OF_DEGREES:
 		case TURN_VERTICALLY_X_ANIMATING_MOVING_FASTLY_IN_INVERSE_CLOCKWISE_OF_DEGREES: {
-			if (!NGGetItemVerticalRotationRemaining(item_id)) {
-				NGTurnItemBy45DegreeVerticalIncrements(item_id, extra_timer, -2);
+			if (extra_timer >= DEGREES_TABLE_COUNT) {
+				break;
 			}
+
+			NGProgressiveAction* progressive_action = nullptr;
+			for (int32_t i = 0; i < progressive_action_count; i++) {
+				if (progressive_actions[i].item_index == item_id &&
+					(progressive_actions[i].type == AZ_ROTATE_ITEM_VERTICAL || progressive_actions[i].type == AZ_TURN_FACING_VERTICAL)) {
+					progressive_action = &progressive_actions[i];
+					break;
+				}
+			}
+
+			if (!progressive_action) {
+				progressive_action = NGCreateProgressiveAction();
+				if (!progressive_action) {
+					break;
+				}
+			}
+
+			// Huh?
+			int32_t speed = 352;
+			if (action_type == TURN_X_ANIMATING_MOVING_SLOWLY_IN_CLOCKWISE_OF_DEGREES ||
+				action_type == TURN_X_ANIMATING_MOVING_SLOWLY_IN_INVERSE_CLOCKWISE_OF_DEGREES) {
+				speed = 160;
+			}
+
+			progressive_action->type = AZ_ROTATE_ITEM_VERTICAL;
+			progressive_action->duration = (degrees_table[extra_timer] / speed) & 0xffff;
+			if (progressive_action->duration < 1) {
+				progressive_action->duration = 1;
+			}
+			progressive_action->argument1_u16 = speed;
+
+			NGAddItemMoved(item_id);
+
+			progressive_action->item_index = item_id;
+			if (action_type == TURN_VERTICALLY_X_ANIMATING_MOVING_SLOWLY_IN_CLOCKWISE_OF_DEGREES ||
+				action_type == TURN_VERTICALLY_X_ANIMATING_MOVING_FASTLY_IN_CLOCKWISE_OF_DEGREES) {
+				progressive_action->argument2_i32[0] = 1;
+			}
+			else {
+				progressive_action->argument2_i32[0] = -1;
+			}
+
+			repeat_type = 1;
+
 			break;
 		}
 		case TURN_VERTICALLY_X_ANIMATING_MOVING_ENDLESS_IN_WAY: {
-			switch (extra_timer) {
-				// Clockwise slowly (one degree per frame)
-			case 0x00:
-				NGSetItemVerticalRotationSpeed(item_id, NG_DEGREE(1));
-				NGSetItemVerticalRotationRemaining(item_id, 0);
-				break;
-				// Clockwise fastly (two degrees per frame)
-			case 0x01:
-				NGSetItemVerticalRotationSpeed(item_id, NG_DEGREE(2));
-				NGSetItemVerticalRotationRemaining(item_id, 0);
-				break;
-				// Inverse Clockwise slowly (one degree per frame)
-			case 0x02:
-				NGSetItemVerticalRotationSpeed(item_id, NG_DEGREE(-1));
-				NGSetItemVerticalRotationRemaining(item_id, 0);
-				break;
-				// Inverse Clockwise fastly (two degrees per frame)
-			case 0x03:
-				NGSetItemVerticalRotationSpeed(item_id, NG_DEGREE(-2));
-				NGSetItemVerticalRotationRemaining(item_id, 0);
-				break;
-			default:
-				NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "TURN_VERTICALLY_X_ANIMATING_MOVING_ENDLESS_IN_WAY: action data %u unimplemented!", extra_timer);
-				break;
+			NGProgressiveAction* progressive_action = nullptr;
+			for (int32_t i = 0; i < progressive_action_count; i++) {
+				if (progressive_actions[i].item_index == item_id &&
+					(progressive_actions[i].type == AZ_ROTATE_ITEM_VERTICAL || progressive_actions[i].type == AZ_TURN_FACING_VERTICAL)) {
+					progressive_action = &progressive_actions[i];
+					break;
+				}
+			}
+
+			if (!progressive_action) {
+				progressive_action = NGCreateProgressiveAction();
+				if (!progressive_action) {
+					break;
+				}
+			}
+
+			int32_t speed = 352;
+			if ((extra_timer & 1) == 0)
+				speed = 160;
+
+			progressive_action->duration = 0xffff;
+			progressive_action->argument1_u16 = speed;
+			progressive_action->type = AZ_ROTATE_ITEM_VERTICAL;
+
+			NGAddItemMoved(item_id);
+
+			if (extra_timer & 2)
+				progressive_action->argument2_i32[0] = -1;
+			else
+				progressive_action->argument2_i32[0] = 1;
+
+			repeat_type = 1;
+
+			break;
+		}
+		case TURN_IMMEDIATELY_X_OF_DEGREES_CLOCKWISE: {
+			ITEM_INFO *item = T4PlusGetItemInfoForID(item_id);
+			if (item && extra_timer < DEGREES_TABLE_COUNT) {
+				item->pos.y_rot += degrees_table[extra_timer];
+			}
+			break;
+		}
+		case TURN_IMMEDIATELY_X_OF_DEGREES_INVERSE_CLOCKWISE: {
+			ITEM_INFO* item = T4PlusGetItemInfoForID(item_id);
+			if (item && extra_timer < DEGREES_TABLE_COUNT) {
+				item->pos.y_rot -= degrees_table[extra_timer];
 			}
 			break;
 		}
@@ -392,7 +366,7 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 			}
 			break;
 		}
-			case FORCE_ANIMATION_0_TO_31_ON_ITEM: {
+		case FORCE_ANIMATION_0_TO_31_ON_ITEM: {
 			NGSetItemAnimation(item_id, extra_timer & 0x1f, true, false, false, true);
 			break;
 		}
