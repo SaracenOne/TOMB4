@@ -80,7 +80,7 @@ extern short ItemNewRooms[256][2];
 extern short ItemNewRoomNo;
 
 extern uchar CurrentAtmosphere;
-extern uchar IsAtmospherePlaying;
+extern bool IsAtmospherePlaying;
 extern char cd_flags[128];
 
 extern ulong FmvSceneTriggered;

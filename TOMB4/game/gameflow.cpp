@@ -550,8 +550,10 @@ void DoLevel(uchar Name, uchar Audio)
 
 	ClipRange = (float)environment_info->far_view;
 
-	S_CDPlay(CurrentAtmosphere, 1);
-	IsAtmospherePlaying = 1;
+	if (CurrentAtmosphere != -1 && !IsUsingNewAudioSystem()) {
+		S_CDPlay(CurrentAtmosphere, 1);
+	}
+	IsAtmospherePlaying = true;
 	ScreenFadedOut = 0;
 	ScreenFading = 0;
 	ScreenFadeBack = 0;
@@ -946,7 +948,7 @@ void DoTitle(uchar Name, uchar Audio)
 	//empty func call here
 	SOUND_Stop();
 	S_CDPlay(Audio, 1);
-	IsAtmospherePlaying = 0;
+	IsAtmospherePlaying = false;
 	S_SetReverbType(1);
 	InitialiseCamera();
 

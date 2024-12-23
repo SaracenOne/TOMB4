@@ -92,7 +92,7 @@ short ItemNewRooms[256][2];
 short ItemNewRoomNo = 0;
 
 uchar CurrentAtmosphere;
-uchar IsAtmospherePlaying;
+bool IsAtmospherePlaying;
 char cd_flags[128];
 
 ulong FmvSceneTriggered;
@@ -2267,7 +2267,7 @@ void TriggerNormalCDTrack(short value, short flags, short type)
 			cd_flags[value] |= code;
 			S_CDPlay(value, 0);
 			if (IsUsingOldTriggerMode()) {
-				IsAtmospherePlaying = 0;
+				IsAtmospherePlaying = false;
 			}
 		}
 	}

@@ -13,6 +13,7 @@
 #include "../gameflow.h"
 #include "../../specific/function_table.h"
 #include "trng_globaltrigger.h"
+#include "../../specific/audio.h"
 
 #define MAX_NG_SAVEGAME_BUFFER_SIZE 0x8000
 
@@ -158,10 +159,34 @@ void NGReadNGSavegameInfo() {
 					int16_t secondary_single_cd_track = NG_READ_16(ng_savegame_buffer, offset);
 					uint32_t cd_channel_2_offset = NG_READ_32(ng_savegame_buffer, offset);
 
+					if (secondary_loop_cd_track != -1) {
+						S_CDPlayExt(secondary_loop_cd_track, 1, true, false);
+					}
+
+					if (secondary_single_cd_track != -1) {
+						S_CDPlayExt(secondary_loop_cd_track, 1, false , false);
+					}
+
+					if (secondary_loop_cd_track != -1 || secondary_single_cd_track != -1) {
+						S_CDSeek(1, cd_channel_2_offset / sizeof(int32_t));
+					}
+
 					int16_t main_loop_cd_track = NG_READ_16(ng_savegame_buffer, offset);
 					int16_t main_single_cd_track = NG_READ_16(ng_savegame_buffer, offset);
 
+					if (main_loop_cd_track != -1) {
+						S_CDPlayExt(main_loop_cd_track, 0, true, false);
+					}
+
+					if (main_single_cd_track != -1) {
+						S_CDPlayExt(main_single_cd_track, 0, false, false);
+					}
+
 					uint32_t cd_channel_1_offset = NG_READ_32(ng_savegame_buffer, offset);
+
+					if (main_loop_cd_track != -1 || main_single_cd_track != -1) {
+						S_CDSeek(0, cd_channel_1_offset / sizeof(int32_t));
+					}
 
 					LevelFogStart = NG_READ_FLOAT(ng_savegame_buffer, offset);
 
@@ -204,7 +229,7 @@ void NGReadNGSavegameInfo() {
 				}
 				case 0x801A: { // STATUS_GTRIGGERS
 					uint32_t global_trigger_count = NG_READ_16(ng_savegame_buffer, offset);
-					for (int32_t i = 0; i < global_trigger_count; i++) {
+					for (uint32_t i = 0; i < global_trigger_count; i++) {
 						if (i < MAX_NG_GLOBAL_TRIGGERS) {
 							uint16_t flags = NG_READ_16(ng_savegame_buffer, offset);
 

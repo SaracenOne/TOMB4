@@ -31,6 +31,7 @@
 #include "../tomb4/mod_config.h"
 #include "../tomb4/tomb4plus/t4plus_objects.h"
 #include "trng/trng_savegame.h"
+#include "../specific/audio.h"
 
 LEGACY_SAVEGAME_INFO savegame;
 
@@ -750,6 +751,7 @@ void SaveLevelData(bool full_save, bool use_full_flipmask)
 	WriteSG(&flip_status, sizeof(long));
 	WriteSG(cd_flags, 128);
 	WriteSG(&CurrentAtmosphere, sizeof(uchar));
+
 	word = 0;
 	long shatter_bit_idx = 0;
 

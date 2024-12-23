@@ -1213,6 +1213,8 @@ struct ma_audio_stream_channel {
 	int current_track = -1;
 	int current_volume = 100;
 
+	int seek_target = -1;
+
 	int restore_track = -1;
 	StreamMode restore_stream_mode = StreamMode::STREAM_ONESHOT_AND_RESTORE_ATMOSPHERE;
 
@@ -1239,6 +1241,11 @@ void data_callback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uin
 	}
 
 	if (!channels[channel_id].current_stream_paused) {
+		if (channels[channel_id].seek_target >= 0) {
+			ma_data_source_seek_to_pcm_frame(pDecoder, channels[channel_id].seek_target);
+			channels[channel_id].seek_target = -1;
+		}
+
 		ma_uint64 frames_read;
 		ma_data_source_read_pcm_frames(pDecoder, pOutput, frameCount, &frames_read);
 
@@ -1395,8 +1402,7 @@ void track_complete_callback(int channel_id) {
 	channels[channel_id].current_stream_finished = false;
 }
 
-bool ACMInit()
-{
+bool ACMInit() {
 	for (int i = 0; i < MA_AUDIO_STREAM_COUNT; i++) {
 		callback_userdata[i].channel_id = i;
 	}
@@ -1405,8 +1411,7 @@ bool ACMInit()
 	return true;
 }
 
-void ACMClose()
-{
+void ACMClose() {
 	S_CDStop();
 	for (int i = 0; i < MA_AUDIO_STREAM_COUNT; i++) {
 		ma_device_uninit(&channels[i].device);
@@ -1415,8 +1420,7 @@ void ACMClose()
 	acm_ready = false;
 }
 
-void ACMSetVolume()
-{
+void ACMSetVolume() {
 	long volume;
 
 	for (int i = 0; i < MA_AUDIO_STREAM_COUNT; i++) {
@@ -1450,10 +1454,6 @@ void S_CDPlay(long track, long mode) {
 // TODO: restore should restore at the specific time of the original track
 void S_CDPlayExt(unsigned char track_id, unsigned char channel_id, bool looping, bool restore_old_track) {
 	if (IsUsingNewAudioSystem()) {
-		if (looping) {
-			CurrentAtmosphere = (uchar)track_id;
-		}
-
 		if (channels[channel_id].current_track != track_id || !looping) {
 			if (restore_old_track) {
 				channels[channel_id].restore_track = channels[channel_id].current_track;
@@ -1464,8 +1464,7 @@ void S_CDPlayExt(unsigned char track_id, unsigned char channel_id, bool looping,
 		}
 	} else {
 		if (looping) {
-			if (CurrentAtmosphere != track_id)
-			{
+			if (CurrentAtmosphere != track_id) {
 				CurrentAtmosphere = (uchar)track_id;
 
 				if (IsAtmospherePlaying)
@@ -1565,6 +1564,15 @@ void S_UnpauseAudio() {
 			channels[i].current_stream_paused = false;
 		}
 	}
+}
+
+void S_CDSeek(int channel_id, int frame) {
+	ma_decoder* pDecoder = &channels[channel_id].decoder;
+	if (pDecoder == NULL) {
+		return;
+	}
+
+	channels[channel_id].seek_target = frame;
 }
 
 void SetUsingNewAudioSystem(bool enabled) {

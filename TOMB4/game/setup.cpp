@@ -1921,7 +1921,7 @@ void InitialiseGameFlags()
 	memset(cd_flags, 0, sizeof(cd_flags));
 	flipeffect = -1;
 	flip_status = 0;
-	IsAtmospherePlaying = 0;
+	IsAtmospherePlaying = false;
 	camera.underwater = 0;
 }
 

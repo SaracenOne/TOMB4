@@ -239,7 +239,7 @@ static long JeepCheckGetOut()
 		lara.gun_status = LG_NO_ARMS;
 		if (mod_audio_info->outside_jeep_track >= 0) {
 			CurrentAtmosphere = (uchar)mod_audio_info->outside_jeep_track;
-			IsAtmospherePlaying = 1;
+			IsAtmospherePlaying = true;
 			S_CDPlay(CurrentAtmosphere, 1);
 		}
 	}
@@ -392,7 +392,7 @@ void JeepCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 		item->flags |= IFL_TRIGGERED;
 		if (mod_audio_info->inside_jeep_track >= 0) {
 			CurrentAtmosphere = (uchar)mod_audio_info->inside_jeep_track;
-			IsAtmospherePlaying = 1;
+			IsAtmospherePlaying = true;
 			S_CDPlay(CurrentAtmosphere, 1);
 		}
 	}

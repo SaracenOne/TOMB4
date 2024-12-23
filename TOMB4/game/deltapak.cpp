@@ -320,7 +320,7 @@ void handle_cutseq_triggering(long name)
 				if (gfCurrentLevel)
 					S_CDPlay(CurrentAtmosphere, 1);
 
-				IsAtmospherePlaying = 1;
+				IsAtmospherePlaying = true;
 			}
 		}
 	}

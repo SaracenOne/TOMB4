@@ -330,7 +330,7 @@ void DoVonCroyCutscene(ITEM_INFO* item, CREATURE_INFO* info)
 		ClearCutSceneCamera();
 		S_CDStop();
 		S_CDPlay(CurrentAtmosphere, 1);
-		IsAtmospherePlaying = 1;
+		IsAtmospherePlaying = true;
 		bDisableLaraControl = 0;
 		SetFadeClip(0, 1);
 		item->trigger_flags = 0;
