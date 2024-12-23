@@ -55,7 +55,7 @@ struct NG_MOVEMENT_INFO {
 // NG_ITEM_EXTRADATA is persistent supplementary data used by TRNG triggers.
 // The state here can subsequently be serialized as additional data for save games.
 struct NG_ITEM_EXTRADATA {
-	int16_t frozen_ticks = 0;
+	uint16_t frozen_ticks = 0;
 	bool collison_disabled = false; // Will only disable the ObjectCollision routine. Doors and enemies still have collision.
 	int16_t fade_override = 0;
 
@@ -139,6 +139,17 @@ int32_t ng_local_alfa = 0;
 int32_t ng_local_beta = 0;
 int32_t ng_local_delta = 0;
 int32_t ng_last_input_number = 0;
+
+int32_t ng_store_variables[STORE_VARIABLE_COUNT];
+
+char ng_last_text_input[REGULAR_TEXT_BUFFER_SIZE];
+
+char ng_string1[REGULAR_TEXT_BUFFER_SIZE];
+char ng_string2[REGULAR_TEXT_BUFFER_SIZE];
+char ng_string3[REGULAR_TEXT_BUFFER_SIZE];
+char ng_string4[REGULAR_TEXT_BUFFER_SIZE];
+
+char ng_text_big[BIG_TEXT_BUFFER_SIZE];
 
 // Inventory
 uint8_t ng_selected_inventory_item_memory = 0;
@@ -607,7 +618,7 @@ void NGHandleStaticMovement(uint32_t static_num) {
 
 void NGUpdateAllItems() {
 	for (int32_t i = 0; i < ITEM_COUNT; i++) {
-		if (ng_items_extradata[i].frozen_ticks > 0) {
+		if (ng_items_extradata[i].frozen_ticks > 0 && ng_items_extradata[i].frozen_ticks != 0xffff) {
 			ng_items_extradata[i].frozen_ticks--;
 		}
 
@@ -1068,7 +1079,7 @@ bool NGIsItemFrozen(uint32_t item_num) {
 	return false;
 }
 
-void NGSetItemFreezeTimer(uint32_t item_num, int32_t ticks) {
+void NGSetItemFreezeTimer(uint32_t item_num, uint32_t ticks) {
 	ng_items_extradata[item_num].frozen_ticks = ticks;
 }
 
@@ -1407,6 +1418,19 @@ void NGSetupLevelExtraState() {
 	ng_local_delta = 0;
 	ng_last_input_number = 0;
 
+	for (int32_t i = 0; i < STORE_VARIABLE_COUNT; i++) {
+		ng_store_variables[i] = 0;
+	}
+
+	memset(ng_last_text_input, 0x00, REGULAR_TEXT_BUFFER_SIZE);
+	
+	memset(ng_string1, 0x00, REGULAR_TEXT_BUFFER_SIZE);
+	memset(ng_string2, 0x00, REGULAR_TEXT_BUFFER_SIZE);
+	memset(ng_string3, 0x00, REGULAR_TEXT_BUFFER_SIZE);
+	memset(ng_string4, 0x00, REGULAR_TEXT_BUFFER_SIZE);
+
+	memset(ng_text_big, 0x00, BIG_TEXT_BUFFER_SIZE);
+
 	// Inventory
 	ng_selected_inventory_item_memory = 0;
 	ng_used_inventory_object_for_frame = NO_ITEM;
@@ -1446,8 +1470,7 @@ void NGSetupLevelExtraState() {
 				NG_GLOBAL_TRIGGER* global_trigger = &current_record_data->global_trigger_table[i].record;
 				int32_t record_id = current_record_data->global_trigger_table[i].record_id;
 				if (global_trigger->flags != 0xffff) {
-					// FGT_DISABLED
-					if (global_trigger->flags & 0x0008) {
+					if (global_trigger->flags & FGT_DISABLED) {
 						ng_global_trigger_states[record_id].is_disabled = true;
 					}
 				}

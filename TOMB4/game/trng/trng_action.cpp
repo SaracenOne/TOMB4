@@ -719,7 +719,7 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 			// update, but it's possible it might affect their status instead.
 			if (!NGIsItemFrozen(item_id)) {
 				if (extra_timer == 0) {
-					NGSetItemFreezeTimer(item_id, -1);
+					NGSetItemFreezeTimer(item_id, 0xffff);
 				}
 				else {
 					NGSetItemFreezeTimer(item_id, extra_timer * NG_TICKS_PER_SECOND);

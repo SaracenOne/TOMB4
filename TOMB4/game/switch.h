@@ -1,6 +1,9 @@
 #pragma once
 #include "../global/types.h"
 
+#define MAX_SEQUENCES 3
+#define MAX_USED_SEQUENCES 6
+
 void FullBlockSwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);
 long SwitchTrigger(short item_number, short timer);
 long GetSwitchTrigger(ITEM_INFO* item, short* ItemNos, long AttatchedToSwitch);
@@ -22,6 +25,6 @@ void CogSwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);
 
 extern PHD_VECTOR OldPickupPos;
 extern uchar CurrentSequence;
-extern uchar Sequences[3];
-extern uchar SequenceUsed[6];
-extern uchar SequenceResults[3][3][3];
+extern uchar Sequences[MAX_SEQUENCES];
+extern uchar SequenceUsed[MAX_USED_SEQUENCES];
+extern uchar SequenceResults[MAX_SEQUENCES][MAX_SEQUENCES][MAX_SEQUENCES];

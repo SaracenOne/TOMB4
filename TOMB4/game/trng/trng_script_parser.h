@@ -2,6 +2,8 @@
 
 #include "trng_extra_state.h"
 
+#include "../objects.h"
+
 #define MAX_NG_STRINGS 16384
 #define MAX_NG_LEVELS 64
 #define MAX_NG_PLUGINS 256
@@ -351,6 +353,9 @@ struct NG_LEVEL_RECORD_TABLES {
 
 struct NG_LEVEL {
 	NG_LEVEL_RECORD_DATA *records = NULL;
+
+	int32_t first_shatter_id = SHATTER0;
+	int32_t last_shatter_id = SHATTER9;
 };
 
 extern NG_LEVEL ng_levels[MAX_NG_LEVELS];

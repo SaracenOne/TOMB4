@@ -55,6 +55,8 @@ enum NGProgressiveActionType {
 	AZ_ALTERNATE_FLIPMAP,
 };
 
+#define NG_PROGRESSIVE_ACTION_ARGUMENT_2_COUNT 6
+
 struct NGProgressiveAction {
 	NGProgressiveActionType type;
 	int16_t item_index;
@@ -66,12 +68,12 @@ struct NGProgressiveAction {
 	union {
 		float argument2_f32[6];
 
-		uint32_t argument2_u32[6];
-		int32_t  argument2_i32[6];
-		uint16_t argument2_u16[12];
-		int16_t argument2_s16[12];
-		uint8_t argument2_u8[24];
-		int8_t argument2_s8[24];
+		uint32_t argument2_u32[NG_PROGRESSIVE_ACTION_ARGUMENT_2_COUNT];
+		int32_t  argument2_i32[NG_PROGRESSIVE_ACTION_ARGUMENT_2_COUNT];
+		uint16_t argument2_u16[NG_PROGRESSIVE_ACTION_ARGUMENT_2_COUNT * 2];
+		int16_t argument2_s16[NG_PROGRESSIVE_ACTION_ARGUMENT_2_COUNT * 2];
+		uint8_t argument2_u8[NG_PROGRESSIVE_ACTION_ARGUMENT_2_COUNT * 4];
+		int8_t argument2_s8[NG_PROGRESSIVE_ACTION_ARGUMENT_2_COUNT * 4];
 	};
 };
 

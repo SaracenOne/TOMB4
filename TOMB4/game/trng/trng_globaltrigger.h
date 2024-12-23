@@ -52,7 +52,8 @@ enum NGGlobalTriggerFlags {
 	FGT_REMOVE_INPUT = 0x0010,
 	FGT_SINGLE_SHOT_RESUMED = 0x0020,
 	FGT_REPLACE_MANAGEMENT = 0x0040,
-	FGT_HIDE_IN_DEBUG = 0x2000
+	FGT_HIDE_IN_DEBUG = 0x2000,
+	FGT_PAUSE_ONE_SHOT = 0x4000
 };
 
 extern bool NGExecuteSingleGlobalTrigger(int32_t global_trigger_id, int32_t selected_inventory_object_id);

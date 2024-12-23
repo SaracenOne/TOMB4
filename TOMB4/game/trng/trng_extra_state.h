@@ -18,8 +18,8 @@ enum NGTimerTrackerType {
 	TTT_SECONDS_WITH_THREE_NOUGHTS
 };
 
-#define MAX_NG_GLOBAL_TRIGGERS 9999
-#define MAX_NG_TRIGGER_GROUPS 9999
+#define MAX_NG_GLOBAL_TRIGGERS 500
+#define MAX_NG_TRIGGER_GROUPS 1000
 #define MAX_NG_ORGANIZERS 4999
 #define MAX_NG_ITEM_GROUPS 999
 #define MAX_NG_ANIMATIONS 9999
@@ -99,6 +99,20 @@ extern int32_t ng_local_beta;
 extern int32_t ng_local_delta;
 extern int32_t ng_last_input_number;
 
+#define STORE_VARIABLE_COUNT 16
+extern int32_t ng_store_variables[STORE_VARIABLE_COUNT];
+
+#define REGULAR_TEXT_BUFFER_SIZE 80
+extern char ng_last_text_input[REGULAR_TEXT_BUFFER_SIZE];
+
+extern char ng_string1[REGULAR_TEXT_BUFFER_SIZE];
+extern char ng_string2[REGULAR_TEXT_BUFFER_SIZE];
+extern char ng_string3[REGULAR_TEXT_BUFFER_SIZE];
+extern char ng_string4[REGULAR_TEXT_BUFFER_SIZE];
+
+#define BIG_TEXT_BUFFER_SIZE 320
+extern char ng_text_big[BIG_TEXT_BUFFER_SIZE];
+
 // Inventory
 extern uint8_t ng_selected_inventory_item_memory;
 extern int32_t ng_used_inventory_object_for_frame;
@@ -121,7 +135,7 @@ extern void NGSimulateInputForTime(uint8_t input, int32_t ticks);
 extern void NGEnableInput(uint8_t input);
 
 extern bool NGIsItemFrozen(uint32_t item_num);
-extern void NGSetItemFreezeTimer(uint32_t item_num, int32_t ticks);
+extern void NGSetItemFreezeTimer(uint32_t item_num, uint32_t ticks);
 
 // Moveables
 

@@ -28,13 +28,14 @@
 LPDIRECT3DVERTEXBUFFER DestVB;
 #endif
 #include "../game/trng/trng_savegame.h"
-WATERTAB WaterTable[22][64];
+
+WATERTAB WaterTable[WATER_TABLE_COUNT][WATER_TABLE_SIZE];
 THREAD MainThread;
 short* clipflags;
-float vert_wibble_table[32];
+float vert_wibble_table[WIBBLE_TABLE_SIZE];
 long SaveCounter;
 
-static float unused_vert_wibble_table[256];
+static float unused_vert_wibble_table[UNUSED_WIBBLE_TABLE_SIZE];
 static uchar water_abs[4] = { 4, 8, 12, 16 };
 static short water_shimmer[4] = { 31, 63, 95, 127 };
 static short water_choppy[4] = { 16, 53, 90, 127 };
@@ -142,7 +143,7 @@ void init_water_table()
 
 	srand(121197);
 
-	for (int i = 0; i < 64; i++)
+	for (int i = 0; i < WATER_TABLE_SIZE; i++)
 	{
 		sSin = rcossin_tbl[i << 7];
 		WaterTable[0][i].shimmer = (63 * sSin) >> 15;
@@ -182,13 +183,13 @@ void init_water_table()
 		}
 	}
 
-	for (int i = 0; i < 32; i++)
+	for (int i = 0; i < WIBBLE_TABLE_SIZE; i++)
 	{
 		fSin = sinf(float(i * (M_PI / 16.0F)));
 		vert_wibble_table[i] = fSin + fSin;
 	}
 
-	for (int i = 0; i < 256; i++)
+	for (int i = 0; i < UNUSED_WIBBLE_TABLE_SIZE; i++)
 	{
 		angle = 0x10000 * i / 256;
 		lSin = phd_sin(angle);

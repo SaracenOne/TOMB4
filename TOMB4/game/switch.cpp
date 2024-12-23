@@ -242,9 +242,9 @@ static short CogSwitchBounds[] = {
 
 PHD_VECTOR OldPickupPos;
 uchar CurrentSequence;
-uchar Sequences[3];
-uchar SequenceUsed[6];
-uchar SequenceResults[3][3][3];
+uchar Sequences[MAX_SEQUENCES];
+uchar SequenceUsed[MAX_USED_SEQUENCES];
+uchar SequenceResults[MAX_SEQUENCES][MAX_SEQUENCES][MAX_SEQUENCES];
 
 void FullBlockSwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 {

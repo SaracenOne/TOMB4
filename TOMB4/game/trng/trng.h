@@ -11,14 +11,19 @@
 
 #define NG_TICKS_PER_SECOND 30
 
-#define NG_READ_8(scr_buffer, scr_offset) scr_buffer[scr_offset]; \
+#define NG_READ_8(src_buffer, src_offset) src_buffer[src_offset]; \
 offset += sizeof(int8_t)
 
-#define NG_READ_16(scr_buffer, scr_offset) (uint16_t)((uint8_t)scr_buffer[scr_offset]) | ((uint16_t)(scr_buffer[scr_offset + 1])) << 8; \
-scr_offset += sizeof(int16_t)
+#define NG_READ_16(src_buffer, src_offset) (uint16_t)((uint8_t)src_buffer[src_offset]) | ((uint16_t)(src_buffer[src_offset + 1])) << 8; \
+src_offset += sizeof(int16_t)
 
-#define NG_READ_32(scr_buffer, scr_offset) (uint32_t)(((uint8_t)scr_buffer[scr_offset]) | (((uint32_t)(uint8_t)scr_buffer[scr_offset + 1]) << 8) | (((uint32_t)(uint8_t)scr_buffer[scr_offset + 2]) << 16) | (((uint32_t)(uint8_t)scr_buffer[scr_offset + 3]) << 24)); \
-scr_offset += sizeof(int32_t)
+#define NG_READ_32(src_buffer, src_offset) (uint32_t)(((uint8_t)src_buffer[src_offset]) | (((uint32_t)(uint8_t)src_buffer[src_offset + 1]) << 8) | (((uint32_t)(uint8_t)src_buffer[src_offset + 2]) << 16) | (((uint32_t)(uint8_t)src_buffer[src_offset + 3]) << 24)); \
+src_offset += sizeof(int32_t)
+
+#define NG_READ_FLOAT(src_buffer, src_offset) (*(float*)&src_buffer[src_offset]); \
+src_offset += sizeof(float)
+
+#define NG_READ_FIXED_STRING(src_buffer, dst_buffer, buffer_size, src_offset) memcpy(dst_buffer, src_buffer + src_offset, buffer_size); src_offset += buffer_size
 
 #define SILENCE_EXCESSIVE_LOGS // Debug macro to silence log commands which are commonly called every frame.
 

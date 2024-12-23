@@ -708,7 +708,7 @@ void SaveLevelData(bool full_save, bool use_full_flipmask)
 	MESH_INFO* mesh;
 	CREATURE_INFO* creature;
 	ulong flags;
-	long k, flare_age;
+	long flare_age;
 	ushort packed;
 	short pos, word;
 	uchar byte;
@@ -751,7 +751,7 @@ void SaveLevelData(bool full_save, bool use_full_flipmask)
 	WriteSG(cd_flags, 128);
 	WriteSG(&CurrentAtmosphere, sizeof(uchar));
 	word = 0;
-	k = 0;
+	long shatter_bit_idx = 0;
 
 	for (int i = 0; i < number_rooms; i++)
 	{
@@ -763,20 +763,20 @@ void SaveLevelData(bool full_save, bool use_full_flipmask)
 
 			if (get_game_mod_level_statics_info(gfCurrentLevel)->static_info[mesh->static_number].record_shatter_state_in_savegames)
 			{
-				word |= ((mesh->Flags & 1) << k);
-				k++;
+				word |= ((mesh->Flags & 1) << shatter_bit_idx);
+				shatter_bit_idx++;
 
-				if (k == 16)
+				if (shatter_bit_idx == 16)
 				{
 					WriteSG(&word, sizeof(short));
-					k = 0;
+					shatter_bit_idx = 0;
 					word = 0;
 				}
 			}
 		}
 	}
 
-	if (k)
+	if (shatter_bit_idx)
 		WriteSG(&word, sizeof(short));
 
 	byte = 0;
@@ -788,11 +788,11 @@ void SaveLevelData(bool full_save, bool use_full_flipmask)
 	WriteSG(&CurrentSequence, sizeof(uchar));
 	byte = 0;
 
-	for (int i = 0; i < 6; i++)
+	for (int i = 0; i < MAX_USED_SEQUENCES; i++)
 		byte |= SequenceUsed[i] << i;
 
 	WriteSG(&byte, sizeof(uchar));
-	WriteSG(Sequences, 3);
+	WriteSG(Sequences, MAX_SEQUENCES);
 
 	for (int i = 0; i < number_cameras; i++)
 		WriteSG(&camera.fixed[i].flags, sizeof(short));
@@ -1166,7 +1166,7 @@ void RestoreLevelData(bool full_save, bool use_full_flipmask)
 	OBJECT_INFO* obj;
 	MESH_INFO* mesh;
 	ulong flags;
-	long k, flare_age;
+	long flare_age;
 	ushort word, packed, uroom_number, uword;
 	short sword, item_number, room_number, req, goal, current;
 	uchar numberof;
@@ -1199,28 +1199,23 @@ void RestoreLevelData(bool full_save, bool use_full_flipmask)
 	ReadSG(&flip_status, sizeof(long));
 	ReadSG(cd_flags, 128);
 	ReadSG(&CurrentAtmosphere, sizeof(uchar));
-	k = 16;
+	long shatter_bit_idx = 16;
 
-	for (int i = 0; i < number_rooms; i++)
-	{
+	for (int i = 0; i < number_rooms; i++) {
 		r = &room[i];
 
-		for (int j = 0; j < r->num_meshes; j++)
-		{
+		for (int j = 0; j < r->num_meshes; j++) {
 			mesh = &r->mesh[j];
 
-			if (get_game_mod_level_statics_info(gfCurrentLevel)->static_info[mesh->static_number].record_shatter_state_in_savegames)
-			{
-				if (k == 16)
-				{
+			if (get_game_mod_level_statics_info(gfCurrentLevel)->static_info[mesh->static_number].record_shatter_state_in_savegames) {
+				if (shatter_bit_idx == 16) {
 					ReadSG(&uword, sizeof(ushort));
-					k = 0;
+					shatter_bit_idx = 0;
 				}
 
 				mesh->Flags ^= (uword ^ mesh->Flags) & 1;
 
-				if (!mesh->Flags)
-				{
+				if (!mesh->Flags) {
 					room_number = i;
 					floor = GetFloor(mesh->x, mesh->y, mesh->z, &room_number);
 					GetHeight(floor, mesh->x, mesh->y, mesh->z);
@@ -1229,15 +1224,14 @@ void RestoreLevelData(bool full_save, bool use_full_flipmask)
 				}
 
 				uword >>= 1;
-				k++;
+				shatter_bit_idx++;
 			}
 		}
 	}
 
 	ReadSG(&byte, sizeof(char));
 
-	for (int i = 0; i < MAX_LIBRARY_TABS; i++)
-	{
+	for (int i = 0; i < MAX_LIBRARY_TABS; i++) {
 		LibraryTab[i] = byte & 1;
 		byte >>= 1;
 	}
@@ -1245,13 +1239,12 @@ void RestoreLevelData(bool full_save, bool use_full_flipmask)
 	ReadSG(&CurrentSequence, sizeof(uchar));
 	ReadSG(&byte, sizeof(char));
 
-	for (int i = 0; i < 6; i++)
-	{
+	for (int i = 0; i < MAX_USED_SEQUENCES; i++) {
 		SequenceUsed[i] = byte & 1;
 		byte >>= 1;
 	}
 
-	ReadSG(Sequences, 3);
+	ReadSG(Sequences, MAX_SEQUENCES);
 
 	for (int i = 0; i < number_cameras; i++)
 		ReadSG(&camera.fixed[i].flags, sizeof(short));

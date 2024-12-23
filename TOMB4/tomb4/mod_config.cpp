@@ -858,16 +858,15 @@ void SetupDefaultStaticsInfoForLevel(MOD_LEVEL_INFO* level_info) {
         if (i >= SHATTER0) {
             if (i <= SHATTER9) {
                 level_info->statics_info.static_info[i].large_objects_can_shatter = true;
+                level_info->statics_info.static_info[i].creatures_can_shatter = true;
+                level_info->statics_info.static_info[i].record_shatter_state_in_savegames = true;
             }
             if (i < SHATTER8) {
                 level_info->statics_info.static_info[i].lara_guns_can_shatter = true;
             }
-
-            level_info->statics_info.static_info[i].creatures_can_shatter = true;
-            level_info->statics_info.static_info[i].record_shatter_state_in_savegames = true;
-            level_info->statics_info.static_info[i].shatter_sound_id = SFX_HIT_ROCK;
         }
 
+        level_info->statics_info.static_info[i].shatter_sound_id = SFX_HIT_ROCK;
         level_info->statics_info.static_info[i].hard_collision = false;
     }
 }

@@ -854,16 +854,16 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 				amount *= 6;
 			}
 
-			int32_t i = 0;
-			int32_t last = MOD_LEVEL_COUNT;
+			int32_t cur_level_idx = 0;
+			int32_t last_level_idx = MOD_LEVEL_COUNT;
 
 			if (current_level != 0) {
-				i = current_level;
-				last = current_level + 1;
+				cur_level_idx = current_level;
+				last_level_idx = current_level + 1;
 			}
 
-			for (; i < last; i++) {
-				MOD_EQUIPMENT_MODIFIER* equipment_modifiers = get_game_mod_level_stat_info(i)->equipment_modifiers;
+			for (; cur_level_idx < last_level_idx; cur_level_idx++) {
+				MOD_EQUIPMENT_MODIFIER* equipment_modifiers = get_game_mod_level_stat_info(cur_level_idx)->equipment_modifiers;
 
 				int32_t current_modifier_idx = 0;
 				for (current_modifier_idx = 0; current_modifier_idx < MAX_EQUIPMENT_MODIFIERS; current_modifier_idx++) {
@@ -876,7 +876,7 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 				}
 
 				if (current_modifier_idx >= MAX_EQUIPMENT_MODIFIERS) {
-					NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: Max equipment modifiers exceeded (level %u)", i);
+					NGLog(NG_LOG_TYPE_ERROR, "NGReadNGGameflowInfo: Max equipment modifiers exceeded (level %u)", cur_level_idx);
 				}
 			}
 
@@ -929,32 +929,32 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 				switch (customization_category) {
 				case CUST_DISABLE_SCREAMING_HEAD: {
 
-					int32_t i = 0;
-					int32_t last = MOD_LEVEL_COUNT;
+					int32_t cur_level_idx = 0;
+					int32_t last_level_idx = MOD_LEVEL_COUNT;
 
 					if (current_level != 0) {
-						i = current_level;
-						last = current_level + 1;
+						cur_level_idx = current_level;
+						last_level_idx = current_level + 1;
 					}
 
-					for (; i < last; i++) {
-						get_game_mod_level_objects_info(i)->lara_scream_slot = -1;
+					for (; cur_level_idx < last_level_idx; cur_level_idx++) {
+						get_game_mod_level_objects_info(cur_level_idx)->lara_scream_slot = -1;
 					}
 					break;
 				}
 				case CUST_SET_SECRET_NUMBER: {
 					uint16_t secret_count = NG_READ_16(gfScriptFile, offset);
 
-					int32_t i = 0;
-					int32_t last = MOD_LEVEL_COUNT;
+					int32_t cur_level_idx = 0;
+					int32_t last_level_idx = MOD_LEVEL_COUNT;
 
 					if (current_level != 0) {
-						i = current_level;
-						last = current_level + 1;
+						cur_level_idx = current_level;
+						last_level_idx = current_level + 1;
 					}
 
-					for (; i < last; i++) {
-						get_game_mod_level_stat_info(i)->secret_count = secret_count;
+					for (; cur_level_idx < last_level_idx; cur_level_idx++) {
+						get_game_mod_level_stat_info(cur_level_idx)->secret_count = secret_count;
 					}
 
 					break;
@@ -1005,10 +1005,37 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 					break;
 				}
 				case CUST_SHATTER_RANGE: {
-					NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_SHATTER_RANGE unimplemented! (level %u)", current_level);
-
 					uint16_t first_static_as_shatter = NG_READ_16(gfScriptFile, offset);
 					uint16_t last_static_as_shatter = NG_READ_16(gfScriptFile, offset);
+
+					int32_t cur_level_idx = 0;
+					int32_t last_level_idx = MOD_LEVEL_COUNT;
+
+					if (current_level != 0) {
+						cur_level_idx = current_level;
+						last_level_idx = current_level + 1;
+					}
+
+					for (; cur_level_idx < last_level_idx; cur_level_idx++) {
+						ng_levels[cur_level_idx].first_shatter_id = first_static_as_shatter;
+						ng_levels[cur_level_idx].last_shatter_id = last_static_as_shatter;
+
+						for (int32_t static_idx = 0; static_idx < NUMBER_STATIC_OBJECTS; static_idx++) {
+							if (static_idx >= first_static_as_shatter && static_idx <= last_static_as_shatter) {
+								get_game_mod_level_statics_info(cur_level_idx)->static_info[static_idx].large_objects_can_shatter = true;
+								get_game_mod_level_statics_info(cur_level_idx)->static_info[static_idx].creatures_can_shatter = true;
+								get_game_mod_level_statics_info(cur_level_idx)->static_info[static_idx].lara_guns_can_shatter = true;
+								get_game_mod_level_statics_info(cur_level_idx)->static_info[static_idx].record_shatter_state_in_savegames = true;
+							} else {
+								get_game_mod_level_statics_info(cur_level_idx)->static_info[static_idx].large_objects_can_shatter = false;
+								get_game_mod_level_statics_info(cur_level_idx)->static_info[static_idx].creatures_can_shatter = false;
+								get_game_mod_level_statics_info(cur_level_idx)->static_info[static_idx].lara_guns_can_shatter = false;
+								get_game_mod_level_statics_info(cur_level_idx)->static_info[static_idx].record_shatter_state_in_savegames = false;
+
+							}
+						}
+					}
+
 					offset = data_block_start_start_position + (current_data_block_size_wide * sizeof(int16_t) + sizeof(int16_t));
 					break;
 				}
@@ -1166,17 +1193,17 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 				case CUST_SET_JEEP_KEY_SLOT: {
 					int16_t jeep_key_slot = NG_READ_16(gfScriptFile, offset);
 
-					int32_t i = 0;
-					int32_t last = MOD_LEVEL_COUNT;
+					int32_t cur_level_idx = 0;
+					int32_t last_level_idx = MOD_LEVEL_COUNT;
 
 					if (current_level != 0) {
-						i = current_level;
-						last = current_level + 1;
+						cur_level_idx = current_level;
+						last_level_idx = current_level + 1;
 					}
 
-					for (; i < last; i++) {
+					for (; cur_level_idx < last_level_idx; cur_level_idx++) {
 						if (jeep_key_slot != -1) {
-							get_game_mod_level_objects_info(i)->jeep_key_slot = jeep_key_slot;
+							get_game_mod_level_objects_info(cur_level_idx)->jeep_key_slot = jeep_key_slot;
 						}
 					}
 					break;
@@ -1191,20 +1218,20 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 					int16_t damage = NG_READ_16(gfScriptFile, offset);
 					int16_t poison_intensity = NG_READ_16(gfScriptFile, offset);
 
-					int32_t i = 0;
-					int32_t last = MOD_LEVEL_COUNT;
+					int32_t cur_level_idx = 0;
+					int32_t last_level_idx = MOD_LEVEL_COUNT;
 
 					if (current_level != 0) {
-						i = current_level;
-						last = current_level + 1;
+						cur_level_idx = current_level;
+						last_level_idx = current_level + 1;
 					}
 
-					for (; i < last; i++) {
+					for (; cur_level_idx < last_level_idx; cur_level_idx++) {
 						if (damage != -1) {
-							get_game_mod_level_misc_info(i)->damage_static_interaction = damage;
+							get_game_mod_level_misc_info(cur_level_idx)->damage_static_interaction = damage;
 						}
 						if (poison_intensity != -1) {
-							get_game_mod_level_misc_info(i)->poison_static_interaction = poison_intensity;
+							get_game_mod_level_misc_info(cur_level_idx)->poison_static_interaction = poison_intensity;
 						}
 					}
 					break;
@@ -1221,45 +1248,45 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_LOOK_TRANSPARENT type unimplemented! (level %u)", current_level);
 					}
 
-					int32_t i = 0;
-					int32_t last = MOD_LEVEL_COUNT;
+					int32_t cur_level_idx = 0;
+					int32_t last_level_idx = MOD_LEVEL_COUNT;
 
 					if (current_level != 0) {
-						i = current_level;
-						last = current_level + 1;
+						cur_level_idx = current_level;
+						last_level_idx = current_level + 1;
 					}
 
-					for (; i < last; i++) {
-						get_game_mod_level_lara_info(i)->use_look_transparency = use_look_transparency;
+					for (; cur_level_idx < last_level_idx; cur_level_idx++) {
+						get_game_mod_level_lara_info(cur_level_idx)->use_look_transparency = use_look_transparency;
 					}
 					break;
 				}
 				case CUST_HAIR_TYPE: {
 					uint16_t hair_type = NG_READ_16(gfScriptFile, offset);
 
-					int32_t i = 0;
-					int32_t last = MOD_LEVEL_COUNT;
+					int32_t cur_level_idx = 0;
+					int32_t last_level_idx = MOD_LEVEL_COUNT;
 
 					if (current_level != 0) {
-						i = current_level;
-						last = current_level + 1;
+						cur_level_idx = current_level;
+						last_level_idx = current_level + 1;
 					}
 
-					for (; i < last; i++) {
+					for (; cur_level_idx < last_level_idx; cur_level_idx++) {
 						switch (hair_type) {
 						case 0x00:
 							break;
 						case 0x01:
-							get_game_mod_level_lara_info(i)->hair_type = LARA_HAIR_TYPE_NONE;
+							get_game_mod_level_lara_info(cur_level_idx)->hair_type = LARA_HAIR_TYPE_NONE;
 							break;
 						case 0x02:
-							get_game_mod_level_lara_info(i)->hair_type = LARA_HAIR_TYPE_PIGTAILS;
+							get_game_mod_level_lara_info(cur_level_idx)->hair_type = LARA_HAIR_TYPE_PIGTAILS;
 							break;
 						case 0x03:
-							get_game_mod_level_lara_info(i)->hair_type = LARA_HAIR_TYPE_BRAID;
+							get_game_mod_level_lara_info(cur_level_idx)->hair_type = LARA_HAIR_TYPE_BRAID;
 							break;
 						case 0x04:
-							NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_HAIR_TYPE hair type 04 unimplemented! (level %u)", i);
+							NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_HAIR_TYPE hair type 04 unimplemented! (level %u)", cur_level_idx);
 							break;
 						case 0xffff:
 							break;
@@ -1279,16 +1306,16 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_KEEP_DEAD_ENEMIES type unimplemented! (level %u)", current_level);
 					}
 
-					int32_t i = 0;
-					int32_t last = MOD_LEVEL_COUNT;
+					int32_t cur_level_idx = 0;
+					int32_t last_level_idx = MOD_LEVEL_COUNT;
 
 					if (current_level != 0) {
-						i = current_level;
-						last = current_level + 1;
+						cur_level_idx = current_level;
+						last_level_idx = current_level + 1;
 					}
 
-					for (; i < last; i++) {
-						get_game_mod_level_creature_info(i)->fade_dead_enemies = fade_dead_enemies;
+					for (; cur_level_idx < last_level_idx; cur_level_idx++) {
+						get_game_mod_level_creature_info(cur_level_idx)->fade_dead_enemies = fade_dead_enemies;
 					}
 					break;
 				}
@@ -1305,16 +1332,16 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 						NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_SET_OLD_CD_TRIGGER type unimplemented! (level %u)", current_level);
 					}
 
-					int32_t i = 0;
-					int32_t last = MOD_LEVEL_COUNT;
+					int32_t cur_level_idx = 0;
+					int32_t last_level_idx = MOD_LEVEL_COUNT;
 
 					if (current_level != 0) {
-						i = current_level;
-						last = current_level + 1;
+						cur_level_idx = current_level;
+						last_level_idx = current_level + 1;
 					}
 
-					for (; i < last; i++) {
-						get_game_mod_level_audio_info(i)->old_cd_trigger_system = old_cd_trigger;
+					for (; cur_level_idx < last_level_idx; cur_level_idx++) {
+						get_game_mod_level_audio_info(cur_level_idx)->old_cd_trigger_system = old_cd_trigger;
 					}
 					break;
 				}
@@ -1377,46 +1404,46 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 					int16_t height_look_cam = NG_READ_16(gfScriptFile, offset);
 					int16_t speed_camera = NG_READ_16(gfScriptFile, offset);
 
-					int32_t i = 0;
-					int32_t last = MOD_LEVEL_COUNT;
+					int32_t cur_level_idx = 0;
+					int32_t last_level_idx = MOD_LEVEL_COUNT;
 
 					if (current_level != 0) {
-						i = current_level;
-						last = current_level + 1;
+						cur_level_idx = current_level;
+						last_level_idx = current_level + 1;
 					}
 
-					for (; i < last; i++) {
+					for (; cur_level_idx < last_level_idx; cur_level_idx++) {
 						if (fcam_properties != -1) {
 							if (fcam_properties & 0x01) {
-								get_game_mod_level_camera_info(i)->disable_battle_camera = true;
+								get_game_mod_level_camera_info(cur_level_idx)->disable_battle_camera = true;
 							}
 							if (fcam_properties & ~0x01) {
 								NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: CUST_CAMERA unsupported FCAM_ property! (level %u)", current_level);
 							}
 						}
 						if (distance_chase_cam != -1) {
-							get_game_mod_level_camera_info(i)->chase_camera_distance = distance_chase_cam;
+							get_game_mod_level_camera_info(cur_level_idx)->chase_camera_distance = distance_chase_cam;
 						}
 						if (v_orient_chase_cam != -1) {
-							get_game_mod_level_camera_info(i)->chase_camera_vertical_orientation = v_orient_chase_cam;
+							get_game_mod_level_camera_info(cur_level_idx)->chase_camera_vertical_orientation = v_orient_chase_cam;
 						}
 						if (h_orient_chase_cam != -1) {
 							NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "NGReadNGGameflowInfo: h_orient_chase_cam is not supported! (level %u)", current_level);
 						}
 						if (distance_combat_cam != -1) {
-							get_game_mod_level_camera_info(i)->combat_camera_distance = distance_combat_cam;
+							get_game_mod_level_camera_info(cur_level_idx)->combat_camera_distance = distance_combat_cam;
 						}
 						if (v_orient_combat_cam != -1) {
-							get_game_mod_level_camera_info(i)->combat_camera_vertical_orientation = v_orient_combat_cam;
+							get_game_mod_level_camera_info(cur_level_idx)->combat_camera_vertical_orientation = v_orient_combat_cam;
 						}
 						if (distance_look_cam != -1) {
-							get_game_mod_level_camera_info(i)->look_camera_distance = distance_look_cam;
+							get_game_mod_level_camera_info(cur_level_idx)->look_camera_distance = distance_look_cam;
 						}
 						if (height_look_cam != -1) {
-							get_game_mod_level_camera_info(i)->look_camera_height = height_look_cam;
+							get_game_mod_level_camera_info(cur_level_idx)->look_camera_height = height_look_cam;
 						}
 						if (speed_camera != -1) {
-							get_game_mod_level_camera_info(i)->camera_speed = speed_camera;
+							get_game_mod_level_camera_info(cur_level_idx)->camera_speed = speed_camera;
 						}
 					}
 
@@ -1477,16 +1504,16 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 					break;
 				}
 				case CUST_TR5_UNDERWATER_COLLISIONS: {
-					int32_t i = 0;
-					int32_t last = MOD_LEVEL_COUNT;
+					int32_t cur_level_idx = 0;
+					int32_t last_level_idx = MOD_LEVEL_COUNT;
 
 					if (current_level != 0) {
-						i = current_level;
-						last = current_level + 1;
+						cur_level_idx = current_level;
+						last_level_idx = current_level + 1;
 					}
 
-					for (; i < last; i++) {
-						get_game_mod_level_lara_info(i)->use_tr5_swimming_collision = true;
+					for (; cur_level_idx < last_level_idx; cur_level_idx++) {
+						get_game_mod_level_lara_info(cur_level_idx)->use_tr5_swimming_collision = true;
 					}
 					break;
 				}
@@ -1504,16 +1531,16 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 					uint8_t flare_light_b = NG_READ_16(gfScriptFile, offset);
 					uint8_t flare_light_intensity = NG_READ_16(gfScriptFile, offset);
 
-					int32_t i = 0;
-					int32_t last = MOD_LEVEL_COUNT;
+					int32_t cur_level_idx = 0;
+					int32_t last_level_idx = MOD_LEVEL_COUNT;
 
 					if (current_level != 0) {
-						i = current_level;
-						last = current_level + 1;
+						cur_level_idx = current_level;
+						last_level_idx = current_level + 1;
 					}
 
-					for (; i < last; i++) {
-						NGSetupFlareCustomization(i, flare_flags, flare_lifetime_in_seconds, flare_light_r, flare_light_g, flare_light_b, flare_light_intensity);
+					for (; cur_level_idx < last_level_idx; cur_level_idx++) {
+						NGSetupFlareCustomization(cur_level_idx, flare_flags, flare_lifetime_in_seconds, flare_light_r, flare_light_g, flare_light_b, flare_light_intensity);
 					}
 					break;
 				}
@@ -1595,8 +1622,8 @@ size_t NGReadLevelBlock(char* gfScriptFile, size_t offset, NG_LEVEL_RECORD_TABLE
 					}
 
 					if (current_level == 0) {
-						for (int32_t i = 0; i < MOD_LEVEL_COUNT; i++) {
-							NGSetupBugfixCustomization(i, (bug_fix_flags_upper << 8) | bug_fix_flags_lower);
+						for (int32_t cur_level_idx = 0; cur_level_idx < MOD_LEVEL_COUNT; cur_level_idx++) {
+							NGSetupBugfixCustomization(cur_level_idx, (bug_fix_flags_upper << 8) | bug_fix_flags_lower);
 						}
 					}
 					else {

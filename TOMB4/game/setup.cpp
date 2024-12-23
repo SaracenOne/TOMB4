@@ -2017,10 +2017,10 @@ void InitialiseObjects()
 	InitialiseHair();
 	InitialiseEffects();
 
-	for (int i = 0; i < 6; i++)
+	for (int i = 0; i < MAX_USED_SEQUENCES; i++)
 		SequenceUsed[i] = 0;
 
-	for (int i = 0; i < 8; i++)
+	for (int i = 0; i < MAX_LIBRARY_TABS; i++)
 		LibraryTab[i] = 0;
 
 	NumRPickups = 0;
