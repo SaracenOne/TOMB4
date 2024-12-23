@@ -14,6 +14,7 @@
 #include "../../specific/function_table.h"
 #include "trng_globaltrigger.h"
 #include "../../specific/audio.h"
+#include "../control.h"
 
 #define MAX_NG_SAVEGAME_BUFFER_SIZE 0x8000
 
@@ -78,8 +79,42 @@ void NGReadNGSavegameInfo() {
 					break;
 				}
 				case 0x8006: { // COORDINATES
-					uint32_t coordinate_count = NG_READ_16(ng_savegame_buffer, offset);
-					for (int32_t i = 0; i < coordinate_count; i++) {
+					moved_item_indicies_count = NG_READ_16(ng_savegame_buffer, offset);
+					if (moved_item_indicies_count >= NG_MAX_SAVED_COORDINATES) {
+						NGLog(NG_LOG_TYPE_ERROR, "Saved coordinate overflow.");
+					}
+
+					for (int32_t i = 0; i < moved_item_indicies_count; i++) {
+						moved_item_indicies[i] = NG_READ_16(ng_savegame_buffer, offset);
+					}
+
+					for (int32_t i = 0; i < moved_item_indicies_count; i++) {
+						uint16_t x_rot = NG_READ_16(ng_savegame_buffer, offset);
+						uint16_t y_rot = NG_READ_16(ng_savegame_buffer, offset);
+						uint16_t invisible_flag = NG_READ_16(ng_savegame_buffer, offset);
+
+						int32_t x_pos = NG_READ_32(ng_savegame_buffer, offset);
+						int32_t y_pos = NG_READ_32(ng_savegame_buffer, offset);
+						int32_t z_pos = NG_READ_32(ng_savegame_buffer, offset);
+						uint16_t room_number = NG_READ_16(ng_savegame_buffer, offset);
+
+						ITEM_INFO *item = T4PlusGetItemInfoForID(moved_item_indicies[i]);
+						if (item) {
+							item->pos.x_pos = x_pos;
+							item->pos.y_pos = y_pos;
+							item->pos.z_pos = z_pos;
+
+							item->pos.x_rot = x_rot;
+							item->pos.y_rot = y_rot;
+
+							if (invisible_flag) {
+								item->status |= 0x03;
+							} else {
+								item->status &= ~0x02;
+							}
+
+							UpdateItemRoom(moved_item_indicies[i], -256);
+						}
 					}
 					break;
 				}
@@ -195,8 +230,8 @@ void NGReadNGSavegameInfo() {
 
 					int16_t current_pushable_index = NG_READ_16(ng_savegame_buffer, offset);
 
-					int16_t par_bar_rounds = NG_READ_16(ng_savegame_buffer, offset);
-					int32_t par_bar_frames = NG_READ_32(ng_savegame_buffer, offset);
+					int16_t parallel_bar_rounds = NG_READ_16(ng_savegame_buffer, offset);
+					int32_t parallel_bar_frames = NG_READ_32(ng_savegame_buffer, offset);
 					int16_t test_pop_up_image = NG_READ_16(ng_savegame_buffer, offset);
 					int16_t pop_up_counter = NG_READ_16(ng_savegame_buffer, offset);
 					int16_t pop_up_image_index = NG_READ_16(ng_savegame_buffer, offset);
@@ -246,6 +281,9 @@ void NGReadNGSavegameInfo() {
 					uint16_t room_count = NG_READ_16(ng_savegame_buffer, offset);
 					for (int32_t i = 0; i < room_count; i++) {
 						uint16_t room_flags = NG_READ_16(ng_savegame_buffer, offset);
+						if (i < number_rooms) {
+							room[i].flags = room_flags;
+						}
 					}
 					break;
 				}

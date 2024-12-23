@@ -587,16 +587,22 @@ void NGLevelSetup() {
 		memset(&progressive_actions[i], 0, sizeof(NGProgressiveAction));
 	}
 
-	// Resumed TriggerGroups;
+	// Resumed TriggerGroups
 	resumed_trigger_group_count = 0;
 	for (int32_t i = 0; i < NG_MAX_PROGRESSIVE_ACTIONS; i++) {
 		resumed_trigger_groups[i] = -1;
 	}
 
-	// Performed TriggerGroups;
+	// Performed TriggerGroups
 	last_performed_trigger_group = -1;
 	for (int32_t i = 0; i < NG_MAX_PROGRESSIVE_ACTIONS; i++) {
 		performed_trigger_groups[i] = -1;
+	}
+
+	// Moved item indicies
+	moved_item_indicies_count = 0;
+	for (int32_t i = 0; i < NG_MAX_SAVED_COORDINATES; i++) {
+		moved_item_indicies[i] = -1;
 	}
 }
 
@@ -942,6 +948,20 @@ bool NGUsingLegacyNGTriggerBehaviour() {
 	return get_game_mod_global_info()->trng_legacy_ng_trigger_behaviour;
 }
 
-void NGAddItemMoved(int32_t item_id) {
+int32_t moved_item_indicies_count = 0;
+int16_t moved_item_indicies[NG_MAX_SAVED_COORDINATES];
 
+void NGAddItemMoved(int32_t item_id) {
+	for (int32_t i = 0; i < moved_item_indicies_count; i++) {
+		if (moved_item_indicies[i] == item_id) {
+			return;
+		}
+	}
+
+	moved_item_indicies[moved_item_indicies_count] = item_id;
+	if (moved_item_indicies_count < NG_MAX_SAVED_COORDINATES - 1) {
+		moved_item_indicies_count++;
+	} else {
+		NGLog(NG_LOG_TYPE_ERROR, "Moved item indicies overflow");
+	}
 }

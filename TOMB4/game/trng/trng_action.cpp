@@ -246,6 +246,8 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 			break;
 		}
 		case TURN_IMMEDIATELY_X_OF_DEGREES_CLOCKWISE: {
+			// Should we add NGAddItemMoved here?
+
 			ITEM_INFO *item = T4PlusGetItemInfoForID(item_id);
 			if (item && extra_timer < DEGREES_TABLE_COUNT) {
 				item->pos.y_rot += degrees_table[extra_timer];
@@ -253,6 +255,8 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 			break;
 		}
 		case TURN_IMMEDIATELY_X_OF_DEGREES_INVERSE_CLOCKWISE: {
+			// Should we add NGAddItemMoved here?
+
 			ITEM_INFO* item = T4PlusGetItemInfoForID(item_id);
 			if (item && extra_timer < DEGREES_TABLE_COUNT) {
 				item->pos.y_rot -= degrees_table[extra_timer];
@@ -269,6 +273,8 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 			if (item) {
 				effect_routines[extra_timer](item);
 			}
+
+			NGAddItemMoved(item_id);
 
 			if (flipeffect == -1) {
 				repeat_type = 1;
@@ -441,6 +447,9 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 		}
 		case MOVE_CONTINUOUSLY_FORWARD_BACKWARD_X_ANIMATING_FOR_CLICKS:
 			NGLog(NG_LOG_TYPE_POSSIBLE_INACCURACY, "NGAction: MOVE_CONTINUOUSLY_FORWARD_BACKWARD_X_ANIMATING_FOR_CLICKS may not be accurate.");
+			
+			NGAddItemMoved(item_id);
+			
 			if (!NGGetItemHorizontalMovementRemainingUnits(item_id)) {
 				ITEM_INFO *item = T4PlusGetItemInfoForID(item_id);
 				if (item) {
@@ -461,6 +470,8 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 				repeat_type = 0;
 			}
 
+			NGAddItemMoved(item_id);
+
 			if (!NGGetItemVerticalMovementRemainingUnits(item_id)) {
 				NGSetItemVerticalMovementRemainingUnits(item_id, (extra_timer + 1) * -CLICK_SIZE);
 				NGSetItemVerticalMovementRepeatUnits(item_id, 0);
@@ -477,6 +488,8 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 				repeat_type = 0;
 			}
 
+			NGAddItemMoved(item_id);
+
 			if (!NGGetItemVerticalMovementRemainingUnits(item_id)) {
 				NGSetItemVerticalMovementRemainingUnits(item_id, (extra_timer + 1) * CLICK_SIZE);
 				NGSetItemVerticalMovementRepeatUnits(item_id, 0);
@@ -492,6 +505,8 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 			if (!is_mod_trng_version_equal_or_greater_than_target(1, 3, 0, 0)) {
 				repeat_type = 0;
 			}
+
+			NGAddItemMoved(item_id);
 
 			if (!NGGetItemHorizontalMovementRemainingUnits(item_id)) {
 				NGSetItemHorizontalMovementAngle(item_id, (int16_t)0xC000);
@@ -510,6 +525,8 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 				repeat_type = 0;
 			}
 
+			NGAddItemMoved(item_id);
+
 			if (!NGGetItemHorizontalMovementRemainingUnits(item_id)) {
 				NGSetItemHorizontalMovementAngle(item_id, (int16_t)0x0000);
 				NGSetItemHorizontalMovementRemainingUnits(item_id, (extra_timer + 1) * CLICK_SIZE);
@@ -526,6 +543,8 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 			if (!is_mod_trng_version_equal_or_greater_than_target(1, 3, 0, 0)) {
 				repeat_type = 0;
 			}
+
+			NGAddItemMoved(item_id);
 
 			if (!NGGetItemHorizontalMovementRemainingUnits(item_id)) {
 				NGSetItemHorizontalMovementAngle(item_id, (int16_t)0x4000);
@@ -544,6 +563,8 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 				repeat_type = 0;
 			}
 
+			NGAddItemMoved(item_id);
+
 			if (!NGGetItemHorizontalMovementRemainingUnits(item_id)) {
 				NGSetItemHorizontalMovementAngle(item_id, (int16_t)0x8000);
 				NGSetItemHorizontalMovementRemainingUnits(item_id, (extra_timer + 1) * CLICK_SIZE);
@@ -557,6 +578,8 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 			}
 			break;
 		case MOVE_CONTINUOUSLY_UPSTAIRS_DOWNSTAIRS_X_ANIMATING_FOR_CLICKS:
+			NGAddItemMoved(item_id);
+
 			if (!NGGetItemVerticalMovementRemainingUnits(item_id)) {
 				NGSetItemVerticalMovementRemainingUnits(item_id, (extra_timer + 1) * -CLICK_SIZE);
 				NGSetItemVerticalMovementRepeatUnits(item_id, -((extra_timer + 1) * -CLICK_SIZE));
@@ -739,7 +762,7 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 			break;
 		}
 		case ENEMY_SAVE_THE_COORDINATES_AND_FACING_OF_X_MOVEABLE_IN_SAVEGAME: {
-			NGLog(NG_LOG_TYPE_UNIMPLEMENTED_FEATURE, "ENEMY_SAVE_THE_COORDINATES_AND_FACING_OF_X_MOVEABLE_IN_SAVEGAME unimplemented!");
+			NGAddItemMoved(item_id);
 			break;
 		}
 		case DISABLE_ITEM_COLLISION:
@@ -749,26 +772,32 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 			NGEnableItemCollision(item_id);
 			break;
 		case MOVE_ITEM_UP_BY_UNITS_X8: {
+			NGAddItemMoved(item_id);
 			NGMoveItemByUnits(item_id, NG_UP, 8 * ((extra_timer)+1));
 			break;
 		}
 		case MOVE_ITEM_DOWN_BY_UNITS_X8: {
+			NGAddItemMoved(item_id);
 			NGMoveItemByUnits(item_id, NG_DOWN, 8 * ((extra_timer)+1));
 			break;
 		}
 		case MOVE_ITEM_WEST_BY_UNITS_X8: {
+			NGAddItemMoved(item_id);
 			NGMoveItemByUnits(item_id, NG_WEST, 8 * ((extra_timer)+1));
 			break;
 		}
 		case MOVE_ITEM_NORTH_BY_UNITS_X8: {
+			NGAddItemMoved(item_id);
 			NGMoveItemByUnits(item_id, NG_NORTH, 8 * ((extra_timer)+1));
 			break;
 		}
 		case MOVE_ITEM_EAST_BY_UNITS_X8: {
+			NGAddItemMoved(item_id);
 			NGMoveItemByUnits(item_id, NG_EAST, 8 * ((extra_timer)+1));
 			break;
 		}
 		case MOVE_ITEM_SOUTH_BY_UNITS_X8: {
+			NGAddItemMoved(item_id);
 			NGMoveItemByUnits(item_id, NG_SOUTH, 8 * ((extra_timer)+1));
 			break;
 		}

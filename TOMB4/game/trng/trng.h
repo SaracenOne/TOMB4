@@ -227,4 +227,9 @@ extern bool stored_test_dummy_failed;
 extern int32_t NGCalculateTriggerTimer(int16_t *data, int32_t timer);
 extern bool NGUsingLegacyNGTriggerBehaviour();
 
+#define NG_MAX_SAVED_COORDINATES 1024
+
+extern int32_t moved_item_indicies_count;
+extern int16_t moved_item_indicies[NG_MAX_SAVED_COORDINATES];
+
 extern void NGAddItemMoved(int32_t item_id);
