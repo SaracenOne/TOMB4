@@ -550,7 +550,7 @@ void DoLevel(uchar Name, uchar Audio)
 
 	ClipRange = (float)environment_info->far_view;
 
-	if (CurrentAtmosphere != -1 && !IsUsingNewAudioSystem()) {
+	if (CurrentAtmosphere != -1 && IsUsingOldCDTriggerMode()) {
 		S_CDPlay(CurrentAtmosphere, 1);
 	}
 	IsAtmospherePlaying = true;

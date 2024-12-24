@@ -1181,7 +1181,7 @@ bool IsUsingNewAudioSystem() {
 	return false;
 }
 
-bool IsUsingOldTriggerMode() {
+bool IsUsingOldCDTriggerMode() {
 	return true;
 }
 
@@ -1451,7 +1451,6 @@ void S_CDPlay(long track, long mode) {
 	}
 }
 
-// TODO: restore should restore at the specific time of the original track
 void S_CDPlayExt(unsigned char track_id, unsigned char channel_id, bool looping, bool restore_old_track) {
 	if (IsUsingNewAudioSystem()) {
 		if (channels[channel_id].current_track != track_id || !looping) {
@@ -1587,7 +1586,7 @@ bool IsUsingNewAudioSystem() {
 	return new_audio_system;
 }
 
-bool IsUsingOldTriggerMode() {
+bool IsUsingOldCDTriggerMode() {
 	return old_cd_trigger_mode;
 }
 

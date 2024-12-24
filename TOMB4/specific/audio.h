@@ -33,7 +33,7 @@ void SetUsingNewAudioSystem(bool enabled);
 void SetUsingOldTriggerMode(bool enabled);
 
 bool IsUsingNewAudioSystem();
-bool IsUsingOldTriggerMode();
+bool IsUsingOldCDTriggerMode();
 
 #if !defined(MA_AUDIO_SAMPLES) || !defined(MA_AUDIO_ENGINE)
 extern HACMDRIVER hACMDriver;

@@ -25,6 +25,7 @@
 #include "../specific/dxsound.h"
 #include "../specific/drawbars.h"
 #include "trng/trng.h"
+#include "../specific/audio.h"
 
 #pragma warning(push)
 #pragma warning(disable : 4838)
@@ -3014,6 +3015,8 @@ long S_CallInventory2()
 			go_deselect = 0;
 			loading_or_saving = 0;
 		}
+
+		S_AudioUpdate();
 	}
 
 	InitialisePickUpDisplay();
