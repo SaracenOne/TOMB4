@@ -529,10 +529,11 @@ void ObjectObjects()
 	obj->save_flags = 1;
 
 	obj = &objects[WHITE_LIGHT];
-	if (game_mod_config.global_info.tomo_swap_whitelight_for_teleporter)
-		obj->control = ControlTeleporter;
+	if (game_mod_config.global_info.tomo_swap_whitelight_for_teleporter || get_game_mod_level_objects_info(gfCurrentLevel)->whitelight_teleport_ocb >= 0)
+		obj->control = ControlTeleporterLight;
 	else
 		obj->control = ControlElectricalLight;
+
 	obj->draw_routine = 0;
 	obj->using_drawanimating_item = 0;
 	obj->save_flags = 1;

@@ -238,6 +238,8 @@ struct MOD_LEVEL_OBJECTS_INFO {
 	int16_t falling_block_timer = 60;
 	int16_t falling_block_tremble = 1023;
 
+	int16_t whitelight_teleport_ocb = -1;
+
 	int16_t slot_override[NUMBER_OBJECTS];
 	MOD_LEVEL_OBJECT_CUSTOMIZATION object_customization[NUMBER_OBJECTS];
 };

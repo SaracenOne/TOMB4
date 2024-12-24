@@ -9,6 +9,8 @@
 #include "camera.h"
 #include "tomb4fx.h"
 #include "gameflow.h"
+#include "lara.h"
+#include "items.h"
 
 void ControlPulseLight(short item_number)
 {
