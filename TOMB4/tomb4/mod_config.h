@@ -405,7 +405,7 @@ struct MOD_LEVEL_LARA_INFO {
 	int32_t pigtail_right_z = -50;
 
 	int32_t crawlspace_jump_animation = 421;
-	int32_t crawlspace_jump_pit_deepness_threshold = 768;
+	int32_t crawlspace_jump_pit_deepness_threshold = (HALF_BLOCK_SIZE + CLICK_SIZE);
 
 	bool use_tr5_swimming_collision = false;
 	bool disable_hardcoded_breath_sound = false;
