@@ -343,13 +343,13 @@ long LaraTestClimb(long x, long y, long z, long xfront, long zfront, long item_h
 		return 0;
 
 	room_number = item_room;
-	floor = GetFloor(x, y - 128, z, &room_number);
+	floor = GetFloor(x, y - HALF_CLICK_SIZE, z, &room_number);
 	h = GetHeight(floor, x, y, z);
 
 	if (h == NO_HEIGHT)
 		return 0;
 
-	h -= 128 + y + item_height;
+	h -= HALF_CLICK_SIZE + y + item_height;
 
 	if (h < -70)
 		return 0;
@@ -505,7 +505,7 @@ long LaraTestClimbUpPos(ITEM_INFO* item, long front, long right, long* shift, lo
 
 	xfront = 0;
 	zfront = 0;
-	y = item->pos.y_pos - HALF_BLOCK_SIZE + CLICK_SIZE;
+	y = item->pos.y_pos - (HALF_BLOCK_SIZE + CLICK_SIZE);
 	angle = ushort(item->pos.y_rot + 0x2000) / 0x4000;
 
 	switch (angle)
@@ -558,7 +558,7 @@ long LaraTestClimbUpPos(ITEM_INFO* item, long front, long right, long* shift, lo
 	h -= y;
 	*ledge = h;
 
-	if (h > 128)
+	if (h > HALF_CLICK_SIZE)
 	{
 		c = GetCeiling(floor, x+xfront, y, z+zfront) - y;
 
