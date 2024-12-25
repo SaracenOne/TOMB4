@@ -565,7 +565,7 @@ long LaraTestClimbUpPos(ITEM_INFO* item, long front, long right, long* shift, lo
 		if (c >= HALF_BLOCK_SIZE)
 			return 1;
 
-		if (h - c > (HALF_BLOCK_SIZE + CLICK_SIZE))
+		if (h - c > ((HALF_BLOCK_SIZE + CLICK_SIZE) - 6))
 		{
 			*shift = h;
 			return -1;

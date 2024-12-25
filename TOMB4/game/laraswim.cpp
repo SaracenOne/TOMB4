@@ -465,7 +465,7 @@ void LaraSwimCollisionTR4(ITEM_INFO* item, COLL_INFO* coll)
 		lara.move_angle = item->pos.y_rot;
 
 	coll->facing = lara.move_angle;
-	y = (HALF_BLOCK_SIZE + CLICK_SIZE) * phd_sin(item->pos.x_rot) >> W2V_SHIFT;
+	y = ((HALF_BLOCK_SIZE + CLICK_SIZE) - 6) * phd_sin(item->pos.x_rot) >> W2V_SHIFT;
 	y = abs(y);
 
 	if (y < 200)
@@ -549,7 +549,7 @@ void LaraSwimCollisionTR5(ITEM_INFO* item, COLL_INFO* coll)
 		coll->facing = item->pos.y_rot;
 	}
 
-	height = (HALF_BLOCK_SIZE + CLICK_SIZE) * phd_sin(item->pos.x_rot) >> W2V_SHIFT;
+	height = ((HALF_BLOCK_SIZE + CLICK_SIZE) - 6) * phd_sin(item->pos.x_rot) >> W2V_SHIFT;
 
 	if (height < 0)
 		height = -height;

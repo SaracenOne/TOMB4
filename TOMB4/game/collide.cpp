@@ -986,7 +986,7 @@ bool ItemPushLara(ITEM_INFO* item, ITEM_INFO* l, COLL_INFO* coll, long spaz, lon
 	coll->bad_ceiling = 0;
 	facing = coll->facing;
 	coll->facing = (short)phd_atan(l->pos.z_pos - coll->old.z, l->pos.x_pos - coll->old.x);
-	GetCollisionInfo(coll, l->pos.x_pos, l->pos.y_pos, l->pos.z_pos, l->room_number, (HALF_BLOCK_SIZE + CLICK_SIZE));
+	GetCollisionInfo(coll, l->pos.x_pos, l->pos.y_pos, l->pos.z_pos, l->room_number, ((HALF_BLOCK_SIZE + CLICK_SIZE) - 6));
 	coll->facing = facing;
 
 	if (coll->coll_type == CT_NONE)
@@ -1102,7 +1102,7 @@ long ItemPushLaraStatic(ITEM_INFO* l, short* bounds, PHD_3DPOS* pos, COLL_INFO* 
 	coll->bad_ceiling = 0;
 	facing = coll->facing;
 	coll->facing = (short)phd_atan(l->pos.z_pos - coll->old.z, l->pos.x_pos - coll->old.x);
-	GetCollisionInfo(coll, l->pos.x_pos, l->pos.y_pos, l->pos.z_pos, l->room_number, (HALF_BLOCK_SIZE + CLICK_SIZE));
+	GetCollisionInfo(coll, l->pos.x_pos, l->pos.y_pos, l->pos.z_pos, l->room_number, ((HALF_BLOCK_SIZE + CLICK_SIZE) - 6));
 	coll->facing = facing;
 
 	if (coll->coll_type == CT_NONE)

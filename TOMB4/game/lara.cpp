@@ -804,7 +804,7 @@ short LaraFloorFront(ITEM_INFO* item, short ang, long dist)
 
 	room_num = item->room_number;
 	x = item->pos.x_pos + ((dist * phd_sin(ang)) >> W2V_SHIFT);
-	y = item->pos.y_pos - (HALF_BLOCK_SIZE + CLICK_SIZE);
+	y = item->pos.y_pos - (HALF_BLOCK_SIZE + CLICK_SIZE) - 6;
 	z = item->pos.z_pos + ((dist * phd_cos(ang)) >> W2V_SHIFT);
 	height = GetHeight(GetFloor(x, y, z, &room_num), x, y, z);
 
@@ -1616,7 +1616,7 @@ void lara_col_dash(ITEM_INFO* item, COLL_INFO* coll)
 void GetLaraCollisionInfo(ITEM_INFO* item, COLL_INFO* coll)
 {
 	coll->facing = lara.move_angle;
-	GetCollisionInfo(coll, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, HALF_BLOCK_SIZE + CLICK_SIZE);
+	GetCollisionInfo(coll, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, (HALF_BLOCK_SIZE + CLICK_SIZE) - 6);
 }
 
 void lara_as_dashdive(ITEM_INFO* item, COLL_INFO* coll)
@@ -3169,9 +3169,9 @@ void lara_col_walk(ITEM_INFO* item, COLL_INFO* coll)
 	if (LaraFallen(item, coll))
 		return;
 
-	if (coll->mid_floor > 128)
+	if (coll->mid_floor > HALF_CLICK_SIZE)
 	{
-		if (coll->front_floor == NO_HEIGHT || coll->front_floor <= 128)
+		if (coll->front_floor == NO_HEIGHT || coll->front_floor <= HALF_CLICK_SIZE)
 			coll->mid_floor = 0;
 		else
 		{
@@ -3681,17 +3681,17 @@ void lara_as_stop(ITEM_INFO* item, COLL_INFO* coll)
 		if (input & IN_LSTEP)
 		{
 			height = LaraFloorFront(item, item->pos.y_rot - 0x4000, 116);
-			ceiling = LaraCeilingFront(item, item->pos.y_rot - 0x4000, 116, (HALF_BLOCK_SIZE + CLICK_SIZE));
+			ceiling = LaraCeilingFront(item, item->pos.y_rot - 0x4000, 116, (HALF_BLOCK_SIZE + CLICK_SIZE) - 6);
 
-			if (height < HALF_CLICK_SIZE && height > -128 && height_type != BIG_SLOPE && ceiling <= 0)
+			if (height < HALF_CLICK_SIZE && height > -HALF_CLICK_SIZE && height_type != BIG_SLOPE && ceiling <= 0)
 				item->goal_anim_state = AS_STEPLEFT;
 		}
 		else if (input & IN_RSTEP)
 		{
 			height = LaraFloorFront(item, item->pos.y_rot + 0x4000, 116);
-			ceiling = LaraCeilingFront(item, item->pos.y_rot + 0x4000, 116, (HALF_BLOCK_SIZE + CLICK_SIZE));
+			ceiling = LaraCeilingFront(item, item->pos.y_rot + 0x4000, 116, (HALF_BLOCK_SIZE + CLICK_SIZE) - 6);
 
-			if (height < HALF_CLICK_SIZE && height > -128 && height_type != BIG_SLOPE && ceiling <= 0)
+			if (height < HALF_CLICK_SIZE && height > -HALF_CLICK_SIZE && height_type != BIG_SLOPE && ceiling <= 0)
 				item->goal_anim_state = AS_STEPRIGHT;
 		}
 		else if (input & IN_LEFT)
@@ -3744,7 +3744,7 @@ void lara_as_stop(ITEM_INFO* item, COLL_INFO* coll)
 		item->goal_anim_state = AS_COMPRESS;
 	else if (input & IN_FORWARD)
 	{
-		ceiling = LaraCeilingFront(item, item->pos.y_rot, 104, (HALF_BLOCK_SIZE + CLICK_SIZE));
+		ceiling = LaraCeilingFront(item, item->pos.y_rot, 104, (HALF_BLOCK_SIZE + CLICK_SIZE) - 6);
 		height = LaraFloorFront(item, item->pos.y_rot, 104);
 
 		if ((height_type == BIG_SLOPE || height_type == DIAGONAL) && height < 0 || ceiling > 0)
@@ -4317,7 +4317,7 @@ void lara_col_poledown(ITEM_INFO* item, COLL_INFO* coll)
 	{
 		room_number = item->room_number;
 		item->floor = GetHeight(GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number),
-			item->pos.x_pos, item->pos.y_pos - (HALF_BLOCK_SIZE + CLICK_SIZE), item->pos.z_pos);
+			item->pos.x_pos, item->pos.y_pos - (HALF_BLOCK_SIZE + CLICK_SIZE) - 6, item->pos.z_pos);
 		item->goal_anim_state = AS_POLESTAT;
 		item->item_flags[2] = 0;
 	}
@@ -4458,7 +4458,7 @@ void lara_col_ropefwd(ITEM_INFO* item, COLL_INFO* coll)
 			JumpOffRope(item);
 	}
 	else if (item->frame_number == anims[ANIM_ROPEKICK].frame_base + 15)
-		ApplyVelocityToRope(lara.RopeSegment, item->pos.y_rot, 128);
+		ApplyVelocityToRope(lara.RopeSegment, item->pos.y_rot, HALF_CLICK_SIZE);
 }
 
 void lara_as_climbrope(ITEM_INFO* item, COLL_INFO* coll)
@@ -4927,7 +4927,7 @@ long LaraTestHangOnClimbWall(ITEM_INFO* item, COLL_INFO* coll)
 	if (lara.move_angle != item->pos.y_rot)
 	{
 		r = LaraCeilingFront(item, item->pos.y_rot, 0, 0);
-		l = LaraCeilingFront(item, lara.move_angle, 128, 0);
+		l = LaraCeilingFront(item, lara.move_angle, HALF_CLICK_SIZE, 0);
 
 		if (abs(r - l) > 60)
 			return 0;
@@ -5296,7 +5296,7 @@ void JumpOffRope(ITEM_INFO* item)
 		if (item->pos.x_rot >= 0)
 		{
 			item->fallspeed = -112;
-			item->speed = item->pos.x_rot / 128;
+			item->speed = item->pos.x_rot / HALF_CLICK_SIZE;
 		}
 		else
 		{

@@ -340,7 +340,7 @@ static long CanGetOff(short num)	//always called with num = 1
 
 	c = GetCeiling(floor, x, y, z);
 
-	if (c - item->pos.y_pos > -(HALF_BLOCK_SIZE + CLICK_SIZE) || h - c < (HALF_BLOCK_SIZE + CLICK_SIZE))
+	if (c - item->pos.y_pos > -((HALF_BLOCK_SIZE + CLICK_SIZE) - 6) || h - c < ((HALF_BLOCK_SIZE + CLICK_SIZE) - 6))
 		return 0;
 
 	x = item->pos.x_pos + (HALF_CLICK_SIZE * phd_sin(yrot) >> W2V_SHIFT);
