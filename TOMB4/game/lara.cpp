@@ -1145,7 +1145,7 @@ void lara_col_all4s(ITEM_INFO* item, COLL_INFO* coll)
 						item->goal_anim_state = AS_CRAWLBACK;
 					else
 					{
-						if (input & IN_ACTION && height > 768 && !slope)
+						if (input & IN_ACTION && height > (HALF_BLOCK_SIZE + CLICK_SIZE) && !slope)
 						{
 							x = item->pos.x_pos;
 							z = item->pos.z_pos;
@@ -5047,7 +5047,7 @@ long LaraHangRightCornerTest(ITEM_INFO* item, COLL_INFO* coll)
 				{
 					front = LaraFloorFront(item, item->pos.y_rot, 116);
 
-					if (abs(coll->front_floor - front) > 60 || front < -768)
+					if (abs(coll->front_floor - front) > 60 || front < -(HALF_BLOCK_SIZE + CLICK_SIZE))
 						flag = 0;
 				}
 			}
@@ -5200,7 +5200,7 @@ long LaraHangLeftCornerTest(ITEM_INFO* item, COLL_INFO* coll)
 				{
 					front = LaraFloorFront(item, item->pos.y_rot, 116);
 
-					if (abs(coll->front_floor - front) > 60 || front < -768)
+					if (abs(coll->front_floor - front) > 60 || front < -(HALF_BLOCK_SIZE + CLICK_SIZE))
 						flag = 0;
 				}
 			}
@@ -5599,7 +5599,7 @@ long TestLaraVault(ITEM_INFO* item, COLL_INFO* coll)
 
 	if (hdif >= -(HALF_BLOCK_SIZE + HALF_CLICK_SIZE) && hdif <= -(CLICK_SIZE + HALF_CLICK_SIZE))
 	{
-		if (!slope && hdif - coll->front_ceiling >= 0 && coll->left_floor2 - coll->left_ceiling2 >= 0 && coll->right_floor2 - coll->right_ceiling2 >= 0 && !(T4PlusIsRoomSwamp(&room[item->room_number]) && lara.water_surface_dist < -768))
+		if (!slope && hdif - coll->front_ceiling >= 0 && coll->left_floor2 - coll->left_ceiling2 >= 0 && coll->right_floor2 - coll->right_ceiling2 >= 0 && !(T4PlusIsRoomSwamp(&room[item->room_number]) && lara.water_surface_dist < -(HALF_BLOCK_SIZE + CLICK_SIZE)))
 		{
 			item->anim_number = ANIM_VAULT2;
 			item->frame_number = anims[ANIM_VAULT2].frame_base;
@@ -5613,7 +5613,7 @@ long TestLaraVault(ITEM_INFO* item, COLL_INFO* coll)
 	}
 	else if (hdif >= -((CLICK_SIZE * 3) + HALF_CLICK_SIZE) && hdif <= -(HALF_BLOCK_SIZE + HALF_CLICK_SIZE))
 	{
-		if (!slope && hdif - coll->front_ceiling >= 0 && coll->left_floor2 - coll->left_ceiling2 >= 0 && coll->right_floor2 - coll->right_ceiling2 >= 0 && !(T4PlusIsRoomSwamp(&room[item->room_number]) && lara.water_surface_dist < -768))
+		if (!slope && hdif - coll->front_ceiling >= 0 && coll->left_floor2 - coll->left_ceiling2 >= 0 && coll->right_floor2 - coll->right_ceiling2 >= 0 && !(T4PlusIsRoomSwamp(&room[item->room_number]) && lara.water_surface_dist < -(HALF_BLOCK_SIZE + CLICK_SIZE)))
 		{
 			item->anim_number = ANIM_VAULT3;
 			item->frame_number = anims[ANIM_VAULT3].frame_base;

@@ -687,7 +687,7 @@ void TriggerUnderwaterExplosion(ITEM_INFO* item, long vehicle)
 				splash_setup.InnerYVel = short((-HALF_BLOCK_SIZE - wh) << 3);
 				splash_setup.pad1 = short((wh >> 6) + 24);
 				splash_setup.MiddleRad = short((wh >> 6) + 24);
-				splash_setup.MiddleRadVel = short((-768 - wh) << 2);
+				splash_setup.MiddleRadVel = short((-(HALF_BLOCK_SIZE + CLICK_SIZE) - wh) << 2);
 				splash_setup.MiddleYVel = short((wh >> 6) + 32);
 				splash_setup.pad2 = short((wh >> 6) + 32);
 				SetupSplash(&splash_setup);

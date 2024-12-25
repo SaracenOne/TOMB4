@@ -168,7 +168,7 @@ void ControlElementPuzzle(short item_number)
 		}
 
 		AddFire(item->pos.x_pos, item->pos.y_pos - 620, item->pos.z_pos, 1, item->room_number, fade);
-		TriggerDynamic(item->pos.x_pos, item->pos.y_pos - 768, item->pos.z_pos, 12, r, g, 0);
+		TriggerDynamic(item->pos.x_pos, item->pos.y_pos - (HALF_BLOCK_SIZE + CLICK_SIZE), item->pos.z_pos, 12, r, g, 0);
 	}
 	else if (item->trigger_flags == 3)
 	{

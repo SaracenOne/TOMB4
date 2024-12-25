@@ -66,7 +66,7 @@ long TargetVisible(ITEM_INFO* item, AI_INFO* info)
 	bounds = GetBestFrame(enemy);
 
 	start.x = item->pos.x_pos;
-	start.y = item->pos.y_pos - 768;
+	start.y = item->pos.y_pos - (HALF_BLOCK_SIZE + CLICK_SIZE);
 	start.z = item->pos.z_pos;
 	start.room_number = item->room_number;
 

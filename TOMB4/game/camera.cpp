@@ -187,7 +187,7 @@ void MoveCamera(GAME_VECTOR* ideal, long speed)
 		dy = abs(camera.pos.y - ideal->y);
 		dz = abs(camera.pos.z - ideal->z);
 
-		if (dx < 768 && dy < 768 && dz < 768)
+		if (dx < (HALF_BLOCK_SIZE + CLICK_SIZE) && dy < (HALF_BLOCK_SIZE + CLICK_SIZE) && dz < (HALF_BLOCK_SIZE + CLICK_SIZE))
 		{
 			temp1.x = camera.pos.x;
 			temp1.y = camera.pos.y;

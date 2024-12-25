@@ -996,14 +996,14 @@ static long UserControl(ITEM_INFO* item, long height, long* pitch)
 		{
 			if (jeep->velocity > 0)
 			{
-				jeep->velocity -= 768;
+				jeep->velocity -= (HALF_BLOCK_SIZE + CLICK_SIZE);
 
 				if (jeep->velocity < 0)
 					jeep->velocity = 0;
 			}
 			else if (jeep->velocity < 0)
 			{
-				jeep->velocity += 768;
+				jeep->velocity += (HALF_BLOCK_SIZE + CLICK_SIZE);
 
 				if (jeep->velocity > 0)
 					jeep->velocity = 0;

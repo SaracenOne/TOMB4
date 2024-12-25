@@ -138,9 +138,9 @@ void CrocgodControl(short item_number)
 		else if (crocgod->hurt_by_lara)
 			crocgod->enemy = lara_item;
 
-		item->pos.y_pos -= 768;
+		item->pos.y_pos -= (HALF_BLOCK_SIZE + CLICK_SIZE);
 		CreatureAIInfo(item, &info);
-		item->pos.y_pos += 768;
+		item->pos.y_pos += (HALF_BLOCK_SIZE + CLICK_SIZE);
 
 		if (crocgod->enemy != lara_item)
 			phd_atan(lara_item->pos.z_pos - item->pos.z_pos, lara_item->pos.x_pos - item->pos.x_pos);

@@ -562,7 +562,7 @@ void MovableBlock(short item_number) {
 		if (frame == anims[lara_item->anim_number].frame_end) {
 			if (item->gravity_status == 0 || !global_info->trng_pushables_have_gravity) {
 				int16_t room_number = item->room_number;
-				GetHeight(GetFloor(item->pos.x_pos, item->pos.y_pos - 256, item->pos.z_pos, &room_number),
+				GetHeight(GetFloor(item->pos.x_pos, item->pos.y_pos - CLICK_SIZE, item->pos.z_pos, &room_number),
 					item->pos.x_pos, item->pos.y_pos - 256, item->pos.z_pos);
 				if (item->room_number != room_number)
 					ItemNewRoom(item_number, room_number);

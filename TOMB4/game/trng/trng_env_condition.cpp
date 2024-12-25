@@ -186,11 +186,11 @@ TestEnvConditionTripletResult TestEnvConditionTriplet(NG_MULTI_ENV_TRIPLET* trip
 		case ENV_NO_BLOCK_AT_RIGHT:
 		case ENV_NO_BLOCK_AT_LEFT:
 		case ENV_NO_BLOCK_BACK: {
-			int16_t distance_test = 768;
+			int16_t distance_test = (HALF_BLOCK_SIZE + CLICK_SIZE);
 			if (triplet->distance_for_env != -1) {
 				distance_test = triplet->distance_for_env;
 			} else {
-				distance_test = 768;
+				distance_test = (HALF_BLOCK_SIZE + CLICK_SIZE);
 			}
 
 			int16_t room_num = lara_item->room_number;
@@ -242,7 +242,7 @@ TestEnvConditionTripletResult TestEnvConditionTriplet(NG_MULTI_ENV_TRIPLET* trip
 		case ENV_HOLE_FLOOR_AT_RIGHT:
 		case ENV_HOLE_FLOOR_AT_LEFT:
 		case ENV_HOLE_FLOOR_BACK: {
-			short distance_test = 768;
+			short distance_test = (HALF_BLOCK_SIZE + CLICK_SIZE);
 			if (triplet->distance_for_env != -1) {
 				distance_test = triplet->distance_for_env;
 			}

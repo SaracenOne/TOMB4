@@ -85,7 +85,7 @@ void InitialiseAutogun(short item_number)
 	item = &items[item_number];
 	InitialiseCreature(item_number);
 	item->item_flags[0] = 0;
-	item->item_flags[1] = 768;
+	item->item_flags[1] = (HALF_BLOCK_SIZE + CLICK_SIZE);
 	item->item_flags[2] = 0;
 }
 
@@ -119,10 +119,10 @@ void AutogunControl(short item_number)
 		item->status = ITEM_DEACTIVATED;
 		item->flags |= IFL_INVISIBLE;
 		untrigger_item_in_room(item->room_number, SMOKE_EMITTER_BLACK);
-		TriggerExplosionSparks(item->pos.x_pos, item->pos.y_pos - 768, item->pos.z_pos, 3, -2, 0, item->room_number);
+		TriggerExplosionSparks(item->pos.x_pos, item->pos.y_pos - (HALF_BLOCK_SIZE + CLICK_SIZE), item->pos.z_pos, 3, -2, 0, item->room_number);
 
 		for (int i = 0; i < 2; i++)
-			TriggerExplosionSparks(item->pos.x_pos, item->pos.y_pos - 768, item->pos.z_pos, 3, -1, 0, item->room_number);
+			TriggerExplosionSparks(item->pos.x_pos, item->pos.y_pos - (HALF_BLOCK_SIZE + CLICK_SIZE), item->pos.z_pos, 3, -1, 0, item->room_number);
 
 		SoundEffect(SFX_EXPLOSION1, &item->pos, 0x1800000 | SFX_SETPITCH);
 		SoundEffect(SFX_EXPLOSION2, &item->pos, SFX_DEFAULT);

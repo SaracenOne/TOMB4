@@ -113,7 +113,7 @@ void EnemyJeepControl(short item_number)
 	floor = GetFloor(x, y, z, &room_number);
 	h1 = GetHeight(floor, x, y, z);
 	
-	if (abs(y - h1) > 768)
+	if (abs(y - h1) > (HALF_BLOCK_SIZE + CLICK_SIZE))
 	{
 		item->pos.x_pos += Zoffset >> 6;
 		item->pos.z_pos -= Xoffset >> 6;
@@ -127,7 +127,7 @@ void EnemyJeepControl(short item_number)
 	floor = GetFloor(x, y, z, &room_number);
 	h2 = GetHeight(floor, x, y, z);
 
-	if (abs(y - h2) > 768)
+	if (abs(y - h2) > (HALF_BLOCK_SIZE + CLICK_SIZE))
 	{
 		item->pos.x_pos -= Zoffset >> 6;
 		item->pos.z_pos += Xoffset >> 6;
@@ -144,7 +144,7 @@ void EnemyJeepControl(short item_number)
 	h1 = GetHeight(floor, x, y, z);
 	_h1 = h1;
 
-	if (abs(y - h1) > 768)
+	if (abs(y - h1) > (HALF_BLOCK_SIZE + CLICK_SIZE))
 		h1 = y;
 
 	x = item->pos.x_pos - Xoffset;
@@ -154,7 +154,7 @@ void EnemyJeepControl(short item_number)
 	h2 = GetHeight(floor, x, y, z);
 	_h2 = h2;
 
-	if (abs(y - h2) > 768)
+	if (abs(y - h2) > (HALF_BLOCK_SIZE + CLICK_SIZE))
 		h2 = y;
 
 	xrot = (short)phd_atan(1364, h2 - h1);
