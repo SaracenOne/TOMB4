@@ -25,6 +25,515 @@ bool NGIsNGSavegame() {
 	return ng_savegame_buffer_size > 0;
 }
 
+uint32_t NGWriteOldFlipeffects(uint32_t position) {
+	uint32_t old_flipeffect_size = 0;
+	old_flipeffect_size += sizeof(uint16_t);
+	old_flipeffect_size += sizeof(uint16_t);
+	old_flipeffect_size += sizeof(uint16_t);
+	for (int32_t i = 0; i < old_flipeffect_count; i++) {
+		if (i < NG_MAX_OLD_FLIPEFFECTS) {
+			old_flipeffect_size += sizeof(uint16_t);
+			old_flipeffect_size += sizeof(uint32_t);
+		} else {
+			NGLog(NG_LOG_TYPE_ERROR, "Old flipeffect overflow!");
+		}
+	}
+
+	old_flipeffect_size /= sizeof(uint16_t);
+
+	NG_WRITE_16(ng_savegame_buffer, position, old_flipeffect_size);
+	NG_WRITE_16(ng_savegame_buffer, position, 0x8003);
+
+	NG_WRITE_16(ng_savegame_buffer, position, old_flipeffect_count);
+	for (int32_t i = 0; i < old_flipeffect_count; i++) {
+		if (i < NG_MAX_OLD_FLIPEFFECTS) {
+			NG_WRITE_16(ng_savegame_buffer, position, old_flipeffects[i].flags);
+			NG_WRITE_32(ng_savegame_buffer, position, old_flipeffects[i].offset_floor_data);
+		} else {
+			NGLog(NG_LOG_TYPE_ERROR, "Old flipeffect overflow!");
+		}
+	}
+
+	return position;
+}
+
+uint32_t NGWriteOldFMV(uint32_t position) {
+	uint32_t old_fmv_size = 0;
+	old_fmv_size += sizeof(uint16_t);
+	old_fmv_size += sizeof(uint16_t);
+	for (int32_t i = 0; i < old_fmv_size; i++) {
+		if (i < 128) {
+			old_fmv_size += sizeof(uint8_t);
+		}
+		else {
+			NGLog(NG_LOG_TYPE_ERROR, "Old fmv overflow!");
+		}
+	}
+
+	old_fmv_size /= sizeof(uint16_t);
+
+	NG_WRITE_16(ng_savegame_buffer, position, old_fmv_size);
+	NG_WRITE_16(ng_savegame_buffer, position, 0x8004);
+
+	for (int32_t i = 0; i < 128; i++) {
+		NG_WRITE_8(ng_savegame_buffer, position, 0);
+	}
+
+	return position;
+}
+
+uint32_t NGWriteCoordinates(uint32_t position) {
+	if (moved_item_indicies_count > 0) {
+		uint32_t coordinates_size = 0;
+		coordinates_size += sizeof(uint16_t);
+		coordinates_size += sizeof(uint16_t);
+		coordinates_size += sizeof(uint16_t);
+		for (int32_t i = 0; i < moved_item_indicies_count; i++) {
+			coordinates_size += sizeof(uint16_t);
+		}
+
+		for (int32_t i = 0; i < moved_item_indicies_count; i++) {
+			coordinates_size += sizeof(uint16_t);
+			coordinates_size += sizeof(uint16_t);
+			coordinates_size += sizeof(uint16_t);
+
+			coordinates_size += sizeof(uint32_t);
+			coordinates_size += sizeof(uint32_t);
+			coordinates_size += sizeof(uint32_t);
+			coordinates_size += sizeof(uint16_t);
+		}
+
+		coordinates_size /= sizeof(uint16_t);
+
+		NG_WRITE_16(ng_savegame_buffer, position, coordinates_size);
+		NG_WRITE_16(ng_savegame_buffer, position, 0x8006);
+
+		NG_WRITE_16(ng_savegame_buffer, position, moved_item_indicies_count);
+		for (int32_t i = 0; i < moved_item_indicies_count; i++) {
+			NG_WRITE_16(ng_savegame_buffer, position, moved_item_indicies[i]);
+		}
+
+		for (int32_t i = 0; i < moved_item_indicies_count; i++) {
+			ITEM_INFO* item = T4PlusGetItemInfoForID(moved_item_indicies[i]);
+			if (item) {
+				NG_WRITE_16(ng_savegame_buffer, position, item->pos.x_rot);
+				NG_WRITE_16(ng_savegame_buffer, position, item->pos.y_rot);
+				if (item->status & 0x02) {
+					NG_WRITE_16(ng_savegame_buffer, position, 1);
+				}
+				else {
+					NG_WRITE_16(ng_savegame_buffer, position, 0);
+				}
+				NG_WRITE_32(ng_savegame_buffer, position, item->pos.x_pos);
+				NG_WRITE_32(ng_savegame_buffer, position, item->pos.y_pos);
+				NG_WRITE_32(ng_savegame_buffer, position, item->pos.z_pos);
+				NG_WRITE_16(ng_savegame_buffer, position, item->room_number);
+			}
+			else {
+				NG_WRITE_16(ng_savegame_buffer, position, 0);
+				NG_WRITE_16(ng_savegame_buffer, position, 0);
+				NG_WRITE_16(ng_savegame_buffer, position, 0);
+				NG_WRITE_32(ng_savegame_buffer, position, 0);
+				NG_WRITE_32(ng_savegame_buffer, position, 0);
+				NG_WRITE_32(ng_savegame_buffer, position, 0);
+				NG_WRITE_16(ng_savegame_buffer, position, 0);
+			}
+		}
+	}
+	return position;
+}
+
+uint32_t NGWriteProgressiveActions(uint32_t position) {
+	uint32_t old_progressive_actions_size = 0;
+	old_progressive_actions_size += sizeof(uint16_t);
+	old_progressive_actions_size += sizeof(uint16_t);
+	old_progressive_actions_size += sizeof(uint16_t);
+	for (int32_t i = 0; i < old_action_count; i++) {
+		if (i < NG_MAX_PROGRESSIVE_ACTIONS) {
+			old_progressive_actions_size += sizeof(uint16_t);
+			old_progressive_actions_size += sizeof(uint16_t);
+			old_progressive_actions_size += sizeof(uint16_t);
+			old_progressive_actions_size += sizeof(uint16_t);
+			for (int32_t j = 0; j < NG_PROGRESSIVE_ACTION_ARGUMENT_2_COUNT; j++) {
+				old_progressive_actions_size += sizeof(uint32_t);
+			}
+		} else {
+			NGLog(NG_LOG_TYPE_ERROR, "Progressive action overflow!");
+		}
+	}
+
+	old_progressive_actions_size /= sizeof(uint16_t);
+
+	NG_WRITE_16(ng_savegame_buffer, position, old_progressive_actions_size);
+	NG_WRITE_16(ng_savegame_buffer, position, 0x8007);
+
+	NG_WRITE_16(ng_savegame_buffer, position, progressive_action_count);
+	for (int32_t i = 0; i < progressive_action_count; i++) {
+		if (i < NG_MAX_PROGRESSIVE_ACTIONS) {
+			NG_WRITE_16(ng_savegame_buffer, position, progressive_actions[i].type);
+			NG_WRITE_16(ng_savegame_buffer, position, progressive_actions[i].item_index);
+			NG_WRITE_16(ng_savegame_buffer, position, progressive_actions[i].duration);
+			NG_WRITE_16(ng_savegame_buffer, position, progressive_actions[i].argument1_u16);
+			for (int32_t j = 0; j < NG_PROGRESSIVE_ACTION_ARGUMENT_2_COUNT; j++) {
+				NG_WRITE_32(ng_savegame_buffer, position, progressive_actions[i].argument2_u32[j]);
+			}
+		} else {
+			NGLog(NG_LOG_TYPE_ERROR, "Progressive action overflow!");
+		}
+	}
+
+	return position;
+}
+
+uint32_t NGWriteOldActions(uint32_t position) {
+	uint32_t old_action_size = 0;
+	old_action_size += sizeof(uint16_t);
+	old_action_size += sizeof(uint16_t);
+	old_action_size += sizeof(uint16_t);
+	for (int32_t i = 0; i < old_action_count; i++) {
+		if (i < NG_MAX_OLD_ACTIONS) {
+			old_action_size += sizeof(uint16_t);
+			old_action_size += sizeof(uint32_t);
+		}
+		else {
+			NGLog(NG_LOG_TYPE_ERROR, "Old action overflow!");
+		}
+	}
+
+	old_action_size /= sizeof(uint16_t);
+
+	NG_WRITE_16(ng_savegame_buffer, position, old_action_size);
+	NG_WRITE_16(ng_savegame_buffer, position, 0x8008);
+
+	NG_WRITE_16(ng_savegame_buffer, position, old_action_count);
+	for (int32_t i = 0; i < old_action_count; i++) {
+		if (i < NG_MAX_OLD_ACTIONS) {
+			NG_WRITE_16(ng_savegame_buffer, position, old_actions[i].flags);
+			NG_WRITE_32(ng_savegame_buffer, position, old_actions[i].offset_floor_data);
+		} else {
+			NGLog(NG_LOG_TYPE_ERROR, "Old action overflow!");
+		}
+	}
+
+	return position;
+}
+
+uint32_t NGWriteOldConditions(uint32_t position) {
+	uint32_t old_condition_size = 0;
+	old_condition_size += sizeof(uint16_t);
+	old_condition_size += sizeof(uint16_t);
+	old_condition_size += sizeof(uint16_t);
+	for (int32_t i = 0; i < old_condition_count; i++) {
+		if (i < NG_MAX_OLD_CONDITIONS) {
+			old_condition_size += sizeof(uint16_t);
+			old_condition_size += sizeof(uint32_t);
+		}
+		else {
+			NGLog(NG_LOG_TYPE_ERROR, "Old condition overflow!");
+		}
+	}
+
+	old_condition_size /= sizeof(uint16_t);
+
+	NG_WRITE_16(ng_savegame_buffer, position, old_condition_size);
+	NG_WRITE_16(ng_savegame_buffer, position, 0x800E);
+
+	NG_WRITE_16(ng_savegame_buffer, position, old_condition_count);
+	for (int32_t i = 0; i < old_condition_count; i++) {
+		if (i < NG_MAX_OLD_CONDITIONS) {
+			NG_WRITE_16(ng_savegame_buffer, position, old_conditions[i].flags);
+			NG_WRITE_32(ng_savegame_buffer, position, old_conditions[i].offset_floor_data);
+		} else {
+			NGLog(NG_LOG_TYPE_ERROR, "Old condition overflow!");
+		}
+	}
+
+	return position;
+}
+
+uint32_t NGWriteVariableData(uint32_t position) {
+	uint32_t variable_data_size = 248;
+
+	int start_pos = position;
+
+	NG_WRITE_16(ng_savegame_buffer, position, variable_data_size);
+	NG_WRITE_16(ng_savegame_buffer, position, 0x800F);
+
+	NG_WRITE_16(ng_savegame_buffer, position, 0); // TODO: Cold intensity
+	NG_WRITE_16(ng_savegame_buffer, position, 0); // TODO: Cold flags
+	NG_WRITE_16(ng_savegame_buffer, position, 0); // TODO: Damage intensity
+	NG_WRITE_16(ng_savegame_buffer, position, 0); // TODO: Damage flags
+	NG_WRITE_32(ng_savegame_buffer, position, 0); // TODO: Stop keyboard mask
+	NG_WRITE_32(ng_savegame_buffer, position, 0); // TODO: Status NG
+	NG_WRITE_16(ng_savegame_buffer, position, 0); // TODO: Disable feature flags
+	NG_WRITE_32(ng_savegame_buffer, position, 0); // TODO: Counter game
+	NG_WRITE_16(ng_savegame_buffer, position, 0); // TODO: Level now flags
+
+	int32_t layer1_color = (gfLayer1Col.a << 24) | (gfLayer1Col.r << 16) | (gfLayer1Col.g << 8) | (gfLayer1Col.b);
+	NG_WRITE_32(ng_savegame_buffer, position, layer1_color);
+
+	int32_t layer2_color = (gfLayer2Col.a << 24) | (gfLayer2Col.r << 16) | (gfLayer2Col.g << 8) | (gfLayer2Col.b);
+	NG_WRITE_32(ng_savegame_buffer, position, layer2_color);
+
+	NG_WRITE_8(ng_savegame_buffer, position, gfLayer1Vel);
+	NG_WRITE_8(ng_savegame_buffer, position, gfLayer2Vel);
+
+	if (S_CDGetChannelIsActive(1) && S_CDGetChannelIsLooping(1)) {
+		NG_WRITE_16(ng_savegame_buffer, position, S_CDGetTrackID(1));
+	} else {
+		NG_WRITE_16(ng_savegame_buffer, position, -1);
+	}
+
+	NG_WRITE_16(ng_savegame_buffer, position, 0); // TODO: Level NG Flags
+
+	if (S_CDGetChannelIsActive(1) && !S_CDGetChannelIsLooping(1)) {
+		NG_WRITE_16(ng_savegame_buffer, position, S_CDGetTrackID(1));
+	} else {
+		NG_WRITE_16(ng_savegame_buffer, position, -1);
+	}
+
+	if (S_CDGetChannelIsActive(1) && S_CDGetChannelPosition(1)) {
+		NG_WRITE_32(ng_savegame_buffer, position, S_CDGetChannelPosition(1) * sizeof(int32_t));
+	} else {
+		NG_WRITE_32(ng_savegame_buffer, position, -1);
+	}
+
+
+	if (S_CDGetChannelIsActive(0) && S_CDGetChannelIsLooping(0)) {
+		NG_WRITE_16(ng_savegame_buffer, position, S_CDGetTrackID(0));
+	} else {
+		NG_WRITE_16(ng_savegame_buffer, position, -1);
+	}
+
+	if (S_CDGetChannelIsActive(0) && !S_CDGetChannelIsLooping(0)) {
+		NG_WRITE_16(ng_savegame_buffer, position, S_CDGetTrackID(0));
+	} else {
+		NG_WRITE_16(ng_savegame_buffer, position, -1);
+	}
+
+	if (S_CDGetChannelIsActive(0) && S_CDGetChannelPosition(0)) {
+		NG_WRITE_32(ng_savegame_buffer, position, S_CDGetChannelPosition(0) * sizeof(int32_t));
+	} else {
+		NG_WRITE_32(ng_savegame_buffer, position, -1);
+	}
+
+	NG_WRITE_FLOAT(ng_savegame_buffer, position, LevelFogStart);
+
+	NG_WRITE_32(ng_savegame_buffer, position, 0); // Unused
+	NG_WRITE_32(ng_savegame_buffer, position, 0); // Unused
+
+	NG_WRITE_16(ng_savegame_buffer, position, 0); // TODO: Current pushable index
+
+	NG_WRITE_16(ng_savegame_buffer, position, 0); // TODO: Parallel bar rounds.
+	NG_WRITE_32(ng_savegame_buffer, position, 0); // TODO: Parallel bar frames.
+
+
+	NG_WRITE_16(ng_savegame_buffer, position, 0); // TODO: Test Pop up image.
+	NG_WRITE_16(ng_savegame_buffer, position, 0); // TODO: Pop up counter.
+	NG_WRITE_16(ng_savegame_buffer, position, 0); // TODO: Pop up image index.
+
+	NG_WRITE_8(ng_savegame_buffer, position, 1); // TODO: Volumetric FX
+	NG_WRITE_8(ng_savegame_buffer, position, 1); // TODO: Hardware Fog
+	NG_WRITE_16(ng_savegame_buffer, position, 0); // Unused
+
+	NG_WRITE_16(ng_savegame_buffer, position, 0); // TODO: End Fog Sectors
+
+	int32_t fog_color = (gfDistanceFog.a << 24) | (gfDistanceFog.r << 16) | (gfDistanceFog.g << 8) | (gfDistanceFog.b);
+	NG_WRITE_32(ng_savegame_buffer, position, fog_color);
+
+	NG_WRITE_16(ng_savegame_buffer, position, 0); // TODO: Start Fog Sectors
+	NG_WRITE_16(ng_savegame_buffer, position, 0); // TODO: Max Fog Bulb Distance
+
+	for (int32_t i = 0; i < 100; i++) {
+		NG_WRITE_32(ng_savegame_buffer, position, 0); // TODO: Unused
+	}
+
+	int end_pos = position;
+
+	int total_pos = end_pos - start_pos;
+
+	return position;
+}
+
+uint32_t NGWriteGlobalVariables(uint32_t position) {
+	uint32_t global_variable_size_size = 0;
+	global_variable_size_size += sizeof(uint16_t);
+	global_variable_size_size += sizeof(uint16_t);
+
+	global_variable_size_size += sizeof(uint32_t);
+	global_variable_size_size += sizeof(uint32_t);
+	global_variable_size_size += sizeof(uint32_t);
+	global_variable_size_size += sizeof(uint32_t);
+
+	global_variable_size_size += sizeof(ng_string1);
+	global_variable_size_size += sizeof(ng_string2);
+	global_variable_size_size += sizeof(ng_string3);
+	global_variable_size_size += sizeof(ng_string4);
+
+	for (int32_t i = 0; i < STORE_VARIABLE_COUNT; i++) {
+		global_variable_size_size += sizeof(uint32_t);
+	}
+
+	global_variable_size_size += sizeof(ng_last_text_input);
+	global_variable_size_size += sizeof(uint32_t);
+	global_variable_size_size += sizeof(uint32_t);
+	global_variable_size_size += sizeof(ng_text_big);
+
+
+	for (int32_t i = 0; i < 20; i++) {
+		global_variable_size_size += sizeof(uint32_t);
+	}
+
+	global_variable_size_size /= sizeof(uint16_t);
+
+	NG_WRITE_16(ng_savegame_buffer, position, global_variable_size_size);
+	NG_WRITE_16(ng_savegame_buffer, position, 0x8038);
+
+	NG_WRITE_32(ng_savegame_buffer, position, ng_global_alfa);
+	NG_WRITE_32(ng_savegame_buffer, position, ng_global_beta);
+	NG_WRITE_32(ng_savegame_buffer, position, ng_global_delta);
+	NG_WRITE_32(ng_savegame_buffer, position, ng_global_timer);
+
+	NG_WRITE_FIXED_STRING(ng_savegame_buffer, &ng_string1, sizeof(ng_string1), position);
+	NG_WRITE_FIXED_STRING(ng_savegame_buffer, &ng_string2, sizeof(ng_string2), position);
+	NG_WRITE_FIXED_STRING(ng_savegame_buffer, &ng_string3, sizeof(ng_string3), position);
+	NG_WRITE_FIXED_STRING(ng_savegame_buffer, &ng_string4, sizeof(ng_string4), position);
+
+	for (int32_t i = 0; i < STORE_VARIABLE_COUNT; i++) {
+		NG_READ_32(ng_savegame_buffer, position, ng_store_variables[i]);
+	}
+
+	NG_WRITE_FIXED_STRING(ng_savegame_buffer, &ng_last_text_input, sizeof(ng_last_text_input), position);
+
+	NG_WRITE_32(ng_savegame_buffer, position, ng_last_input_number);
+	NG_WRITE_32(ng_savegame_buffer, position, ng_current_value);
+
+	NG_WRITE_FIXED_STRING(ng_savegame_buffer, &ng_text_big, sizeof(ng_text_big), position);
+
+	for (int32_t i = 0; i < 20; i++) {
+		NG_WRITE_32(ng_savegame_buffer, position, 0);
+	}
+
+	return position;
+}
+
+uint32_t NGWriteGlobalTriggerState(uint32_t position) {
+	uint32_t global_variable_size = 0;
+	global_variable_size += sizeof(uint16_t);
+	global_variable_size += sizeof(uint16_t);
+
+	global_variable_size += sizeof(uint16_t);
+
+	for (int32_t i = 0; i < MAX_NG_GLOBAL_TRIGGERS; i++) {
+		global_variable_size += sizeof(uint16_t);
+	}
+
+	global_variable_size /= sizeof(uint16_t);
+
+	NG_WRITE_16(ng_savegame_buffer, position, global_variable_size);
+	NG_WRITE_16(ng_savegame_buffer, position, 0x801A);
+
+	NG_WRITE_16(ng_savegame_buffer, position, MAX_NG_GLOBAL_TRIGGERS);
+	for (int32_t i = 0; i < MAX_NG_GLOBAL_TRIGGERS; i++) {
+		uint16_t flags = 0;
+		if (ng_global_trigger_states[i].is_disabled) {
+			flags |= FGT_DISABLED;
+		}
+		if (ng_global_trigger_states[i].is_halted) {
+			flags |= FGT_PAUSE_ONE_SHOT;
+		}
+
+		NG_WRITE_16(ng_savegame_buffer, position, flags);
+	}
+
+	return position;
+}
+
+uint32_t NGWriteLocalVariables(uint32_t position) {
+	uint32_t local_variables_size = 0;
+	local_variables_size += sizeof(uint16_t);
+	local_variables_size += sizeof(uint16_t);
+
+	local_variables_size += sizeof(uint32_t);
+	local_variables_size += sizeof(uint32_t);
+	local_variables_size += sizeof(uint32_t);
+	local_variables_size += sizeof(uint32_t);
+
+	local_variables_size /= 2;
+
+	NG_WRITE_16(ng_savegame_buffer, position, local_variables_size);
+	NG_WRITE_16(ng_savegame_buffer, position, 0x8039);
+
+	NG_WRITE_32(ng_savegame_buffer, position, ng_local_alfa);
+	NG_WRITE_32(ng_savegame_buffer, position, ng_local_beta);
+	NG_WRITE_32(ng_savegame_buffer, position, ng_local_delta);
+	NG_WRITE_32(ng_savegame_buffer, position, ng_local_timer);
+
+	return position;
+}
+
+uint32_t NGWriteFrozenItems(uint32_t position) {
+	uint32_t frozen_items_size = 0;
+	uint16_t frozen_item_count = 0;
+	for (int i = 0; i < level_items; i++) {
+		if (NGIsItemFrozen(i)) {
+			frozen_item_count++;
+		}
+	}
+
+	frozen_items_size += sizeof(uint16_t);
+	frozen_items_size += sizeof(uint16_t);
+	frozen_items_size += sizeof(uint16_t);
+
+	for (int i = 0; i < level_items; i++) {
+		frozen_items_size += sizeof(uint16_t);
+		frozen_items_size += sizeof(uint16_t);
+	}
+
+	frozen_items_size /= 2;
+
+	NG_WRITE_16(ng_savegame_buffer, position, frozen_items_size);
+	NG_WRITE_16(ng_savegame_buffer, position, 0x803A);
+	NG_WRITE_16(ng_savegame_buffer, position, frozen_item_count);
+
+	for (int i = 0; i < level_items; i++) {
+		if (NGIsItemFrozen(i)) {
+			NG_WRITE_16(ng_savegame_buffer, position, i);
+			NG_WRITE_16(ng_savegame_buffer, position, NGGetItemFrozenTimer(i));
+		}
+	}
+
+	return position;
+}
+
+void NGWriteNGSavegameInfo() {
+	memset(ng_savegame_buffer, 0x00, MAX_NG_SAVEGAME_BUFFER_SIZE);
+	ng_savegame_buffer_size = 0;
+
+	NG_WRITE_16(ng_savegame_buffer, ng_savegame_buffer_size, NGLE_START_SIGNATURE);
+
+	ng_savegame_buffer_size = NGWriteOldFlipeffects(ng_savegame_buffer_size);
+	ng_savegame_buffer_size = NGWriteOldFMV(ng_savegame_buffer_size);
+	ng_savegame_buffer_size = NGWriteCoordinates(ng_savegame_buffer_size);
+	ng_savegame_buffer_size = NGWriteProgressiveActions(ng_savegame_buffer_size);
+	ng_savegame_buffer_size = NGWriteOldActions(ng_savegame_buffer_size);
+	ng_savegame_buffer_size = NGWriteOldConditions(ng_savegame_buffer_size);
+	ng_savegame_buffer_size = NGWriteVariableData(ng_savegame_buffer_size);
+	ng_savegame_buffer_size = NGWriteGlobalVariables(ng_savegame_buffer_size);
+	ng_savegame_buffer_size = NGWriteGlobalTriggerState(ng_savegame_buffer_size);
+	ng_savegame_buffer_size = NGWriteLocalVariables(ng_savegame_buffer_size);
+	ng_savegame_buffer_size = NGWriteFrozenItems(ng_savegame_buffer_size);
+
+	NG_WRITE_32(ng_savegame_buffer, ng_savegame_buffer_size, NGLE_END_SIGNATURE);
+	NG_WRITE_32(ng_savegame_buffer, ng_savegame_buffer_size, ng_savegame_buffer_size + sizeof(uint32_t));
+}
+
+void NGWriteNGSavegameBuffer(FILE* file) {
+	if (ng_savegame_buffer_size > 0) {
+		fwrite(ng_savegame_buffer, ng_savegame_buffer_size, 1, file);
+	}
+}
+
 void NGReadNGSavegameInfo() {
 	size_t offset = 0;
 
@@ -131,8 +640,7 @@ void NGReadNGSavegameInfo() {
 							for (int32_t j = 0; j < NG_PROGRESSIVE_ACTION_ARGUMENT_2_COUNT; j++) {
 								progressive_actions[i].argument2_u32[j] = NG_READ_32(ng_savegame_buffer, offset);
 							}
-						}
-						else {
+						} else {
 							NGLog(NG_LOG_TYPE_ERROR, "Progressive action overflow!");
 						}
 					}
@@ -199,7 +707,7 @@ void NGReadNGSavegameInfo() {
 					}
 
 					if (secondary_single_cd_track != -1) {
-						S_CDPlayExt(secondary_loop_cd_track, 1, false , false);
+						S_CDPlayExt(secondary_single_cd_track, 1, false , false);
 					}
 
 					if (secondary_loop_cd_track != -1 || secondary_single_cd_track != -1) {
@@ -263,15 +771,14 @@ void NGReadNGSavegameInfo() {
 					break;
 				}
 				case 0x801A: { // STATUS_GTRIGGERS
-					uint32_t global_trigger_count = NG_READ_16(ng_savegame_buffer, offset);
+					uint16_t global_trigger_count = NG_READ_16(ng_savegame_buffer, offset);
 					for (uint32_t i = 0; i < global_trigger_count; i++) {
 						if (i < MAX_NG_GLOBAL_TRIGGERS) {
 							uint16_t flags = NG_READ_16(ng_savegame_buffer, offset);
 
 							ng_global_trigger_states[i].is_disabled = flags & FGT_DISABLED;
 							ng_global_trigger_states[i].is_halted = flags & FGT_PAUSE_ONE_SHOT;
-						}
-						else {
+						} else {
 							NGLog(NG_LOG_TYPE_ERROR, "GTrigger overflow!");
 						}
 					}
@@ -518,6 +1025,7 @@ void NGReadNGSavegameInfo() {
 }
 
 void NGReadNGSavegameBuffer(FILE *file) {
+	memset(ng_savegame_buffer, 0x00, MAX_NG_SAVEGAME_BUFFER_SIZE);
 	ng_savegame_buffer_size = 0;
 
 	int32_t original_file_position = ftell(file);
@@ -533,7 +1041,7 @@ void NGReadNGSavegameBuffer(FILE *file) {
 				int32_t ngle_buffer_start = ftell(file);
 				uint16_t header_ident;
 				fread(&header_ident, sizeof(uint16_t), 1, file);
-				if (header_ident == 0x474e) {
+				if (header_ident == NGLE_START_SIGNATURE) {
 					if (fseek(file, -int32_t(sizeof(uint16_t)), SEEK_CUR) == 0) {
 						uint32_t buffer_size = ngle_buffer_end - ngle_buffer_start;
 						if (buffer_size < MAX_NG_SAVEGAME_BUFFER_SIZE) {

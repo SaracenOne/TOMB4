@@ -2507,7 +2507,7 @@ void NGReadNGGameflowInfo(char *gfScriptFile, size_t offset, size_t len) {
 		}
 
 		// TRNG Stuff
-		get_game_mod_global_info()->trng_extended_flipmap_bitmask = true;
+		get_game_mod_global_info()->trng_savegames = true;
 		get_game_mod_global_info()->trng_new_triggers = true;
 		get_game_mod_global_info()->trng_anim_commands_enabled = true;
 		get_game_mod_global_info()->trng_timerfields_enabled = true;
@@ -2520,7 +2520,6 @@ void NGReadNGGameflowInfo(char *gfScriptFile, size_t offset, size_t len) {
 		get_game_mod_global_info()->trng_hack_allow_meshes_with_exactly_256_vertices = true;
 		get_game_mod_global_info()->trng_advanced_block_raising_behaviour = true;
 		get_game_mod_global_info()->trng_pushables_have_gravity = true;
-		get_game_mod_global_info()->trng_legacy_ng_trigger_behaviour = !is_mod_trng_version_equal_or_greater_than_target(1, 3, 0, 0);
 
 		for (int32_t i = 0; i < MOD_LEVEL_COUNT; i++) {
 			MOD_LEVEL_ENVIRONMENT_INFO *environment_info = get_game_mod_level_environment_info(i);

@@ -533,7 +533,7 @@ void sgRestoreLevel()
 	FLOOR_INFO* floor;
 
 	if (OpenSaveGame(gfCurrentLevel, 0) >= 0) {
-		RestoreLevelData(false, get_game_mod_global_info()->trng_extended_flipmap_bitmask);
+		RestoreLevelData(false, get_game_mod_global_info()->trng_savegames);
 
 		// T4Plus
 		T4PlusEnterLevel(gfCurrentLevel, false);
@@ -609,7 +609,7 @@ void sgSaveLevel()
 	long level_index;
 
 	level_index = OpenSaveGame(gfCurrentLevel, 1);
-	SaveLevelData(0, get_game_mod_global_info()->trng_extended_flipmap_bitmask);
+	SaveLevelData(0, get_game_mod_global_info()->trng_savegames);
 	SaveLaraData();
 	SaveHubData(level_index);
 }
@@ -624,10 +624,15 @@ void sgSaveGame()
 	savegame.fog_colour.r = gfVolumetricFog.r;
 	savegame.fog_colour.g = gfVolumetricFog.g;
 	savegame.fog_colour.b = gfVolumetricFog.b;
-	SaveLevelData(1, get_game_mod_global_info()->trng_extended_flipmap_bitmask);
+	SaveLevelData(1, get_game_mod_global_info()->trng_savegames);
 	SaveLaraData();
 	SaveHubData(level_index);
 	CreateCheckSum();
+
+	// TRNG
+	if (get_game_mod_global_info()->trng_savegames) {
+		NGWriteNGSavegameInfo();
+	}
 }
 
 void sgRestoreGame()

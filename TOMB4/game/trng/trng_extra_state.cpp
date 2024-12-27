@@ -1079,6 +1079,10 @@ bool NGIsItemFrozen(uint32_t item_num) {
 	return false;
 }
 
+int32_t NGGetItemFrozenTimer(uint32_t item_num) {
+	return ng_items_extradata[item_num].frozen_ticks;
+}
+
 void NGSetItemFreezeTimer(uint32_t item_num, uint32_t ticks) {
 	ng_items_extradata[item_num].frozen_ticks = ticks;
 }

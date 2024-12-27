@@ -247,6 +247,8 @@ long S_SaveGame(long slot_num)
 		bytes = fwrite(&seconds, sizeof(short), 1, file);
 		bytes = fwrite(&savegame, sizeof(LEGACY_SAVEGAME_INFO), 1, file);
 
+		NGWriteNGSavegameBuffer(file);
+
 		fclose(file);
 		sprintf(counter, "%d", SaveCounter);
 		SaveCounter++;

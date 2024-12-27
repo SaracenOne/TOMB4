@@ -11,6 +11,7 @@
 
 #define NG_TICKS_PER_SECOND 30
 
+// Read
 #define NG_READ_8(src_buffer, src_offset) src_buffer[src_offset]; \
 offset += sizeof(int8_t)
 
@@ -24,6 +25,26 @@ src_offset += sizeof(int32_t)
 src_offset += sizeof(float)
 
 #define NG_READ_FIXED_STRING(src_buffer, dst_buffer, buffer_size, src_offset) memcpy(dst_buffer, src_buffer + src_offset, buffer_size); src_offset += buffer_size
+
+// Write
+#define NG_WRITE_8(dst_buffer, dst_offset, value) dst_buffer[dst_offset] = (uint8_t)value; \
+dst_offset += sizeof(int8_t)
+
+#define NG_WRITE_16(dst_buffer, dst_offset, value) dst_buffer[dst_offset] = (uint8_t)(value & 0xFF); \
+dst_buffer[dst_offset + 1] = (uint8_t)((value >> 8) & 0xFF); \
+dst_offset += sizeof(uint16_t)
+
+#define NG_WRITE_32(dst_buffer, dst_offset, value) dst_buffer[dst_offset] = (uint8_t)(value & 0xFF); \
+dst_buffer[dst_offset + 1] = (uint8_t)((value >> 8) & 0xFF); \
+dst_buffer[dst_offset + 2] = (uint8_t)((value >> 16) & 0xFF); \
+dst_buffer[dst_offset + 3] = (uint8_t)((value >> 24) & 0xFF); \
+dst_offset += sizeof(uint32_t)
+
+#define NG_WRITE_FLOAT(dst_buffer, dst_offset, value) *(float*)&dst_buffer[dst_offset] = value; \
+dst_offset += sizeof(float)
+
+#define NG_WRITE_FIXED_STRING(dst_buffer, src_buffer, buffer_size, dst_offset) memcpy(dst_buffer + dst_offset, src_buffer, buffer_size); \
+dst_offset += buffer_size
 
 #define SILENCE_EXCESSIVE_LOGS // Debug macro to silence log commands which are commonly called every frame.
 
@@ -138,6 +159,7 @@ extern void NGUpdateAllStatics();
 extern void NGDrawPhase();
 
 extern bool NGIsItemFrozen(uint32_t item_num);
+extern int32_t NGGetItemFrozenTimer(uint32_t item_num);
 
 extern void NGFrameStart();
 extern void NGPreFrameFinish();

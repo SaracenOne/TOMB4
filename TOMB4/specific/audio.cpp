@@ -1213,7 +1213,8 @@ struct ma_audio_stream_channel {
 	int current_track = -1;
 	int current_volume = 100;
 
-	int seek_target = -1;
+	ma_uint64 position = 0;
+	ma_int32 seek_target = -1;
 
 	int restore_track = -1;
 	StreamMode restore_stream_mode = StreamMode::STREAM_ONESHOT_AND_RESTORE_ATMOSPHERE;
@@ -1243,16 +1244,20 @@ void data_callback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uin
 	if (!channels[channel_id].current_stream_paused) {
 		if (channels[channel_id].seek_target >= 0) {
 			ma_data_source_seek_to_pcm_frame(pDecoder, channels[channel_id].seek_target);
+			channels[channel_id].position = channels[channel_id].seek_target;
 			channels[channel_id].seek_target = -1;
 		}
 
 		ma_uint64 frames_read;
 		ma_data_source_read_pcm_frames(pDecoder, pOutput, frameCount, &frames_read);
 
+		channels[channel_id].position += frames_read;
+
 		channels[channel_id].current_stream_finished = false;
 		if (!channels[channel_id].current_stream_loops) {
 			if (frames_read == 0) {
 				channels[channel_id].current_stream_finished = true;
+				channels[channel_id].position = 0;
 			}
 		}
 	}
@@ -1330,8 +1335,7 @@ bool play_track_on_stream_channel(int channel_id, long track, StreamMode mode) {
 	char name[2048];
 	memset(name, 0x00, sizeof(name));
 
-	if (get_game_mod_global_info()->tr_level_editor)
-	{
+	if (get_game_mod_global_info()->tr_level_editor) {
 		platform_find_file_with_substring(audio_path.c_str(), LevelEditorTrackFileNames[track], name);
 
 		// Not sure if we should detect vorbis by filename since ogg is container format.
@@ -1363,6 +1367,7 @@ bool play_track_on_stream_channel(int channel_id, long track, StreamMode mode) {
 	if (result) {
 		channels[channel_id].current_stream_active = true;
 		channels[channel_id].current_track = track;
+		channels[channel_id].position = 0;
 	}
 
 	if (channel_id == 0) {
@@ -1473,6 +1478,41 @@ void S_CDPlayExt(unsigned char track_id, unsigned char channel_id, bool looping,
 		else {
 			S_CDPlay(track_id, false);
 		}
+	}
+}
+
+unsigned char S_CDGetTrackID(unsigned char channel_id) {
+	if (IsUsingNewAudioSystem()) {
+		return channels[channel_id].current_track;
+	} else {
+		return 0;
+	}
+}
+
+bool S_CDGetChannelIsActive(unsigned char channel_id) {
+	if (IsUsingNewAudioSystem()) {
+		return channels[channel_id].current_stream_active;
+	}
+	else {
+		return 0;
+	}
+}
+
+bool S_CDGetChannelIsLooping(unsigned char channel_id) {
+	if (IsUsingNewAudioSystem()) {
+		return channels[channel_id].current_stream_loops;
+	}
+	else {
+		return 0;
+	}
+}
+
+int32_t S_CDGetChannelPosition(unsigned char channel_id) {
+	if (IsUsingNewAudioSystem()) {
+		return channels[channel_id].position;
+	}
+	else {
+		return -1;
 	}
 }
 

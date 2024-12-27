@@ -439,7 +439,7 @@ struct MOD_GLOBAL_INFO {
 	TRNG_ENGINE_VERSION trng_engine_version;
 
 	// TRNG Stuff
-	bool trng_extended_flipmap_bitmask = false;
+	bool trng_savegames = false;
 	bool trng_new_triggers = false; // TRNG (special TRNG flipeffects. Disable if conflicting with FURR)
 	bool trng_anim_commands_enabled = false;
 	bool trng_timerfields_enabled = false;
