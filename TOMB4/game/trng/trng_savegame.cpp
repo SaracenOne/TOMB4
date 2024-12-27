@@ -148,7 +148,7 @@ uint32_t NGWriteProgressiveActions(uint32_t position) {
 	old_progressive_actions_size += sizeof(uint16_t);
 	old_progressive_actions_size += sizeof(uint16_t);
 	old_progressive_actions_size += sizeof(uint16_t);
-	for (int32_t i = 0; i < old_action_count; i++) {
+	for (int32_t i = 0; i < progressive_action_count; i++) {
 		if (i < NG_MAX_PROGRESSIVE_ACTIONS) {
 			old_progressive_actions_size += sizeof(uint16_t);
 			old_progressive_actions_size += sizeof(uint16_t);
