@@ -85,6 +85,11 @@ extern NGLevelInfo ng_level_info[MOD_LEVEL_COUNT];
 extern int32_t ng_floor_id_size;
 extern int8_t *ng_floor_id_table;
 
+#define NG_MAX_FLIP_ROOMS 512
+
+extern int32_t ng_total_flip_rooms;
+extern int16_t ng_flip_rooms[NG_MAX_FLIP_ROOMS];
+
 extern int32_t ng_script_id_count;
 extern int32_t ng_room_remap_count;
 extern int32_t ng_static_id_count;
@@ -255,3 +260,6 @@ extern int32_t moved_item_indicies_count;
 extern int16_t moved_item_indicies[NG_MAX_SAVED_COORDINATES];
 
 extern void NGAddItemMoved(int32_t item_id);
+
+extern int32_t NGFindIndexForRoom(int32_t room_index);
+extern void NGInitializeFlipMaps();

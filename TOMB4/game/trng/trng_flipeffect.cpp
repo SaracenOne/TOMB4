@@ -562,7 +562,13 @@ bool global_trigger_enable_disable(uint8_t enable, uint8_t global_trigger_id) {
 
 // NGLE - 115
 bool set_room_type(uint8_t room_number, uint8_t room_type) {
-	ROOM_INFO* r = &room[room_number];
+	int32_t indexed_room_number = NGFindIndexForRoom(room_number);
+	if (indexed_room_number >= number_rooms || indexed_room_number < 0) {
+		NGLog(NG_LOG_TYPE_ERROR, "Room number overflow!");
+		return false;
+	}
+
+	ROOM_INFO* r = &room[indexed_room_number];
 	if (r) {
 		switch (room_type) {
 			case 0: {
@@ -629,7 +635,13 @@ bool set_room_type(uint8_t room_number, uint8_t room_type) {
 
 // NGLE - 116
 bool remove_room_type(uint8_t room_number, uint8_t room_type) {
-	ROOM_INFO* r = &room[room_number];
+	int32_t indexed_room_number = NGFindIndexForRoom(room_number);
+	if (indexed_room_number >= number_rooms || indexed_room_number < 0) {
+		NGLog(NG_LOG_TYPE_ERROR, "Room number overflow!");
+		return false;
+	}
+
+	ROOM_INFO* r = &room[indexed_room_number];
 	if (r) {
 		switch (room_type) {
 			case 0: {

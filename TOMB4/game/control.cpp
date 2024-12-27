@@ -75,17 +75,17 @@ MESH_INFO* SmashedMesh[16];
 short SmashedMeshRoom[16];
 short SmashedMeshCount = 0;
 
-long flipmap[MAX_FLIPMAPS];
-long flip_stats[MAX_FLIPMAPS];
-long flip_status;
-long flipeffect = -1;
-long fliptimer = 0;
+int32_t flipmap[MAX_FLIPMAPS];
+int32_t flip_stats[MAX_FLIPMAPS];
+int32_t flip_status;
+int32_t flipeffect = -1;
+int32_t fliptimer = 0;
 
-short *trigger_index;
-long tiltxoff;
-long tiltyoff;
-long OnObject;
-long height_type;
+int16_t *trigger_index;
+int32_t tiltxoff;
+int32_t tiltyoff;
+int32_t OnObject;
+int32_t height_type;
 
 bool InItemControlLoop = false;
 short ItemNewRooms[256][2];

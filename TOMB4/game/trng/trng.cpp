@@ -28,6 +28,9 @@ NGLevelInfo ng_level_info[MOD_LEVEL_COUNT];
 int32_t ng_floor_id_size = 0;
 int8_t *ng_floor_id_table = NULL;
 
+int32_t ng_total_flip_rooms = 0;
+int16_t ng_flip_rooms[NG_MAX_FLIP_ROOMS];
+
 NGAnimatedTexture ng_animated_texture;
 
 int32_t ng_script_id_count = 0;
@@ -604,6 +607,8 @@ void NGLevelSetup() {
 	for (int32_t i = 0; i < NG_MAX_SAVED_COORDINATES; i++) {
 		moved_item_indicies[i] = -1;
 	}
+
+	NGInitializeFlipMaps();
 }
 
 void NGSignalForManagementCreatedItems() {
@@ -963,5 +968,43 @@ void NGAddItemMoved(int32_t item_id) {
 		moved_item_indicies_count++;
 	} else {
 		NGLog(NG_LOG_TYPE_ERROR, "Moved item indicies overflow");
+	}
+}
+
+int32_t NGFindIndexForRoom(int32_t room_index) {
+	if (room_index >= NG_MAX_FLIP_ROOMS) {
+		return -1;
+	}
+
+	if (ng_flip_rooms[room_index] != -1) {
+		return -1;
+	}
+
+	ROOM_INFO* current_room = &room[room_index];
+
+	if (current_room->flipped_room == -1) {
+		return room_index;
+	}
+
+	int8_t flipmap_index = current_room->FlipNumber;
+
+	if (flipmap[flipmap_index]) {
+		return current_room->flipped_room;
+	}
+
+	return room_index;
+}
+
+void NGInitializeFlipMaps() {
+	ng_total_flip_rooms = number_rooms;
+	
+	for (int32_t i = 0; i < NG_MAX_FLIP_ROOMS; i++) {
+		ng_flip_rooms[i] = -1;
+	}
+
+	for (int32_t i = 0; i < ng_total_flip_rooms; i++) {
+		if (room[i].flipped_room != -1) {
+			ng_flip_rooms[i] = room[i].flipped_room;
+		}
 	}
 }

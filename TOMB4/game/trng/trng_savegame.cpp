@@ -452,6 +452,35 @@ uint32_t NGWriteGlobalTriggerState(uint32_t position) {
 	return position;
 }
 
+uint32_t NGWriteRoomFlags(uint32_t position) {
+	uint32_t room_flags_size = 0;
+	room_flags_size += sizeof(uint16_t);
+	room_flags_size += sizeof(uint16_t);
+
+	room_flags_size += sizeof(uint16_t);
+	for (int32_t i = 0; i < ng_total_flip_rooms; i++) {
+		room_flags_size += sizeof(uint16_t);
+	}
+
+	room_flags_size /= sizeof(uint16_t);;
+
+	NG_WRITE_16(ng_savegame_buffer, position, room_flags_size);
+	NG_WRITE_16(ng_savegame_buffer, position, 0x801C);
+
+	NG_WRITE_16(ng_savegame_buffer, position, ng_total_flip_rooms);
+	for (int32_t i = 0; i < ng_total_flip_rooms; i++) {
+		int32_t room_index = NGFindIndexForRoom(i);
+		if (room_index != -1 && room_index < number_rooms) {
+			int16_t flags = room[room_index].flags & 0x1C35;
+			NG_WRITE_16(ng_savegame_buffer, position, flags);
+		} else {
+			NG_WRITE_16(ng_savegame_buffer, position, 0xFFFF);
+		}
+	}
+
+	return position;
+}
+
 uint32_t NGWriteLocalVariables(uint32_t position) {
 	uint32_t local_variables_size = 0;
 	local_variables_size += sizeof(uint16_t);
@@ -524,6 +553,7 @@ void NGWriteNGSavegameInfo() {
 	ng_savegame_buffer_size = NGWriteVariableData(ng_savegame_buffer_size);
 	ng_savegame_buffer_size = NGWriteGlobalVariables(ng_savegame_buffer_size);
 	ng_savegame_buffer_size = NGWriteGlobalTriggerState(ng_savegame_buffer_size);
+	ng_savegame_buffer_size = NGWriteRoomFlags(ng_savegame_buffer_size);
 	ng_savegame_buffer_size = NGWriteLocalVariables(ng_savegame_buffer_size);
 	ng_savegame_buffer_size = NGWriteFrozenItems(ng_savegame_buffer_size);
 
@@ -796,7 +826,12 @@ void NGReadNGSavegameInfo() {
 					for (int32_t i = 0; i < room_count; i++) {
 						uint16_t room_flags = NG_READ_16(ng_savegame_buffer, offset);
 						if (i < number_rooms) {
-							room[i].flags = room_flags;
+							int32_t room_index = NGFindIndexForRoom(i);
+							if (room_index != -1 && room_index < number_rooms) {
+								uint16_t new_room_flags = room[room_index].flags & ~0x1C35;
+								new_room_flags |= room_flags;
+								room[room_index].flags = new_room_flags;
+							}
 						}
 					}
 					break;

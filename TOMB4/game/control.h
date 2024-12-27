@@ -63,17 +63,17 @@ extern short SmashedMeshCount;
 
 #define MAX_FLIPMAPS 32 // bumped from 10
 
-extern long flipmap[MAX_FLIPMAPS];
-extern long flip_stats[MAX_FLIPMAPS];
-extern long flip_status;
-extern long flipeffect;
-extern long fliptimer;
+extern int32_t flipmap[MAX_FLIPMAPS];
+extern int32_t flip_stats[MAX_FLIPMAPS];
+extern int32_t flip_status;
+extern int32_t flipeffect;
+extern int32_t fliptimer;
 
-extern short *trigger_index;
-extern long tiltxoff;
-extern long tiltyoff;
-extern long OnObject;
-extern long height_type;
+extern int16_t *trigger_index;
+extern int32_t tiltxoff;
+extern int32_t tiltyoff;
+extern int32_t OnObject;
+extern int32_t height_type;
 
 extern bool InItemControlLoop;
 extern short ItemNewRooms[256][2];
