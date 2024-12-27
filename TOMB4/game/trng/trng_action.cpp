@@ -466,10 +466,6 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 			}
 			break;
 		case MOVE_ITEM_UP_FOR_CLICKS:
-			if (!is_mod_trng_version_equal_or_greater_than_target(1, 3, 0, 0)) {
-				repeat_type = 0;
-			}
-
 			NGAddItemMoved(item_id);
 
 			if (!NGGetItemVerticalMovementRemainingUnits(item_id)) {
@@ -484,10 +480,6 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 			}
 			break;
 		case MOVE_ITEM_DOWN_FOR_CLICKS:
-			if (!is_mod_trng_version_equal_or_greater_than_target(1, 3, 0, 0)) {
-				repeat_type = 0;
-			}
-
 			NGAddItemMoved(item_id);
 
 			if (!NGGetItemVerticalMovementRemainingUnits(item_id)) {
@@ -502,10 +494,6 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 			}
 			break;
 		case MOVE_ITEM_WEST_FOR_CLICKS:
-			if (!is_mod_trng_version_equal_or_greater_than_target(1, 3, 0, 0)) {
-				repeat_type = 0;
-			}
-
 			NGAddItemMoved(item_id);
 
 			if (!NGGetItemHorizontalMovementRemainingUnits(item_id)) {
@@ -521,10 +509,6 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 			}
 			break;
 		case MOVE_ITEM_NORTH_FOR_CLICKS:
-			if (!is_mod_trng_version_equal_or_greater_than_target(1, 3, 0, 0)) {
-				repeat_type = 0;
-			}
-
 			NGAddItemMoved(item_id);
 
 			if (!NGGetItemHorizontalMovementRemainingUnits(item_id)) {
@@ -540,10 +524,6 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 			}
 			break;
 		case MOVE_ITEM_EAST_FOR_CLICKS:
-			if (!is_mod_trng_version_equal_or_greater_than_target(1, 3, 0, 0)) {
-				repeat_type = 0;
-			}
-
 			NGAddItemMoved(item_id);
 
 			if (!NGGetItemHorizontalMovementRemainingUnits(item_id)) {
@@ -559,10 +539,6 @@ int32_t NGPerformTRNGAction(uint16_t action_timer, uint16_t item_id, int32_t fla
 			}
 			break;
 		case MOVE_ITEM_SOUTH_FOR_CLICKS:
-			if (!is_mod_trng_version_equal_or_greater_than_target(1, 3, 0, 0)) {
-				repeat_type = 0;
-			}
-
 			NGAddItemMoved(item_id);
 
 			if (!NGGetItemHorizontalMovementRemainingUnits(item_id)) {
