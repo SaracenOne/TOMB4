@@ -888,7 +888,11 @@ void NGCaptureAction(uint16_t item_index, uint16_t extra_timer, uint32_t floor_o
 	scanned_actions[current_action_id].offset_floor_data = offset_now;
 	scanned_actions[current_action_id].timer = extra_timer;
 
-	uint16_t plugin_id = NGGetPluginIDForFloorData(NGGetFloorTriggerNow());
+	if (!NGUsingLegacyNGTriggerBehaviour()) {
+		offset_now = (floor_offset - (*trigger_index));
+	}
+
+	uint16_t plugin_id = NGGetPluginIDForFloorData(offset_now >> 1, false);
 	scanned_actions[current_action_id].plugin_id = plugin_id;
 
 	scanned_action_count++;

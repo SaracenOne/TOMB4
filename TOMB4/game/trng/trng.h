@@ -128,7 +128,7 @@ extern NGStaticTableEntry ng_static_id_table[NG_STATIC_ID_TABLE_SIZE];
 extern void NGPreloadAllLevelInfo(uint32_t valid_level_count);
 extern void NGLoadLevelInfo(FILE* level_fp);
 
-extern int32_t NGGetPluginIDForFloorData(int16_t *floor_data_ptr);
+extern int32_t NGGetPluginIDForFloorData(uint32_t floor_index, bool test_condition);
 
 
 // Move the item in a direction by the number of units

@@ -189,11 +189,14 @@ int32_t ng_input_simulate_oneshot = -1;
 int32_t ng_input_lock_timers[NG_INPUT_TIMER_COUNT];
 int32_t ng_input_simulate_timers[NG_INPUT_TIMER_COUNT];
 
-int32_t NGGetPluginIDForFloorData(int16_t *floor_data_ptr) {
-	int32_t index = int32_t(floor_data_ptr - floor_data);
+int32_t NGGetPluginIDForFloorData(uint32_t floor_index, bool test_condition) {
+	if (test_condition) {
+		floor_index++;
+	}
+
 	if (ng_floor_id_table) {
-		if (index < ng_floor_id_size) {
-			int32_t plugin_id = ng_floor_id_table[index];
+		if (floor_index < ng_floor_id_size) {
+			int32_t plugin_id = ng_floor_id_table[floor_index];
 			return plugin_id;
 		} else {
 			NGLog(NG_LOG_TYPE_ERROR, "NGGetPluginIDForFloorData: Overflow!");

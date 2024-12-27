@@ -3198,7 +3198,11 @@ void NGCaptureFlipEffect(uint16_t flip_number, uint16_t timer, uint32_t flip_off
 	scanned_flipeffects[flipeffect_count].offset_floor_data = offset_now;
 	scanned_flipeffects[flipeffect_count].timer = timer;
 
-	uint16_t plugin_id = NGGetPluginIDForFloorData(NGGetFloorTriggerNow());
+	if (!NGUsingLegacyNGTriggerBehaviour()) {
+		offset_now = (flip_offset - (*floor_data));
+	}
+
+	uint16_t plugin_id = NGGetPluginIDForFloorData(offset_now >> 1, false);
 	scanned_flipeffects[flipeffect_count].plugin_id = plugin_id;
 
 	if (flip_number == PERFORM_TRIGGERGROUP_FROM_SCRIPT_IN_SPECIFIC_WAY && plugin_id == 0) {

@@ -982,7 +982,7 @@ int NGRunConditionTrigger(uint16_t *current_floor_data) {
 		}
 	}
 
-	uint16_t plugin_id = NGGetPluginIDForFloorData(NGGetFloorTriggerNow());
+	uint16_t plugin_id = NGGetPluginIDForFloorData((offset_now >> 1), true);
 
 	bool is_oneshot = false;
 	if (NGGetFloorTriggerNow()[1] & IFL_INVISIBLE) {
@@ -1090,7 +1090,7 @@ bool NGAnalyzeDummyCondition(uint16_t *current_floor_data) {
 	uint32_t offset_condition = (uint32_t)current_floor_data;
 	uint32_t offset_now = offset_condition - (uint32_t)floor_data;
 
-	uint16_t plugin_id = NGGetPluginIDForFloorData((short *)offset_now);
+	uint16_t plugin_id = NGGetPluginIDForFloorData((offset_now >> 1), true);
 	if (plugin_id > 0) {
 		return false;
 	}
