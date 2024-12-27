@@ -1,29 +1,20 @@
 #pragma once
 #include "../global/types.h"
 
-void OpenStreamFile(char* name);
-void GetADPCMData();
 void ACMSetVolume();
-void ACMEmulateCDPlay(long track, long mode);
-#if !defined(MA_AUDIO_SAMPLES) || !defined(MA_AUDIO_ENGINE)
-BOOL __stdcall ACMEnumCallBack(HACMDRIVERID hadid, DWORD_PTR dwInstance, DWORD fdwSupport);
-#endif
-long ACMSetupNotifications();
-void FillADPCMBuffer(char* p, long track);
-long ACMHandleNotifications();
 bool ACMInit();
 void ACMClose();
-void S_CDPlay(long track, long mode);
-void S_CDPlayExt(unsigned char track_id, unsigned char channel_id, bool looping, bool restore_old_track);
-unsigned char S_CDGetTrackID(unsigned char channel_id);
-bool S_CDGetChannelIsActive(unsigned char channel_id);
-bool S_CDGetChannelIsLooping(unsigned char channel_id);
-int32_t S_CDGetChannelPosition(unsigned char channel_id);
+void S_CDPlay(int32_t track, int32_t mode);
+void S_CDPlayExt(uint8_t track_id, uint8_t channel_id, bool looping, bool restore_old_track);
+int32_t S_CDGetTrackID(uint8_t channel_id);
+bool S_CDGetChannelIsActive(uint8_t channel_id);
+bool S_CDGetChannelIsLooping(uint8_t channel_id);
+uint64_t S_CDGetChannelPosition(uint8_t channel_id);
 void S_CDStop();
-void S_CDStopExt(unsigned char channel_id);
-void S_StartSyncedAudio(long track);
+void S_CDStopExt(uint8_t channel_id);
+void S_StartSyncedAudio(int32_t track);
 
-void S_CDSetChannelVolume(unsigned char volume, unsigned char channel_id);
+void S_CDSetChannelVolume(uint8_t volume, uint8_t channel_id);
 
 void S_AudioUpdate();
 void S_PauseAudio();
@@ -31,7 +22,7 @@ void S_UnpauseAudio();
 
 void S_Reset();
 
-void S_CDSeek(int channel_id, int frame);
+void S_CDSeek(int channel_id, int64_t frame);
 
 void SetUsingNewAudioSystem(bool enabled);
 void SetUsingOldTriggerMode(bool enabled);

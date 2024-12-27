@@ -673,518 +673,7 @@ long LegacyTrack = -1;
 long LegacyTrackFlag = 7;
 
 #ifndef MA_AUDIO_ENGINE
-
-static LPDIRECTSOUNDBUFFER DSBuffer = 0;
-static LPDIRECTSOUNDNOTIFY DSNotify = 0;
-static ACMSTREAMHEADER StreamHeaders[4];
-static HACMDRIVERID hACMDriverID = 0;
-static HACMSTREAM hACMStream = 0;
-static HANDLE NotifyEventHandles[2];
-static HANDLE NotificationThreadHandle = 0;
-static FILE* audio_stream_fp;
-static CRITICAL_SECTION audio_cs;
-static uchar* audio_fp_write_ptr = 0;
-static uchar* pAudioWrite = 0;
-static ulong AudioBytes = 0;
-static long audio_buffer_size = 0;
-static long CurrentNotify = 0;
-static long NotifySize = 0;
-static long NextWriteOffset = 0;
-static long auido_play_mode = 0;
-static long audio_counter = 0;
-static volatile bool reading_audio_file = 0;
-static volatile bool continue_reading_audio_file = 0;
-
-void OpenStreamFile(char* name)
-{
-	__try
-	{
-		EnterCriticalSection(&audio_cs);
-	}
-	__finally
-	{
-		LeaveCriticalSection(&audio_cs);
-	}
-
-	audio_stream_fp = FileOpen(name);
-
-	if (!audio_stream_fp)
-	{
-		Log(1, "%s - Not Found", name);
-		return;
-	}
-
-	fseek(audio_stream_fp, 90, SEEK_SET);
-	audio_fp_write_ptr = wav_file_buffer;
-	memset(wav_file_buffer, 0, 0x37000);
-
-	if (fread(wav_file_buffer, 1, 0x37000, audio_stream_fp) < 0x37000 && auido_play_mode == 1)
-	{
-		fseek(audio_stream_fp, 90, SEEK_SET);
-		Log(0, "FileReset In OpenStreamFile");
-	}
-}
-
-void GetADPCMData()
-{
-	if (!audio_stream_fp)
-		return;
-
-	memset(audio_fp_write_ptr, 0, 0x5800);
-
-	if (fread(audio_fp_write_ptr, 1, 0x5800, audio_stream_fp) < 0x5800 && auido_play_mode == 1)
-	{
-		Log(0, "FileReset In GetADPCMData");
-		fseek(audio_stream_fp, 90, SEEK_SET);
-	}
-
-	audio_fp_write_ptr += 0x5800;
-
-	if ((long)audio_fp_write_ptr >= long(wav_file_buffer + 0x37000))
-		audio_fp_write_ptr = wav_file_buffer;
-}
-
-void ACMSetVolume()
-{
-	long volume;
-
-	if (!MusicVolume)
-		volume = -10000;
-	else
-		volume = -4000 * (100 - MusicVolume) / 100;
-
-	if (DSBuffer)
-		DSBuffer->SetVolume(volume);
-}
-
-void ACMEmulateCDPlay(long track, long mode)
-{
-	char name[256];
-
-	__try
-	{
-		EnterCriticalSection(&audio_cs);
-	}
-	__finally
-	{
-		LeaveCriticalSection(&audio_cs);
-	}
-
-	if (get_game_mod_global_info()->tr_level_editor)
-	{
-		wsprintf(name, "audio\\%s", LevelEditorTrackFileNames[track]);
-	} else {
-		wsprintf(name, "audio\\%s", LastRevelationTrackFileNames[track]);
-	}
-
-	if (mode)
-		Log(8, "Playing %s %s %d", name, "Looped", track);
-	else
-		Log(8, "Playing %s %s %d", name, "", track);
-
-	LegacyTrack = track;
-	LegacyTrackFlag = 6;
-	auido_play_mode = mode;
-	OpenStreamFile(name);
-
-	if (!audio_stream_fp)
-		return;
-
-	memcpy(ADPCMBuffer, audio_fp_write_ptr, 0x5800);
-	GetADPCMData();
-	DXAttempt(DSBuffer->Lock(0, audio_buffer_size, (LPVOID*)&pAudioWrite, &AudioBytes, 0, 0, 0));
-	acmStreamConvert(hACMStream, &StreamHeaders[0], ACM_STREAMCONVERTF_BLOCKALIGN | ACM_STREAMCONVERTF_START);
-	memcpy(ADPCMBuffer, audio_fp_write_ptr, 0x5800);
-	GetADPCMData();
-	acmStreamConvert(hACMStream, &StreamHeaders[1], ACM_STREAMCONVERTF_BLOCKALIGN);
-	DXAttempt(DSBuffer->Unlock(pAudioWrite, audio_buffer_size, 0, 0));
-	CurrentNotify = 2;
-	NextWriteOffset = 2 * NotifySize;
-	ACMSetVolume();
-	DSBuffer->Play(0, 0, DSBPLAY_LOOPING);
-}
-
-BOOL __stdcall ACMEnumCallBack(HACMDRIVERID hadid, DWORD_PTR dwInstance, DWORD fdwSupport)
-{
-	ACMDRIVERDETAILS driver;
-
-	memset(&driver, 0, sizeof(driver));
-	driver.cbStruct = sizeof(ACMDRIVERDETAILS);
-	acmDriverDetails(hadid, &driver, 0);
-
-	if (strcmp(driver.szShortName, "MS-ADPCM"))
-		return 1;
-
-	hACMDriverID = hadid;
-	return 0;
-}
-
-long ACMSetupNotifications()
-{
-	DSBPOSITIONNOTIFY posNotif[5];
-	ulong ThreadId;
-	long result;
-
-	NotifyEventHandles[0] = CreateEvent(0, 0, 0, 0);
-	NotifyEventHandles[1] = CreateEvent(0, 0, 0, 0);
-	posNotif[0].dwOffset = NotifySize;
-	posNotif[0].hEventNotify = NotifyEventHandles[0];
-	Log(8, "Set notifies for position %lu", posNotif[0].dwOffset);
-
-	for (int i = 1; i < 4; i++)
-	{
-		posNotif[i].dwOffset = NotifySize + posNotif[i - 1].dwOffset;
-		posNotif[i].hEventNotify = NotifyEventHandles[0];
-		Log(8, "Set notifies for positions %lu", posNotif[i].dwOffset);
-	}
-
-	posNotif[3].dwOffset--;
-	posNotif[4].dwOffset = -1;
-	posNotif[4].hEventNotify = NotifyEventHandles[1];
-	NotificationThreadHandle = CreateThread(0, 0, (LPTHREAD_START_ROUTINE)ACMHandleNotifications, 0, 0, &ThreadId);
-
-	if (!NotificationThreadHandle)
-		Log(1, "Create Notification Thread failed");
-
-	result = DSNotify->SetNotificationPositions(5, posNotif);
-
-	if (result != DS_OK)
-	{
-		CloseHandle(NotifyEventHandles[0]);
-		CloseHandle(NotifyEventHandles[1]);
-		NotifyEventHandles[1] = 0;
-		NotifyEventHandles[0] = 0;
-	}
-	else
-		Log(8, "Setup Notifications OK");
-
-	return result;
-}
-
-void FillADPCMBuffer(char* p, long track)
-{
-	reading_audio_file = 1;
-
-	__try
-	{
-		EnterCriticalSection(&audio_cs);
-	}
-	__finally
-	{
-		LeaveCriticalSection(&audio_cs);
-	}
-
-	if (!audio_stream_fp)
-	{
-		reading_audio_file = 0;
-		continue_reading_audio_file = 0;
-		return;
-	}
-
-	if (track != LegacyTrack || track == -1)
-	{
-		Log(0, "Not Current Track %d", track);
-		reading_audio_file = 0;
-		continue_reading_audio_file = 0;
-		return;
-	}
-
-	memset(p, 0, 0x5800);
-
-	if (!audio_stream_fp)
-	{
-		reading_audio_file = 0;
-		continue_reading_audio_file = 0;
-		return;
-	}
-
-	fread(p, 1, 0x5800, audio_stream_fp);
-
-	if (audio_stream_fp && feof(audio_stream_fp))
-	{
-		if (auido_play_mode == 1)
-			fseek(audio_stream_fp, 90, SEEK_SET);
-		else
-		{
-			audio_counter++;
-
-			if (audio_counter > 8)
-			{
-				audio_counter = 0;
-
-				if (auido_play_mode == 2)
-				{
-					reading_audio_file = 0;
-					continue_reading_audio_file = 0;
-					S_CDStop();
-					return;
-				}
-
-				if (CurrentAtmosphere && !IsAtmospherePlaying)
-				{
-					reading_audio_file = 0;
-					continue_reading_audio_file = 0;
-					S_CDStop();
-					S_CDPlay(CurrentAtmosphere, 1);
-					return;
-				}
-			}
-		}
-	}
-
-	reading_audio_file = 0;
-	continue_reading_audio_file = 1;
-}
-
-long ACMHandleNotifications()
-{
-	char* write;
-	ulong wait, bytes;
-
-	while ((wait = WaitForMultipleObjects(2, NotifyEventHandles, 0, INFINITE)) != WAIT_FAILED)
-	{
-		EnterCriticalSection(&audio_cs);
-
-		if (!wait && DSBuffer)
-		{
-			memcpy(ADPCMBuffer, audio_fp_write_ptr, 0x5800);
-
-			if (LegacyTrack == -1)
-				memset(ADPCMBuffer, 0, 0x5800);
-			else
-				FillADPCMBuffer((char*)audio_fp_write_ptr, LegacyTrack);
-
-			if (continue_reading_audio_file)
-			{
-				audio_fp_write_ptr += 0x5800;
-
-				if ((long)audio_fp_write_ptr >= long(wav_file_buffer + 0x37000))
-					audio_fp_write_ptr = wav_file_buffer;
-
-				DSBuffer->Lock(NextWriteOffset, NotifySize, (LPVOID*)&write, &bytes, 0, 0, 0);
-				acmStreamConvert(hACMStream, &StreamHeaders[CurrentNotify], ACM_STREAMCONVERTF_BLOCKALIGN);
-				DSBuffer->Unlock(&write, bytes, 0, 0);
-				NextWriteOffset += bytes;
-
-				if (NextWriteOffset >= audio_buffer_size)
-					NextWriteOffset -= audio_buffer_size;
-
-				CurrentNotify = (CurrentNotify + 1) & 3;
-			}
-		}
-
-		LeaveCriticalSection(&audio_cs);
-
-		if (!DSBuffer)
-			break;
-	}
-
-	return DS_OK;
-}
-
-bool ACMInit()
-{
-	DSBUFFERDESC desc;
-	static WAVEFORMATEX wav_format;
-	static ulong StreamSize;
-	ulong version, pMetric;
-
-	version = acmGetVersion();
-	InitializeCriticalSection(&audio_cs);
-	acm_ready = 0;
-	Log(8, "ACM Version %u.%.02u", ((version >> 16) & 0xFFFF) >> 8, (version >> 16) & 0xFF);
-	acmDriverEnum(ACMEnumCallBack, 0, 0);
-
-	if (!hACMDriverID)
-	{
-		Log(1, "*** Unable To Locate MS-ADPCM Driver ***");
-		return 0;
-	}
-
-	if (acmDriverOpen(&hACMDriver, hACMDriverID, 0))
-	{
-		Log(1, "*** Failed To Open Driver MS-ADPCM Driver ***");
-		return 0;
-	}
-
-	ADPCMBuffer = (uchar*)SYSTEM_MALLOC(0x5800);
-	wav_file_buffer = (uchar*)SYSTEM_MALLOC(0x37000);
-	wav_format.wFormatTag = WAVE_FORMAT_PCM;
-	acmMetrics(0, ACM_METRIC_MAX_SIZE_FORMAT, &pMetric);
-	acmFormatSuggest(hACMDriver, (LPWAVEFORMATEX)&source_wav_format, &wav_format, pMetric, ACM_FORMATSUGGESTF_WFORMATTAG);
-	audio_buffer_size = 0x577C0;
-	NotifySize = 0x15DF0;
-
-	memset(&desc, 0, sizeof(desc));
-	desc.dwBufferBytes = 0x577C0;
-	desc.dwReserved = 0;
-	desc.dwSize = 20;
-	desc.dwFlags = DSBCAPS_LOCSOFTWARE | DSBCAPS_CTRLFREQUENCY | DSBCAPS_CTRLPAN | DSBCAPS_CTRLVOLUME | DSBCAPS_CTRLPOSITIONNOTIFY | DSBCAPS_GETCURRENTPOSITION2;
-	desc.lpwfxFormat = &wav_format;
-	App.dx.lpDS->CreateSoundBuffer(&desc, &DSBuffer, 0);
-	DSBuffer->QueryInterface(DSNGUID, (LPVOID*)&DSNotify);
-
-	ACMSetupNotifications();
-	acmStreamOpen(&hACMStream, hACMDriver, (LPWAVEFORMATEX)&source_wav_format, &wav_format, 0, 0, 0, 0);
-	acmStreamSize(hACMStream, 0x5800, &StreamSize, 0);
-	DXAttempt(DSBuffer->Lock(0, audio_buffer_size, (LPVOID*)&pAudioWrite, &AudioBytes, 0, 0, 0));
-	memset(pAudioWrite, 0, audio_buffer_size);
-
-	for (int i = 0; i < 4; i++)
-	{
-		memset(&StreamHeaders[i], 0, sizeof(ACMSTREAMHEADER));
-		StreamHeaders[i].cbStruct = sizeof(ACMSTREAMHEADER);
-		StreamHeaders[i].pbSrc = ADPCMBuffer;
-		StreamHeaders[i].cbSrcLength = 0x5800;
-		StreamHeaders[i].cbDstLength = StreamSize;
-		StreamHeaders[i].pbDst = &pAudioWrite[NotifySize * i];
-		acmStreamPrepareHeader(hACMStream, &StreamHeaders[i], 0);
-	}
-
-	DXAttempt(DSBuffer->Unlock(pAudioWrite, audio_buffer_size, 0, 0));
-	acm_ready = 1;
-	return 1;
-}
-
-void ACMClose()
-{
-	if (!acm_ready)
-		return;
-
-	EnterCriticalSection(&audio_cs);
-	S_CDStop();
-	CloseHandle(NotifyEventHandles[0]);
-	CloseHandle(NotifyEventHandles[1]);
-	acmStreamUnprepareHeader(hACMStream, &StreamHeaders[0], 0);
-	acmStreamUnprepareHeader(hACMStream, &StreamHeaders[1], 0);
-	acmStreamUnprepareHeader(hACMStream, &StreamHeaders[2], 0);
-	acmStreamUnprepareHeader(hACMStream, &StreamHeaders[3], 0);
-	acmStreamClose(hACMStream, 0);
-	acmDriverClose(hACMDriver, 0);
-
-	if (DSNotify)
-	{
-		Log(4, "Released %s @ %x - RefCnt = %d", "Notification", DSNotify, DSNotify->Release());
-		DSNotify = 0;
-	}
-	else
-		Log(1, "%s Attempt To Release NULL Ptr", "Notification");
-
-	if (DSBuffer)
-	{
-		Log(4, "Released %s @ %x - RefCnt = %d", "Stream Buffer", DSBuffer, DSBuffer->Release());
-		DSBuffer = 0;
-	}
-	else
-		Log(1, "%s Attempt To Release NULL Ptr", "Stream Buffer");
-
-	LeaveCriticalSection(&audio_cs);
-}
-
-void S_CDPlay(long track, long mode)
-{
-	if (acm_ready)
-	{
-		__try
-		{
-			EnterCriticalSection(&audio_cs);
-		}
-		__finally
-		{
-			LeaveCriticalSection(&audio_cs);
-		}
-
-		IsAtmospherePlaying = track == CurrentAtmosphere;
-		audio_counter = 0;
-		S_CDStop();
-		ACMEmulateCDPlay(track, mode);
-	}
-}
-
-void S_CDPlayExt(unsigned char track_id, unsigned char channel_id, bool looping, bool restore_old_track) {
-	if (looping) {
-		if (CurrentAtmosphere != track_id)
-		{
-			CurrentAtmosphere = (uchar)track_id;
-
-			if (IsAtmospherePlaying)
-				S_CDPlay(track_id, true);
-		}
-	}
-	else {
-		S_CDPlay(track_id, false);
-	}
-}
-
-void S_CDStop()
-{
-	if (acm_ready && audio_stream_fp)
-	{
-		__try
-		{
-			EnterCriticalSection(&audio_cs);
-		}
-		__finally
-		{
-			LeaveCriticalSection(&audio_cs);
-		}
-
-		memset(wav_file_buffer, 0, 0x37000);
-		DSBuffer->Stop();
-		DSBuffer->SetCurrentPosition(0);
-		while (reading_audio_file) {};
-		fclose(audio_stream_fp);
-		audio_stream_fp = 0;
-		audio_counter = 0;
-		LegacyTrackFlag = 7;
-		LegacyTrack = -1;
-	}
-}
-
-void S_CDStopExt(unsigned char channel_id) {
-	S_CDStop();
-}
-
-void S_CDSetChannelVolume(unsigned char volume, unsigned char channel) {
-	return;
-}
-
-void S_StartSyncedAudio(long track)
-{
-	S_CDStop();
-	S_CDPlay(track, 2);
-}
-
-void S_AudioUpdate() {
-	return;
-}
-
-void S_PauseAudio() {
-	return;
-}
-
-void S_UnpauseAudio() {
-	return;
-}
-
-void S_Reset() {
-	return;
-}
-
-void SetUsingNewAudioSystem(bool enabled) {
-}
-
-void SetUsingOldTriggerMode(bool enabled) {
-}
-
-bool IsUsingNewAudioSystem() {
-	return false;
-}
-
-bool IsUsingOldCDTriggerMode() {
-	return true;
-}
-
+#error "MA_AUDIO_ENGINE is required."
 #else
 #define STB_VORBIS_HEADER_ONLY // <-- Exclude stb_vorbis' implementation
 #include "../tomb4/libs/miniaudio/extras/stb_vorbis.c"
@@ -1210,13 +699,13 @@ struct ma_audio_stream_channel {
 	bool current_stream_finished = false;
 	StreamMode current_stream_mode = StreamMode::STREAM_ONESHOT_AND_RESTORE_ATMOSPHERE;
 	bool current_stream_active = false;
-	int current_track = -1;
-	int current_volume = 100;
+	ma_int32 current_track = -1;
+	ma_int32 current_volume = 100;
 
 	ma_uint64 position = 0;
-	ma_int32 seek_target = -1;
+	ma_int64 seek_target = -1;
 
-	int restore_track = -1;
+	ma_int32 restore_track = -1;
 	StreamMode restore_stream_mode = StreamMode::STREAM_ONESHOT_AND_RESTORE_ATMOSPHERE;
 
 	ma_decoder_config decoder_config = {};
@@ -1263,13 +752,15 @@ void data_callback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uin
 	}
 }
 
-void stop_track_on_stream_channel(int channel_id) {
+void stop_track_on_stream_channel(int32_t channel_id) {
 	if (channel_id == 0) {
 		LegacyTrack = -1;
 		LegacyTrackFlag = 7;
 	}
 
 	channels[channel_id].current_track = -1;
+	channels[channel_id].current_stream_active = false;
+	channels[channel_id].position = 0;
 
 	if (channels[channel_id].device.pContext) {
 		if (ma_device_stop(&channels[channel_id].device) != MA_SUCCESS) {
@@ -1280,7 +771,7 @@ void stop_track_on_stream_channel(int channel_id) {
 	}
 }
 
-bool load_and_play_track(const char* path, StreamMode mode, int channel_id) {
+bool load_and_play_track(const char* path, StreamMode mode, int32_t channel_id) {
 	stop_track_on_stream_channel(channel_id);
 
 #if defined(_WIN32) && defined(UNICODE)
@@ -1329,7 +820,7 @@ bool load_and_play_track(const char* path, StreamMode mode, int channel_id) {
 	return true;
 }
 
-bool play_track_on_stream_channel(int channel_id, long track, StreamMode mode) {
+bool play_track_on_stream_channel(int32_t channel_id, int32_t track, StreamMode mode) {
 	std::string audio_path = working_dir_path + "audio" + PATH_SEPARATOR;
 
 	char name[2048];
@@ -1340,8 +831,9 @@ bool play_track_on_stream_channel(int channel_id, long track, StreamMode mode) {
 
 		// Not sure if we should detect vorbis by filename since ogg is container format.
 		// May need to investigate the spec further.
-		char* ext = strrchr(name, '.');
+		char *ext = strrchr(name, '.');
 		if (ext) {
+			ext++;
 			if (platform_strcicmp(ext, "wav") == 0) {
 				channels[channel_id].decoder_config.encodingFormat = ma_encoding_format_wav;
 			} else if (platform_strcicmp(ext, "mp3") == 0) {
@@ -1359,7 +851,11 @@ bool play_track_on_stream_channel(int channel_id, long track, StreamMode mode) {
 		channels[channel_id].decoder_config.encodingFormat = ma_encoding_format_wav;
 	}
 
-	audio_path += PATH_SEPARATOR;
+	if (strlen(name) <= 0) {
+		stop_track_on_stream_channel(channel_id);
+		return false;
+	}
+
 	audio_path += name;
 
 	bool result = load_and_play_track(audio_path.c_str(), (StreamMode)mode, channel_id);
@@ -1380,7 +876,7 @@ bool play_track_on_stream_channel(int channel_id, long track, StreamMode mode) {
 	return result;
 }
 
-void track_complete_callback(int channel_id) {
+void track_complete_callback(int32_t channel_id) {
 	if (channels[channel_id].current_stream_mode == STREAM_ONESHOT_AND_RESTORE_ATMOSPHERE) {
 		if (CurrentAtmosphere && !IsAtmospherePlaying)
 		{
@@ -1408,7 +904,7 @@ void track_complete_callback(int channel_id) {
 }
 
 bool ACMInit() {
-	for (int i = 0; i < MA_AUDIO_STREAM_COUNT; i++) {
+	for (int32_t i = 0; i < MA_AUDIO_STREAM_COUNT; i++) {
 		callback_userdata[i].channel_id = i;
 	}
 
@@ -1418,7 +914,7 @@ bool ACMInit() {
 
 void ACMClose() {
 	S_CDStop();
-	for (int i = 0; i < MA_AUDIO_STREAM_COUNT; i++) {
+	for (int32_t i = 0; i < MA_AUDIO_STREAM_COUNT; i++) {
 		ma_device_uninit(&channels[i].device);
 		ma_decoder_uninit(&channels[i].decoder);
 	}
@@ -1426,23 +922,23 @@ void ACMClose() {
 }
 
 void ACMSetVolume() {
-	long volume;
+	int32_t volume;
 
-	for (int i = 0; i < MA_AUDIO_STREAM_COUNT; i++) {
+	for (int32_t i = 0; i < MA_AUDIO_STREAM_COUNT; i++) {
 		float current_volume_float = (float)(channels[i].current_volume) / 100.0f;
 		float master_volume_float = (float)(MusicVolume) / 100.0f;
 
 		if (!MusicVolume || !channels[i].current_volume) {
 			volume = -10000;
 		} else {
-			volume = (long)roundf(- 4000 * (1.0f - (current_volume_float * master_volume_float)));
+			volume = (int32_t)roundf(- 4000 * (1.0f - (current_volume_float * master_volume_float)));
 		}
 
 		ma_device_set_master_volume_db(&channels[i].device, (float)volume * 0.01f);
 	}
 }
 
-void S_CDPlay(long track, long mode) {
+void S_CDPlay(int32_t track, int32_t mode) {
 	if (!new_audio_system || old_cd_trigger_mode) {
 		play_track_on_stream_channel(0, track, (StreamMode)mode);
 
@@ -1456,7 +952,7 @@ void S_CDPlay(long track, long mode) {
 	}
 }
 
-void S_CDPlayExt(unsigned char track_id, unsigned char channel_id, bool looping, bool restore_old_track) {
+void S_CDPlayExt(uint8_t track_id, uint8_t channel_id, bool looping, bool restore_old_track) {
 	if (IsUsingNewAudioSystem()) {
 		if (channels[channel_id].current_track != track_id || !looping) {
 			if (restore_old_track) {
@@ -1469,7 +965,7 @@ void S_CDPlayExt(unsigned char track_id, unsigned char channel_id, bool looping,
 	} else {
 		if (looping) {
 			if (CurrentAtmosphere != track_id) {
-				CurrentAtmosphere = (uchar)track_id;
+				CurrentAtmosphere = (uint8_t)track_id;
 
 				if (IsAtmospherePlaying)
 					S_CDPlay(track_id, true);
@@ -1481,7 +977,7 @@ void S_CDPlayExt(unsigned char track_id, unsigned char channel_id, bool looping,
 	}
 }
 
-unsigned char S_CDGetTrackID(unsigned char channel_id) {
+int32_t S_CDGetTrackID(uint8_t channel_id) {
 	if (IsUsingNewAudioSystem()) {
 		return channels[channel_id].current_track;
 	} else {
@@ -1489,7 +985,7 @@ unsigned char S_CDGetTrackID(unsigned char channel_id) {
 	}
 }
 
-bool S_CDGetChannelIsActive(unsigned char channel_id) {
+bool S_CDGetChannelIsActive(uint8_t channel_id) {
 	if (IsUsingNewAudioSystem()) {
 		return channels[channel_id].current_stream_active;
 	}
@@ -1498,7 +994,7 @@ bool S_CDGetChannelIsActive(unsigned char channel_id) {
 	}
 }
 
-bool S_CDGetChannelIsLooping(unsigned char channel_id) {
+bool S_CDGetChannelIsLooping(uint8_t channel_id) {
 	if (IsUsingNewAudioSystem()) {
 		return channels[channel_id].current_stream_loops;
 	}
@@ -1507,7 +1003,7 @@ bool S_CDGetChannelIsLooping(unsigned char channel_id) {
 	}
 }
 
-int32_t S_CDGetChannelPosition(unsigned char channel_id) {
+uint64_t S_CDGetChannelPosition(uint8_t channel_id) {
 	if (IsUsingNewAudioSystem()) {
 		return channels[channel_id].position;
 	}
@@ -1523,7 +1019,7 @@ void S_CDStop() {
 	}
 }
 
-void S_CDStopExt(unsigned char channel_id) {
+void S_CDStopExt(uint8_t channel_id) {
 	if (IsUsingNewAudioSystem()) {
 		stop_track_on_stream_channel(channel_id);
 	}
@@ -1532,7 +1028,7 @@ void S_CDStopExt(unsigned char channel_id) {
 	}
 }
 
-void S_StartSyncedAudio(long track) {
+void S_StartSyncedAudio(int32_t track) {
 	S_CDStop();
 	S_CDPlay(track, 2);
 }
@@ -1556,7 +1052,7 @@ void S_Reset() {
 }
 
 void S_AudioUpdate() {
-	for (int i = 0; i < MA_AUDIO_STREAM_COUNT; i++) {
+	for (int32_t i = 0; i < MA_AUDIO_STREAM_COUNT; i++) {
 		bool should_callback = false;
 		ma_mutex_lock(&channels[i].device.startStopLock);
 		{
@@ -1571,7 +1067,7 @@ void S_AudioUpdate() {
 }
 
 void S_PauseAudio() {
-	for (int i = 0; i < MA_AUDIO_STREAM_COUNT; i++) {
+	for (int32_t i = 0; i < MA_AUDIO_STREAM_COUNT; i++) {
 		if (channels[i].device.pContext) {
 			ma_mutex_lock(&channels[i].device.startStopLock);
 			{
@@ -1584,7 +1080,7 @@ void S_PauseAudio() {
 	}
 }
 
-void S_CDSetChannelVolume(unsigned char volume, unsigned char channel) {
+void S_CDSetChannelVolume(uint8_t volume, uint8_t channel) {
 	if (IsUsingNewAudioSystem()) {
 		channels[channel].current_volume = volume;
 		ACMSetVolume();
@@ -1605,7 +1101,7 @@ void S_UnpauseAudio() {
 	}
 }
 
-void S_CDSeek(int channel_id, int frame) {
+void S_CDSeek(int channel_id, int64_t frame) {
 	ma_decoder* pDecoder = &channels[channel_id].decoder;
 	if (pDecoder == NULL) {
 		return;
