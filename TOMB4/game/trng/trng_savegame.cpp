@@ -481,6 +481,34 @@ uint32_t NGWriteRoomFlags(uint32_t position) {
 	return position;
 }
 
+uint32_t NGWriteOCBItems(uint32_t position) {
+	uint32_t ocb_item_size = 0;
+	ocb_item_size += sizeof(uint16_t);
+	ocb_item_size += sizeof(uint16_t);
+
+	ocb_item_size += sizeof(uint16_t);
+	for (int32_t i = 0; i < level_items; i++) {
+		ocb_item_size += sizeof(uint16_t);
+	}
+
+	ocb_item_size /= 2;
+
+	NG_WRITE_16(ng_savegame_buffer, position, ocb_item_size);
+	NG_WRITE_16(ng_savegame_buffer, position, 0x804D);
+
+	NG_WRITE_16(ng_savegame_buffer, position, level_items);
+	for (int32_t i = 0; i < level_items; i++) {
+		ITEM_INFO* item = T4PlusGetItemInfoForID(i);
+		if (item) {
+			NG_WRITE_16(ng_savegame_buffer, position, item->trigger_flags);
+		} else {
+			NG_WRITE_16(ng_savegame_buffer, position, 0);
+		}
+	}
+
+	return position;
+}
+
 uint32_t NGWriteLocalVariables(uint32_t position) {
 	uint32_t local_variables_size = 0;
 	local_variables_size += sizeof(uint16_t);
@@ -554,6 +582,7 @@ void NGWriteNGSavegameInfo() {
 	ng_savegame_buffer_size = NGWriteGlobalVariables(ng_savegame_buffer_size);
 	ng_savegame_buffer_size = NGWriteGlobalTriggerState(ng_savegame_buffer_size);
 	ng_savegame_buffer_size = NGWriteRoomFlags(ng_savegame_buffer_size);
+	ng_savegame_buffer_size = NGWriteOCBItems(ng_savegame_buffer_size);
 	ng_savegame_buffer_size = NGWriteLocalVariables(ng_savegame_buffer_size);
 	ng_savegame_buffer_size = NGWriteFrozenItems(ng_savegame_buffer_size);
 
