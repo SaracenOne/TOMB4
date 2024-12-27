@@ -269,10 +269,10 @@ uint32_t NGWriteVariableData(uint32_t position) {
 	NG_WRITE_32(ng_savegame_buffer, position, 0); // TODO: Counter game
 	NG_WRITE_16(ng_savegame_buffer, position, 0); // TODO: Level now flags
 
-	int32_t layer1_color = (gfLayer1Col.a << 24) | (gfLayer1Col.r << 16) | (gfLayer1Col.g << 8) | (gfLayer1Col.b);
+	int32_t layer1_color = (gfLayer1Col.a << 24) & 0xff000000 | (gfLayer1Col.r << 16) & 0x00ff0000 | (gfLayer1Col.g << 8) & 0x0000ff00 | (gfLayer1Col.b) & 0x000000ff;
 	NG_WRITE_32(ng_savegame_buffer, position, layer1_color);
 
-	int32_t layer2_color = (gfLayer2Col.a << 24) | (gfLayer2Col.r << 16) | (gfLayer2Col.g << 8) | (gfLayer2Col.b);
+	int32_t layer2_color = (gfLayer2Col.a << 24) & 0xff000000 | (gfLayer2Col.r << 16) & 0x00ff0000 | (gfLayer2Col.g << 8) & 0x0000ff00 | (gfLayer2Col.b) & 0x000000ff;
 	NG_WRITE_32(ng_savegame_buffer, position, layer2_color);
 
 	NG_WRITE_8(ng_savegame_buffer, position, gfLayer1Vel);
@@ -292,8 +292,10 @@ uint32_t NGWriteVariableData(uint32_t position) {
 		NG_WRITE_16(ng_savegame_buffer, position, -1);
 	}
 
-	if (S_CDGetChannelIsActive(1) && S_CDGetChannelPosition(1)) {
-		NG_WRITE_32(ng_savegame_buffer, position, S_CDGetChannelPosition(1) * sizeof(int32_t));
+	uint64_t channel_1_position = S_CDGetChannelPosition(1);
+
+	if (S_CDGetChannelIsActive(1)) {
+		NG_WRITE_32(ng_savegame_buffer, position, uint32_t((channel_1_position * sizeof(int32_t)) & 0xffffffff));
 	} else {
 		NG_WRITE_32(ng_savegame_buffer, position, -1);
 	}
@@ -311,8 +313,9 @@ uint32_t NGWriteVariableData(uint32_t position) {
 		NG_WRITE_16(ng_savegame_buffer, position, -1);
 	}
 
-	if (S_CDGetChannelIsActive(0) && S_CDGetChannelPosition(0)) {
-		NG_WRITE_32(ng_savegame_buffer, position, S_CDGetChannelPosition(0) * sizeof(int32_t));
+	uint64_t channel_0_position = S_CDGetChannelPosition(0);
+	if (S_CDGetChannelIsActive(0)) {
+		NG_WRITE_32(ng_savegame_buffer, position, uint32_t((channel_0_position * sizeof(int32_t)) & 0xffffffff));
 	} else {
 		NG_WRITE_32(ng_savegame_buffer, position, -1);
 	}
@@ -338,7 +341,7 @@ uint32_t NGWriteVariableData(uint32_t position) {
 
 	NG_WRITE_16(ng_savegame_buffer, position, 0); // TODO: End Fog Sectors
 
-	int32_t fog_color = (gfDistanceFog.a << 24) | (gfDistanceFog.r << 16) | (gfDistanceFog.g << 8) | (gfDistanceFog.b);
+	int32_t fog_color = (gfDistanceFog.a << 24) & 0xff000000 | (gfDistanceFog.r << 16) & 0x00ff0000 | (gfDistanceFog.g << 8) & 0x0000ff00 | (gfDistanceFog.b) & 0x000000ff;
 	NG_WRITE_32(ng_savegame_buffer, position, fog_color);
 
 	NG_WRITE_16(ng_savegame_buffer, position, 0); // TODO: Start Fog Sectors
@@ -711,7 +714,9 @@ void NGReadNGSavegameInfo() {
 					}
 
 					if (secondary_loop_cd_track != -1 || secondary_single_cd_track != -1) {
-						S_CDSeek(1, cd_channel_2_offset / sizeof(int32_t));
+						if (cd_channel_2_offset != 0xffffffff) {
+							S_CDSeek(1, cd_channel_2_offset / sizeof(int32_t));
+						}
 					}
 
 					int16_t main_loop_cd_track = NG_READ_16(ng_savegame_buffer, offset);
@@ -728,7 +733,9 @@ void NGReadNGSavegameInfo() {
 					uint32_t cd_channel_1_offset = NG_READ_32(ng_savegame_buffer, offset);
 
 					if (main_loop_cd_track != -1 || main_single_cd_track != -1) {
-						S_CDSeek(0, cd_channel_1_offset / sizeof(int32_t));
+						if (cd_channel_1_offset != 0xffffffff) {
+							S_CDSeek(0, cd_channel_1_offset / sizeof(int32_t));
+						}
 					}
 
 					LevelFogStart = NG_READ_FLOAT(ng_savegame_buffer, offset);
